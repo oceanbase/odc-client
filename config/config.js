@@ -69,7 +69,9 @@ const config = {
       // target: 'http://100.81.152.104:8989',
       // target: 'http://100.81.152.113:9000',
       // target: 'http://100.81.152.113:8989',
-      target: 'http://11.124.9.83:7001/proxy/96',
+      target:  process.env.CURRENT_ENV === 'obcloud'
+      ? 'http://g-sit.obcloud.alipay.net'
+      : 'http://11.124.9.83:7001/proxy/96',
     },
   },
 
@@ -133,5 +135,11 @@ config.headScripts = [
   `window.currentEnv=window.currentEnv || '${process.env.CURRENT_ENV || ''}'`,
   `window.publicPath=window.publicPath || '${publicPath}'`,
 ];
-config.headScripts.push(`window.ODCApiHost= window.ODCApiHost || ''`);
+if (process.env.CURRENT_ENV === 'obcloud') {
+  config.headScripts.push(
+    `window.ODCApiHost='${config.proxy['/api/'].target}'`,
+  );
+} else {
+  config.headScripts.push(`window.ODCApiHost= window.ODCApiHost || ''`);
+}
 export default config;
