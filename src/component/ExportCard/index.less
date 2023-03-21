@@ -1,0 +1,34 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  flex: 0;
+  flex-basis: 40px;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 12px;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.search {
+  display: flex;
+  flex: 0;
+  align-items: center;
+  padding: 12px 12px;
+  background: inherit;
+}
+
+.content {
+  flex: 1;
+  padding: 0 0 0 12px;
+  overflow: auto;
+}
+
+.cardDisabled {
+  background-color: var(--background-tertraiy-color);
+}

@@ -1,0 +1,217 @@
+.snippet-sider:global(.ant-layout-sider) {
+  height: 100%;
+  background-color: inherit;
+  border-left: 1px solid var(--divider-color);
+}
+
+.snippet-sider-header {
+  display: flex;
+  justify-content: space-between;
+  height: 38px;
+  padding: 0 16px;
+  color: var(--text-color-secondary);
+  font-size: 12px;
+  font-family: PingFangSC-Regular;
+  line-height: 38px;
+  background: var(--background-tertraiy-color);
+  border-bottom: 1px solid var(--divider-color);
+
+  :global {
+    .anticon-close {
+      color: var(--text-color-secondary);
+      font-size: 14px;
+      font-family: 'Menlo-Regular';
+      line-height: 40px;
+    }
+  }
+}
+
+.snippet-sider-body {
+  position: absolute;
+  width: 240px;
+  height: calc(100% - 95px);
+  padding-top: 15px;
+  background: var(--background-tertraiy-color);
+}
+
+.snippet-sider-searchbar {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 15px;
+  padding-left: 15px;
+  line-height: 28px;
+
+  :global {
+    .ant-input-search {
+      width: 156px;
+      margin-right: 8px;
+
+      .ant-input-search-button {
+        height: 28px;
+      }
+    }
+  }
+}
+
+.snippet-sider-filter {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  padding-right: 15px;
+  padding-left: 15px;
+  color: var(--text-color-secondary);
+
+  :global {
+    .ant-dropdown-trigger {
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+.snippet-sider-card-list {
+  position: relative;
+  height: calc(100% - 56px);
+  height: 100%;
+  margin-top: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  :global {
+    .ant-empty {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: 0;
+      margin-top: -33px;
+      margin-left: -32px;
+
+      .ant-empty-description {
+        color: var(--text-color-secondary);
+      }
+    }
+
+    .ant-spin-spinning {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      margin-top: -10px;
+      margin-left: -10px;
+    }
+  }
+}
+
+.snippet-sider-card {
+  margin-bottom: 8px;
+  overflow: hidden;
+  color: var(--text-color-secondary);
+  font-size: 12px;
+  font-family: PingFangSC-Regular;
+  border-right-width: 0;
+  border-left-width: 0;
+  border-radius: 2px;
+
+  :global {
+    .ant-card-head {
+      color: var(--text-color-secondary);
+      border-bottom: 0;
+    }
+    .ant-card-head-title {
+      padding-bottom: 6px !important;
+
+      .anticon-question-circle {
+        margin-left: 3px;
+        cursor: pointer;
+      }
+
+      .anticon-ellipsis {
+        cursor: pointer;
+      }
+    }
+    .ant-card-body {
+      padding: 0 12px 8px;
+    }
+    .anticon-copy {
+      display: none;
+    }
+  }
+
+  &:hover {
+    border-color: #1890ff;
+
+    :global {
+      .anticon-copy {
+        display: block;
+      }
+    }
+  }
+}
+
+.snippet-keyword {
+  display: inline-block;
+  max-width: 138px;
+  overflow: hidden;
+  color: rgb(24, 144, 255, 0.85);
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.snippet-card-desc {
+  display: -webkit-box;
+  min-height: 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.snippet-card-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 3px;
+  color: var(--text-color-secondary);
+
+  :global {
+    .anticon-copy {
+      margin-top: 3px;
+      color: var(--text-color-secondary);
+      cursor: pointer;
+    }
+  }
+}
+
+.snippet-popover {
+  :global {
+    .ant-popover-title {
+      padding: 16px 16px 0;
+      border-bottom: 0;
+    }
+    .ant-popover-inner-content {
+      width: 280px;
+      max-height: 326px;
+      padding: 4px 16px 16px;
+      overflow: auto;
+    }
+    dl {
+      margin-bottom: 0;
+      font-size: 12px;
+      font-family: PingFangSC-Regular;
+      line-height: 20px;
+    }
+    dt {
+      color: var(--text-color-secondary);
+    }
+    dd {
+      margin-top: 4px;
+      margin-bottom: 12px;
+      color: var(--text-color-secondary);
+
+      code {
+        font-family: Menlo-Regular;
+      }
+    }
+    footer {
+      color: var(--text-color-secondary);
+    }
+  }
+}

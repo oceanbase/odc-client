@@ -1,0 +1,41 @@
+.item {
+  position: relative;
+  display: flex;
+  padding: 8px;
+  border: 1px solid @odc-border-color-secondary-dark2;
+  border-radius: 2px;
+  cursor: pointer;
+  transition-duration: 0.2s;
+  &:hover {
+    border-color: rgba(24, 144, 255, 1);
+  }
+  .img {
+    width: 40px;
+    height: 40px;
+    margin-right: 8px;
+  }
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 12px;
+    .title {
+      color: @odc-text-color-dark;
+      font-family: PingFangSC-Semibold;
+    }
+    .content {
+      color: @odc-text-color-secondary-dark2;
+    }
+  }
+  .checkicon {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+  }
+}
+.activeKey {
+  border: 1px solid rgba(24, 144, 255, 1);
+}

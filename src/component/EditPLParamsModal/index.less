@@ -1,0 +1,49 @@
+.table {
+  :global {
+    .ant-table-wrapper {
+      width: 100%;
+      .ant-table {
+        .ant-table-thead {
+          .ant-table-cell {
+            padding: 2px 8px;
+            line-height: 20px;
+            background-color: var(--table-header-background-color) !important;
+          }
+        }
+
+        .ant-table-tbody {
+          .ant-table-row {
+            .ant-table-cell {
+              padding: 2px 8px;
+              line-height: 20px;
+              word-break: break-all;
+              background-color: var(--hover-color);
+
+              &:nth-of-type(1) {
+                background-color: var(--table-header-background-color);
+              }
+
+              .ant-form-item {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                margin: 0;
+                background-color: var(--background-secondry-color);
+                .ant-form-item-control-input {
+                  min-height: 20px;
+                  .ant-input {
+                    padding: 2px 8px;
+                    border: none;
+                    box-shadow: none;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

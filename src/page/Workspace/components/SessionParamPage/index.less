@@ -1,0 +1,80 @@
+.header {
+  flex-grow: 0;
+  flex-shrink: 1;
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--divider-color);
+}
+.spin {
+  height: 100%;
+  > :global(.ant-spin-container) {
+    height: 100%;
+  }
+}
+.bordered {
+  border: 1px solid var(--odc-border-color);
+}
+
+.search {
+  width: 160px;
+  margin-left: 18px;
+  font-size: 12px;
+
+  :global {
+    .ant-input {
+      font-size: 12px;
+    }
+  }
+}
+
+.table {
+  flex: auto;
+  :global {
+    .row-modified {
+      .react-grid-Row {
+        .react-grid-Cell {
+          &:nth-child(2) {
+            background: #ffe7ba !important;
+          }
+        }
+      }
+    }
+
+    .row-changed {
+      .react-grid-Row {
+        .react-grid-Cell {
+          overflow: hidden;
+
+          &:nth-child(2) {
+            &::after {
+              position: absolute;
+              top: -6px;
+              left: -6px;
+              width: 12px;
+              height: 12px;
+              background: #52c41a;
+              transform: rotateZ(45deg);
+              content: '';
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  padding-right: 8px;
+  box-shadow: rgba(184, 198, 211, 0.4) 0 -2px 8px 0;
+
+  .button {
+    margin-right: 8px;
+    font-size: 12px;
+  }
+}

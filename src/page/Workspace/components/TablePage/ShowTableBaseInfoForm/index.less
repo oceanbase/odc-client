@@ -1,0 +1,38 @@
+.form {
+  &:global(.ant-form) {
+    width: 600px;
+    margin-top: 24px;
+
+    :global {
+      label {
+        font-size: 12px;
+      }
+    }
+
+    .divider {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .submitButton {
+      font-size: 12px;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      width: 100%;
+      height: 40px;
+      padding-right: 8px;
+      box-shadow: rgba(184, 198, 211, 0.4) 0 -2px 8px 0;
+
+      .button {
+        margin-right: 8px;
+        font-size: 12px;
+      }
+    }
+  }
+}

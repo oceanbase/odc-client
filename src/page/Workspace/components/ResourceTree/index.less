@@ -1,0 +1,39 @@
+.resourceTree {
+  .sequenceTree,
+  .triggerTree,
+  .synonymTree {
+    :global {
+      .ant-tree-node-content-wrapper {
+        padding: 0 8px;
+      }
+    }
+  }
+  :global {
+    .ant-tree-treenode {
+      &:hover {
+        background: var(--hover-color) !important;
+      }
+      &:hover::before {
+        background: transparent !important;
+      }
+      .ant-tree-switcher-noop {
+        display: none;
+      }
+      &.ant-tree-treenode-switcher-open,
+      &.ant-tree-treenode-switcher-close {
+        .ant-tree-node-content-wrapper-normal {
+          padding: 0 8px;
+        }
+      }
+    }
+  }
+  > .ant-tabs {
+    > .ant-tabs-content-holder {
+      > .ant-tabs-content {
+        > .ant-tabs-tabpane:not(.ant-tabs-tabpane-active) {
+          display: none;
+        }
+      }
+    }
+  }
+}

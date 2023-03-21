@@ -1,0 +1,136 @@
+.title {
+  font-weight: bold;
+  font-family: PingFangSC-Medium;
+}
+.header {
+  padding-bottom: 12px;
+  background: var(--background-secondry-color);
+  .banner {
+    position: relative;
+    height: 110px;
+    padding: 24px;
+    color: #fff;
+    background: url('../../../../../public/img/manage_index_bg.png') no-repeat center #1890ff;
+    background-size: contain;
+    .title {
+      padding-bottom: 10px;
+      font-size: 20px;
+      line-height: 32px;
+    }
+    .desc {
+      font-size: 12px;
+      line-height: 20px;
+    }
+    .iconBtn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      :global {
+        .anticon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+          color: #fff;
+          font-size: 12px;
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+  .menuList {
+    display: flex;
+    margin-bottom: 0;
+    padding-top: 12px;
+    padding-left: 0;
+    background: var(--background-secondry-color);
+  }
+  .menuItem {
+    display: flex;
+    flex: 1;
+    padding: 24px;
+    .icon {
+      width: 72px;
+      height: 72px;
+    }
+    .content {
+      max-width: 400px;
+      padding-left: 16px;
+      .title {
+        font-size: 16px;
+        line-height: 24px;
+      }
+      .desc {
+        margin-top: 8px;
+        color: var(--text-color-hint);
+        line-height: 20px;
+      }
+    }
+  }
+}
+.contentWrapper {
+  padding: 24px;
+  background: var(--background-secondry-color);
+  .title {
+    padding-bottom: 16px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .main {
+    display: flex;
+    flex: 1;
+    .resourceList {
+      display: flex;
+      flex-wrap: wrap;
+      padding-left: 0;
+    }
+    .resourceItem {
+      display: flex;
+      width: 50%;
+      padding: 20px;
+      .index {
+        width: 20px;
+        height: 20px;
+        color: var(--text-color-primary);
+        line-height: 16px;
+        text-align: center;
+        border: 1px solid var(--odc-border-color);
+        border-radius: 10px;
+      }
+      .content {
+        width: 200px;
+        padding-left: 20px;
+        .title {
+          font-size: 14px;
+          line-height: 24px;
+        }
+        .desc {
+          color: var(--text-color-hint);
+          line-height: 20px;
+        }
+        :global {
+          .ant-btn-link {
+            height: 20px;
+            margin-top: 12px;
+            padding: 0;
+            line-height: 20px;
+          }
+        }
+      }
+    }
+
+    .resourceGroup {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      background: #f8fbff;
+      .bgImg {
+        width: 542px;
+        height: auto;
+      }
+    }
+  }
+}

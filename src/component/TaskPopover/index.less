@@ -1,0 +1,136 @@
+@import (reference) '~@/func.less';
+.button {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: PingFangSC-Regular;
+  line-height: 32px;
+  .buttonIcon {
+    font-size: 20px;
+  }
+  &:hover {
+    background: #f4f4f4;
+    cursor: pointer;
+  }
+}
+
+.badge:global(.ant-badge) {
+  margin-right: 20px;
+  :global {
+    .ant-badge-count {
+      box-shadow: none;
+    }
+  }
+  &.empty {
+    :global {
+      .ant-badge-count {
+        background: #575e6d;
+      }
+    }
+  }
+}
+
+.taskList {
+  .taskItem {
+    &:hover {
+      cursor: pointer;
+    }
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 12px;
+    & ~ .taskItem {
+      padding-top: 16px;
+    }
+    .taskItemImg {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
+    }
+    .taskItemContent {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+      margin-right: 12px;
+      overflow: hidden;
+      .taskItemName {
+        height: 20px;
+        color: @odc-text-color-dark;
+        font-size: 12px;
+        line-height: 20px;
+        .odc-text-ellipsis();
+      }
+      .taskItemContentBootm {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 20px;
+        .taskItemType {
+          color: @odc-text-color-secondary-dark2;
+          font-family: PingFangSC-Regular;
+        }
+      }
+    }
+    .taskItemStatus {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      font-size: 14px;
+    }
+  }
+  .taskMore {
+    padding-top: 12px;
+    font-size: 12px;
+    text-align: center;
+  }
+}
+.taskPopover {
+  :global {
+    .ant-popover-title {
+      padding-top: 18px;
+      font-size: 12px;
+      border-width: 0;
+    }
+    .ant-popover-inner-content {
+      width: 280px;
+      max-height: 340px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+  }
+}
+
+.connectionPopover {
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+  }
+}
+
+.taskDrawer {
+  :global {
+    .ant-drawer-header {
+      padding-top: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+      .ant-tabs-nav {
+        padding: 0 16px;
+      }
+      .ant-tabs-tab {
+        font-weight: 400;
+        &.ant-tabs-tab-active {
+          font-weight: 700;
+        }
+      }
+    }
+    .ant-drawer-body {
+      padding: 16px;
+    }
+  }
+}

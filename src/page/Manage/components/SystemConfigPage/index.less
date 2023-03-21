@@ -1,0 +1,26 @@
+.systemConfig {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .title {
+      font-size: 16px;
+    }
+  }
+
+  .configLabel {
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .configValue,
+  .configDesc {
+    color: var(--text-color-hint);
+    font-size: 12px;
+  }
+
+  :global {
+    .ant-divider-horizontal {
+      margin: 20px 0;
+    }
+  }
+}

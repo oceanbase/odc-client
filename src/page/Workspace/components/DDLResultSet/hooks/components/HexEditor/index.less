@@ -1,0 +1,24 @@
+.cell {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  cursor: default;
+  // user-select: none;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+  &.cellSeleced {
+    background: var(--hover-color);
+    outline: #1890ff solid 1px;
+  }
+}
+.addCell {
+  display: inline-block;
+  color: #333;
+  text-align: center;
+  background-color: #ededed;
+  cursor: pointer;
+  &:hover {
+    background-color: #e5e5e5;
+  }
+}

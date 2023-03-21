@@ -1,0 +1,144 @@
+.tree-transfer {
+  :global {
+    .ant-tree-switcher {
+      width: 14px;
+    }
+
+    .ant-transfer-list {
+      height: 280px;
+    }
+
+    .ant-tree-treenode {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    .ant-tree-treenode-selected {
+      .ant-tree-switcher {
+        color: @odc-text-color-dark !important;
+      }
+      &::before {
+        background: transparent !important;
+      }
+
+      &:hover::before {
+        background: #f5f5f5;
+      }
+
+      .ant-tree-node-selected {
+        color: @odc-text-color-dark;
+      }
+    }
+
+    .ant-tree-checkbox {
+      margin-right: 4px;
+      margin-left: 4px;
+    }
+
+    .ant-transfer-list-body-customize-wrapper {
+      padding: 0;
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper {
+      padding-left: 0;
+      white-space: nowrap;
+
+      .ant-tree-iconEle {
+        width: 20px;
+        height: 20px;
+        line-height: 22px;
+      }
+    }
+
+    .ant-transfer-list:first-child {
+      position: relative;
+      flex: 1 1 30%;
+      min-width: 200px;
+
+      .ant-transfer-list-body-customize-wrapper {
+        padding: 0;
+      }
+
+      .ant-transfer-list-header {
+        .ant-checkbox-wrapper,
+        .anticon-down,
+        .ant-transfer-list-header-selected {
+          display: none;
+        }
+      }
+    }
+    .ant-transfer-list:last-child {
+      flex: 1 1 70%;
+      min-width: 200px;
+      white-space: nowrap;
+      .ant-transfer-list-header-title {
+        display: flex;
+        justify-content: space-between;
+      }
+      .ant-dropdown-trigger {
+        display: none;
+      }
+      .ant-transfer-list-header-selected {
+        display: none;
+      }
+
+      .ant-transfer-list-body-search-wrapper {
+        display: none;
+      }
+
+      .ant-transfer-list-body {
+        padding: 16px 0 0 0;
+      }
+    }
+  }
+}
+
+.header-tip {
+  color: var(--text-color-secondary);
+}
+
+.dragable-item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  height: 28px;
+  padding-left: 12px;
+  line-height: 28px;
+  cursor: move;
+
+  :global {
+    .anticon-down {
+      position: relative;
+      top: 1px;
+      color: var(--text-color-secondary);
+    }
+
+    .ant-select-selection-item {
+      color: #0089ff;
+    }
+    .anticon-delete {
+      position: sticky;
+      right: 0;
+      padding: 5px;
+      padding-right: 12px;
+      color: var(--text-color-secondary);
+      background: var(--background-secondry-color);
+      &:hover {
+        color: #0089ff;
+      }
+    }
+  }
+}
+
+.spin {
+  display: block;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+
+.checkboxAll {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}

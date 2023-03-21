@@ -1,0 +1,139 @@
+.list {
+  padding: 16px;
+  padding-bottom: 0;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    &:hover {
+      cursor: move;
+    }
+  }
+
+  .dragging {
+    cursor: move;
+  }
+
+  .close {
+    padding-left: 8px;
+    opacity: 0.75;
+  }
+}
+
+.table {
+  .column {
+    padding: 4px 0;
+    cursor: pointer;
+  }
+
+  .dragable {
+    cursor: move;
+  }
+
+  .dragging {
+    cursor: move;
+  }
+
+  .close {
+    opacity: 0.75;
+  }
+
+  :global {
+    .ant-table-column-title {
+      font-weight: normal;
+      font-size: 12px;
+
+      &::before {
+        display: inline-block;
+        margin-right: 4px;
+        color: #f5222d;
+        font-size: 14px;
+        font-family: SimSun, sans-serif;
+        line-height: 1;
+        content: '*';
+      }
+    }
+
+    .ant-form-item {
+      margin-bottom: 8px;
+    }
+
+    .ant-checkbox-group {
+      width: 100%;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .ant-table-thead {
+      th {
+        height: inherit !important;
+        padding: 8px !important;
+        line-height: inherit !important;
+      }
+    }
+
+    .ant-table-row {
+      td {
+        padding: 8px 16px 0 16px !important;
+        vertical-align: top;
+      }
+    }
+
+    .ant-table-tbody {
+      tr {
+        td {
+          background: var(--background-primary-color) !important;
+        }
+      }
+    }
+  }
+}
+
+.btnAdd {
+  margin-top: 8px;
+
+  :global {
+    .anticon-plus {
+      margin-right: 5px;
+      font-size: 11px;
+      opacity: 0.75;
+    }
+  }
+}
+
+.partitionValueWrap {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-right: -16px;
+  line-height: 30px;
+
+  :global {
+    .btn-partition-delete {
+      position: absolute;
+      top: 50%;
+      right: -30px;
+      margin-top: -18px;
+      cursor: pointer;
+    }
+
+    .anticon {
+      color: var(--text-color-hint);
+
+      &:hover {
+        color: #1890ff;
+      }
+    }
+
+    .empty-tip {
+      color: #c4c4c4;
+      font-size: 12px;
+    }
+  }
+}

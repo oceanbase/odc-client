@@ -1,0 +1,233 @@
+import { TAB_HEADER_HEIGHT } from '@/constant';
+import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
+import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
+import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
+import { formatMessage } from '@/util/intl';
+import type { IEditor, monaco } from '@alipay/ob-editor';
+import { Tabs, Tooltip } from 'antd';
+import classnames from 'classnames';
+import { debounce } from 'lodash';
+import React, { ReactNode } from 'react';
+import SplitPane from 'react-split-pane';
+import EditorToolBar from '../EditorToolBar';
+import { ISQLCodeEditorProps, SQLCodeEditor } from '../SQLCodeEditor';
+import styles from './index.less';
+const RESULT_HEIGHT = 230;
+export enum ITabType {
+  /**
+   * 运行结果
+   */
+  LOG,
+
+  /**
+   * 结果（预留）
+   */
+  RESULT,
+}
+interface ICommonIDEProps {
+  /**
+   * toolbar 对应的 group key，默认：COMMON_EDITOR_GROUP
+   */
+  toolbarGroupKey?: string;
+  /**
+   * 编辑器语言类型
+   */
+
+  language: string;
+  /**
+   * 初始化 SQL
+   */
+
+  initialSQL?: string;
+  onSQLChange?: (sql: string) => void;
+  /**
+   * editor 的自定义 props
+   */
+
+  editorProps?: Partial<ISQLCodeEditorProps>;
+  /**
+   * 运行结果
+   */
+
+  log?: ReactNode;
+  /**
+   * 结果集
+   */
+  resultSets?: IResultSet[];
+  /**
+   * toolbar 右侧按钮
+   */
+
+  toolbarActions?: ReactNode;
+  /**
+   * 是否添加边框
+   */
+  bordered?: boolean;
+}
+interface ICommonIDEState {
+  resultHeight: number;
+}
+
+class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
+  state: ICommonIDEState = {
+    resultHeight: RESULT_HEIGHT,
+  };
+
+  public editor: IEditor;
+  public model: monaco.editor.IModel;
+
+  private handleChangeSplitPane = debounce((size: number) => {
+    this.setState({
+      resultHeight: size,
+    });
+    this.emitResize();
+  }, 200);
+
+  private emitResize = debounce(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 500);
+
+  private onEditorCreated = (editor) => {
+    this.editor = editor;
+    if (!this.model) {
+      import('@alipay/ob-editor').then((module) => {
+        this.model = module.monaco.editor.createModel(this.props.initialSQL, this.props.language);
+        this.editor.UNSAFE_getCodeEditor().setModel(this.model);
+      });
+    } else {
+      this.editor.UNSAFE_getCodeEditor().setModel(this.model);
+    }
+  };
+
+  private onSQLChange = (sql: string) => {
+    this.props.onSQLChange?.(sql);
+  };
+
+  public componentWillUnmount() {
+    this.model?.dispose();
+  }
+
+  private getResultSetTitle = (executeSql: string, title) => {
+    return <Tooltip title={executeSql}>{title}</Tooltip>;
+  };
+
+  render() {
+    const {
+      toolbarGroupKey,
+      language,
+      initialSQL,
+      bordered,
+      editorProps = {},
+      log,
+      resultSets,
+      toolbarActions,
+    } = this.props;
+
+    const { resultHeight } = this.state;
+    return (
+      <div
+        className={classnames(styles.main, {
+          [styles.bordered]: bordered,
+        })}
+      >
+        <div className={styles.toolbar}>
+          <EditorToolBar
+            loading={false}
+            ctx={this}
+            actionGroupKey={toolbarGroupKey || 'COMMON_EDITOR_GROUP'}
+            rightExtra={toolbarActions}
+          />
+        </div>
+        <div className={styles.content}>
+          {log || resultSets?.length ? (
+            <SplitPane
+              split="horizontal"
+              primary={'second'}
+              minSize={30}
+              maxSize={-100}
+              size={resultHeight}
+              onChange={this.handleChangeSplitPane}
+            >
+              <div className={styles.editorBox}>
+                <SQLCodeEditor
+                  disableAutoUpdateInitialValue={true}
+                  language={language}
+                  initialValue={initialSQL}
+                  onValueChange={this.onSQLChange}
+                  onEditorCreated={this.onEditorCreated}
+                  {...editorProps}
+                />
+              </div>
+              <div className={styles.resultTabs}>
+                <Tabs className={styles.tabs} animated={false}>
+                  {log ? (
+                    <Tabs.TabPane
+                      style={{
+                        padding: 16,
+                      }}
+                      tab={formatMessage({
+                        id: 'odc.component.CommonIDE.Result',
+                      })}
+                      /*运行结果*/
+                      key={ITabType.LOG}
+                    >
+                      {log}
+                    </Tabs.TabPane>
+                  ) : null}
+                  {resultSets?.map((set, i) => {
+                    return (
+                      <Tabs.TabPane
+                        tab={this.getResultSetTitle(
+                          set.executeSql,
+                          `${formatMessage({
+                            id: 'workspace.window.sql.result',
+                          })}${i + 1}`,
+                        )}
+                        key={`resultset-${set.uniqKey}`}
+                      >
+                        {!!set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS ? (
+                          <DDLResultSet
+                            key={set.uniqKey || i}
+                            showExplain={false}
+                            showPagination={true}
+                            autoCommit={true}
+                            columns={set.columns}
+                            sqlId={set.sqlId}
+                            rows={set.rows}
+                            enableRowId={true}
+                            originSql={set.originSql}
+                            resultHeight={resultHeight - TAB_HEADER_HEIGHT - 1}
+                            generalSqlType={set.generalSqlType}
+                            traceId={set.traceId}
+                            isEditing={false}
+                            disableEdit={true}
+                            onExport={null}
+                          />
+                        ) : (
+                          <SQLResultLog resultHeight={resultHeight} resultSet={set} />
+                        )}
+                      </Tabs.TabPane>
+                    );
+                  })}
+                </Tabs>
+              </div>
+            </SplitPane>
+          ) : (
+            <div className={styles.editorBox}>
+              <SQLCodeEditor
+                disableAutoUpdateInitialValue={true}
+                language={language}
+                initialValue={initialSQL}
+                onValueChange={this.onSQLChange}
+                onEditorCreated={this.onEditorCreated}
+                {...editorProps}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default CommonIDE;

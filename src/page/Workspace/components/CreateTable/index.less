@@ -1,0 +1,45 @@
+.card:global(.ant-card) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  :global {
+    .ant-card-head {
+      flex-grow: 0;
+      min-height: 40px;
+      margin-bottom: 0;
+      background: var(--background-secondry-color);
+      border-bottom-color: var(--divider-color);
+      > .ant-card-head-wrapper {
+        > .ant-card-head-title {
+          padding: 8px 0;
+        }
+        > .ant-card-extra {
+          padding: 8px 0;
+        }
+      }
+    }
+    .ant-card-body {
+      flex-grow: 1;
+      padding: 0;
+    }
+  }
+}
+
+.tableCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  .toolbar {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 38px;
+    background-color: var(--background-secondry-color);
+    border-bottom: 1px solid var(--divider-color);
+  }
+  .table {
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+}

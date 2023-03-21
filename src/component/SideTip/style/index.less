@@ -1,0 +1,197 @@
+@import (reference) '~antd/lib/style/themes/default';
+
+@tech-prefix: tech;
+@tech-sidetip-prefix-cls: ~'@{tech-prefix}-sidetip';
+
+@tech-sidetip-width: 56px;
+@tech-sidetip-height: 56px;
+
+@tech-sidetip-icon-width: 24px;
+@tech-sidetip-icon-height: 24px;
+
+@tech-sidetip-width-small: 40px;
+@tech-sidetip-height-small: 40px;
+
+@tech-sidetip-icon-width-small: 16px;
+@tech-sidetip-icon-height-small: 16px;
+
+.@{tech-sidetip-prefix-cls} {
+  &-hide {
+    position: absolute;
+    top: 0;
+    right: -22px;
+    z-index: @zindex-affix;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    transform: scale(0);
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.18s ease-out 0.18s;
+    &:hover {
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    &-icon {
+      width: 6px;
+      height: 2px;
+      background: @white;
+      border-radius: 4px;
+    }
+
+    &-hovered {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  &-container {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: @zindex-affix;
+    font-size: @font-size-base;
+    cursor: 'pointer';
+
+    .@{ant-prefix}-badge {
+      display: block;
+    }
+
+    &-dragged {
+      cursor: 'grab';
+    }
+
+    &-hide {
+      transition: all 0.3s;
+    }
+
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+
+    &-hide-not-dragged {
+      &:hover {
+        right: 0 !important;
+      }
+    }
+  }
+
+  &-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @tech-sidetip-width;
+    height: @tech-sidetip-height;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px 0 rgba(13, 26, 38, 0.2);
+    cursor: pointer;
+    transition: background-color 0.2s ease 0.1s, opacity 0.2s ease 0s, transform 0.2s ease 0.1s;
+    user-select: none;
+
+    &-primary {
+      background-color: @primary-color;
+    }
+
+    &-small {
+      width: @tech-sidetip-width-small;
+      height: @tech-sidetip-height-small;
+    }
+
+    &-disabled {
+      background-color: @disabled-bg;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &-loading {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: @tech-sidetip-width;
+      height: @tech-sidetip-height;
+      color: @primary-color;
+      font-size: @tech-sidetip-width;
+
+      &-primary {
+        color: @white;
+      }
+
+      &-small {
+        width: @tech-sidetip-width-small;
+        height: @tech-sidetip-height-small;
+        font-size: @tech-sidetip-width-small;
+      }
+    }
+
+    &-close {
+      position: absolute;
+      top: 50%;
+      width: @tech-sidetip-icon-width;
+      height: @tech-sidetip-icon-height;
+      color: @text-color-secondary;
+      font-size: @tech-sidetip-icon-width;
+      transform: translateY(-50%) scale(0.4) rotate(-45deg);
+      opacity: 0;
+      transition: all 0.3s linear;
+      user-select: none;
+
+      &-primary {
+        color: @white;
+      }
+
+      &-show {
+        transform: translateY(-50%);
+        opacity: 1;
+      }
+
+      &-small {
+        width: @tech-sidetip-icon-width-small;
+        height: @tech-sidetip-icon-height-small;
+        font-size: @tech-sidetip-icon-width-small;
+        line-height: @tech-sidetip-icon-width-small;
+      }
+    }
+
+    &-icon {
+      position: absolute;
+      top: 50%;
+      width: @tech-sidetip-icon-width;
+      height: @tech-sidetip-icon-height;
+      color: @text-color-secondary;
+      font-size: @tech-sidetip-icon-width;
+      line-height: @tech-sidetip-icon-height;
+      transform: translateY(-50%);
+      opacity: 1;
+      transition: all 0.3s linear;
+      user-select: none;
+
+      &-open {
+        transform: translateY(-50%) scale(0.4) rotate(45deg);
+        opacity: 0;
+      }
+
+      &-disabled {
+        color: @disabled-color;
+      }
+
+      &-primary {
+        color: @white;
+      }
+
+      &-small {
+        width: @tech-sidetip-icon-width-small;
+        height: @tech-sidetip-icon-height-small;
+        font-size: @tech-sidetip-icon-width-small;
+        line-height: @tech-sidetip-icon-width-small;
+      }
+    }
+  }
+}

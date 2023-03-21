@@ -1,0 +1,35 @@
+.propsTab {
+  height: 100%;
+  :global {
+    .ant-tabs-nav-wrap {
+      display: block;
+    }
+    .ant-tabs-content-holder {
+      background-color: var(--background-primary-color);
+    }
+    .ant-tabs-content {
+      padding-left: 0;
+      border-left: none;
+    }
+
+    .ant-tabs-bar.ant-tabs-left-bar {
+      width: 80px;
+      height: calc(100vh - 40px - 28px);
+    }
+
+    .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+      left: 0;
+    }
+
+    .ant-tabs-tab {
+      margin: 0 !important;
+      padding: 8px 16px !important;
+      font-size: 12px !important;
+      text-align: left !important;
+
+      &.ant-tabs-tab-active {
+        background: var(--hover-color);
+      }
+    }
+  }
+}

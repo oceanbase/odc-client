@@ -1,0 +1,23 @@
+.sqlContent {
+  .content {
+    box-sizing: border-box;
+    height: 128px;
+    max-height: 360px;
+    padding-top: 8px;
+    background: var(--background-tertraiy-color);
+    :global {
+      .monaco-editor {
+        .margin,
+        .monaco-editor-background {
+          background: var(--background-tertraiy-color);
+        }
+      }
+    }
+  }
+  .files {
+    display: flex;
+    flex-direction: column;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+}

@@ -1,0 +1,92 @@
+@import (reference) '~@/func.less';
+.table {
+  :global {
+    .ant-table {
+      font-size: 12px;
+    }
+
+    // .ant-table-body {
+    //   table {
+    //     border: none;
+    //   }
+    // }
+
+    .ant-table-thead > tr > th {
+      white-space: nowrap;
+      .ant-table-column-sorters {
+        padding: 0;
+      }
+    }
+
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      height: 24px;
+      padding: 0 8px;
+    }
+
+    .ant-table-column-title {
+      color: var(--text-color-primary);
+    }
+
+    .ant-table-column-has-sorters {
+      position: relative;
+    }
+
+    .ant-table-column-sorter {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+    }
+
+    .ant-table-pagination {
+      padding-right: 24px;
+    }
+
+    .react-resizable {
+      position: relative;
+      background-clip: padding-box;
+    }
+
+    .react-resizable-handle {
+      position: absolute;
+      right: -5px;
+      bottom: 0;
+      z-index: 1;
+      width: 10px;
+      height: 100%;
+      cursor: col-resize;
+    }
+  }
+
+  .odd {
+    background: var(--background-tertraiy-color);
+  }
+}
+
+.virtualTable {
+  :global {
+    .ant-table-container::before,
+    .ant-table-container::after {
+      display: none;
+    }
+    .ant-table-thead {
+      .ant-table-cell {
+        padding: 0 8px;
+        line-height: 24px;
+        border-right: 1px solid var(--odc-border-color);
+        border-bottom: 1px solid var(--odc-border-color);
+      }
+    }
+  }
+  .cell {
+    box-sizing: border-box;
+    padding: 0 8px;
+    line-height: 24px;
+    background: var(--background-primary-color);
+    border-right: 1px solid var(--odc-border-color);
+    border-bottom: 1px solid var(--odc-border-color);
+    &.ellipsis {
+      .odc-text-ellipsis();
+    }
+  }
+}

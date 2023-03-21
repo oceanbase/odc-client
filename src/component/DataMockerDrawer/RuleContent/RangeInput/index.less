@@ -1,0 +1,54 @@
+:global(.ant-form-item-has-error) {
+  .startInput:global(.ant-input) {
+    border-left: 0;
+  }
+  .middleText {
+    border-color: #ff4d4f;
+    border-style: solid;
+    border-width: 1px 0;
+  }
+  .title {
+    border-color: #ff4d4f;
+    border-right: 1px;
+  }
+}
+.title {
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 0 11px;
+  color: var(--text-color-secondary);
+  font-size: 12px;
+  line-height: 28px;
+  text-align: center;
+  background-color: var(--background-tertraiy-color);
+  border-top: 1px solid var(--border-color);
+  border-right: none;
+  border-bottom: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+  border-radius: 2px;
+  border-image: initial;
+}
+.startInput {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.middleText {
+  &:global(.ant-input) {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 30px !important;
+    background-color: var(--background-tertraiy-color) !important;
+    border-right: 0;
+    border-left: 0;
+    pointer-events: none;
+  }
+}
+.endInput {
+  &:hover {
+    border-left-width: 1px;
+  }
+
+  flex-grow: 1;
+  flex-shrink: 1;
+  border-left-width: 0;
+}

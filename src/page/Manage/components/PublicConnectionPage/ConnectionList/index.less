@@ -1,0 +1,511 @@
+@import (reference) '~@/func.less';
+@color3: #1890ff;
+@color4: #bfbfbf;
+.banner {
+  width: 100%;
+  padding-top: 110px;
+  padding-bottom: 60px;
+  padding-left: 160px;
+  color: #fff;
+  font-size: 42px;
+  font-family: PingFangSC-Regular;
+  background-color: #040e1e;
+  background-image: url('../../../../../../public/img/bg.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.cloudWelcome {
+  margin-top: 100px;
+  margin-bottom: 30px;
+  color: @odc-text-color-dark;
+  font-size: 42px;
+}
+
+.info {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  .cell {
+    width: 50%;
+    margin-top: 5px;
+    color: var(--text-color-secondary);
+    line-height: 20px;
+    .odc-text-ellipsis();
+    .link {
+      color: var(--text-color-secondary);
+    }
+    &:nth-child(2n + 2) {
+      padding-left: 16px;
+    }
+    &:hover {
+      color: @color3;
+      cursor: pointer;
+      .link {
+        color: @color3;
+      }
+    }
+  }
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+  .wizard {
+    // width: 744px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 24px;
+    font-family: PingFangSC-Regular;
+
+    .header {
+      font-family: PingFangSC-Thin;
+    }
+
+    .content {
+      display: flex;
+      width: 100%;
+      margin-top: 40px;
+      padding: 48px 32px;
+      background: #fff;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+
+      .logo {
+        width: 38px;
+        margin-right: 30px;
+        background-color: #fff;
+        background-image: url('../../../../../../public/img/portal-create-connection.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+
+      .leftContent {
+        width: 320px;
+        height: 124px;
+
+        .title {
+          margin-bottom: 8px;
+          font-size: 16px;
+          font-family: PingFangSC-Medium;
+        }
+
+        .desc {
+          margin-bottom: 16px;
+          color: var(--text-color-hint);
+          font-size: 14px;
+          font-family: PingFangSC-Regular;
+        }
+      }
+
+      .divider {
+        width: 1px;
+        height: 124px;
+        margin: 0 24px;
+        border-left: 1px solid @odc-border-color-secondary-dark;
+      }
+
+      .rightContent {
+        .title {
+          margin-bottom: 8px;
+          font-size: 16px;
+          font-family: PingFangSC-Medium;
+        }
+
+        ul {
+          color: @odc-text-color-secondary-dark2;
+          font-size: 14px;
+          font-family: PingFangSC-Regular;
+          list-style-type: circle;
+        }
+        // width: 320px;
+        // height: 124px;
+      }
+    }
+  }
+}
+
+.titleFontStyle {
+  display: inline-block;
+  color: var(--text-color-primary);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.connection-btn {
+  cursor: pointer;
+  &:hover {
+    color: #1890ff;
+  }
+}
+
+.connectbox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px 40px;
+  overflow: auto;
+  :global {
+    .ant-modal-wrap {
+      z-index: 1100;
+    }
+    .ant-popconfirm {
+      z-index: 1110;
+    }
+  }
+  .bodyHeader {
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+    background: url('../../../../../../public/img/ob_black_logo.png') no-repeat right center;
+    background-size: 110px 15px;
+    h1 {
+      margin: 0;
+      padding: 24px 0 16px;
+      color: var(--text-color-primary);
+      font-size: 20px;
+      line-height: 32px;
+    }
+  }
+  .bodyContent {
+    display: flex;
+    .contentWrapper {
+      flex: 1;
+      // fix: table组件在设置scroll.y的时候, 可能会出现的宽度溢出问题，同时使得在窗口resize的时候，宽度change渲染的更流畅
+      max-width: calc(100vw - 48px - 16px - 320px);
+      padding: 25px;
+      background: var(--background-primary-color);
+      :global {
+        .ant-table-pagination.ant-pagination {
+          margin-bottom: 0;
+        }
+      }
+    }
+    .sliderWrapper {
+      width: 320px;
+      margin-left: 16px;
+      .helpInfo {
+        .title {
+          .titleFontStyle();
+          .odc-text-ellipsis();
+        }
+        .info();
+
+        margin-top: 0;
+        padding: 25px;
+        background: var(--background-primary-color);
+      }
+      .relativeTool {
+        margin-top: 16px;
+        padding: 25px 25px 12px;
+        background: var(--background-primary-color);
+        :global {
+          .ant-tabs-content {
+            position: relative;
+          }
+          .ant-tabs-nav {
+            &::before {
+              border-bottom: none;
+            }
+            .ant-tabs-nav-wrap {
+              &::before,
+              &::after {
+                box-shadow: none;
+              }
+            }
+          }
+          .ant-tabs-nav-list {
+            .ant-tabs-tab {
+              .titleFontStyle();
+
+              margin: 0 24px 0 0;
+              padding: 0;
+              color: @color4;
+              &.ant-tabs-tab-active {
+                .ant-tabs-tab-btn {
+                  color: @odc-text-color-dark;
+                  .titleFontStyle();
+                }
+              }
+            }
+            .ant-tabs-ink-bar {
+              display: none;
+            }
+          }
+        }
+        .tools {
+          .cell {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--odc-border-color);
+            &:last-child {
+              border-bottom: none;
+            }
+            .content {
+              width: 220px;
+              .odc-text-ellipsis();
+            }
+            .title {
+              color: var(--text-color-primary);
+              line-height: 20px;
+              .connection-btn();
+              .odc-text-ellipsis();
+            }
+            .desc {
+              color: var(--text-color-hint);
+              .odc-text-ellipsis();
+            }
+            .logo {
+              display: flex;
+              align-items: center;
+              background-color: #fff;
+            }
+          }
+        }
+        .resources {
+          padding: 12px 0;
+          .content {
+            .odc-text-ellipsis();
+          }
+          .info();
+        }
+      }
+    }
+  }
+  .sliderModal {
+    :global {
+      .ant-modal-header {
+        padding: 20px 24px;
+        border-bottom: 0;
+      }
+      .ant-modal-body {
+        padding-top: 0;
+      }
+    }
+    &.relativeModal {
+      .viewMethod {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+    .contentItem {
+      font-size: 12px;
+      line-height: 20px;
+    }
+    .viewMethod {
+      padding-top: 40px;
+    }
+  }
+}
+
+.publicResource {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 20px 24px 16px;
+  background: var(--background-primary-color);
+  cursor: pointer;
+  &:hover {
+    border-color: transparent;
+    box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.08), 0 9px 28px 0 rgba(0, 0, 0, 0.05),
+      0 12px 48px 16px rgba(0, 0, 0, 0.03);
+  }
+  .titleWrapper {
+    margin-bottom: 12px;
+  }
+  .title {
+    color: var(--text-color-primary);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .desc {
+    color: var(--text-color-hint);
+    font-size: 12px;
+  }
+  .icon {
+    color: #1890ff;
+  }
+  :global {
+    .ant-btn-link {
+      padding: 0;
+    }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .sliderWrapper {
+    display: none;
+  }
+  .connectbox {
+    .bodyContent {
+      .contentWrapper {
+        // fix: table组件在设置scroll.y的时候, 可能会出现的宽度溢出问题，同时使得在窗口resize的时候，宽度change渲染的更流畅
+        max-width: calc(100vw - 48px);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .connectbox {
+    .bodyContent {
+      .contentWrapper {
+        max-width: calc(960px - 48px);
+      }
+    }
+  }
+}
+
+.tableRow {
+  &:last-child {
+    :global {
+      .ant-table-cell {
+        border-bottom: 0;
+      }
+    }
+  }
+  .nameCell {
+    overflow-x: hidden;
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      margin-bottom: 4px;
+      .cellTitle {
+        font-size: 12px;
+        line-height: 20px;
+        .odc-text-ellipsis();
+      }
+      .conectionStatus {
+        padding-right: 8px;
+      }
+      .sessionName {
+        padding-right: 5px;
+        color: var(--text-color-primary);
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .topOp {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        visibility: hidden;
+        cursor: pointer;
+      }
+      &.top {
+        .topOp {
+          visibility: visible;
+          .topSet {
+            display: inline-block;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+    .footer {
+      color: var(--text-color-hint);
+      .odc-text-ellipsis();
+      .split {
+        padding: 0 6px;
+      }
+    }
+  }
+  .labelCell {
+    display: flex;
+    justify-content: start;
+    cursor: pointer;
+    .labelTag {
+      display: flex;
+      padding: 0 8px;
+      overflow: hidden;
+      line-height: 20px;
+      .labelName {
+        .odc-text-ellipsis();
+      }
+      .labelDelete {
+        display: none;
+        padding-left: 8px;
+      }
+    }
+    .labelBlank {
+      display: inline-block;
+    }
+    .labelSet {
+      display: none;
+      color: #1890ff;
+      background: var(--background-primary-color);
+      border: 1px solid #1890ff;
+      border-radius: 2px;
+    }
+    :global {
+      .ant-tooltip {
+        width: 148px;
+        .ant-tooltip-inner {
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    .nameCell {
+      .header {
+        .topOp {
+          display: inline-block;
+          visibility: visible;
+        }
+      }
+    }
+    .labelCell {
+      .labelBlank {
+        display: none;
+      }
+      .labelDelete {
+        display: inline-block;
+      }
+      .labelSet {
+        display: inline-block;
+      }
+    }
+  }
+  :global {
+    .ant-table-cell {
+      &:last-child {
+        padding: 16px 12px;
+        .ant-btn {
+          padding: 4px;
+        }
+      }
+    }
+  }
+}
+
+.ellipsis {
+  .odc-text-ellipsis();
+}
+
+.activeStatus:global(.anticon) {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.subTitle {
+  color: var(--text-color-primary);
+}
+
+.connectionTitle {
+  white-space: pre;
+}

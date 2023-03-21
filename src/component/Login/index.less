@@ -1,0 +1,201 @@
+@prefix: odc-login;
+
+.@{prefix}-container {
+  display: flex;
+  justify-content: space-between;
+  min-width: 960px;
+  height: 100vh;
+  min-height: 620px;
+  overflow: auto;
+
+  .@{prefix}-banner {
+    position: relative;
+    flex-grow: 1;
+    height: 100%;
+    background: linear-gradient(#0097fe, #0463e0);
+
+    > div {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: auto 100%;
+    }
+  }
+
+  .@{prefix}-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 580px;
+    height: 100%;
+    padding: 0 120px;
+    background: #fff;
+    background-color: #fff;
+
+    @media (max-width: 1280px) {
+      width: 460px;
+      padding: 0 60px;
+    }
+
+    .@{prefix}-locale {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      color: rgba(0, 0, 0, 0.45);
+      font-family: PingFangSC-Regular;
+      cursor: pointer;
+      &:hover {
+        background: #fff;
+      }
+    }
+
+    .@{prefix}-board {
+      position: absolute;
+      top: 48px;
+    }
+
+    .@{prefix}-content {
+      width: 100%;
+
+      .@{prefix}-logo {
+        display: block;
+        height: 68px;
+        margin: 0 auto;
+        margin-bottom: 40px;
+      }
+
+      .@{prefix}-activate-logo,
+      .@{prefix}-reigster-logo {
+        display: block;
+        height: 68px;
+        margin: 0 auto;
+      }
+
+      .@{prefix}-register,
+      .@{prefix}-activate {
+        .ant-form-item-with-help {
+          margin-bottom: 24px;
+        }
+      }
+
+      .@{prefix}-form {
+        width: 100%;
+
+        input::placeholder {
+          font-size: 16px;
+        }
+
+        .ant-form-item {
+          margin-bottom: 16px;
+          padding-bottom: 0;
+        }
+
+        .ant-input-affix-wrapper {
+          padding: 0;
+          border: none;
+          border-bottom: 2px solid #d9d9d9;
+          border-radius: 0;
+
+          .ant-input-prefix {
+            .anticon {
+              font-size: 20px;
+            }
+          }
+        }
+
+        .ant-input-affix-wrapper .ant-input:not(:first-child) {
+          padding-left: 14px;
+        }
+
+        .ant-input-affix-wrapper-focused {
+          border-bottom-color: #1890ff;
+          box-shadow: none;
+        }
+
+        .ant-input {
+          height: 56px;
+        }
+
+        .@{prefix}-form-focus-input {
+          .ant-input-prefix {
+            .anticon {
+              color: #1890ff;
+            }
+          }
+        }
+      }
+
+      .@{prefix}-auth-code {
+        display: flex;
+        align-items: start;
+        width: 100%;
+        margin-bottom: 16px;
+        padding-bottom: 0;
+        & > .ant-space-item:first-child {
+          flex: 1;
+        }
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+        .@{prefix}-code-btn {
+          position: relative;
+          margin-top: 8px;
+          border: 1px solid #d9d9d9;
+          cursor: pointer;
+          .@{prefix}-code-mask {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            inset: 0;
+          }
+          &.@{prefix}-error,
+          &:hover {
+            .@{prefix}-code-mask {
+              opacity: 1;
+            }
+          }
+        }
+      }
+      .@{prefix}-submit-btn {
+        height: 40px;
+        margin-top: 18px;
+        color: #fff;
+        font-size: 16px;
+        background-image: linear-gradient(to right, #1aabff, #0b79ff);
+        border: none;
+        border-radius: 4px;
+        box-shadow: 0 8px 24px -4px rgba(24, 103, 255, 0.16),
+          0 16px 48px -8px rgba(0, 76, 228, 0.24);
+      }
+
+      .@{prefix}-switch-btn {
+        margin-top: 24px;
+        text-align: center;
+      }
+
+      .@{prefix}-watermark-wrapper {
+        position: absolute;
+        bottom: 40px;
+        width: 340px;
+        text-align: center;
+
+        .@{prefix}-watermark {
+          height: 16px;
+        }
+      }
+
+      .@{prefix}-alert {
+        margin-top: 24px;
+      }
+    }
+  }
+}

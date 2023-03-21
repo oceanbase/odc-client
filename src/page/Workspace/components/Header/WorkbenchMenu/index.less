@@ -1,0 +1,42 @@
+@import (reference) '~@/func.less';
+.sqlListMenu {
+  & > :global(.ant-dropdown-menu) {
+    max-height: 180px;
+    padding: 0;
+    overflow-y: auto;
+    :global {
+      .ant-dropdown-menu-item {
+        &:last-of-type {
+          position: sticky;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          background: var(--background-secondry-color);
+          border-top: 1px solid var(--divider-color);
+        }
+        > .ant-dropdown-menu-title-content {
+          display: flex;
+          align-items: center;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+.sqlScriptItem:hover {
+  .sqlOperation {
+    opacity: 1;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}
+.scriptName {
+  display: inline-block;
+  width: 200px;
+  .odc-text-ellipsis();
+}
+
+.sqlOperation {
+  opacity: 0;
+}

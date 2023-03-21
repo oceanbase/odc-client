@@ -1,0 +1,59 @@
+.table {
+  width: 424px;
+
+  .column {
+    padding: 4px 0;
+    cursor: pointer;
+  }
+
+  .dragable {
+    cursor: move;
+  }
+
+  .dragging {
+    cursor: move;
+  }
+
+  .close {
+    // opacity: 0.75;
+    color: #979797;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+
+  :global {
+    .ant-table-column-title {
+      font-weight: normal;
+      font-size: 12px;
+    }
+
+    .ant-checkbox-group {
+      width: 100%;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .ant-table-thead {
+      th {
+        padding: 8px;
+        background: var(--background-secondry-color);
+      }
+    }
+
+    .ant-table-row {
+      td {
+        padding: 8px;
+        vertical-align: top;
+      }
+    }
+
+    .ant-table-tbody {
+      tr {
+        td {
+          background: var(--background-secondry-color) !important;
+        }
+      }
+    }
+  }
+}
