@@ -23,7 +23,7 @@
     "cov": "max test --coverage",
     "build:odc": "npm run updateDoc && cross-env NODE_OPTIONS=--max_old_space_size=4096 max build",
     "build:client": "cross-env NODE_OPTIONS=--max_old_space_size=4096 UMI_ENV=client npm run build:odc && npm run build-main-prod",
-    "build": "cross-env NODE_OPTIONS=--max_old_space_size=4096 UMI_ENV=cloudweb max build",
+    "build": "cross-env NODE_OPTIONS=--max_old_space_size=4096 HAVEOCP=1 UMI_ENV=cloudweb max build",
     "prettier": "prettier --write 'src/**/*.{js,jsx,tsx,ts,less,md,json}'",
     "type-check": "tsc --noEmit",
     "precommit": "npm run type-check",
