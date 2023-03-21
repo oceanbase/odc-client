@@ -1,0 +1,41 @@
+.tableWrapper {
+  height: 100%;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .title {
+    font-size: 16px;
+    .cursor {
+      font-size: 12px;
+      cursor: pointer;
+    }
+  }
+}
+
+.commonTable {
+  margin-top: 16px;
+  :global {
+    .ant-table-thead {
+      .ant-table-cell {
+        padding: 8px 16px;
+        line-height: 20px;
+        .ant-table-column-sorters {
+          padding: 0;
+        }
+      }
+    }
+    .ant-table-tbody {
+      .ant-table-cell {
+        padding: 10px 16px;
+        line-height: 20px;
+      }
+    }
+
+    .ant-table-pagination .ant-pagination-total-text {
+      position: absolute;
+      left: 0;
+    }
+  }
+}

@@ -1,0 +1,17 @@
+.typePage {
+  height: 100%;
+  :global {
+    .ant-tabs-content-left {
+      &.ant-tabs-content {
+        height: 100%;
+        .ant-tabs-tabpane {
+          display: none !important;
+          &.ant-tabs-tabpane-active {
+            display: block !important;
+            padding-left: 0 !important;
+          }
+        }
+      }
+    }
+  }
+}

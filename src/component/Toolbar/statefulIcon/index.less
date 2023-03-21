@@ -1,0 +1,17 @@
+.disabled {
+  color: var(--icon-color-disable);
+
+  &:hover {
+    cursor: auto;
+  }
+}
+
+.loading,
+.loading:global(.anticon) {
+  color: #3fa3ff;
+  background: var(--hover-color);
+  outline: 5px solid var(--hover-color);
+  &:hover {
+    cursor: progress;
+  }
+}

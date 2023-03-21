@@ -1,0 +1,41 @@
+.inputGroupWrap {
+  display: inline-block;
+  margin-right: 16px !important;
+  margin-bottom: 8px;
+  margin-left: 0 !important;
+  white-space: nowrap;
+
+  :global {
+    .ant-input-group {
+      width: auto;
+    }
+    .anticon-delete {
+      margin-left: 4px;
+    }
+    .ant-input {
+      width: 50px;
+    }
+  }
+}
+
+.rangeColumFormItem {
+  width: calc(33.3% - 16px);
+  min-width: 150px;
+  margin-right: 16px !important;
+}
+
+.divRef {
+  position: absolute;
+  top: -9999px;
+  padding: 0 12px;
+}
+.tooltipinput {
+  :global {
+    .ant-input-group-addon {
+      max-width: 120px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}

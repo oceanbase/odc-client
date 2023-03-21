@@ -1,0 +1,14 @@
+public/*
+public/help-web/*
+public/help-client/*
+public/workers/*
+src/workers/*
+build/*
+config/
+*.test.js
+jest.config.js
+jestSetup.js
+scripts/*
+mock/*
+dist/*
+release/*

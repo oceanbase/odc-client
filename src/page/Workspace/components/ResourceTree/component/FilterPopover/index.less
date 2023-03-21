@@ -1,0 +1,28 @@
+.active {
+  color: #1890ff;
+}
+.filterPopover {
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    width: 140px;
+    padding: 10px;
+    .active:global(.ant-btn-link) {
+      color: #1890ff;
+    }
+  }
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+    .ant-checkbox-group {
+      padding: 10px;
+    }
+    .ant-divider-horizontal {
+      margin: 0;
+    }
+    .ant-btn-link {
+      color: #00000040;
+    }
+  }
+}

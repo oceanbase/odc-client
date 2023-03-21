@@ -1,0 +1,125 @@
+.uploadListItem {
+  position: relative;
+  padding: 0 12px;
+  overflow: hidden;
+  border-bottom: 2px solid var(--odc-border-color);
+  &.active {
+    border-bottom-color: #1890ff;
+  }
+  &.dragging {
+    cursor: move;
+  }
+  &.drag {
+    cursor: grab;
+  }
+  &:hover {
+    background: var(--hover-color);
+    .action {
+      display: inline-block;
+      cursor: pointer;
+    }
+  }
+}
+.info {
+  display: flex;
+  .paperClip {
+    color: #1890ff;
+  }
+  &.error {
+    color: #ff4d4f;
+    .paperClip {
+      color: #ff4d4f;
+    }
+    .action {
+      display: inline-block;
+    }
+  }
+}
+.icon,
+.text,
+.action {
+  line-height: 22px;
+}
+.text {
+  flex: auto;
+  margin: 0;
+  padding: 0 8px;
+  overflow: hidden;
+  line-height: 22px;
+  white-space: nowrap;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+.action {
+  display: none;
+  padding-left: 5px;
+}
+.progress {
+  position: absolute;
+  bottom: -10px;
+  width: 100%;
+}
+.mark {
+  padding: 0;
+  color: #1890ff;
+  background: none;
+}
+.fileList {
+  background: var(--background-secondry-color);
+  :global {
+    .ant-upload.ant-upload-drag {
+      background: var(--background-secondry-color);
+      border: 1px solid var(--odc-border-color);
+      &:hover {
+        border-color: var(--odc-border-color);
+      }
+      .ant-upload {
+        padding: 0;
+      }
+    }
+    .ant-progress-text {
+      display: none;
+    }
+  }
+}
+.toolBar {
+  cursor: default;
+  .searchMode,
+  .tipMode {
+    display: flex;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--divider-color);
+  }
+  .searchMode {
+    border-bottom-color: var(--divider-color);
+  }
+  .tipInfo {
+    flex: 1;
+    color: var(--text-color-hint);
+    text-align: left;
+  }
+  .opBtns {
+    font-size: 12px !important;
+    :global {
+      .anticon {
+        padding: 0 5px;
+        cursor: pointer;
+      }
+      .anticon-plus {
+        font-size: 12px !important;
+      }
+    }
+  }
+  :global {
+    .ant-input-affix-wrapper {
+      flex: 1;
+    }
+    .ant-btn {
+      margin-left: 10px;
+      padding: 0;
+    }
+    .ant-input-group-addon {
+      display: none;
+    }
+  }
+}

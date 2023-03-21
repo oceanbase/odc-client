@@ -1,0 +1,81 @@
+.table {
+  :global {
+    .ant-table {
+      font-size: 12px;
+
+      .ant-table-thead > tr > th {
+        white-space: nowrap;
+      }
+      .ant-table-tbody {
+        & > tr:hover:not(.ant-table-expanded-row) {
+          & > td {
+            background: unset;
+          }
+        }
+        & > tr.ant-table-row-selected td {
+          background: unset;
+        }
+        & > tr {
+          & > td:hover {
+            background: var(--hover-color) !important;
+          }
+        }
+      }
+    }
+
+    // .ant-table-body {
+    //   table {
+    //     border: none;
+    //   }
+    // }
+
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      height: 24px !important;
+      padding: 0 8px !important;
+      line-height: 24px !important;
+    }
+    .ant-table-column-title {
+      color: @odc-text-color-secondary-dark;
+    }
+
+    .ant-table-column-has-sorters {
+      position: relative;
+    }
+
+    .ant-table-column-sorter {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+    }
+
+    .ant-table-pagination {
+      padding-right: 24px;
+    }
+  }
+
+  .odd {
+    background: var(--background-tertraiy-color);
+  }
+}
+// 悬浮编辑
+.popOver {
+  &:global(.ant-popover-placement-top) {
+    padding-bottom: 0;
+  }
+  :global {
+    .ant-popover-arrow {
+      display: none;
+    }
+    .ant-popover-content {
+      transform: translateY(100%);
+    }
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+    .ant-popover-inner {
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+}

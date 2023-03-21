@@ -1,0 +1,56 @@
+##########################################################
+#            OBFlow Secret Scan Ignore List              #
+##########################################################
+# Above the segmentation lines there are suspected privacy information #
+# Please use the file name as the first line and the igored information #
+# should be started with tab. #
+# Under the segmentation lines there are the folders which you need to ignore #
+##########################################################
+**
+    odcsupport@service.alipay.com
+    https://www.oceanbase.com*
+    https://github.com/*
+    https://lodash.com*
+    https://help.aliyun.com/*
+    https://mozilla.github.io*
+    https://stackoverflow.com*
+    http://www.w3.org*
+    https://ant.design*
+    https://f7a1adcbaf4b4472baab9faf8f999229@o1337429.ingest.sentry.io/6607252
+    https://electronjs.org*
+    https://www.aliyun.com*
+
+--------------------------------------------------------
+# Should use GLOB wildcard to config and analysis the ignored folder
+# The root patch should start with '/'
+/mock/**
+/tools/obtest/**
+/tools/deploy/**
+/docs/**
+/*.md
+/scripts/**
+/build/**
+/*.yml
+/libraries/**
+/.npmrc
+/src/locale/must/unprocessed-code.ts.txt
+/yarn.lock
+/node_modules/**
+/src/.umi/**
+/release/**
+/dist/**
+/.node/**
+/.vscode/**
+/.git/**
+/config/**
+/src/svgr/**
+/public/**
+/package-lock.json
+/src/workers/**
+--------------------------------------------------------
+# Config the ignored fold to escape the Chinese scan by GLOB wildcard
+--------------------------------------------------------
+# Set md5 of pemFile string to filter
+# This section must be end up with '--------------------------------------------------------'!!!
+
+--------------------------------------------------------

@@ -1,0 +1,148 @@
+.main {
+  display: flex;
+  height: 100%;
+}
+
+.sqlPage {
+  position: relative;
+  flex: 1;
+}
+
+.codeBtn {
+  margin-bottom: 10px;
+  padding: 4px 12px 4px 8px;
+  color: #fff;
+  background: #1890ff;
+  border: 0;
+  cursor: pointer;
+  img {
+    margin-right: 5px;
+  }
+  &:hover {
+    background-color: #40a9ff;
+  }
+}
+
+.doc {
+  display: flex;
+  flex-direction: column;
+  width: 35%;
+  min-width: 300px;
+  max-width: 800px;
+  height: 100%;
+  border-left: 1px solid var(--divider-color);
+
+  .docTitle {
+    display: flex;
+    flex: 0;
+    flex-basis: 38px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--divider-color);
+
+    .docTitleLabel {
+      overflow: hidden;
+      font-size: 14px;
+      font-family: PingFangSC-Medium;
+    }
+
+    // .docTitleBtn {}
+  }
+
+  .docContent {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    word-break: break-all;
+
+    :global {
+      code {
+        position: relative;
+        padding: 0 2px;
+        font-size: inherit;
+        font-family: monospace;
+        line-height: inherit;
+        text-indent: 0;
+        word-wrap: break-word;
+        word-break: break-all;
+        background-color: var(--background-tertraiy-color);
+        border: 1px solid var(--odc-border-color);
+        border-radius: 2px 2px;
+      }
+
+      ul,
+      ol {
+        list-style: disc;
+      }
+
+      pre {
+        margin: 5px 0;
+        padding: 16px;
+        overflow: auto;
+        color: var(--text-color-secondary);
+        font-size: 13px;
+        font-family: Consolas, Menlo, Courier, monospace;
+        line-height: 21px;
+        -moz-tab-size: 4;
+        tab-size: 4;
+        background: var(--background-tertraiy-color);
+        border: 1px solid var(--odc-border-color);
+        border-radius: 2px 2px;
+      }
+
+      pre code {
+        top: 0;
+        margin: 0;
+        padding: 0;
+        font-size: inherit;
+        line-height: inherit;
+        background: none;
+        border: none;
+      }
+
+      pre code::after,
+      .typo pre code::before {
+        content: normal;
+      }
+
+      table {
+        position: relative;
+        width: 100%;
+        overflow: auto;
+        white-space: normal;
+        word-break: normal;
+        word-break: keep-all;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+
+      table tr {
+        background: var(--background-primary-color);
+        border-top: 1px solid var(--odc-border-color);
+      }
+
+      table tr:nth-child(odd) {
+        background-color: var(--background-tertraiy-color);
+      }
+
+      table thead tr:nth-child(odd) {
+        background-color: var(--background-normal-color);
+      }
+
+      table td,
+      table th {
+        padding: 6px 8px;
+        white-space: normal;
+        word-wrap: break-word;
+        border: 1px solid var(--odc-border-color);
+      }
+
+      table p {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+}

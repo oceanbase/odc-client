@@ -1,0 +1,36 @@
+.dragLayer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: '100%';
+  height: '100%';
+  pointer-events: none;
+}
+
+.dragBox {
+  position: relative;
+  display: 'inline-block';
+  padding: 0 8px;
+  color: #1890ff;
+  font-size: 12px;
+  font-family: 'PingFangSC-Semibold';
+  line-height: 24px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+}
+
+.dragIcon {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  overflow: hidden;
+  color: #008f00;
+  line-height: 12px;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
+}

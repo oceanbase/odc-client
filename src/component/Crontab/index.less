@@ -1,0 +1,88 @@
+.crontab-editor {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+  }
+  .content {
+    width: 100%;
+    &.default-mode {
+      padding: 8px;
+      background: var(--background-tertraiy-color);
+    }
+  }
+  .custom-editor {
+    display: flex;
+    background: var(--background-primary-color);
+    .input-wrapper {
+      &:first-child {
+        .input {
+          border-left: 1px solid var(--odc-border-color);
+        }
+      }
+      &:last-child {
+        flex: 1;
+        .input {
+          border-right: 1px solid var(--odc-border-color);
+        }
+      }
+      .input {
+        border-top: 1px solid var(--odc-border-color);
+        border-bottom: 1px solid var(--odc-border-color);
+      }
+      &.active {
+        :global {
+          .ant-btn {
+            color: var(--odc-color1-color);
+          }
+        }
+      }
+      &.error {
+        :global {
+          .ant-input.ant-input-borderless {
+            color: var(--background-primary-color);
+            background: var(--code-red-color);
+          }
+          .ant-btn {
+            color: var(--code-red-color);
+          }
+        }
+      }
+    }
+    :global {
+      .ant-input.ant-input-borderless {
+        margin: 4px 11px;
+        padding: 0;
+        border: none;
+        &:focus {
+          background: var(--code-background-selected-color);
+        }
+      }
+    }
+  }
+  :global {
+    .ant-space-item-split {
+      color: var(--icon-color-disable);
+    }
+    .ant-collapse {
+      margin-top: 12px;
+      background: var(--background-tertraiy-color);
+      .ant-collapse-content-box {
+        padding-right: 38px;
+        text-align: right;
+      }
+      .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
+        top: 21px;
+      }
+      .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+        padding-top: 0;
+      }
+      .ant-collapse-item-active {
+        .ant-collapse-header {
+          padding-bottom: 0;
+        }
+      }
+    }
+  }
+}

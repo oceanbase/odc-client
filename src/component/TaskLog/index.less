@@ -1,0 +1,135 @@
+@baseBgColor: var(--background-normal-color);
+.cardTabs {
+  &:global(.ant-tabs-card) {
+    height: 100%;
+    border: 1px solid var(--odc-border-color);
+    :global {
+      .ant-tabs-nav {
+        height: 34px;
+        background-color: @baseBgColor;
+        .ant-tabs-nav-wrap {
+          .ant-tabs-tab {
+            height: 34px;
+            line-height: 32px;
+            background: @baseBgColor;
+            border: none;
+            border-radius: 0;
+            transition-duration: 0s;
+          }
+          .ant-tabs-tab-active {
+            background: var(--background-primary-color);
+            border-top: 2px solid #1890ff;
+            border-bottom: none;
+          }
+        }
+      }
+      .ant-tabs-content {
+        height: 100%;
+        .ant-tabs-tabpane-active {
+          height: 100%;
+          .ant-spin-nested-loading {
+            height: 100%;
+            .ant-spin-container {
+              height: 100%;
+            }
+          }
+        }
+      }
+      .tech-log-linenumber {
+        user-select: none;
+      }
+      .tech-log-highlight {
+        .hljs-keyword {
+          &.info {
+            color: #65b650;
+          }
+          &.warning {
+            color: #faad14;
+          }
+          &.error {
+            color: #f5222d;
+          }
+          &.debug,
+          &.trace {
+            color: #986801;
+          }
+        }
+        .hljs-number {
+          color: #477d60;
+          &.date,
+          &.time {
+            color: #8b8b8b;
+          }
+        }
+      }
+      .react-lazylog-searchbar {
+        background: #fff;
+      }
+      .react-lazylog-searchbar-input {
+        color: @odc-text-color-dark;
+        background: #fff;
+        border-color: #d2d2d2;
+        outline: none;
+      }
+      .react-lazylog-searchbar-filter {
+        fill: @odc-text-color-secondary-dark;
+      }
+      .react-lazylog-searchbar-matches {
+        color: @odc-text-color-secondary-dark;
+      }
+      .react-lazylog {
+        color: @odc-text-color-secondary-dark;
+        background-color: #fff;
+      }
+      .lazylog-white {
+        > a {
+          margin-right: 0;
+          margin-left: 0;
+          padding-right: 1.5em;
+        }
+        > span {
+          > span {
+            > span {
+              background-color: #fcf397;
+            }
+          }
+        }
+      }
+      .lazylog-white:hover {
+        background-color: #e6f7ff;
+      }
+      .lazylog-white--highlight {
+        background-color: #d5e9fa;
+        > a {
+          color: #1890ff;
+        }
+      }
+    }
+  }
+  :global {
+    .ant-tabs-content {
+      .tech-log-search-wrap {
+        background-color: var(--background-primary-color);
+      }
+      .ob-log-toolbar-wrap {
+        background: #fff;
+      }
+      .tech-log-toolbar-wrap {
+        background-color: @baseBgColor;
+      }
+      .tech-log-content {
+        color: var(--text-color-primary);
+        background-color: var(--background-primary-color);
+        .tech-log-vir-list {
+          background-color: var(--background-primary-color);
+          .tech-log-linenumber {
+            color: var(--text-color-secondary);
+          }
+        }
+      }
+      .tech-log-search-count-info {
+        color: var(--text-color-primary);
+      }
+    }
+  }
+}

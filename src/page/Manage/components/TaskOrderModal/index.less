@@ -1,0 +1,46 @@
+.detailModal {
+  .alert {
+    margin-bottom: 12px;
+  }
+  :global {
+    .ant-drawer-body {
+      padding: 12px 16px 24px;
+    }
+    .ant-drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .ant-descriptions-item-container {
+      .ant-descriptions-item-content {
+        display: block;
+      }
+    }
+    .row-dragging {
+      background: var(--table-header-background-color);
+      border: 1px solid var(--odc-border-color);
+    }
+    .row-dragging td {
+      padding: 16px;
+    }
+    .row-dragging .drag-visible {
+      visibility: visible;
+    }
+  }
+}
+
+.disabled {
+  color: var(--text-color-placeholder);
+  :global {
+    .ant-typography {
+      color: var(--text-color-placeholder);
+    }
+  }
+  &:hover {
+    cursor: auto;
+  }
+}
+
+.drag-handle {
+  color: var(--text-color-hint);
+  cursor: grab;
+}

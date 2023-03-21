@@ -1,0 +1,31 @@
+.container {
+  height: 100vh;
+  padding: 16px 24px;
+  background: var(--background-primary-color);
+
+  .header {
+    padding-bottom: 8px;
+    font-weight: bolder;
+    font-size: 16px;
+
+    .icon {
+      padding: 0 8px 0 0;
+      color: #9d7ac7;
+      font-size: 16px;
+    }
+  }
+
+  .form {
+    width: 600px;
+
+    :global {
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-label {
+        text-align: left;
+      }
+    }
+  }
+}

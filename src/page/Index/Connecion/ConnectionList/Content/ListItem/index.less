@@ -1,0 +1,69 @@
+.item {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding-right: 24px;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}
+.base {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid var(--odc-border-color);
+}
+.checkbox {
+  flex-basis: 30px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.connectionName {
+  flex-basis: 520px;
+  flex-grow: 5;
+  flex-shrink: 1;
+  color: var(--text-color-primary);
+}
+.cluster {
+  flex-basis: 330px;
+  flex-grow: 3;
+  flex-shrink: 1;
+  color: var(--text-color-secondary);
+  :global {
+    .anticon {
+      color: var(--text-color-hint);
+    }
+  }
+}
+.tenant {
+  flex-basis: 206px;
+  flex-grow: 2;
+  flex-shrink: 1;
+  color: var(--text-color-secondary);
+  :global {
+    .anticon {
+      color: var(--text-color-hint);
+    }
+  }
+}
+.host {
+  flex-basis: 170px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  color: var(--text-color-secondary);
+  :global {
+    .anticon {
+      color: var(--text-color-hint);
+    }
+  }
+}
+.action {
+  flex-basis: 100px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  justify-content: right;
+}

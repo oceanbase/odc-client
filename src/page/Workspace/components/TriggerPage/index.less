@@ -1,0 +1,38 @@
+.triggerPage {
+  height: 100%;
+  .toolbarCustomize {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    padding: 7px 16px;
+    .title {
+      color: var(--text-color-secondary);
+      font-size: 12px;
+      line-height: 28px;
+    }
+    .operator {
+      .spaceLeft {
+        margin-left: 10px;
+      }
+      :global {
+        .ant-btn-sm {
+          height: 28px;
+        }
+      }
+    }
+  }
+  :global {
+    .ant-tabs-content-left {
+      &.ant-tabs-content {
+        height: 100%;
+        .ant-tabs-tabpane {
+          display: none !important;
+          &.ant-tabs-tabpane-active {
+            display: block !important;
+            padding-left: 0 !important;
+          }
+        }
+      }
+    }
+  }
+}

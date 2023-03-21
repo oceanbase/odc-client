@@ -1,0 +1,75 @@
+.explainDrawer {
+  :global {
+    .ant-drawer-body {
+      padding-top: 16px;
+    }
+    .ant-spin-nested-loading + div {
+      z-index: 9 !important;
+    }
+  }
+}
+
+.card {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+  :global {
+    .ant-descriptions-header {
+      margin-bottom: 12px;
+    }
+    .ant-descriptions-row > th,
+    .ant-descriptions-row > td {
+      padding-bottom: 2px;
+    }
+    .ant-descriptions-item-content {
+      display: flex;
+      justify-content: flex-end;
+      color: @odc-text-color-dark;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: right;
+    }
+    .ant-statistic-title {
+      position: relative;
+      &::before {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        margin-right: 6px;
+        vertical-align: middle;
+        background: var(--text-color-hint);
+        border-radius: 50%;
+        content: '';
+      }
+    }
+    .ant-statistic-content {
+      padding-left: 12px;
+      color: @odc-text-color-dark;
+      font-weight: 500;
+      font-size: 30px;
+    }
+  }
+}
+
+.baseCard {
+  :global {
+    .tech-statistic-field {
+      padding: 4px 0;
+    }
+    .tech-statistic-field-name {
+      font-size: 12px;
+    }
+    .tech-statistic-field-val {
+      font-size: 12px;
+      line-height: 18px;
+    }
+  }
+}
+
+.ioCard {
+  :global {
+    .tech-stats-item {
+      padding-left: 0 !important;
+    }
+  }
+}

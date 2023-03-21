@@ -1,0 +1,46 @@
+:global(.ant-form-item-has-error) {
+  .inputItem {
+    &:global(.ant-input),
+    &:global(.ant-picker),
+    &:global(.ant-select),
+    &:global(.ant-input-number) {
+      border-left: 0;
+    }
+  }
+  .middleText {
+    border-color: #ff4d4f;
+    border-style: solid;
+    border-width: 1px 0;
+  }
+  .title {
+    border-color: #ff4d4f;
+    border-right: 1px;
+  }
+  .addonBefore {
+    border-color: #ff4d4f;
+  }
+}
+.addonBefore {
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin-right: -1px;
+  padding: 0 11px;
+  color: var(--text-color-secondary);
+  font-size: 12px;
+  line-height: 26px;
+  text-align: center;
+  background-color: var(--background-tertraiy-color);
+  border-top: 1px solid var(--border-color);
+  border-right: none;
+  border-bottom: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+  border-radius: 2px;
+  border-image: initial;
+}
+.selecWithTitle {
+  display: flex;
+}
+.inputItem {
+  flex-grow: 1;
+  flex-shrink: 1;
+}

@@ -1,0 +1,36 @@
+.overflowText {
+  position: relative;
+  padding-bottom: 20px;
+  overflow: hidden;
+  line-height: 20px;
+  &.overflow {
+    &::after {
+      position: absolute;
+      bottom: 0;
+      display: block;
+      padding-left: 20px;
+      background: linear-gradient(to right, transparent, var(--background-primary-color) 50%);
+      content: '...';
+    }
+    &:not(.showMore)::after {
+      right: 0;
+    }
+    &.showMore::after {
+      right: 40px;
+    }
+    .more:global(.ant-btn-link) {
+      padding-left: 30px;
+    }
+  }
+
+  .more:global(.ant-btn-link) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: unset;
+    padding: 0;
+  }
+  .content {
+    word-break: break-all;
+  }
+}

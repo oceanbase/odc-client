@@ -1,0 +1,33 @@
+.treeFilter {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 240px;
+  :global {
+    .ant-tree {
+      min-height: 220px;
+      max-height: 220px;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .ant-tree-switcher {
+      width: 16px;
+      &:not(.ant-tree-switcher-noop) {
+        width: unset;
+        padding-right: 6px;
+      }
+    }
+    .ant-tree-node-content-wrapper {
+      &:hover,
+      &.ant-tree-node-selected {
+        background: none;
+      }
+    }
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 8px 7px 3px;
+    border-top: 1px solid var(--odc-border-color);
+  }
+}

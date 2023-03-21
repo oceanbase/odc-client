@@ -1,0 +1,110 @@
+.limit {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  margin-left: 8px;
+  color: var(--text-color-secondary);
+  font-size: 12px;
+  font-family: PingFangSC-Regular;
+  white-space: nowrap;
+}
+.toolsLeft {
+  display: flex;
+  align-items: center;
+  :global {
+    .ant-divider.ant-divider-vertical {
+      margin-top: 0;
+    }
+  }
+}
+
+.toolsRight {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-right: 10px;
+}
+
+.column {
+  display: inline-block;
+  max-width: 60px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: text-bottom;
+}
+
+.tableHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+
+  .asc {
+    transform: rotate(90deg);
+  }
+
+  .desc {
+    margin-right: -6px;
+    transform: rotate(-90deg);
+  }
+}
+
+.columnModeFooter {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.pagination {
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.objectCell {
+  display: flex;
+  justify-content: space-between;
+
+  .objectName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.menuItem {
+  box-sizing: content-box;
+  height: 25px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 5px 5px 5px 12px;
+  font-size: 12px;
+  line-height: 25px;
+}
+.cellMenuClassname {
+  &:global(.ant-menu-root.ant-menu-vertical) {
+    position: absolute;
+    z-index: 1;
+    width: 150px;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+      0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    :global {
+      .ant-menu-item,
+      .ant-menu-submenu > .ant-menu-submenu-title {
+        .menuItem();
+      }
+    }
+  }
+}
+.cellSubMenuClassname {
+  &:global(.ant-menu.ant-menu-submenu) {
+    :global {
+      .ant-menu-item {
+        .menuItem();
+      }
+    }
+  }
+}
+.datagrid {
+  flex: 1;
+}

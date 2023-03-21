@@ -1,0 +1,25 @@
+.main {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  .contentWithExtraColumn {
+    padding-bottom: 200px;
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+  .bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    overflow-y: auto;
+    background: var(--background-secondry-color);
+    border-top: 1px solid var(--divider-color);
+  }
+}

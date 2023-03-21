@@ -1,0 +1,141 @@
+@import (reference) '~antd/lib/style/themes/default';
+
+@tech-prefix: tech;
+@tech-log-prefix-cls: ~'@{tech-prefix}-log';
+
+@mark-base: #faad14;
+@mark-bg: fade(@mark-base, 25%);
+@mark-high-light-bg: fade(@mark-base, 65%);
+
+@content-bg: #f7f9fb;
+@gray-bg: #f0f2f5;
+@toolbar-bg: #ebeef2;
+@default-text-color: fade(@black, 65%);
+
+.@{tech-log-prefix-cls} {
+  &-search-wrap {
+    padding: 7px 0 7px @padding-sm;
+    background: @gray-bg;
+    box-shadow: 0 1px 4px 0 fade(@black, 6%);
+  }
+
+  &-search-count-info {
+    display: inline-block;
+    min-width: 30px;
+    color: @text-color-secondary;
+    text-align: center;
+
+    &.@{tech-log-prefix-cls}-searched-count-info {
+      color: @default-text-color;
+    }
+  }
+
+  &-update-search-cursor {
+    margin-right: @margin-md;
+    margin-left: @margin-xs;
+    text-align: right;
+  }
+
+  &-search-input {
+    width: 100%;
+    margin-right: @margin-xs;
+
+    &-controlled {
+      border-right-color: transparent;
+    }
+  }
+
+  &-toolbar-wrap {
+    width: 100%;
+    height: 46px;
+    padding-left: @padding-sm;
+    background: @toolbar-bg;
+  }
+
+  &-toolbar {
+    color: @default-text-color;
+    cursor: pointer;
+
+    &-text {
+      color: @default-text-color;
+    }
+  }
+
+  &-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &-content {
+    position: relative;
+    flex: 1;
+    color: @default-text-color;
+    font-size: 14px;
+    font-family: Menlo-Regular;
+    line-height: 22px;
+    letter-spacing: 1px;
+    background: @content-bg;
+  }
+
+  &-loading,
+  &-empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate3d(-50%, -50%, 0);
+  }
+
+  &-ellipsis {
+    width: 97%;
+    margin-left: 1%;
+    padding-left: 49px;
+    background: @gray-bg;
+  }
+
+  &-action-btn {
+    width: 16px;
+    color: @default-text-color;
+  }
+
+  &-vir-list {
+    padding-top: @padding-xs;
+    padding-left: @padding-xs;
+    background: @content-bg;
+  }
+
+  &-line-wrap {
+    display: flex;
+  }
+
+  &-mark {
+    margin: 0;
+    padding: 0;
+    word-break: break-word;
+    background: @mark-bg;
+
+    &.@{tech-log-prefix-cls}-active-mark {
+      background: @mark-high-light-bg;
+    }
+  }
+
+  &-linenumber {
+    display: inline-block;
+    min-width: 30px;
+    margin-right: @margin-sm;
+    color: @text-color-secondary;
+    text-align: right;
+    vertical-align: top;
+  }
+
+  &-line-content {
+    flex: 1;
+    padding-right: @padding-md;
+    word-wrap: anywhere;
+    word-break: break-all;
+  }
+  &-highlight {
+    white-space: pre-line;
+  }
+}

@@ -1,0 +1,128 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  overflow: hidden;
+  overflow-x: auto;
+  font-size: 14px;
+  background-color: var(--background-secondry-color);
+  border-bottom: 1px solid var(--divider-color);
+
+  :global {
+    .tools-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .tools-right {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      padding-right: 10px;
+    }
+
+    .anticon-redo {
+      transform: rotate(270deg);
+    }
+  }
+
+  .button {
+    display: flex;
+    align-items: center;
+    margin: 5px 0 5px 8px;
+    padding: 5px;
+    color: var(--icon-color-normal);
+    font-size: 16px;
+    font-family: PingFangSC-Regular;
+    &:not(.disabled):not(.isRunning):hover {
+      // color: #1890ff;
+      background: var(--hover-color);
+      cursor: pointer;
+      i,
+      span {
+        cursor: pointer;
+      }
+    }
+
+    & > span {
+      &:global(.anticon) {
+        padding-left: 0;
+        font-size: 16px;
+      }
+
+      font-size: 12px;
+      white-space: nowrap;
+    }
+  }
+
+  .disabled {
+    color: var(--text-color-placeholder);
+
+    &:hover {
+      cursor: auto;
+    }
+  }
+  .isRunning {
+    &:hover {
+      cursor: progress;
+    }
+  }
+  .isActive {
+    color: var(--icon-color-focus) !important;
+    background: var(--hover-color) !important;
+  }
+
+  .divider {
+    top: 0;
+    height: 1em;
+    margin-right: 0;
+  }
+}
+
+.compact {
+  .button {
+    margin-left: 8px;
+    & > span {
+      padding-left: 4px;
+    }
+  }
+
+  .divider {
+    margin-left: 8px;
+  }
+}
+.button {
+  display: flex;
+  align-items: center;
+  color: var(--text-color-primary);
+  font-family: PingFangSC-Regular;
+
+  &:not(.disabled):not(.isRunning):hover {
+    font-family: PingFangSC-Regular;
+    // color: #1890ff;
+    background: var(--hover-color);
+    cursor: pointer;
+    i,
+    span {
+      cursor: pointer;
+    }
+  }
+
+  & > span {
+    &:global(.anticon) {
+      font-size: 16px;
+    }
+
+    &:global(.anticon-caret-down) {
+      margin-left: 5px;
+    }
+
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
+
+.buttonText {
+  margin-left: 5px;
+  line-height: 1;
+}

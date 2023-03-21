@@ -1,0 +1,179 @@
+import { formatMessage } from '@/util/intl';
+import Icon, { CaretDownOutlined } from '@ant-design/icons';
+import { Button, Divider, Dropdown, message, Popconfirm, Popover, Tooltip } from 'antd';
+import { PopconfirmProps } from 'antd/lib/popconfirm';
+import classNames from 'classnames'; // @ts-ignore
+import { ComponentType } from 'react';
+
+import styles from './index.less';
+import statefulIcon, { IConStatus } from './statefulIcon';
+
+const noop = () => {
+  // TODO
+};
+
+function TButton({
+  text,
+  onClick = noop,
+  icon,
+  type,
+  status = IConStatus.INIT,
+  disabled = false,
+  isMenuIcon,
+  isShowText = false,
+  confirmConfig,
+  ...rest
+}: {
+  [key: string]: any;
+  confirmConfig?: PopconfirmProps | (() => PopconfirmProps);
+  status?: IConStatus;
+  type?: string;
+  /**
+   * 是否为下拉菜单主icon
+   */
+
+  isMenuIcon?: boolean;
+}) {
+  const isInit = status === IConStatus.INIT;
+  const isRunning = status === IConStatus.RUNNING;
+  disabled = disabled || status === IConStatus.DISABLE;
+  const isActive = status === IConStatus.ACTIVE;
+  if (typeof icon === 'function' || icon?.render) {
+    icon = <Icon component={icon} />;
+  } else if (typeof icon === 'string') {
+    /**
+     * string 模式下直接获取已经注册的 icon。
+     */
+    const IconComponent = statefulIcon[icon];
+
+    if (!IconComponent) {
+      icon = <Icon type={icon} />;
+    } else {
+      disabled = disabled || !isInit;
+      icon = (
+        <>
+          <IconComponent status={status} />
+          {isMenuIcon ? <CaretDownOutlined style={{ fontSize: 8 }} /> : null}
+        </>
+      );
+    }
+  }
+
+  const clzName = classNames(
+    styles.button,
+    isRunning ? styles.isRunning : disabled ? styles.disabled : null,
+    isActive ? styles.isActive : null,
+  );
+  if (typeof confirmConfig === 'function') {
+    confirmConfig = confirmConfig();
+  }
+  let content = (
+    <span
+      {...rest}
+      className={clzName}
+      onClick={() => {
+        if (isRunning) {
+          message.success(
+            formatMessage({ id: 'odc.component.Toolbar.DoNotClickAgainWhile' }), //执行中请勿重复点击
+          );
+        } else if (disabled || confirmConfig) {
+          return;
+        } else {
+          onClick?.();
+        }
+      }}
+    >
+      {icon} {isShowText && <span style={{ lineHeight: 1 }}>{text}</span>}
+    </span>
+  );
+
+  switch (type) {
+    case 'BUTTON':
+      content = (
+        <Button {...rest} icon={icon} disabled={disabled} onClick={!disabled ? onClick : null}>
+          {text}
+        </Button>
+      );
+      break;
+    case 'BUTTON_PRIMARY':
+      content = (
+        <Button
+          {...rest}
+          icon={icon}
+          type="primary"
+          disabled={disabled}
+          onClick={!disabled ? onClick : null}
+        >
+          {text}
+        </Button>
+      );
+      break;
+    default:
+      content = (
+        <span
+          {...rest}
+          className={clzName}
+          onClick={!disabled && !confirmConfig && !isRunning ? onClick : null}
+        >
+          {icon} {isShowText && <span className={styles.buttonText}>{text}</span>}
+        </span>
+      );
+      break;
+  }
+  if (confirmConfig && !disabled && !isRunning) {
+    content = (
+      <Popconfirm disabled={disabled} {...confirmConfig}>
+        {content}
+      </Popconfirm>
+    );
+  }
+
+  if (!isShowText) {
+    return (
+      <Tooltip placement={isMenuIcon ? 'top' : 'bottom'} title={text}>
+        {content}
+      </Tooltip>
+    );
+  }
+  return content;
+}
+
+function TDivider() {
+  return <Divider type="vertical" className={styles.divider} />;
+}
+
+function ButtonMenu(props: {
+  icon: string | ComponentType;
+  menu: any;
+  text: string;
+  status: IConStatus;
+}) {
+  const { icon, menu, text, status = IConStatus.INIT } = props;
+  return (
+    <Dropdown overlay={menu} trigger={['click']} disabled={status === IConStatus.DISABLE}>
+      <TButton text={text} icon={icon} isMenuIcon={true} />
+    </Dropdown>
+  );
+}
+
+function ButtonPopover(props: { icon: string | ComponentType; content: any }) {
+  const { icon, content } = props;
+  return (
+    <Popover content={content} placement="bottom">
+      <TButton icon={icon} />
+    </Popover>
+  );
+}
+
+export default function Toolbar({ style = {}, children, compact = false }) {
+  return (
+    <div className={classNames([styles.toolbar, compact ? styles.compact : null])} style={style}>
+      {children}
+    </div>
+  );
+}
+
+Toolbar.Button = TButton;
+Toolbar.Divider = TDivider;
+Toolbar.ButtonMenu = ButtonMenu;
+Toolbar.ButtonPopover = ButtonPopover;

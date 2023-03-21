@@ -1,0 +1,90 @@
+.box {
+  display: flex;
+  height: 520px;
+  max-height: 520px;
+}
+.menu {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 200px;
+  height: 100%;
+  overflow: auto;
+  .menuContent {
+    min-height: calc(100% - 52px);
+  }
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+  .contentImg {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 100%;
+  }
+  .contentText {
+    flex-grow: 1;
+    width: 100%;
+    padding: 20px 80px 20px 20px;
+    overflow: auto;
+    background: var(--background-normal-color);
+  }
+}
+
+.modal {
+  :global {
+    .ant-modal {
+      .ant-modal-body {
+        padding: 0;
+      }
+      .ant-modal-close {
+        color: #fff;
+      }
+    }
+  }
+}
+.menuTitle {
+  padding-top: 20px;
+  padding-bottom: 12px;
+  padding-left: 16px;
+  color: var(--text-color-primary);
+  font-family: PingFangSC-Medium;
+  line-height: 20px;
+}
+.menuBtn {
+  &:global(.ant-btn) {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+  }
+}
+
+.newVersion {
+  &:global(.ant-notification-notice) {
+    max-width: 310px;
+  }
+  :global {
+    .ant-notification-notice-message {
+      display: none;
+    }
+  }
+}
+
+.radiogroup {
+  :global {
+    .ant-radio-inner {
+      &::after {
+        top: -1px;
+        left: -1px;
+        width: 7px;
+        height: 7px;
+        border-radius: 7px;
+      }
+
+      width: 7px;
+      height: 7px;
+    }
+  }
+}

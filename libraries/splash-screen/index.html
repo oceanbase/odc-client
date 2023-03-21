@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+
+<head>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      background: url('./img/splash.png');
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      text-align: center;
+      align-items: center;
+      flex-direction: column;
+      background-size: cover;
+      background-repeat: no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .text {
+      display: flex;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      top: 30px;
+      color: white;
+    }
+    .loadingbox {
+      width: 181px;
+      height: 4px;
+      border-radius: 4px;
+      background-color: rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+    @keyframes ant-progress-active {
+      0% {
+        width: 0;
+        opacity: 0.1;
+      }
+
+      20% {
+        width: 0;
+        opacity: 0.5;
+      }
+
+      100% {
+        width: 100%;
+        opacity: 0;
+      }
+    }
+
+    .loadingbox::before {
+      content: '';
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 10px;
+      opacity: 0;
+      z-index: 1;
+      animation: ant-progress-active 2.4s cubic-bezier(.23, 1, .32, 1) infinite;
+    }
+    .loading {
+      content: '';
+      position: absolute;
+      border-radius: 4px;
+      top: 0px;
+      left: 0px;
+      width: 0%;
+      height: 100%;
+      background: #1890ff;
+    }
+
+
+    .nameText {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      line-height: 28px;
+      margin-top: 13px;
+    }
+
+    .chineseNameText {
+      font-family: PingFangSC-Regular;
+      color: #FFFFFF;
+      letter-spacing: 1px;
+      line-height: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <img style='width: 192px;margin-top: 100px;' src='./img/odc_logo.png' />
+    <div class="text">
+      <div class="loadingbox">
+        <div id='percent'  class="loading"></div>
+      </div>
+    </div>
+    <div style="text-align:center;position: absolute; bottom: 25px; left: 50%;transform: translateX(-50%);height: 13px;">
+      <img src='./img/ob_logo.png' style="width: 87px; height: 13px;vertical-align: top;" />
+    </div>
+  </div>
+</body>
+<script>
+  let percent = 0;
+  const now = Date.now();
+  function updatePercent() {
+    const current = Date.now();
+    const newPercent = Math.floor((current - now) / 400);
+    if (newPercent !== percent) {
+      percent = newPercent;
+      const dom = document.getElementById('percent');
+      if (dom) {
+        dom.style.width = Math.min(percent, 95) + '%';
+      }
+    }
+    requestAnimationFrame(() => {
+      updatePercent();
+    })
+  }
+  updatePercent()
+</script>
+</html>
