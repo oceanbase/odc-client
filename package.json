@@ -14,6 +14,8 @@
   "scripts": {
     "start": "max dev",
     "dev:client": "concurrently \"UMI_ENV=client npm run dev\" \"npm run build-main-dev\"",
+    "dev:cloudweb": "cross-env NODE_OPTIONS=--max_old_space_size=4096 HAVEOCP=1 UMI_ENV=cloudweb max dev",
+    "dev:obcloud": "cross-env NODE_OPTIONS=--max_old_space_size=4096 HAVEOCP=1 CURRENT_ENV=obcloud max dev",
     "start-electron": "electron --inspect=5858 -w ./dist/main/main.js",
     "analyze": "ANALYZE=1 max build",
     "dev": "cross-env NODE_OPTIONS=--max_old_space_size=5120 max dev",
@@ -21,6 +23,7 @@
     "cov": "max test --coverage",
     "build:odc": "npm run updateDoc && cross-env NODE_OPTIONS=--max_old_space_size=4096 max build",
     "build:client": "cross-env NODE_OPTIONS=--max_old_space_size=4096 UMI_ENV=client npm run build:odc && npm run build-main-prod",
+    "build": "cross-env NODE_OPTIONS=--max_old_space_size=4096 UMI_ENV=cloudweb max build",
     "prettier": "prettier --write 'src/**/*.{js,jsx,tsx,ts,less,md,json}'",
     "type-check": "tsc --noEmit",
     "precommit": "npm run type-check",

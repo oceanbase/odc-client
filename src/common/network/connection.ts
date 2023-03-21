@@ -285,17 +285,22 @@ export async function newSession(
   },
   holdErrorTip?: boolean,
 ) {
-  const { data } = await request.post(`/api/v2/connect/sessions?connectType=CONNECT_TYPE_OB`, {
-    data: {
-      connectionId: sid,
-      copiedFromSessionId,
-      password: encrypt(password),
-      cloudParams,
+  const { data } = await request.post(
+    `/api/v2/connect/sessions?connectType=${
+      ENV_environment === 'cloud' ? 'CONNECT_TYPE_CLOUD' : 'CONNECT_TYPE_OB'
+    }`,
+    {
+      data: {
+        connectionId: sid,
+        copiedFromSessionId,
+        password: encrypt(password),
+        cloudParams,
+      },
+      params: {
+        holdErrorTip,
+      },
     },
-    params: {
-      holdErrorTip,
-    },
-  });
+  );
   if (data) {
     // 不带 sid
     const sessionId = data.substring(4);
