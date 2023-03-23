@@ -544,7 +544,7 @@ const CreateSQLPlanTaskModal: React.FC<IProps> = (props) => {
           {isInitContent && (
             <CommonIDE
               initialSQL={formData?.sqlContent}
-              language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+              language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
               onSQLChange={handleSqlChange}
             />
           )}

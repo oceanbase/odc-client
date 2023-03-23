@@ -12,7 +12,7 @@ import { AutoComplete, Button, Checkbox, Col, Form, Input, message, Row, Select 
 import { useForm } from 'antd/es/form/Form';
 import Drawer from '../Drawer';
 import InputBigNumber from '../InputBigNumber';
-import { SQLCodeEditor } from '../SQLCodeEditor';
+import MonacoEditor from '../MonacoEditor';
 import styles from './index.less';
 const { Option } = Select;
 interface IProps {
@@ -187,14 +187,15 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
             style={{
               height: 200,
               outline: '1px solid var(--odc-border-color)',
+              position: 'relative',
             }}
           >
-            <SQLCodeEditor
+            <MonacoEditor
               readOnly
-              initialValue={sql}
-              language={`sql-oceanbase-${
-                connection.connection.dbMode === ConnectionMode.OB_MYSQL ? 'mysql' : 'oracle'
-              }`}
+              defaultValue={sql}
+              language={
+                connection.connection.dbMode === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
+              }
             />
           </div>
         </Form.Item>

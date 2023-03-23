@@ -22,13 +22,13 @@ import { FormattedMessage } from 'umi';
 // @ts-ignore
 
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ConnectionStore } from '@/store/connection';
 import { openPackageBodyPage, openPackageHeadPage, updatePage } from '@/store/helper/page';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import { throttle } from 'lodash';
 import styles from './index.less';
 
@@ -194,7 +194,7 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
 
   private showSearchWidget() {
     [this.editor_header, this.editor_body].forEach((editor) => {
-      const codeEditor = editor?.UNSAFE_getCodeEditor();
+      const codeEditor = editor;
       codeEditor?.trigger('FIND_OR_REPLACE', 'actions.find', null);
     });
   }
@@ -389,11 +389,16 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
                         status={reloading ? IConStatus.ACTIVE : IConStatus.INIT}
                       />
                     </Toolbar>
-                    <div style={{ height: `calc(100vh - ${40 + 28 + 46 + 39}px)` }}>
+                    <div
+                      style={{
+                        height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
+                        position: 'relative',
+                      }}
+                    >
                       <SQLCodeEditorDDL
                         readOnly
-                        initialValue={pkg?.packageHead?.basicInfo?.ddl}
-                        language={`sql-oceanbase-${isMySQL ? 'mysql-pl' : 'oracle-pl'}`}
+                        defaultValue={pkg?.packageHead?.basicInfo?.ddl}
+                        language={isMySQL ? 'obmysql' : 'oboracle'}
                         onEditorCreated={(editor: IEditor) => {
                           this.editor_header = editor;
                         }}
@@ -521,11 +526,16 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
                         status={reloading ? IConStatus.ACTIVE : IConStatus.INIT}
                       />
                     </Toolbar>
-                    <div style={{ height: `calc(100vh - ${40 + 28 + 46 + 39}px)` }}>
+                    <div
+                      style={{
+                        height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
+                        position: 'relative',
+                      }}
+                    >
                       <SQLCodeEditorDDL
                         readOnly
-                        initialValue={pkg.packageBody.basicInfo.ddl}
-                        language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                        defaultValue={pkg.packageBody.basicInfo.ddl}
+                        language={isMySQL ? 'obmysql' : 'oboracle'}
                         onEditorCreated={(editor: IEditor) => {
                           this.editor_body = editor;
                         }}

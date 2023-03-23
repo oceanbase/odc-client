@@ -352,7 +352,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
     return (
       <>
         <CommonIDE
-          language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}` + (this.isPL() ? '-pl' : '')}
+          language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
           initialSQL={sql}
           log={logEle}
           onSQLChange={this.handleSqlChange}

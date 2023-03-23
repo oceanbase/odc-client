@@ -16,6 +16,12 @@ export interface IUser {
   roles?: IManagerRole[];
 }
 
+export enum SQL_OBJECT_TYPE {
+  TABLE,
+  VIEW,
+  FUNCTION,
+}
+
 // 个人配置
 export interface IUserConfig {
   'sqlexecute.defaultDelimiter': string;

@@ -1,3 +1,4 @@
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -5,7 +6,6 @@ import { ConnectionMode } from '@/d.ts';
 import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { IEditor } from '@alipay/ob-editor';
 import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useRef, useState } from 'react';
@@ -66,11 +66,17 @@ const TableDDL: React.FC<IProps> = function ({ connectionStore }) {
           /* 刷新 */ onClick={onRefresh}
         />
       </Toolbar>
-      <div style={{ height: `calc(100vh - ${48 + 34 + 39 + 50}px)`, overflow: 'hidden' }}>
+      <div
+        style={{
+          height: `calc(100vh - ${48 + 34 + 39 + 50}px)`,
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
         <SQLCodeEditorDDL
           readOnly
-          initialValue={table?.info?.DDL}
-          language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+          defaultValue={table?.info?.DDL}
+          language={isMySQL ? 'obmysql' : 'oboracle'}
           onEditorCreated={(editor: IEditor) => {
             editorRef.current = editor;
           }}

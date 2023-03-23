@@ -56,7 +56,6 @@ import TaskManaerPage from '@/page/Workspace/components/TaskManagePage';
 import TriggerPage from '@/page/Workspace/components/TriggerPage';
 import TutorialPage from '@/page/Workspace/components/TutorialPage';
 import TypePage from '@/page/Workspace/components/TypePage';
-import '@alipay/ob-editor-react/lib/style';
 
 /** 页面类型 */
 export const pageMap = {

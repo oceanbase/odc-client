@@ -3,6 +3,7 @@ import { executeSQL, runSQLLint } from '@/common/network/sql';
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import ExportResultSetModal from '@/component/ExportResultSetModal';
+import { IEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
 import SQLConfigContext from '@/component/SQLConfig/SQLConfigContext';
@@ -18,6 +19,7 @@ import {
   ITableColumn,
   PageType,
   SqlType,
+  SQL_OBJECT_TYPE,
 } from '@/d.ts';
 import type { ConnectionStore } from '@/store/connection';
 import connection from '@/store/connection';
@@ -38,10 +40,10 @@ import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { getRealTableName, splitSql } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
-import type { IEditor } from '@alipay/ob-editor';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import ExecDetail from '../SQLExplain/ExecDetail';
@@ -268,16 +270,16 @@ class SQLPage extends Component<
 
   public handleEditorCreated = (editor: IEditor) => {
     this.editor = editor; // 快捷键绑定
-    this.editor.addCommand('CTRLCMD+KEY_D', () => {
+    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD, () => {
       this.handleDownload();
     });
-    this.editor.addCommand('CTRLCMD+KEY_S', () => {
+    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       this.saveScript();
     });
-    this.editor.addCommand('f8', this.handleExecuteSQL);
-    this.editor.addCommand('f9', this.handleExecuteSelectedSQL);
+    this.editor.addCommand(monaco.KeyCode.F8, this.handleExecuteSQL);
+    this.editor.addCommand(monaco.KeyCode.F9, this.handleExecuteSelectedSQL);
     this.debounceHighlightSelectionLine();
-    this.editor.UNSAFE_getCodeEditor().onDidChangeCursorPosition(() => {
+    this.editor.onDidChangeCursorPosition(() => {
       this.debounceHighlightSelectionLine();
     });
   };
@@ -294,7 +296,7 @@ class SQLPage extends Component<
   public handleExecuteSQL = async () => {
     const { params } = this.props;
 
-    const selectedSQL = this.editor.getSelection();
+    const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
     await this.executeSQL(
       sqlToExecute,
@@ -306,13 +308,10 @@ class SQLPage extends Component<
   public handleExecuteSelectedSQL = async () => {
     const { connectionStore, sqlStore } = this.props;
 
-    let selectedSQL = this.editor.getSelection(); // 如果没有选中，尝试获取当前语句
+    let selectedSQL = this.editor.getModel().getValueInRange(this.editor.getSelection()); // 如果没有选中，尝试获取当前语句
     let begin, end;
     if (!selectedSQL) {
-      const offset = this.editor
-        .UNSAFE_getCodeEditor()
-        .getModel()
-        .getOffsetAt(this.editor.getPosition());
+      const offset = this.editor.getModel().getOffsetAt(this.editor.getPosition());
 
       if (offset > -1) {
         const result = await getCurrentSQL(
@@ -328,9 +327,9 @@ class SQLPage extends Component<
         }
       }
     } else {
-      const range = this.editor.getSelectionRange();
-      begin = this.editor.UNSAFE_getCodeEditor().getModel().getOffsetAt(range.getStartPosition());
-      end = this.editor.UNSAFE_getCodeEditor().getModel().getOffsetAt(range.getEndPosition());
+      const range = this.editor.getSelection();
+      begin = this.editor.getModel().getOffsetAt(range.getStartPosition());
+      end = this.editor.getModel().getOffsetAt(range.getEndPosition());
     }
 
     if (!selectedSQL) {
@@ -441,7 +440,7 @@ class SQLPage extends Component<
     if (this.state.lintResultSet) {
       this.hanldeCloseLintPage();
     }
-    const selectted = this.editor.getSelection();
+    const selectted = this.editor.getSelectionContent();
     const value = selectted || this.editor.getValue();
     if (!value) {
       return;
@@ -718,13 +717,10 @@ class SQLPage extends Component<
 
   public handleExplain = async () => {
     const { connectionStore } = this.props;
-    let selectedSQL = this.editor.getSelection(); // 如果没有选中，尝试获取当前语句
+    let selectedSQL = this.editor.getSelectionContent(); // 如果没有选中，尝试获取当前语句
 
     if (!selectedSQL) {
-      const offset = this.editor
-        .UNSAFE_getCodeEditor()
-        .getModel()
-        .getOffsetAt(this.editor.getPosition());
+      const offset = this.editor.getModel().getOffsetAt(this.editor.getPosition());
 
       if (offset > -1) {
         selectedSQL = (
@@ -781,7 +777,7 @@ class SQLPage extends Component<
       return;
     }
     this.outOfLimitTipHaveShow = false;
-    const selection = editor.getSelection();
+    const selection = editor.getSelectionContent();
     if (selection?.length) {
       return;
     }
@@ -789,7 +785,7 @@ class SQLPage extends Component<
       utils.addHighlight(editor, sectionRange.begin, sectionRange.end, type);
       return;
     }
-    const offset = editor.UNSAFE_getCodeEditor().getModel().getOffsetAt(editor.getPosition());
+    const offset = editor.getModel().getOffsetAt(editor.getPosition());
     const result = await getCurrentSQL(
       value,
       offset,
@@ -807,31 +803,28 @@ class SQLPage extends Component<
   public debounceHighlightSelectionLine = debounce(this.highlightSelectionLine, 200);
 
   public onOpenObjDetail = (obj) => {
-    import('@alipay/ob-editor').then((module) => {
-      const SQL_OBJECT_TYPE = module.SQL_OBJECT_TYPE;
-      switch (obj.objType) {
-        case SQL_OBJECT_TYPE.TABLE: {
-          openTableViewPage(
-            getRealTableName(obj.name, connection?.connection?.dbMode === ConnectionMode.OB_ORACLE),
-          );
+    switch (obj.objType) {
+      case SQL_OBJECT_TYPE.TABLE: {
+        openTableViewPage(
+          getRealTableName(obj.name, connection?.connection?.dbMode === ConnectionMode.OB_ORACLE),
+        );
 
-          break;
-        }
-        case SQL_OBJECT_TYPE.VIEW: {
-          openViewViewPage(
-            getRealTableName(obj.name, connection?.connection?.dbMode === ConnectionMode.OB_ORACLE),
-          );
-
-          break;
-        }
-        case SQL_OBJECT_TYPE.FUNCTION: {
-          openFunctionViewPage(obj.name);
-          break;
-        }
-        default:
-          break;
+        break;
       }
-    });
+      case SQL_OBJECT_TYPE.VIEW: {
+        openViewViewPage(
+          getRealTableName(obj.name, connection?.connection?.dbMode === ConnectionMode.OB_ORACLE),
+        );
+
+        break;
+      }
+      case SQL_OBJECT_TYPE.FUNCTION: {
+        openFunctionViewPage(obj.name);
+        break;
+      }
+      default:
+        break;
+    }
   };
 
   public render() {
@@ -866,7 +859,7 @@ class SQLPage extends Component<
       <SQLConfigContext.Provider value={{ session, pageKey }}>
         <ScriptPage
           ctx={this}
-          language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+          language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
           toolbar={{
             loading: pageLoading,
             actionGroupKey: 'SQL_DEFAULT_ACTION_GROUP',
@@ -882,7 +875,7 @@ class SQLPage extends Component<
           }}
           editor={{
             readOnly: this.editor?.getValue()?.length > 10000 * 500,
-            initialValue: initialSQL,
+            defaultValue: initialSQL,
             enableSnippet: true,
             onValueChange: this.handleSQLChanged,
             onEditorCreated: this.handleEditorCreated,

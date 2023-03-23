@@ -25,15 +25,14 @@
   resolved "https://registry.npm.alibaba-inc.com/@ali/anima-detect/download/@ali/anima-detect-1.0.3.tgz#3662d1866c0e5f35b1a96104f4596a325a59dd2d"
   integrity sha1-NmLRhmwOXzWxqWEE9FlqMlpZ3S0=
 
-"@alipay/antd-data-tracker@^0.1.7":
-  version "0.1.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/antd-data-tracker/download/@alipay/antd-data-tracker-0.1.9.tgz#840c06029dc5128c975eb4e847c0e6fa7b5758b1"
-  integrity sha1-hAwGAp3FEoyXXrToR8Dm+ntXWLE=
-
-"@alipay/monaco-editor@0.18.1-p.1":
-  version "0.18.1-p.1"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/monaco-editor/download/@alipay/monaco-editor-0.18.1-p.1.tgz#dd39163d1d65d439cfd1e0e95b27933fe31c0dc6"
-  integrity sha1-3TkWPR1l1DnP0eDpWyeTP+McDcY=
+"@alipay/monaco-plugin-ob@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.antgroup-inc.cn/@alipay/monaco-plugin-ob/-/monaco-plugin-ob-0.0.7.tgz#1aef233a99b5362da82681d13579aa1945ffb3ba"
+  integrity sha512-AAejZwqs2sqltBewmletG+N9qKTtTYdLaGSQdlNyNVGt9wh4jr8ch8kDdb7rYkQfB76w40iwMXBKeRctvLhDsw==
+  dependencies:
+    "@alipay/ob-parser-js" dev-S09001520464
+    antlr4 "~4.8.0"
+    comlink "^4.3.1"
 
 "@alipay/monitor-stack@^0.2.19":
   version "0.2.23"
@@ -41,44 +40,6 @@
   integrity sha1-wVMPvgihR+I9wkqaE+46OwjZbnc=
   dependencies:
     blueimp-md5 "^2.10.0"
-
-"@alipay/ob-editor-common@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-editor-common/download/@alipay/ob-editor-common-4.7.9.tgz#a146f9bd33400fd31c956a8fcfbaf965b1fbfa1b"
-  integrity sha512-NvfaOXxT/a2txLfgfEJoiNqGN1tyxBLT9NRt+r06DOETKSkZqRedlISZBrvKQ3Or3xL4bPEs7tDrZjSM6JwzCA==
-  dependencies:
-    "@alipay/antd-data-tracker" "^0.1.7"
-    "@alipay/monaco-editor" "0.18.1-p.1"
-    tslib "^1.10.0"
-
-"@alipay/ob-editor-react@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-editor-react/download/@alipay/ob-editor-react-4.7.9.tgz#ae54f158de6b2f08135fb5aebcd9470265e7c251"
-  integrity sha512-1RQS6Ry13+eRUYTXTZ545Qg5yKecEY8uq3D1qxtZ2Xtr0MCOPJdHpnEu+m4eTa98sJTD0qy3oEPgmWvnGHqFsg==
-  dependencies:
-    classnames "^2.2.5"
-    element-resize-detector "^1.1.14"
-    react-loadable "^5.4.0"
-    tslib "^1.10.0"
-
-"@alipay/ob-editor@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-editor/download/@alipay/ob-editor-4.7.9.tgz#8238c4ec04243e8f74188bf4ea075a3864059509"
-  integrity sha512-ZRKl9A/byOsI3TtQD87NwW4EBl61syN0sYFWi6o52Q0fE8d6gQHyr3Z6P5bvJNCVpVAx0Q9nunqg2g4+CyTDAA==
-  dependencies:
-    "@alipay/ob-editor-common" "4.7.9"
-    "@alipay/ob-language-d1log" "4.7.9"
-    "@alipay/ob-language-perl" "4.7.9"
-    "@alipay/ob-language-python" "4.7.9"
-    "@alipay/ob-language-shell" "4.7.9"
-    "@alipay/ob-language-sql-common" "4.7.9"
-    "@alipay/ob-language-sql-standard-mode" "4.7.9"
-    antlr4 "~4.8.0"
-    load-script "^1.0.0"
-    lodash-es "^4.17.4"
-    lru-cache "^4.1.5"
-    tslib "^1.10.0"
-    url-join "^4.0.0"
 
 "@alipay/ob-intl-cli@1.0.2":
   version "1.0.2"
@@ -110,115 +71,6 @@
     prettier-eslint "^15.0.1"
     slash "^5.0.0"
 
-"@alipay/ob-language-d1log@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-d1log/download/@alipay/ob-language-d1log-4.7.9.tgz#4d322b3608b9a5e3793b6ede763a77654d330f41"
-  integrity sha512-SauKV+a3I37yRP1oFr7uq7NUZvHIYYT9UWR92hmyO/T5BS+zMGwN5GZcHHVyJuGn4qH1IPiuNO2tR8h2P+s61g==
-
-"@alipay/ob-language-perl@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-perl/download/@alipay/ob-language-perl-4.7.9.tgz#3f96da24ca3e75a4699dcdfb62d818ecc8333887"
-  integrity sha512-WmkEysZ1sW5OC42Otzq84zZ8MsmWDQXV9VoZSNz5jjiLRZRjP9EgZz1WH6+i08z92vMHr+jy5AZhw/9nwRLViQ==
-
-"@alipay/ob-language-python@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-python/download/@alipay/ob-language-python-4.7.9.tgz#83a37f7aaebcdc96060d737be204f1d716e0c1c4"
-  integrity sha512-n4vJlbmlMB3S9w3j59AsjfWCz2yIHHGib7g1oSiCYQiqRKf9895hEgwJ7zjvVkaLkzVWGuIEbCilf5YOpnKsVA==
-
-"@alipay/ob-language-shell@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-shell/download/@alipay/ob-language-shell-4.7.9.tgz#eb735ad3b4d794053eef9698c2d83dc74a0655bc"
-  integrity sha512-OIJ1WpBTDMhJUzp0rg92QB80t/o0icWS3+9xZFdeMJGI6qy9f9KtC8MeA+jk5D8ZsHyUqtcy/I8Abn/JwCVLIQ==
-
-"@alipay/ob-language-sql-common@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-common/download/@alipay/ob-language-sql-common-4.7.9.tgz#cc2a02b36f02c39b6d001d222f738ab1b0c393ef"
-  integrity sha512-efMB0gM7TjqHYc5FAPbtxRT0Amqn0BXwIxsDIEOyYiuLmEKcAlPR8MDaNeAe0tM+ZeBtx6OIV8lLiTUz+rbNNg==
-  dependencies:
-    load-script "^1.0.0"
-    lodash-es "^4.17.4"
-    lru-cache "^4.1.5"
-    tslib "^1.10.0"
-    url-join "^4.0.0"
-
-"@alipay/ob-language-sql-oceanbase-mysql-pl@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-oceanbase-mysql-pl/download/@alipay/ob-language-sql-oceanbase-mysql-pl-4.7.9.tgz#5e5c27da81ed2917a6caf1b3c7e82e9d8fd041c2"
-  integrity sha512-7Xo8oM/+Eo+Pii1E43DAkWTL8O69DGm9MgQRlRmbpKCxG5ATnHSl9VZ79XTLx4Kiyo97c2O+NGvCwUxjddycxQ==
-  dependencies:
-    "@alipay/ob-language-sql-common" "4.7.9"
-    "@alipay/ob-language-sql-oceanbase-mysql" "4.7.9"
-    "@alipay/ob-language-sql-oceanbase-parser" "4.7.9"
-    "@alipay/ob-language-sql-services" "4.7.9"
-    lodash-es "^4.17.4"
-    tslib "^1.10.0"
-
-"@alipay/ob-language-sql-oceanbase-mysql@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-oceanbase-mysql/download/@alipay/ob-language-sql-oceanbase-mysql-4.7.9.tgz#a8c8bc06d20abf852dd71951297b3985c8f767e1"
-  integrity sha512-THQ6RFMY5AtuYWuGKO5UTivMMQHq8JOj2La+OJhf8acvt1PzexyIxjVjI53CjwP1GonVMhT9wGJuRqYpOoXCgg==
-  dependencies:
-    "@alipay/ob-editor-common" "4.7.9"
-    "@alipay/ob-language-sql-common" "4.7.9"
-    "@alipay/ob-language-sql-oceanbase-parser" "4.7.9"
-    "@alipay/ob-language-sql-services" "4.7.9"
-    lodash-es "^4.17.4"
-    tslib "^1.10.0"
-
-"@alipay/ob-language-sql-oceanbase-oracle-pl@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-oceanbase-oracle-pl/download/@alipay/ob-language-sql-oceanbase-oracle-pl-4.7.9.tgz#19c379d211eaa254cb1f5c3ba9ce130ceea942f0"
-  integrity sha512-oXceh9K1wBbAlTxhbgPNdU4y78iZ+JLEC9EjBH05hv9324VstCgnBXe6FhIVeChBxHLmUa+cJCSljC3A8I9CFw==
-  dependencies:
-    "@alipay/ob-language-sql-common" "4.7.9"
-    "@alipay/ob-language-sql-oceanbase-oracle" "4.7.9"
-    "@alipay/ob-language-sql-oceanbase-parser" "4.7.9"
-    "@alipay/ob-language-sql-services" "4.7.9"
-    lodash-es "^4.17.4"
-    tslib "^1.10.0"
-
-"@alipay/ob-language-sql-oceanbase-oracle@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-oceanbase-oracle/download/@alipay/ob-language-sql-oceanbase-oracle-4.7.9.tgz#55f2c57ba69f73a41f17e3610fd6503f5d2fa055"
-  integrity sha512-RAEE08XhACtSciq6h5SQhaLkTmRi+Pak8dYzqxHogvVi02LGnZ7bg7jPO26WRY3HwbQG0xuDOq30p3WnZ/6/8g==
-  dependencies:
-    "@alipay/ob-editor-common" "4.7.9"
-    "@alipay/ob-language-sql-common" "4.7.9"
-    "@alipay/ob-language-sql-oceanbase-parser" "4.7.9"
-    "@alipay/ob-language-sql-services" "4.7.9"
-    lodash-es "^4.17.4"
-    tslib "^1.10.0"
-
-"@alipay/ob-language-sql-oceanbase-parser@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-oceanbase-parser/download/@alipay/ob-language-sql-oceanbase-parser-4.7.9.tgz#65ff2203352e0ee7ab6ba1890370c3a14ee3307c"
-  integrity sha512-Q0n4twXSxpNHDDTqEJ32wFemcOye713kpwvas/N3bcWSvpch80wRPXEZ8DJSOrBpqLbWaqcnihidevDhjD/aEg==
-
-"@alipay/ob-language-sql-services@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-services/download/@alipay/ob-language-sql-services-4.7.9.tgz#a7410f9f3cae2bec3251f03597e28c5fc55b97ff"
-  integrity sha512-IZGPKFWAW50gNI9cBoCqxE8hgK11tPy4NOOdMRisKbYk3/QG/I4PbgtCjesgmd35UJ4n0g/NDRqqYE6Jgnyi9w==
-  dependencies:
-    "@alipay/ob-parser-js" "^1.0.7"
-    antlr4 "~4.8.0"
-    levenshtein-edit-distance "^2.0.3"
-    localforage "^1.7.3"
-    lodash-es "^4.17.4"
-    lru-cache "^4.1.5"
-    tslib "^1.10.0"
-    uuid "^3.3.2"
-
-"@alipay/ob-language-sql-standard-mode@4.7.9":
-  version "4.7.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-language-sql-standard-mode/download/@alipay/ob-language-sql-standard-mode-4.7.9.tgz#83b73cb2ec426d9c0c0a455d86d4a777d41e06c9"
-  integrity sha512-2dgWdViW/OxrnfaxRb/OcDZqTEjzjlfaL5P+Iut4diSUt18lGy670v6yS8p5nv7eUAAfLffBUhE8efNHRTKkDw==
-  dependencies:
-    "@alipay/ob-language-sql-services" "4.7.9"
-    babel-runtime "^6.26.0"
-    lodash-es "^4.17.11"
-    lru-cache "^4.1.5"
-    tslib "^1.10.0"
-
 "@alipay/ob-parser-js@1.0.9":
   version "1.0.9"
   resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-parser-js/download/@alipay/ob-parser-js-1.0.9.tgz#fcfe4cbe1d33e081dd239ca8b63033cd1f214b18"
@@ -228,10 +80,10 @@
     antlr4 "~4.8.0"
     lodash "^4.17.20"
 
-"@alipay/ob-parser-js@^1.0.7":
-  version "1.0.10"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-parser-js/download/@alipay/ob-parser-js-1.0.10.tgz#271cadfa65174cd0928c72f0d5f725bc86f3b141"
-  integrity sha512-iOo8CKTgxHtetYmQP1qA2c7f+Gm899hrUzc53FtVuKtF2xtCrJpSD9Hl1U43nAHy5NIQ5TZsE3UanYqpuE/LCA==
+"@alipay/ob-parser-js@dev-S09001520464":
+  version "0.0.9001520464-dev.45"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-parser-js/-/ob-parser-js-0.0.9001520464-dev.45.tgz#4ad70ad2064e451b776a06d2ca78296274e03c44"
+  integrity sha512-2aWiCsu9mOuLhssVzcSi6bZ0T1DeFFJrSuRrr2hi2kVNHSvYBRqGzeDG/hIlOyByHTmfGPxa+6uUUHRA5HK4Tg==
   dependencies:
     "@alipay/ob-sql-formatter" "^1.0.8"
     antlr4 "~4.8.0"
@@ -5557,7 +5409,7 @@ babel-preset-jest@^29.5.0:
     babel-plugin-jest-hoist "^29.5.0"
     babel-preset-current-node-syntax "^1.0.0"
 
-babel-runtime@^6.26.0, babel-runtime@^6.9.2:
+babel-runtime@^6.9.2:
   version "6.26.0"
   resolved "https://registry.npm.alibaba-inc.com/babel-runtime/download/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   integrity sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
@@ -5598,7 +5450,7 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-batch-processor@1.0.0, batch-processor@^1.0.0:
+batch-processor@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.alibaba-inc.com/batch-processor/download/batch-processor-1.0.0.tgz#75c95c32b748e0850d10c2b168f6bdbe9891ace8"
   integrity sha1-dclcMrdI4IUNEMKxaPa9vpiRrOg=
@@ -6423,6 +6275,11 @@ combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   integrity sha1-w9RaizT9cwYxoRCoolIGgrMdWn8=
   dependencies:
     delayed-stream "~1.0.0"
+
+comlink@^4.3.1:
+  version "4.4.1"
+  resolved "https://registry.antgroup-inc.cn/comlink/-/comlink-4.4.1.tgz#e568b8e86410b809e8600eb2cf40c189371ef981"
+  integrity sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==
 
 commander@*:
   version "10.0.0"
@@ -7684,13 +7541,6 @@ element-resize-detector@1.1.11:
   integrity sha1-NNya/2JCOeDr26bNre6uiKTPCxs=
   dependencies:
     batch-processor "^1.0.0"
-
-element-resize-detector@^1.1.14:
-  version "1.2.4"
-  resolved "https://registry.npm.alibaba-inc.com/element-resize-detector/download/element-resize-detector-1.2.4.tgz#3e6c5982dd77508b5fa7e6d5c02170e26325c9b1"
-  integrity sha512-Fl5Ftk6WwXE0wqCgNoseKWndjzZlDCwuPTcoVZfCP9R3EHQF8qUtr3YUPNETegRBOKqQKPW3n4kiIWngGi8tKg==
-  dependencies:
-    batch-processor "1.0.0"
 
 elliptic@^6.5.3:
   version "6.5.4"
@@ -9909,11 +9759,6 @@ image-size@~0.5.0:
   resolved "https://registry.npm.alibaba-inc.com/image-size/download/image-size-0.5.5.tgz#09dfd4ab9d20e29eb1c3e80b8990378df9e3cb9c"
   integrity sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=
 
-immediate@~3.0.5:
-  version "3.0.6"
-  resolved "https://registry.npm.alibaba-inc.com/immediate/download/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
-  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
-
 immer@^8.0.4:
   version "8.0.4"
   resolved "https://registry.npm.alibaba-inc.com/immer/download/immer-8.0.4.tgz#3a21605a4e2dded852fb2afd208ad50969737b7a"
@@ -11535,11 +11380,6 @@ leven@^3.1.0:
   resolved "https://registry.npm.alibaba-inc.com/leven/download/leven-3.1.0.tgz#77891de834064cccba82ae7842bb6b14a13ed7f2"
   integrity sha1-d4kd6DQGTMy6gq54QrtrFKE+1/I=
 
-levenshtein-edit-distance@^2.0.3:
-  version "2.0.5"
-  resolved "https://registry.npm.alibaba-inc.com/levenshtein-edit-distance/download/levenshtein-edit-distance-2.0.5.tgz#a066eca8afb350e4d9054aed9ffeef66e78ffc83"
-  integrity sha1-oGbsqK+zUOTZBUrtn/7vZueP/IM=
-
 levn@^0.4.1:
   version "0.4.1"
   resolved "https://registry.npm.alibaba-inc.com/levn/download/levn-0.4.1.tgz#ae4562c007473b932a6200d403268dd2fffc6ade"
@@ -11555,13 +11395,6 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
-
-lie@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.npm.alibaba-inc.com/lie/download/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
-  integrity sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
-  dependencies:
-    immediate "~3.0.5"
 
 lightningcss-darwin-arm64@1.19.0:
   version "1.19.0"
@@ -11676,11 +11509,6 @@ load-json-file@^4.0.0:
     pify "^3.0.0"
     strip-bom "^3.0.0"
 
-load-script@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.alibaba-inc.com/load-script/download/load-script-1.0.0.tgz#0491939e0bee5643ee494a7e3da3d2bac70c6ca4"
-  integrity sha1-BJGTngvuVkPuSUp+PaPSuscMbKQ=
-
 loader-runner@^2.4.0:
   version "2.4.0"
   resolved "https://registry.npm.alibaba-inc.com/loader-runner/download/loader-runner-2.4.0.tgz#ed47066bfe534d7e84c4c7b9998c2a75607d9357"
@@ -11709,13 +11537,6 @@ local-pkg@^0.4.2:
   resolved "https://registry.npm.alibaba-inc.com/local-pkg/download/local-pkg-0.4.3.tgz#0ff361ab3ae7f1c19113d9bb97b98b905dbc4963"
   integrity sha512-SFppqq5p42fe2qcZQqqEOiVRXl+WCP1MdT6k7BDEW1j++sp5fIY+/fdRQitvKgB5BrBcmrs5m/L0v2FrU5MY1g==
 
-localforage@^1.7.3:
-  version "1.10.0"
-  resolved "https://registry.npm.alibaba-inc.com/localforage/download/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
-  integrity sha1-XEZdxfYrKAfDqEwMahsbMhJ4HdQ=
-  dependencies:
-    lie "3.1.1"
-
 locate-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npm.alibaba-inc.com/locate-path/download/locate-path-3.0.0.tgz#dbec3b3ab759758071b58fe59fc41871af21400e"
@@ -11738,7 +11559,7 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@^4.17.11, lodash-es@^4.17.21, lodash-es@^4.17.4:
+lodash-es@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npm.alibaba-inc.com/lodash-es/download/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
   integrity sha1-Q+YmxG5lkbd1C+srUBFzkMYJ4+4=
@@ -11883,7 +11704,7 @@ lowercase-keys@^2.0.0:
   resolved "https://registry.npm.alibaba-inc.com/lowercase-keys/download/lowercase-keys-2.0.0.tgz#2603e78b7b4b0006cbca2fbcc8a3202558ac9479"
   integrity sha1-JgPni3tLAAbLyi+8yKMgJVislHk=
 
-lru-cache@^4.0.1, lru-cache@^4.1.5:
+lru-cache@^4.0.1:
   version "4.1.5"
   resolved "https://registry.npm.alibaba-inc.com/lru-cache/download/lru-cache-4.1.5.tgz#8bbe50ea85bed59bc9e33dcab8235ee9bcf443cd"
   integrity sha1-i75Q6oW+1ZvJ4z3KuCNe6bz0Q80=
@@ -12373,6 +12194,11 @@ moment@^2.24.0, moment@^2.25.3, moment@^2.27.0, moment@^2.29.0, moment@^2.29.2, 
   version "2.29.4"
   resolved "https://registry.npm.alibaba-inc.com/moment/download/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
+monaco-editor@^0.36.1:
+  version "0.36.1"
+  resolved "https://registry.antgroup-inc.cn/monaco-editor/-/monaco-editor-0.36.1.tgz#aad528c815605307473a1634612946921d8079b5"
+  integrity sha512-/CaclMHKQ3A6rnzBzOADfwdSJ25BFoFT0Emxsc4zYVyav5SkK9iA6lEtIeuN/oRYbwPgviJT+t3l+sjFa28jYg==
 
 moo-color@^1.0.2:
   version "1.0.3"
@@ -13878,7 +13704,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@15.x, prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.7, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.7, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npm.alibaba-inc.com/prop-types/download/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -14866,13 +14692,6 @@ react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npm.alibaba-inc.com/react-lifecycles-compat/download/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha1-TxonOv38jzSIqMUWv9p4+HI1I2I=
-
-react-loadable@^5.4.0:
-  version "5.5.0"
-  resolved "https://registry.npm.alibaba-inc.com/react-loadable/download/react-loadable-5.5.0.tgz#582251679d3da86c32aae2c8e689c59f1196d8c4"
-  integrity sha1-WCJRZ509qGwyquLI5onFnxGW2MQ=
-  dependencies:
-    prop-types "^15.5.0"
 
 react-merge-refs@^1.1.0:
   version "1.1.0"
@@ -17356,11 +17175,6 @@ urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npm.alibaba-inc.com/urix/download/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
-
-url-join@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.npm.alibaba-inc.com/url-join/download/url-join-4.0.1.tgz#b642e21a2646808ffa178c4c5fda39844e12cde7"
-  integrity sha1-tkLiGiZGgI/6F4xMX9o5hE4Szec=
 
 url-parse-lax@^3.0.0:
   version "3.0.0"

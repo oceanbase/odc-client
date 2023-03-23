@@ -12,7 +12,6 @@ import { SQLStore } from '@/store/sql';
 import editorUtils from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { getPLDebugExecuteSql } from '@/util/sql';
-import type { IEditor, monaco } from '@alipay/ob-editor';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Checkbox, message, Modal, Typography } from 'antd';
 import EventBus from 'eventbusjs';
@@ -24,6 +23,7 @@ import { ConnectionMode, IPage, ISqlExecuteResultStatus, ISQLScript } from '@/d.
 
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL } from '@/common/network/sql';
+import { IEditor } from '@/component/MonacoEditor';
 import PL_TYPE, { PLType } from '@/constant/plType';
 import { DebugStore } from '@/store/debug';
 import { DebugStatus, IDebugStackItem } from '@/store/debug/type';
@@ -32,6 +32,7 @@ import notification from '@/util/notification';
 import { getPLEntryName } from '@/util/parser';
 import { checkPLNameChanged } from '@/util/pl';
 import { debounce } from 'lodash';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 const RESULT_HEIGHT = 230;
 
@@ -238,13 +239,13 @@ class PLPage extends Component<
     const self = this;
     this.editor = editor;
     // 快捷键绑定
-    this.editor.addCommand('f8', this.handleExecuteSQL);
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    this.editor.addCommand(monaco.KeyCode.F8, this.handleExecuteSQL);
+    const codeEditor = editor;
     this.debugMode = codeEditor.createContextKey('debugMode', false);
-    import('@alipay/ob-editor').then((module) => {
-      const monaco = module.monaco;
+    import('monaco-editor').then((module) => {
+      const monaco = module;
       codeEditor.addCommand(
-        monaco.KeyCode.KEY_I | monaco.KeyMod.CtrlCmd,
+        monaco.KeyCode.KeyI | monaco.KeyMod.CtrlCmd,
         async function () {
           // @ts-ignore
           await PL_ACTIONS.PL_DEBUG_STEP_IN.action(self);
@@ -253,7 +254,7 @@ class PLPage extends Component<
       );
 
       codeEditor.addCommand(
-        monaco.KeyCode.KEY_O | monaco.KeyMod.CtrlCmd,
+        monaco.KeyCode.KeyO | monaco.KeyMod.CtrlCmd,
         async function () {
           // @ts-ignore
           await PL_ACTIONS.PL_DEBUG_STEP_OUT.action(self);
@@ -262,7 +263,7 @@ class PLPage extends Component<
       );
 
       codeEditor.addCommand(
-        monaco.KeyCode.KEY_P | monaco.KeyMod.CtrlCmd,
+        monaco.KeyCode.KeyP | monaco.KeyMod.CtrlCmd,
         async function () {
           // @ts-ignore
           await PL_ACTIONS.PL_DEBUG_STEP_SKIP.action(self);
@@ -573,7 +574,7 @@ class PLPage extends Component<
   // 断点管理 - 交互绑定
   public initBreakpointEventBind(editor: IEditor) {
     this.editor = editor;
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.onMouseDown(async (e) => {
       // 非调试状态 或者 lineNumber 左侧空白
       if (!this.state.debug || e.target.type !== 3 || this.getDebug().isDebugEnd()) {
@@ -600,7 +601,7 @@ class PLPage extends Component<
       }
     });
     codeEditor.onMouseMove((e) => {
-      if (!e.target.detail || !this.state.debug || this.getDebug().isDebugEnd()) {
+      if (!e.target.element || !this.state.debug || this.getDebug().isDebugEnd()) {
         return;
       }
       const { lineNumber } = e.target.position;
@@ -666,7 +667,7 @@ class PLPage extends Component<
     const { currentDebugObj } = this.state;
     const { plType, plName, packageName } = currentDebugObj;
     const pl = debug.getPlInfo(packageName, plName, plType);
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     const value = codeEditor.getValue();
     if (value !== pl.content) {
       codeEditor.setValue(pl.content);
@@ -1001,7 +1002,7 @@ class PLPage extends Component<
     return (
       <ScriptPage
         ctx={this}
-        language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}${scriptType == 'PL' ? '-pl' : ''}`}
+        language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
         toolbar={{
           loading: toolBarLoading,
           actionGroupKey: this.getActionGroupKey(),
@@ -1013,7 +1014,7 @@ class PLPage extends Component<
         handleChangeSplitPane={this.handleChangeSplitPane}
         editor={{
           readOnly: this.isEditorReadonly(),
-          initialValue: initialSQL,
+          defaultValue: initialSQL,
           enableSnippet: true,
           onValueChange: this.handleSQLChanged,
           onEditorCreated: this.handleEditorCreated,
