@@ -23,7 +23,7 @@ const SQLResultSetViewPage: React.FC<IProps> = (props) => {
       }}
     >
       <CommonIDE
-        language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+        language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
         initialSQL={props.params?.resultSets
           ?.map((r) => {
             return r.originSql;

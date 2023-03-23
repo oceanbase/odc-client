@@ -72,14 +72,8 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
-    "@alipay/ob-editor": "4.7.9",
-    "@alipay/ob-editor-react": "4.7.9",
+    "@alipay/monaco-plugin-ob": "^0.0.7",
     "@alipay/ob-intl-cli": "1.0.2",
-    "@alipay/ob-language-sql-common": "4.7.9",
-    "@alipay/ob-language-sql-oceanbase-mysql": "4.7.9",
-    "@alipay/ob-language-sql-oceanbase-mysql-pl": "4.7.9",
-    "@alipay/ob-language-sql-oceanbase-oracle": "4.7.9",
-    "@alipay/ob-language-sql-oceanbase-oracle-pl": "4.7.9",
     "@alipay/ob-parser-js": "1.0.9",
     "@alipay/ob-react-data-grid": "2.4.7",
     "@alipay/tracert": "4",
@@ -136,6 +130,7 @@
     "mobx-react": "^6.3.1",
     "mockjs": "^1.1.0",
     "moment": "^2.29.0",
+    "monaco-editor": "^0.36.1",
     "npm-run-all": "^4.1.5",
     "path-to-regexp": "^2.1.0",
     "prettier": "^2.2.0",

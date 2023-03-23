@@ -1,3 +1,4 @@
+import { IEditor } from '@/component/MonacoEditor';
 import ScriptPage from '@/component/ScriptPage';
 import {
   ConnectionMode,
@@ -12,7 +13,6 @@ import { SchemaStore } from '@/store/schema';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { getRealTableName } from '@/util/sql';
-import type { IEditor } from '@alipay/ob-editor';
 import { CheckOutlined, CloseCircleFilled, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Collapse, Layout, message, Tabs } from 'antd';
 import classNames from 'classnames';

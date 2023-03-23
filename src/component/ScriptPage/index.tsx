@@ -1,7 +1,6 @@
 import DropWrapper from '@/component/Dragable/component/DropWrapper';
 import EditorToolBar from '@/component/EditorToolBar';
 import GrammerHelpSider from '@/component/GrammerHelpSider';
-import { SQLCodeEditor } from '@/component/SQLCodeEditor';
 import StatusBar from '@/component/StatusBar';
 import { EDITOR_TOOLBAR_HEIGHT, SQL_PAGE_RESULT_HEIGHT } from '@/constant';
 import { DbObjectType } from '@/d.ts/index';
@@ -10,12 +9,12 @@ import { SettingStore } from '@/store/setting';
 import snippetStore from '@/store/snippet';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
-import type { IEditor } from '@alipay/ob-editor';
 import { Layout } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { PureComponent } from 'react';
 import SplitPane from 'react-split-pane';
 import CustomDragLayer from '../GrammerHelpSider/component/CustomDragLayer';
+import MonacoEditor, { IEditor } from '../MonacoEditor';
 import TemplateInsertModal, { CLOSE_INSERT_PROMPT_KEY, getCopyText } from '../TemplateInsertModal';
 import styles from './index.less';
 
@@ -117,7 +116,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   snippetStore.snippetDragging?.objType,
                 )
               ) {
-                const position = (ctx.editor as IEditor)?.UNSAFE_getCodeEditor().getPosition();
+                const position = (ctx.editor as IEditor)?.getPosition();
                 if (!position) {
                   return;
                 }
@@ -128,7 +127,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   const value =
                     settingStore.configurations['sqlexecute.defaultObjectDraggingOption'];
                   const insertText = await getCopyText(name, type, value, true);
-                  const editor = (ctx.editor as IEditor).UNSAFE_getCodeEditor();
+                  const editor = ctx.editor as IEditor;
                   editor.focus();
                   editorUtils.insertSnippetTemplate(ctx.editor, insertText);
                 } else {
@@ -146,7 +145,7 @@ export default class ScriptPage extends PureComponent<IProps> {
               }
             }}
           >
-            <SQLCodeEditor {...editor} language={language} />
+            <MonacoEditor {...editor} language={language} />
           </DropWrapper>
           {this.props.Others}
         </Content>
@@ -204,7 +203,7 @@ export default class ScriptPage extends PureComponent<IProps> {
             });
           }}
           onOk={(insertText) => {
-            const editor = (ctx.editor as IEditor).UNSAFE_getCodeEditor();
+            const editor = ctx.editor as IEditor;
             editor.focus();
             // editor.setPosition({
             //   lineNumber: offset?.line,

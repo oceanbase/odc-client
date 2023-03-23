@@ -1,6 +1,6 @@
 import { getShadowSyncAnalysisRecordResult } from '@/common/network/task';
+import MonacoEditor from '@/component/MonacoEditor';
 import SimpleTextItem from '@/component/SimpleTextItem';
-import { SQLCodeEditor } from '@/component/SQLCodeEditor';
 import { ConnectionMode } from '@/d.ts';
 import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
@@ -73,16 +73,17 @@ const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, 
               style={{
                 height: 280,
                 border: '1px solid var(--odc-border-color)',
+                position: 'relative',
               }}
             >
-              <SQLCodeEditor
-                initialValue={record?.originTableDDL}
+              <MonacoEditor
+                value={record?.originTableDDL}
                 readOnly
-                language={`sql-oceanbase-${
+                language={
                   connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                    ? 'mysql'
-                    : 'oracle'
-                }`}
+                    ? 'obmysql'
+                    : 'oboracle'
+                }
               />
             </div>
           </div>
@@ -99,16 +100,17 @@ const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, 
               style={{
                 height: 280,
                 border: '1px solid var(--odc-border-color)',
+                position: 'relative',
               }}
             >
-              <SQLCodeEditor
-                initialValue={record?.destTableDDL}
+              <MonacoEditor
+                value={record?.destTableDDL}
                 readOnly
-                language={`sql-oceanbase-${
+                language={
                   connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                    ? 'mysql'
-                    : 'oracle'
-                }`}
+                    ? 'obmysql'
+                    : 'oboracle'
+                }
               />
             </div>
           </div>
@@ -124,16 +126,17 @@ const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, 
               style={{
                 height: 280,
                 border: '1px solid var(--odc-border-color)',
+                position: 'relative',
               }}
             >
-              <SQLCodeEditor
-                initialValue={record?.comparingDDL}
+              <MonacoEditor
+                value={record?.comparingDDL}
                 readOnly
-                language={`sql-oceanbase-${
+                language={
                   connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                    ? 'mysql'
-                    : 'oracle'
-                }`}
+                    ? 'obmysql'
+                    : 'oboracle'
+                }
               />
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -12,7 +13,6 @@ import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import {
   AlignLeftOutlined,
   CloudDownloadOutlined,
@@ -230,7 +230,7 @@ export default class TriggerPage extends Component<
     openTriggerEditPageByName(triggerName);
   };
   private showSearchWidget = () => {
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
   };
   private handleEditBaseInfo = () => {
@@ -595,8 +595,8 @@ export default class TriggerPage extends Component<
                 <ToolContentWrpper>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(trigger && trigger.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                    defaultValue={(trigger && trigger.ddl) || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

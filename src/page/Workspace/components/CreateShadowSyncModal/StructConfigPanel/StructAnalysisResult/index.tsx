@@ -1,6 +1,6 @@
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode } from '@/component/CommonTable/interface';
-import { SQLCodeEditor } from '@/component/SQLCodeEditor';
+import MonacoEditor from '@/component/MonacoEditor';
 import { ConnectionMode, SchemaComparingResult } from '@/d.ts';
 import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
@@ -156,14 +156,17 @@ export default function ({ data, resultData, skip, cancelSkip }: IProps) {
               width: '100%',
               height: 400,
               border: '1px solid var(--odc-border-color)',
+              position: 'relative',
             }}
           >
-            <SQLCodeEditor
-              initialValue={data?.allDDL}
+            <MonacoEditor
+              value={data?.allDDL}
               readOnly
-              language={`sql-oceanbase-${
-                connection?.connection?.dialectType === ConnectionMode.OB_MYSQL ? 'mysql' : 'oracle'
-              }`}
+              language={
+                connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
+                  ? 'obmysql'
+                  : 'oboracle'
+              }
             />
           </div>
         </Tabs.TabPane>

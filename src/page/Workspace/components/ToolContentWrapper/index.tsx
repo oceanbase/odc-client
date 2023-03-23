@@ -4,7 +4,11 @@
 import React from 'react';
 
 const ToolContentWrapper: React.FC<{}> = (props) => {
-  return <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)` }}>{props.children}</div>;
+  return (
+    <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)`, position: 'relative' }}>
+      {props.children}
+    </div>
+  );
 };
 
 export default ToolContentWrapper;

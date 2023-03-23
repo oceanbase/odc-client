@@ -9,7 +9,6 @@ import { MenuInfo } from 'rc-menu/lib/interface';
 
 import { movePagePostion } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
-import '@alipay/ob-editor-react/lib/style';
 import { inject, observer } from 'mobx-react';
 import DatabaseInfo from '../DatabaseInfo';
 import { pageMap } from './config';

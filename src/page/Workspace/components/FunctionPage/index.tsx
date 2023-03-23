@@ -19,13 +19,13 @@ import { formatMessage, FormattedMessage } from 'umi';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { PLType } from '@/constant/plType';
 import type { ConnectionStore } from '@/store/connection';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import EditableTable from '../EditableTable';
 import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
@@ -140,7 +140,7 @@ export default class FunctionPage extends Component<
   }
 
   private showSearchWidget() {
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
   }
 
@@ -308,11 +308,11 @@ export default class FunctionPage extends Component<
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)` }}>
+                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(func && func.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql-pl' : 'oracle-pl'}`}
+                    defaultValue={(func && func.ddl) || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

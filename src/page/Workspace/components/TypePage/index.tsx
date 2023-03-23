@@ -1,3 +1,4 @@
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -13,7 +14,6 @@ import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { getLocalFormatDateTime } from '@/util/utils';
-import type { IEditor } from '@alipay/ob-editor';
 import {
   AlignLeftOutlined,
   CloudDownloadOutlined,
@@ -163,7 +163,7 @@ export default class TypePage extends Component<
     openTypeEditPageByName(typeName);
   };
   private showSearchWidget = () => {
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
   };
 
@@ -328,8 +328,8 @@ export default class TypePage extends Component<
                 <ToolContentWrpper>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(type && type.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                    defaultValue={(type && type.ddl) || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}
