@@ -14,16 +14,19 @@ import { DbObjectType } from '@/d.ts';
 import { action, observable } from 'mobx';
 
 enum EditorSnippetType {
-  NORMAL,
-  DML,
-  DDL,
-  FLOW,
+  NORMAL = 'NORMAL',
+  DML = 'DML',
+  DDL = 'DDL',
+  FLOW = 'FLOW',
 }
 
 interface EditorSnippet {
   description: string;
   snippetType: EditorSnippetType;
   name: string;
+  prefix: string;
+  body: string;
+  buildIn: boolean;
 }
 export interface ISnippet extends EditorSnippet {
   id?: number;
@@ -100,6 +103,7 @@ export class SnippetStore {
 
     const customerSnippets = await queryCustomerSnippets();
     addSnippet(language, customerSnippets);
+    this.snippets = customerSnippets;
     // editorFactory.resetSQLSnippet(customerSnippets, language);
     // this.snippets = editorFactory
     //   .getSQLMode(language)

@@ -1,14 +1,12 @@
-import Plugin from '@alipay/monaco-plugin-ob';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import * as monaco from 'monaco-editor';
 
 import { SettingStore } from '@/store/setting';
+import editorUtils from '@/util/editor';
+import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
-
-const plugin = new Plugin();
-plugin.setup();
 
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
@@ -108,6 +106,18 @@ const MonacoEditor: React.FC<IProps> = function ({
         const currentValue = editorRef.current.getValue();
         setInnerValue(currentValue);
       });
+      domRef.current.addEventListener('paste', (e) => {
+        console.log(e.clipboardData.getData('text/html'));
+        console.log(e.clipboardData.getData('text/plain'));
+        const data = e.clipboardData.getData('text/html');
+        const isODCSnippet = data.indexOf('!isODCSnippet_') > -1;
+        if (isODCSnippet) {
+          e.preventDefault();
+        }
+        const text = getUnWrapedSnippetBody(data);
+        editorUtils.insertSnippetTemplate(editorRef.current, text);
+      });
+      import('./plugin').then((module) => module.register());
       onEditorCreated?.(
         Object.assign(editorRef.current, {
           doFormat() {},
