@@ -9,6 +9,7 @@ import { formatMessage } from '@/util/intl';
 import { getSnippetText, getWrapedSnippetBody } from '@/util/snippet';
 import { CopyOutlined, EllipsisOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Card, Dropdown, Menu, message, Popover, Typography } from 'antd';
+import copy from 'copy-to-clipboard';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import styles from './index.less';
 
@@ -122,8 +123,14 @@ export default ({ snippet, handleSnippetMenuClick }, {}) => {
           <span>{renderSnippetTypeName(snippet)}</span>
           <CopyToClipboard
             key="copy"
-            text={`${getWrapedSnippetBody(snippet.body)}`}
+            options={{
+              format: 'text/html',
+            }}
+            text={`<meta name='_!isODCSnippet_' content='yes' />${getWrapedSnippetBody(
+              snippet.body,
+            )}`}
             onCopy={() => {
+              copy(snippet.body, { format: 'text/plain' });
               message.success(
                 formatMessage(
                   {

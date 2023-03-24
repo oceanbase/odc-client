@@ -283,21 +283,22 @@ const utils = {
     codeEditor.revealPosition(codeEditor.getModel().getPositionAt(offset));
   },
   // snippt - 在编辑器光标处插入 snippt
-  insertSnippetTemplate(editor, snippetText) {
+  insertSnippetTemplate(editor: IEditor, snippetText) {
     if (!editor) {
       return;
     }
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const snippetController = codeEditor.getContribution('snippetController2');
+    //@ts-ignore
     snippetController.insert(snippetText);
   },
   // text - 在编辑器光标处插入 text
-  async insertTextToCurrectPosition(editor, text, targetPosition?: monaco.IPosition) {
+  async insertTextToCurrectPosition(editor: IEditor, text, targetPosition?: monaco.IPosition) {
     const monaco = await getMonaco();
     if (!editor) {
       return;
     }
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const position = targetPosition || codeEditor.getPosition();
     const { lineNumber, column } = position;
     const range = new monaco.Range(lineNumber, column, lineNumber, column);
@@ -328,7 +329,7 @@ const utils = {
     const op = { identifier: { major: 1, minor: 1 }, range, text, forceMoveMarkers: true };
     codeEditor.executeEdits('replace-text', [op]);
   },
-  async getCurrentSelectRange(editor) {
+  async getCurrentSelectRange(editor: IEditor) {
     const monaco = await getMonaco();
     if (!editor) {
       return;

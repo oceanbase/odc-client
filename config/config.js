@@ -2,6 +2,8 @@ import getVersion from './version';
 import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
+// import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+
 const version = getVersion();
 console.log('git last commit: ', version);
 const umiEnv = process.env.UMI_ENV;
@@ -36,12 +38,6 @@ const config = {
     firefox: 60,
     edge: 79,
   },
-  copy: [
-    {
-      from: 'src/workers',
-      to: './dist/renderer/workers/' + define.MONACO_VERSION,
-    },
-  ],
   // esbuild: {},
   metas: [
     {
@@ -90,7 +86,7 @@ const config = {
     config.performance.hints('warning');
     config.module.rules.delete('svg');
     config.module.rule('asset').oneOf('fallback').exclude.add(/.svg/);
-
+    // config.plugin('monaco').use(MonacoWebpackPlugin)
     config.module
       .rule('svg')
       .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)

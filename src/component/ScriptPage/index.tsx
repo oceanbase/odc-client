@@ -6,7 +6,7 @@ import { EDITOR_TOOLBAR_HEIGHT, SQL_PAGE_RESULT_HEIGHT } from '@/constant';
 import { DbObjectType } from '@/d.ts/index';
 import { IDebugStackItem } from '@/store/debug/type';
 import { SettingStore } from '@/store/setting';
-import snippetStore from '@/store/snippet';
+import { default as snippet, default as snippetStore } from '@/store/snippet';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { Layout } from 'antd';
@@ -56,6 +56,13 @@ export default class ScriptPage extends PureComponent<IProps> {
     offset: null,
     /// resultHeight: RESULT_HEIGHT
   };
+
+  componentDidMount() {
+    if (this.props.editor?.enableSnippet) {
+      snippet.registerEditor({ language: this.props.language });
+      snippet.resetSnippets();
+    }
+  }
 
   renderPanels = () => {
     const { ctx, language, toolbar, stackbar, editor, statusBar, settingStore } = this.props;
