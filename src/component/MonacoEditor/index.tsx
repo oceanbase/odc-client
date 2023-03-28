@@ -107,8 +107,6 @@ const MonacoEditor: React.FC<IProps> = function ({
         setInnerValue(currentValue);
       });
       domRef.current.addEventListener('paste', (e) => {
-        console.log(e.clipboardData.getData('text/html'));
-        console.log(e.clipboardData.getData('text/plain'));
         const data = e.clipboardData.getData('text/html');
         const isODCSnippet = data.indexOf('!isODCSnippet_') > -1;
         if (isODCSnippet) {
