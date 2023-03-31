@@ -65,14 +65,6 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
 
       transferData && {
         title: formatMessage({
-          id: 'odc.component.TaskDetailDrawer.ObjTables.PlannedProcessingQuantity',
-        }), // 计划处理数量
-        dataIndex: ['dataInfo', 'total'],
-        width: 100,
-      },
-
-      transferData && {
-        title: formatMessage({
           id: 'odc.component.TaskDetailDrawer.ObjTables.ActualProcessingQuantity',
         }), // 实际处理数量
         dataIndex: ['dataInfo', 'count'],
