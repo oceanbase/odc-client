@@ -25,6 +25,7 @@ const config = {
   // dynamicImportSyntax: {},
   publicPath,
   runtimePublicPath: {},
+  hash: true,
   // tracert: {
   //   spmAPos: 'a3112',
   //   bizType: 'lu',
