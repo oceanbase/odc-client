@@ -9,7 +9,7 @@ import {
   queryCustomerSnippets,
   updateCustomerSnippet,
 } from '@/common/network/snippet';
-import { addSnippet } from '@/component/MonacoEditor/plugin';
+import { addSnippet } from '@/component/MonacoEditor/plugins/snippet';
 import { DbObjectType } from '@/d.ts';
 import { action, observable } from 'mobx';
 
