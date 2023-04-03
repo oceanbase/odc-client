@@ -8,7 +8,7 @@ import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
-import { getModelService } from './service';
+import { getModelService } from './plugins/ob-language/service';
 
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
@@ -95,7 +95,7 @@ const MonacoEditor: React.FC<IProps> = function ({
   }, [readOnly, themeValue]);
 
   async function initPlugin() {
-    const module = await import('./plugin');
+    const module = await import('./plugins/ob-language/index');
     const plugin = module.register();
     plugin.setModelOptions(
       editorRef.current.getModel().id,
@@ -106,42 +106,56 @@ const MonacoEditor: React.FC<IProps> = function ({
     );
   }
 
+  async function initEditor() {
+    editorRef.current = monaco.editor.create(domRef.current, {
+      value: innerValue,
+      language: language || 'sql',
+      theme: themeValue,
+      minimap: { enabled: false },
+      readOnly: readOnly,
+    });
+    console.log(editorRef.current.getModel());
+    await initPlugin();
+    monaco.editor.setModelLanguage(editorRef.current.getModel(), language || 'sql');
+    editorRef.current.onDidChangeModelContent((e) => {
+      /**
+       * editor value change
+       */
+      const currentValue = editorRef.current.getValue();
+      setInnerValue(currentValue);
+    });
+    domRef.current.addEventListener('paste', (e) => {
+      const data = e.clipboardData.getData('text/html');
+      const isODCSnippet = data.indexOf('!isODCSnippet_') > -1;
+      if (isODCSnippet) {
+        e.preventDefault();
+      }
+      const text = getUnWrapedSnippetBody(data);
+      editorUtils.insertSnippetTemplate(editorRef.current, text);
+    });
+    onEditorCreated?.(
+      Object.assign(editorRef.current, {
+        doFormat() {},
+        getSelectionContent() {
+          return editorRef.current.getModel().getValueInRange(editorRef.current.getSelection());
+        },
+      }),
+    );
+  }
+
   useEffect(() => {
     if (domRef.current && !editorRef.current) {
-      editorRef.current = monaco.editor.create(domRef.current, {
-        value: innerValue,
-        language: language || 'sql',
-        theme: themeValue,
-        minimap: { enabled: false },
-        readOnly: readOnly,
-      });
-      editorRef.current.onDidChangeModelContent((e) => {
-        /**
-         * editor value change
-         */
-        const currentValue = editorRef.current.getValue();
-        setInnerValue(currentValue);
-      });
-      domRef.current.addEventListener('paste', (e) => {
-        const data = e.clipboardData.getData('text/html');
-        const isODCSnippet = data.indexOf('!isODCSnippet_') > -1;
-        if (isODCSnippet) {
-          e.preventDefault();
-        }
-        const text = getUnWrapedSnippetBody(data);
-        editorUtils.insertSnippetTemplate(editorRef.current, text);
-      });
-      initPlugin();
-      onEditorCreated?.(
-        Object.assign(editorRef.current, {
-          doFormat() {},
-          getSelectionContent() {
-            return editorRef.current.getModel().getValueInRange(editorRef.current.getSelection());
-          },
-        }),
-      );
+      initEditor();
     }
-  }, [domRef.current]);
+  }, [domRef.current, initEditor]);
+
+  useEffect(() => {
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.dispose();
+      }
+    };
+  }, []);
 
   return (
     <div className={styles.container}>

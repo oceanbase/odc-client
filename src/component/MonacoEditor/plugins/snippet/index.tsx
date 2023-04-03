@@ -1,20 +1,9 @@
 import { ISnippet } from '@/store/snippet';
-import Plugin from '@alipay/monaco-plugin-ob';
 import { LanguageType } from '@alipay/monaco-plugin-ob/dist/type';
 
 import * as monaco from 'monaco-editor';
 
-let plugin = null;
 let snippetIns: monaco.IDisposable;
-
-export function register(): Plugin {
-  if (plugin) {
-    return plugin;
-  }
-  plugin = new Plugin();
-  plugin.setup();
-  return plugin;
-}
 
 export function addSnippet(language: string, snippets: ISnippet[]) {
   if (snippetIns) {
