@@ -1,13 +1,12 @@
 import { getCycleTaskFile, getTaskFile } from '@/common/network/task';
-import { SQLCodeEditor } from '@/component/SQLCodeEditor';
 import { TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { downloadFile } from '@/util/utils';
-import type { IEditor } from '@alipay/ob-editor';
 import { Button, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
+import MonacoEditor, { IEditor } from '../MonacoEditor';
 import styles from './index.less';
 
 @inject('settingStore')
@@ -61,10 +60,10 @@ export class SQLContent extends React.PureComponent<{
           </div>
         ) : (
           <div className={styles.content}>
-            <SQLCodeEditor
+            <MonacoEditor
               readOnly
-              initialValue={sqlContent}
-              language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+              defaultValue={sqlContent}
+              language={isMySQL ? 'obmysql' : 'oboracle'}
               onEditorCreated={async (e: IEditor) => {
                 this.editor = e;
                 await this.editor.doFormat();

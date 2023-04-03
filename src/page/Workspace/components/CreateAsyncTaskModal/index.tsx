@@ -475,7 +475,7 @@ class CreateAsyncTaskModal extends React.PureComponent<IProps, IState> {
           >
             <CommonIDE
               initialSQL={modalStore.asyncTaskData?.sql}
-              language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+              language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
               onSQLChange={(sql) => {
                 this.handleSqlChange('sqlContent', sql);
               }}
@@ -564,7 +564,7 @@ class CreateAsyncTaskModal extends React.PureComponent<IProps, IState> {
             style={{ height: '280px' }}
           >
             <CommonIDE
-              language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+              language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
               onSQLChange={(sql) => {
                 this.handleSqlChange('rollbackSqlContent', sql);
               }}

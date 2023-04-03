@@ -420,7 +420,7 @@ const plActions: ToolBarActions = {
           data: null,
         },
       });
-      const codeEditor = ctx.editor.UNSAFE_getCodeEditor();
+      const codeEditor = ctx.editor;
       codeEditor.setValue(params.scriptText);
       ctx.clearBreakPoints();
       ctx.clearHighLightLine();

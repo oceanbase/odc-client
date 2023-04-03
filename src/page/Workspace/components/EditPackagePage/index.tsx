@@ -1,5 +1,5 @@
 import { executeSQL } from '@/common/network/sql';
-import { SQLCodeEditor } from '@/component/SQLCodeEditor';
+import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
 import Toolbar from '@/component/Toolbar';
 import { ConnectionMode, ISqlExecuteResultStatus } from '@/d.ts';
 import { ConnectionStore } from '@/store/connection';
@@ -7,7 +7,6 @@ import { PageStore } from '@/store/page';
 import { SchemaStore } from '@/store/schema';
 import { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
-import type { IEditor } from '@alipay/ob-editor';
 import { AlignLeftOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -93,10 +92,10 @@ export default class CreatePackage extends Component<
             onClick={this.handleFormat}
           />
         </Toolbar>
-        <div style={{ height: `calc(100vh - ${40 + 28 + 50 + 40}px)` }}>
-          <SQLCodeEditor
-            initialValue={sql}
-            language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+        <div style={{ height: `calc(100vh - ${40 + 28 + 50 + 40}px)`, position: 'relative' }}>
+          <MonacoEditor
+            defaultValue={sql}
+            language={isMySQL ? 'obmysql' : 'oboracle'}
             onValueChange={this.handleSQLChanged}
             onEditorCreated={(editor: IEditor) => {
               this.editor = editor;
