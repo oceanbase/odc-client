@@ -5,10 +5,10 @@ export function getLanguageFromConnectType(type: ConnectType) {
   const dialectType = getDialectTypeFromConnectType(type);
   switch (dialectType) {
     case ConnectionMode.OB_MYSQL: {
-      return 'sql-oceanbase-mysql';
+      return 'obmysql';
     }
     case ConnectionMode.OB_ORACLE: {
-      return 'sql-oceanbase-oracle';
+      return 'oboracle';
     }
     default: {
       return 'sql';

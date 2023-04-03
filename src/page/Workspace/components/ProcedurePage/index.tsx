@@ -19,6 +19,7 @@ import { formatMessage, FormattedMessage } from 'umi';
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
@@ -26,7 +27,6 @@ import type { ConnectionStore } from '@/store/connection';
 import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import EditableTable from '../EditableTable';
 import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
@@ -139,7 +139,7 @@ export default class ProcedurePage extends Component<
   }
 
   private showSearchWidget() {
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
   }
 
@@ -303,11 +303,11 @@ export default class ProcedurePage extends Component<
                     onClick={this.reloadProcedure.bind(this, procedure.proName)}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 38}px)` }}>
+                <div style={{ height: `calc(100vh - ${40 + 28 + 38}px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(procedure && procedure.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql-pl' : 'oracle-pl'}`}
+                    defaultValue={(procedure && procedure.ddl) || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

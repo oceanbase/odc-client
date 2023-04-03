@@ -1,3 +1,4 @@
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -9,7 +10,6 @@ import type { PageStore } from '@/store/page';
 import type { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -237,11 +237,11 @@ export default class SynonymPage extends Component<
                     status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)` }}>
+                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(synonym && synonym.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                    defaultValue={(synonym && synonym.ddl) || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

@@ -1,3 +1,4 @@
+import { IEditor } from '@/component/MonacoEditor';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -34,7 +35,7 @@ const scriptActions: ToolBarActions = {
     // 添加占位符
     icon: 'ADD_SNIPPET_SECTION',
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
+      const codeEditor: IEditor = ctx.editor;
       const value = codeEditor.getValue();
       const snippetSections = value.match(/\$\{\d\:(.*?)\}/g) || [];
       const snipptSectionText = `\${${snippetSections.length + 1}:string}`;
@@ -51,8 +52,7 @@ const scriptActions: ToolBarActions = {
           text: snipptSectionText,
         },
       ]);
-      import('@alipay/ob-editor').then((module) => {
-        const monaco = module.monaco;
+      import('monaco-editor').then((monaco) => {
         const range = new monaco.Range(
           position.lineNumber,
           position.column + 4,
@@ -73,15 +73,14 @@ const scriptActions: ToolBarActions = {
     // 删除占位符
     icon: 'REMOVE_SNIPPET_SECTION',
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
+      const codeEditor: IEditor = ctx.editor;
       const selectText = ctx.editor.getSelection();
       if (!selectText) {
         return;
       }
       const capitalizeText = selectText.replace(/\$\{\d\:(.*?)\}/g, '$1');
       const selection = codeEditor.getSelection();
-      import('@alipay/ob-editor').then((module) => {
-        const monaco = module.monaco;
+      import('monaco-editor').then((monaco) => {
         const range = new monaco.Range(
           selection.startLineNumber,
           selection.startColumn,

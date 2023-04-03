@@ -122,7 +122,12 @@ export default ({ snippet, handleSnippetMenuClick }, {}) => {
           <span>{renderSnippetTypeName(snippet)}</span>
           <CopyToClipboard
             key="copy"
-            text={`${getWrapedSnippetBody(snippet.body)}`}
+            options={{
+              format: 'text/html',
+            }}
+            text={`<meta name='_!isODCSnippet_' content='yes' />${getWrapedSnippetBody(
+              snippet.body,
+            )}`}
             onCopy={() => {
               message.success(
                 formatMessage(

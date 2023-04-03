@@ -1,5 +1,6 @@
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
 import ExportResultSetModal from '@/component/ExportResultSetModal';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -14,7 +15,6 @@ import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { generateUniqKey } from '@/util/utils';
-import type { IEditor } from '@alipay/ob-editor';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Layout, message, Radio, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -423,12 +423,17 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
                         status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
                       />
                     </Toolbar>
-                    <div style={{ height: `calc(100vh - ${40 + 28 + 47 + 38}px)` }}>
+                    <div
+                      style={{
+                        height: `calc(100vh - ${40 + 28 + 47 + 38}px)`,
+                        position: 'relative',
+                      }}
+                    >
                       <SQLCodeEditorDDL
                         readOnly
                         key={view.ddl}
-                        initialValue={`${view.ddl};`}
-                        language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                        defaultValue={`${view.ddl};`}
+                        language={isMySQL ? 'obmysql' : 'oboracle'}
                         onEditorCreated={(editor: IEditor) => {
                           this.editor = editor;
                         }}

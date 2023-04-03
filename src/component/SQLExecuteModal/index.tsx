@@ -51,7 +51,6 @@ function SQLExecuteModal(props: {
       width={600}
       bodyStyle={{
         height: 400,
-        border: '1px solid #e9e9e9',
       }}
       visible={visible}
       destroyOnClose
@@ -63,9 +62,9 @@ function SQLExecuteModal(props: {
     >
       <CommonIDE
         bordered={true}
-        language={`sql-oceanbase-${
-          connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL ? 'mysql' : 'oracle'
-        }${isPL ? '-pl' : ''}`}
+        language={
+          connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
+        }
         initialSQL={sql}
         onSQLChange={(sql) => {
           setInnerSQL(sql);

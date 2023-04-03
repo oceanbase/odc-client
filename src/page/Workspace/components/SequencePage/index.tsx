@@ -1,4 +1,5 @@
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import { IEditor } from '@/component/MonacoEditor';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
@@ -11,7 +12,6 @@ import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import {
   AlignLeftOutlined,
   CloudDownloadOutlined,
@@ -288,11 +288,11 @@ export default class SequencePage extends Component<IProps, IState> {
                   onClick={this.reloadSequence.bind(this, params.sequenceName)}
                 />
               </Toolbar>
-              <div style={{ height: `calc(100vh - ${40 + 28 + 38}px)` }}>
+              <div style={{ height: `calc(100vh - ${40 + 28 + 38}px)`, position: 'relative' }}>
                 <SQLCodeEditorDDL
                   readOnly
-                  initialValue={(sequence && sequence.ddl) || ''}
-                  language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                  defaultValue={(sequence && sequence.ddl) || ''}
+                  language={isMySQL ? 'obmysql' : 'oboracle'}
                   onEditorCreated={(editor: IEditor) => {
                     this.editor = editor;
                   }}

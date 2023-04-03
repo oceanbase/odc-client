@@ -9,13 +9,25 @@ import {
   queryCustomerSnippets,
   updateCustomerSnippet,
 } from '@/common/network/snippet';
+import { addSnippet } from '@/component/MonacoEditor/plugin';
 import { DbObjectType } from '@/d.ts';
-import type { IEditorFactory } from '@alipay/ob-editor';
-import {
-  ISnippet as EditorSnippet,
-  SnippetType as EditorSnippetType,
-} from '@alipay/ob-language-sql-common';
 import { action, observable } from 'mobx';
+
+enum EditorSnippetType {
+  NORMAL = 'NORMAL',
+  DML = 'DML',
+  DDL = 'DDL',
+  FLOW = 'FLOW',
+}
+
+interface EditorSnippet {
+  description: string;
+  snippetType: EditorSnippetType;
+  name: string;
+  prefix: string;
+  body: string;
+  buildIn: boolean;
+}
 export interface ISnippet extends EditorSnippet {
   id?: number;
   type?: EditorSnippetType;
@@ -72,30 +84,31 @@ export const SNIPPET_BODY_TAG = {
 export class SnippetStore {
   @observable
   public snippetDragging: Partial<ISnippet>;
-  public editorFactory: IEditorFactory;
   public language: string;
   @observable
   public snippets: ISnippet[] = [];
 
-  public registerEditor(cfg: { factory: IEditorFactory; language: string }) {
-    this.editorFactory = cfg.factory;
+  public registerEditor(cfg: { language: string }) {
+    // this.editorFactory = cfg.factory;
     this.language = cfg.language;
   }
 
   @action
   public async resetSnippets() {
-    const { editorFactory, language } = this;
+    const { language } = this;
 
-    if (!editorFactory || !language) {
+    if (!language) {
       return;
     }
 
     const customerSnippets = await queryCustomerSnippets();
-    editorFactory.resetSQLSnippet(customerSnippets, language);
-    this.snippets = editorFactory
-      .getSQLMode(language)
-      .getSnippets()
-      .filter((snippet) => !!snippet.snippetType);
+    addSnippet(language, customerSnippets);
+    this.snippets = customerSnippets;
+    // editorFactory.resetSQLSnippet(customerSnippets, language);
+    // this.snippets = editorFactory
+    //   .getSQLMode(language)
+    //   .getSnippets()
+    //   .filter((snippet) => !!snippet.snippetType);
   }
 
   @action
