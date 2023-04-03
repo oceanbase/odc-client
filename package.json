@@ -72,7 +72,7 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
-    "@alipay/monaco-plugin-ob": "^0.0.7",
+    "@alipay/monaco-plugin-ob": "^0.0.8",
     "@alipay/ob-intl-cli": "1.0.2",
     "@alipay/ob-parser-js": "1.0.9",
     "@alipay/ob-react-data-grid": "2.4.7",

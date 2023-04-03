@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import * as monaco from 'monaco-editor';
 
+import { ConnectionStore } from '@/store/connection';
 import { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
+import { getModelService } from './service';
 
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
@@ -15,6 +17,7 @@ export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
 
 export interface IProps {
   settingStore?: SettingStore;
+  connectionStore?: ConnectionStore;
   /**
    * 默认值
    */
@@ -44,6 +47,7 @@ const MonacoEditor: React.FC<IProps> = function ({
   theme,
   readOnly,
   settingStore,
+  connectionStore,
   onValueChange,
   onEditorCreated,
 }) {
@@ -90,6 +94,18 @@ const MonacoEditor: React.FC<IProps> = function ({
     }
   }, [readOnly, themeValue]);
 
+  async function initPlugin() {
+    const module = await import('./plugin');
+    const plugin = module.register();
+    plugin.setModelOptions(
+      editorRef.current.getModel().id,
+      getModelService({
+        modelId: editorRef.current.getModel().id,
+        delimiter: connectionStore.delimiter,
+      }),
+    );
+  }
+
   useEffect(() => {
     if (domRef.current && !editorRef.current) {
       editorRef.current = monaco.editor.create(domRef.current, {
@@ -115,7 +131,7 @@ const MonacoEditor: React.FC<IProps> = function ({
         const text = getUnWrapedSnippetBody(data);
         editorUtils.insertSnippetTemplate(editorRef.current, text);
       });
-      import('./plugin').then((module) => module.register());
+      initPlugin();
       onEditorCreated?.(
         Object.assign(editorRef.current, {
           doFormat() {},
@@ -134,4 +150,4 @@ const MonacoEditor: React.FC<IProps> = function ({
   );
 };
 
-export default inject('settingStore')(observer(MonacoEditor));
+export default inject('settingStore', 'connectionStore')(observer(MonacoEditor));

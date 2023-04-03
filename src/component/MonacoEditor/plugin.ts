@@ -7,9 +7,13 @@ import * as monaco from 'monaco-editor';
 let plugin = null;
 let snippetIns: monaco.IDisposable;
 
-export function register() {
+export function register(): Plugin {
+  if (plugin) {
+    return plugin;
+  }
   plugin = new Plugin();
   plugin.setup();
+  return plugin;
 }
 
 export function addSnippet(language: string, snippets: ISnippet[]) {
@@ -28,6 +32,7 @@ export function addSnippet(language: string, snippets: ISnippet[]) {
           endColumn: word.endColumn,
         };
         return {
+          incomplete: false,
           suggestions:
             snippets?.map((item) => {
               return {
