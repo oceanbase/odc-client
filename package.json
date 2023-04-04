@@ -19,7 +19,7 @@
     "dev": "cross-env NODE_OPTIONS=--max_old_space_size=5120 max dev",
     "test": "max test",
     "cov": "max test --coverage",
-    "build:odc": "npm run updateDoc && cross-env NODE_OPTIONS=--max_old_space_size=4096 max build",
+    "build:odc": "npm run updateDoc && cross-env NODE_OPTIONS=--max_old_space_size=6096 max build",
     "build:client": "cross-env NODE_OPTIONS=--max_old_space_size=4096 UMI_ENV=client npm run build:odc && npm run build-main-prod",
     "prettier": "prettier --write 'src/**/*.{js,jsx,tsx,ts,less,md,json}'",
     "type-check": "tsc --noEmit",
@@ -72,7 +72,7 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
-    "@alipay/monaco-plugin-ob": "^0.0.8",
+    "@alipay/monaco-plugin-ob": "0.0.13",
     "@alipay/ob-intl-cli": "1.0.2",
     "@alipay/ob-parser-js": "1.0.9",
     "@alipay/ob-react-data-grid": "2.4.7",
