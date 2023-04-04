@@ -57,8 +57,8 @@ const utils = {
   },
 
   // 断点管理 - 删除断点
-  removeBreakPoint(editor: any, lineNumber: number) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  removeBreakPoint(editor: IEditor, lineNumber: number) {
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) return;
     const decorations = model.getLineDecorations(lineNumber);
@@ -255,12 +255,12 @@ const utils = {
   },
 
   // 光标位置 - 通过鼠标坐标更新编辑器光标位置
-  async updateEditorCursorPositionByClientPosition(editor, { clientX, clientY }) {
+  async updateEditorCursorPositionByClientPosition(editor: IEditor, { clientX, clientY }) {
     const monaco = await getMonaco();
     if (!editor) {
       return;
     }
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const editorPos = codeEditor.getTargetAtClientPoint(clientX, clientY);
     if (!editorPos || !editorPos.position) {
       return;
