@@ -135,7 +135,16 @@ const MonacoEditor: React.FC<IProps> = function ({
     });
     onEditorCreated?.(
       Object.assign(editorRef.current, {
-        doFormat() {},
+        doFormat() {
+          const selection = editorRef.current
+            .getModel()
+            .getValueInRange(editorRef.current.getSelection());
+          if (!selection) {
+            editorRef.current.trigger('editor', 'editor.action.formatDocument', null);
+          } else {
+            editorRef.current.trigger('editor', 'editor.action.formatSelection', null);
+          }
+        },
         getSelectionContent() {
           return editorRef.current.getModel().getValueInRange(editorRef.current.getSelection());
         },

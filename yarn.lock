@@ -25,10 +25,10 @@
   resolved "https://registry.npm.alibaba-inc.com/@ali/anima-detect/download/@ali/anima-detect-1.0.3.tgz#3662d1866c0e5f35b1a96104f4596a325a59dd2d"
   integrity sha1-NmLRhmwOXzWxqWEE9FlqMlpZ3S0=
 
-"@alipay/monaco-plugin-ob@0.0.13":
-  version "0.0.13"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/monaco-plugin-ob/download/@alipay/monaco-plugin-ob-0.0.13.tgz#f8dacdab21e2c9a02f19c86a05747d9ce9650438"
-  integrity sha512-tP1BQJWCT4ql3SNC+yjEfuWGXtSfVkc9BoXpPhRE0wcFaQM+7QrW+cDJXeCYCdGOojKxj7IvhH3oBGe2t4PznQ==
+"@alipay/monaco-plugin-ob@0.0.15":
+  version "0.0.15"
+  resolved "https://registry.npm.alibaba-inc.com/@alipay/monaco-plugin-ob/download/@alipay/monaco-plugin-ob-0.0.15.tgz#34bfe1a46530e9c3be7d846fc32bb57cf77e0e30"
+  integrity sha512-IVJxt/kKLjamYe2Oq1ut8zlxzwg9lT+BTrk0iKSNKXfrcB01RlJW2bTeeeVFB8S6JPu7KRYvCQ8dPsCgezRgqA==
   dependencies:
     "@alipay/ob-parser-js" dev-S09001520464
     antlr4 "~4.8.0"
