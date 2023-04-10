@@ -23,6 +23,12 @@ export function resolveODCError(
     errCode: string;
     errMsg: string;
     requestId: string | number;
+    extraMessage?: {
+      isComponent?: boolean;
+      extraMessageParams?: {
+        [key in string]: string;
+      };
+    };
   },
   url: string,
   params: any,
@@ -31,7 +37,6 @@ export function resolveODCError(
   let errCode = null;
   let errMsg = '';
   let requestId;
-
   errCode = res.errCode;
   errMsg = res.errMsg;
   requestId = res.requestId;
@@ -106,6 +111,7 @@ export function resolveODCError(
         supportRepeat: true,
         holdErrorTip: params.holdErrorTip,
         requestId,
+        extraMessage: res?.extraMessage,
       });
       if (!hasShow && params.wantCatchError) {
         throw new Error(errMsg);
