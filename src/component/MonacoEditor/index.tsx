@@ -2,12 +2,14 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import * as monaco from 'monaco-editor';
 
+import appConfig from '@/constant/appConfig';
 import { ConnectionStore } from '@/store/connection';
 import { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
+import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
 
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
@@ -104,6 +106,7 @@ const MonacoEditor: React.FC<IProps> = function ({
         delimiter: connectionStore.delimiter,
       }),
     );
+    markerPluginApply(editorRef.current.getModel());
   }
 
   async function initEditor() {
@@ -112,9 +115,12 @@ const MonacoEditor: React.FC<IProps> = function ({
       language: language || 'sql',
       theme: themeValue,
       minimap: { enabled: false },
+      unicodeHighlight: {
+        invisibleCharacters: false,
+        ambiguousCharacters: false,
+      },
       readOnly: readOnly,
     });
-    console.log(editorRef.current.getModel());
     await initPlugin();
     monaco.editor.setModelLanguage(editorRef.current.getModel(), language || 'sql');
     editorRef.current.onDidChangeModelContent((e) => {
@@ -154,6 +160,20 @@ const MonacoEditor: React.FC<IProps> = function ({
 
   useEffect(() => {
     if (domRef.current && !editorRef.current) {
+      window.MonacoEnvironment = {
+        getWorkerUrl(workerId: string, label: string) {
+          if (!appConfig.worker.needOrigin) {
+            return `data:text/javascript;charset=utf-8,${encodeURIComponent(
+              `importScripts('${window.publicPath}editor.worker.js')`,
+            )}`;
+          } else {
+            const url = new URL(`${window.publicPath}editor.worker.js`, location.origin);
+            return `data:text/javascript;charset=utf-8,${encodeURIComponent(
+              `importScripts('${url.href}')`,
+            )}`;
+          }
+        },
+      };
       initEditor();
     }
   }, [domRef.current, initEditor]);

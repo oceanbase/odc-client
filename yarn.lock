@@ -12197,7 +12197,7 @@ moment@^2.24.0, moment@^2.25.3, moment@^2.27.0, moment@^2.29.0, moment@^2.29.2, 
 
 monaco-editor-webpack-plugin@^7.0.1:
   version "7.0.1"
-  resolved "https://registry.antgroup-inc.cn/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-7.0.1.tgz#ba19c60aba990184e36ad8722b1ed6a564527c7c"
+  resolved "https://registry.npm.alibaba-inc.com/monaco-editor-webpack-plugin/download/monaco-editor-webpack-plugin-7.0.1.tgz#ba19c60aba990184e36ad8722b1ed6a564527c7c"
   integrity sha512-M8qIqizltrPlIbrb73cZdTWfU9sIsUVFvAZkL3KGjAHmVWEJ0hZKa/uad14JuOckc0GwnCaoGHvMoYtJjVyCzw==
   dependencies:
     loader-utils "^2.0.2"
