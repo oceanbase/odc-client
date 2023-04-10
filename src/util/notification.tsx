@@ -2,10 +2,40 @@ import { formatMessage } from '@/util/intl';
 import { Modal, notification } from 'antd';
 import { useCallback, useState } from 'react';
 import { generateUniqKey } from './utils';
+export interface DescriptionProps {
+  description: string;
+  requestId?: string | number;
+  isComponent?: boolean;
+  extraMessageParams?: {
+    [key in string]: string;
+  };
+}
+function ExtraMessage(props: {
+  extraMessageParams: {
+    [key in string]: string;
+  };
+}) {
+  const { extraMessageParams } = props;
 
-function Description(props: { description: string; requestId?: string | number }) {
-  const { description, requestId } = props;
-
+  return (
+    <>
+      <div>
+        <strong>报错信息:</strong>
+      </div>
+      {Object.keys(extraMessageParams).map(
+        (key, index) =>
+          extraMessageParams[key] !== '' && (
+            <div key={index}>
+              <span style={{ color: 'var(--text-color-hint)' }}>{key}</span>:{' '}
+              <span>{extraMessageParams[key]}</span>
+            </div>
+          ),
+      )}
+    </>
+  );
+}
+function Description(props: DescriptionProps) {
+  const { description, requestId, isComponent = true, extraMessageParams = {} } = props;
   const [isOpen, setIsOpen] = useState(false);
 
   const openDetail = useCallback(() => {
@@ -55,6 +85,7 @@ function Description(props: { description: string; requestId?: string | number }
       )}
 
       {ellipsisText}
+      {isComponent && <ExtraMessage {...{ extraMessageParams }} />}
       {isEllipsis ? (
         <a onClick={openDetail}>
           {
@@ -77,6 +108,12 @@ interface ErrorParams {
   supportRepeat?: boolean;
   holdErrorTip?: boolean;
   requestId?: string | number;
+  extraMessage?: {
+    isComponent?: boolean;
+    ComponentMessageParams?: {
+      [key in string]?: any;
+    };
+  };
 }
 interface WarnParams {
   description: string;
@@ -91,18 +128,24 @@ export default {
       supportRepeat = true,
       holdErrorTip = false,
       requestId,
+      extraMessage,
     } = errorParams;
     /**
      * 最小 4.5，最大 20 秒，其余情况 length * 0.1s
      */
     const key = generateUniqKey();
-    const duration = holdErrorTip ? 9999 : Math.max(Math.min(20, description.length * 0.1), 4.5);
+    let duration = holdErrorTip ? 9999 : Math.max(Math.min(20, description.length * 0.1), 4.5);
+    if (extraMessage.isComponent) {
+      duration = 5;
+    }
     if (!supportRepeat && notificationCache.has(description)) {
       notification.close(notificationCache.get(description));
     }
     notification.error({
       message: formatMessage({ id: 'odc.src.util.notification.RequestFailed' }), // 请求失败
-      description: <Description description={description} requestId={requestId} />,
+      description: (
+        <Description description={description} requestId={requestId} {...extraMessage} />
+      ),
       duration,
       key,
       onClose: () => {
