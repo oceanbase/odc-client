@@ -2,7 +2,7 @@ import getVersion from './version';
 import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
-// import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
 
 const version = getVersion();
 console.log('git last commit: ', version);
@@ -88,7 +88,12 @@ const config = {
     config.performance.hints('warning');
     config.module.rules.delete('svg');
     config.module.rule('asset').oneOf('fallback').exclude.add(/.svg/);
-    // config.plugin('monaco').use(MonacoWebpackPlugin)
+    config.plugin('monaco').use(MonacoWebpackPlugin, [
+      {
+        filename: '[name].worker.js',
+        languages: ['yaml', 'json']
+      }
+    ])
     config.module
       .rule('svg')
       .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)

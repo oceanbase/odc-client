@@ -359,19 +359,6 @@ export class ConnectionStore {
   }
 
   @action
-  public async heartbeat() {
-    const sessions = this.getAllSessionIds();
-    if (!sessions?.length) {
-      return;
-    }
-    await request.post(`/api/v1/heartbeat`, {
-      data: {
-        sessionIds: sessions.map((s) => generateSessionSid(s)),
-      },
-    });
-  }
-
-  @action
   public setConnection(connection: Partial<IConnection>) {
     this.connection = {
       ...this.connection,

@@ -78,7 +78,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     commonStore,
     taskStore,
   } = props;
-  let timer = -1;
 
   const { pages = [], activePageKey } = pageStore;
   const { siderWidth, collapsed, serverSystemInfo } = settingStore;
@@ -258,28 +257,11 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     }
   };
 
-  const addHeartBeat = () => {
-    // 发送心跳 10s 一次
-    let num = 1;
-    timer = window.setInterval(() => {
-      try {
-        connectionStore.heartbeat();
-      } catch (e) {
-        console.trace(e);
-      }
-      num++;
-    }, 10000);
-  };
-
-  const clearHeartBeat = () => {
-    window.clearInterval(timer);
-  };
   useEffect(() => {
     async function asyncEffect() {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       addPageUnloadListener();
-      addHeartBeat(); // 丢失连接，需要重连。例如直接刷新工作台页面
 
       if (!connectionStore.connection || !connectionStore.connection.sid) {
         if (!params?.sessionId || !params?.tabKey) {
@@ -335,8 +317,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     asyncEffect();
     return () => {
       appConfig.workspace.unMount?.();
-
-      clearHeartBeat();
       pageStore.clear();
       schemaStore.clear();
       sqlStore.reset();
