@@ -9,7 +9,6 @@ import { Component } from 'react';
 // @ts-ignore
 import { tableModify } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
-import TableIndexModal from '@/component/TableIndexModal';
 import type { ConnectionStore } from '@/store/connection';
 import { getRangeInitialValue, isRangeDisabled } from '@/util/utils';
 import type { RowsChangeData } from '@alipay/ob-react-data-grid';
@@ -273,21 +272,6 @@ export default class IndexTab extends Component<
           onAddIndex={this.handleAddIndex}
           onReset={this.handleResetIndexes}
           onModified={() => onUpdateIndexes(clone(table.indexes))}
-        />
-
-        <TableIndexModal
-          dataTypes={dataTypes}
-          rangeDisabled={rangeDisabled}
-          rangeInitialValue={rangeInitialValue}
-          model={
-            (table.indexes && table.indexes[indexIdxToEdit]) || {
-              ...defaultColumnModel,
-            }
-          }
-          columns={table.columns}
-          visible={showColumnEditModal}
-          onCancel={() => this.setState({ showColumnEditModal: false })}
-          onSave={this.handleCreateIndex}
         />
 
         <ExecuteSQLModal

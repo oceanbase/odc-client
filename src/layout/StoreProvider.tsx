@@ -9,6 +9,7 @@ import userStore from '@/store/login';
 import modalStore from '@/store/modal';
 import pageStore from '@/store/page';
 import schemaStore from '@/store/schema';
+import sessionManagerStore from '@/store/sessionManager';
 import settingStore from '@/store/setting';
 import snippetStore from '@/store/snippet';
 import sqlStore from '@/store/sql';
@@ -30,6 +31,7 @@ export default function (props) {
       authStore={authStore}
       debugStore={debugStore}
       clusterStore={clusterStore}
+      sessionManagerStore={sessionManagerStore}
     >
       {props.children}
     </Provider>

@@ -1,45 +1,37 @@
-import { dropTable, tableModify } from '@/common/network/table';
+import { dropTable, getTableUpdateSQL, tableModify } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
-import SplitPartitionModal from '@/component/SplitPartitionModal';
 import TableColumnModal from '@/component/TableColumnModal';
-import TableIndexModal from '@/component/TableIndexModal';
 import TableRenameModal from '@/component/TableRenameModal';
 import { copyObj } from '@/component/TemplateInsertModal';
 import {
-  ConnectionMode,
   DbObjectType,
   DragInsertType,
-  ITable,
   ITableColumn,
   ITableConstraint,
   ITableIndex,
+  ITableModel,
   ITablePartition,
   ITreeNode,
   PageType,
   ResourceTabKey,
   ResourceTreeNodeMenuKeys,
-  TableTreeNode,
 } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { openNewSQLPage, openTableViewPage } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { removeTableQuote } from '@/util/sql';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { convertPartitionType, getRangeInitialValue, isRangeDisabled } from '@/util/utils';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal, Spin } from 'antd';
 import { AntTreeNode } from 'antd/lib/tree';
 import EventBus from 'eventbusjs';
-import { isEmpty } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import React, { Component } from 'react';
-import CreateTablePartitionRuleForm from '../CreateTablePartitionRuleForm';
 import { PropsTab, TopTab } from '../TablePage';
 import AddPartitionWithTableNameModal from '../TablePage/Partitions/AddPartitionModal/AddPartitionWithTableNameModal';
 import TreeNodeDirectory, { injectCustomInfoToTreeData } from './component/TreeNodeDirectory';
@@ -61,26 +53,23 @@ enum ExecuteDMLMode {
 interface ITableTreeState {
   updateDML: string;
   showExecuteSQLModal: boolean;
-  currentTable: Partial<ITable>;
-  showIndexEditModal: boolean;
+  currentTable: Partial<ITableModel>;
   executeDMLMode: ExecuteDMLMode;
   showTableRenameModal: boolean;
   showColumnEditModal: boolean;
   columnToEdit: Partial<ITableColumn>;
-  showPartitionEditModal: boolean;
   partitionToEdit: Partial<ITablePartition>;
   showSplitPartitionEditModal: boolean;
   updatedTableName: string;
 }
 
-@inject('pageStore', 'schemaStore', 'connectionStore', 'sqlStore', 'userStore', 'modalStore')
+@inject('pageStore', 'sqlStore', 'userStore', 'modalStore', 'sessionManagerStore')
 @observer
 export default class TableTree extends Component<
   {
     userStore?: UserStore;
     pageStore?: PageStore;
-    schemaStore?: SchemaStore;
-    connectionStore?: ConnectionStore;
+    sessionManagerStore?: SessionManagerStore;
     sqlStore?: SQLStore;
     modalStore?: ModalStore;
     loading: boolean;
@@ -98,18 +87,11 @@ export default class TableTree extends Component<
   public readonly state: ITableTreeState = {
     updateDML: '',
     showExecuteSQLModal: false,
-    currentTable: {
-      tableName: '',
-      partitioned: false,
-      columns: [],
-      indexes: [],
-    },
-    showIndexEditModal: false,
+    currentTable: null,
     executeDMLMode: ExecuteDMLMode.CREATE_COLUMN,
     showTableRenameModal: false,
     showColumnEditModal: false,
     columnToEdit: {},
-    showPartitionEditModal: false,
     partitionToEdit: {},
     showSplitPartitionEditModal: false,
     // 保存重命名后的表名
@@ -155,14 +137,8 @@ export default class TableTree extends Component<
     openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION);
   };
 
-  public handleRefreshPartitions = async (tableName: string | undefined) => {
-    const { schemaStore } = this.props;
-    // TODO: 增加 loading
-    await schemaStore!.loadTablePartitions(tableName || '');
-  };
-
   public handleDeleteTable = async (tableName: string) => {
-    const { schemaStore, pageStore, handleRefreshTree } = this.props;
+    const { pageStore, handleRefreshTree } = this.props;
     Modal.confirm({
       title: formatMessage(
         { id: 'workspace.window.createTable.modal.delete' },
@@ -191,17 +167,12 @@ export default class TableTree extends Component<
     });
   };
 
-  public handleRefreshTable = async (table: Partial<ITable>) => {
-    const { schemaStore } = this.props;
-    await schemaStore!.loadTableColumns(table.tableName || '');
-    await schemaStore!.loadTableIndexes(table.tableName || '');
-    await schemaStore!.loadTableConstraints(table.tableName || '');
-    if (table.partitioned) {
-      await schemaStore!.loadTablePartitions(table.tableName || '');
-    }
+  public handleRefreshTable = async (table: Partial<ITableModel>) => {
+    const session = this.props.sessionManagerStore.getMasterSession();
+    await session.database.loadTable(table.info.tableName);
   };
 
-  public handleDeleteIndex = async (table: Partial<ITable>, index: Partial<ITableIndex>) => {
+  public handleDeleteIndex = async (table: Partial<ITableModel>, index: Partial<ITableIndex>) => {
     const { schemaStore } = this.props;
 
     if (table.tableName) {
@@ -216,7 +187,7 @@ export default class TableTree extends Component<
   };
 
   public handleDeleteConstraint = async (
-    table: Partial<ITable>,
+    table: Partial<ITableModel>,
     constraint: Partial<ITableConstraint>,
   ) => {
     const { schemaStore } = this.props;
@@ -232,45 +203,10 @@ export default class TableTree extends Component<
     }
   };
 
-  public handleStartCreateIndex = async (currentTable: Partial<ITable>) => {
-    const { schemaStore } = this.props;
-
-    if (currentTable.tableName) {
-      // 索引需要选择列，因此首先需要加载列
-      await schemaStore!.loadTableColumns(currentTable.tableName);
-      this.setState({
-        currentTable,
-        showIndexEditModal: true,
-        executeDMLMode: ExecuteDMLMode.CREATE_INDEX,
-      });
-    }
-  };
-
-  public handleCreateIndex = async (index: ITableIndex) => {
-    const { schemaStore } = this.props;
-    const { currentTable } = this.state;
-    if (currentTable) {
-      const sql = await schemaStore!.getIndexCreateSQL(currentTable.tableName, index);
-      this.setState({
-        updateDML: sql,
-        showIndexEditModal: false,
-        showExecuteSQLModal: true,
-      });
-    }
-  };
-
-  public handleRefreshIndexes = async (table: Partial<ITable>) => {
-    const { schemaStore } = this.props;
-    // TODO: 增加 loading
-    await schemaStore!.loadTableIndexes(table.tableName || '');
-  };
-
-  public handleRefreshConstraints = async (table: Partial<ITable>) => {
-    const { schemaStore } = this.props;
-    await schemaStore!.loadTableConstraints(table.tableName || '');
-  };
-
-  public handleDeleteColumn = async (table: Partial<ITable>, column: Partial<ITableColumn>) => {
+  public handleDeleteColumn = async (
+    table: Partial<ITableModel>,
+    column: Partial<ITableColumn>,
+  ) => {
     const { schemaStore } = this.props;
 
     const sql = await schemaStore!.getColumnDeleteSQL(table.tableName || '', column);
@@ -283,7 +219,7 @@ export default class TableTree extends Component<
   };
 
   public handleStartEditColumn = async (
-    currentTable: Partial<ITable>,
+    currentTable: Partial<ITableModel>,
     column: Partial<ITableColumn>,
   ) => {
     this.setState({
@@ -294,7 +230,7 @@ export default class TableTree extends Component<
     });
   };
 
-  public handleStartCreateColumn = async (currentTable: Partial<ITable>) => {
+  public handleStartCreateColumn = async (currentTable: Partial<ITableModel>) => {
     this.setState({
       currentTable,
       showColumnEditModal: true,
@@ -325,112 +261,6 @@ export default class TableTree extends Component<
         showExecuteSQLModal: true,
       });
     }
-  };
-
-  public handleDeletePartition = async (
-    table: Partial<ITable>,
-    partition: Partial<ITablePartition>,
-  ) => {
-    const { schemaStore } = this.props;
-
-    if (table.tableName) {
-      const sql = await schemaStore!.getPartitionDeleteSQL(table.tableName, partition);
-      this.setState({
-        currentTable: table,
-        updateDML: sql,
-        showExecuteSQLModal: true,
-        executeDMLMode: ExecuteDMLMode.DELETE_PARTITION,
-      });
-    }
-  };
-
-  public handleStartSplitPartition = async (
-    currentTable: Partial<ITable>,
-    partition: Partial<ITablePartition>,
-  ) => {
-    this.setState({
-      currentTable,
-      partitionToEdit: partition,
-      showSplitPartitionEditModal: true,
-      executeDMLMode: ExecuteDMLMode.SPLIT_PARTITION,
-    });
-  };
-
-  public handleSplitPartition = async (
-    partitions: Array<Partial<ITablePartition>>,
-    source: Partial<ITablePartition>,
-  ) => {
-    const { schemaStore } = this.props;
-    const { currentTable } = this.state;
-    const { tableName } = currentTable;
-    // 第一个为源分区规则，后续为分裂规则
-    const updateDML = await schemaStore!.getPartitionSplitSQL(
-      tableName,
-      [source, ...partitions].map((p) => {
-        p.tableName = tableName;
-        return p;
-      }),
-    );
-    this.setState({
-      showExecuteSQLModal: true,
-      showSplitPartitionEditModal: false,
-      updateDML,
-    });
-  };
-
-  public handleStartCreatePartition = async (currentTable: Partial<ITable>) => {
-    const ddl = await this.addPartitionRef.current.addNewPartitions(currentTable.tableName);
-    if (ddl) {
-      this.setState({
-        currentTable,
-        updateDML: ddl,
-        showExecuteSQLModal: true,
-        executeDMLMode: ExecuteDMLMode.CREATE_PARTITION,
-      });
-    }
-  };
-
-  public handleSavePartitionRules = async (partitions: Array<Partial<ITablePartition>>) => {
-    const { schemaStore } = this.props;
-    const { currentTable } = this.state;
-    const { tableName } = currentTable;
-    let updateDML = '';
-    if (!currentTable.partitioned) {
-      // 非分区表转分区表
-      updateDML = await schemaStore!.getPartitionTransformSQL(
-        tableName,
-        partitions.map((p) => ({
-          ...p,
-          tableName,
-        })),
-      );
-    } else {
-      const sqls = await Promise.all(
-        partitions.map(async (p) => {
-          return schemaStore!.getPartitionCreateSQL(tableName, {
-            ...p,
-            tableName,
-          });
-        }),
-      );
-
-      updateDML = sqls.join('\n');
-    }
-
-    this.setState({
-      updateDML,
-      showPartitionEditModal: false,
-      showExecuteSQLModal: true,
-    });
-  };
-
-  /**
-   * 刷新列
-   */
-  public handleRefreshColumns = async (table: Partial<ITable>) => {
-    const { schemaStore } = this.props;
-    // TODO: 增加 loading
-    await schemaStore!.loadTableColumns(table.tableName || '');
   };
 
   public handleExecuteDML = async () => {
@@ -524,20 +354,25 @@ export default class TableTree extends Component<
     openNewSQLPage();
   };
 
-  public handleRenameTable = (table: Partial<ITable>) => {
+  public handleRenameTable = (table: Partial<ITableModel>) => {
     this.setState({
       currentTable: table,
       showTableRenameModal: true,
     });
   };
 
-  public handleSubmitRenameTable = async (table: Partial<ITable>) => {
-    const { schemaStore } = this.props;
+  public handleSubmitRenameTable = async (table: Partial<ITableModel>) => {
     const { currentTable } = this.state;
+    const session = this.props.sessionManagerStore.getMasterSession();
     if (currentTable) {
-      const sql = await schemaStore!.getTableUpdateSQL(currentTable.tableName, {
-        table,
-      });
+      const sql = await getTableUpdateSQL(
+        currentTable.info.tableName,
+        session.sessionId,
+        session.database.dbName,
+        {
+          table,
+        },
+      );
       this.setState({
         updateDML: sql,
         showTableRenameModal: false,
@@ -549,41 +384,13 @@ export default class TableTree extends Component<
   };
 
   public handleLoadTreeNodes = async (treeNode: AntTreeNode) => {
-    const {
-      schemaStore,
-      schemaStore: { tables },
-    } = this.props;
-    const { type, root, title } = treeNode.props.dataRef;
-    const table = root.origin;
-    // 已经有子节点，直接返回
-    if (type !== TableTreeNode.TABLE && !isEmpty(treeNode.props.children)) {
-      schemaStore!.setLoadedTableKeys(
-        schemaStore!.loadedTableKeys.concat(treeNode.props.eventKey as string),
-      );
+    const { root } = treeNode.props.dataRef;
+    const tableName = root.origin?.tableName;
+    if (!tableName) {
       return;
     }
-
-    if (type === TableTreeNode.COLUMN && table) {
-      await schemaStore!.loadTableColumns(table.tableName);
-    } else if (type === TableTreeNode.INDEX && table) {
-      await schemaStore!.loadTableIndexes(table.tableName);
-    } else if (type === TableTreeNode.CONSTRAINT && table) {
-      await schemaStore!.loadTableConstraints(table.tableName);
-    } else if (type === TableTreeNode.PARTITION && table) {
-      await schemaStore!.loadTablePartitions(table.tableName);
-    } else if (type === TableTreeNode.TABLE) {
-      // 若对应的对象不存在，无需加载
-      if (!tables.find((item: ITable) => item.tableName === title)) {
-        return;
-      }
-      await schemaStore!.loadTable(table.tableName);
-    }
-    schemaStore!.setLoadedTableKeys(
-      schemaStore!.loadedTableKeys.concat(treeNode.props.eventKey as string),
-    );
-    if (table && table.tableName) {
-      schemaStore!.loadedTableNames.add(table.tableName);
-    }
+    const session = this.props.sessionManagerStore.getMasterSession();
+    await session?.database?.loadTable(tableName);
   };
 
   handleCreateTable = () => {
@@ -602,11 +409,11 @@ export default class TableTree extends Component<
   handleTreeNodeMenuClick = (e: MenuInfo, node: ITreeNode) => {
     // todo 将所有的action进行统一注册，这里使用 actions.excute(key, options:{ table --->原始粒度的数据, props ---> store, this---> this.setState(xxx) }) 方式进行调用，
     // 摆脱 switch，使得 handle处理更简洁！！！
-    const { modalStore, schemaStore } = this.props;
+    const { modalStore } = this.props;
     const { origin, root } = node;
-    const table: Partial<ITable> = root.origin;
+    const table: Partial<ITableModel> = root.origin;
     const menuItem:
-      | Partial<ITable>
+      | Partial<ITableModel>
       | Partial<ITableColumn>
       | Partial<ITableIndex>
       | Partial<ITablePartition>
@@ -758,7 +565,7 @@ export default class TableTree extends Component<
       menu: { type },
       root: { origin },
     } = node;
-    const table: Partial<ITable> = origin;
+    const table: Partial<ITableModel> = origin;
     const tableName = table?.tableName || '';
     switch (type) {
       case DbObjectType.table:
@@ -785,28 +592,24 @@ export default class TableTree extends Component<
   };
 
   private getTreeList = () => {
-    const {
-      schemaStore: { tables, dataTypes },
-      searchKey,
-    } = this.props;
+    const { searchKey, sessionManagerStore } = this.props;
+    const session = sessionManagerStore.getMasterSession();
+    const tables = session.database.tables;
+    const dataTypes = session.dataTypes;
     const treeNodes: ITreeNode[] = [];
     const filteredTables =
-      (tables &&
-        tables.filter(
-          (t: Partial<ITable>) =>
-            t &&
-            t.tableName &&
-            t.tableName
-              .toString()
-              .toUpperCase()
-              .indexOf(searchKey[ResourceTabKey.TABLE].toUpperCase()) > -1,
-        )) ||
-      [];
+      tables?.filter(
+        (t: Partial<ITableModel>) =>
+          t?.info.tableName
+            ?.toString()
+            .toUpperCase()
+            .indexOf(searchKey[ResourceTabKey.TABLE].toUpperCase()) > -1,
+      ) || [];
 
-    filteredTables.forEach((table: Partial<ITable>, index: number) => {
+    filteredTables.forEach((table: Partial<ITableModel>, index: number) => {
       treeNodes.push(
         TREE_NODES.TABLE.getConfig(table, {
-          key: `table-${table.tableName}-${index}`,
+          key: `table-${table.info.tableName}-${index}`,
           type: DbObjectType.table,
           dataTypes,
         }),
@@ -817,43 +620,26 @@ export default class TableTree extends Component<
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-      schemaStore: { tables, dataTypes, loadedTableKeys, switchingDatabase },
-      searchKey,
-      loading,
-    } = this.props;
+    const { sessionManagerStore, loading } = this.props;
     const {
       updateDML,
       showExecuteSQLModal,
-      showIndexEditModal,
       currentTable,
       showColumnEditModal,
       showTableRenameModal,
-      showPartitionEditModal,
       executeDMLMode,
       columnToEdit,
-      partitionToEdit,
-      showSplitPartitionEditModal,
     } = this.state;
-    const isOracle = connection.dbMode === ConnectionMode.OB_ORACLE;
-
-    const rangeDisabled = isRangeDisabled(
-      currentTable && currentTable.partitioned,
-      connection.dbMode,
-    );
-    const rangeInitialValue = getRangeInitialValue(
-      currentTable && currentTable.partitioned,
-      connection.dbMode,
-    );
+    const session = sessionManagerStore.getMasterSession();
+    const mode = session.connection.dialectType;
 
     return (
       <>
-        <Spin spinning={loading || switchingDatabase}>
+        <Spin spinning={loading}>
           <TreeNodeDirectory
             showIcon={false}
             treeList={this.getTreeList()}
-            loadedKeys={loadedTableKeys}
+            loadedKeys={[]}
             handleLoadTreeData={this.handleLoadTreeNodes}
             onDoubleClick={this.handleTreeNodeDoubleClick}
             onMenuClick={this.handleTreeNodeMenuClick}
@@ -876,47 +662,6 @@ export default class TableTree extends Component<
           onCancel={() => this.setState({ showColumnEditModal: false })}
           onSave={this.handleCreateColumn}
         />
-        <TableIndexModal
-          dataTypes={dataTypes}
-          rangeDisabled={rangeDisabled}
-          rangeInitialValue={rangeInitialValue}
-          model={{ _created: true }}
-          columns={(currentTable && currentTable.columns) || []}
-          visible={showIndexEditModal}
-          onCancel={() => this.setState({ showIndexEditModal: false })}
-          onSave={this.handleCreateIndex}
-        />
-        <SplitPartitionModal
-          model={partitionToEdit}
-          visible={showSplitPartitionEditModal}
-          onCancel={() => this.setState({ showSplitPartitionEditModal: false })}
-          onSave={this.handleSplitPartition}
-        />
-
-        <Modal
-          destroyOnClose
-          title={formatMessage({
-            id: 'workspace.window.createTable.partition.modal.title',
-          })}
-          width={1000}
-          visible={showPartitionEditModal}
-          footer={null}
-          onCancel={() => this.setState({ showPartitionEditModal: false })}
-        >
-          <CreateTablePartitionRuleForm
-            dataTypes={dataTypes}
-            partitionType={
-              currentTable &&
-              currentTable.partitions &&
-              currentTable.partitions[0] &&
-              convertPartitionType(isOracle, currentTable.partitions[0].partType)
-            }
-            disableCheckMaxValue={false}
-            disablePartition={!currentTable.partitioned}
-            table={currentTable as ITable}
-            onSave={this.handleSavePartitionRules}
-          />
-        </Modal>
         <AddPartitionWithTableNameModal ref={this.addPartitionRef} />
         <ExecuteSQLModal
           sql={updateDML}

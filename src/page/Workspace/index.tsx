@@ -9,17 +9,16 @@ import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import appConfig from '@/constant/appConfig';
 import type { IPage } from '@/d.ts';
-import { ConnectionMode, IConnectionType, ResourceTabKey } from '@/d.ts';
+import { IConnectionType, ResourceTabKey } from '@/d.ts';
 import PartitionDrawer from '@/page/Workspace/components/PartitionDrawer';
 import ResourceTree from '@/page/Workspace/components/ResourceTree';
 import localLoginHistoy from '@/service/localLoginHistoy';
 import type { CommonStore } from '@/store/common';
-import type { ConnectionStore } from '@/store/connection';
 import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import type { SessionManagerStore } from '@/store/sessionManager';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
@@ -27,7 +26,6 @@ import task from '@/store/task';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { extractResourceId } from '@/util/utils';
-import { ExclamationCircleTwoTone } from '@ant-design/icons';
 import { useParams } from '@umijs/max';
 import { Layout, message, Modal } from 'antd';
 import { debounce } from 'lodash';
@@ -35,7 +33,6 @@ import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useEffect, useState } from 'react';
 import SplitPane from 'react-split-pane';
-import { history } from 'umi';
 import CreateAsyncTaskModal from './components/CreateAsyncTaskModal';
 import CreateSequenceModal from './components/CreateSequenceModal';
 import CreateShadowSyncModal from './components/CreateShadowSyncModal';
@@ -56,13 +53,12 @@ const { Sider, Content } = Layout;
 interface WorkspaceProps {
   pageStore: PageStore;
   settingStore: SettingStore;
-  connectionStore: ConnectionStore;
-  schemaStore: SchemaStore;
   userStore: UserStore;
   sqlStore: SQLStore;
   modalStore?: ModalStore;
   commonStore: CommonStore;
   taskStore?: TaskStore;
+  sessionManagerStore?: SessionManagerStore;
 }
 
 let beforeUnloadHandler: ((e: BeforeUnloadEvent) => void) | undefined;
@@ -70,13 +66,11 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const {
     pageStore,
     settingStore,
-    connectionStore,
-    schemaStore,
-    userStore,
     sqlStore,
     modalStore,
     commonStore,
     taskStore,
+    sessionManagerStore,
   } = props;
 
   const { pages = [], activePageKey } = pageStore;
@@ -242,8 +236,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
         if (typeof _closeMsg === 'string') {
           e.returnValue = _closeMsg;
         } // send with keepalive
-
-        connectionStore.disconnect(false);
+        sessionManagerStore.destoryStore(true);
         return _closeMsg;
       }; // 在页面关闭前通知后端尝试断开数据库长连接
 
@@ -262,67 +255,32 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       addPageUnloadListener();
-
-      if (!connectionStore.connection || !connectionStore.connection.sid) {
-        if (!params?.sessionId || !params?.tabKey) {
-          history.push('/connections');
-          return;
-        }
-        commonStore.setTabKey(params.tabKey);
-      } // 首先从 sid:100-1:d:dbname 中解析出
-
+      commonStore.setTabKey(params.tabKey);
       const resourceId = extractResourceId(params.sessionId);
-      await connectionStore.initConnect(resourceId);
+      const sessionId = resourceId?.sid;
+      const cid = sessionId?.split('-')?.[0];
 
-      if (
-        !connectionStore.autoCommit &&
-        connectionStore.connection.dbMode === ConnectionMode.OB_ORACLE
-      ) {
-        /**
-         * oracle 手动提交需要给加一个提示
-         */
-        if (!localStorage.getItem('showAutoCommitWarn') && !settingStore.enableMultiSession) {
-          Modal.confirm({
-            icon: <ExclamationCircleTwoTone twoToneColor="#faad14" />,
-            title: formatMessage({ id: 'odc.page.Workspace.Note' }), // 注意信息
-            centered: true,
-            content: formatMessage({
-              id: 'odc.page.Workspace.InTheSharedSessionMode',
-            }), //当前使用的是共享 session 模式，主动触发提交/回滚操作，或通过产品功能创建、修改、删除数据库对象，执行 DDL 语句被动触发提交操作，会在所有窗口生效。
-            cancelText: formatMessage({
-              id: 'odc.page.Workspace.NoReminder',
-            }),
-
-            // 不再提醒
-            okText: formatMessage({
-              id: 'odc.page.Workspace.ISee',
-            }),
-
-            // 我知道了
-            onCancel() {
-              localStorage.setItem('showAutoCommitWarn', '1');
-            },
-          });
+      if (!cid) {
+        message.error('cid is not find');
+      } else {
+        const session = await sessionManagerStore.createSession(true, cid);
+        if (session) {
+          if (localLoginHistoy.isNewVersion()) {
+            localLoginHistoy.updateVersion();
+            settingStore.enableVersionTip && openNewVersionTip();
+          }
+          task.setTaskCreateEnabled(true);
+          setIsReady(true);
         }
       }
-      if (connectionStore.connection) {
-        if (localLoginHistoy.isNewVersion()) {
-          localLoginHistoy.updateVersion();
-          settingStore.enableVersionTip && openNewVersionTip();
-        }
-      }
-      task.setTaskCreateEnabled(true);
-      setIsReady(true);
     }
     asyncEffect();
     return () => {
       appConfig.workspace.unMount?.();
       pageStore.clear();
-      schemaStore.clear();
       sqlStore.reset();
       modalStore.clear();
       taskStore.clear();
-      connectionStore.clear();
       clearPageLoadListener();
       executeTaskManager.stopAllTask();
       task.setTaskCreateEnabled();
@@ -403,11 +361,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 export default inject(
   'pageStore',
   'settingStore',
-  'connectionStore',
-  'schemaStore',
   'userStore',
   'sqlStore',
   'commonStore',
   'modalStore',
   'taskStore',
+  'sessionManagerStore',
 )(observer(Workspace));

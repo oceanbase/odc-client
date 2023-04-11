@@ -1,5 +1,4 @@
 import { PageType, ResourceTabKey, SynonymType } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import {
   openCreateTablePage,
   openCreateTriggerPage,
@@ -7,7 +6,7 @@ import {
 } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import { Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -51,15 +50,14 @@ export const PL_ResourceMap = {
   },
 };
 
-@inject('pageStore', 'schemaStore', 'connectionStore', 'modalStore')
+@inject('pageStore', 'modalStore', 'sessionManagerStore')
 @observer
 class ResourceTree extends PureComponent<
   {
     activeResource: ResourceTabKey;
     pageStore?: PageStore;
-    schemaStore?: SchemaStore;
-    connectionStore?: ConnectionStore;
     modalStore?: ModalStore;
+    sessionManagerStore?: SessionManagerStore;
   },
   {
     loading: boolean;
@@ -97,44 +95,50 @@ class ResourceTree extends PureComponent<
     addTreeNodeType: null,
   };
 
-  handleRefreshTable = async (schemaStore: SchemaStore) => {
-    await schemaStore!.refreshTableList();
+  handleRefreshTable = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getTableList();
   };
 
-  handleRefreshFunction = async (schemaStore: SchemaStore) => {
-    schemaStore.setLoadedFunctionKeys([]);
-    await schemaStore?.getFunctionList();
+  handleRefreshFunction = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getFunctionList();
   };
 
-  handleRefreshPackage = async (schemaStore: SchemaStore) => {
-    await schemaStore?.getPackageList();
+  handleRefreshPackage = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getPackageList();
   };
 
-  handleRefreshProcedure = async (schemaStore: SchemaStore) => {
-    await schemaStore.getProcedureList();
+  handleRefreshProcedure = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getProcedureList();
   };
 
-  handleRefreshSequence = async (schemaStore: SchemaStore) => {
-    await schemaStore?.getSequenceList();
+  handleRefreshSequence = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getSequenceList();
   };
 
-  handleRefreshView = async (schemaStore: SchemaStore) => {
-    schemaStore!.setLoadedViewKeys([]);
-    await schemaStore!.getViewList();
+  handleRefreshView = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getViewList();
   };
 
-  handleRefreshTrigger = async (schemaStore: SchemaStore) => {
-    await schemaStore?.getTriggerList();
+  handleRefreshTrigger = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getTriggerList();
   };
 
-  handleRefreshSynonym = async (schemaStore: SchemaStore) => {
-    await schemaStore?.getSynonymList();
+  handleRefreshSynonym = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getSynonymList();
   };
 
   handleChangeSynonymType = async (key: SynonymType) => {
-    const { schemaStore } = this.props;
-    await schemaStore.changeSynonymType(key);
-    this.handleRefreshSynonym(schemaStore);
+    // const { schemaStore } = this.props;
+    // await schemaStore.changeSynonymType(key);
+    // this.handleRefreshSynonym(schemaStore);
   };
 
   handleFilterChange = (value: string[]) => {
@@ -145,16 +149,16 @@ class ResourceTree extends PureComponent<
     });
   };
 
-  handleRefreshType = async (schemaStore: SchemaStore) => {
-    schemaStore.setLoadedTypeKeys([]);
-    await schemaStore?.getTypeList();
+  handleRefreshType = async () => {
+    const session = await this.props.sessionManagerStore.getMasterSession();
+    await session.database.getTypeList();
   };
 
   private readonly TAB_PANELS: {
     key: ResourceTabKey;
     title: string;
     TreeRoot: React.ComponentType<any>;
-    handleRefresh: (e: any) => Promise<void>;
+    handleRefresh: () => Promise<void>;
     searchTitle: string;
     searchPlaceholder: string;
   }[] = [
@@ -284,14 +288,13 @@ class ResourceTree extends PureComponent<
   ];
 
   public handleRefreshTree = async (activeKey: ResourceTabKey) => {
-    const { schemaStore } = this.props;
     const activePanelData = this.TAB_PANELS.find((item) => item.key === activeKey);
     if (!activePanelData) return;
     this.setState({
       loading: true,
     });
 
-    await activePanelData.handleRefresh(schemaStore);
+    await activePanelData.handleRefresh();
     this.setState({
       loading: false,
     });
@@ -345,11 +348,12 @@ class ResourceTree extends PureComponent<
   };
 
   public render() {
-    const { activeResource, schemaStore } = this.props;
+    const { activeResource, sessionManagerStore } = this.props;
     const { loading, searchKey, filterValue, addTreeNodeType } = this.state;
     const activePanelData =
       this.TAB_PANELS.find((item) => item.key === activeResource) || ({} as any);
     const { searchTitle = '', searchPlaceholder = '' } = activePanelData;
+    const session = sessionManagerStore.getMasterSession();
     return (
       <div className={styles.resourceTree}>
         <TreeSearchBar
@@ -388,7 +392,7 @@ class ResourceTree extends PureComponent<
             return (
               <Tabs.TabPane tab={title} key={key}>
                 <TreeRoot
-                  key={schemaStore.database.name}
+                  key={session.sessionId}
                   loading={loading}
                   searchKey={searchKey}
                   filterValue={filterValue[activeResource]}

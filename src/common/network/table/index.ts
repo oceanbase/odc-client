@@ -1,4 +1,4 @@
-import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
+import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import connection from '@/store/connection';
 import schema from '@/store/schema';
 import { formatMessage } from '@/util/intl';
@@ -36,11 +36,12 @@ export async function tableModify(sql: string, tableName: string) {
 
 export async function getTableInfo(
   tableName: string,
-  databaseName?: string,
+  databaseName: string,
+  sessionId: string,
 ): Promise<Partial<ITableModel>> {
   const res = await request.get(
-    `/api/v2/connect/sessions/${connection.sessionId}/databases/${encodeObjName(
-      databaseName || schema.database.name,
+    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
+      databaseName,
     )}/tables/${encodeObjName(tableName)}`,
   );
 
@@ -122,4 +123,24 @@ export async function generateUpdateTableDDL(
     });
   }
   return res?.data?.sql;
+}
+
+export async function getTableUpdateSQL(
+  tableName: string,
+  sessionId: string,
+  dbName: string,
+  options: {
+    table: Partial<ITableModel>;
+    columnList?: Array<Partial<TableColumn>>;
+  },
+): Promise<string> {
+  const { table, columnList } = options;
+  const sid = generateTableSid(tableName, dbName, sessionId);
+  const ret = await request.patch(`/api/v1/table/getUpdateSql/${sid}`, {
+    data: {
+      table,
+      columnList,
+    },
+  });
+  return ret?.data?.sql;
 }
