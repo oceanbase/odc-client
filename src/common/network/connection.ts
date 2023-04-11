@@ -236,14 +236,14 @@ export async function getConnectionDetail(sid: number): Promise<IConnection> {
   return results?.data ? reviseV2Field(results.data) : results.data;
 }
 
-export async function getSupportFeatures(): Promise<
+export async function getSupportFeatures(sessionId: any): Promise<
   {
     support: boolean;
     supportType: string;
   }[]
 > {
   const res = await request.get(
-    `/api/v1/version-config/getSupportFeatures/${generateDatabaseSid()}`,
+    `/api/v1/version-config/getSupportFeatures/${generateDatabaseSid(null, sessionId)}`,
   );
 
   return res?.data;

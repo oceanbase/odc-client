@@ -2,8 +2,8 @@ import { ITypeForm } from '@/d.ts';
 import request from '@/util/request';
 import { generateDatabaseSid, generateTypeSid } from './pathUtil';
 
-export async function getTypeList() {
-  const sid = generateDatabaseSid();
+export async function getTypeList(dbName: string, sessionId: string) {
+  const sid = generateDatabaseSid(dbName, sessionId);
   const res = await request.get(`/api/v1/type/list/${sid}`);
   return res?.data;
 }
