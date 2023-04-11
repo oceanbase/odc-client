@@ -1,6 +1,7 @@
 import { switchSchema } from '@/common/network/connection';
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { getSynonymList } from '@/common/network/synonym';
+import { getTableInfo } from '@/common/network/table';
 import { getTypeList } from '@/common/network/type';
 import {
   IFunction,
@@ -14,13 +15,14 @@ import {
   IView,
   SynonymType,
 } from '@/d.ts';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import logger from '@/util/logger';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
 
 class DatabaseStore {
   @observable.shallow
-  public tables: Array<Partial<ITable>> = [];
+  public tables: Array<Partial<ITableModel>> = [];
 
   @observable.shallow
   public views: Array<Partial<IView>> = [];
@@ -87,8 +89,33 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const data = await request.get(`/api/v1/table/list/${sid}`);
     runInAction(() => {
-      this.tables = data?.data || [];
+      this.tables =
+        data?.data?.map((table: ITable) => ({
+          info: {
+            tableName: table.tableName,
+            character: table.character,
+            collation: table.collation,
+            comment: table.comment,
+            DDL: table.ddlSql,
+            updateTime: table.gmtModified,
+            createTime: table.gmtCreated,
+            tableSize: table.tableSize,
+          },
+        })) || [];
     });
+  }
+
+  @action
+  public async loadTable(tableName: string) {
+    const table = await getTableInfo(tableName, this.dbName, this.sessionId);
+    const idx = this.tables.findIndex((t) => t.info.tableName === tableName);
+    if (idx > -1) {
+      const newTables = [...this.tables];
+      newTables[idx] = table;
+      runInAction(() => {
+        this.tables = newTables;
+      });
+    }
   }
 
   @action

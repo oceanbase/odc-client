@@ -13,8 +13,12 @@ export function generateSessionSid(sessionId?: string): string {
   return `sid:${sessionId || connection.sessionId}`;
 }
 
-export function generateTableSid(tableName: string, databaseName: string = ''): string {
-  return `${generateDatabaseSid(databaseName)}:t:${encodeObjName(tableName)}`;
+export function generateTableSid(
+  tableName: string,
+  databaseName: string = '',
+  sessionId?: string,
+): string {
+  return `${generateDatabaseSid(databaseName, sessionId)}:t:${encodeObjName(tableName)}`;
 }
 
 export function generateViewSid(viewName: string, databaseName: string = ''): string {

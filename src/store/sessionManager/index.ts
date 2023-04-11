@@ -20,8 +20,14 @@ export class SessionManagerStore {
   @observable
   public connection: Map<ConnectionId, IConnection> = new Map();
 
-  async getMasterSession(dbId: string) {
-    const sessionId = this.masterSessionIdMap.get(dbId);
+  getMasterSession(cid?: ConnectionId) {
+    if (!cid) {
+      /**
+       * 暂时兼容老的逻辑
+       */
+      cid = this.connection.keys()?.[0];
+    }
+    const sessionId = this.masterSessionIdMap.get(cid);
     if (!sessionId) {
       return null;
     }
