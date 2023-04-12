@@ -97,7 +97,6 @@ request.interceptors.response.use(async (response, req) => {
   try {
     json = await r.json();
     text = (await response.clone().text()) || '';
-    throw new Error();
   } catch (e) {
     const requestId = json?.requestId || undefined;
     json = {
