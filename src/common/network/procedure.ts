@@ -1,6 +1,7 @@
 import request from '@/util/request';
 import {
   generateFunctionSid,
+  generatePackageSid,
   generateProcedureSid,
   generateTriggerSid,
   generateTypeSid,
@@ -49,4 +50,19 @@ export async function getTypemByName(typeName: string) {
   const sid = generateTypeSid(typeName);
   const { data: type } = await request.get(`/api/v1/type/${sid}`);
   return type;
+}
+
+export async function getPackageCreateSQL(
+  packageName: string,
+  sessionId: string,
+  dbName: string,
+): Promise<string> {
+  const sid = generatePackageSid(packageName, sessionId, dbName);
+  const ret = await request.patch(`/api/v1/package/getCreateSql/${sid}`, {
+    data: {
+      packageName,
+      packageType: 'package',
+    },
+  });
+  return ret?.data?.sql;
 }

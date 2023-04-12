@@ -55,7 +55,7 @@ class TableRenameModal extends Component<IProps> {
       >
         <Form
           ref={this.form}
-          initialValues={{ tableName: getQuoteTableName(model.info.tableName) }}
+          initialValues={{ tableName: getQuoteTableName(model?.info?.tableName) }}
           {...formItemLayout}
         >
           <Form.Item

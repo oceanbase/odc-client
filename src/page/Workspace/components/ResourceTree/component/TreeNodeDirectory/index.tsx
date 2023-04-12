@@ -14,7 +14,7 @@ import TREE_NODE_ACTIONS from '../../actions';
 import TreeNodeMenu from '../TreeNodeMenu';
 import styles from './index.less';
 
-const { TreeNode, DirectoryTree } = Tree;
+const { DirectoryTree } = Tree;
 
 interface IProps {
   // 是否需要启用 Tree默认的icon
@@ -186,7 +186,7 @@ const TreeNodeDirectory: React.FC<IProps> = (props) => {
         className={styles.tree}
         selectable={false}
         loadData={handleLoadTreeData as any}
-        loadedKeys={loadedKeys}
+        loadedKeys={loadedKeys === null ? undefined : loadedKeys}
         height={wrapperHeight}
         treeData={treeList}
         blockNode

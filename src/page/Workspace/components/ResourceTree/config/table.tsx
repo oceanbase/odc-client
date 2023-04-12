@@ -46,15 +46,16 @@ const TREE_NODES = {
         menu: {
           type: DbObjectType.table as MenusType,
         },
-        children: [],
+        children: node.columns?.length ? [] : null,
       };
-
-      r.children.push(TREE_NODES.COLUMN_SET.getConfig(node, options));
-      r.children.push(TREE_NODES.TABLE_INDEX_SET.getConfig(node, options));
-      if (node.partitions) {
-        r.children.push(TREE_NODES.TABLE_PARTITION_SET.getConfig(node, options));
+      if (r.children) {
+        r.children.push(TREE_NODES.COLUMN_SET.getConfig(node, options));
+        r.children.push(TREE_NODES.TABLE_INDEX_SET.getConfig(node, options));
+        if (node.partitions) {
+          r.children.push(TREE_NODES.TABLE_PARTITION_SET.getConfig(node, options));
+        }
+        r.children.push(TREE_NODES.TABLE_CONSTRAINTS_SET.getConfig(node, options));
       }
-      r.children.push(TREE_NODES.TABLE_CONSTRAINTS_SET.getConfig(node, options));
       return r;
     },
   },

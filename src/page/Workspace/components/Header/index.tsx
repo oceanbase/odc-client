@@ -1,3 +1,5 @@
+import { getPackageCreateSQL } from '@/common/network';
+import { getSynonymCreateSQL } from '@/common/network/synonym';
 import { getTypeCreateSQL } from '@/common/network/type';
 import { AcessResult, withWorkspaceCreateAcess } from '@/component/Acess';
 import CreatePackageModal from '@/component/CreatePackageModal';
@@ -14,7 +16,7 @@ import ThemeBtn from '@/component/ThemeBtn';
 import appConfig from '@/constant/appConfig';
 import { IDatabase, IPackage, ISynonym, ITypeForm } from '@/d.ts';
 import { hasSourceReadAuth } from '@/page/Manage';
-import commonStore, { CommonStore } from '@/store/common';
+import { CommonStore } from '@/store/common';
 import { ConnectionStore } from '@/store/connection';
 import {
   openCreatePackagePage,
@@ -30,7 +32,8 @@ import {
 import { UserStore } from '@/store/login';
 import modal, { ModalStore } from '@/store/modal';
 import { PageStore } from '@/store/page';
-import schema, { SchemaStore } from '@/store/schema';
+import schema from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -39,7 +42,7 @@ import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { Component } from 'react';
-import { FormattedMessage, history } from 'umi';
+import { FormattedMessage } from 'umi';
 import ConnectionItem from './ConnectionItem';
 import HomeMenu from './homeMenu';
 import styles from './index.less';
@@ -75,8 +78,8 @@ enum MenuKey {
 
 @inject(
   'connectionStore',
+  'sessionManagerStore',
   'pageStore',
-  'schemaStore',
   'userStore',
   'commonStore',
   'modalStore',
@@ -87,7 +90,7 @@ class Header extends Component<
   {
     connectionStore?: ConnectionStore;
     pageStore?: PageStore;
-    schemaStore?: SchemaStore;
+    sessionManagerStore?: SessionManagerStore;
     userStore?: UserStore;
     modalStore?: ModalStore;
     commonStore?: CommonStore;
@@ -109,14 +112,12 @@ class Header extends Component<
   };
 
   public handleDatabaseChange = async (dbName: string) => {
-    const { schemaStore, pageStore, connectionStore } = this.props;
+    const { pageStore, connectionStore, sessionManagerStore } = this.props;
 
-    if (connectionStore && schemaStore && pageStore) {
-      await schemaStore.selectDatabase(dbName);
+    if (connectionStore && pageStore) {
+      const session = sessionManagerStore.getMasterSession();
+      await session.useDataBase(dbName);
       pageStore.clearExceptResidentPages();
-      history.push(
-        `/workspace/session/${commonStore.tabKey}/sid:${connectionStore.sessionId}:d:${dbName}`,
-      );
     }
   };
   /** 打开 会话参数 页面 */
@@ -237,22 +238,30 @@ class Header extends Component<
 
   public handleCreatePackage = async (pkg: IPackage) => {
     const { packageName } = pkg;
-    const { schemaStore, pageStore, connectionStore } = this.props;
-    const sql = await schemaStore?.getPackageCreateSQL(packageName);
+    const { sessionManagerStore } = this.props;
+    const session = sessionManagerStore.getMasterSession();
+    const ddl = await getPackageCreateSQL(packageName, session.sessionId, session.database.dbName);
     this.setState(
       {
         showCreatePackageModal: false,
       },
 
       () => {
-        openCreatePackagePage(sql);
+        openCreatePackagePage(ddl);
       },
     );
   };
 
   public handleCreateSynonym = async (synonym: ISynonym) => {
-    const { schemaStore } = this.props;
-    const sql = await schemaStore!.getSynonymCreateSQL(synonym.synonymName, synonym);
+    const { sessionManagerStore } = this.props;
+    const session = sessionManagerStore.getMasterSession();
+
+    const sql = await getSynonymCreateSQL(
+      synonym.synonymName,
+      synonym,
+      session.sessionId,
+      session.database.dbName,
+    );
     this.setState(
       {
         showCreateSynonymModal: false,
@@ -281,31 +290,14 @@ class Header extends Component<
     const {
       connectionStore: { connection, sessionId },
       settingStore,
-      schemaStore: {
-        databases,
-        database,
-        enableFunction,
-        enableProcedure,
-        enableView,
-        enableSequence,
-        enablePackage,
-        enablePLDebug,
-        switchingDatabase,
-        enableTrigger,
-        enableType,
-        enableSynonym,
-        enableAsync,
-        enableDBExport,
-        enableDBImport,
-        enableMockData,
-        enableShadowSync,
-        enablePartitionPlan,
-      },
-
       accessible,
+      sessionManagerStore,
     } = this.props;
     const { showCreatePackageModal, showCreateSynonymModal, showCreateTypeModal } = this.state;
-    const allowCreateDBObject = !!(database && database.name && accessible);
+    const session = sessionManagerStore.getMasterSession();
+    const databases = session?.databases;
+    const database = session?.database;
+    const allowCreateDBObject = !!(database?.dbName && accessible);
     const isReadonly = hasSourceReadAuth(connection.permittedActions);
 
     const { clusterName = '', tenantName = '' } = window._odc_params || {};
@@ -319,31 +311,52 @@ class Header extends Component<
         <Menu.Item key={MenuKey.CREATE_TABLE} disabled={!allowCreateDBObject}>
           <FormattedMessage id="workspace.header.create.table" />
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_VIEW} disabled={!allowCreateDBObject || !enableView}>
+        <Menu.Item
+          key={MenuKey.CREATE_VIEW}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableView}
+        >
           <FormattedMessage id="workspace.header.create.view" />
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_FUNCTION} disabled={!allowCreateDBObject || !enableFunction}>
+        <Menu.Item
+          key={MenuKey.CREATE_FUNCTION}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableFunction}
+        >
           <FormattedMessage id="workspace.header.create.function" />
         </Menu.Item>
         <Menu.Item
           key={MenuKey.CREATE_PROCEDURE}
-          disabled={!allowCreateDBObject || !enableProcedure}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableProcedure}
         >
           <FormattedMessage id="workspace.header.create.procedure" />
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_PACKAGE} disabled={!allowCreateDBObject || !enablePackage}>
+        <Menu.Item
+          key={MenuKey.CREATE_PACKAGE}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enablePackage}
+        >
           <FormattedMessage id="workspace.header.create.package" />
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_TRIGGER} disabled={!allowCreateDBObject || !enableTrigger}>
+        <Menu.Item
+          key={MenuKey.CREATE_TRIGGER}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableTrigger}
+        >
           {formatMessage({ id: 'odc.components.Header.Trigger' }) /* 触发器 */}
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_TYPE} disabled={!allowCreateDBObject || !enableType}>
+        <Menu.Item
+          key={MenuKey.CREATE_TYPE}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableType}
+        >
           {formatMessage({ id: 'odc.components.Header.Type' }) /* 类型 */}
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_SEQUENCE} disabled={!allowCreateDBObject || !enableSequence}>
+        <Menu.Item
+          key={MenuKey.CREATE_SEQUENCE}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableSequence}
+        >
           <FormattedMessage id="workspace.header.create.sequence" />
         </Menu.Item>
-        <Menu.Item key={MenuKey.CREATE_SYNONYM} disabled={!allowCreateDBObject || !enableSynonym}>
+        <Menu.Item
+          key={MenuKey.CREATE_SYNONYM}
+          disabled={!allowCreateDBObject || !session?.supportFeature?.enableSynonym}
+        >
           {formatMessage({ id: 'odc.components.Header.Synonyms' }) /* 同义词 */}
         </Menu.Item>
       </Menu>
@@ -376,18 +389,18 @@ class Header extends Component<
         }}
         onClick={this.handleClickMenu}
       >
-        {enableDBImport ? (
+        {session?.supportFeature?.enableDBImport ? (
           <Menu.Item key={MenuKey.IMPORT}>
             <FormattedMessage id="workspace.header.tools.import" />
           </Menu.Item>
         ) : null}
-        {enableDBExport && (
+        {session?.supportFeature?.enableDBExport && (
           <Menu.Item key={MenuKey.EXPORT}>
             <FormattedMessage id="workspace.header.tools.export" />
           </Menu.Item>
         )}
 
-        {enableMockData ? (
+        {session?.supportFeature?.enableMockData ? (
           <Menu.Item key={MenuKey.MOCK}>
             {
               formatMessage({
@@ -398,7 +411,7 @@ class Header extends Component<
             }
           </Menu.Item>
         ) : null}
-        {enablePartitionPlan ? (
+        {session?.supportFeature?.enablePartitionPlan ? (
           <Menu.Item key={MenuKey.PARTITION}>
             {
               formatMessage({
@@ -408,7 +421,7 @@ class Header extends Component<
             }
           </Menu.Item>
         ) : null}
-        {enableAsync ? (
+        {session?.supportFeature?.enableAsync ? (
           <Menu.Item key={MenuKey.ASYNC}>
             {
               formatMessage({
@@ -419,7 +432,7 @@ class Header extends Component<
             }
           </Menu.Item>
         ) : null}
-        {!!enableShadowSync && (
+        {!!session?.supportFeature?.enableShadowSync && (
           <Menu.Item key={MenuKey.SHADOW}>
             {
               formatMessage({
@@ -443,7 +456,7 @@ class Header extends Component<
 
     return (
       <>
-        <Spin spinning={switchingDatabase}>
+        <Spin spinning={false}>
           <div className={classNames([styles.header])}>
             <div className={styles.leftContent}>
               <HomeMenu />
@@ -453,7 +466,7 @@ class Header extends Component<
               <Select
                 bordered={false}
                 showSearch
-                value={database && database.name}
+                value={database?.dbName}
                 style={{
                   minWidth: 100,
                   maxWidth: 192,
@@ -516,7 +529,6 @@ class Header extends Component<
             model={{}}
             sessionId={sessionId}
             visible={showCreateSynonymModal}
-            schemaStore={this.props.schemaStore}
             onCancel={() =>
               this.setState({
                 showCreateSynonymModal: false,
