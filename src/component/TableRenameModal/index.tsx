@@ -1,13 +1,12 @@
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
-import React, { Component } from 'react';
-// compatible
-import type { ITable } from '@/d.ts';
 import { getQuoteTableName } from '@/util/utils';
 import { Form, FormInstance, Input, message, Modal } from 'antd';
+import React, { Component } from 'react';
 
 interface IProps {
-  model: Partial<ITable>;
-  onSave: (values: ITable) => void;
+  model: Partial<ITableModel>;
+  onSave: (values: Partial<ITableModel>) => void;
   visible: boolean;
   onCancel: () => void;
 }
@@ -20,7 +19,7 @@ class TableRenameModal extends Component<IProps> {
     if (!data) {
       return;
     }
-    if (getQuoteTableName(model.tableName) === data.tableName) {
+    if (getQuoteTableName(model.info.tableName) === data.tableName) {
       message.error(
         formatMessage({
           id: 'odc.component.TableRenameModal.TheTableNameHasNot',
@@ -29,7 +28,13 @@ class TableRenameModal extends Component<IProps> {
       );
       return;
     }
-    onSave(data);
+    const newData = Object.assign({}, this.props.model, {
+      info: {
+        ...model.info,
+        tableName: data.tableName,
+      },
+    });
+    onSave(newData);
   };
 
   public render() {
@@ -50,7 +55,7 @@ class TableRenameModal extends Component<IProps> {
       >
         <Form
           ref={this.form}
-          initialValues={{ tableName: getQuoteTableName(model.tableName) }}
+          initialValues={{ tableName: getQuoteTableName(model.info.tableName) }}
           {...formItemLayout}
         >
           <Form.Item

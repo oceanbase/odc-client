@@ -1,6 +1,11 @@
-import { dropTable, getTableUpdateSQL, tableModify } from '@/common/network/table';
+import {
+  dropTable,
+  generateUpdateTableDDL,
+  getTableInfo,
+  getTableUpdateSQL,
+  tableModify,
+} from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
-import TableColumnModal from '@/component/TableColumnModal';
 import TableRenameModal from '@/component/TableRenameModal';
 import { copyObj } from '@/component/TemplateInsertModal';
 import {
@@ -9,7 +14,6 @@ import {
   ITableColumn,
   ITableConstraint,
   ITableIndex,
-  ITableModel,
   ITablePartition,
   ITreeNode,
   PageType,
@@ -32,6 +36,7 @@ import EventBus from 'eventbusjs';
 import { inject, observer } from 'mobx-react';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import React, { Component } from 'react';
+import { ITableModel, TableColumn, TableConstraint, TableIndex } from '../CreateTable/interface';
 import { PropsTab, TopTab } from '../TablePage';
 import AddPartitionWithTableNameModal from '../TablePage/Partitions/AddPartitionModal/AddPartitionWithTableNameModal';
 import TreeNodeDirectory, { injectCustomInfoToTreeData } from './component/TreeNodeDirectory';
@@ -56,7 +61,6 @@ interface ITableTreeState {
   currentTable: Partial<ITableModel>;
   executeDMLMode: ExecuteDMLMode;
   showTableRenameModal: boolean;
-  showColumnEditModal: boolean;
   columnToEdit: Partial<ITableColumn>;
   partitionToEdit: Partial<ITablePartition>;
   showSplitPartitionEditModal: boolean;
@@ -90,7 +94,6 @@ export default class TableTree extends Component<
     currentTable: null,
     executeDMLMode: ExecuteDMLMode.CREATE_COLUMN,
     showTableRenameModal: false,
-    showColumnEditModal: false,
     columnToEdit: {},
     partitionToEdit: {},
     showSplitPartitionEditModal: false,
@@ -172,102 +175,88 @@ export default class TableTree extends Component<
     await session.database.loadTable(table.info.tableName);
   };
 
-  public handleDeleteIndex = async (table: Partial<ITableModel>, index: Partial<ITableIndex>) => {
-    const { schemaStore } = this.props;
-
-    if (table.tableName) {
-      const sql = await schemaStore!.getIndexDeleteSQL(table.tableName, index);
-      this.setState({
-        currentTable: table,
-        updateDML: sql,
-        showExecuteSQLModal: true,
-        executeDMLMode: ExecuteDMLMode.DELETE_INDEX,
-      });
-    }
+  public handleDeleteIndex = async (table: Partial<ITableModel>, index: Partial<TableIndex>) => {
+    const newTable = Object.assign({}, table, {
+      indexes: table.indexes.filter((i) => i.ordinalPosition !== index.ordinalPosition),
+    });
+    const ddl = await generateUpdateTableDDL(newTable, table);
+    this.setState({
+      currentTable: table,
+      updateDML: ddl,
+      showExecuteSQLModal: true,
+      executeDMLMode: ExecuteDMLMode.DELETE_INDEX,
+    });
   };
 
   public handleDeleteConstraint = async (
     table: Partial<ITableModel>,
-    constraint: Partial<ITableConstraint>,
+    constraint: Partial<TableConstraint>,
   ) => {
-    const { schemaStore } = this.props;
-
-    if (table.tableName) {
-      const sql = await schemaStore!.getConstraintDeleteSQL(table.tableName, constraint);
-      this.setState({
-        currentTable: table,
-        updateDML: sql,
-        showExecuteSQLModal: true,
-        executeDMLMode: ExecuteDMLMode.DELETE_CONSTRAINT,
-      });
-    }
-  };
-
-  public handleDeleteColumn = async (
-    table: Partial<ITableModel>,
-    column: Partial<ITableColumn>,
-  ) => {
-    const { schemaStore } = this.props;
-
-    const sql = await schemaStore!.getColumnDeleteSQL(table.tableName || '', column);
+    const newTable = Object.assign({}, table, {
+      primaryConstraints: table.primaryConstraints?.filter(
+        (i) => i.ordinalPosition !== constraint.ordinalPosition,
+      ),
+      uniqueConstraints: table.uniqueConstraints?.filter(
+        (i) => i.ordinalPosition !== constraint.ordinalPosition,
+      ),
+      foreignConstraints: table.foreignConstraints?.filter(
+        (i) => i.ordinalPosition !== constraint.ordinalPosition,
+      ),
+      checkConstraints: table.checkConstraints?.filter(
+        (i) => i.ordinalPosition !== constraint.ordinalPosition,
+      ),
+    });
+    const ddl = await generateUpdateTableDDL(newTable, table);
     this.setState({
       currentTable: table,
-      updateDML: sql,
+      updateDML: ddl,
+      showExecuteSQLModal: true,
+      executeDMLMode: ExecuteDMLMode.DELETE_CONSTRAINT,
+    });
+  };
+
+  public handleDeleteColumn = async (table: Partial<ITableModel>, column: Partial<TableColumn>) => {
+    const newTable = Object.assign({}, table, {
+      columns: table.columns?.filter((c) => c.ordinalPosition !== column.ordinalPosition),
+    });
+    const ddl = await generateUpdateTableDDL(newTable, table);
+    this.setState({
+      currentTable: table,
+      updateDML: ddl,
       showExecuteSQLModal: true,
       executeDMLMode: ExecuteDMLMode.DELETE_COLUMN,
     });
   };
 
-  public handleStartEditColumn = async (
-    currentTable: Partial<ITableModel>,
-    column: Partial<ITableColumn>,
-  ) => {
-    this.setState({
-      currentTable,
-      columnToEdit: column,
-      showColumnEditModal: true,
-      executeDMLMode: ExecuteDMLMode.EDIT_COLUMN,
-    });
-  };
-
-  public handleStartCreateColumn = async (currentTable: Partial<ITableModel>) => {
-    this.setState({
-      currentTable,
-      showColumnEditModal: true,
-      executeDMLMode: ExecuteDMLMode.CREATE_COLUMN,
-    });
-  };
-
-  public handleCreateColumn = async (column: ITableColumn) => {
-    const { schemaStore } = this.props;
-    const { currentTable, executeDMLMode, columnToEdit } = this.state;
-    if (currentTable) {
-      const sql =
-        executeDMLMode === ExecuteDMLMode.EDIT_COLUMN
-          ? await schemaStore!.getColumnUpdateSQL(
-              currentTable.tableName,
-              Object.assign(
-                {
-                  initialValue: columnToEdit,
-                },
-                columnToEdit,
-                column,
-              ),
-            )
-          : await schemaStore!.getColumnCreateSQL(currentTable.tableName, column);
-      this.setState({
-        updateDML: sql,
-        showColumnEditModal: false,
-        showExecuteSQLModal: true,
-      });
-    }
-  };
+  // public handleCreateColumn = async (column: ITableColumn) => {
+  //   const { schemaStore } = this.props;
+  //   const { currentTable, executeDMLMode, columnToEdit } = this.state;
+  //   if (currentTable) {
+  //     const sql =
+  //       executeDMLMode === ExecuteDMLMode.EDIT_COLUMN
+  //         ? await schemaStore!.getColumnUpdateSQL(
+  //             currentTable.tableName,
+  //             Object.assign(
+  //               {
+  //                 initialValue: columnToEdit,
+  //               },
+  //               columnToEdit,
+  //               column,
+  //             ),
+  //           )
+  //         : await schemaStore!.getColumnCreateSQL(currentTable.tableName, column);
+  //     this.setState({
+  //       updateDML: sql,
+  //       showColumnEditModal: false,
+  //       showExecuteSQLModal: true,
+  //     });
+  //   }
+  // };
 
   public handleExecuteDML = async () => {
-    const { pageStore, schemaStore, handleRefreshTree } = this.props;
-    const { updatedTableName } = this.state;
-    const tableName = this.state.currentTable && this.state.currentTable.tableName;
-
+    const { pageStore, handleRefreshTree } = this.props;
+    const { updatedTableName, currentTable } = this.state;
+    const tableName = currentTable?.info?.tableName;
     try {
       const isSuccess = await tableModify(this.state.updateDML, tableName || '');
       if (isSuccess) {
@@ -286,42 +275,7 @@ export default class TableTree extends Component<
           },
         });
 
-        if (this.state.executeDMLMode === ExecuteDMLMode.DELETE_INDEX) {
-          message.success(formatMessage({ id: 'workspace.tree.table.deleteIndex.success' }));
-          await schemaStore!.loadTableIndexes(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.CREATE_INDEX) {
-          message.success(formatMessage({ id: 'workspace.tree.table.createIndex.success' }));
-          await schemaStore!.loadTableIndexes(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.CREATE_COLUMN) {
-          message.success(formatMessage({ id: 'workspace.tree.table.createColumn.success' }));
-          // 刷新字段列表
-          await schemaStore!.loadTableColumns(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.DELETE_COLUMN) {
-          message.success(formatMessage({ id: 'workspace.tree.table.deleteColumn.success' }));
-          // 刷新字段列表
-          await schemaStore!.loadTableColumns(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.EDIT_COLUMN) {
-          message.success(formatMessage({ id: 'workspace.tree.table.editColumn.success' }));
-          // 需要刷新字段列表，因为数据类型可能发生了改变
-          await schemaStore!.loadTableColumns(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.CREATE_PARTITION) {
-          message.success(
-            formatMessage({
-              id: 'workspace.tree.table.createPartition.success',
-            }),
-          );
-          await schemaStore!.loadTablePartitions(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.DELETE_PARTITION) {
-          message.success(
-            formatMessage({
-              id: 'workspace.tree.table.deletePartition.success',
-            }),
-          );
-          await schemaStore!.loadTablePartitions(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.SPLIT_PARTITION) {
-          message.success(formatMessage({ id: 'workspace.tree.table.splitPartition.success' }));
-          await schemaStore!.loadTablePartitions(tableName);
-        } else if (this.state.executeDMLMode === ExecuteDMLMode.RENAME_TABLE) {
+        if (this.state.executeDMLMode === ExecuteDMLMode.RENAME_TABLE) {
           message.success(formatMessage({ id: 'workspace.tree.table.rename.success' }));
           // TODO: 刷新表详情页
           // aone/v2/project/874455/bug#openWorkitemIdentifier=32755672
@@ -343,6 +297,10 @@ export default class TableTree extends Component<
             );
           }
           // schemaStore!.updateTableName(tableName, this.state.updatedTableName);
+        } else {
+          const session = this.props.sessionManagerStore.getMasterSession();
+          message.success('操作成功');
+          await session.database.loadTable(tableName);
         }
       }
     } catch (e) {
@@ -378,7 +336,7 @@ export default class TableTree extends Component<
         showTableRenameModal: false,
         showExecuteSQLModal: true,
         executeDMLMode: ExecuteDMLMode.RENAME_TABLE,
-        updatedTableName: table.tableName || '',
+        updatedTableName: table.info.tableName || '',
       });
     }
   };
@@ -418,7 +376,7 @@ export default class TableTree extends Component<
       | Partial<ITableIndex>
       | Partial<ITablePartition>
       | Partial<ITableConstraint> = origin;
-    const tableName = table?.tableName || '';
+    const tableName = table?.info?.tableName || '';
     switch (e.key) {
       case ResourceTreeNodeMenuKeys.BROWSER_SCHEMA:
         this.handleBrowserDDL(tableName, PropsTab.COLUMN);
@@ -438,26 +396,26 @@ export default class TableTree extends Component<
       case ResourceTreeNodeMenuKeys.EXPORT_TABLE:
         modalStore.changeExportModal(true, {
           type: DbObjectType.table,
-          name: table?.tableName,
+          name: table?.info?.tableName,
         });
         break;
       case ResourceTreeNodeMenuKeys.OPEN_SQL_WINDOW:
         this.handleOpenSQLWindow();
         break;
       case ResourceTreeNodeMenuKeys.COPY_NAME:
-        copyObj(table?.tableName, DbObjectType.table, DragInsertType.NAME);
+        copyObj(table?.info?.tableName, DbObjectType.table, DragInsertType.NAME);
         break;
       case ResourceTreeNodeMenuKeys.COPY_SELECT:
-        copyObj(table?.tableName, DbObjectType.table, DragInsertType.SELECT);
+        copyObj(table?.info?.tableName, DbObjectType.table, DragInsertType.SELECT);
         break;
       case ResourceTreeNodeMenuKeys.COPY_INSERT:
-        copyObj(table?.tableName, DbObjectType.table, DragInsertType.INSERT);
+        copyObj(table?.info?.tableName, DbObjectType.table, DragInsertType.INSERT);
         break;
       case ResourceTreeNodeMenuKeys.COPY_UPDATE:
-        copyObj(table?.tableName, DbObjectType.table, DragInsertType.UPDATE);
+        copyObj(table?.info?.tableName, DbObjectType.table, DragInsertType.UPDATE);
         break;
       case ResourceTreeNodeMenuKeys.COPY_DELETE:
-        copyObj(table?.tableName, DbObjectType.table, DragInsertType.DELETE);
+        copyObj(table?.info?.tableName, DbObjectType.table, DragInsertType.DELETE);
         break;
       case ResourceTreeNodeMenuKeys.BROWSER_DDL:
         this.handleBrowserDDL(tableName, PropsTab.DDL);
@@ -474,74 +432,56 @@ export default class TableTree extends Component<
       case ResourceTreeNodeMenuKeys.BROWSER_COLUMNS:
         this.handleBrowserColumns(tableName);
         break;
-      case ResourceTreeNodeMenuKeys.CREATE_COLUMN:
-        this.handleStartCreateColumn(table);
-        break;
       case ResourceTreeNodeMenuKeys.REFRESH_COLUMNS:
-        this.handleRefreshColumns(table);
-        break;
-      case ResourceTreeNodeMenuKeys.EDIT_COLUMN:
-        this.handleStartEditColumn(table, menuItem as ITableColumn);
+        this.handleRefreshTable(table);
         break;
       case ResourceTreeNodeMenuKeys.DELETE_COLUMN:
         this.handleDeleteColumn(table, menuItem as ITableColumn);
         break;
       case ResourceTreeNodeMenuKeys.BROWSER_INDEXES:
-        this.handleBrowserIndexes(table.tableName);
-        break;
-      case ResourceTreeNodeMenuKeys.CREATE_INDEX:
-        this.handleStartCreateIndex(table);
+        this.handleBrowserIndexes(table.info.tableName);
         break;
       case ResourceTreeNodeMenuKeys.REFRESH_INDEXES:
-        this.handleRefreshIndexes(table);
+        this.handleRefreshTable(table);
         break;
       case ResourceTreeNodeMenuKeys.EDIT_INDEX:
-        this.handleBrowserIndexes(table.tableName);
+        this.handleBrowserIndexes(table.info.tableName);
         break;
       case ResourceTreeNodeMenuKeys.DELETE_INDEX:
-        this.handleDeleteIndex(table, menuItem as ITableIndex);
+        this.handleDeleteIndex(table, menuItem as TableIndex);
         break;
       // 目前不支持, 是隐藏状态
       case ResourceTreeNodeMenuKeys.RENAME_INDEX:
         break;
       case ResourceTreeNodeMenuKeys.BROWSER_PARTITIONS:
-        this.handleBrowserPartitions(table.tableName);
-        break;
-      case ResourceTreeNodeMenuKeys.CREATE_PARTITION:
-        this.handleStartCreatePartition(table);
+        this.handleBrowserPartitions(table.info.tableName);
         break;
       case ResourceTreeNodeMenuKeys.REFRESH_PARTITIONS:
-        this.handleRefreshPartitions(table.tableName);
+        this.handleRefreshTable(table);
         break;
       case ResourceTreeNodeMenuKeys.EDIT_PARTITION:
-        this.handleBrowserPartitions(table.tableName);
-        break;
-      case ResourceTreeNodeMenuKeys.DELETE_PARTITION:
-        this.handleDeletePartition(table, menuItem as ITablePartition);
+        this.handleBrowserPartitions(table.info.tableName);
         break;
       // 目前不支持, 是隐藏状态
       case ResourceTreeNodeMenuKeys.RENAME_PARTITION:
         break;
-      case ResourceTreeNodeMenuKeys.SPLIT_PARTITION:
-        this.handleStartSplitPartition(table, menuItem as ITablePartition);
-        break;
       case ResourceTreeNodeMenuKeys.BROWSER_CONSTRAINTS:
-        this.handleBrowserConstraints(table.tableName);
+        this.handleBrowserConstraints(table.info.tableName);
         break;
       // 目前不支持, 是隐藏状态
       case ResourceTreeNodeMenuKeys.CREATE_CONSTRAINT:
         break;
       case ResourceTreeNodeMenuKeys.REFRESH_CONSTRAINTS:
-        this.handleRefreshConstraints(table);
+        this.handleRefreshTable(table);
         break;
       case ResourceTreeNodeMenuKeys.EDIT_CONSTRAINT:
-        this.handleBrowserConstraints(table.tableName);
+        this.handleBrowserConstraints(table.info.tableName);
         break;
       case ResourceTreeNodeMenuKeys.DELETE_CONSTRAINT:
         this.handleDeleteConstraint(table, menuItem as ITableConstraint);
         break;
       case ResourceTreeNodeMenuKeys.REFRESH_CONSTRAINTES:
-        this.handleRefreshConstraints(table);
+        this.handleRefreshTable(table);
         break;
       case ResourceTreeNodeMenuKeys.DOWNLOAD: {
         this.downloadTable(tableName);
@@ -553,10 +493,10 @@ export default class TableTree extends Component<
     }
   };
   downloadTable = async (tableName: string) => {
-    const { schemaStore } = this.props;
-    const table = await schemaStore.getTableContent(tableName);
+    const session = this.props.sessionManagerStore.getMasterSession();
+    const table = await getTableInfo(tableName, session.database.dbName, session.sessionId);
     if (table) {
-      downloadPLDDL(tableName, 'TABLE', table.DDL);
+      downloadPLDDL(tableName, 'TABLE', table.info?.DDL);
     }
   };
 
@@ -566,7 +506,7 @@ export default class TableTree extends Component<
       root: { origin },
     } = node;
     const table: Partial<ITableModel> = origin;
-    const tableName = table?.tableName || '';
+    const tableName = table?.info?.tableName || '';
     switch (type) {
       case DbObjectType.table:
         this.handleBrowserSchema(tableName, TopTab.PROPS);
@@ -625,7 +565,6 @@ export default class TableTree extends Component<
       updateDML,
       showExecuteSQLModal,
       currentTable,
-      showColumnEditModal,
       showTableRenameModal,
       executeDMLMode,
       columnToEdit,
@@ -651,16 +590,6 @@ export default class TableTree extends Component<
           visible={showTableRenameModal}
           onCancel={() => this.setState({ showTableRenameModal: false })}
           onSave={this.handleSubmitRenameTable}
-        />
-        <TableColumnModal
-          model={
-            executeDMLMode === ExecuteDMLMode.EDIT_COLUMN
-              ? columnToEdit
-              : { _created: true, allowNull: true }
-          }
-          visible={showColumnEditModal}
-          onCancel={() => this.setState({ showColumnEditModal: false })}
-          onSave={this.handleCreateColumn}
         />
         <AddPartitionWithTableNameModal ref={this.addPartitionRef} />
         <ExecuteSQLModal
