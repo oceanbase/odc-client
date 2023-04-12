@@ -392,7 +392,7 @@ class ResourceTree extends PureComponent<
             return (
               <Tabs.TabPane tab={title} key={key}>
                 <TreeRoot
-                  key={session.sessionId}
+                  key={session?.sessionId}
                   loading={loading}
                   searchKey={searchKey}
                   filterValue={filterValue[activeResource]}

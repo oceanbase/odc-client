@@ -1,6 +1,6 @@
-import { SynonymType } from '@/d.ts';
+import { ISynonym, SynonymType } from '@/d.ts';
 import request from '@/util/request';
-import { generateDatabaseSid } from './pathUtil';
+import { generateDatabaseSid, generateSynonymSid } from './pathUtil';
 
 export async function getSynonymList(synonymType: SynonymType, dbName: string, sessionId: string) {
   const sid = generateDatabaseSid(dbName, sessionId);
@@ -10,4 +10,18 @@ export async function getSynonymList(synonymType: SynonymType, dbName: string, s
     },
   });
   return res?.data;
+}
+
+export async function getSynonymCreateSQL(
+  synonymName: string,
+  synonym: Partial<ISynonym>,
+  sessionId: string,
+  dbName: string,
+) {
+  const sid = generateSynonymSid(synonymName, sessionId, dbName);
+
+  const ret = await request.post(`/api/v1/synonym/getCreateSql/${sid}`, {
+    data: synonym,
+  });
+  return ret?.data?.sql;
 }

@@ -144,3 +144,9 @@ export async function getTableUpdateSQL(
   });
   return ret?.data?.sql;
 }
+
+export async function getTableListByDatabaseName(sessionId: string, databaseName?: string) {
+  const sid = generateDatabaseSid(databaseName, sessionId);
+  const ret = await request.get(`/api/v1/table/list/${sid}`);
+  return ret?.data || [];
+}

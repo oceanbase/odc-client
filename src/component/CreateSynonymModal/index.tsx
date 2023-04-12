@@ -1,20 +1,22 @@
 import { getSynonymList } from '@/common/network/synonym';
+import { getTableListByDatabaseName } from '@/common/network/table';
 import { getViewListByDatabaseName } from '@/common/network/view';
 import { ISynonym, ITable, SynonymType } from '@/d.ts';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import { Button, Form, Input, Modal, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form';
+import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import styles from './index.less';
 
 interface IProps {
-  schemaStore?: SchemaStore;
   model: Partial<ISynonym>;
   onSave: (values: ISynonym) => void;
   visible: boolean;
   onCancel: () => void;
   sessionId: string;
+  sessionManagerStore?: SessionManagerStore;
 }
 
 interface IState {
@@ -37,6 +39,9 @@ enum ObjectType {
 }
 
 const { Option } = Select;
+
+@inject('sessionManagerStore')
+@observer
 export default class CreateSynonymModal extends Component<IProps, IState> {
   public readonly state = {
     objectList: [],
@@ -51,8 +56,8 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
   private formRef = React.createRef<FormInstance>();
 
   public componentDidMount() {
-    const { schemaStore } = this.props;
-    this.handleChangeTableOwner(schemaStore?.database?.name);
+    const session = this.props.sessionManagerStore.getMasterSession();
+    this.handleChangeTableOwner(session?.database?.dbName);
   }
 
   componentDidUpdate(prevProps) {
@@ -65,8 +70,17 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
   }
 
   private loadSynoymList = async () => {
-    const commonList = await getSynonymList(SynonymType.COMMON);
-    const publicList = await getSynonymList(SynonymType.PUBLIC);
+    const session = this.props.sessionManagerStore.getMasterSession();
+    const commonList = await getSynonymList(
+      SynonymType.COMMON,
+      session.database.dbName,
+      session.sessionId,
+    );
+    const publicList = await getSynonymList(
+      SynonymType.PUBLIC,
+      session.database.dbName,
+      session.sessionId,
+    );
     this.setState({
       synonyms: {
         COMMON: commonList,
@@ -126,12 +140,12 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
   };
 
   private getObjectList = async (owner: string, type: ObjectType) => {
-    const { schemaStore } = this.props;
     let objectList = [];
+    const session = this.props.sessionManagerStore.getMasterSession();
     if (type === ObjectType.VIEW) {
       objectList = await getViewListByDatabaseName(owner);
     } else {
-      objectList = await schemaStore.getTableListByDatabaseName(owner);
+      objectList = await getTableListByDatabaseName(session.sessionId, owner);
     }
     return objectList;
   };
@@ -157,14 +171,11 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
   };
 
   public render() {
-    const {
-      visible,
-      onCancel,
-      schemaStore: { databases },
-    } = this.props;
+    const { visible, sessionManagerStore, onCancel } = this.props;
     const { objectList, tableOwner, objectType } = this.state;
     const formItemStyle = { width: '328px' };
-
+    const session = sessionManagerStore.getMasterSession();
+    const databases = session.databases;
     return (
       <Modal
         width={480}

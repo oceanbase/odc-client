@@ -343,7 +343,10 @@ export default class TableTree extends Component<
 
   public handleLoadTreeNodes = async (treeNode: AntTreeNode) => {
     const { root } = treeNode.props.dataRef;
-    const tableName = root.origin?.tableName;
+    const tableName = root.origin?.info?.tableName;
+    if (root.origin?.columns?.length) {
+      return;
+    }
     if (!tableName) {
       return;
     }
@@ -534,6 +537,9 @@ export default class TableTree extends Component<
   private getTreeList = () => {
     const { searchKey, sessionManagerStore } = this.props;
     const session = sessionManagerStore.getMasterSession();
+    if (!session) {
+      return [];
+    }
     const tables = session.database.tables;
     const dataTypes = session.dataTypes;
     const treeNodes: ITreeNode[] = [];
@@ -561,16 +567,7 @@ export default class TableTree extends Component<
 
   public render() {
     const { sessionManagerStore, loading } = this.props;
-    const {
-      updateDML,
-      showExecuteSQLModal,
-      currentTable,
-      showTableRenameModal,
-      executeDMLMode,
-      columnToEdit,
-    } = this.state;
-    const session = sessionManagerStore.getMasterSession();
-    const mode = session.connection.dialectType;
+    const { updateDML, showExecuteSQLModal, currentTable, showTableRenameModal } = this.state;
 
     return (
       <>
@@ -578,7 +575,7 @@ export default class TableTree extends Component<
           <TreeNodeDirectory
             showIcon={false}
             treeList={this.getTreeList()}
-            loadedKeys={[]}
+            loadedKeys={null}
             handleLoadTreeData={this.handleLoadTreeNodes}
             onDoubleClick={this.handleTreeNodeDoubleClick}
             onMenuClick={this.handleTreeNodeMenuClick}

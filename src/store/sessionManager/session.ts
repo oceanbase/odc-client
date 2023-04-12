@@ -123,7 +123,7 @@ class SessionStore {
       const sessionId = await newSession(
         this.connection.id.toString(),
         password,
-        parantSessionId.toString(),
+        parantSessionId?.toString(),
         cloudParams,
         true,
       );

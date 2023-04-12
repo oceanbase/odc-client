@@ -1,9 +1,10 @@
 import { IConnection } from '@/d.ts';
 import request from '@/util/request';
-import { action, observable } from 'mobx';
+import { toInteger } from 'lodash';
+import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
 
-type ConnectionId = string | number;
+type ConnectionId = number;
 
 export class SessionManagerStore {
   @observable
@@ -18,16 +19,18 @@ export class SessionManagerStore {
   public masterSessionIdMap: Map<ConnectionId, string> = new Map();
 
   @observable
-  public connection: Map<ConnectionId, IConnection> = new Map();
+  public connection: Map<number, IConnection> = new Map();
 
   getMasterSession(cid?: ConnectionId) {
     if (!cid) {
       /**
        * 暂时兼容老的逻辑
        */
-      cid = this.connection.keys()?.[0];
+      cid = Array.from(this.connection.keys())?.[0];
     }
     const sessionId = this.masterSessionIdMap.get(cid);
+    this.masterSessionIdMap.keys()?.[0];
+    this.sessionMap.keys()?.[0];
     if (!sessionId) {
       return null;
     }
@@ -38,7 +41,7 @@ export class SessionManagerStore {
    * 获取connection的信息
    */
   async initConnection(connectionId: ConnectionId) {
-    if (this.connection.get(connectionId)) {
+    if (this.connection.get(toInteger(connectionId))) {
       return true;
     }
     const results = await request.get(`/api/v2/connect/connections/${connectionId}`);
@@ -61,14 +64,17 @@ export class SessionManagerStore {
     if (!(await this.initConnection(cid))) {
       return null;
     }
-    const connection = this.connection.get(cid);
+    const connection = this.connection.get(toInteger(cid));
     const session = await SessionStore.createInstance(connection, connection.defaultSchema);
-    if (session) {
-      this.sessionMap.set(session.sessionId, session);
-      if (isMaster) {
-        this.masterSessionIdMap.set(cid, session.sessionId);
+    runInAction(() => {
+      if (session) {
+        this.sessionMap.set(session.sessionId, session);
+        if (isMaster) {
+          this.masterSessionIdMap.set(toInteger(cid), session.sessionId);
+        }
       }
-    }
+    });
+
     return session;
   }
 
@@ -81,7 +87,7 @@ export class SessionManagerStore {
     if (!(await this.initConnection(cid))) {
       return null;
     }
-    const connection = this.connection.get(cid);
+    const connection = this.connection.get(toInteger(cid));
     const session = await SessionStore.recoverExistInstance(
       connection,
       sessionId,
@@ -90,7 +96,7 @@ export class SessionManagerStore {
     if (session) {
       this.sessionMap.set(session.sessionId, session);
       if (isMaster) {
-        this.masterSessionIdMap.set(cid, session.sessionId);
+        this.masterSessionIdMap.set(toInteger(cid), session.sessionId);
       }
     }
     return session;
@@ -102,10 +108,10 @@ export class SessionManagerStore {
 
   @action
   destoryStore(force: boolean = false) {
-    this.connection = new Map();
+    this.connection.clear();
     SessionStore.batchDestory(Array.from(this.sessionMap.values()), force);
-    this.sessionMap = new Map();
-    this.masterSessionIdMap = new Map();
+    this.sessionMap.clear();
+    this.masterSessionIdMap.clear();
   }
   @action
   destorySession(sessionId: string, force: boolean = false) {

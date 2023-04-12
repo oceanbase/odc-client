@@ -37,16 +37,20 @@ export function generateSequenceSid(sName: string): string {
   return `${generateDatabaseSid()}:s:${encodeObjName(sName)}`;
 }
 
-export function generatePackageSid(paName: string): string {
-  return `${generateDatabaseSid()}:pkg:${encodeObjName(paName)}`;
+export function generatePackageSid(paName: string, sessionId?: string, dbName?: string): string {
+  return `${generateDatabaseSid(dbName, sessionId)}:pkg:${encodeObjName(paName)}`;
 }
 
 export function generateTriggerSid(triggerName: string): string {
   return `${generateDatabaseSid()}:tr:${encodeObjName(triggerName)}`;
 }
 
-export function generateSynonymSid(synonymName: string): string {
-  return `${generateDatabaseSid()}:syn:${encodeObjName(synonymName)}`;
+export function generateSynonymSid(
+  synonymName: string,
+  sessionId?: string,
+  dbName?: string,
+): string {
+  return `${generateDatabaseSid(sessionId, dbName)}:syn:${encodeObjName(synonymName)}`;
 }
 
 export function generateTypeSid(typeName: string): string {
