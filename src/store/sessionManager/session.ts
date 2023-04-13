@@ -91,6 +91,7 @@ class SessionStore {
     password?: string,
     parentSessionId?: string | number,
     cloudParams?: any,
+    simpleMode?: boolean,
   ) {
     const session = new SessionStore(connection);
     if (await session.init(dbName, password, parentSessionId, cloudParams)) {

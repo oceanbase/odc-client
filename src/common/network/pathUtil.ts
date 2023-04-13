@@ -21,16 +21,20 @@ export function generateTableSid(
   return `${generateDatabaseSid(databaseName, sessionId)}:t:${encodeObjName(tableName)}`;
 }
 
-export function generateViewSid(viewName: string, databaseName: string = ''): string {
-  return `${generateDatabaseSid(databaseName)}:v:${encodeObjName(viewName)}`;
+export function generateViewSid(
+  viewName: string,
+  databaseName: string = '',
+  sessionId: string,
+): string {
+  return `${generateDatabaseSid(databaseName, sessionId)}:v:${encodeObjName(viewName)}`;
 }
 
-export function generateFunctionSid(funName: string): string {
-  return `${generateDatabaseSid()}:f:${encodeObjName(funName)}`;
+export function generateFunctionSid(funName: string, sessionId?: string, dbName?: string): string {
+  return `${generateDatabaseSid(dbName, sessionId)}:f:${encodeObjName(funName)}`;
 }
 
-export function generateProcedureSid(pName: string): string {
-  return `${generateDatabaseSid()}:p:${encodeObjName(pName)}`;
+export function generateProcedureSid(pName: string, sessionId?: string, dbName?: string): string {
+  return `${generateDatabaseSid(dbName, sessionId)}:p:${encodeObjName(pName)}`;
 }
 
 export function generateSequenceSid(sName: string): string {

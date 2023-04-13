@@ -1030,6 +1030,10 @@ export interface IFunction {
   createTime?: number;
   modifyTime?: number;
   errorMessage: string;
+  variables: {
+    varName: string;
+    varType: string;
+  }[];
 }
 
 export enum ParamMode {
@@ -1058,6 +1062,10 @@ export interface IProcedure {
   modifyTime: number;
   status: string;
   errorMessage: string;
+  variables: {
+    varName: string;
+    varType: string;
+  }[];
 }
 
 // 程序包
@@ -1073,6 +1081,10 @@ export interface IPackage {
 
     functions: any[];
     procedures: any[];
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
   };
 
   packageHead: {
@@ -1085,6 +1097,10 @@ export interface IPackage {
 
     functions: any[];
     procedures: any[];
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
   };
 
   packageName: string;

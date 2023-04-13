@@ -11,7 +11,7 @@ import appConfig from '@/constant/appConfig';
 import type { IPage } from '@/d.ts';
 import { IConnectionType, ResourceTabKey } from '@/d.ts';
 import PartitionDrawer from '@/page/Workspace/components/PartitionDrawer';
-import ResourceTree from '@/page/Workspace/components/ResourceTree';
+import ResourceTree from '@/page/Workspace/ResourceTree';
 import localLoginHistoy from '@/service/localLoginHistoy';
 import type { CommonStore } from '@/store/common';
 import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
@@ -28,7 +28,7 @@ import { formatMessage } from '@/util/intl';
 import { extractResourceId } from '@/util/utils';
 import { useParams } from '@umijs/max';
 import { Layout, message, Modal } from 'antd';
-import { debounce } from 'lodash';
+import { debounce, toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useEffect, useState } from 'react';
@@ -263,7 +263,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       if (!cid) {
         message.error('cid is not find');
       } else {
-        const session = await sessionManagerStore.createSession(true, cid);
+        const session = await sessionManagerStore.createSession(true, toInteger(cid));
         if (session) {
           if (localLoginHistoy.isNewVersion()) {
             localLoginHistoy.updateVersion();
@@ -311,7 +311,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
             onChange={handleChangeSiderWidth}
           >
             <Sider width={siderWidth} className={styles.sider}>
-              <ResourceTree activeResource={activeResource} />
+              <ResourceTree />
             </Sider>
             <Content>
               <WindowManager

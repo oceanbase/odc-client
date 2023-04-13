@@ -499,7 +499,7 @@ export default class TableTree extends Component<
     const session = this.props.sessionManagerStore.getMasterSession();
     const table = await getTableInfo(tableName, session.database.dbName, session.sessionId);
     if (table) {
-      downloadPLDDL(tableName, 'TABLE', table.info?.DDL);
+      downloadPLDDL(tableName, 'TABLE', table.info?.DDL, session.database.dbName);
     }
   };
 
