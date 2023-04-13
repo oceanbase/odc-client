@@ -7,8 +7,13 @@ import {
   generateTypeSid,
 } from './pathUtil';
 
-export async function getProcedureByProName(proName: string, ignoreError?: boolean) {
-  const sid = generateProcedureSid(proName);
+export async function getProcedureByProName(
+  proName: string,
+  ignoreError?: boolean,
+  sessionId?: string,
+  dbName?: string,
+) {
+  const sid = generateProcedureSid(proName, sessionId, dbName);
   const { data: procedure } = await request.get(`/api/v1/procedure/${sid}`, {
     params: {
       ignoreError,
@@ -22,8 +27,13 @@ export async function getProcedureByProName(proName: string, ignoreError?: boole
   return procedure;
 }
 
-export async function getFunctionByFuncName(funcName: string, ignoreError?: boolean) {
-  const sid = generateFunctionSid(funcName);
+export async function getFunctionByFuncName(
+  funcName: string,
+  ignoreError?: boolean,
+  sessionId?: string,
+  dbName?: string,
+) {
+  const sid = generateFunctionSid(funcName, sessionId, dbName);
   const { data: func } = await request.get(`/api/v1/function/${sid}`, {
     params: {
       ignoreError,

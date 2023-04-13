@@ -60,12 +60,24 @@ export class SessionManagerStore {
    * @returns 创建的 session
    */
   @action
-  async createSession(isMaster?: boolean, cid?: ConnectionId): Promise<SessionStore | null> {
+  async createSession(
+    isMaster?: boolean,
+    cid?: ConnectionId,
+    dbName?: string,
+    simpleMode?: boolean,
+  ): Promise<SessionStore | null> {
     if (!(await this.initConnection(cid))) {
       return null;
     }
     const connection = this.connection.get(toInteger(cid));
-    const session = await SessionStore.createInstance(connection, connection.defaultSchema);
+    const session = await SessionStore.createInstance(
+      connection,
+      dbName || connection.defaultSchema,
+      null,
+      null,
+      null,
+      simpleMode,
+    );
     runInAction(() => {
       if (session) {
         this.sessionMap.set(session.sessionId, session);

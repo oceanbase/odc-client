@@ -1,6 +1,5 @@
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
 import connection from '@/store/connection';
-import schema from '@/store/schema';
 import { generateAndDownloadFile, getQuoteTableName } from '../utils';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
@@ -41,7 +40,6 @@ export default function exportToSQL(
     .join(';\n');
 }
 
-export function downloadPLDDL(plName: string, plType, ddl: string) {
-  const dbName = schema.database.name;
+export function downloadPLDDL(plName: string, plType, ddl: string, dbName: string) {
   generateAndDownloadFile(`${dbName}_${plType}_${plName}.sql`, ddl);
 }

@@ -1,5 +1,10 @@
+import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
 import { switchSchema } from '@/common/network/connection';
-import { generateDatabaseSid } from '@/common/network/pathUtil';
+import {
+  generateDatabaseSid,
+  generatePackageSid,
+  generateViewSid,
+} from '@/common/network/pathUtil';
 import { getSynonymList } from '@/common/network/synonym';
 import { getTableInfo } from '@/common/network/table';
 import { getTypeList } from '@/common/network/type';
@@ -16,6 +21,7 @@ import {
   SynonymType,
 } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
+import { formatMessage } from '@/util/intl';
 import logger from '@/util/logger';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
@@ -73,10 +79,6 @@ class DatabaseStore {
       if (!isSuccess) {
         return false;
       }
-      /**
-       * 这里只需要先去请求表列表，其他的对象使用到再去获取。
-       */
-      await this.getTableList();
       return true;
     } catch (e) {
       logger.error('create database error', e);
@@ -128,6 +130,21 @@ class DatabaseStore {
   }
 
   @action
+  public async loadView(viewName: string) {
+    const sid = generateViewSid(viewName, this.dbName, this.sessionId);
+    const { data: view } = (await request.get(`/api/v1/view/${sid}`)) || {};
+    const newView = { ...view, columns: view.columns || [] };
+    const idx = this.views.findIndex((t) => t.viewName === viewName);
+    if (idx > -1) {
+      const newViews = [...this.views];
+      newViews[idx] = newView;
+      runInAction(() => {
+        this.views = newViews;
+      });
+    }
+  }
+
+  @action
   public async getFunctionList(ignoreError?: boolean) {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/function/list/${sid}`, {
@@ -141,12 +158,44 @@ class DatabaseStore {
   }
 
   @action
+  public async loadFunction(funName: string) {
+    const func = await getFunctionByFuncName(funName, false, this.sessionId, this.dbName);
+    const idx = this.functions.findIndex((t) => t.funName === funName);
+
+    if (idx !== -1) {
+      this.functions[idx] = {
+        ...func,
+        // 漠高：status 只能在列表里查到
+        status: this.functions[idx].status,
+      };
+    }
+
+    return func;
+  }
+
+  @action
   public async getProcedureList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/procedure/list/${sid}`);
     runInAction(() => {
       this.procedures = ret?.data || [];
     });
+  }
+
+  @action
+  public async loadProcedure(procName: string) {
+    const func = await getProcedureByProName(procName, false, this.sessionId, this.dbName);
+    const idx = this.procedures.findIndex((t) => t.proName === procName);
+
+    if (idx !== -1) {
+      this.procedures[idx] = {
+        ...func,
+        // 漠高：status 只能在列表里查到
+        status: this.procedures[idx].status,
+      };
+    }
+
+    return func;
   }
 
   @action
@@ -177,6 +226,78 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/package/list/${sid}`);
     this.packages = ret?.data || [];
+  }
+
+  @action
+  public async loadPackage(pkgName: string, ignoreError?: boolean) {
+    const sid = generatePackageSid(pkgName, this.sessionId, this.dbName);
+    const res = await request.get(`/api/v1/package/${sid}`, {
+      params: {
+        ignoreError,
+      },
+    });
+    const data = res?.data;
+    const packageName = data?.packageName;
+    if (data) {
+      function addKey(target, paramName) {
+        const keyMap = {};
+        target[paramName] = target[paramName]
+          ?.map((obj) => {
+            const { params, returnType, proName, funName } = obj;
+            const name = proName || funName;
+            const key = btoa(
+              encodeURIComponent(
+                params
+                  ?.map((p) => {
+                    return p.paramName + ':' + p.dataType;
+                  })
+                  ?.join('$@p@$') +
+                  '$@' +
+                  returnType,
+              ),
+            );
+            const uniqKey = packageName + '.' + name + '*' + key;
+            if (keyMap[uniqKey]) {
+              /**
+               * 去除完全一致的子程序
+               */
+              return null;
+            }
+            keyMap[uniqKey] = key;
+            return {
+              ...obj,
+              params: params?.map((param) =>
+                Object.assign({}, param, {
+                  originDefaultValue: param.defaultValue,
+                }),
+              ),
+              key: uniqKey,
+            };
+          })
+          .filter(Boolean);
+      }
+      const pkgBody = data.packageBody;
+      const pkgHead = data.packageHead;
+      if (pkgBody) {
+        addKey(pkgBody, 'functions');
+        addKey(pkgBody, 'procedures');
+      }
+      if (pkgHead) {
+        addKey(pkgHead, 'functions');
+        addKey(pkgHead, 'procedures');
+      }
+    }
+    const { packageBody, packageHead } = data;
+
+    if (!packageHead && !packageBody) {
+      throw new Error(
+        formatMessage({ id: 'odc.src.store.schema.TheHeaderOfTheObtained' }), //获取包体包头为空
+      );
+    }
+    const idx = this.packages.findIndex((t) => t.packageName === packageName);
+    if (idx !== -1) {
+      this.packages[idx] = { ...this.packages[idx], packageBody, packageHead };
+    }
   }
 
   @action
