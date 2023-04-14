@@ -1235,6 +1235,13 @@ export interface ITriggerForm {
 export interface IType {
   typeName: string;
   type: TypeCode;
+  typeDetail: {
+    functions: IFunction[];
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
+  };
   owner?: string;
   createTime?: number;
   lastDdlTime?: number;

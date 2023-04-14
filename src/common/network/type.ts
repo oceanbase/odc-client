@@ -8,8 +8,13 @@ export async function getTypeList(dbName: string, sessionId: string) {
   return res?.data;
 }
 
-export async function getType(typeName: string, ignoreError?: boolean) {
-  const sid = generateTypeSid(typeName);
+export async function getType(
+  typeName: string,
+  ignoreError?: boolean,
+  dbName?: string,
+  sessionId?: string,
+) {
+  const sid = generateTypeSid(typeName, sessionId, dbName);
   const res = await request.get(`/api/v1/type/${sid}`, {
     params: {
       ignoreError,

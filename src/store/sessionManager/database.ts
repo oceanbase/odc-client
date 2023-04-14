@@ -7,7 +7,7 @@ import {
 } from '@/common/network/pathUtil';
 import { getSynonymList } from '@/common/network/synonym';
 import { getTableInfo } from '@/common/network/table';
-import { getTypeList } from '@/common/network/type';
+import { getType, getTypeList } from '@/common/network/type';
 import {
   IFunction,
   IPackage,
@@ -222,6 +222,19 @@ class DatabaseStore {
   }
 
   @action
+  public async loadType(typeName: string) {
+    const type = await getType(typeName, false, this.dbName, this.sessionId);
+    const idx = this.types.findIndex((t) => t.typeName === typeName);
+    if (idx !== -1) {
+      this.types[idx] = {
+        ...type,
+        status: this.types[idx].status,
+      };
+    }
+    return type;
+  }
+
+  @action
   public async getPackageList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/package/list/${sid}`);
@@ -311,7 +324,7 @@ class DatabaseStore {
   public async getPublicSynonymList() {
     const synonym = await getSynonymList(SynonymType.PUBLIC, this.dbName, this.sessionId);
 
-    this.synonyms = synonym || [];
+    this.publicSynonyms = synonym || [];
   }
 }
 

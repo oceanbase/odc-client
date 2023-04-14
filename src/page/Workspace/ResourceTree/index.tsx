@@ -1,4 +1,4 @@
-import { IDatabase, IFunction, IPackage, IProcedure, IView } from '@/d.ts';
+import { IDatabase, IFunction, IPackage, IProcedure, IType, IView } from '@/d.ts';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { DisconnectOutlined } from '@ant-design/icons';
 import { Tree } from 'antd';
@@ -163,6 +163,60 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
             break;
           }
           await dbSession.database.loadPackage(packageName);
+          break;
+        }
+        // trigger
+        case ResourceNodeType.TriggerRoot: {
+          const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+          if (!dbSession) {
+            break;
+          }
+          await dbSession.database.getTriggerList();
+          break;
+        }
+        // sequence
+        case ResourceNodeType.SequenceRoot: {
+          const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+          if (!dbSession) {
+            break;
+          }
+          await dbSession.database.getSequenceList();
+          break;
+        }
+        // synonym
+        case ResourceNodeType.SynonymRoot: {
+          const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+          if (!dbSession) {
+            break;
+          }
+          await dbSession.database.getSynonymList();
+          break;
+        }
+        // public synonym
+        case ResourceNodeType.PublicSynonymRoot: {
+          const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+          if (!dbSession) {
+            break;
+          }
+          await dbSession.database.getPublicSynonymList();
+          break;
+        }
+        //type
+        case ResourceNodeType.TypeRoot: {
+          const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+          if (!dbSession) {
+            break;
+          }
+          await dbSession.database.getTypeList();
+          break;
+        }
+        case ResourceNodeType.Type: {
+          const typeName = (data as IType).typeName;
+          const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+          if (!dbSession) {
+            break;
+          }
+          await dbSession.database.loadType(typeName);
           break;
         }
       }

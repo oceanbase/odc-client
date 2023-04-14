@@ -69,7 +69,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             ),
             children: packageHead.variables?.map((v, i) => {
               return {
-                title: v.varName,
+                title: `${v.varName}:${v.varType}`,
                 key: `${pkgKey}-head-variable-${v.varName}-${v.varType}-${i}`,
                 type: ResourceNodeType.PackageHeadVariable,
                 isLeaf: true,
@@ -93,12 +93,12 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
               />
             ),
             children: functions
-              .map((func) => {
-                return FunctionTreeNodeData(func, dbSession, dbName, pkgKey);
+              .map((func, i) => {
+                return FunctionTreeNodeData(func, dbSession, dbName, `${pkgKey}-${i}`);
               })
               .concat(
-                procedures.map((proc) => {
-                  return ProcedureTreeNodeData(proc, dbSession, dbName, pkgKey);
+                procedures.map((proc, i) => {
+                  return ProcedureTreeNodeData(proc, dbSession, dbName, `${pkgKey}-${i}`);
                 }),
               ),
           };
@@ -135,7 +135,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             ),
             children: packageBody.variables?.map((v, i) => {
               return {
-                title: v.varName,
+                title: `${v.varName}:${v.varType}`,
                 key: `${pkgKey}-body-variable-name${v.varName}-${v.varType}-${i}`,
                 type: ResourceNodeType.PackageBodyVariable,
                 isLeaf: true,
@@ -159,12 +159,12 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
               />
             ),
             children: functions
-              .map((func) => {
-                return FunctionTreeNodeData(func, dbSession, dbName, pkgKey + '-body-');
+              .map((func, i) => {
+                return FunctionTreeNodeData(func, dbSession, dbName, pkgKey + '-body-' + i);
               })
               .concat(
-                procedures.map((proc) => {
-                  return ProcedureTreeNodeData(proc, dbSession, dbName, pkgKey + '-body-');
+                procedures.map((proc, i) => {
+                  return ProcedureTreeNodeData(proc, dbSession, dbName, pkgKey + '-body-' + i);
                 }),
               ),
           };
