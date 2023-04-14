@@ -41,6 +41,19 @@ export enum ResourceNodeType {
   PackageBodyVariableRoot,
   PackageBodyVariable,
   PackageBodyProgramRoot,
+  TriggerRoot,
+  Trigger,
+  SequenceRoot,
+  Sequence,
+  SynonymRoot,
+  Synonym,
+  PublicSynonymRoot,
+  PublicSynonym,
+  TypeRoot,
+  Type,
+  TypeVariableRoot,
+  TypeVariable,
+  TypeProgramRoot,
 }
 
 interface ExtraData {
