@@ -19,13 +19,12 @@ interface IRuleConfigTableProps {
   dbMode?: ConnectionMode;
 }
 
-const PAGE_SIZE = 10;
-
 const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
-  const { value, form, columnSizeMap, readonly, dbMode } = props;
+  const { value = [], form, columnSizeMap, readonly, dbMode } = props;
   const taskDbMode = dbMode || connection.connection.dbMode;
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   function initColumns(): ColumnProps<IMockFormColumn>[] {
     return [
@@ -75,7 +74,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
         dataIndex: 'rule',
         width: 120,
         render(_, t, index) {
-          index = (currentPage - 1) * PAGE_SIZE + index;
+          index = (currentPage - 1) * pageSize + index;
           return (
             <Form.Item
               style={{ marginBottom: 0 }}
@@ -119,7 +118,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
         }), // 细则
         dataIndex: 'typeConfig',
         render(_, t, index) {
-          index = (currentPage - 1) * PAGE_SIZE + index;
+          index = (currentPage - 1) * pageSize + index;
           return (
             <Form.Item
               style={{ marginBottom: 0 }}
@@ -155,13 +154,17 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
         }
         return i % 2 === 0 ? 'o-min-table-even' : 'o-min-table-odd';
       }}
-      dataSource={value || []}
+      dataSource={value}
       onChange={(page) => {
         setCurrentPage(page.current);
       }}
       pagination={{
-        pageSize: PAGE_SIZE,
+        pageSize,
         current: currentPage,
+        showSizeChanger: value.length >= 20 ? true : false,
+        onShowSizeChange(current, size) {
+          setPageSize(size);
+        },
       }}
     />
   );
