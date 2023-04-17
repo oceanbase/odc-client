@@ -44,6 +44,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           title: '列',
           type: ResourceNodeType.TableColumnRoot,
           key: `${tableKey}-column`,
+          sessionId: dbSession?.sessionId,
           icon: (
             <FolderOpenFilled
               style={{
@@ -84,6 +85,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               }}
             />
           ),
+          sessionId: dbSession?.sessionId,
           children: table.indexes?.map((c) => {
             return {
               title: c.name,
@@ -109,6 +111,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         title: '分区',
         type: ResourceNodeType.TablePartitionRoot,
         key: `${tableKey}-partition`,
+        sessionId: dbSession?.sessionId,
         icon: (
           <FolderOpenFilled
             style={{
@@ -127,6 +130,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: 'HASH',
               key: `${tableKey}-partition-hash`,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={PartitionSvg}
@@ -146,6 +150,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: 'KEY',
               key: `${tableKey}-partition-key`,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={PartitionSvg}
@@ -165,6 +170,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: p.name,
               key: `${tableKey}-partition-list-${p.name}`,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={PartitionSvg}
@@ -184,6 +190,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: p.name,
               key: `${tableKey}-partition-listColumns-${p.name}`,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={PartitionSvg}
@@ -203,6 +210,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: p.name,
               key: `${tableKey}-partition-range-${p.name}`,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={PartitionSvg}
@@ -222,6 +230,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: p.name,
               key: `${tableKey}-partition-rangeColumns-${p.name}`,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={PartitionSvg}
@@ -259,6 +268,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           title: '约束',
           type: ResourceNodeType.TableConstraintRoot,
           key: `${tableKey}-constraint`,
+          sessionId: dbSession?.sessionId,
           icon: (
             <FolderOpenFilled
               style={{
@@ -271,6 +281,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: c.name,
               type: ResourceNodeType.TableConstraint,
               isLeaf: true,
+              sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
                   component={IndexSvg}

@@ -35,6 +35,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
           title: '列',
           type: ResourceNodeType.ViewColumnRoot,
           key: `${viewKey}-view`,
+          sessionId: dbSession?.sessionId,
           icon: (
             <FolderOpenFilled
               style={{
