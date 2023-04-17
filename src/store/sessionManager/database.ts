@@ -110,6 +110,9 @@ class DatabaseStore {
   @action
   public async loadTable(tableName: string) {
     const table = await getTableInfo(tableName, this.dbName, this.sessionId);
+    if (!table) {
+      return;
+    }
     const idx = this.tables.findIndex((t) => t.info.tableName === tableName);
     if (idx > -1) {
       const newTables = [...this.tables];
@@ -161,7 +164,9 @@ class DatabaseStore {
   public async loadFunction(funName: string) {
     const func = await getFunctionByFuncName(funName, false, this.sessionId, this.dbName);
     const idx = this.functions.findIndex((t) => t.funName === funName);
-
+    if (!func) {
+      return;
+    }
     if (idx !== -1) {
       this.functions[idx] = {
         ...func,
@@ -186,7 +191,9 @@ class DatabaseStore {
   public async loadProcedure(procName: string) {
     const func = await getProcedureByProName(procName, false, this.sessionId, this.dbName);
     const idx = this.procedures.findIndex((t) => t.proName === procName);
-
+    if (!func) {
+      return;
+    }
     if (idx !== -1) {
       this.procedures[idx] = {
         ...func,
@@ -224,6 +231,9 @@ class DatabaseStore {
   @action
   public async loadType(typeName: string) {
     const type = await getType(typeName, false, this.dbName, this.sessionId);
+    if (!type) {
+      return;
+    }
     const idx = this.types.findIndex((t) => t.typeName === typeName);
     if (idx !== -1) {
       this.types[idx] = {

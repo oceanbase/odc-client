@@ -1,5 +1,4 @@
 import { AcessResult, canAcessWorkspace } from '@/component/Acess';
-import Node from '@/component/TreeNode';
 import { Menu } from 'antd';
 import { inject, observer } from 'mobx-react';
 import styles from '../TreeNodeDirectory/index.less';
@@ -7,26 +6,18 @@ import MenuConfig from './config';
 import { IMenuItemConfig, IProps } from './type';
 
 const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
-  const {
-    type = '',
-    title = '',
-    icon,
-    disabled,
-    style,
-    connectionStore,
-    onDoubleClick,
-    onMenuClick,
-    options,
-  } = props;
+  const { type = '', connectionStore, onMenuClick, options } = props;
 
   return (
-    <Node
-      title={title}
-      disabled={disabled}
-      icon={icon}
-      style={style}
-      onDoubleClick={onDoubleClick}
-      onMenuClick={onMenuClick}
+    <Menu
+      style={{
+        width: '160px',
+      }}
+      onClick={(e) => {
+        e.domEvent.preventDefault();
+        e.domEvent.stopPropagation();
+        onMenuClick(e);
+      }}
     >
       {MenuConfig[type]
         ? MenuConfig[type].map((item: IMenuItemConfig) => {
@@ -69,7 +60,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
               : menuItems;
           })
         : null}
-    </Node>
+    </Menu>
   );
 };
 
