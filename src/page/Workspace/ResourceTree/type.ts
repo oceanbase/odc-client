@@ -1,3 +1,4 @@
+import { IPackage } from '@/d.ts';
 import { DataNode } from 'antd/lib/tree';
 
 export enum ResourceNodeType {
@@ -54,6 +55,12 @@ export enum ResourceNodeType {
   TypeVariableRoot,
   TypeVariable,
   TypeProgramRoot,
+  // 只会在menu中用，用来区别function和type function 的菜单
+  TypeFunction,
+  PackageHeadFunction,
+  PackageHeadProcedure,
+  PackageBodyFunction,
+  PackageBodyProcedure,
 }
 
 interface ExtraData {
@@ -62,6 +69,8 @@ interface ExtraData {
   sessionId?: string;
   packageName?: string;
   children?: (DataNode & ExtraData)[];
+  menuKey?: ResourceNodeType;
+  pkg?: Partial<IPackage>;
 }
 
 export type TreeDataNode = DataNode & ExtraData;

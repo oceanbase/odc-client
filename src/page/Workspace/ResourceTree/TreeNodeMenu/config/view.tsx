@@ -170,7 +170,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
             if (!isSuccess) {
               return;
             }
-            await session.database.loadView(view.viewName);
+            await session.database.getViewList();
             message.success(
               formatMessage({
                 id: 'odc.components.ResourceTree.ViewTree.TheViewHasBeenDeleted',

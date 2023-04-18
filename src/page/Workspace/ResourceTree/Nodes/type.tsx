@@ -74,7 +74,13 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
             />
           ),
           children: functions.map((func, i) => {
-            return FunctionTreeNodeData(func, dbSession, dbName, `${pkgKey}-${i}`);
+            return FunctionTreeNodeData(
+              func,
+              dbSession,
+              dbName,
+              `${pkgKey}-${i}`,
+              ResourceNodeType.TypeFunction,
+            );
           }),
         };
       }

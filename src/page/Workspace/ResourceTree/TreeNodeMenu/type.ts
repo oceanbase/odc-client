@@ -11,9 +11,9 @@ export interface IMenuItemConfig {
   // 当前菜单项后面是否需要显示分割线
   hasDivider?: boolean;
   // 动态配置菜单子项的是否启用
-  disabled?: (options: any) => boolean;
+  disabled?: (session: SessionStore, node: TreeDataNode) => boolean;
   // 动态配置菜单子项的显隐
-  isHide?: (options: any) => boolean;
+  isHide?: (session: SessionStore, node: TreeDataNode) => boolean;
   actionType?: actionTypes;
   children?: IMenuItemConfig[];
   run?: (session: SessionStore, node: TreeDataNode) => void;

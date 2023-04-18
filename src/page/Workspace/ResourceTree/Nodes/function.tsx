@@ -1,4 +1,4 @@
-import { IDatabase, IFunction } from '@/d.ts';
+import { IDatabase, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
 import Icon, { FolderOpenFilled, InfoOutlined, NumberOutlined } from '@ant-design/icons';
@@ -15,6 +15,8 @@ export function FunctionTreeNodeData(
   dbSession: SessionStore,
   dbName: string,
   packageName?: string,
+  menuKey?: ResourceNodeType,
+  pkg?: Partial<IPackage>,
 ): TreeDataNode {
   const funcKey = `${packageName}-${dbName}-function-${func.funName}`;
   let paramRoot: TreeDataNode;
@@ -95,6 +97,8 @@ export function FunctionTreeNodeData(
     title: func.funName,
     key: funcKey,
     type: ResourceNodeType.Function,
+    menuKey,
+    pkg,
     icon: (
       <Icon
         component={FunctionSvg}

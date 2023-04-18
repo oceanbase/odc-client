@@ -7,7 +7,9 @@ import { IMenuItemConfig, IProps } from './type';
 
 const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
   const { type = '', dbSession, options, node } = props;
-  const menuItems = MenuConfig[type];
+  // menuKey 用来定制menu
+  const menuKey = node?.menuKey;
+  const menuItems = MenuConfig[menuKey || type];
   if (!dbSession || !menuItems?.length) {
     return <span className="ant-tree-title">{node.title}</span>;
   }
@@ -31,8 +33,8 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
           {menuItems
             ? menuItems.map((item: IMenuItemConfig) => {
                 // 菜单子项 显隐可独立配置
-                const disabledItem = item.disabled ? item.disabled(options) : false;
-                const isHideItem = item.isHide ? item.isHide(options) : false;
+                const disabledItem = item.disabled ? item.disabled(dbSession, node) : false;
+                const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
                 const acessible =
                   canAcessWorkspace(item.actionType, dbSession?.connection?.visibleScope) || true;
                 let menuItems = [];

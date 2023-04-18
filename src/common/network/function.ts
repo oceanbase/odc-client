@@ -12,3 +12,9 @@ export async function getFunctionCreateSQL(funName: string, func: Partial<IFunct
   });
   return ret?.data?.sql;
 }
+
+export async function deleteFunction(funName: string, sessionId: string, dbName: string) {
+  const sid = generateFunctionSid(funName, sessionId, dbName);
+  const res = await request.delete(`/api/v1/function/${sid}`);
+  return !res?.isError;
+}
