@@ -13,7 +13,7 @@ import { downloadPLDDL } from '@/util/sqlExport';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
-import { IMenuItemConfig, IOptions } from '../type';
+import { IMenuItemConfig } from '../type';
 
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
@@ -73,7 +73,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         id: 'odc.TreeNodeMenu.config.table.Import',
       }) /*导入*/,
       actionType: actionTypes.update,
-      isHide: (options: IOptions) => {
+      isHide: () => {
         return !setting.enableDBImport;
       },
       run(session, node) {
@@ -86,7 +86,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.table.Export' }), //导出
       ],
-      isHide: (options: IOptions) => {
+      isHide: () => {
         return !setting.enableDBExport;
       },
       run(session, node) {
@@ -114,7 +114,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.table.AnalogData' }), // 模拟数据
       ],
-      isHide: (options: IOptions) => {
+      isHide: () => {
         return !setting.enableMockdata;
       },
       actionType: actionTypes.update,
@@ -267,7 +267,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           icon: <QuestionCircleFilled />,
           centered: true,
           onOk: async () => {
-            const success = await dropTable(tableName);
+            const success = await dropTable(tableName, session.sessionId, session.database?.dbName);
             if (success) {
               await session.database.getTableList();
               message.success(

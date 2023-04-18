@@ -91,10 +91,10 @@ export async function generateCreateTableDDL(data: ITableModel): Promise<string>
   return res?.data?.sql;
 }
 
-export async function dropTable(tableName: string) {
+export async function dropTable(tableName: string, sessionId: string, dbName: string) {
   const res = await request.delete(
-    `/api/v2/connect/sessions/${connection.sessionId}/databases/${encodeObjName(
-      schema.database.name,
+    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
+      dbName,
     )}/tables/${encodeObjName(tableName)}`,
   );
 

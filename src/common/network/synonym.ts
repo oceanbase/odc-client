@@ -25,3 +25,34 @@ export async function getSynonymCreateSQL(
   });
   return ret?.data?.sql;
 }
+
+export async function getSynonym(
+  synonymName: string,
+  synonymType: SynonymType,
+  sessionId: string,
+  dbName: string,
+) {
+  const sid = generateSynonymSid(synonymName, sessionId, dbName);
+  const ret = await request.get(`/api/v1/synonym/${sid}`, {
+    params: {
+      synonymType,
+    },
+  });
+  return ret?.data;
+}
+
+export async function deleteSynonym(
+  synonymName: string,
+  synonymType: SynonymType,
+  sessionId: string,
+  dbName: string,
+) {
+  const sid = generateSynonymSid(synonymName, sessionId, dbName);
+  const res = await request.delete(`/api/v1/synonym/${sid}`, {
+    params: {
+      synonymType: synonymType,
+    },
+  });
+
+  return !!res?.data;
+}

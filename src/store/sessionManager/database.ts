@@ -309,8 +309,10 @@ class DatabaseStore {
         addKey(pkgHead, 'functions');
         addKey(pkgHead, 'procedures');
       }
+    } else {
+      return null;
     }
-    const { packageBody, packageHead } = data;
+    const { packageBody, packageHead } = data || {};
 
     if (!packageHead && !packageBody) {
       throw new Error(
@@ -321,6 +323,7 @@ class DatabaseStore {
     if (idx !== -1) {
       this.packages[idx] = { ...this.packages[idx], packageBody, packageHead };
     }
+    return data;
   }
 
   @action

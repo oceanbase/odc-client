@@ -3,7 +3,6 @@ import {
   getFunctionCreateSQL,
   getProcedureByProName,
   getScript,
-  getTriggerByName,
   getTypemByName,
 } from '@/common/network';
 import {
@@ -42,6 +41,7 @@ import {
 import { formatMessage } from '@/util/intl';
 import { getPLScriptTemplate } from '@/util/sql';
 
+import { getTriggerByName } from '@/common/network/trigger';
 import plType from '@/constant/plType';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
@@ -499,8 +499,12 @@ export function openSequenceViewPage(
 }
 /** 编辑存储过程页面 */
 
-export async function openProcedureEditPageByProName(proName: string) {
-  const plSchema = await getProcedureByProName(proName);
+export async function openProcedureEditPageByProName(
+  proName: string,
+  sessionId: string,
+  dbName: string,
+) {
+  const plSchema = await getProcedureByProName(proName, false, sessionId, dbName);
   await page.openPage(
     PageType.PL,
     {
@@ -546,8 +550,12 @@ export async function openFunctionOrProcedureFromPackage(
 }
 /** 编辑函数页面-remote */
 
-export async function openFunctionEditPageByFuncName(funcName: string) {
-  const plSchema = await getFunctionByFuncName(funcName);
+export async function openFunctionEditPageByFuncName(
+  funcName: string,
+  sessionId: string,
+  dbName: string,
+) {
+  const plSchema = await getFunctionByFuncName(funcName, false, sessionId, dbName);
   await page.openPage(
     PageType.PL,
     {
@@ -662,8 +670,12 @@ export function openTriggerViewPage(
 }
 /** 编辑触发器页面 */
 
-export async function openTriggerEditPageByName(triggerName: string) {
-  const plSchema = await getTriggerByName(triggerName);
+export async function openTriggerEditPageByName(
+  triggerName: string,
+  sessionId: string,
+  dbName: string,
+) {
+  const plSchema = await getTriggerByName(triggerName, sessionId, dbName);
   page.openPage(
     PageType.PL,
     {

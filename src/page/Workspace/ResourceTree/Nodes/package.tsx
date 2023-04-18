@@ -45,6 +45,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
         headRoot = {
           title: '包头',
           key: `${pkgKey}-head`,
+          data: pkg,
           icon: (
             <Icon
               component={PackageHeadSvg}
@@ -53,6 +54,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
               }}
             />
           ),
+          sessionId: dbSession?.sessionId,
           type: ResourceNodeType.PackageHead,
         };
         if (packageHead.variables?.length) {
@@ -84,6 +86,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             title: '子程序',
             key: `${pkgKey}-head-program`,
             type: ResourceNodeType.PackageHeadProgramRoot,
+            data: pkg,
             icon: (
               <Icon
                 component={ParameterSvg}
@@ -94,11 +97,23 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             ),
             children: functions
               .map((func, i) => {
-                return FunctionTreeNodeData(func, dbSession, dbName, `${pkgKey}-${i}`);
+                return FunctionTreeNodeData(
+                  func,
+                  dbSession,
+                  dbName,
+                  `${pkgKey}-${i}`,
+                  ResourceNodeType.PackageHeadFunction,
+                );
               })
               .concat(
                 procedures.map((proc, i) => {
-                  return ProcedureTreeNodeData(proc, dbSession, dbName, `${pkgKey}-${i}`);
+                  return ProcedureTreeNodeData(
+                    proc,
+                    dbSession,
+                    dbName,
+                    `${pkgKey}-${i}`,
+                    ResourceNodeType.PackageHeadProcedure,
+                  );
                 }),
               ),
           };
@@ -112,6 +127,8 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
           title: '包体',
           key: `${pkgKey}-body`,
           type: ResourceNodeType.PackageBody,
+          sessionId: dbSession?.sessionId,
+          data: pkg,
           icon: (
             <Icon
               component={PackageBodySvg}
@@ -160,11 +177,25 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             ),
             children: functions
               .map((func, i) => {
-                return FunctionTreeNodeData(func, dbSession, dbName, pkgKey + '-body-' + i);
+                return FunctionTreeNodeData(
+                  func,
+                  dbSession,
+                  dbName,
+                  pkgKey + '-body-' + i,
+                  ResourceNodeType.PackageBodyFunction,
+                  pkg,
+                );
               })
               .concat(
                 procedures.map((proc, i) => {
-                  return ProcedureTreeNodeData(proc, dbSession, dbName, pkgKey + '-body-' + i);
+                  return ProcedureTreeNodeData(
+                    proc,
+                    dbSession,
+                    dbName,
+                    pkgKey + '-body-' + i,
+                    ResourceNodeType.PackageBodyProcedure,
+                    pkg,
+                  );
                 }),
               ),
           };

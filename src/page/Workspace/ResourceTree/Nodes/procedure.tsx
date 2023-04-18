@@ -1,4 +1,4 @@
-import { IDatabase, IProcedure } from '@/d.ts';
+import { IDatabase, IPackage, IProcedure } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
 import Icon, { FolderOpenFilled, InfoOutlined } from '@ant-design/icons';
@@ -15,6 +15,8 @@ export function ProcedureTreeNodeData(
   dbSession: SessionStore,
   dbName: string,
   packageName?: string,
+  menuKey?: ResourceNodeType,
+  pkg?: Partial<IPackage>,
 ): TreeDataNode {
   const funcKey = `${packageName}-${dbName}-procedure-${proc.proName}`;
   let paramRoot: TreeDataNode;
@@ -71,6 +73,8 @@ export function ProcedureTreeNodeData(
     title: proc.proName,
     key: funcKey,
     type: ResourceNodeType.Procedure,
+    menuKey,
+    pkg,
     icon: (
       <Icon
         component={ProcedureSvg}

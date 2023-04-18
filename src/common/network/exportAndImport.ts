@@ -11,7 +11,6 @@ import {
   IMPORT_TYPE,
   TaskType,
 } from '@/d.ts';
-import connection from '@/store/connection';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
 import { isNil } from 'lodash';
@@ -19,12 +18,13 @@ import { isNil } from 'lodash';
 export async function getExportObjects(
   databaseName: string,
   type?: DbObjectType,
+  cid?: number,
 ): Promise<{
   [key in DbObjectType]: string[];
 }> {
   const result = await request.get(`/api/v2/dataTransfer/getExportObjects`, {
     params: {
-      connectionId: connection.connection?.id,
+      connectionId: cid,
       schema: databaseName,
       objectType: type,
     },

@@ -940,7 +940,7 @@ class PLPage extends Component<
    * 这个函数的目的是为了显性的访问一次mobx的store，从而可以让mobx知道plpage依赖这些store
    */
   private setMobxListener() {
-    console.log(this.props.sqlStore.runningPageKey);
+    return this.props.sqlStore.runningPageKey;
   }
 
   private isEditorReadonly = () => {

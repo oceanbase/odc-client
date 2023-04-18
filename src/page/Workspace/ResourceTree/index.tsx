@@ -1,6 +1,5 @@
 import { IDatabase } from '@/d.ts';
 import { SessionManagerStore } from '@/store/sessionManager';
-import { DisconnectOutlined } from '@ant-design/icons';
 import { Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
@@ -22,6 +21,7 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
   const databases = session?.databases;
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const treeWrapperRef = useRef<HTMLDivElement>();
+
   useEffect(() => {
     const resizeHeight = throttle(() => {
       setWrapperHeight(treeWrapperRef?.current?.offsetHeight - 24);
@@ -37,19 +37,25 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
     if (!session) {
       return [];
     }
-    const root: TreeDataNode = {
-      title: session.connection.name,
-      key: 'connection' + session.connection.id,
-      type: ResourceNodeType.Connection,
-      icon: <DisconnectOutlined style={{ color: '#3FA3FF' }} />,
-      children: databases?.map((database) => {
-        const dbName = database.name;
-        const dbSessionId = databaseSessions[dbName];
-        const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-        return DataBaseTreeData(dbSession, database);
-      }),
-    };
-    return [root];
+    // const root: TreeDataNode[] = {
+    //   title: session.connection.name,
+    //   key: 'connection' + session.connection.id,
+    //   type: ResourceNodeType.Connection,
+    //   icon: <DisconnectOutlined style={{ color: '#3FA3FF' }} />,
+    //   children: databases?.map((database) => {
+    //     const dbName = database.name;
+    //     const dbSessionId = databaseSessions[dbName];
+    //     const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+    //     return DataBaseTreeData(dbSession, database);
+    //   }),
+    // };
+    const root = databases?.map((database) => {
+      const dbName = database.name;
+      const dbSessionId = databaseSessions[dbName];
+      const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+      return DataBaseTreeData(dbSession, database);
+    });
+    return root || [];
   })();
 
   const loadData = useCallback(
