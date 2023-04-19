@@ -3,6 +3,7 @@ import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { IType, PageType, TypePropsTab } from '@/d.ts';
 import { openTypeViewPage } from '@/store/helper/page';
+import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -18,7 +19,12 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.ResourceTree.actions.ViewType' })],
       run(session, node) {
         const type: IType = node.data;
-        openTypeViewPage(type?.typeName, TypePropsTab.DDL);
+        openTypeViewPage(
+          type?.typeName,
+          TypePropsTab.DDL,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -27,7 +33,9 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.ResourceTree.actions.NewType' })],
       actionType: actionTypes.create,
       hasDivider: true,
-      run(session, node) {},
+      run(session, node) {
+        modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
     },
 
     {

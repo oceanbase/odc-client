@@ -1,7 +1,5 @@
 import type { ISqlExecuteResult } from '@/d.ts';
-import connection from '@/store/connection';
 import request from '@/util/request';
-import { message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 
 export interface IExecuteSQLParams {
@@ -110,10 +108,6 @@ export default async function executeSQL(
   sessionId?: string,
   dbName?: string,
 ): Promise<ISqlExecuteResult[]> {
-  if (connection.isDestroy) {
-    message.error('Session is destroyed');
-    return [];
-  }
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
     typeof params === 'string'

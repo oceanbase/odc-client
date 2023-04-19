@@ -1,3 +1,4 @@
+import { getSynonym } from '@/common/network/synonym';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
@@ -5,9 +6,8 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ISynonym, SynonymType } from '@/d.ts';
 import { ConnectionMode, SynonymPropsTab } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
@@ -24,17 +24,18 @@ const { TabPane } = Tabs;
 const ToolbarButton = Toolbar.Button;
 interface IProps {
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore?: SessionManagerStore;
   pageKey: string;
   params: {
     synonymName: string;
     synonymType: SynonymType;
     propsTab: SynonymPropsTab;
+    sessionId: string;
+    dbName: string;
   };
 }
 
-@inject('schemaStore', 'pageStore', 'connectionStore')
+@inject('pageStore', 'sessionManagerStore')
 @observer
 export default class SynonymPage extends Component<
   IProps,
@@ -94,8 +95,8 @@ export default class SynonymPage extends Component<
     );
   };
   private reloadsynonym = async (synonymName: string, synonymType: SynonymType) => {
-    const { schemaStore } = this.props;
-    const synonym = await schemaStore.getSynonym(synonymName, synonymType);
+    const { params } = this.props;
+    const synonym = await getSynonym(synonymName, synonymType, params.sessionId, params.dbName);
 
     if (synonym) {
       this.setState({
@@ -121,11 +122,10 @@ export default class SynonymPage extends Component<
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-    } = this.props;
+    const { sessionManagerStore, params } = this.props;
     const { propsTab, synonym, formated } = this.state;
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const session = sessionManagerStore.sessionMap.get(params.sessionId);
+    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
     return (
       synonym && (
@@ -216,7 +216,12 @@ export default class SynonymPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(synonym?.synonymName, PLType.SYNONYM, synonym?.ddl);
+                      downloadPLDDL(
+                        synonym?.synonymName,
+                        PLType.SYNONYM,
+                        synonym?.ddl,
+                        params.dbName,
+                      );
                     }}
                   />
 

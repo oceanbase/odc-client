@@ -83,7 +83,7 @@ const MonacoEditor: React.FC<IProps> = function ({
     /**
      * value 与 innervalue 不匹配，需要更新到value，不过这个时候需要触发onchange，因为这是被动改动
      */
-    editorRef.current.setValue(value);
+    editorRef.current && editorRef.current.setValue(value);
     _setInnerValue(value);
   }, [value]);
 

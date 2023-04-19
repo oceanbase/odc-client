@@ -42,6 +42,7 @@ import Header from './components/Header';
 import ImportDrawer from './components/ImportDrawer';
 import ScriptManageModal from './components/ScriptManageModal';
 import ResourceSider from './components/Sider';
+import GlobalModals from './GlobalModals';
 import styles from './index.less';
 
 let _closeMsg = '';
@@ -351,6 +352,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
             <PartitionDrawer />
             <CreateShadowSyncModal key={`${modalStore.addShadowSyncVisible}shadowSync`} />
             <CreateSQLPlanTaskModal />
+            <GlobalModals />
           </>
         )}
       </Layout>

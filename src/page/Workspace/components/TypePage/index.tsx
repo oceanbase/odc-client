@@ -1,3 +1,4 @@
+import { getType } from '@/common/network/type';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
@@ -6,10 +7,9 @@ import { enableTypeEdit } from '@/constant';
 import { PLType } from '@/constant/plType';
 import type { IType } from '@/d.ts';
 import { ConnectionMode, TypePropsTab } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openTypeEditPageByName } from '@/store/helper/page';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -70,18 +70,19 @@ const TypeCodeMap = {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
   params: {
     typeName: string;
     propsTab: TypePropsTab;
+    sessionId: string;
+    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class TypePage extends Component<
   IProps,
@@ -141,10 +142,9 @@ export default class TypePage extends Component<
   };
   private reloadType = async () => {
     const {
-      schemaStore,
-      params: { typeName },
+      params: { typeName, sessionId, dbName },
     } = this.props;
-    const type = await schemaStore.loadType(typeName);
+    const type = await getType(typeName, false, dbName, sessionId);
 
     if (type) {
       this.setState({
@@ -180,11 +180,10 @@ export default class TypePage extends Component<
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-    } = this.props;
+    const { params, sessionManagerStore } = this.props;
     const { propsTab, type, formated } = this.state;
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const session = sessionManagerStore.sessionMap.get(params?.sessionId);
+    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
     return (
       type && (
@@ -288,7 +287,7 @@ export default class TypePage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(type?.typeName, PLType.TYPE, type?.ddl);
+                      downloadPLDDL(type?.typeName, PLType.TYPE, type?.ddl, params.dbName);
                     }}
                   />
 
@@ -328,7 +327,7 @@ export default class TypePage extends Component<
                 <ToolContentWrpper>
                   <SQLCodeEditorDDL
                     readOnly
-                    defaultValue={(type && type.ddl) || ''}
+                    value={type?.ddl || ''}
                     language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;

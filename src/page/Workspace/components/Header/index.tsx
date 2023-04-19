@@ -1,8 +1,6 @@
-import { getPackageCreateSQL } from '@/common/network';
 import { getSynonymCreateSQL } from '@/common/network/synonym';
 import { getTypeCreateSQL } from '@/common/network/type';
 import { AcessResult, withWorkspaceCreateAcess } from '@/component/Acess';
-import CreatePackageModal from '@/component/CreatePackageModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
 import DropdownMenu from '@/component/DropdownMenu';
@@ -14,12 +12,11 @@ import RecordPopover from '@/component/RecordPopover';
 import TaskPopover from '@/component/TaskPopover';
 import ThemeBtn from '@/component/ThemeBtn';
 import appConfig from '@/constant/appConfig';
-import { IDatabase, IPackage, ISynonym, ITypeForm } from '@/d.ts';
+import { IDatabase, ISynonym, ITypeForm } from '@/d.ts';
 import { hasSourceReadAuth } from '@/page/Manage';
 import { CommonStore } from '@/store/common';
 import { ConnectionStore } from '@/store/connection';
 import {
-  openCreatePackagePage,
   openCreateSynonymPage,
   openCreateTablePage,
   openCreateTriggerPage,
@@ -234,22 +231,6 @@ class Header extends Component<
 
   public handleOpenCreateSequencePage = () => {
     this.props.modalStore.changeCreateSequenceModalVisible(true);
-  };
-
-  public handleCreatePackage = async (pkg: IPackage) => {
-    const { packageName } = pkg;
-    const { sessionManagerStore } = this.props;
-    const session = sessionManagerStore.getMasterSession();
-    const ddl = await getPackageCreateSQL(packageName, session.sessionId, session.database.dbName);
-    this.setState(
-      {
-        showCreatePackageModal: false,
-      },
-
-      () => {
-        openCreatePackagePage(ddl);
-      },
-    );
   };
 
   public handleCreateSynonym = async (synonym: ISynonym) => {
@@ -513,16 +494,6 @@ class Header extends Component<
             </div>
           </div>
         </Spin>
-        <CreatePackageModal
-          model={{}}
-          visible={showCreatePackageModal}
-          onCancel={() =>
-            this.setState({
-              showCreatePackageModal: false,
-            })
-          }
-          onSave={this.handleCreatePackage as any}
-        />
 
         {allowCreateDBObject && sessionId && (
           <CreateSynonymModal

@@ -29,8 +29,13 @@ export async function deleteType(typeName: string, sessionId: string, dbName: st
   return !res?.isError;
 }
 
-export async function getTypeCreateSQL(typeName: string, type: Partial<ITypeForm>) {
-  const sid = generateTypeSid(typeName);
+export async function getTypeCreateSQL(
+  typeName: string,
+  type: Partial<ITypeForm>,
+  sessionId: string,
+  dbName: string,
+) {
+  const sid = generateTypeSid(typeName, sessionId, dbName);
   const res = await request.post(`/api/v1/type/getCreateSql/${sid}`, {
     data: type,
   });
