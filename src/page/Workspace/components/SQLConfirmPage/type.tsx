@@ -1,14 +1,12 @@
 import { ITriggerFormData, PageType, SynonymType } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
 
 export interface IProps {
   sqlStore: SQLStore;
-  schemaStore: SchemaStore;
   pageStore: PageStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
   params: {
     sql: string;
@@ -19,6 +17,8 @@ export interface IProps {
     // 是否显示"上一步"
     hasPre?: boolean;
     isPackageBody: boolean;
+    sessionId: string;
+    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;

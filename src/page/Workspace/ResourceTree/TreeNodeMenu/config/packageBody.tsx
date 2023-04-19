@@ -27,7 +27,13 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       ],
       run(session, node) {
         const pkgInfo: IPackage = node.data;
-        openPackageViewPage(pkgInfo?.packageName, TopTab.BODY, true);
+        openPackageViewPage(
+          pkgInfo?.packageName,
+          TopTab.BODY,
+          true,
+          session?.database?.dbName,
+          session?.sessionId,
+        );
       },
     },
 
@@ -162,7 +168,13 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         }),
       ],
       run(session, node) {
-        openPackageViewPage(node.pkg?.packageName, TopTab.BODY, true);
+        openPackageViewPage(
+          node.pkg?.packageName,
+          TopTab.BODY,
+          true,
+          session?.database?.dbName,
+          session?.sessionId,
+        );
       },
     },
     {
@@ -269,7 +281,13 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         }),
       ],
       run(session, node) {
-        openPackageViewPage(node.pkg?.packageName, TopTab.BODY, true);
+        openPackageViewPage(
+          node.pkg?.packageName,
+          TopTab.BODY,
+          true,
+          session?.database?.dbName,
+          session?.sessionId,
+        );
       },
     },
     {

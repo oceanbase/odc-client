@@ -108,12 +108,13 @@ export const executeTaskManager = new TaskManager();
 export default async function executeSQL(
   params: IExecuteSQLParams | string,
   sessionId?: string,
+  dbName?: string,
 ): Promise<ISqlExecuteResult[]> {
   if (connection.isDestroy) {
     message.error('Session is destroyed');
     return [];
   }
-  const sid = generateDatabaseSid(null, sessionId);
+  const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
     typeof params === 'string'
       ? {
