@@ -1,5 +1,8 @@
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
+import { getSequence } from '@/common/network/sequence';
 import { executeSQL } from '@/common/network/sql';
+import { getSynonym } from '@/common/network/synonym';
+import { getTriggerByName } from '@/common/network/trigger';
 import { getType } from '@/common/network/type';
 import CommonIDE from '@/component/CommonIDE';
 import {
@@ -32,7 +35,7 @@ import { TopTab } from '../PackagePage';
 import styles from './index.less';
 import type { IProps, IState } from './type';
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class SQLConfirmPage extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -51,10 +54,11 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
 
   private getNameBySQL = (sql: string) => {
     const {
-      params: { type },
-      connectionStore,
+      params: { type, sessionId, dbName },
+      sessionManagerStore,
     } = this.props;
-    const isOracle = connectionStore.connection.dbMode === ConnectionMode.OB_ORACLE;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
+    const isOracle = session.connection.dialectType === ConnectionMode.OB_ORACLE;
     let name;
     if (!this.isPL()) {
       // 同义词不处于 PL 文件中，需要用 SQL 来解析
@@ -75,6 +79,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
     isSuccess: boolean;
     errMsg: string;
   }> = async (sql, type) => {
+    const { sessionId, dbName } = this.props.params;
     let isSuccess = false;
     let errMsg = '';
     const split = ![
@@ -85,7 +90,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
       PageType.CREATE_SYNONYM,
       PageType.CREATE_TRIGGER_SQL,
     ].includes(type);
-    const result = await executeSQL({ sql, split });
+    const result = await executeSQL({ sql, split }, sessionId, dbName);
     isSuccess = result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
     errMsg = result?.[0]?.track;
     return {
@@ -96,10 +101,11 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
   private handleSubmit = async () => {
     const {
       pageStore,
-      schemaStore,
+      sessionManagerStore,
       pageKey,
-      params: { type, synonymType, isPackageBody },
+      params: { type, synonymType, isPackageBody, sessionId, dbName },
     } = this.props;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { sql } = this.state;
     this.setState({
       loading: true,
@@ -122,7 +128,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
               // `${name} 触发器创建成功`
             ); // 刷新对应的资源树
 
-            await schemaStore!.getTriggerList(); // 名称验证，验证通过直接跳转至详情页
+            await session.database.getTriggerList(); // 名称验证，验证通过直接跳转至详情页
 
             this.handleCheckName(name, PageType.TRIGGER);
             return;
@@ -134,8 +140,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
                   id: 'odc.components.SQLConfirmPage.SynonymCreatedSuccessfully',
                 }), // 同义词创建成功
             );
-            await schemaStore.changeSynonymType(synonymType);
-            await schemaStore.getSynonymList(); // todo 打开同义词 查看页面
+            await session.database.getSynonymList();
             this.handleCheckName(name, PageType.SYNONYM, { synonymType });
             return;
           }
@@ -151,7 +156,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
               // `${name} 类型创建成功`
             ); // 刷新对应的资源树
 
-            await schemaStore.refreshTypeList();
+            await session.database.getTypeList();
             this.handleCheckName(name, PageType.TYPE);
             return;
           }
@@ -169,7 +174,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
                 }),
               );
             }
-            await schemaStore!.getPackageList();
+            await session.database!.getPackageList();
             this.handleCheckName(name, PageType.PACKAGE);
             return;
           }
@@ -182,19 +187,19 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
                 { name },
               ), // `创建序列 ${name} 成功`
             );
-            await schemaStore.getSequenceList();
+            await session.database.getSequenceList();
             this.handleCheckName(name, PageType.SEQUENCE);
             return;
           }
           case PageType.CREATE_FUNCTION: {
             message.success(formatMessage({ id: 'workspace.window.createFunction.success' }));
-            await schemaStore!.refreshFunctionList();
+            await session.database.getFunctionList();
             this.handleCheckName(name, PageType.FUNCTION);
             return;
           }
           case PageType.CREATE_PROCEDURE: {
             message.success(formatMessage({ id: 'workspace.window.createProcedure.success' }));
-            await schemaStore!.getProcedureList();
+            await session.database.getProcedureList();
             this.handleCheckName(name, PageType.PROCEDURE);
             return;
           }
@@ -218,54 +223,61 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
     pageType: PageType,
     options?: Record<string, any>,
   ) => {
-    const { schemaStore, params } = this.props;
+    const { sessionManagerStore, params } = this.props;
+    const { sessionId, dbName } = params;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
 
     switch (pageType) {
       case PageType.TRIGGER: {
-        const trigger = await schemaStore.getTrigger(name, true);
+        const trigger = await getTriggerByName(name, sessionId, dbName);
         if (trigger) {
           openTriggerViewPage(name, TriggerPropsTab.DDL, trigger.enableState, trigger);
         }
         return;
       }
       case PageType.TYPE: {
-        const type = await getType(name, true);
+        const type = await getType(name, true, sessionId, dbName);
         if (type) {
           openTypeViewPage(name, TypePropsTab.DDL);
         }
         return;
       }
       case PageType.SYNONYM: {
-        const synonym = await schemaStore.getSynonym(name, options?.synonymType, true);
+        const synonym = await getSynonym(name, options?.synonymType, sessionId, dbName);
         if (synonym) {
           openSynonymViewPage(name, options?.synonymType);
         }
         return;
       }
       case PageType.PACKAGE: {
-        const pkg = await schemaStore.getPackage(name, true);
+        const pkg = await session.database.loadPackage(name, true);
         if (pkg) {
-          await schemaStore.loadPackage(name);
-          openPackageViewPage(name, params.isPackageBody ? TopTab.BODY : TopTab.HEAD, true);
+          openPackageViewPage(
+            name,
+            params.isPackageBody ? TopTab.BODY : TopTab.HEAD,
+            true,
+            dbName,
+            sessionId,
+          );
         }
         return;
       }
       case PageType.SEQUENCE: {
-        const sequence = await schemaStore.getSequence(name, true);
+        const sequence = await getSequence(name, sessionId, dbName);
         if (sequence) {
           openSequenceViewPage(name);
         }
         return;
       }
       case PageType.FUNCTION: {
-        const func = await getFunctionByFuncName(name, true);
+        const func = await getFunctionByFuncName(name, true, sessionId, dbName);
         if (func) {
           openFunctionViewPage(name);
         }
         return;
       }
       case PageType.PROCEDURE: {
-        const procedure = await getProcedureByProName(name, true);
+        const procedure = await getProcedureByProName(name, true, sessionId, dbName);
         if (procedure) {
           openProcedureViewPage(name);
         }
@@ -343,11 +355,12 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
 
   public render() {
     const {
-      params: { hasPre },
-      connectionStore,
+      params: { hasPre, sessionId, dbName },
+      sessionManagerStore,
     } = this.props;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { sql, log, loading } = this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
     const logEle = log ? this.getLogEle(log) : null;
     return (
       <>

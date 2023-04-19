@@ -29,7 +29,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       actionType: actionTypes.create,
 
-      run(session, node) {},
+      run(session, node) {
+        modal.changeCreatePackageModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
     },
     {
       key: 'CREATE_BODY',
@@ -170,7 +172,13 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
-        openPackageViewPage(pkgInfo?.packageName, TopTab.HEAD, true);
+        openPackageViewPage(
+          pkgInfo?.packageName,
+          TopTab.HEAD,
+          true,
+          session?.database?.dbName,
+          session?.sessionId,
+        );
       },
     },
     {

@@ -1,14 +1,14 @@
-import type { IPackage, IView } from '@/d.ts';
+import { getPackageCreateSQL } from '@/common/network';
+import { openCreatePackagePage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, Modal } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
+import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 
 interface IProps {
-  model: Partial<IPackage>;
-  onSave: (values: IView) => void;
-  visible: boolean;
-  onCancel: () => void;
+  modalStore?: ModalStore;
 }
 
 export enum CheckOption {
@@ -19,11 +19,15 @@ class CreatePackageModal extends Component<IProps> {
   public formRef = React.createRef<FormInstance>();
 
   public save = () => {
-    const { onSave } = this.props;
+    const { modalStore } = this.props;
+    const { sessionId, dbName } = modalStore.createPackageModalData;
     this.formRef.current
       .validateFields()
-      .then((data) => {
-        onSave(data);
+      .then(async (data) => {
+        const packageName = data?.packageName;
+        const sql = await getPackageCreateSQL(packageName, sessionId, dbName);
+        openCreatePackagePage(sql, sessionId, dbName);
+        modalStore.changeCreatePackageModalVisible(false);
       })
       .catch((error) => {
         console.error(JSON.stringify(error));
@@ -31,9 +35,9 @@ class CreatePackageModal extends Component<IProps> {
   };
 
   public render() {
-    const { visible, onCancel, model } = this.props;
+    const { modalStore } = this.props;
     const initialValues = {
-      packageName: model.packageName,
+      packageName: null,
     };
 
     return (
@@ -44,16 +48,18 @@ class CreatePackageModal extends Component<IProps> {
         title={formatMessage({
           id: 'workspace.window.createPackage.modal.title',
         })}
-        visible={visible}
+        visible={modalStore.createPackageModalVisible}
         okText={formatMessage({
           id: 'odc.component.CreatePackageModal.NextConfirmTheSqlStatement',
         })} /* 下一步：确认 SQL */
         onOk={this.save}
-        onCancel={onCancel}
+        onCancel={() => {
+          modalStore.changeCreatePackageModalVisible(false);
+        }}
       >
         <Form
           layout="vertical"
-          hideRequiredMark={true}
+          requiredMark={'optional'}
           initialValues={initialValues}
           ref={this.formRef}
         >
@@ -85,4 +91,4 @@ class CreatePackageModal extends Component<IProps> {
   }
 }
 
-export default CreatePackageModal;
+export default inject('modalStore')(observer(CreatePackageModal));

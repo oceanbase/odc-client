@@ -98,6 +98,24 @@ export class ModalStore {
   public scriptManageModalVisible: boolean = false;
 
   @observable
+  public createPackageModalVisible: boolean = false;
+
+  @observable
+  public createPackageModalData = {
+    sessionId: '',
+    dbName: '',
+  };
+
+  @action
+  public changeCreatePackageModalVisible(v: boolean, sessionId?: string, dbName?: string) {
+    this.createPackageModalVisible = v;
+    this.createPackageModalData = {
+      sessionId,
+      dbName,
+    };
+  }
+
+  @observable
   public createSequenceModalData: {
     isEdit: boolean;
     data: any;

@@ -78,7 +78,13 @@ export async function openPackageBodyPage(packageName: string, sql: string) {
 
   return pageTitle;
 }
-export function openPackageViewPage(packageName: string, topTab: TopTab, showCode: boolean) {
+export function openPackageViewPage(
+  packageName: string,
+  topTab: TopTab,
+  showCode: boolean,
+  dbName: string,
+  sessionId: string,
+) {
   let propsTab = '';
   topTab = topTab || TopTab.HEAD;
   if (topTab == TopTab.HEAD) {
@@ -105,6 +111,8 @@ export function openPackageViewPage(packageName: string, topTab: TopTab, showCod
       packageName,
       topTab,
       propsTab,
+      dbName,
+      sessionId,
     },
   );
 }
@@ -429,7 +437,7 @@ export function openProcedureViewPage(
 }
 /** 创建程序包页面 */
 
-export function openCreatePackagePage(sql: string) {
+export function openCreatePackagePage(sql: string, sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_PACKAGE,
     {
@@ -440,6 +448,8 @@ export function openCreatePackagePage(sql: string) {
 
     {
       sql,
+      sessionId,
+      dbName,
       type: PageType.CREATE_PACKAGE,
     },
   );

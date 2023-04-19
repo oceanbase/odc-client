@@ -107,3 +107,60 @@ export async function deletePackageBody(
   const result = await request.delete(`/api/v1/package/deletePackageBody/${sid}`);
   return !!result?.data;
 }
+
+export async function getPackage(pkgName: string, sessionId: string, dbName: string) {
+  const sid = generatePackageSid(pkgName, sessionId, dbName);
+  const res = await request.get(`/api/v1/package/${sid}`);
+  const data = res?.data;
+  const packageName = data?.packageName;
+  if (data) {
+    function addKey(target, paramName) {
+      const keyMap = {};
+      target[paramName] = target[paramName]
+        ?.map((obj) => {
+          const { params, returnType, proName, funName } = obj;
+          const name = proName || funName;
+          const key = btoa(
+            encodeURIComponent(
+              params
+                ?.map((p) => {
+                  return p.paramName + ':' + p.dataType;
+                })
+                ?.join('$@p@$') +
+                '$@' +
+                returnType,
+            ),
+          );
+          const uniqKey = packageName + '.' + name + '*' + key;
+          if (keyMap[uniqKey]) {
+            /**
+             * 去除完全一致的子程序
+             */
+            return null;
+          }
+          keyMap[uniqKey] = key;
+          return {
+            ...obj,
+            params: params?.map((param) =>
+              Object.assign({}, param, {
+                originDefaultValue: param.defaultValue,
+              }),
+            ),
+            key: uniqKey,
+          };
+        })
+        .filter(Boolean);
+    }
+    const pkgBody = data.packageBody;
+    const pkgHead = data.packageHead;
+    if (pkgBody) {
+      addKey(pkgBody, 'functions');
+      addKey(pkgBody, 'procedures');
+    }
+    if (pkgHead) {
+      addKey(pkgHead, 'functions');
+      addKey(pkgHead, 'procedures');
+    }
+  }
+  return data;
+}
