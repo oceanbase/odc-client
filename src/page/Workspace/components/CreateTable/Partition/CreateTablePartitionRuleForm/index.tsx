@@ -1,13 +1,11 @@
 import { formatMessage } from '@/util/intl';
 import { cloneDeep, debounce } from 'lodash';
-import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 // compatible
 import PartitionRange from '@/component/PartitionRange';
 import TableIndexSelector from '@/component/TableIndexSelector';
 import { IDataType, IPartitionType, ITablePartition } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { dataTypesIns } from '@/util/dataType';
+import SessionStore from '@/store/sessionManager/session';
 import { Button, Form, FormInstance, Input, InputNumber, Select } from 'antd';
 import SQLCreateTableConfig from '../../config';
 import { TableColumn, TablePartition } from '../../interface';
@@ -16,12 +14,12 @@ import styles from './index.less';
 
 interface IProps {
   fixedFooter?: boolean;
-  connectionStore?: ConnectionStore;
   dataTypes: IDataType[];
   partitionType?: IPartitionType;
   disableCheckMaxValue?: boolean;
   disablePartition?: boolean;
   columns: TableColumn[];
+  session: SessionStore;
   /**
    * 是否为新增modal的模式，新增的时候，不需要显示列等信息，只需要展示分区定义信息。
    */
@@ -57,8 +55,6 @@ export const partitionNameMap = {
   [IPartitionType.NONE]: 'None',
 };
 
-@inject('connectionStore')
-@observer
 class CreateTablePartitionRuleForm extends Component<
   IProps,
   {
@@ -75,8 +71,8 @@ class CreateTablePartitionRuleForm extends Component<
     if (!name) {
       return '';
     }
-    const { onSave, connectionStore } = this.props;
-    const config = SQLCreateTableConfig[connectionStore.connection?.dialectType];
+    const { session } = this.props;
+    const config = SQLCreateTableConfig[session.connection?.dialectType];
     return !config.paritionNameCaseSensitivity ? name.toLowerCase() : name;
   }
 
@@ -246,13 +242,13 @@ class CreateTablePartitionRuleForm extends Component<
     const {
       columns,
       disablePartition,
-      connectionStore,
       fixedFooter,
       selectColumns,
       addMode,
       selectColumnName,
       partNumber,
       expression,
+      session,
     } = this.props;
     const formItemLayout = {
       labelCol: { span: 4 },
@@ -260,7 +256,7 @@ class CreateTablePartitionRuleForm extends Component<
     };
 
     const { partitionType } = this.state;
-    const config = SQLCreateTableConfig[connectionStore.connection?.dialectType] || {};
+    const config = SQLCreateTableConfig[session.connection?.dialectType] || {};
 
     const initialPartitions = [{ name: '', value: '' }];
 
@@ -364,16 +360,6 @@ class CreateTablePartitionRuleForm extends Component<
       </Button>
     );
   }
-
-  private getFormatePartitionValue = (columnName: string, value: any) => {
-    const { columns, connectionStore } = this.props;
-    const columnSchema = columns.find((c) => c.name === columnName);
-    const isNumberType = dataTypesIns.getDataType(
-      connectionStore?.connection?.dialectType,
-      columnSchema.type,
-    ).isNumber;
-    return isNumberType ? value : "'" + value + "'"; // 必须用单引号
-  };
 }
 
 export default CreateTablePartitionRuleForm;

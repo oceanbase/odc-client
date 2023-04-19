@@ -1,4 +1,5 @@
 import { ResultSetColumn } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 import React from 'react';
 
 const ResultContext = React.createContext<{
@@ -8,6 +9,7 @@ const ResultContext = React.createContext<{
   sqlId: string;
   sessionId: string;
   isEditing: boolean;
+  session?: SessionStore;
   /**
    * 是否为列模式
    */

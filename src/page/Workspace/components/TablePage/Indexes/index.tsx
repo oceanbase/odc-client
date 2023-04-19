@@ -14,6 +14,7 @@ const TableIndexes: React.FC<IProps> = function ({}) {
       value={{
         indexes: editIndexes || table?.indexes,
         columns: table?.columns,
+        session: tableContext.session,
         setIndexes: setEditIndexes,
       }}
     >

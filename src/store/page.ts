@@ -5,7 +5,6 @@ import tracert from '@/util/tracert';
 import { message } from 'antd';
 import { isNil } from 'lodash';
 import { action, computed, observable } from 'mobx';
-import { history } from 'umi';
 import commonStore from './common';
 import connectionStore from './connection';
 import {
@@ -268,7 +267,6 @@ export class PageStore {
 
           if (updatePath) {
             p.path = this.generatePagePath();
-            history.push(p.path);
           }
         }
         newPages.push(p);

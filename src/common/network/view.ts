@@ -1,4 +1,4 @@
-import { IView } from '@/d.ts';
+import { ICreateView, IView } from '@/d.ts';
 import request from '@/util/request';
 import { sortString } from '@/util/utils';
 import { generateDatabaseSid, generateViewSid } from './pathUtil';
@@ -28,4 +28,13 @@ export async function deleteView(viewName: string, sessionId: string, dbName: st
   const sid = generateViewSid(viewName, dbName, sessionId);
   const res = await request.delete(`/api/v1/view/${sid}`);
   return !res?.isError;
+}
+
+export async function getViewCreateSQL(view: ICreateView, sessionId, dbName) {
+  const { viewName } = view;
+  const sid = generateViewSid(viewName, dbName, sessionId);
+  const ret = await request.patch(`/api/v1/view/getCreateSql/${sid}`, {
+    data: view,
+  });
+  return ret?.data?.sql;
 }

@@ -2,7 +2,7 @@ import { deleteView, getView } from '@/common/network/view';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
 import { DbObjectType, DragInsertType, IView, ResourceTreeNodeMenuKeys } from '@/d.ts';
-import { TopTab } from '@/page/Workspace/components/ViewPage';
+import { PropsTab, TopTab } from '@/page/Workspace/components/ViewPage';
 import { openCreateViewPage, openViewViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import page from '@/store/page';
@@ -20,7 +20,13 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.ViewViewProperties' })],
       run(session, node) {
         const view = node.data as IView;
-        openViewViewPage(view.viewName, TopTab.PROPS);
+        openViewViewPage(
+          view.viewName,
+          TopTab.PROPS,
+          PropsTab.INFO,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -30,7 +36,13 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       hasDivider: true,
       run(session, node) {
         const view = node.data as IView;
-        openViewViewPage(view.viewName, TopTab.DATA);
+        openViewViewPage(
+          view.viewName,
+          TopTab.DATA,
+          PropsTab.INFO,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -40,7 +52,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       hasDivider: true,
       actionType: actionTypes.create,
       run(session, node) {
-        openCreateViewPage();
+        openCreateViewPage(session?.sessionId, session?.database?.dbName);
       },
     },
 

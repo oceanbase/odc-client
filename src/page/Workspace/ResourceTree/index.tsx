@@ -68,6 +68,7 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
             false,
             session?.connection?.id,
             dbName,
+            true,
           );
           setDatabaseSessions({
             ...databaseSessions,

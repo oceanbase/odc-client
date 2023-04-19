@@ -83,7 +83,7 @@ const SQLCreateTableConfig: Partial<Record<ConnectionMode, ICreateConfig>> = {
   },
 };
 
-export function useTableConfig(connectionStore: ConnectionStore) {
-  return SQLCreateTableConfig[connectionStore?.connection?.dialectType] || {};
+export function useTableConfig(dialectType: ConnectionMode) {
+  return SQLCreateTableConfig[dialectType] || {};
 }
 export default SQLCreateTableConfig;

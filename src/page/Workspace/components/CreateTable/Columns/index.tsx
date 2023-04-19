@@ -1,6 +1,4 @@
 import Toolbar from '@/component/Toolbar';
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import { DataGridRef } from '@alipay/ob-react-data-grid';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
@@ -12,7 +10,6 @@ import { useColumns } from './columns';
 import { generateUpdateTableDDL } from '@/common/network/table';
 import classnames from 'classnames';
 import { cloneDeep, isNil } from 'lodash';
-import { inject, observer } from 'mobx-react';
 import TablePageContext from '../../TablePage/context';
 import { useTableConfig } from '../config';
 import EditToolbar from '../EditToolbar';
@@ -20,10 +17,7 @@ import { removeGridParams } from '../helper';
 import { TableColumn } from '../interface';
 import TableCardLayout from '../TableCardLayout';
 import styles from './index.less';
-interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
-}
+interface IProps {}
 
 export const defaultColumn: TableColumn = {
   name: '',
@@ -42,17 +36,19 @@ export const defaultColumn: TableColumn = {
   enumMembers: [],
 };
 
-const Columns: React.FC<IProps> = function ({ schemaStore, connectionStore }) {
+const Columns: React.FC<IProps> = function ({}) {
   const tableContext = useContext(TableContext);
   const pageContext = useContext(TablePageContext);
+  const session = tableContext.session;
   const editMode = pageContext?.editMode;
   const columns = tableContext?.columns;
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns = useColumns({ schemaStore, connectionStore }, columns);
+  const gridColumns = useColumns({ session }, columns);
   const gridRef = useRef<DataGridRef>();
-  const config = useTableConfig(connectionStore);
+  const config = useTableConfig(session.connection.dialectType);
   const [editColumns, setEditColumns] = useState(null);
   const displayColumns = editColumns || columns;
+
   const rows = useMemo(() => {
     return displayColumns.map((column, idx) => {
       return {
@@ -116,8 +112,9 @@ const Columns: React.FC<IProps> = function ({ schemaStore, connectionStore }) {
                     ...pageContext.table,
                     columns: newColumns,
                   },
-
                   pageContext.table,
+                  session?.sessionId,
+                  session?.database?.dbName,
                 );
 
                 if (!updateTableDML) {
@@ -217,4 +214,4 @@ const Columns: React.FC<IProps> = function ({ schemaStore, connectionStore }) {
   );
 };
 
-export default inject('schemaStore', 'connectionStore')(observer(Columns));
+export default Columns;

@@ -1,27 +1,22 @@
 import { ConnectionMode } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Button, Col, Form, Input, Row, Select } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { PureComponent } from 'react';
 
 const { Option } = Select;
 
 interface IProps {
   onSubmit: (values: any) => void;
-  connectionStore?: ConnectionStore;
+  connectionMode?: ConnectionMode;
 }
-
-@inject('connectionStore')
-@observer
 export default class BaseInfoForm extends PureComponent<IProps> {
   public handleSubmit = (values) => {
     this.props?.onSubmit(values);
   };
 
   private getCheckOptions = () => {
-    const { connectionStore } = this.props;
-    const isOracle = connectionStore.connection.dbMode === ConnectionMode.OB_ORACLE;
+    const { connectionMode } = this.props;
+    const isOracle = connectionMode === ConnectionMode.OB_ORACLE;
     const r = [
       {
         name: formatMessage({ id: 'odc.component.BaseInfoForm.No' }), // 无

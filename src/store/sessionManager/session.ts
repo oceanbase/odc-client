@@ -94,7 +94,7 @@ class SessionStore {
     simpleMode?: boolean,
   ) {
     const session = new SessionStore(connection);
-    if (await session.init(dbName, password, parentSessionId, cloudParams)) {
+    if (await session.init(dbName, password, parentSessionId, cloudParams, simpleMode)) {
       return session;
     }
     return null;
@@ -119,6 +119,7 @@ class SessionStore {
       tenantId: any;
       instanceId: any;
     },
+    simpleMode?: boolean,
   ): Promise<boolean> {
     try {
       const sessionId = await newSession(
@@ -133,7 +134,7 @@ class SessionStore {
       }
       this.sessionId = sessionId;
       this.isAlive = true;
-      return await this.initSessionBaseInfo(dbName);
+      return await this.initSessionBaseInfo(dbName, simpleMode);
     } catch (e) {
       logger.error('create session error', e);
       return false;
@@ -151,7 +152,7 @@ class SessionStore {
     }
   }
 
-  async initSessionBaseInfo(dbName?: string) {
+  async initSessionBaseInfo(dbName?: string, simpleMode?: boolean) {
     try {
       await this.getDatabaseList();
       if (!this.databases?.length) {
@@ -164,7 +165,8 @@ class SessionStore {
       await this.getSupportFeature();
       await this.initTransactionStatus();
       await this.initSessionTransaction();
-      if (!this.transState) {
+      await this.getDataTypeList();
+      if (!this.transState && !simpleMode) {
         return false;
       }
       return true;
@@ -213,6 +215,18 @@ class SessionStore {
       this.databases.find((d) => d.name === selectDatabase) ||
       this.databases.find((d) => d.name.toLowerCase() === selectDatabase?.toLowerCase());
     return selected?.name;
+  }
+
+  @action
+  public async getDataTypeList() {
+    if (this.dataTypes?.length) {
+      return;
+    }
+    const sid = generateDatabaseSid(this.database?.dbName, this.sessionId);
+    const ret = await request.get(
+      `/api/v1/version-config/datatype/list/${sid}?configKey=column_data_type`,
+    );
+    this.dataTypes = ret?.data || [];
   }
 
   @action
@@ -291,7 +305,7 @@ class SessionStore {
 
   @action
   public async queryTablesAndViews(name: string = '', force: boolean = false) {
-    const sid = generateDatabaseSid(this.sessionId);
+    const sid = generateDatabaseSid(this.database?.dbName, this.sessionId);
     const now = Date.now();
 
     if (now - this.lastTableAndViewLoadTime < 10000 && !force) {

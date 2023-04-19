@@ -48,6 +48,7 @@ interface IProps {}
 
 const TablePartitions: React.FC<IProps> = function ({}) {
   const tableContext = useContext(TablePageContext);
+  const session = tableContext.session;
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
   const [editPartitions, setEditPartitions] = useState<ITableModel['partitions']>(null);
   const addPartitionRef = useRef<{
@@ -264,6 +265,8 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                     },
 
                     tableContext.table,
+                    session.sessionId,
+                    session.database?.dbName,
                   );
 
                   if (!updateTableDML) {

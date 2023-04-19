@@ -105,8 +105,8 @@ export const executeTaskManager = new TaskManager();
 
 export default async function executeSQL(
   params: IExecuteSQLParams | string,
-  sessionId?: string,
-  dbName?: string,
+  sessionId: string,
+  dbName: string,
 ): Promise<ISqlExecuteResult[]> {
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
