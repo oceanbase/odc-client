@@ -97,6 +97,7 @@ export class ModalStore {
   @observable
   public scriptManageModalVisible: boolean = false;
 
+  /** create package */
   @observable
   public createPackageModalVisible: boolean = false;
 
@@ -110,6 +111,44 @@ export class ModalStore {
   public changeCreatePackageModalVisible(v: boolean, sessionId?: string, dbName?: string) {
     this.createPackageModalVisible = v;
     this.createPackageModalData = {
+      sessionId,
+      dbName,
+    };
+  }
+
+  /** create synonym */
+  @observable
+  public createSynonymModalVisible: boolean = false;
+
+  @observable
+  public createSynonymModalData = {
+    sessionId: '',
+    dbName: '',
+  };
+
+  @action
+  public changeCreateSynonymModalVisible(v: boolean, sessionId?: string, dbName?: string) {
+    this.createSynonymModalVisible = v;
+    this.createSynonymModalData = {
+      sessionId,
+      dbName,
+    };
+  }
+
+  /** create type */
+  @observable
+  public createTypeModalVisible: boolean = false;
+
+  @observable
+  public createTypeModalData = {
+    sessionId: '',
+    dbName: '',
+  };
+
+  @action
+  public changeCreateTypeModalVisible(v: boolean, sessionId?: string, dbName?: string) {
+    this.createTypeModalVisible = v;
+    this.createTypeModalData = {
       sessionId,
       dbName,
     };

@@ -3,8 +3,8 @@ import request from '@/util/request';
 import { sortString } from '@/util/utils';
 import { generateDatabaseSid, generateViewSid } from './pathUtil';
 
-export async function getViewListByDatabaseName(databaseName?: string) {
-  const sid = generateDatabaseSid(databaseName);
+export async function getViewListByDatabaseName(databaseName?: string, sessionId?: string) {
+  const sid = generateDatabaseSid(databaseName, sessionId);
   const { data: views } = await request.get(`/api/v1/view/list/${sid}`);
   const sortedViews = (views || []).sort((a: any, b: any) => sortString(a.viewName, b.viewName));
   return sortedViews;

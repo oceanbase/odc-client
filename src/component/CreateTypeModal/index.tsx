@@ -1,14 +1,15 @@
-import { IType, ITypeForm, TypeCode } from '@/d.ts';
+import { getTypeCreateSQL } from '@/common/network/type';
+import { ITypeForm, TypeCode } from '@/d.ts';
+import { openCreateTypePage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { Button, Form, Input, Modal, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form';
+import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 
 interface IProps {
-  model: Partial<IType>;
-  onSave: (values: ITypeForm) => void;
-  visible: boolean;
-  onCancel: () => void;
+  modalStore?: ModalStore;
 }
 
 export enum CheckOption {
@@ -30,7 +31,7 @@ class CreateTypeModal extends Component<
 
   handleCancel = () => {
     this.handleSwitchLoading(false);
-    this.props.onCancel();
+    this.props.modalStore.changeCreateTypeModalVisible(false);
   };
 
   handleSwitchLoading = (loading: boolean) => {
@@ -43,9 +44,21 @@ class CreateTypeModal extends Component<
     this.formRef.current
       .validateFields()
       .then(async (values: ITypeForm) => {
+        const { modalStore } = this.props;
         this.handleSwitchLoading(true);
-        await this.props.onSave(values);
+        const sql = await getTypeCreateSQL(
+          values.typeName,
+          values,
+          modalStore.createTypeModalData.sessionId,
+          modalStore.createTypeModalData.dbName,
+        );
+        openCreateTypePage(
+          sql,
+          modalStore.createTypeModalData.sessionId,
+          modalStore.createTypeModalData.dbName,
+        );
         this.handleSwitchLoading(false);
+        modalStore.changeCreateTypeModalVisible(false);
       })
       .catch((errorInfo) => {
         throw new Error({ ...errorInfo });
@@ -53,7 +66,7 @@ class CreateTypeModal extends Component<
   };
 
   public render() {
-    const { visible } = this.props;
+    const { modalStore } = this.props;
     const { loading } = this.state;
     return (
       <Modal
@@ -61,7 +74,7 @@ class CreateTypeModal extends Component<
         destroyOnClose
         title={formatMessage({ id: 'odc.component.CreateTypeModal.NewType' })}
         /* 新建类型 */
-        visible={visible}
+        visible={modalStore.createTypeModalVisible}
         onCancel={this.handleCancel}
         maskClosable={false}
         centered
@@ -177,4 +190,4 @@ class CreateTypeModal extends Component<
   }
 }
 
-export default CreateTypeModal;
+export default inject('modalStore')(observer(CreateTypeModal));

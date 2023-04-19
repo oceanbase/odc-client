@@ -236,16 +236,16 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
         return;
       }
       case PageType.TYPE: {
-        const type = await getType(name, true, sessionId, dbName);
+        const type = await getType(name, true, dbName, sessionId);
         if (type) {
-          openTypeViewPage(name, TypePropsTab.DDL);
+          openTypeViewPage(name, TypePropsTab.DDL, sessionId, dbName);
         }
         return;
       }
       case PageType.SYNONYM: {
         const synonym = await getSynonym(name, options?.synonymType, sessionId, dbName);
         if (synonym) {
-          openSynonymViewPage(name, options?.synonymType);
+          openSynonymViewPage(name, options?.synonymType, sessionId, dbName);
         }
         return;
       }

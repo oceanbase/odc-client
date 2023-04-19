@@ -20,7 +20,12 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
       ],
       run(session, node) {
         const synonym: Partial<ISynonym> = node.data;
-        openSynonymViewPage(synonym.synonymName, synonymType);
+        openSynonymViewPage(
+          synonym.synonymName,
+          synonymType,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -31,7 +36,9 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
       ],
       actionType: actionTypes.create,
       hasDivider: true,
-      run(session, node) {},
+      run(session, node) {
+        modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
     },
 
     {

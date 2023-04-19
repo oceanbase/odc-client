@@ -703,7 +703,12 @@ export async function openTriggerEditPageByName(
 }
 /** 创建同义词页面 */
 
-export function openCreateSynonymPage(sql: string, synonymType?: SynonymType) {
+export function openCreateSynonymPage(
+  sql: string,
+  synonymType?: SynonymType,
+  sessionId?: string,
+  dbName?: string,
+) {
   page!.openPage(
     PageType.CREATE_SYNONYM,
     {
@@ -711,6 +716,8 @@ export function openCreateSynonymPage(sql: string, synonymType?: SynonymType) {
     },
     {
       sql,
+      sessionId,
+      dbName,
       synonymType,
       type: PageType.CREATE_SYNONYM,
     },
@@ -718,7 +725,12 @@ export function openCreateSynonymPage(sql: string, synonymType?: SynonymType) {
 }
 /** 同义词详情页面 */
 
-export function openSynonymViewPage(synonymName: string, synonymType: SynonymType) {
+export function openSynonymViewPage(
+  synonymName: string,
+  synonymType: SynonymType,
+  sessionId: string,
+  dbName: string,
+) {
   page.openPage(
     PageType.SYNONYM,
     {
@@ -726,6 +738,8 @@ export function openSynonymViewPage(synonymName: string, synonymType: SynonymTyp
     },
 
     {
+      sessionId,
+      dbName,
       synonymName,
       synonymType,
       propsTab: SynonymPropsTab.DDL,
@@ -734,13 +748,15 @@ export function openSynonymViewPage(synonymName: string, synonymType: SynonymTyp
 }
 /** 创建类型页面 */
 
-export function openCreateTypePage(sql: string) {
+export function openCreateTypePage(sql: string, sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_TYPE,
     {
       title: formatMessage({ id: 'odc.helper.page.openPage.NewType' }), // 新建类型
     },
     {
+      sessionId,
+      dbName,
       sql,
       type: PageType.CREATE_TYPE,
     },
@@ -748,7 +764,12 @@ export function openCreateTypePage(sql: string) {
 }
 /** 类型详情页面 */
 
-export function openTypeViewPage(typeName: string, propsTab: TypePropsTab = TypePropsTab.DDL) {
+export function openTypeViewPage(
+  typeName: string,
+  propsTab: TypePropsTab = TypePropsTab.DDL,
+  sessionId: string,
+  dbName: string,
+) {
   page.openPage(
     PageType.TYPE,
     {
@@ -756,6 +777,8 @@ export function openTypeViewPage(typeName: string, propsTab: TypePropsTab = Type
     },
 
     {
+      sessionId,
+      dbName,
       typeName,
       propsTab,
     },
