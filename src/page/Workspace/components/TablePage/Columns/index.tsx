@@ -12,6 +12,7 @@ const TableColumns: React.FC<IProps> = function ({}) {
     <TableContext.Provider
       value={{
         columns: table?.columns,
+        session: tableContext.session,
         setColumns: () => {},
       }}
     >

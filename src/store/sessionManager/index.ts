@@ -76,7 +76,7 @@ export class SessionManagerStore {
       null,
       null,
       null,
-      simpleMode,
+      simpleMode || !isMaster,
     );
     runInAction(() => {
       if (session) {

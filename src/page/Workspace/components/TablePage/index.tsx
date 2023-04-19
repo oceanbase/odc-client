@@ -1,7 +1,6 @@
 import { getTableInfo } from '@/common/network/table';
 import { ConstraintType, DbObjectType } from '@/d.ts';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ExportOutlined } from '@ant-design/icons';
@@ -23,6 +22,7 @@ import TableData from './TableData';
 
 import Toolbar from '@/component/Toolbar';
 import modal from '@/store/modal';
+import { SessionManagerStore } from '@/store/sessionManager';
 import styles from './index.less';
 
 const Content = Layout.Content;
@@ -32,12 +32,13 @@ interface IProps {
   pageKey: string;
   pageStore?: PageStore;
   settingStore?: SettingStore;
-  schemaStore?: SchemaStore;
+  sessionManagerStore?: SessionManagerStore;
   params: {
     tableName: string;
     topTab: TopTab;
     propsTab: PropsTab;
     constraintsTab: ConstraintType;
+    sessionId: string;
   };
 }
 
@@ -57,13 +58,7 @@ export enum PropsTab {
   PARTITION = 'PARTITION',
 }
 
-const TablePage: React.FC<IProps> = function ({
-  params,
-  settingStore,
-  pageStore,
-  schemaStore,
-  pageKey,
-}) {
+const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pageStore, pageKey }) {
   const [table, setTable] = useState<Partial<ITableModel>>(null);
   const [version, setVersion] = useState(0);
   const [topTab, setTopTab] = useState(TopTab.PROPS);
@@ -71,14 +66,17 @@ const TablePage: React.FC<IProps> = function ({
   const executeRef = useRef<{
     showExecuteModal: (sql: any, tableName: any) => Promise<boolean>;
   }>();
+  const session = sessionManagerStore.sessionMap.get(params.sessionId);
+  const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
-  const enableConstraint = schemaStore.enableConstraint;
+  const enableConstraint = session?.supportFeature?.enableConstraint;
 
   async function fetchTable() {
     if (table?.info?.tableName === params.tableName) {
       return;
     }
-    const newTable = await getTableInfo(params.tableName);
+    const session = sessionManagerStore.sessionMap.get(params.sessionId);
+    const newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
     if (newTable) {
       setTable(newTable);
       setVersion(version + 1);
@@ -185,6 +183,7 @@ const TablePage: React.FC<IProps> = function ({
             onRefresh: refresh,
             showExecuteModal: executeRef.current?.showExecuteModal,
             editMode: true,
+            session,
           }}
         >
           <Tabs
@@ -267,6 +266,7 @@ const TablePage: React.FC<IProps> = function ({
               {version > 0 ? (
                 <TableData
                   table={oldTable}
+                  session={session}
                   tableName={table?.info.tableName}
                   pageKey={pageKey}
                   key={version}
@@ -276,11 +276,11 @@ const TablePage: React.FC<IProps> = function ({
           </Tabs>
         </TablePageContext.Provider>
       </Content>
-      <ShowExecuteModal ref={executeRef} />
+      <ShowExecuteModal session={session} ref={executeRef} />
     </>
   ) : (
     <Spin style={{ marginLeft: '50%', marginTop: 40 }} />
   );
 };
 
-export default inject('pageStore', 'schemaStore', 'settingStore')(observer(TablePage));
+export default inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage));

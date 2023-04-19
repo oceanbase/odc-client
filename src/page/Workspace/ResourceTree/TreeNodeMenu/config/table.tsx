@@ -26,7 +26,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       actionType: actionTypes.create,
       async run(session, node) {
-        openCreateTablePage();
+        openCreateTablePage(session.sessionId, session.database.dbName);
       },
     },
   ],
@@ -39,7 +39,12 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         }),
       ],
       run(session, node) {
-        openTableViewPage((node.data as ITableModel)?.info?.tableName, TopTab.PROPS, PropsTab.DDL);
+        openTableViewPage(
+          (node.data as ITableModel)?.info?.tableName,
+          TopTab.PROPS,
+          PropsTab.DDL,
+          session?.sessionId,
+        );
       },
     },
 
@@ -63,7 +68,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
             propsTab = oldPropsTab;
           }
         }
-        openTableViewPage(tableName, TopTab.DATA, propsTab);
+        openTableViewPage(tableName, TopTab.DATA, propsTab, session?.sessionId);
       },
     },
 
@@ -244,13 +249,6 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
     },
 
     {
-      key: ResourceTreeNodeMenuKeys.RENAME_TABLE,
-      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.table.Rename' })],
-      actionType: actionTypes.update,
-      run(session, node) {},
-    },
-
-    {
       key: ResourceTreeNodeMenuKeys.DELETE_TABLE,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.table.Delete' })],
       actionType: actionTypes.delete,
@@ -303,7 +301,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.COLUMN);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.COLUMN, session?.sessionId);
       },
     },
 
@@ -324,7 +322,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.INDEX);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.INDEX, session?.sessionId);
       },
     },
 
@@ -345,7 +343,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION, session?.sessionId);
       },
     },
 
@@ -366,7 +364,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.CONSTRAINT);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.CONSTRAINT, session?.sessionId);
       },
     },
 

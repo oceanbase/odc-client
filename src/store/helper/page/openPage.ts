@@ -283,7 +283,7 @@ export function openRecycleBin() {
 }
 /** 创建表页面 */
 
-export function openCreateTablePage() {
+export function openCreateTablePage(sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_TABLE,
     {
@@ -297,7 +297,8 @@ export function openCreateTablePage() {
     },
 
     {
-      sessionId: connection.connection.sid,
+      sessionId,
+      dbName,
     },
   );
 }
@@ -307,6 +308,7 @@ export function openTableViewPage(
   tableName: string,
   topTab: TableTopTab = TableTopTab.PROPS,
   propsTab: TablePropsTab = TablePropsTab.INFO,
+  sessionId: string,
 ) {
   page!.openPage(
     PageType.TABLE,
@@ -315,6 +317,7 @@ export function openTableViewPage(
     },
 
     {
+      sessionId,
       tableName,
       topTab,
       propsTab,
@@ -325,10 +328,17 @@ export function openTableViewPage(
 /**
  * 创建视图页面
  */
-export function openCreateViewPage() {
-  page!.openPage(PageType.CREATE_VIEW, {
-    title: formatMessage({ id: 'workspace.window.createView.modal.title' }),
-  });
+export function openCreateViewPage(sessionId: string, dbName: string) {
+  page!.openPage(
+    PageType.CREATE_VIEW,
+    {
+      title: formatMessage({ id: 'workspace.window.createView.modal.title' }),
+    },
+    {
+      sessionId,
+      dbName,
+    },
+  );
 }
 
 /**
@@ -339,6 +349,8 @@ export function openViewViewPage(
   viewName: string,
   topTab: ViewTopTab = ViewTopTab.PROPS,
   propsTab: ViewPropsTab = ViewPropsTab.INFO,
+  sessionId: string,
+  dbName: string,
 ) {
   page!.openPage(
     PageType.VIEW,
@@ -350,6 +362,8 @@ export function openViewViewPage(
       viewName,
       topTab,
       propsTab,
+      sessionId,
+      dbName,
     },
   );
 }

@@ -5,7 +5,7 @@ import { exportResultSet } from '@/common/network/sql';
 import HelpDoc from '@/component/helpDoc';
 import MaskPolicySelecter from '@/component/MaskPolicySelecter';
 import { ConnectionMode, IExportResultSetFileType, IMPORT_ENCODING } from '@/d.ts';
-import connection from '@/store/connection';
+import SessionStore from '@/store/sessionManager/session';
 import { isClient } from '@/util/env';
 import { downloadFile } from '@/util/utils';
 import { AutoComplete, Button, Checkbox, Col, Form, Input, message, Row, Select } from 'antd';
@@ -19,8 +19,7 @@ interface IProps {
   sql: string;
   visible: boolean;
   tableName: string;
-  sessionId?: string;
-  schemaName?: string;
+  session: SessionStore;
   onClose: () => void;
 }
 
@@ -35,7 +34,7 @@ const defaultCsvData = {
 const FormItem = Form.Item;
 
 const ExportResultSetModal: React.FC<IProps> = (props) => {
-  const { visible, sql, tableName, sessionId, schemaName, onClose } = props;
+  const { visible, sql, tableName, session, onClose } = props;
   const [loading, setLoading] = useState(false);
   const taskInsRef = useRef<{
     stopTask: () => void;
@@ -73,11 +72,11 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
           fileEncoding,
           tableName,
           csvFormat,
-          sessionId,
+          session.sessionId,
           saveSql,
           maxRows,
           maskingPolicyId,
-          schemaName,
+          session.database.dbName,
         );
 
         if (!taskIns) {
@@ -169,11 +168,7 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
           fileEncoding: IMPORT_ENCODING.UTF8,
           csvFormat: defaultCsvData,
           saveSql: true,
-          maxRows: sessionId
-            ? [...connection.subSessions.values()].find(
-                (session) => session.sessionId === sessionId,
-              )?.queryLimit
-            : connection.queryLimit,
+          maxRows: session?.params?.queryLimit,
         }}
         layout="vertical"
         form={form}
@@ -194,7 +189,7 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
               readOnly
               defaultValue={sql}
               language={
-                connection.connection.dbMode === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
+                session.connection.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
               }
             />
           </div>

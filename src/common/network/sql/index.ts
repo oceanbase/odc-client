@@ -132,9 +132,10 @@ export async function fetchResultCache(
   sessionId: string,
   maxSizeKB: number = 2048,
   skip: number = 0,
+  dbName: string,
 ) {
   const res = await request.get(
-    `/api/v2/connect/sessions/${generateDatabaseSid(null, sessionId)}/sqls/${sqlId}/content`,
+    `/api/v2/connect/sessions/${generateDatabaseSid(dbName, sessionId)}/sqls/${sqlId}/content`,
     {
       params: {
         row: rowNum,

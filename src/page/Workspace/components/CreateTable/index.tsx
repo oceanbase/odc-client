@@ -19,10 +19,11 @@ import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import page from '@/store/page';
-import schema from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
+import { inject, observer } from 'mobx-react';
 import Columns, { defaultColumn } from './Columns';
 import styles from './index.less';
 import Partition from './Partition';
@@ -33,6 +34,11 @@ const TabPane = Tabs.TabPane;
 
 interface IProps {
   pageKey: string;
+  sessionManagerStore?: SessionManagerStore;
+  params: {
+    sessionId: string;
+    dbName: string;
+  };
 }
 
 const defaultInfo: TableInfo = {
@@ -44,7 +50,7 @@ const defaultInfo: TableInfo = {
 
 const defaultPartitions: TablePartition = null;
 
-const CreateTable: React.FC<IProps> = function ({ pageKey }) {
+const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManagerStore }) {
   const [info, setInfo] = useState<TableInfo>(defaultInfo);
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
   const [partitions, setPartitions] = useState<Partial<TablePartition>>(defaultPartitions);
@@ -57,6 +63,8 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
   const { loading, run: runGenerateCreateTableDDL } = useRequest(generateCreateTableDDL, {
     manual: true,
   });
+
+  const session = sessionManagerStore.sessionMap.get(params.sessionId);
 
   const isComplete = useMemo(() => {
     return (
@@ -101,16 +109,20 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
               disabled={!isComplete}
               loading={loading}
               onClick={async () => {
-                const sql = await runGenerateCreateTableDDL({
-                  info,
-                  columns,
-                  partitions,
-                  indexes,
-                  primaryConstraints,
-                  uniqueConstraints,
-                  foreignConstraints,
-                  checkConstraints,
-                });
+                const sql = await runGenerateCreateTableDDL(
+                  {
+                    info,
+                    columns,
+                    partitions,
+                    indexes,
+                    primaryConstraints,
+                    uniqueConstraints,
+                    foreignConstraints,
+                    checkConstraints,
+                  },
+                  params?.sessionId,
+                  params?.dbName,
+                );
 
                 if (sql) {
                   setDDL(sql);
@@ -146,6 +158,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
           setForeignConstraints,
           checkConstraints,
           setCheckConstraints,
+          session,
         }}
       >
         <Tabs className={'odc-left-tabs'} tabPosition="left">
@@ -190,13 +203,13 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
           readonly
           onCancel={() => setDDL('')}
           onSave={async () => {
-            const results = await executeSQL(DDL);
+            const results = await executeSQL(DDL, params.sessionId, params.dbName);
             const result = results?.find((result) => result.track);
             if (!result?.track) {
               // 关闭创建表页面
               page.close(pageKey);
               // 刷新左侧资源树
-              await schema.getTableList();
+              await session.database.getTableList();
               message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
             } else {
               notification.error(result);
@@ -207,4 +220,4 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
     </Card>
   );
 };
-export default CreateTable;
+export default inject('sessionManagerStore')(observer(CreateTable));

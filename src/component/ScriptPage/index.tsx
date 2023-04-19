@@ -5,6 +5,7 @@ import StatusBar from '@/component/StatusBar';
 import { EDITOR_TOOLBAR_HEIGHT, SQL_PAGE_RESULT_HEIGHT } from '@/constant';
 import { DbObjectType } from '@/d.ts/index';
 import { IDebugStackItem } from '@/store/debug/type';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import { default as snippet, default as snippetStore } from '@/store/snippet';
 import editorUtils from '@/util/editor';
@@ -34,6 +35,7 @@ interface IProps {
   statusBar?: any;
   Result?: React.ReactNode;
   Others: any;
+  session: SessionStore;
   handleChangeSplitPane?: (size: number) => void;
 }
 
@@ -65,7 +67,8 @@ export default class ScriptPage extends PureComponent<IProps> {
   }
 
   renderPanels = () => {
-    const { ctx, language, toolbar, stackbar, editor, statusBar, settingStore } = this.props;
+    const { ctx, language, toolbar, stackbar, editor, statusBar, settingStore, session } =
+      this.props;
     const isShowDebugStackBar = !!stackbar?.list?.length;
     return (
       <Layout
@@ -133,7 +136,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   const type = snippetStore.snippetDragging?.objType;
                   const value =
                     settingStore.configurations['sqlexecute.defaultObjectDraggingOption'];
-                  const insertText = await getCopyText(name, type, value, true);
+                  const insertText = await getCopyText(name, type, value, true, session.sessionId);
                   const editor = ctx.editor as IEditor;
                   editor.focus();
                   editorUtils.insertSnippetTemplate(ctx.editor, insertText);

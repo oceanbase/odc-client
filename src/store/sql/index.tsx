@@ -18,6 +18,7 @@ import { action, observable, runInAction } from 'mobx';
 import connectionStore from '../connection';
 import { generateResultSetColumns } from '../helper';
 import schemaStore from '../schema';
+import sessionManager from '../sessionManager';
 import sqlStore from '../sql';
 export enum ExcecuteSQLMode {
   PL = 'PL',
@@ -101,13 +102,13 @@ export class SQLStore {
   }
 
   @action
-  public async commit(pageKey: string, sessionId: string) {
+  public async commit(pageKey: string, sessionId: string, dbName: string) {
     try {
       runInAction(() => {
         this.commitingPageKey.add(pageKey);
       });
-      const data = await executeSQL('commit;', sessionId);
-      connectionStore.initSessionTransaction(sessionId);
+      const data = await executeSQL('commit;', sessionId, dbName);
+      sessionManager.sessionMap.get(sessionId)?.initSessionTransaction();
       if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
@@ -119,11 +120,11 @@ export class SQLStore {
   }
 
   @action
-  public async rollback(pageKey: string, sessionId: string) {
+  public async rollback(pageKey: string, sessionId: string, dbName: string) {
     try {
       this.rollbackPageKey.add(pageKey);
-      const data = await executeSQL('rollback;', sessionId);
-      connectionStore.initSessionTransaction(sessionId);
+      const data = await executeSQL('rollback;', sessionId, dbName);
+      sessionManager.sessionMap.get(sessionId)?.initSessionTransaction();
       if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
@@ -156,7 +157,8 @@ export class SQLStore {
     sql: string = '',
     pageKey: string,
     isSection: boolean,
-    sessionId?: string,
+    sessionId: string,
+    dbName: string,
   ): Promise<ISqlExecuteResult[]> {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
@@ -174,6 +176,7 @@ export class SQLStore {
           showTableColumnInfo,
         },
         sessionId,
+        dbName,
       );
     } catch (e) {
       throw e;

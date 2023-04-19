@@ -10,9 +10,7 @@ import {
   RSModifyDataType,
   TransState,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import modal from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import SubmitSvg from '@/svgr/Submit.svg';
@@ -46,7 +44,9 @@ import styles from './index.less';
 import RollbackSvg from '@/svgr/Roll-back.svg';
 // @ts-ignore
 import { uploadTableObject } from '@/common/network/sql';
+import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import SessionStore from '@/store/sessionManager/session';
 import MockSvg from '@/svgr/mock_toolbar.svg';
 import { isObjectColumn } from '@/util/column';
 import { generateUniqKey, getBlobValueKey } from '@/util/utils';
@@ -74,12 +74,10 @@ export enum ColumnOrder {
 }
 
 interface IProps {
-  schemaStore?: SchemaStore;
   sqlStore?: SQLStore;
-  connectionStore?: ConnectionStore;
   settingStore?: SettingStore;
   table?: Partial<ITable>;
-  sessionId?: string;
+  session: SessionStore;
   /**
    * 执行语句的ID
    */
@@ -134,13 +132,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const {
     isTableData,
     isViewData,
-    originSql,
+    session,
     rows: originRows,
     columns,
     showPagination,
-    connectionStore,
     sqlStore,
-    schemaStore,
     settingStore,
     showExplain,
     showMock,
@@ -149,7 +145,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     useUniqueColumnName,
     disableEdit,
     sqlId,
-    sessionId,
     autoCommit,
     dbTotalDurationMicroseconds,
     onUpdateEditing,
@@ -160,6 +155,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     enableRowId,
   } = props;
   const [queryEditableLoading, setQueryEditableLoading] = useState(false);
+  const sessionId = session?.sessionId;
 
   /**
    * 编辑中的rows
@@ -423,14 +419,20 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       return column.key === columnKey;
     });
     const rowIndex = row._rowIndex;
-    schemaStore?.downloadDataObject(sqlId, columnIndex, rowIndex, sessionId);
+    downloadDataObject(sqlId, columnIndex, rowIndex, sessionId, session?.database?.dbName);
   };
   const getDonwloadUrl = async (columnKey, row) => {
     const columnIndex = columns.findIndex((column) => {
       return column.key === columnKey;
     });
     const rowIndex = row._rowIndex;
-    return await schemaStore?.getDataObjectDownloadUrl(sqlId, columnIndex, rowIndex, sessionId);
+    return await getDataObjectDownloadUrl(
+      sqlId,
+      columnIndex,
+      rowIndex,
+      sessionId,
+      session?.database?.dbName,
+    );
   };
   const getMenus = useCallback(
     (row: any, rowColumn: CalculatedColumn<any, any>) => {
@@ -661,7 +663,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   if (selectedCellRowsKey.length === 1) {
     selectedRowIdx = rows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
   }
-  const rgdColumns = useColumns(columnsToDisplay, isEditing, !!sqlId, originRows);
+  const rgdColumns = useColumns(
+    columnsToDisplay,
+    isEditing,
+    !!sqlId,
+    originRows,
+    session?.connection?.dialectType,
+  );
   const pasteFormatter = useCallback(
     function pasteFormatter(
       row: RowType<any>,
@@ -684,8 +692,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     },
     [columnsToDisplay],
   );
-  const isInTransaction =
-    connectionStore.getSessionTransaction(sessionId)?.transState === TransState.IDLE;
+  const isInTransaction = session.transState?.transState === TransState.IDLE;
   return (
     <div style={{ height: resultHeight, display: 'flex', flexDirection: 'column' }}>
       <Spin spinning={queryEditableLoading}>
@@ -781,7 +788,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     <>
                       <SubmitConfirm
                         onConfirm={async () => {
-                          await sqlStore.commit(props.pageKey, sessionId);
+                          await sqlStore.commit(
+                            props.pageKey,
+                            sessionId,
+                            session?.database?.dbName,
+                          );
                           onRefresh(limit || 1000);
                         }}
                         disabled={isInTransaction}
@@ -799,7 +810,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                       </SubmitConfirm>
                       <SubmitConfirm
                         onConfirm={async () => {
-                          await sqlStore.rollback(props.pageKey, sessionId);
+                          await sqlStore.rollback(
+                            props.pageKey,
+                            sessionId,
+                            session?.database?.dbName,
+                          );
                           onRefresh(limit || 1000);
                         }}
                         isRollback
@@ -1109,6 +1124,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             isEditing,
             downloadObjectData,
             getDonwloadUrl,
+            session,
           }}
         >
           <EditableTable
@@ -1154,9 +1170,4 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject(
-  'sqlStore',
-  'schemaStore',
-  'connectionStore',
-  'settingStore',
-)(observer(DDLResultSet));
+export default inject('sqlStore', 'settingStore')(observer(DDLResultSet));

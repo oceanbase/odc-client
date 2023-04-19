@@ -1,19 +1,16 @@
-import { SchemaStore } from '@/store/schema';
-import { inject, observer } from 'mobx-react';
 import React, { useContext } from 'react';
 import TableContext from '../TableContext';
 import CreateTablePartitionRuleForm from './CreateTablePartitionRuleForm';
 
-interface IProps {
-  schemaStore?: SchemaStore;
-}
+interface IProps {}
 
-const Partition: React.FC<IProps> = function ({ schemaStore }) {
+const Partition: React.FC<IProps> = function ({}) {
   const tableContext = useContext(TableContext);
   return (
     <CreateTablePartitionRuleForm
       columns={tableContext.columns}
-      dataTypes={schemaStore.dataTypes}
+      session={tableContext.session}
+      dataTypes={tableContext.session?.dataTypes}
       onSave={(partitions) => {
         tableContext.setPartitions(partitions);
       }}
@@ -21,4 +18,4 @@ const Partition: React.FC<IProps> = function ({ schemaStore }) {
   );
 };
 
-export default inject('schemaStore')(observer(Partition));
+export default Partition;

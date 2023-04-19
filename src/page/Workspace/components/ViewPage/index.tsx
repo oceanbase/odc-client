@@ -1,4 +1,5 @@
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
+import { getView } from '@/common/network/view';
 import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
@@ -6,11 +7,9 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IResultSet, IView } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { generateResultSetColumns } from '@/store/helper';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
-import schema from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -47,13 +46,14 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
   pageKey: string;
+  sessionManagerStore: SessionManagerStore;
   params: {
     viewName: string;
     topTab: TopTab;
     propsTab: PropsTab;
+    sessionId: string;
+    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
@@ -85,7 +85,7 @@ interface IViewPageState {
   formated: boolean;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class ViewPage extends Component<IProps, IViewPageState> {
   public editor: IEditor;
@@ -249,8 +249,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   };
 
   public reloadView = async (viewName: string) => {
-    const { schemaStore } = this.props;
-    const view = await schemaStore.getView(viewName);
+    const view = await getView(viewName, this.props.params.sessionId, this.props.params.dbName);
     if (view) {
       this.setState({ view });
     } else {
@@ -259,8 +258,11 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   };
 
   public reloadViewColumns = async (viewName: string) => {
-    const { schemaStore } = this.props;
-    const { columns } = await schemaStore.getView(viewName);
+    const { columns } = await getView(
+      viewName,
+      this.props.params.sessionId,
+      this.props.params.dbName,
+    );
     this.setState({
       view: {
         ...this.state.view,
@@ -293,9 +295,9 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     limit: number = 1000,
   ) => {
     this.setState({ dataLoading: true });
-
+    const { sessionId, dbName } = this.props.params;
     try {
-      const viewData = await queryTableOrViewData(schema.database?.name, viewName, limit, false);
+      const viewData = await queryTableOrViewData(dbName, viewName, limit, false, sessionId);
       if (viewData?.track) {
         notification.error(viewData);
       } else {
@@ -329,13 +331,13 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   public render() {
     const {
       pageKey,
-      params: { viewName },
-      connectionStore,
-      schemaStore: { database },
+      params: { viewName, sessionId, dbName },
+      sessionManagerStore,
     } = this.props;
     const { topTab, propsTab, view, dataLoading, resultSet, showExportResuleSetModal, formated } =
       this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
+    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return (
       view && (
@@ -402,7 +404,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
                         }
                         icon={<CloudDownloadOutlined />}
                         onClick={() => {
-                          downloadPLDDL(view?.viewName, 'VIEW', view?.ddl);
+                          downloadPLDDL(view?.viewName, 'VIEW', view?.ddl, dbName);
                         }}
                       />
 
@@ -447,7 +449,8 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
                   {resultSet && (
                     <DDLResultSet
                       showExplain={false}
-                      autoCommit={connectionStore?.autoCommit}
+                      session={session}
+                      autoCommit={session?.params?.autoCommit}
                       showPagination={true}
                       isTableData={false}
                       isViewData={true}
@@ -477,6 +480,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
             </Tabs>
           </Content>
           <ExportResultSetModal
+            session={session}
             visible={showExportResuleSetModal}
             sql={resultSet?.originSql}
             tableName={resultSet?.resultSetMetaData?.table?.tableName}
