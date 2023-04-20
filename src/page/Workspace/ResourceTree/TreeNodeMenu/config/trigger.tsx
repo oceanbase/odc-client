@@ -18,23 +18,30 @@ import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
+  [ResourceNodeType.TriggerRoot]: [
+    {
+      key: 'CREATE_TRIGGER',
+      text: [formatMessage({ id: 'odc.ResourceTree.actions.CreateATrigger' })],
+      actionType: actionTypes.create,
+      run(session, node) {
+        openCreateTriggerPage(null, session?.sessionId, session?.database?.dbName);
+      },
+    },
+  ],
   [ResourceNodeType.Trigger]: [
     {
       key: 'OVERVIEW_TRIGGER',
       text: [formatMessage({ id: 'odc.ResourceTree.actions.ViewTriggers' })],
       run(session, node) {
         const trigger: ITrigger = node.data;
-        openTriggerViewPage(trigger?.triggerName, TriggerPropsTab.DDL, trigger?.enableState);
-      },
-    },
-
-    {
-      key: 'CREATE_TRIGGER',
-      text: [formatMessage({ id: 'odc.ResourceTree.actions.CreateATrigger' })],
-      actionType: actionTypes.create,
-      hasDivider: true,
-      run(session, node) {
-        openCreateTriggerPage();
+        openTriggerViewPage(
+          trigger?.triggerName,
+          TriggerPropsTab.DDL,
+          trigger?.enableState,
+          null,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 

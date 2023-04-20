@@ -1,14 +1,14 @@
+import { getSequence } from '@/common/network/sequence';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
-import { ConnectionMode } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
+import { ConnectionMode, ISequence } from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -38,13 +38,14 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
+  sessionManagerStore: SessionManagerStore;
   modalStore?: ModalStore;
-  connectionStore: ConnectionStore;
   pageKey: string;
   params: {
     sequenceName: string;
     propsTab: PropsTab;
+    sessionId: string;
+    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
@@ -53,9 +54,10 @@ interface IProps {
 interface IState {
   propsTab: PropsTab;
   formated: boolean;
+  sequence: ISequence;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore', 'modalStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore', 'modalStore')
 @observer
 export default class SequencePage extends Component<IProps, IState> {
   public editor: IEditor;
@@ -63,6 +65,7 @@ export default class SequencePage extends Component<IProps, IState> {
   public readonly state: IState = {
     propsTab: this.props.params.propsTab || PropsTab.INFO,
     formated: false,
+    sequence: null,
   };
 
   public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
@@ -78,11 +81,7 @@ export default class SequencePage extends Component<IProps, IState> {
     }
   }
   private getSequence = () => {
-    const {
-      params: { sequenceName },
-      schemaStore,
-    } = this.props;
-    return schemaStore.sequencesMap[sequenceName];
+    return this.state.sequence;
   };
   public handlePropsTabChanged = (propsTab: PropsTab) => {
     const { pageStore, pageKey } = this.props;
@@ -100,8 +99,12 @@ export default class SequencePage extends Component<IProps, IState> {
   };
 
   public reloadSequence = async (sequenceName: string) => {
-    const { schemaStore } = this.props;
-    await schemaStore.getSequence(sequenceName);
+    const { params } = this.props;
+    const sequence = await getSequence(sequenceName, params.sessionId, params.dbName);
+    sequence &&
+      this.setState({
+        sequence,
+      });
   };
 
   public async componentDidMount() {
@@ -130,17 +133,17 @@ export default class SequencePage extends Component<IProps, IState> {
     this.props.modalStore.changeCreateSequenceModalVisible(true, {
       isEdit: true,
       data: sequence,
+      sessionId: this.props.params.sessionId,
+      dbName: this.props.params.dbName,
     });
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-      params,
-    } = this.props;
+    const { sessionManagerStore, params } = this.props;
     const { propsTab, formated } = this.state;
     const sequence = this.getSequence();
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const session = sessionManagerStore.sessionMap.get(params.sessionId);
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return sequence ? (
       <>
@@ -260,7 +263,7 @@ export default class SequencePage extends Component<IProps, IState> {
                   }
                   icon={<CloudDownloadOutlined />}
                   onClick={() => {
-                    downloadPLDDL(sequence?.name, 'SEQUENCE', sequence?.ddl);
+                    downloadPLDDL(sequence?.name, 'SEQUENCE', sequence?.ddl, params.dbName);
                   }}
                 />
 

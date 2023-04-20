@@ -1,3 +1,4 @@
+import { getTriggerByName } from '@/common/network/trigger';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
@@ -6,10 +7,9 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ITrigger } from '@/d.ts';
 import { ConnectionMode, TriggerState } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openTriggerEditPageByName } from '@/store/helper/page';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -74,10 +74,11 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
   params: {
+    sessionId: string;
+    dbName: string;
     triggerName: string;
     propsTab: PropsTab;
     triggerData: ITrigger;
@@ -86,7 +87,7 @@ interface IProps {
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class TriggerPage extends Component<
   IProps,
@@ -205,10 +206,9 @@ export default class TriggerPage extends Component<
   };
   private reloadTrigger = async () => {
     const {
-      schemaStore,
-      params: { triggerName },
+      params: { triggerName, sessionId, dbName },
     } = this.props;
-    const trigger = await schemaStore.getTrigger(triggerName);
+    const trigger = await getTriggerByName(triggerName, sessionId, dbName);
     if (trigger) {
       this.setState({
         trigger,
@@ -225,9 +225,9 @@ export default class TriggerPage extends Component<
   };
   private editTrigger = () => {
     const {
-      params: { triggerName },
+      params: { triggerName, sessionId, dbName },
     } = this.props;
-    openTriggerEditPageByName(triggerName);
+    openTriggerEditPageByName(triggerName, sessionId, dbName);
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;
@@ -242,7 +242,9 @@ export default class TriggerPage extends Component<
     const {
       trigger: { triggerName, enableState },
     } = this.state;
-    this.props.schemaStore.setTriggerStatus(triggerName, enableState);
+    const { sessionManagerStore, params } = this.props;
+    const session = sessionManagerStore.sessionMap.get(params?.sessionId);
+    session.database.getTriggerList();
     this.props.pageStore.updatePageColor(triggerName, enableState === TriggerState.disabled);
     this.handleCloseBaseInfo(callback);
   };
@@ -271,11 +273,12 @@ export default class TriggerPage extends Component<
 
   public render() {
     const {
-      connectionStore: { connection },
-      schemaStore: { enableTriggerAlterStatus },
+      sessionManagerStore,
+      params: { sessionId, dbName },
     } = this.props;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { propsTab, trigger, isEditStatus, formated } = this.state;
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
 
     if (!trigger || !trigger.triggerName) {
@@ -294,7 +297,7 @@ export default class TriggerPage extends Component<
                 /* 基本信息 */
                 key={PropsTab.BASE_INFO}
               >
-                {enableTriggerAlterStatus && (
+                {session?.supportFeature?.enableTriggerAlterStatus && (
                   <Toolbar>
                     {isEditStatus ? (
                       <div className={styles.toolbarCustomize}>
@@ -555,7 +558,7 @@ export default class TriggerPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(trigger?.triggerName, PLType.TRIGGER, trigger?.ddl);
+                      downloadPLDDL(trigger?.triggerName, PLType.TRIGGER, trigger?.ddl, dbName);
                     }}
                   />
 

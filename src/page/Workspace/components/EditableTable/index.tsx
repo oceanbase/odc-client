@@ -123,7 +123,7 @@ export default inject('settingStore')(
         [rowKey],
       );
       const onSelectedColumnsChange = function (keys: Set<React.Key>) {
-        onSelectChange([], [...keys]);
+        onSelectChange?.([], [...keys]);
       };
       const innerOnSelectedCellChange = useCallback(
         function (position: Position, row: any, columnKey: string) {

@@ -6,7 +6,7 @@ import { WrapAutoCompleteEditor } from '@/page/Workspace/components/EditableTabl
 import { InputNumberEditor } from '@/page/Workspace/components/EditableTable/Editors/NumberEditor';
 import { WrapSelectEditor } from '@/page/Workspace/components/EditableTable/Editors/SelectEditor';
 import { TextEditor } from '@/page/Workspace/components/EditableTable/Editors/TextEditor';
-import type { SchemaStore } from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import { mergeDataType } from '@/util/dataType';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
@@ -19,7 +19,6 @@ import {
 } from '@ant-design/icons';
 import { useUpdate } from 'ahooks';
 import { Row } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, {
   useCallback,
   useEffect,
@@ -31,7 +30,7 @@ import React, {
 import Toolbar from '../Toolbar';
 
 interface IProps {
-  schemaStore?: SchemaStore;
+  session: SessionStore;
   dbMode: ConnectionMode;
   paramsRef?: any;
   mode: DbObjectType;
@@ -51,7 +50,7 @@ interface RowData extends RowType, Partial<IPLParam> {
 }
 
 const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
-  const { schemaStore, dbMode, mode } = props;
+  const { dbMode, mode, session } = props;
   const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
   const defaultParamMode = ParamMode.IN;
   const [rows, setRows] = useState<RowData[]>([]);
@@ -92,7 +91,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
           name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
           width: 120,
           editor: WrapAutoCompleteEditor(
-            schemaStore.dataTypes.map((d) => d.databaseType.replace('()', '')),
+            session.dataTypes.map((d) => d.databaseType.replace('()', '')),
           ),
         },
         {
@@ -122,7 +121,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
         name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
         width: 100,
         editor: WrapAutoCompleteEditor(
-          schemaStore.dataTypes.map((d) => d.databaseType.replace('()', '')),
+          session.dataTypes.map((d) => d.databaseType.replace('()', '')),
         ),
       },
       isMySQL
@@ -145,7 +144,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
           }
         : null,
     ].filter(Boolean);
-  }, [schemaStore, defaultParamMode, isMysqlFunction, isMySQL]);
+  }, [session, defaultParamMode, isMysqlFunction, isMySQL]);
 
   const getDefaultRowData = useCallback(() => {
     if (isMySQL) {
@@ -319,4 +318,4 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('schemaStore')(observer(FunctionOrProcedureParams));
+export default FunctionOrProcedureParams;

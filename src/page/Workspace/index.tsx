@@ -1,8 +1,6 @@
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
 import AddConnectionDrawer from '@/component/AddConnectionDrawer';
 import ApplyPermission from '@/component/ApplyPermission';
-import CreateFunctionModal from '@/component/CreateFunctionModal';
-import CreateProcedureModal from '@/component/CreateProcedureModal';
 import DataMockerDrawer from '@/component/DataMockerDrawer';
 import openNewVersionTip from '@/component/VersionModal/NewVersion';
 import WindowManager from '@/component/WindowManager';
@@ -346,8 +344,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
             <ApplyPermission />
             <CreateAsyncTaskModal key={`${modalStore.createAsyncTaskVisible}async`} />
             <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
-            <CreateFunctionModal />
-            <CreateProcedureModal />
             <ScriptManageModal />
             <PartitionDrawer />
             <CreateShadowSyncModal key={`${modalStore.addShadowSyncVisible}shadowSync`} />

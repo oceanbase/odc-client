@@ -12,7 +12,7 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
 export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
-  [ResourceNodeType.Sequence]: [
+  [ResourceNodeType.SequenceRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.CREATE_SEQUENCE,
       text: [
@@ -20,20 +20,27 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.TreeNodeMenu.config.sequence.CreateASequence',
         }),
       ],
-
-      hasDivider: true,
       actionType: actionTypes.create,
       run(session, node) {
-        modal.changeCreateSequenceModalVisible(true);
+        modal.changeCreateSequenceModalVisible(true, {
+          sessionId: session?.sessionId,
+          dbName: session?.database?.dbName,
+        });
       },
     },
-
+  ],
+  [ResourceNodeType.Sequence]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.ViewSequence' })],
       run(session, node) {
         const sequence: ISequence = node.data;
-        openSequenceViewPage(sequence?.name);
+        openSequenceViewPage(
+          sequence?.name,
+          undefined,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -52,6 +59,8 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           modal.changeCreateSequenceModalVisible(true, {
             isEdit: true,
             data: sequence,
+            sessionId: session?.sessionId,
+            dbName: session?.database?.dbName,
           });
         }
       },

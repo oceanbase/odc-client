@@ -1,3 +1,5 @@
+import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
+import { getTriggerCreateSQL } from '@/common/network/trigger';
 import { ITriggerBaseInfoForm } from '@/d.ts';
 import { openCreateTriggerSQLPage } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
@@ -37,7 +39,7 @@ const customPanelStyle = {
   borderRadius: 4,
   overflow: 'hidden',
 };
-@inject('sqlStore', 'connectionStore', 'schemaStore', 'pageStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class CreateTriggerPage extends Component<IProps, IState> {
   public readonly state = {
@@ -54,8 +56,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
 
   componentDidMount() {
     const {
-      schemaStore: { database },
-      params: { preData = null },
+      params: { preData = null, dbName },
     } = this.props;
     if (preData) {
       this.setState(
@@ -74,7 +75,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
         },
       );
     } else {
-      this.loadSchemaMode(database?.name);
+      this.loadSchemaMode(dbName);
     }
   } // 获取 step对应的状态
 
@@ -148,7 +149,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
     const { baseInfo, adancedInfo } = this.state; // todo 表单信息提交&页面跳转
     // todo 点击 上一步，在不修改表单的情况下，应该也是可以提交的
 
-    const { schemaStore, pageStore, pageKey } = this.props;
+    const { sessionManagerStore, pageStore, pageKey, params } = this.props;
     const {
       triggerMode,
       triggerType,
@@ -166,6 +167,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
       rowLevel: triggerGrade === 'row',
       sqlExpression,
     };
+    const session = sessionManagerStore.sessionMap.get(params.sessionId);
     const pass = this.setEvents(serverData, triggerEvents, triggerColumns);
 
     if (!pass) {
@@ -179,11 +181,21 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
       this.setReferences(serverData, 'OLD', referencesOldValue);
     }
 
-    const sql = await schemaStore.getTriggerCreateSQL('TEST_TRIGGER', serverData);
-    await openCreateTriggerSQLPage(sql, {
-      baseInfo: { ...baseInfo },
-      adancedInfo: { ...adancedInfo },
-    });
+    const sql = await getTriggerCreateSQL(
+      'TEST_TRIGGER',
+      serverData,
+      params.sessionId,
+      params.dbName,
+    );
+    await openCreateTriggerSQLPage(
+      sql,
+      {
+        baseInfo: { ...baseInfo },
+        adancedInfo: { ...adancedInfo },
+      },
+      params.sessionId,
+      params.dbName,
+    );
 
     await pageStore.close(pageKey);
   };
@@ -235,8 +247,8 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
   };
 
   loadSchemaMode = async (value: string) => {
-    const { schemaStore } = this.props;
-    const tables = await schemaStore.getTableListByDatabaseName(value);
+    const { params } = this.props;
+    const tables = await getTableListByDatabaseName(params?.sessionId, value);
     this.setState({
       tables,
       columns: [],
@@ -249,8 +261,8 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
   };
 
   loadColumns = async (value: string) => {
-    const { schemaStore } = this.props;
-    const columns = await schemaStore.getTableColumnList(value);
+    const { params } = this.props;
+    const columns = await getTableColumnList(value, params.dbName, params.sessionId);
     this.setState({
       columns,
     });
@@ -268,13 +280,14 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
 
   public render() {
     const {
-      schemaStore: { database, databases, enableTriggerReferences, enableTriggerAlterStatus },
-      params: { preData = null },
+      sessionManagerStore,
+      params: { preData = null, dbName, sessionId },
     } = this.props;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { tables, columns, activeKey, baseInfoStatus, advancedStatus } = this.state;
     const defaultBaseInfo = {
       schemaType: 'TABLE',
-      schemaMode: database?.name,
+      schemaMode: dbName,
     };
 
     return (
@@ -305,10 +318,10 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
                 setStepStatus={this.setStepStatus}
                 reloadSchemaMode={this.reloadSchemaMode}
                 reloadColumns={this.reloadColumns}
-                databases={databases}
+                databases={session?.databases}
                 tables={tables}
                 initialValues={preData?.baseInfo || (defaultBaseInfo as ITriggerBaseInfoForm)}
-                enableTriggerAlterStatus={enableTriggerAlterStatus}
+                enableTriggerAlterStatus={session?.supportFeature?.enableTriggerAlterStatus}
               />
             </Panel>
             <Panel
@@ -331,7 +344,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
                 setStepStatus={this.setStepStatus}
                 setFormRef={this.setFormRef}
                 initialValues={preData?.adancedInfo}
-                enableTriggerReferences={enableTriggerReferences}
+                enableTriggerReferences={session?.supportFeature?.enableTriggerReferences}
               />
             </Panel>
           </Collapse>

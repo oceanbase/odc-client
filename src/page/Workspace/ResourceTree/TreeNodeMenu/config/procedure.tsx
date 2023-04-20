@@ -15,6 +15,20 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
+  [ResourceNodeType.ProcedureRoot]: [
+    {
+      key: 'CREATE',
+      text: ['新建存储过程'],
+      actionType: actionTypes.create,
+      run(session, node) {
+        modal.changeCreateProcedureModalVisible(
+          true,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
+      },
+    },
+  ],
   [ResourceNodeType.Procedure]: [
     {
       key: 'OVERVIEW',
@@ -25,21 +39,13 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       run(session, node) {
         const proc: IProcedure = node.data;
-        openProcedureViewPage(proc?.proName, TopTab.PROPS, PropsTab.DDL);
-      },
-    },
-
-    {
-      key: 'CREATE',
-      text: [
-        formatMessage({
-          id: 'odc.ResourceTree.config.treeNodesActions.New',
-        }),
-      ],
-      actionType: actionTypes.create,
-      hasDivider: true,
-      run(session, node) {
-        modal.changeCreateProcedureModalVisible(true);
+        openProcedureViewPage(
+          proc?.proName,
+          TopTab.PROPS,
+          PropsTab.DDL,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 

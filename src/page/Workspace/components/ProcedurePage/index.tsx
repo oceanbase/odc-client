@@ -2,7 +2,6 @@ import Toolbar from '@/component/Toolbar';
 import type { IProcedure } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import {
   AlignLeftOutlined,
@@ -23,8 +22,8 @@ import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
-import type { ConnectionStore } from '@/store/connection';
 import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
@@ -51,18 +50,19 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
   params: {
     proName: string;
     propsTab: PropsTab;
+    sessionId: string;
+    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class ProcedurePage extends Component<
   IProps,
@@ -108,8 +108,8 @@ export default class ProcedurePage extends Component<
   };
 
   public reloadProcedure = async (proName: string) => {
-    const { schemaStore } = this.props;
-    const procedure = await getProcedureByProName(proName);
+    const { params } = this.props;
+    const procedure = await getProcedureByProName(proName, false, params.sessionId, params.dbName);
     if (procedure) {
       procedure.params = procedure.params.map((param) => {
         const { dataType, dataLength } = parseDataType(param.dataType);
@@ -134,8 +134,8 @@ export default class ProcedurePage extends Component<
   }
 
   public async editProcedure(proName: string) {
-    const { schemaStore, pageStore } = this.props;
-    await openProcedureEditPageByProName(proName);
+    const { params } = this.props;
+    await openProcedureEditPageByProName(proName, params.sessionId, params.dbName);
   }
 
   private showSearchWidget() {
@@ -158,11 +158,12 @@ export default class ProcedurePage extends Component<
   public render() {
     const {
       pageKey,
-      params: { proName },
-      connectionStore,
+      params: { proName, sessionId, dbName },
+      sessionManagerStore,
     } = this.props;
+    const session = sessionManagerStore?.sessionMap.get(sessionId);
     const { propsTab, procedure, formated } = this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     const tableColumns = [
       {
@@ -269,7 +270,7 @@ export default class ProcedurePage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(proName, PLType.PROCEDURE, procedure?.ddl);
+                      downloadPLDDL(proName, PLType.PROCEDURE, procedure?.ddl, dbName);
                     }}
                   />
 
