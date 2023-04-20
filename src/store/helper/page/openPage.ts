@@ -125,7 +125,7 @@ export function openPackageViewPage(
     },
   );
 }
-export async function openNewSQLPage() {
+export async function openNewSQLPage(cid: number, dbName: string) {
   const key = await generatePageKey(PageType.SQL);
   const title = generatePageTitle(PageType.SQL, key);
   page.openPage(
@@ -138,10 +138,12 @@ export async function openNewSQLPage() {
     {
       scriptName: title,
       scriptText: '',
+      cid,
+      dbName,
     },
   );
 }
-export async function openNewSQLPageWithResult(result) {
+export async function openNewSQLPageWithResult(result, cid: number, dbName: string) {
   const key = await generatePageKey(PageType.SQL);
   const title = generatePageTitle(PageType.SQL, key);
   sqlStore.resultSets.set(key, generateResultSetColumns(result));
@@ -161,12 +163,14 @@ export async function openNewSQLPageWithResult(result) {
         })
         .join('\n'),
       fromTask: true,
+      cid,
+      dbName,
     },
   );
 }
 /** 根据scriptID打开sql或者pl的page */
 
-export async function openSQLPageByScript(scriptId: any) {
+export async function openSQLPageByScript(scriptId: any, cid: number, dbName: string) {
   const existPage = findPageByScriptIdAndType(scriptId);
 
   if (existPage) {
@@ -177,7 +181,7 @@ export async function openSQLPageByScript(scriptId: any) {
   const file = await getScript(scriptId);
 
   if (file) {
-    const key = openSQLOrPLPage(file);
+    const key = openSQLOrPLPage(file, cid, dbName);
     return key;
   }
 
@@ -185,7 +189,7 @@ export async function openSQLPageByScript(scriptId: any) {
 }
 /** 打开已存在的SQL/匿名块Page */
 
-export async function openSQLOrPLPage(file: IScript) {
+export async function openSQLOrPLPage(file: IScript, cid: number, dbName: string) {
   const key = await generatePageKey(PageType.SQL, {
     scriptId: file.scriptMeta.id,
   });
@@ -201,6 +205,8 @@ export async function openSQLOrPLPage(file: IScript) {
       ...file.scriptMeta,
       scriptText: file.content,
       scriptId: file.scriptMeta.id,
+      cid,
+      dbName,
     },
   );
 

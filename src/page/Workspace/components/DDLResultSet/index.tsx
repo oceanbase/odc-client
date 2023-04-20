@@ -692,7 +692,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     },
     [columnsToDisplay],
   );
-  const isInTransaction = session.transState?.transState === TransState.IDLE;
+  const isInTransaction = session?.transState?.transState === TransState.IDLE;
   return (
     <div style={{ height: resultHeight, display: 'flex', flexDirection: 'column' }}>
       <Spin spinning={queryEditableLoading}>

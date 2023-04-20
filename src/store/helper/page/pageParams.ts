@@ -20,6 +20,15 @@ export interface IPLPageParams extends Partial<IScriptMeta> {
   dbName: string;
 }
 
+export interface ISQLPageParams extends Partial<IScriptMeta> {
+  scriptText: string;
+  scriptName?: string;
+  scriptId?: string;
+  fromTask?: boolean;
+  cid: number;
+  dbName: string;
+}
+
 export function createPackageHeadPageParams(packageName: string, sql: string, scriptId?: string) {
   return {
     packageName: packageName,
