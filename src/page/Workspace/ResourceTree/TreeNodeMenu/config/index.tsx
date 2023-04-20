@@ -1,3 +1,4 @@
+import { databaseMenusConfig } from './database';
 import { functionMenusConfig } from './function';
 import { packageMenusConfig } from './package';
 import { packageBodyMenusConfig } from './packageBody';
@@ -20,4 +21,5 @@ export default {
   ...typeMenusConfig,
   ...packageMenusConfig,
   ...packageBodyMenusConfig,
+  ...databaseMenusConfig,
 };

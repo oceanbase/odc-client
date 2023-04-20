@@ -5,6 +5,7 @@ import {
   newSession,
 } from '@/common/network/connection';
 import { generateDatabaseSid, generateSessionSid } from '@/common/network/pathUtil';
+import { queryIdentities } from '@/common/network/table';
 import showReConnectModal from '@/component/ReconnectModal';
 import {
   ConnectionMode,
@@ -51,17 +52,30 @@ class SessionStore {
     };
   } = {};
 
+  /**
+   * 这个里面包含系统视图，后续还有可能包含其余的对象
+   */
+  @observable.shallow
+  public allIdentities: {
+    [dbName: string]: {
+      tables: string[];
+      views: string[];
+    };
+  } = {};
+
   @observable
   public params: {
     autoCommit: boolean;
     delimiter: string;
     queryLimit: number;
     delimiterLoading: boolean;
+    obVersion: string;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
     delimiterLoading: false,
     queryLimit: DEFAULT_QUERY_LIMIT,
+    obVersion: '',
   };
 
   /**
@@ -80,6 +94,8 @@ class SessionStore {
   public isAlive: boolean = false;
 
   private lastTableAndViewLoadTime: number = 0;
+
+  private lastIdentitiesLoadTime: number = 0;
 
   constructor(connection: IConnection) {
     this.connection = connection;
@@ -162,7 +178,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.getSupportFeature();
+      await this.getSupportFeature(dbName);
       await this.initTransactionStatus();
       await this.initSessionTransaction();
       await this.getDataTypeList();
@@ -230,8 +246,8 @@ class SessionStore {
   }
 
   @action
-  public async getSupportFeature() {
-    const data = await getSupportFeatures(this.sessionId);
+  public async getSupportFeature(dbName) {
+    const data = await getSupportFeatures(this.sessionId, dbName);
     if (!data) {
       throw new Error('getSupportFeature error');
     }
@@ -348,6 +364,7 @@ class SessionStore {
       this.params.autoCommit = data.autocommit;
       this.params.delimiter = data.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data.queryLimit;
+      this.params.obVersion = data.obVersion;
     } catch (e) {
       console.error(e);
       this.params.autoCommit = true;
@@ -398,6 +415,38 @@ class SessionStore {
     });
     sessions.forEach((session) => {
       session.isAlive = false;
+    });
+  }
+
+  @action
+  public async queryIdentities() {
+    const now = Date.now();
+    if (now - this.lastIdentitiesLoadTime < 10000) {
+      return;
+    }
+    this.lastIdentitiesLoadTime = now;
+    const data = await queryIdentities(['TABLE', 'VIEW'], this.sessionId, this.database?.dbName);
+    if (!data) {
+      this.lastTableAndViewLoadTime = 0;
+    }
+    runInAction(() => {
+      data?.forEach((item) => {
+        const { schemaName, identities } = item;
+        this.allIdentities[schemaName] = { tables: [], views: [] };
+        identities.forEach((identity) => {
+          const { type, name } = identity;
+          switch (type) {
+            case 'TABLE': {
+              this.allIdentities[schemaName].tables.push(name);
+              return;
+            }
+            case 'VIEW': {
+              this.allIdentities[schemaName].views.push(name);
+              return;
+            }
+          }
+        });
+      });
     });
   }
 }

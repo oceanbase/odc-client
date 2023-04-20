@@ -226,8 +226,10 @@ export default class TriggerPage extends Component<
   private editTrigger = () => {
     const {
       params: { triggerName, sessionId, dbName },
+      sessionManagerStore,
     } = this.props;
-    openTriggerEditPageByName(triggerName, sessionId, dbName);
+    const session = sessionManagerStore.sessionMap.get(sessionId);
+    openTriggerEditPageByName(triggerName, sessionId, dbName, session?.connection?.id);
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;

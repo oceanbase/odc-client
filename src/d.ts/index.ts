@@ -559,14 +559,6 @@ export interface IConnection {
   /**
    * @deprecated
    */
-  dbMode: ConnectionMode;
-  /**
-   * @deprecated
-   */
-  defaultDBName: string;
-  /**
-   * @deprecated
-   */
   copyFromSid: number;
   /**
    * @deprecated

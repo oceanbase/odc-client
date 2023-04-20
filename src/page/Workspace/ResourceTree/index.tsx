@@ -53,7 +53,7 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
       const dbName = database.name;
       const dbSessionId = databaseSessions[dbName];
       const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-      return DataBaseTreeData(dbSession, database);
+      return DataBaseTreeData(dbSession, database, session?.connection?.id);
     });
     return root || [];
   })();

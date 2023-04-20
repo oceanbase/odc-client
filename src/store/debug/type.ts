@@ -1,5 +1,6 @@
 import { PLType } from '@/constant/plType';
 import { IFunction, IPLParam, IProcedure, ParamMode } from '@/d.ts';
+import SessionStore from '../sessionManager/session';
 
 export enum DebugStatus {
   /**
@@ -46,6 +47,7 @@ export enum DebugStatus {
 
 export interface ICreateDebugConfig {
   plType: PLType;
+  session: SessionStore;
   packageName?: string;
   procedure?: IProcedure;
   function?: IFunction;

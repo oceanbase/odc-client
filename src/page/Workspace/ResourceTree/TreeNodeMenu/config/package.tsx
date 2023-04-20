@@ -68,8 +68,18 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const sql = pkg?.packageHead?.basicInfo?.ddl || '';
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageHeadPage(pkg?.packageName, sql);
-        await openPackageBodyPage(pkg?.packageName, bodysql);
+        await openPackageHeadPage(
+          pkg?.packageName,
+          sql,
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
+        await openPackageBodyPage(
+          pkg?.packageName,
+          bodysql,
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -196,7 +206,12 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         const pkgInfo: IPackage = node.data;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const sql = pkg?.packageHead?.basicInfo?.ddl || '';
-        await openPackageHeadPage(pkg?.packageName, sql);
+        await openPackageHeadPage(
+          pkg?.packageName,
+          sql,
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
 

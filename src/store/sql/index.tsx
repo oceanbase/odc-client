@@ -1,9 +1,8 @@
+import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
-import { default as PLTYPE } from '@/constant/plType';
 import {
   ConnectionMode,
   ILogItem,
-  ILogType,
   IResultSet,
   ISqlExecuteResult,
   ISqlExecuteResultStatus,
@@ -19,7 +18,6 @@ import connectionStore from '../connection';
 import { generateResultSetColumns } from '../helper';
 import schemaStore from '../schema';
 import sessionManager from '../sessionManager';
-import sqlStore from '../sql';
 export enum ExcecuteSQLMode {
   PL = 'PL',
   TABLE = 'TABLE',
@@ -270,22 +268,10 @@ export class SQLStore {
     return `sid:${sessionId}:d:${dbName}`;
   } // 获取 PL getPLSchema
 
+  // 解析 PL
   @action
-  public async getPLSchema(plScriptText: string) {
-    const resParse = await this.parsePL(plScriptText);
-    const { plName, obDbObjectType } = resParse;
-    const FUNCS = {
-      PROCEDURE: 'getProcedure',
-      FUNCTION: 'getFunction',
-    };
-    const res = await schemaStore[FUNCS[obDbObjectType]](plName); // 记录下来，便于后续流程使用
-
-    return res;
-  } // 解析 PL
-
-  @action
-  public async parsePL(sql: string) {
-    const sid = this.getSid();
+  public async parsePL(sql: string, sessionId, dbName) {
+    const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.put(`/api/v1/pl/parsePLNameType/${sid}`, {
       data: {
         sql,
@@ -295,8 +281,8 @@ export class SQLStore {
   } // 编译 PL
 
   @action
-  public async compilePL(plName: string, obDbObjectType: string) {
-    const sid = this.getSid();
+  public async compilePL(plName: string, obDbObjectType: string, sessionId, dbName) {
+    const sid = generateDatabaseSid(dbName, sessionId);
     this.setRunningPL(plName, 'COMPLIE');
     const res = await request.post(`/api/v1/pl/compile/${sid}`, {
       data: { obDbObjectType, plName },
@@ -344,8 +330,8 @@ export class SQLStore {
 
   // 运行 PL
   @action
-  public async execPL(plSchema: any, ignoreError?: boolean) {
-    const sid = this.getSid();
+  public async execPL(plSchema: any, ignoreError?: boolean, sessionId?: string, dbName?: string) {
+    const sid = generateDatabaseSid(dbName, sessionId);
     const { plName } = plSchema;
     this.setRunningPL(plName, 'EXEC');
     let res;
@@ -365,7 +351,7 @@ export class SQLStore {
         },
       });
     } else {
-      const data = await executeSQL({ sql: plSchema.ddl, split: false }); // 数据格式兼容
+      const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
       if (data?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS && ignoreError) {
         this.removeRunningPL(plName);
         return {
@@ -393,7 +379,7 @@ export class SQLStore {
     if (res?.data) {
       res.data = res.data === true ? {} : res.data;
       if (isNil(dbms)) {
-        dbms = await this.getPLDBMS();
+        dbms = await this.getPLDBMS(sessionId, dbName);
       }
       res.data.dbms = dbms;
     }
@@ -402,284 +388,16 @@ export class SQLStore {
   }
 
   @action
-  public async startPLDebug(plSchema: any) {
-    const sid = this.getSid();
-    const { plName } = plSchema;
-    this.setRunningPL(plName, 'DEBUG');
-    this.debugLogs = [];
-    let res;
-
-    if (plSchema.proName) {
-      res = await request.put(`/api/v1/pl/startDebugProcedure/${sid}`, {
-        data: {
-          ...plSchema,
-          // 程序包内的存储过程名字需要加上程序包前缀
-          proName: plSchema.proName,
-        },
-      });
-    } else if (plSchema.funName) {
-      res = await request.put(`/api/v1/pl/startDebugFunction/${sid}`, {
-        data: {
-          ...plSchema,
-          // 程序包内的函数名字需要加上程序包前缀
-          funName: plSchema.funName,
-        },
-      });
-    } else {
-      res = await request.put(`/api/v1/pl/startDebugAnonymousBlock/${sid}`, {
-        data: {
-          sql: plSchema.ddl,
-        },
-      });
-    }
-
-    return res && res.data;
-  }
-
-  @action
-  public async endPLDebug(plSchema: any, asyncCallback: any) {
-    const sid = this.getSid();
-    const { plName } = plSchema;
-    await request.put(`/api/v1/pl/endDebug/${sid}`);
-    if (asyncCallback) {
-      await asyncCallback();
-    }
-
-    this.removeRunningPL(plName);
-  }
-
-  @action
-  public async getPLDebugResult(plSchema: any) {
-    const sid = this.getSid();
-    const { plType, plName, packageName } = plSchema;
-    const runTimeInfo = await this.getPLDebugRuntimeInfo();
-    const { terminated } = runTimeInfo;
-    let r: any = {
-      terminated,
-    };
-
-    if (terminated) {
-      message.success(
-        formatMessage({
-          id: 'odc.EditorToolBar.actions.pl.ThisRoundOfDebuggingHas',
-        }),
-        2,
-      );
-      r.DBMS = await this.getPLDBMS();
-      await this.getPLDebugLog(plName, plType, packageName);
-      let debugResult; // 增加 OUT 参数
-
-      r.PARAMS = plSchema.params || [];
-
-      if (plType === PLTYPE.PROCEDURE) {
-        debugResult = await request.get(`/api/v1/pl/getPLDebugRunResult/${sid}`);
-        r.PARAMS = r.PARAMS.concat(debugResult.data);
-      }
-
-      if (plType === PLTYPE.FUNCTION) {
-        debugResult = await request.get(`/api/v1/pl/getFuncDebugRunResult/${sid}`);
-      }
-
-      if (debugResult?.errMsg) {
-        await sqlStore.addDebugLog({
-          type: ILogType.ERROR,
-          message: debugResult.errMsg,
-        });
-      }
-
-      if (debugResult && debugResult.data) {
-        const { returnType, returnValue } = debugResult.data;
-        r.PARAMS = r.PARAMS.concat({
-          paramName: formatMessage({
-            id: 'odc.src.store.sql.ReturnValue',
-          }),
-          dataType: returnType,
-          paramMode: 'OUT',
-          defaultValue: returnValue,
-        });
-      }
-    } else {
-      r.VARIABLE = await this.getPLDebugVariables();
-      r.TRACK = await this.getPLDebugTrack();
-    }
-
-    r.DEBUG_LOG = this.debugLogs;
-    return r;
-  }
-
-  @action
-  public async addBreakPoint(plName: string, lineNum: number, packageName?: string) {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/setBreakpoint/${sid}`, {
-      data: {
-        lineNum,
-        plName,
-        packageName,
-      },
-    });
-
-    if (res && res.data) {
-      await sqlStore.addDebugLog({
-        type: ILogType.INFO,
-        message: `Add breakpoint ${packageName ? packageName + '.' : ''}${
-          plName || ''
-        } [line ${lineNum}].`,
-      });
-    }
-
-    return res && res.data;
-  }
-
-  @action
-  public async deleteBreakpoint(
-    plName: string,
-    breakpoint: {
-      breakPointNum: number;
-      lineNum: number;
-    },
-    packageName?: string,
-  ) {
-    const sid = this.getSid();
-    const { breakPointNum, lineNum } = breakpoint;
-    const res = await request.put(`/api/v1/pl/deleteBreakpoint/${sid}`, {
-      data: {
-        lineNum,
-        breakPointNum,
-        plName,
-        packageName,
-      },
-    });
-
-    if (res && res.data) {
-      await sqlStore.addDebugLog({
-        type: ILogType.INFO,
-        message: `Del breakpoint ${packageName ? packageName + '.' : ''}${
-          plName || ''
-        } [line ${lineNum}].`,
-      });
-    }
-
-    return res && res.data;
-  }
-
-  @action
-  public async continueNextBreakpoint() {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/continueNextBreakpoint/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async continueNextLine() {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/continueNextLine/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async getPLDebugTrack() {
-    const sid = this.getSid();
-    const res = await request.get(`/api/v1/pl/printBacktrace/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async getPLDebugRuntimeInfo() {
-    const sid = this.getSid();
-    const res = await request.get(`/api/v1/pl/getRuntimeInfo/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async getPLDebugVariables() {
-    const sid = this.getSid();
-    const res = await request.get(`/api/v1/pl/getValues/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async getPLDBMS() {
+  public async getPLDBMS(sessionId, dbName) {
     /**
      * MySQL暂时不支持getLine
      */
-    if (connectionStore.connection.dbMode !== ConnectionMode.OB_ORACLE) {
+    const session = sessionManager.sessionMap.get(sessionId);
+    if (session?.connection.dialectType !== ConnectionMode.OB_ORACLE) {
       return null;
     }
-    const sid = this.getSid();
+    const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.get(`/api/v1/pl/getLine/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async getPLDebugBreakpoints() {
-    const sid = this.getSid();
-    const res = await request.get(`/api/v1/pl/showBreakpoints/${sid}`);
-    return res?.data;
-  }
-
-  @action
-  public async getPLDebugLog(plName: string, plType: string, packageName?: string) {
-    const sid = this.getSid();
-    plName = plName || '';
-    if (packageName) {
-      /**
-       * aone/issue/33328989
-       */
-      plName = packageName;
-      plType = PLTYPE.PKG_BODY;
-    }
-    const res = await request.get(`/api/v1/pl/getErrors/${sid}`, {
-      params: {
-        plName: plName || '',
-        type: plType || '',
-      },
-    });
-    const errorLogs = (res && res.data) || [];
-    const batchs = errorLogs.map((logItem) => {
-      return sqlStore.addDebugLog({
-        type: ILogType.ERROR,
-        message: logItem.text,
-      });
-    });
-    await Promise.all(batchs);
-  }
-
-  @action
-  public async continueStepIn() {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/continueStepIn/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async continueStepOut() {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/continueStepOut/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async continueToExit() {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/continueToExit/${sid}`);
-    return res && res.data;
-  }
-
-  @action
-  public async addDebugLog(logItem) {
-    logItem.timestamp = logItem.timestamp || `${Date.now()}`;
-    this.debugLogs.push(logItem);
-  }
-
-  @action
-  public async clearDebugLogs() {
-    this.debugLogs = [];
-  }
-
-  @action
-  public async abort() {
-    const sid = this.getSid();
-    const res = await request.put(`/api/v1/pl/abort/${sid}`);
     return res && res.data;
   }
 

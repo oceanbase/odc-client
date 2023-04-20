@@ -1,25 +1,29 @@
 import { getTableInfo } from '@/common/network/table';
+import { getView } from '@/common/network/view';
 import { ConnectionMode, ITableColumn } from '@/d.ts';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
-import connection from '@/store/connection';
-import schema from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import { getRealNameInDatabase } from '@/util/sql';
 import type { IModelOptions } from '@alipay/monaco-plugin-ob/dist/type';
 
-function hasConnect() {
-  return connection.sessionId && schema.database?.name;
+function hasConnect(session: SessionStore) {
+  return session?.sessionId && session?.database?.dbName;
 }
 
-export function getModelService({ modelId, delimiter }): IModelOptions {
+export function getModelService(
+  { modelId, delimiter },
+  sessionFunc: () => SessionStore,
+): IModelOptions {
   return {
     delimiter,
     async getTableList(schemaName: string) {
-      const dbName = schemaName || schema.database?.name;
-      if (!hasConnect()) {
+      const dbName = schemaName || sessionFunc()?.database?.dbName;
+      if (!hasConnect(sessionFunc())) {
         return;
       }
-      await schema.queryIdentities();
-      const dbObj = schema.allIdentities[dbName] || schema.allIdentities[dbName?.toUpperCase()];
+      await sessionFunc()?.queryIdentities();
+      const dbObj =
+        sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
       if (!dbObj) {
         return [];
       }
@@ -28,24 +32,26 @@ export function getModelService({ modelId, delimiter }): IModelOptions {
     async getTableColumns(tableName: string, dbName?: string) {
       const realTableName = getRealNameInDatabase(
         tableName,
-        connection.connection?.dialectType === ConnectionMode.OB_ORACLE,
+        sessionFunc()?.connection?.dialectType === ConnectionMode.OB_ORACLE,
       );
-      if (!hasConnect()) {
+      if (!hasConnect(sessionFunc())) {
         return;
       }
       if (!dbName) {
-        dbName = schema.database?.name;
+        dbName = sessionFunc()?.database?.dbName;
       }
       if (/[\w]+/.test(realTableName) && realTableName?.length < 500) {
-        const db = schema.allIdentities[dbName] || schema.allIdentities[dbName?.toUpperCase()];
+        const db =
+          sessionFunc()?.allIdentities[dbName] ||
+          sessionFunc()?.allIdentities[dbName?.toUpperCase()];
         /**
          * schemaStore.queryIdentities(); 不能是阻塞的，编辑器对于函数的超时时间有严格的要求，不能超过 300ms，调用这个接口肯定会超过这个时间。
          */
-        await schema.queryIdentities();
+        await sessionFunc()?.queryIdentities();
         const isTable = db?.tables?.includes(realTableName);
         const isView = db?.views?.includes(realTableName);
         if (isTable) {
-          const tableInfo = await getTableInfo(realTableName, dbName);
+          const tableInfo = await getTableInfo(realTableName, dbName, sessionFunc()?.sessionId);
           // 表
           return tableInfo?.columns?.map((column: TableColumn) => ({
             columnName: column.name,
@@ -54,7 +60,7 @@ export function getModelService({ modelId, delimiter }): IModelOptions {
         }
         if (isView) {
           // 视图
-          const view = await schema.getView(realTableName, dbName);
+          const view = await getView(realTableName, sessionFunc()?.sessionId, dbName);
           return view?.columns?.map((column: ITableColumn) => ({
             columnName: column.columnName,
             columnType: column.dataType,
@@ -64,13 +70,13 @@ export function getModelService({ modelId, delimiter }): IModelOptions {
       return [];
     },
     async getSchemaList() {
-      return schema.databases?.map((t) => t.name);
+      return sessionFunc()?.databases?.map((t) => t.name);
     },
     async getFunctions() {
-      if (!schema.functions) {
-        await schema.getFunctionList();
+      if (!sessionFunc()?.database.functions) {
+        await sessionFunc()?.database.getFunctionList();
       }
-      return schema.functions.map((func) => ({
+      return sessionFunc()?.database.functions.map((func) => ({
         name: func.funName,
         desc: func.status,
       }));

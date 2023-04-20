@@ -48,8 +48,8 @@ export async function getFunctionByFuncName(
 }
 
 // 获取类型详情
-export async function getTypemByName(typeName: string) {
-  const sid = generateTypeSid(typeName);
+export async function getTypemByName(typeName: string, sessionId: string, dbName: string) {
+  const sid = generateTypeSid(typeName, sessionId, dbName);
   const { data: type } = await request.get(`/api/v1/type/${sid}`);
   return type;
 }

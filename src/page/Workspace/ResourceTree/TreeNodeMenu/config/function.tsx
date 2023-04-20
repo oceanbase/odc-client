@@ -57,6 +57,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
+          session?.connection?.id,
         );
       },
     },
@@ -75,6 +76,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
+          session?.connection?.id,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {
@@ -111,6 +113,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
+          session?.connection?.id,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {
@@ -137,6 +140,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
+          session?.connection?.id,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {

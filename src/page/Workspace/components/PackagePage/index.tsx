@@ -208,14 +208,26 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
 
   public async handleEditPackage(pkgName: string, type: PropsTab) {
     const {
-      params: { packageName },
+      params: { packageName, sessionId },
+      sessionManagerStore,
     } = this.props;
     const pkg = this.getPackage(packageName);
+    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { topTab } = this.state;
     if (topTab == TopTab.BODY) {
-      openPackageBodyPage(pkgName, pkg.packageBody.basicInfo.ddl);
+      openPackageBodyPage(
+        pkgName,
+        pkg.packageBody.basicInfo.ddl,
+        session?.connection?.id,
+        session?.database?.dbName,
+      );
     } else if (topTab == TopTab.HEAD) {
-      openPackageHeadPage(pkgName, pkg.packageHead.basicInfo.ddl);
+      openPackageHeadPage(
+        pkgName,
+        pkg.packageHead.basicInfo.ddl,
+        session?.connection?.id,
+        session?.database?.dbName,
+      );
     }
   }
 

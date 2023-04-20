@@ -57,7 +57,7 @@ export function generateSynonymSid(
   return `${generateDatabaseSid(dbName, sessionId)}:syn:${encodeObjName(synonymName)}`;
 }
 
-export function generateTypeSid(typeName: string, sessionId?: string, dbName?: string): string {
+export function generateTypeSid(typeName: string, sessionId: string, dbName: string): string {
   return `${generateDatabaseSid(dbName, sessionId)}:ty:${encodeObjName(typeName)}`;
 }
 
