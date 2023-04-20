@@ -158,9 +158,11 @@ export default class TypePage extends Component<
   };
   private handleEditType = () => {
     const {
-      params: { typeName },
+      sessionManagerStore,
+      params: { typeName, dbName, sessionId },
     } = this.props;
-    openTypeEditPageByName(typeName);
+    const session = sessionManagerStore.sessionMap.get(sessionId);
+    openTypeEditPageByName(typeName, session?.sessionId, session?.connection?.id, dbName);
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;

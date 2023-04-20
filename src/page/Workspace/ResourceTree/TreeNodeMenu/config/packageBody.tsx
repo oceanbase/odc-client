@@ -48,7 +48,12 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pkgInfo: IPackage = node.data;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageBodyPage(pkg?.packageName, bodysql);
+        await openPackageBodyPage(
+          pkg?.packageName,
+          bodysql,
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
     {
@@ -65,6 +70,8 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pKey = await openPackageBodyPage(
           pkgInfo?.packageName,
           pkgInfo?.packageBody?.basicInfo?.ddl,
+          session?.connection?.id,
+          session?.database?.dbName,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {
@@ -188,7 +195,12 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pkgInfo = node.pkg;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageBodyPage(pkg?.packageName, bodysql);
+        await openPackageBodyPage(
+          pkg?.packageName,
+          bodysql,
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -221,6 +233,8 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.funName,
           PLType.FUNCTION,
           plSchema,
+          session?.connection?.id,
+          session?.database?.dbName,
         );
 
         setTimeout(() => {
@@ -259,6 +273,8 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.funName,
           PLType.FUNCTION,
           plSchema,
+          session?.connection?.id,
+          session?.database?.dbName,
         );
 
         setTimeout(() => {
@@ -301,7 +317,12 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pkgInfo = node.pkg;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageBodyPage(pkg?.packageName, bodysql);
+        await openPackageBodyPage(
+          pkg?.packageName,
+          bodysql,
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
 
@@ -334,6 +355,8 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.proName,
           PLType.PROCEDURE,
           plSchema,
+          session?.connection?.id,
+          session?.database?.dbName,
         );
 
         setTimeout(() => {
@@ -372,6 +395,8 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.funName,
           PLType.PROCEDURE,
           plSchema,
+          session?.connection?.id,
+          session?.database?.dbName,
         );
 
         setTimeout(() => {

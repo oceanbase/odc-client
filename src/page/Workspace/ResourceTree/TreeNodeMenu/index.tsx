@@ -1,6 +1,7 @@
 import { AcessResult, canAcessWorkspace } from '@/component/Acess';
 import { Dropdown, Menu } from 'antd';
 import { inject, observer } from 'mobx-react';
+import { ResourceNodeType } from '../type';
 import MenuConfig from './config';
 import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
@@ -10,7 +11,11 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
   const menuItems = MenuConfig[menuKey || type];
-  if (!dbSession || !menuItems?.length) {
+  /**
+   * 非database的情况下，必须存在session
+   */
+  const isSessionValid = type === ResourceNodeType.Database || dbSession;
+  if (!isSessionValid || !menuItems?.length) {
     return <span className="ant-tree-title">{node.title}</span>;
   }
 

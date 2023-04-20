@@ -134,8 +134,14 @@ export default class ProcedurePage extends Component<
   }
 
   public async editProcedure(proName: string) {
-    const { params } = this.props;
-    await openProcedureEditPageByProName(proName, params.sessionId, params.dbName);
+    const { params, sessionManagerStore } = this.props;
+    const session = sessionManagerStore?.sessionMap.get(params.sessionId);
+    await openProcedureEditPageByProName(
+      proName,
+      params.sessionId,
+      params.dbName,
+      session?.connection?.id,
+    );
   }
 
   private showSearchWidget() {

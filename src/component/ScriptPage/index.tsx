@@ -155,7 +155,7 @@ export default class ScriptPage extends PureComponent<IProps> {
               }
             }}
           >
-            <MonacoEditor {...editor} language={language} />
+            <MonacoEditor {...editor} language={language} sessionStore={this.props.session} />
           </DropWrapper>
           {this.props.Others}
         </Content>

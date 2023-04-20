@@ -57,6 +57,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           trigger?.triggerName,
           session?.sessionId,
           session?.database?.dbName,
+          session?.connection?.id,
         );
       },
     },

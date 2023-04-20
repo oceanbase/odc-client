@@ -51,10 +51,14 @@ import { generateResultSetColumns } from '..';
 import connection from '../../connection';
 import page from '../../page';
 import { generatePageKey, generatePageTitle } from '../pageKeyGenerate';
-import { createPackageBodyPageParams, createPackageHeadPageParams } from './pageParams';
+import {
+  createPackageBodyPageParams,
+  createPackageHeadPageParams,
+  IPLPageParams,
+} from './pageParams';
 import { findPageByScriptIdAndType } from './util';
 
-export function openPackageHeadPage(packageName: string, sql: string) {
+export function openPackageHeadPage(packageName: string, sql: string, cid: number, dbName: string) {
   const pageTitle = `${packageName}_head`;
   page.openPage(
     PageType.PL,
@@ -62,10 +66,15 @@ export function openPackageHeadPage(packageName: string, sql: string) {
       title: pageTitle,
     },
 
-    createPackageHeadPageParams(packageName, sql, pageTitle),
+    Object.assign(createPackageHeadPageParams(packageName, sql, pageTitle), { cid, dbName }),
   );
 }
-export async function openPackageBodyPage(packageName: string, sql: string) {
+export async function openPackageBodyPage(
+  packageName: string,
+  sql: string,
+  cid: number,
+  dbName: string,
+) {
   const pageTitle = `${packageName}_body`;
   await page.openPage(
     PageType.PL,
@@ -73,7 +82,7 @@ export async function openPackageBodyPage(packageName: string, sql: string) {
       title: pageTitle,
     },
 
-    createPackageBodyPageParams(packageName, sql, pageTitle),
+    Object.assign(createPackageBodyPageParams(packageName, sql, pageTitle), { cid, dbName }),
   );
 
   return pageTitle;
@@ -197,7 +206,11 @@ export async function openSQLOrPLPage(file: IScript) {
 
   return key;
 }
-export async function openNewDefaultPLPage(value?: { sql: string; params: any }) {
+export async function openNewDefaultPLPage(
+  value?: { sql: string; params: any },
+  cid?: number,
+  dbName?: string,
+) {
   const key = await generatePageKey(PageType.PL, value?.params);
   const title = generatePageTitle(PageType.PL, key);
   page.openPage(
@@ -211,10 +224,12 @@ export async function openNewDefaultPLPage(value?: { sql: string; params: any })
       scriptName: title,
       isAnonymous: true,
       scriptText: value?.sql ?? getPLScriptTemplate(),
+      cid,
+      dbName,
       plSchema: {
         params: [],
       },
-    },
+    } as IPLPageParams,
   );
 }
 
@@ -551,6 +566,7 @@ export async function openProcedureEditPageByProName(
   proName: string,
   sessionId: string,
   dbName: string,
+  cid: number,
 ) {
   const plSchema = await getProcedureByProName(proName, false, sessionId, dbName);
   await page.openPage(
@@ -565,6 +581,8 @@ export async function openProcedureEditPageByProName(
       scriptText: plSchema.ddl,
       plSchema,
       plType: plType.PROCEDURE,
+      cid,
+      dbName,
     },
   );
 }
@@ -575,6 +593,8 @@ export async function openFunctionOrProcedureFromPackage(
   subName: string,
   type: any,
   plSchema: any,
+  cid: number,
+  dbName: string,
 ) {
   const plName = `${packageName}.${subName}`;
   await page.openPage(
@@ -591,6 +611,8 @@ export async function openFunctionOrProcedureFromPackage(
       fromPackage: true,
       plType: type,
       scriptText: plSchema.ddl,
+      cid,
+      dbName,
     },
   );
 
@@ -602,6 +624,7 @@ export async function openFunctionEditPageByFuncName(
   funcName: string,
   sessionId: string,
   dbName: string,
+  cid: number,
 ) {
   const plSchema = await getFunctionByFuncName(funcName, false, sessionId, dbName);
   await page.openPage(
@@ -616,6 +639,8 @@ export async function openFunctionEditPageByFuncName(
       scriptText: plSchema.ddl,
       plSchema,
       plType: plType.FUNCTION,
+      cid,
+      dbName,
     },
   );
 }
@@ -738,6 +763,7 @@ export async function openTriggerEditPageByName(
   triggerName: string,
   sessionId: string,
   dbName: string,
+  cid: number,
 ) {
   const plSchema = await getTriggerByName(triggerName, sessionId, dbName);
   page.openPage(
@@ -752,6 +778,8 @@ export async function openTriggerEditPageByName(
       triggerName,
       plSchema,
       plType: plType.TRIGGER,
+      cid,
+      dbName,
     },
   );
 }
@@ -840,8 +868,13 @@ export function openTypeViewPage(
 }
 /** 编辑类型页面 */
 
-export async function openTypeEditPageByName(typeName: string) {
-  const plSchema = await getTypemByName(typeName);
+export async function openTypeEditPageByName(
+  typeName: string,
+  sessionId: string,
+  cid: number,
+  dbName: string,
+) {
+  const plSchema = await getTypemByName(typeName, sessionId, dbName);
   page.openPage(
     PageType.PL,
     {
@@ -854,6 +887,8 @@ export async function openTypeEditPageByName(typeName: string) {
       typeName,
       plSchema,
       plType: plType.TYPE,
+      cid,
+      dbName,
     },
   );
 }

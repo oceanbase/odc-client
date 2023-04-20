@@ -236,21 +236,24 @@ export async function getConnectionDetail(sid: number): Promise<IConnection> {
   return results?.data ? reviseV2Field(results.data) : results.data;
 }
 
-export async function getSupportFeatures(sessionId: any): Promise<
+export async function getSupportFeatures(
+  sessionId: any,
+  dbName: string,
+): Promise<
   {
     support: boolean;
     supportType: string;
   }[]
 > {
   const res = await request.get(
-    `/api/v1/version-config/getSupportFeatures/${generateDatabaseSid(null, sessionId)}`,
+    `/api/v1/version-config/getSupportFeatures/${generateDatabaseSid(dbName, sessionId)}`,
   );
 
   return res?.data;
 }
 
-export async function changeDelimiter(v, sessionId?: string): Promise<boolean> {
-  const data = await executeSQL(`delimiter ${v}`, sessionId);
+export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
+  const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
   return data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
 }
 

@@ -4,6 +4,7 @@ import * as monaco from 'monaco-editor';
 
 import appConfig from '@/constant/appConfig';
 import { ConnectionStore } from '@/store/connection';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
@@ -18,6 +19,7 @@ export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
 }
 
 export interface IProps {
+  sessionStore?: SessionStore;
   settingStore?: SettingStore;
   connectionStore?: ConnectionStore;
   /**
@@ -42,17 +44,19 @@ export interface IProps {
   onEditorCreated?: (editor: IEditor) => void;
 }
 
-const MonacoEditor: React.FC<IProps> = function ({
-  defaultValue,
-  language,
-  value,
-  theme,
-  readOnly,
-  settingStore,
-  connectionStore,
-  onValueChange,
-  onEditorCreated,
-}) {
+const MonacoEditor: React.FC<IProps> = function (props) {
+  const {
+    defaultValue,
+    language,
+    value,
+    theme,
+    readOnly,
+    settingStore,
+    connectionStore,
+    sessionStore,
+    onValueChange,
+    onEditorCreated,
+  } = props;
   const [innerValue, _setInnerValue] = useState<string>(defaultValue);
   const settingTheme = settingStore.theme.editorTheme;
   function setInnerValue(v: string) {
@@ -69,12 +73,18 @@ const MonacoEditor: React.FC<IProps> = function ({
 
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 
+  const sessionRef = useRef<SessionStore>(sessionStore);
+
   const themeValue = useMemo(() => {
     if (!theme) {
       return settingTheme;
     }
     return theme;
   }, [theme, settingTheme]);
+
+  useEffect(() => {
+    sessionRef.current = sessionStore;
+  }, [sessionStore]);
 
   useEffect(() => {
     if (typeof value === 'undefined' || value == innerValue) {
@@ -101,10 +111,13 @@ const MonacoEditor: React.FC<IProps> = function ({
     const plugin = module.register();
     plugin.setModelOptions(
       editorRef.current.getModel().id,
-      getModelService({
-        modelId: editorRef.current.getModel().id,
-        delimiter: connectionStore.delimiter,
-      }),
+      getModelService(
+        {
+          modelId: editorRef.current.getModel().id,
+          delimiter: connectionStore.delimiter,
+        },
+        () => sessionRef.current,
+      ),
     );
     markerPluginApply(editorRef.current.getModel());
   }

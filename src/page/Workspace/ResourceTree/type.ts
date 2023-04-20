@@ -71,6 +71,7 @@ interface ExtraData {
   children?: (DataNode & ExtraData)[];
   menuKey?: ResourceNodeType;
   pkg?: Partial<IPackage>;
+  cid?: number;
 }
 
 export type TreeDataNode = DataNode & ExtraData;

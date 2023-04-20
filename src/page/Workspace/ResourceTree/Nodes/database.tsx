@@ -12,7 +12,11 @@ import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
 
-export function DataBaseTreeData(dbSession: SessionStore, database: IDatabase): TreeDataNode {
+export function DataBaseTreeData(
+  dbSession: SessionStore,
+  database: IDatabase,
+  cid: number,
+): TreeDataNode {
   const dbName = database.name;
 
   const tableTreeData = TableTreeData(dbSession, database);
@@ -39,6 +43,7 @@ export function DataBaseTreeData(dbSession: SessionStore, database: IDatabase): 
     type: ResourceNodeType.Database,
     sessionId: dbSession?.sessionId,
     data: database,
+    cid,
     icon: <DatabaseOutlined style={{ color: '#3FA3FF' }} />,
     children: dbSession
       ? [

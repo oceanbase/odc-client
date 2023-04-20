@@ -1,5 +1,4 @@
 import { ConnectionMode, ISQLScript } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import {
   closePageByScriptIdAndType,
   openNewDefaultPLPage,
@@ -9,7 +8,6 @@ import {
 } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
-import { SchemaStore } from '@/store/schema';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { formatBytes, isWin64 } from '@/util/utils';
@@ -21,6 +19,7 @@ import { FormattedMessage } from 'umi';
 
 import { deleteScript } from '@/common/network';
 import DropdownMenu from '@/component/DropdownMenu';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { isNil } from 'lodash';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -29,11 +28,10 @@ import styles from './index.less';
 const { SubMenu } = Menu;
 
 interface IProps {
-  connectionStore?: ConnectionStore;
   userStore?: UserStore;
   modalStore?: ModalStore;
   settingStore?: SettingStore;
-  schemaStore?: SchemaStore;
+  sessionManagerStore?: SessionManagerStore;
 }
 
 enum MenuKey {
@@ -44,17 +42,16 @@ enum MenuKey {
 }
 
 const WorkbenchMenu: React.FC<IProps> = function ({
-  connectionStore,
   userStore,
   modalStore,
   settingStore,
-  schemaStore,
+  sessionManagerStore,
 }) {
-  const { connection } = connectionStore;
   const { scriptStore } = userStore;
   const { scripts } = scriptStore;
   const [editingScriptId, setEditingScriptId] = useState(null);
   const scriptEditorVisible = !isNil(editingScriptId);
+  const session = sessionManagerStore.getMasterSession();
   const handleClickMenu = (clickParam: MenuInfo) => {
     switch (clickParam.key) {
       case MenuKey.CREATE_SQL:
@@ -62,7 +59,7 @@ const WorkbenchMenu: React.FC<IProps> = function ({
         break;
 
       case MenuKey.CREATE_PL:
-        openNewDefaultPLPage();
+        openNewDefaultPLPage(null, session?.connection?.id, session?.database?.dbName);
         break;
       case MenuKey.OB_CLIENT:
         openOBClientPage();
@@ -127,12 +124,12 @@ const WorkbenchMenu: React.FC<IProps> = function ({
             <Menu.Item key={MenuKey.CREATE_SQL}>
               <FormattedMessage id="workspace.header.create.sql" />
             </Menu.Item>
-            {connection.dbMode == ConnectionMode.OB_ORACLE ? (
+            {session?.connection.dialectType == ConnectionMode.OB_ORACLE ? (
               <Menu.Item key={MenuKey.CREATE_PL}>
                 <FormattedMessage id="workspace.header.create.pl" />
               </Menu.Item>
             ) : null}
-            {(isClient() && !isWin64()) || !schemaStore.enableObclient ? null : (
+            {(isClient() && !isWin64()) || !session?.supportFeature.enableObclient ? null : (
               <Menu.Item key={MenuKey.OB_CLIENT}>
                 {
                   formatMessage({
@@ -236,8 +233,7 @@ const WorkbenchMenu: React.FC<IProps> = function ({
 
 export default inject(
   'userStore',
-  'connectionStore',
   'modalStore',
   'settingStore',
-  'schemaStore',
+  'sessionManagerStore',
 )(observer(WorkbenchMenu));

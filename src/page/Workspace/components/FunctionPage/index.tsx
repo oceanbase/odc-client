@@ -140,8 +140,14 @@ export default class FunctionPage extends Component<
   }
 
   public async editFunction(funName: string) {
-    const { params, pageStore } = this.props;
-    await openFunctionEditPageByFuncName(funName, params.sessionId, params.dbName);
+    const { params, sessionManagerStore } = this.props;
+    const session = sessionManagerStore.sessionMap.get(params.sessionId);
+    await openFunctionEditPageByFuncName(
+      funName,
+      params.sessionId,
+      params.dbName,
+      session?.connection?.id,
+    );
   }
 
   private showSearchWidget() {

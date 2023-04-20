@@ -3,11 +3,9 @@ import PL_ACTIONS from '@/component/EditorToolBar/actions/pl';
 import EditPLParamsModal from '@/component/EditPLParamsModal';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
-import { ConnectionStore } from '@/store/connection';
-import { openNewDefaultPLPage } from '@/store/helper/page';
+import { IPLPageParams, openNewDefaultPLPage } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
 import { SQLStore } from '@/store/sql';
 import editorUtils from '@/util/editor';
 import { formatMessage } from '@/util/intl';
@@ -21,13 +19,20 @@ import PLDebugResultSet from '../PLDebugResultSet';
 
 import { ConnectionMode, IPage, ISqlExecuteResultStatus, ISQLScript } from '@/d.ts';
 
-import { newScript, updateScript } from '@/common/network';
+import {
+  getFunctionByFuncName,
+  getProcedureByProName,
+  newScript,
+  updateScript,
+} from '@/common/network';
 import { executeSQL } from '@/common/network/sql';
 import { IEditor } from '@/component/MonacoEditor';
 import PL_TYPE, { PLType } from '@/constant/plType';
 import { DebugStore } from '@/store/debug';
 import { DebugStatus, IDebugStackItem } from '@/store/debug/type';
 import { debounceUpdatePageScriptText, updatePage } from '@/store/helper/page';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import notification from '@/util/notification';
 import { getPLEntryName } from '@/util/parser';
 import { checkPLNameChanged } from '@/util/pl';
@@ -57,6 +62,7 @@ export interface IStatusBar {
 }
 
 interface ISQLPageState {
+  isReady: boolean;
   plAction?: 'DEBUG' | 'EXEC' | '' | 'COMPILE';
   scriptType?: 'SQL' | 'PL';
   resultHeight: number;
@@ -98,16 +104,15 @@ interface ISQLPageState {
   };
 }
 
-@inject('sqlStore', 'userStore', 'pageStore', 'connectionStore', 'schemaStore', 'debugStore')
+@inject('sqlStore', 'userStore', 'pageStore', 'debugStore', 'sessionManagerStore')
 @observer
 class PLPage extends Component<
   {
-    params: any;
+    params: IPLPageParams;
     sqlStore: SQLStore;
     userStore: UserStore;
     pageStore: PageStore;
-    connectionStore: ConnectionStore;
-    schemaStore: SchemaStore;
+    sessionManagerStore: SessionManagerStore;
     debugStore?: DebugStore;
     pageKey: string;
     page: IPage;
@@ -120,6 +125,7 @@ class PLPage extends Component<
   ISQLPageState
 > {
   public readonly state: ISQLPageState = {
+    isReady: false,
     resultHeight: RESULT_HEIGHT,
     initialSQL: (this.props.params && this.props.params.scriptText) || '',
     showSaveSQLModal: false,
@@ -158,10 +164,18 @@ class PLPage extends Component<
 
   private debugLines: number[] = [];
 
+  public session: SessionStore = null;
+
   debugMode: monaco.editor.IContextKey<boolean>;
 
   public async componentDidMount() {
-    const { params, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent } = this.props;
+    const {
+      params,
+      pageKey,
+      sessionManagerStore,
+      onSetUnsavedModalTitle,
+      onSetUnsavedModalContent,
+    } = this.props;
     onSetUnsavedModalTitle(formatMessage({ id: 'workspace.window.sql.modal.close.title' }));
     onSetUnsavedModalContent(
       formatMessage(
@@ -171,8 +185,20 @@ class PLPage extends Component<
         },
       ),
     );
+    const session = await sessionManagerStore.createSession(
+      false,
+      params.cid,
+      params.dbName,
+      false,
+    );
 
-    EventBus.addEventListener('pageAction', this.listenAction);
+    if (session) {
+      this.session = session;
+      this.setState({
+        isReady: true,
+      });
+      EventBus.addEventListener('pageAction', this.listenAction);
+    }
   }
 
   public async UNSAFE_componentWillReceiveProps(nextProps) {
@@ -211,6 +237,9 @@ class PLPage extends Component<
     sqlStore.clear(pageKey);
     if (plSchema && plSchema.plName) {
       sqlStore.removeRunningPL(plSchema.plName);
+    }
+    if (this.session) {
+      this.props.sessionManagerStore.destorySession(this.session.sessionId);
     }
     EventBus.removeEventListener('pageAction', this.listenAction);
   }
@@ -371,11 +400,8 @@ class PLPage extends Component<
   };
 
   public isShowDebugTip(plAction: any) {
-    const {
-      connectionStore: { obVersion },
-    } = this.props;
     const tipVisible = localStorage.getItem(PL_DEBUG_TIP_VSIBLE_KEY);
-    if (!obVersion || plAction !== 'DEBUG') {
+    if (!this.session?.params?.obVersion || plAction !== 'DEBUG') {
       return false;
     }
     const getVersionNumbers = (value: string) => {
@@ -403,7 +429,7 @@ class PLPage extends Component<
       }
       return res;
     };
-    return isLessThan324(obVersion) && tipVisible !== 'no';
+    return isLessThan324(this.session?.params?.obVersion) && tipVisible !== 'no';
   }
 
   public checkAndFillPLINParams = async (plAction: any) => {
@@ -487,7 +513,12 @@ class PLPage extends Component<
         },
       });
       sqlStore.runningPageKey.add(pageKey);
-      const resExec = await sqlStore.execPL(plSchema, true);
+      const resExec = await sqlStore.execPL(
+        plSchema,
+        true,
+        this.session?.sessionId,
+        this.session?.database?.dbName,
+      );
       if (resExec.status === 'FAIL') {
         this.setState({
           toolBarLoading: false,
@@ -524,6 +555,7 @@ class PLPage extends Component<
           content: plSchema.ddl,
           function: plSchema,
           procedure: plSchema,
+          session: this.session,
           onContextChange: this.onDebugContextChange,
         },
         pageKey,
@@ -739,7 +771,7 @@ class PLPage extends Component<
   };
 
   private async savePL(opts?: any) {
-    const { sqlStore, pageStore, schemaStore, params, onChangeSaved, pageKey, page } = this.props;
+    const { sqlStore, pageStore, params, onChangeSaved, pageKey, page } = this.props;
     const plSchema = this.getFormatPLSchema();
     const { plName, plType, packageName } = plSchema;
     const newPLEntryName = getPLEntryName(params.scriptText);
@@ -760,7 +792,11 @@ class PLPage extends Component<
         return;
       }
     }
-    const data = await executeSQL({ sql: params.scriptText, split: false });
+    const data = await executeSQL(
+      { sql: params.scriptText, split: false },
+      this.session?.sessionId,
+      this.session?.database.dbName,
+    );
     let isSuccess = data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
     if (!isSuccess) {
       notification.error(data?.[0]);
@@ -770,11 +806,21 @@ class PLPage extends Component<
       let newParams;
       if (!params.fromPackage) {
         if (plType === PL_TYPE.FUNCTION) {
-          const newFunc = await schemaStore?.loadFunction(plName);
+          const newFunc = await getFunctionByFuncName(
+            plName,
+            false,
+            this.session.sessionId,
+            this.session.database.dbName,
+          );
           newParams = newFunc?.params;
         }
         if (plType === PL_TYPE.PROCEDURE) {
-          const newProcedure = await schemaStore?.loadProcedure(plName);
+          const newProcedure = await getProcedureByProName(
+            plName,
+            false,
+            this.session.sessionId,
+            this.session.database.dbName,
+          );
           newParams = newProcedure?.params;
         }
       }
@@ -792,13 +838,13 @@ class PLPage extends Component<
         },
       );
 
-      if (
-        params?.plSchema?.plType === PL_TYPE.PKG_HEAD ||
-        params?.plSchema?.plType === PL_TYPE.PKG_BODY ||
-        params?.fromPackage
-      ) {
-        await schemaStore?.loadPackage(packageName);
-      }
+      // if (
+      //   params?.plSchema?.plType === PL_TYPE.PKG_HEAD ||
+      //   params?.plSchema?.plType === PL_TYPE.PKG_BODY ||
+      //   params?.fromPackage
+      // ) {
+      //   await schemaStore?.loadPackage(packageName);
+      // }
 
       // 编译、运行、调试、情况不用弹出保存成功
       if (!opts || opts.hideMessage !== true) {
@@ -944,11 +990,10 @@ class PLPage extends Component<
   }
 
   private isEditorReadonly = () => {
-    const { connectionStore } = this.props;
     const { debug } = this.state;
     const plSchema = this.getFormatPLSchema();
     return (
-      (plSchema.plName && connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL) || debug
+      (plSchema.plName && this.session?.connection.dialectType === ConnectionMode.OB_MYSQL) || debug
     );
   };
 
@@ -982,10 +1027,9 @@ class PLPage extends Component<
   }
 
   public render() {
-    const { pageKey, pageStore, params, connectionStore } = this.props;
+    const { pageKey, pageStore, params } = this.props;
     const debug = this.getDebug();
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
-    const { scriptType } = params;
+    const isMySQL = this.session?.connection.dialectType === ConnectionMode.OB_MYSQL;
     const {
       showSaveSQLModal,
       showEditPLParamsModal,
@@ -996,15 +1040,17 @@ class PLPage extends Component<
       initialSQL,
       result,
       resultHeight,
+      isReady,
     } = this.state;
     const {} = this.state;
     this.setMobxListener();
     return (
       <ScriptPage
+        session={this.session}
         ctx={this}
         language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
         toolbar={{
-          loading: toolBarLoading,
+          loading: toolBarLoading || !isReady,
           actionGroupKey: this.getActionGroupKey(),
         }}
         stackbar={{
@@ -1022,6 +1068,7 @@ class PLPage extends Component<
         statusBar={isDebugMode ? this.getDebugStatusBar() : statusBar}
         Result={
           <PLDebugResultSet
+            session={this.session}
             key={result.type}
             debug={debug}
             removeBreakPoints={this.removeBreakPoints}
