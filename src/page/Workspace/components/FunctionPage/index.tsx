@@ -3,7 +3,6 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IFunction } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import {
   AlignLeftOutlined,
@@ -22,8 +21,8 @@ import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { PLType } from '@/constant/plType';
-import type { ConnectionStore } from '@/store/connection';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
@@ -50,18 +49,19 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
   params: {
     funName: string;
     propsTab: PropsTab;
+    sessionId: string;
+    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class FunctionPage extends Component<
   IProps,
@@ -109,8 +109,13 @@ export default class FunctionPage extends Component<
   };
 
   public reloadFunction = async (funName: string) => {
-    const { schemaStore } = this.props;
-    const func: IFunction = await getFunctionByFuncName(funName);
+    const { params } = this.props;
+    const func: IFunction = await getFunctionByFuncName(
+      funName,
+      false,
+      params?.sessionId,
+      params?.dbName,
+    );
     if (func) {
       func.params = func.params.map((param) => {
         const { dataType, dataLength } = parseDataType(param.dataType);
@@ -135,8 +140,8 @@ export default class FunctionPage extends Component<
   }
 
   public async editFunction(funName: string) {
-    const { schemaStore, pageStore } = this.props;
-    await openFunctionEditPageByFuncName(funName);
+    const { params, pageStore } = this.props;
+    await openFunctionEditPageByFuncName(funName, params.sessionId, params.dbName);
   }
 
   private showSearchWidget() {
@@ -159,11 +164,12 @@ export default class FunctionPage extends Component<
   public render() {
     const {
       pageKey,
-      params: { funName },
-      connectionStore,
+      sessionManagerStore,
+      params: { funName, sessionId, dbName },
     } = this.props;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { propsTab, func, formated } = this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     const tableColumns = [
       {
@@ -274,7 +280,7 @@ export default class FunctionPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl);
+                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl, dbName);
                     }}
                   />
 

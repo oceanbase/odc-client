@@ -231,7 +231,14 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
       case PageType.TRIGGER: {
         const trigger = await getTriggerByName(name, sessionId, dbName);
         if (trigger) {
-          openTriggerViewPage(name, TriggerPropsTab.DDL, trigger.enableState, trigger);
+          openTriggerViewPage(
+            name,
+            TriggerPropsTab.DDL,
+            trigger.enableState,
+            trigger,
+            sessionId,
+            dbName,
+          );
         }
         return;
       }
@@ -265,21 +272,21 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
       case PageType.SEQUENCE: {
         const sequence = await getSequence(name, sessionId, dbName);
         if (sequence) {
-          openSequenceViewPage(name);
+          openSequenceViewPage(name, undefined, sessionId, dbName);
         }
         return;
       }
       case PageType.FUNCTION: {
         const func = await getFunctionByFuncName(name, true, sessionId, dbName);
         if (func) {
-          openFunctionViewPage(name);
+          openFunctionViewPage(name, undefined, undefined, sessionId, dbName);
         }
         return;
       }
       case PageType.PROCEDURE: {
         const procedure = await getProcedureByProName(name, true, sessionId, dbName);
         if (procedure) {
-          openProcedureViewPage(name);
+          openProcedureViewPage(name, undefined, undefined, sessionId, dbName);
         }
       }
     }
@@ -311,12 +318,12 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
   };
   private handleGotoPre = async () => {
     const {
-      params: { preData },
+      params: { preData, sessionId, dbName },
       pageStore,
       pageKey,
     } = this.props;
     await pageStore.close(pageKey);
-    await openCreateTriggerPage(preData);
+    await openCreateTriggerPage(preData, sessionId, dbName);
   };
   private handleSqlChange = (sql: string) => {
     this.setState(
@@ -360,7 +367,7 @@ export default class SQLConfirmPage extends Component<IProps, IState> {
     } = this.props;
     const session = sessionManagerStore.sessionMap.get(sessionId);
     const { sql, log, loading } = this.state;
-    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
     const logEle = log ? this.getLogEle(log) : null;
     return (
       <>

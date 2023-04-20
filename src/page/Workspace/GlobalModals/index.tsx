@@ -1,4 +1,6 @@
+import CreateFunctionModal from '@/component/CreateFunctionModal';
 import CreatePackageModal from '@/component/CreatePackageModal';
+import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
 import { ModalStore } from '@/store/modal';
@@ -15,6 +17,8 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreatePackageModal />
       {modalStore.createSynonymModalVisible && <CreateSynonymModal />}
       <CreateTypeModal />
+      <CreateFunctionModal />
+      <CreateProcedureModal />
     </>
   );
 };

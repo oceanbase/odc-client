@@ -30,18 +30,6 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
     },
 
     {
-      key: ResourceTreeNodeMenuKeys.CREATE_SYNONYM,
-      text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
-      ],
-      actionType: actionTypes.create,
-      hasDivider: true,
-      run(session, node) {
-        modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
-      },
-    },
-
-    {
       key: ResourceTreeNodeMenuKeys.DELETE_SYNONYM,
       text: [
         formatMessage({
@@ -148,6 +136,30 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
   ];
 }
 export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
+  [ResourceNodeType.SynonymRoot]: [
+    {
+      key: ResourceTreeNodeMenuKeys.CREATE_SYNONYM,
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
+      ],
+      actionType: actionTypes.create,
+      run(session, node) {
+        modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
+  ],
+  [ResourceNodeType.PublicSynonymRoot]: [
+    {
+      key: ResourceTreeNodeMenuKeys.CREATE_SYNONYM,
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
+      ],
+      actionType: actionTypes.create,
+      run(session, node) {
+        modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
+  ],
   [ResourceNodeType.Synonym]: getMenu(SynonymType.COMMON),
   [ResourceNodeType.PublicSynonym]: getMenu(SynonymType.PUBLIC),
 };

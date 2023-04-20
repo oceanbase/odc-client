@@ -1,4 +1,4 @@
-import { TriggerState } from '@/d.ts';
+import { ITriggerForm, TriggerState } from '@/d.ts';
 import request from '@/util/request';
 import { generateTriggerSid } from './pathUtil';
 
@@ -30,4 +30,18 @@ export async function deleteTrigger(triggerName: string, sessionId: string, dbNa
   const sid = generateTriggerSid(triggerName, sessionId, dbName);
   const ret = await request.delete(`/api/v1/trigger/${sid}`);
   return !ret?.isError;
+}
+
+export async function getTriggerCreateSQL(
+  triggerName: string,
+  trigger: Partial<ITriggerForm>,
+  sessionId: string,
+  dbName: string,
+) {
+  const sid = generateTriggerSid(triggerName, sessionId, dbName);
+
+  const ret = await request.post(`/api/v1/trigger/getCreateSql/${sid}`, {
+    data: trigger,
+  });
+  return ret?.data?.sql;
 }

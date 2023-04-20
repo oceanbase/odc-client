@@ -15,6 +15,16 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
 export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
+  [ResourceNodeType.FunctionRoot]: [
+    {
+      key: 'CREATE',
+      text: ['新建函数'],
+      actionType: actionTypes.create,
+      run(session, node) {
+        modal.changeCreateFunctionModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
+  ],
   [ResourceNodeType.Function]: [
     {
       key: 'OVERVIEW',
@@ -25,21 +35,13 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       run(session, node) {
         const func: IFunction = node.data;
-        openFunctionViewPage(func?.funName, TopTab.PROPS, PropsTab.DDL);
-      },
-    },
-
-    {
-      key: 'CREATE',
-      text: [
-        formatMessage({
-          id: 'odc.ResourceTree.config.treeNodesActions.New',
-        }),
-      ],
-      actionType: actionTypes.create,
-      hasDivider: true,
-      run(session, node) {
-        modal.changeCreateFunctionModalVisible(true);
+        openFunctionViewPage(
+          func?.funName,
+          TopTab.PROPS,
+          PropsTab.DDL,
+          session?.sessionId,
+          session?.database?.dbName,
+        );
       },
     },
 

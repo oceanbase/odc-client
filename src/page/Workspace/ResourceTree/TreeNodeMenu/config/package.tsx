@@ -19,7 +19,7 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
-  [ResourceNodeType.Package]: [
+  [ResourceNodeType.PackageRoot]: [
     {
       key: 'CREATE',
       text: [
@@ -33,6 +33,8 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         modal.changeCreatePackageModalVisible(true, session?.sessionId, session?.database?.dbName);
       },
     },
+  ],
+  [ResourceNodeType.Package]: [
     {
       key: 'CREATE_BODY',
       text: [
@@ -49,7 +51,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           session?.sessionId,
           session?.database?.dbName,
         );
-        openCreatePackageBodyPage(sql);
+        openCreatePackageBodyPage(sql, session?.sessionId, session?.database?.dbName);
       },
     },
     {

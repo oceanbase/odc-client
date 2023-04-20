@@ -13,6 +13,16 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
 export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
+  [ResourceNodeType.TypeRoot]: [
+    {
+      key: 'CREATE',
+      text: [formatMessage({ id: 'odc.ResourceTree.actions.NewType' })],
+      actionType: actionTypes.create,
+      run(session, node) {
+        modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
+  ],
   [ResourceNodeType.Type]: [
     {
       key: 'OVERVIEW',
@@ -25,16 +35,6 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           session?.sessionId,
           session?.database?.dbName,
         );
-      },
-    },
-
-    {
-      key: 'CREATE',
-      text: [formatMessage({ id: 'odc.ResourceTree.actions.NewType' })],
-      actionType: actionTypes.create,
-      hasDivider: true,
-      run(session, node) {
-        modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
       },
     },
 

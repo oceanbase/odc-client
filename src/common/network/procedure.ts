@@ -1,3 +1,4 @@
+import { IProcedure } from '@/d.ts';
 import request from '@/util/request';
 import {
   generateFunctionSid,
@@ -163,4 +164,17 @@ export async function getPackage(pkgName: string, sessionId: string, dbName: str
     }
   }
   return data;
+}
+
+export async function getProcedureCreateSQL(
+  funName: string,
+  func: Partial<IProcedure>,
+  sessionId: string,
+  dbName: string,
+) {
+  const sid = generateProcedureSid(funName, sessionId, dbName);
+  const ret = await request.patch(`/api/v1/procedure/getCreateSql/${sid}`, {
+    data: func,
+  });
+  return ret?.data?.sql;
 }

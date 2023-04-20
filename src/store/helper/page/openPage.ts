@@ -369,7 +369,7 @@ export function openViewViewPage(
 }
 /** 创建函数页面 */
 
-export function openCreateFunctionPage(sql: string) {
+export function openCreateFunctionPage(sql: string, sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_FUNCTION,
     {
@@ -379,6 +379,8 @@ export function openCreateFunctionPage(sql: string) {
     },
 
     {
+      sessionId,
+      dbName,
       sql,
       type: PageType.CREATE_FUNCTION,
     },
@@ -390,6 +392,8 @@ export function openFunctionViewPage(
   functionName: string,
   topTab: FunctionTopTab = FunctionTopTab.PROPS,
   propsTab: FunctionPropsTab = FunctionPropsTab.INFO,
+  sessionId: string,
+  dbName: string,
 ) {
   page!.openPage(
     PageType.FUNCTION,
@@ -398,6 +402,8 @@ export function openFunctionViewPage(
     },
 
     {
+      sessionId,
+      dbName,
       funName: functionName,
       topTab,
       propsTab,
@@ -406,15 +412,19 @@ export function openFunctionViewPage(
 }
 /** 根据函数信息自动填充sql */
 
-export async function openCreateFunctionPageByRemote(func: IFunction) {
-  const sql = await getFunctionCreateSQL(func.funName, func);
+export async function openCreateFunctionPageByRemote(
+  func: IFunction,
+  sessionId: string,
+  dbName: string,
+) {
+  const sql = await getFunctionCreateSQL(func.funName, func, sessionId, dbName);
   if (sql) {
-    openCreateFunctionPage(sql);
+    openCreateFunctionPage(sql, sessionId, dbName);
   }
 }
 /** 创建存储过程页面 */
 
-export function openCreateProcedurePage(sql: string) {
+export function openCreateProcedurePage(sql: string, sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_PROCEDURE,
     {
@@ -424,6 +434,8 @@ export function openCreateProcedurePage(sql: string) {
     },
 
     {
+      sessionId,
+      dbName,
       sql,
       type: PageType.CREATE_PROCEDURE,
     },
@@ -435,6 +447,8 @@ export function openProcedureViewPage(
   procedureName: string,
   topTab: ProcedureTopTab = ProcedureTopTab.PROPS,
   propsTab: ProcedurePropsTab = ProcedurePropsTab.INFO,
+  sessionId: string,
+  dbName: string,
 ) {
   page!.openPage(
     PageType.PROCEDURE,
@@ -443,6 +457,8 @@ export function openProcedureViewPage(
     },
 
     {
+      sessionId,
+      dbName,
       proName: procedureName,
       topTab,
       propsTab,
@@ -470,7 +486,7 @@ export function openCreatePackagePage(sql: string, sessionId: string, dbName: st
 }
 /** 创建程序包包体页面 */
 
-export function openCreatePackageBodyPage(sql: string) {
+export function openCreatePackageBodyPage(sql: string, sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_PACKAGE,
     {
@@ -480,6 +496,8 @@ export function openCreatePackageBodyPage(sql: string) {
     },
 
     {
+      sessionId,
+      dbName,
       sql,
       type: PageType.CREATE_PACKAGE,
       isPackageBody: true,
@@ -488,7 +506,7 @@ export function openCreatePackageBodyPage(sql: string) {
 }
 /** 创建序列页面 */
 
-export function openCreateSequencePage(sql: string) {
+export function openCreateSequencePage(sql: string, sessionId: string, dbName: string) {
   page!.openPage(
     PageType.CREATE_SEQUENCE,
     {
@@ -498,6 +516,8 @@ export function openCreateSequencePage(sql: string) {
     },
 
     {
+      sessionId,
+      dbName,
       sql,
       type: PageType.CREATE_SEQUENCE,
     },
@@ -508,6 +528,8 @@ export function openCreateSequencePage(sql: string) {
 export function openSequenceViewPage(
   sequenceName: string,
   propsTab: SequencePropsTab = SequencePropsTab.INFO,
+  sessionId: string,
+  dbName: string,
 ) {
   page?.openPage(
     PageType.SEQUENCE,
@@ -516,6 +538,8 @@ export function openSequenceViewPage(
     },
 
     {
+      sessionId,
+      dbName,
       sequenceName,
       propsTab,
     },
@@ -642,7 +666,11 @@ export async function openOBClientPage() {
 /**
  * 创建触发器页面 (表单)
  */
-export async function openCreateTriggerPage(preData?: ITriggerFormData) {
+export async function openCreateTriggerPage(
+  preData: ITriggerFormData = null,
+  sessionId: string,
+  dbName: string,
+) {
   await page!.openPage(
     PageType.CREATE_TRIGGER,
     {
@@ -650,19 +678,27 @@ export async function openCreateTriggerPage(preData?: ITriggerFormData) {
     },
     {
       preData,
-      sessionId: connection.connection.sid,
+      sessionId,
+      dbName,
     },
   );
 }
 /** 创建触发器页面 (SQL确认页面) */
 
-export async function openCreateTriggerSQLPage(sql: string, preData: ITriggerFormData) {
+export async function openCreateTriggerSQLPage(
+  sql: string,
+  preData: ITriggerFormData,
+  sessionId: string,
+  dbName: string,
+) {
   await page!.openPage(
     PageType.CREATE_TRIGGER_SQL,
     {
       title: formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }), // 新建触发器
     },
     {
+      sessionId,
+      dbName,
       sql,
       preData,
       hasPre: true,
@@ -677,6 +713,8 @@ export function openTriggerViewPage(
   propsTab: TriggerPropsTab = TriggerPropsTab.DDL,
   triggerState: TriggerState,
   triggerData?: ITrigger,
+  sessionId?: string,
+  dbName?: string,
 ) {
   page.openPage(
     PageType.TRIGGER,
@@ -685,6 +723,8 @@ export function openTriggerViewPage(
     },
 
     {
+      sessionId,
+      dbName,
       triggerName,
       triggerData,
       propsTab,

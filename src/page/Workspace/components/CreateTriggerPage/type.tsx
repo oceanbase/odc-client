@@ -5,9 +5,8 @@ import {
   ITriggerBaseInfoForm,
   ITriggerFormData,
 } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
 import React from 'react';
 
@@ -30,16 +29,14 @@ export interface ICollapseHeader {
 
 export interface IProps {
   sqlStore: SQLStore;
-
-  schemaStore: SchemaStore;
-
+  sessionManagerStore: SessionManagerStore;
   pageStore: PageStore;
-
-  connectionStore: ConnectionStore;
 
   pageKey: string;
 
   params: {
+    sessionId: string;
+    dbName: string;
     preData?: ITriggerFormData;
   };
 

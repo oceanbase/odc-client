@@ -14,6 +14,16 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
 export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
+  [ResourceNodeType.ViewRoot]: [
+    {
+      key: ResourceTreeNodeMenuKeys.CREATE_VIEW,
+      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.CreateAView' })],
+      actionType: actionTypes.create,
+      run(session, node) {
+        openCreateViewPage(session?.sessionId, session?.database?.dbName);
+      },
+    },
+  ],
   [ResourceNodeType.View]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
@@ -43,16 +53,6 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           session?.sessionId,
           session?.database?.dbName,
         );
-      },
-    },
-
-    {
-      key: ResourceTreeNodeMenuKeys.CREATE_VIEW,
-      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.CreateAView' })],
-      hasDivider: true,
-      actionType: actionTypes.create,
-      run(session, node) {
-        openCreateViewPage(session?.sessionId, session?.database?.dbName);
       },
     },
 

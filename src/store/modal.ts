@@ -86,10 +86,67 @@ export class ModalStore {
   public createSequenceModalVisible: boolean = false;
 
   @observable
+  public createSequenceModalData: {
+    isEdit?: boolean;
+    data?: any;
+    sessionId: string;
+    dbName: string;
+  };
+
+  @action
+  public changeCreateSequenceModalVisible(
+    isShow: boolean = true,
+    data?: typeof this.createSequenceModalData,
+  ) {
+    this.createSequenceModalVisible = isShow;
+    this.createSequenceModalData = isShow ? data : null;
+  }
+
+  /** create function */
+  @observable
   public createFunctionModalVisible: boolean = false;
 
   @observable
+  public createFunctionModalData = {
+    sessionId: '',
+    dbName: '',
+  };
+
+  @action
+  public changeCreateFunctionModalVisible(
+    isShow: boolean = true,
+    sessionId?: string,
+    dbName?: string,
+  ) {
+    this.createFunctionModalVisible = isShow;
+    this.createFunctionModalData = {
+      sessionId,
+      dbName,
+    };
+  }
+
+  /** create procedure */
+  @observable
   public createProcedureModalVisible: boolean = false;
+
+  @observable
+  public createProcedureModalData = {
+    sessionId: '',
+    dbName: '',
+  };
+
+  @action
+  public changeCreateProcedureModalVisible(
+    isShow: boolean = true,
+    sessionId?: string,
+    dbName?: string,
+  ) {
+    this.createProcedureModalVisible = isShow;
+    this.createProcedureModalData = {
+      sessionId,
+      dbName,
+    };
+  }
 
   @observable
   public versionModalVisible: boolean = false;
@@ -154,12 +211,6 @@ export class ModalStore {
     };
   }
 
-  @observable
-  public createSequenceModalData: {
-    isEdit: boolean;
-    data: any;
-  };
-
   @action
   public changeExportModal(isShow: boolean = true, modalData?: IExportModalData) {
     this.exportModalVisible = isShow;
@@ -211,22 +262,6 @@ export class ModalStore {
   @action
   public changeUserConfigModal(isShow: boolean = true) {
     this.userConfigModalVisible = isShow;
-  }
-
-  @action
-  public changeCreateSequenceModalVisible(isShow: boolean = true, data?: any) {
-    this.createSequenceModalVisible = isShow;
-    this.createSequenceModalData = isShow ? data : null;
-  }
-
-  @action
-  public changeCreateFunctionModalVisible(isShow: boolean = true) {
-    this.createFunctionModalVisible = isShow;
-  }
-
-  @action
-  public changeCreateProcedureModalVisible(isShow: boolean = true) {
-    this.createProcedureModalVisible = isShow;
   }
 
   @action
