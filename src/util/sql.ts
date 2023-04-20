@@ -208,11 +208,15 @@ export function encodeIdentifiers(str, isMySQL: boolean) {
   return isMySQL ? str.replace(/`/g, '``') : str.replace(/"/g, '""');
 }
 
-export async function splitSql(sql: string, isOracle: boolean = false): Promise<number[]> {
+export async function splitSql(
+  sql: string,
+  isOracle: boolean = false,
+  delimiter,
+): Promise<number[]> {
   const { SQLDocument } = await import('@alipay/ob-parser-js');
   const doc = new SQLDocument({
     text: sql,
-    delimiter: connection.delimiter,
+    delimiter: delimiter,
   });
   return doc?.statements?.map((stmt) => {
     return stmt.stop + (stmt.delimiter?.length || 0);

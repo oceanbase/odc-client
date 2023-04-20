@@ -11,8 +11,7 @@ import SQLLintResult from '@/component/SQLLintResult';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
-import { ISubSession } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -33,12 +32,11 @@ enum MenuKey {
 
 interface IProps {
   sqlStore?: SQLStore;
-  schemaStore?: SchemaStore;
   pageKey: string;
   activeKey: string;
   resultHeight: number;
   editingMap: Record<string, boolean>;
-  session: ISubSession;
+  session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
 
   onCloseResultSet: (resultSetKey: string) => void;
@@ -63,7 +61,6 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const {
     activeKey,
     sqlStore: { resultSets: r },
-    schemaStore,
     pageKey,
     resultHeight,
     editingMap,
@@ -214,7 +211,11 @@ const SQLResultSet: React.FC<IProps> = function (props) {
           tab={formatMessage({ id: 'workspace.window.sql.record.title' })}
           key={recordsTabKey}
         >
-          <ExecuteHistory resultHeight={resultHeight} onShowExecuteDetail={onShowExecuteDetail} />
+          <ExecuteHistory
+            session={session}
+            resultHeight={resultHeight}
+            onShowExecuteDetail={onShowExecuteDetail}
+          />
         </TabPane>
         {lintResultSet ? (
           <TabPane
@@ -283,12 +284,12 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   <DDLResultSet
                     key={set.uniqKey || i}
                     dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                    showExplain={schemaStore.enableSQLExplain}
+                    showExplain={session?.supportFeature?.enableSQLExplain}
                     showPagination={true}
                     columns={set.columns}
-                    sessionId={session?.sessionId}
+                    session={session}
                     sqlId={set.sqlId}
-                    autoCommit={session?.autoCommit}
+                    autoCommit={session?.params?.autoCommit}
                     table={{
                       tableName: set.resultSetMetaData?.table?.tableName,
                       columns: set.resultSetMetaData?.columnList,
@@ -413,4 +414,4 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject('sqlStore', 'userStore', 'pageStore', 'schemaStore')(observer(SQLResultSet));
+export default inject('sqlStore', 'userStore', 'pageStore')(observer(SQLResultSet));

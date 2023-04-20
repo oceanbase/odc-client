@@ -189,7 +189,7 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
               readOnly
               defaultValue={sql}
               language={
-                session.connection.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
+                session?.connection.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
               }
             />
           </div>

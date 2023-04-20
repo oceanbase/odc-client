@@ -54,12 +54,13 @@ export async function getCurrentSQL(
   rawSQL: string,
   offset: number,
   isMysql: boolean = true,
+  delimiter: string,
 ): Promise<{
   sql: string;
   begin: number;
   end: number;
 }> {
-  const splitSqls = await splitSql(rawSQL, !isMysql);
+  const splitSqls = await splitSql(rawSQL, !isMysql, delimiter);
 
   if (!splitSqls?.length) {
     return null;
