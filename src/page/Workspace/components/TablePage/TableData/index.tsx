@@ -1,13 +1,9 @@
 import { executeSQL } from '@/common/network/sql';
-import {
-  batchGetDataModifySQL,
-  getTableColumnList,
-  queryTableOrViewData,
-} from '@/common/network/table';
+import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { TAB_HEADER_HEIGHT } from '@/constant';
-import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable, ITableColumn } from '@/d.ts';
+import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import { PageStore } from '@/store/page';
 import schema from '@/store/schema';
@@ -56,7 +52,6 @@ class TableData extends React.Component<
     showDataExecuteSQLModal: boolean;
     updateDataDML: string;
     tipToShow: string;
-    columns: ITableColumn[];
   }
 > {
   constructor(props) {
@@ -70,7 +65,6 @@ class TableData extends React.Component<
       updateDataDML: '',
       tipToShow: '',
       resultSet: null,
-      columns: [],
     };
   }
 
@@ -119,16 +113,6 @@ class TableData extends React.Component<
       if (resultSet) {
         this.setState({
           resultSet,
-        });
-      }
-      const columns = await getTableColumnList(
-        tableName,
-        session?.database?.dbName,
-        session?.sessionId,
-      );
-      if (columns) {
-        this.setState({
-          columns,
         });
       }
     } catch (e) {
@@ -197,7 +181,7 @@ class TableData extends React.Component<
     const res = await batchGetDataModifySQL(
       resultSet.resultSetMetaData?.table?.databaseName,
       tableName,
-      this.state.columns,
+      resultSet.resultSetMetaData?.columnList,
       true,
       editRows,
       session.sessionId,
@@ -302,7 +286,7 @@ class TableData extends React.Component<
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
-            table={{ ...table, columns: this.state.columns }}
+            table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
             session={session}
             onUpdateEditing={(editing) => {
@@ -342,6 +326,7 @@ class TableData extends React.Component<
         />
 
         <ExecuteSQLModal
+          sessionStore={session}
           tip={this.state.tipToShow}
           sql={updateDataDML}
           visible={showDataExecuteSQLModal}

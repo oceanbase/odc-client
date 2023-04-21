@@ -14,9 +14,7 @@ import { generateUniqKey } from '@/util/utils';
 import { message } from 'antd';
 import { clone, isNil } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
-import connectionStore from '../connection';
 import { generateResultSetColumns } from '../helper';
-import schemaStore from '../schema';
 import sessionManager from '../sessionManager';
 export enum ExcecuteSQLMode {
   PL = 'PL',
@@ -134,11 +132,10 @@ export class SQLStore {
   }
 
   @action
-  public async stopExec(pageKey: string) {
+  public async stopExec(pageKey: string, sessionId: string) {
     try {
       this.stopingPageKey.add(pageKey);
-      const session = connectionStore.subSessions.get(pageKey);
-      const data = await stopExec(session?.sessionId);
+      const data = await stopExec(sessionId);
 
       if (data) {
         message.success(
@@ -163,14 +160,15 @@ export class SQLStore {
     }
 
     let record; // 需要忽略默认错误处理
+    const session = sessionManager.sessionMap.get(sessionId);
     try {
       this.runningPageKey.add(pageKey);
       !!isSection && this.isRunningSection.add(pageKey);
-      const showTableColumnInfo = connectionStore.subSessions.get(pageKey)?.tableColumnInfoVisible;
+      const showTableColumnInfo = session?.params?.tableColumnInfoVisible;
       record = await executeSQL(
         {
           sql,
-          queryLimit: connectionStore.subSessions.get(pageKey)?.queryLimit || undefined,
+          queryLimit: session?.params.queryLimit || undefined,
           showTableColumnInfo,
         },
         sessionId,
@@ -190,9 +188,7 @@ export class SQLStore {
     /**
      * 刷新一下delimiter
      */
-    sessionId
-      ? connectionStore.initSubSessionTransactionStatus(sessionId)
-      : connectionStore.initTransactionStatus();
+    session.initTransactionStatus();
 
     // 判断结果集是否支持编辑
     // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
@@ -261,13 +257,6 @@ export class SQLStore {
     };
   }
 
-  public getSid() {
-    const { sessionId } = connectionStore;
-    const { database } = schemaStore;
-    const dbName = database && database.name;
-    return `sid:${sessionId}:d:${dbName}`;
-  } // 获取 PL getPLSchema
-
   // 解析 PL
   @action
   public async parsePL(sql: string, sessionId, dbName) {
@@ -299,8 +288,10 @@ export class SQLStore {
       obDbObjectType: string;
       plName: string;
     }[];
+    sessionId?: string;
+    dbName: string;
   }) {
-    const sid = this.getSid();
+    const sid = generateDatabaseSid(params.dbName, params.sessionId);
     const res = await request.post(
       `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations`,
       {
@@ -311,8 +302,8 @@ export class SQLStore {
   }
 
   @action
-  public async getBatchCompilePLResult(id: string) {
-    const sid = this.getSid();
+  public async getBatchCompilePLResult(id: string, sessionId: string, dbName: string) {
+    const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.get(
       `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations/${id}`,
     );
@@ -320,8 +311,8 @@ export class SQLStore {
   }
 
   @action
-  public async deleteBatchCompilePL(id: string) {
-    const sid = this.getSid();
+  public async deleteBatchCompilePL(id: string, sessionId: string, dbName: string) {
+    const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.delete(
       `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations/${id}`,
     );
@@ -402,50 +393,19 @@ export class SQLStore {
   }
 
   @action
-  public async exportData(
-    sql: string,
-    queryLimit: number,
-    type: string,
-    tag: string,
-  ): Promise<string> {
-    const sid = `sid:${connectionStore.sessionId}:d:${
-      schemaStore.database && schemaStore.database.name
-    }`;
-    const params = {
-      sid,
-      sql,
-      queryLimit,
-      type,
-      tag,
-    };
-    const { data: fileName } = await request.post(`/api/v1/file/startTask/${sid}`, {
-      data: params,
-    });
-    return fileName;
-  }
-
-  @action
-  public async getFileProcess(fileName: string): Promise<boolean> {
-    const sid = `sid:${connectionStore.sessionId}:d:${
-      schemaStore.database && schemaStore.database.name
-    }`;
-    const { data } = await request.get(`/api/v1/file/getProcess/${sid}?fileName=${fileName}`);
-    return data === 100;
-  }
-
-  @action
-  public async refreshResultSet(pageKey: string, resultSetIndex: number) {
+  public async refreshResultSet(pageKey: string, resultSetIndex: number, sessionId?: string) {
     const resultSet = this.resultSets.get(pageKey);
-    const subSession = connectionStore.subSessions.get(pageKey);
+    const session = sessionManager.sessionMap.get(sessionId);
 
     if (resultSet) {
       const target = resultSet[resultSetIndex];
       const record = await executeSQL(
         {
           sql: target.originSql,
-          queryLimit: connectionStore.subSessions.get(pageKey).queryLimit,
+          queryLimit: session?.params?.queryLimit,
         },
-        subSession?.sessionId,
+        session?.sessionId,
+        session?.database?.dbName,
       );
 
       if (!record?.length) {

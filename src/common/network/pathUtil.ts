@@ -2,11 +2,9 @@
  * 后端的API需要的path
  */
 import connection, { ConnectionPropertyType } from '@/store/connection';
-import schema from '@/store/schema';
 import { encodeObjName } from '@/util/utils';
 
 export function generateDatabaseSid(databaseName: string = '', sessionId?: string): string {
-  databaseName = databaseName || schema.database.name;
   return `sid:${sessionId || connection.sessionId}:d:${encodeObjName(databaseName)}`;
 }
 export function generateSessionSid(sessionId?: string): string {
@@ -62,5 +60,5 @@ export function generateTypeSid(typeName: string, sessionId: string, dbName: str
 }
 
 export function generateVarSid(type: ConnectionPropertyType, sessionId?: string): string {
-  return `${generateDatabaseSid(null, sessionId)}:var:${type}`;
+  return `${generateDatabaseSid('', sessionId)}:var:${type}`;
 }

@@ -39,8 +39,13 @@ export async function uploadCloudTableObject(file: File, sessionId: string) {
   return await uploadFileToOSS(file, 'UploadObjectData', sessionId);
 }
 
-export async function getSQLExecuteDetail(sql: string, tag?: string): Promise<ISQLExecuteDetail> {
-  const sid = generateDatabaseSid();
+export async function getSQLExecuteDetail(
+  sql: string,
+  tag?: string,
+  sessionId?: string,
+  dbName?: string,
+): Promise<ISQLExecuteDetail> {
+  const sid = generateDatabaseSid(dbName, sessionId);
   const result = await request.post(`/api/v1/diagnose/getExecDetail/${sid}`, {
     data: {
       sql,
@@ -50,8 +55,8 @@ export async function getSQLExecuteDetail(sql: string, tag?: string): Promise<IS
   return result?.data;
 }
 
-export async function getSQLExplain(sql: string): Promise<ISQLExplain | null> {
-  const sid = generateDatabaseSid();
+export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQLExplain | null> {
+  const sid = generateDatabaseSid(dbName, sessionId);
   const result = await request.post(`/api/v1/diagnose/explain/${sid}`, {
     data: {
       sql,
@@ -95,8 +100,10 @@ function formatSQLExplainTree(data: any): ISQLExplainTreeNode {
 export async function getSQLExecuteExplain(
   sql: string,
   tag?: string,
+  sessionId?: string,
+  dbName?: string,
 ): Promise<ISQLExplain | string | null> {
-  const sid = generateDatabaseSid();
+  const sid = generateDatabaseSid(dbName, sessionId);
   const result = await request.post(`/api/v1/diagnose/getExecExplain/${sid}`, {
     data: {
       sql,
