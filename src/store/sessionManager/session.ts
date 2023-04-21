@@ -1,8 +1,10 @@
 import {
+  changeDelimiter,
   getSessionStatus,
   getSupportFeatures,
   getTransactionInfo,
   newSession,
+  setTransactionInfo,
 } from '@/common/network/connection';
 import { generateDatabaseSid, generateSessionSid } from '@/common/network/pathUtil';
 import { queryIdentities } from '@/common/network/table';
@@ -70,12 +72,14 @@ class SessionStore {
     queryLimit: number;
     delimiterLoading: boolean;
     obVersion: string;
+    tableColumnInfoVisible: boolean;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
     delimiterLoading: false,
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
+    tableColumnInfoVisible: true,
   };
 
   /**
@@ -449,6 +453,41 @@ class SessionStore {
       });
     });
   }
+
+  /**
+   * delimiter
+   */
+  @action
+  public changeDelimiter = async (v: string) => {
+    this.params.delimiterLoading = true;
+    const isSuccess = await changeDelimiter(v, this.sessionId, this.database?.dbName);
+    runInAction(() => {
+      if (isSuccess) {
+        this.params.delimiter = v;
+      }
+      this.params.delimiterLoading = false;
+    });
+    return isSuccess;
+  };
+
+  @action
+  public setQueryLimit = async (num: number) => {
+    const isSuccess = await setTransactionInfo(
+      {
+        queryLimit: num,
+      },
+      this.sessionId,
+    );
+    if (isSuccess) {
+      this.params.queryLimit = num;
+    }
+    return isSuccess;
+  };
+
+  @action
+  public changeColumnInfoVisible = async (v: boolean) => {
+    this.params.tableColumnInfoVisible = v;
+  };
 }
 
 export default SessionStore;

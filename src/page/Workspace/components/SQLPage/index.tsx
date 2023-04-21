@@ -555,7 +555,7 @@ class SQLPage extends Component<
     if (resultSets) {
       const resultSet = resultSets[resultSetIndex]; // 尝试从 结果集是否可编辑接口 中获取表名（存储在每个字段中）
 
-      const tableName = columnList[0]?.name || '';
+      const tableName = columnList[0]?.tableName || '';
       let tipToShow = '';
       /**
        * 校验空行
@@ -929,6 +929,7 @@ class SQLPage extends Component<
             />,
 
             <ExecPlan
+              session={this.session}
               key="execPlan"
               visible={showExplainDrawer}
               selectedSQL={selectedSQL}
@@ -944,6 +945,7 @@ class SQLPage extends Component<
               key="execDetail"
               visible={showExecuteDetailDrawer}
               sql={execDetailSql}
+              session={this.session}
               traceId={execDetailTraceId}
               onClose={() => {
                 this.setState({
@@ -955,6 +957,7 @@ class SQLPage extends Component<
             />,
 
             <ExecuteSQLModal
+              sessionStore={this.session}
               key="executeSQLModal"
               tip={this.state.tipToShow}
               sql={updateDataDML}

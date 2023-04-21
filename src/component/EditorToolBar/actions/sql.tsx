@@ -4,7 +4,6 @@ import { getConfirmTitle } from '@/component/SubmitConfirm';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
 import SQLPage from '@/page/Workspace/components/SQLPage';
-import schema from '@/store/schema';
 import setting from '@/store/setting';
 import sqlStore from '@/store/sql';
 import { formatMessage } from '@/util/intl';
@@ -34,7 +33,7 @@ const sqlActions: ToolBarActions = {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Plan' }),
     icon: 'EXPAIN',
     isVisible(ctx: SQLPage) {
-      return schema.enableSQLExplain;
+      return ctx.getSession()?.supportFeature.enableSQLExplain;
     },
     async action(ctx: any) {
       await ctx.handleExplain();
@@ -148,10 +147,9 @@ const sqlActions: ToolBarActions = {
     },
 
     statusFunc: (ctx: SQLPage) => {
-      const { pageKey, sqlStore, connectionStore } = ctx.props;
+      const { pageKey, sqlStore } = ctx.props;
       const { runningPageKey, rollbackPageKey, stopingPageKey, commitingPageKey } = sqlStore;
-      const sessionId = ctx.getSession()?.sessionId;
-      const transaction = connectionStore?.getSessionTransaction(sessionId);
+      const transaction = ctx.session?.transState;
       if (transaction?.transState === TransState.IDLE) {
         return IConStatus.DISABLE;
       }
@@ -181,12 +179,16 @@ const sqlActions: ToolBarActions = {
     },
 
     isVisible(ctx: SQLPage) {
-      return !ctx.getSession()?.autoCommit;
+      return !ctx.getSession()?.params?.autoCommit;
     },
 
     async action(ctx: SQLPage) {
       ctx.debounceHighlightSelectionLine();
-      ctx.props.sqlStore.commit(ctx.props.pageKey, ctx.getSession()?.sessionId);
+      ctx.props.sqlStore.commit(
+        ctx.props.pageKey,
+        ctx.getSession()?.sessionId,
+        ctx?.getSession()?.database?.dbName,
+      );
     },
   },
 
@@ -202,11 +204,11 @@ const sqlActions: ToolBarActions = {
       }
       return null;
     },
-    statusFunc: (ctx) => {
-      const { pageKey, sqlStore, connectionStore } = ctx.props;
+    statusFunc: (ctx: SQLPage) => {
+      const { pageKey, sqlStore } = ctx.props;
       const { runningPageKey, rollbackPageKey, stopingPageKey, commitingPageKey } = sqlStore;
       const sessionId = ctx.getSession()?.sessionId;
-      const transaction = connectionStore?.getSessionTransaction(sessionId);
+      const transaction = ctx.session?.transState;
       if (transaction?.transState === TransState.IDLE) {
         return IConStatus.DISABLE;
       }
@@ -236,12 +238,16 @@ const sqlActions: ToolBarActions = {
     },
 
     isVisible(ctx: SQLPage) {
-      return !ctx.getSession()?.autoCommit;
+      return !ctx.getSession()?.params?.autoCommit;
     },
 
     async action(ctx: SQLPage) {
       ctx.debounceHighlightSelectionLine();
-      sqlStore.rollback(ctx.props.pageKey, ctx.getSession()?.sessionId);
+      sqlStore.rollback(
+        ctx.props.pageKey,
+        ctx.getSession()?.sessionId,
+        ctx?.getSession()?.database?.dbName,
+      );
     },
   },
 
@@ -262,8 +268,8 @@ const sqlActions: ToolBarActions = {
       }
       return IConStatus.INIT;
     },
-    isVisible: () => {
-      return schema.enableKillQuery;
+    isVisible: (ctx: SQLPage) => {
+      return ctx.getSession()?.supportFeature.enableKillQuery;
     },
     async action(ctx: any) {
       sqlStore.stopExec(ctx.props.pageKey);

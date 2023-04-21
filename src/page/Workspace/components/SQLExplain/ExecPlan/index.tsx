@@ -4,16 +4,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import SQLExplain from '../index';
 
 import { getSQLExplain } from '@/common/network/sql';
+import SessionStore from '@/store/sessionManager/session';
 import styles from './index.less';
 
 interface IProps {
+  session: SessionStore;
   visible: boolean;
   selectedSQL: string;
   onClose: () => void;
 }
 
 const ExecPlan: React.FC<IProps> = function (props) {
-  const { visible, selectedSQL, onClose } = props;
+  const { visible, selectedSQL, session, onClose } = props;
   const [loadingExplain, setloadingExplain] = useState(false);
   const [sqlExplainToShow, setSqlExplainToShow] = useState(null);
   const fetchExecPlan = useCallback(
@@ -24,7 +26,11 @@ const ExecPlan: React.FC<IProps> = function (props) {
       setloadingExplain(true);
       setSqlExplainToShow(null);
 
-      const explain = await getSQLExplain(selectedSQL);
+      const explain = await getSQLExplain(
+        selectedSQL,
+        session?.sessionId,
+        session?.database?.dbName,
+      );
       setloadingExplain(false);
 
       if (explain) {

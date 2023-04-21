@@ -1,19 +1,14 @@
-import { ConnectionStore } from '@/store/connection';
 import { AutoComplete } from 'antd';
 import { trim } from 'lodash';
-import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import SQLConfigContext from '../SQLConfig/SQLConfigContext';
 
-interface IProps {
-  connectionStore?: ConnectionStore;
-}
+interface IProps {}
 
 const DelimiterSelect: React.FC<IProps> = function (props) {
-  const { connectionStore } = props;
   const { session, pageKey } = useContext(SQLConfigContext);
   const [delimiterValue, setDelimiterValue] = useState(null);
-  const delimiter = session?.delimiter;
+  const delimiter = session?.params?.delimiter;
 
   useEffect(() => {
     setDelimiterValue(delimiter);
@@ -29,7 +24,7 @@ const DelimiterSelect: React.FC<IProps> = function (props) {
       }}
       onBlur={async () => {
         if (trim(delimiterValue)) {
-          const isSuccess = await connectionStore.changeDelimiter(delimiterValue, pageKey);
+          const isSuccess = await session.changeDelimiter(delimiterValue);
           if (!isSuccess) {
             setDelimiterValue(delimiter);
           }
@@ -38,7 +33,7 @@ const DelimiterSelect: React.FC<IProps> = function (props) {
         }
       }}
       size="small"
-      disabled={session?.delimiterLoading}
+      disabled={session?.params?.delimiterLoading}
       options={[';', '/', '//', '$', '$$'].map((value) => {
         return {
           value,
@@ -48,4 +43,4 @@ const DelimiterSelect: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject('connectionStore')(observer(DelimiterSelect));
+export default DelimiterSelect;

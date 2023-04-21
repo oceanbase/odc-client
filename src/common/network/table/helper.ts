@@ -251,6 +251,7 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
       secondPrecision: column.secondPrecision,
       dayPrecision: column.dayPrecision,
       yearPrecision: column.yearPrecision,
+      tableName: column.tableName,
     };
   });
   // index
