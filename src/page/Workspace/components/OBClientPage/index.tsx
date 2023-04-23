@@ -7,8 +7,9 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
 import { generateSessionSid } from '@/common/network/pathUtil';
-import { ConnectionStore } from '@/store/connection';
 import { ModalStore } from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import { generateUniqKey } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
@@ -18,16 +19,19 @@ import styles from './index.less';
 const { Text } = Typography;
 
 interface IOBClientProps {
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
   settingStore?: SettingStore;
+  params: {
+    cid: number;
+    dbName: string;
+  };
 }
 
 interface IOBClientState {
   isClosed: boolean;
 }
 
-@inject('connectionStore', 'modalStore', 'settingStore')
+@inject('modalStore', 'settingStore')
 @observer
 class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
   private xtermRef = React.createRef<HTMLDivElement>();
@@ -41,6 +45,8 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
   private _pingClock: any;
 
   private theme: string;
+
+  private session: SessionStore;
 
   state: IOBClientState = {
     isClosed: false,
@@ -74,12 +80,17 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     }
   }
 
-  private initTerminal = () => {
-    const { settingStore } = this.props;
+  private initTerminal = async () => {
+    const { settingStore, params } = this.props;
     const dom = this.xtermRef.current;
     if (!dom) {
       return;
     }
+    const session = await sessionManager.createSession(false, params?.cid, params?.dbName);
+    if (!session) {
+      return;
+    }
+    this.session = session;
     this.theme = settingStore.theme.cmdTheme;
     this.xtermInstance = new Terminal({
       convertEol: true,
@@ -106,7 +117,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     });
 
     let url = new URL(
-      `/api/v1/webSocket/obclient/${generateSessionSid()}`,
+      `/api/v1/webSocket/obclient/${generateSessionSid(session?.sessionId)}`,
       window.ODCApiHost || window.location.href,
     );
     url.protocol = url.protocol.replace('http', 'ws');

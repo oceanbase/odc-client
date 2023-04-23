@@ -393,7 +393,7 @@ export class SQLStore {
   }
 
   @action
-  public async refreshResultSet(pageKey: string, resultSetIndex: number, sessionId?: string) {
+  public async refreshResultSet(pageKey: string, resultSetIndex: number, sessionId: string) {
     const resultSet = this.resultSets.get(pageKey);
     const session = sessionManager.sessionMap.get(sessionId);
 

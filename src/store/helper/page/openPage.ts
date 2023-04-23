@@ -651,7 +651,7 @@ export async function openFunctionEditPageByFuncName(
   );
 }
 
-export async function openOBClientPage() {
+export async function openOBClientPage(cid: number, dbName: string) {
   const MAX_CLIENT_PAGE = 3;
   const currentNum =
     Math.max(
@@ -691,6 +691,8 @@ export async function openOBClientPage() {
     {
       time: Date.now(),
       index: currentNum,
+      cid,
+      dbName,
     },
   );
 }
