@@ -1,7 +1,7 @@
 import { IFunction, IPackage, IProcedure, IType, IView } from '@/d.ts';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { EventDataNode } from 'antd/lib/tree';
-import { ITableModel } from '../components/CreateTable/interface';
+import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
 
 export async function loadNode(

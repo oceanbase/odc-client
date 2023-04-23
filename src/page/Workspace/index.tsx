@@ -1,15 +1,9 @@
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
-import AddConnectionDrawer from '@/component/AddConnectionDrawer';
-import ApplyPermission from '@/component/ApplyPermission';
-import DataMockerDrawer from '@/component/DataMockerDrawer';
 import openNewVersionTip from '@/component/VersionModal/NewVersion';
 import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import appConfig from '@/constant/appConfig';
 import type { IPage } from '@/d.ts';
-import { IConnectionType, ResourceTabKey } from '@/d.ts';
-import PartitionDrawer from '@/page/Workspace/components/PartitionDrawer';
-import ResourceTree from '@/page/Workspace/ResourceTree';
 import localLoginHistoy from '@/service/localLoginHistoy';
 import type { CommonStore } from '@/store/common';
 import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
@@ -25,29 +19,21 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { extractResourceId } from '@/util/utils';
 import { useParams } from '@umijs/max';
-import { Layout, message, Modal } from 'antd';
-import { debounce, toInteger } from 'lodash';
+import { message, Modal } from 'antd';
+import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useEffect, useState } from 'react';
-import SplitPane from 'react-split-pane';
-import CreateAsyncTaskModal from './components/CreateAsyncTaskModal';
-import CreateSequenceModal from './components/CreateSequenceModal';
-import CreateShadowSyncModal from './components/CreateShadowSyncModal';
-import CreateSQLPlanTaskModal from './components/CreateSQLPlanTaskModal';
-import ExportDrawer from './components/ExportDrawer';
-import Header from './components/Header';
-import ImportDrawer from './components/ImportDrawer';
-import ScriptManageModal from './components/ScriptManageModal';
-import ResourceSider from './components/Sider';
+import ActivityBar from './ActivityBar/ index';
+import ActivityBarContext from './ActivityBar/ActivityBarContext';
+import { ActivityBarItemType } from './ActivityBar/type';
 import GlobalModals from './GlobalModals';
-import styles from './index.less';
+import WorkBenchLayout from './Layout';
+import SideBar from './SideBar';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
   _closeMsg = t;
 }
-const { Sider, Content } = Layout;
 
 interface WorkspaceProps {
   pageStore: PageStore;
@@ -73,10 +59,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   } = props;
 
   const { pages = [], activePageKey } = pageStore;
-  const { siderWidth, collapsed, serverSystemInfo } = settingStore;
+  const { serverSystemInfo } = settingStore;
   const params = useParams();
+  const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
 
-  const [activeResource, setActiveResource] = useState<ResourceTabKey>(ResourceTabKey.TABLE);
   const [isReady, setIsReady] = useState<boolean>(false);
 
   const handleActivatePage = (activeKey: string) => {
@@ -120,7 +106,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
         // 操作执行中，关闭窗口将终止窗口操作，确认关闭吗？
         onOk: async () => {
-          await sqlStore.stopExec(targetPageKey);
+          await sqlStore.stopExec(
+            targetPageKey,
+            pageStore.pages.find((page) => page.key === targetPageKey)?.params?.sessionId,
+          );
           pageStore.close(targetPageKey);
         },
       });
@@ -206,20 +195,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     pageStore.setPageUnsaved(targetPageKey);
   };
 
-  const handleClickMenu = (param: MenuInfo) => {
-    // @ts-ignore
-    setActiveResource(param.key as any);
-  };
-
-  const handleChangeSiderWidth = (width: number) => {
-    settingStore.setSiderWidth(width); // 手动触发 resize 事件
-
-    emitResizeEvent();
-  };
-
-  const emitResizeEvent = debounce(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, 500);
   /**
    * 不是客户端的话，需要监听关闭事件，然后断开数据库连接
    */
@@ -286,73 +261,44 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     };
   }, []);
   return (
-    <>
-      <Header />
-      <Layout className={styles.content}>
-        <ResourceSider activeResource={activeResource} onMenuClick={handleClickMenu} />
-        <div
-          style={{
-            left: collapsed ? '40px' : '96px',
-          }}
-          className={styles.splitContainer}
-        >
-          <SplitPane
-            split="vertical"
-            minSize={120}
-            maxSize={480}
-            defaultSize={siderWidth}
-            pane2Style={{
-              minWidth: '1px',
-            }}
-            resizerStyle={{
-              background: 'transparent',
-            }}
-            onChange={handleChangeSiderWidth}
-          >
-            <Sider width={siderWidth} className={styles.sider}>
-              <ResourceTree />
-            </Sider>
-            <Content>
-              <WindowManager
-                pages={pages}
-                activeKey={activePageKey}
-                onActivatePage={handleActivatePage}
-                onOpenPage={handleOpenPage}
-                onOpenPageAfterTarget={openPageAfterTargetPage}
-                onClosePage={handleClosePage}
-                onCloseOtherPage={handleCloseOtherPage}
-                onCloseAllPage={handleCloseAllPage}
-                onSavePage={handleSavePage}
-                onStartSavingPage={handleStartSavingPage}
-                onUnsavedChangePage={handelUnsavedChangePage}
-              />
-            </Content>
-          </SplitPane>
-        </div>
-        {isReady && (
-          <>
-            {!!serverSystemInfo?.tutorialEnabled && <WorkspaceSideTip />}
-            <ExportDrawer key={`${modalStore.exportModalVisible}export`} />
-            <ImportDrawer key={`${modalStore.importModalVisible}import`} />
-            <AddConnectionDrawer
-              connectionType={IConnectionType.ORGANIZATION}
-              onlySys
-              key={`${modalStore.addConnectionVisible}connection`}
-            />
-
-            <DataMockerDrawer />
-            <ApplyPermission />
-            <CreateAsyncTaskModal key={`${modalStore.createAsyncTaskVisible}async`} />
-            <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
-            <ScriptManageModal />
-            <PartitionDrawer />
-            <CreateShadowSyncModal key={`${modalStore.addShadowSyncVisible}shadowSync`} />
-            <CreateSQLPlanTaskModal />
-            <GlobalModals />
-          </>
-        )}
-      </Layout>
-    </>
+    <ActivityBarContext.Provider
+      value={{
+        activeKey: activityBarKey,
+        onChangeActiveKey(v) {
+          if (v === activityBarKey) {
+            setActivityBarKey(null);
+            return;
+          }
+          setActivityBarKey(v);
+        },
+      }}
+    >
+      <WorkBenchLayout
+        activityBar={<ActivityBar />}
+        sideBar={activityBarKey !== null ? <SideBar /> : null}
+        editorGroup={
+          <WindowManager
+            pages={pages}
+            activeKey={activePageKey}
+            onActivatePage={handleActivatePage}
+            onOpenPage={handleOpenPage}
+            onOpenPageAfterTarget={openPageAfterTargetPage}
+            onClosePage={handleClosePage}
+            onCloseOtherPage={handleCloseOtherPage}
+            onCloseAllPage={handleCloseAllPage}
+            onSavePage={handleSavePage}
+            onStartSavingPage={handleStartSavingPage}
+            onUnsavedChangePage={handelUnsavedChangePage}
+          />
+        }
+      />
+      {isReady && (
+        <>
+          {!!serverSystemInfo?.tutorialEnabled && <WorkspaceSideTip />}
+          <GlobalModals />
+        </>
+      )}
+    </ActivityBarContext.Provider>
   );
 };
 
