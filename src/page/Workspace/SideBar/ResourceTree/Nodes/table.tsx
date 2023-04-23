@@ -9,7 +9,7 @@ import {
   TableForeignConstraint,
   TablePrimaryConstraint,
   TableUniqueConstraint,
-} from '../../components/CreateTable/interface';
+} from '../../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 import IndexSvg from '@/svgr/index.svg';
