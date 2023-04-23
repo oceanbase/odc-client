@@ -465,7 +465,7 @@ class SQLPage extends Component<
   };
   public handleRefreshResultSet = async (resultSetIndex: number) => {
     const { sqlStore, pageKey } = this.props;
-    await sqlStore.refreshResultSet(pageKey, resultSetIndex);
+    await sqlStore.refreshResultSet(pageKey, resultSetIndex, this.session?.sessionId);
     this.triggerTableLayout();
   };
 

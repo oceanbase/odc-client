@@ -1,5 +1,5 @@
 import { IDatabase } from '@/d.ts';
-import { openCreateTriggerPage, openNewDefaultPLPage, openNewSQLPage } from '@/store/helper/page';
+import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
@@ -25,7 +25,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'NEW_OBCLIENT',
       text: ['新建命令行窗口'],
       run(session, node) {
-        openCreateTriggerPage(null, session?.sessionId, session?.database?.dbName);
+        const database: IDatabase = node.data;
+        openOBClientPage(node?.cid, database?.name);
       },
     },
   ],
