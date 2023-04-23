@@ -1,4 +1,4 @@
-import { IDatabase } from '@/d.ts';
+import { DbObjectType, IDatabase } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import Icon, { FolderOpenFilled } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
@@ -31,6 +31,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
         key,
         type: ResourceNodeType.Sequence,
         data: sequence,
+        dbObjectType: DbObjectType.sequence,
         icon: (
           <Icon
             component={SequenceSvg}

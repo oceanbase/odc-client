@@ -1,4 +1,4 @@
-import { IDatabase } from '@/d.ts';
+import { DbObjectType, IDatabase } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import Icon, { FolderOpenFilled, InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
@@ -90,6 +90,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
         key: pkgKey,
         type: ResourceNodeType.Type,
         data: type,
+        dbObjectType: DbObjectType.type,
         icon: (
           <Icon
             component={TypeSvg}

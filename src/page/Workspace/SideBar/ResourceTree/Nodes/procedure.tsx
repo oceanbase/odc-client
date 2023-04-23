@@ -1,4 +1,4 @@
-import { IDatabase, IPackage, IProcedure } from '@/d.ts';
+import { DbObjectType, IDatabase, IPackage, IProcedure } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
 import Icon, { FolderOpenFilled, InfoOutlined } from '@ant-design/icons';
@@ -74,6 +74,7 @@ export function ProcedureTreeNodeData(
     key: funcKey,
     type: ResourceNodeType.Procedure,
     menuKey,
+    dbObjectType: DbObjectType.procedure,
     pkg,
     icon: (
       <Icon

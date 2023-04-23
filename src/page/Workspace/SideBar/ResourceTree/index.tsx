@@ -86,7 +86,7 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
 
   const renderNode = useCallback(
     (node: TreeDataNode): React.ReactNode => {
-      const { type, sessionId } = node;
+      const { type, sessionId, key, dbObjectType } = node;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
 
       return <TreeNodeMenu node={node} dbSession={dbSession} type={type} />;

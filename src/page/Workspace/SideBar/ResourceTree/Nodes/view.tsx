@@ -1,5 +1,5 @@
 import { fieldIconMap } from '@/constant';
-import { IDatabase } from '@/d.ts';
+import { DbObjectType, IDatabase } from '@/d.ts';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import ViewSvg from '@/svgr/menuView.svg';
@@ -69,6 +69,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
         key: viewKey,
         type: ResourceNodeType.View,
         data: view,
+        dbObjectType: DbObjectType.view,
         icon: (
           <Icon
             type="view"

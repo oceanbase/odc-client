@@ -128,6 +128,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       language: language || 'sql',
       theme: themeValue,
       minimap: { enabled: false },
+      automaticLayout: true,
       unicodeHighlight: {
         invisibleCharacters: false,
         ambiguousCharacters: false,

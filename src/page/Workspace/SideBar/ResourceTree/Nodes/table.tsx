@@ -1,5 +1,5 @@
 import { fieldIconMap } from '@/constant';
-import { IDatabase, IPartitionType } from '@/d.ts';
+import { DbObjectType, IDatabase, IPartitionType } from '@/d.ts';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { convertDataTypeToDataShowType } from '@/util/utils';
@@ -301,6 +301,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         key: tableKey,
         type: ResourceNodeType.Table,
         data: table,
+        dbObjectType: DbObjectType.table,
         icon: (
           <TableOutlined
             style={{

@@ -1,4 +1,4 @@
-import { IDatabase } from '@/d.ts';
+import { DbObjectType, IDatabase } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import SynonymSvg from '@/svgr/menuSynonym.svg';
 import Icon, { FolderOpenFilled } from '@ant-design/icons';
@@ -34,6 +34,7 @@ export function SynonymTreeData(
         key,
         type: isPublic ? ResourceNodeType.PublicSynonym : ResourceNodeType.Synonym,
         data: synonym,
+        dbObjectType: DbObjectType.synonym,
         icon: (
           <Icon
             component={SynonymSvg}

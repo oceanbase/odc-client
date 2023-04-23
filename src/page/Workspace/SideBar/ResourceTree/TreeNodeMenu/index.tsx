@@ -1,4 +1,6 @@
 import { AcessResult, canAcessWorkspace } from '@/component/Acess';
+import DragWrapper from '@/component/Dragable/component/DragWrapper';
+import snippet from '@/store/snippet';
 import { Dropdown, Menu } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { ResourceNodeType } from '../type';
@@ -15,8 +17,34 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
    * 非database的情况下，必须存在session
    */
   const isSessionValid = type === ResourceNodeType.Database || dbSession;
+
+  /**
+   * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
+   * 不可拖动
+   */
+  const nodeChild = node.dbObjectType ? (
+    <DragWrapper
+      key={node.key + '-drag'}
+      style={{
+        wordBreak: 'break-all',
+        display: 'inline',
+      }}
+      useCustomerDragLayer={true}
+      onBegin={() => {
+        snippet.snippetDragging = {
+          prefix: node.title?.toString(),
+          body: node.title?.toString(),
+          objType: node.dbObjectType,
+        };
+      }}
+    >
+      <span className="ant-tree-title">{node.title}</span>
+    </DragWrapper>
+  ) : (
+    <span className="ant-tree-title">{node.title}</span>
+  );
   if (!isSessionValid || !menuItems?.length) {
-    return <span className="ant-tree-title">{node.title}</span>;
+    return nodeChild;
   }
 
   function onMenuClick(item: IMenuItemConfig) {
@@ -87,7 +115,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
       }
       trigger={['contextMenu']}
     >
-      <span className="ant-tree-title">{node.title}</span>
+      {nodeChild}
     </Dropdown>
   );
 };

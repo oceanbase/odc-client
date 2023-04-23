@@ -58,7 +58,6 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
       obr = new ResizeObserver((entries) => {
         if (dom) {
           const width = dom.clientWidth;
-          console.log(width);
           setWidth(width);
         }
       });
