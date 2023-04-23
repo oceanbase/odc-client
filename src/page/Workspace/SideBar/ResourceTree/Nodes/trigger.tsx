@@ -1,4 +1,4 @@
-import { IDatabase, TriggerState } from '@/d.ts';
+import { DbObjectType, IDatabase, TriggerState } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import TriggerSvg from '@/svgr/menuTrigger.svg';
 import { formatMessage } from '@/util/intl';
@@ -50,6 +50,7 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
         title: trigger.triggerName,
         key,
         type: ResourceNodeType.Trigger,
+        dbObjectType: DbObjectType.trigger,
         data: trigger,
         icon: icon,
         sessionId: dbSession?.sessionId,

@@ -1,4 +1,4 @@
-import { IPackage } from '@/d.ts';
+import { DbObjectType, IPackage } from '@/d.ts';
 import { DataNode } from 'antd/lib/tree';
 
 export enum ResourceNodeType {
@@ -72,6 +72,7 @@ interface ExtraData {
   menuKey?: ResourceNodeType;
   pkg?: Partial<IPackage>;
   cid?: number;
+  dbObjectType?: DbObjectType;
 }
 
 export type TreeDataNode = DataNode & ExtraData;

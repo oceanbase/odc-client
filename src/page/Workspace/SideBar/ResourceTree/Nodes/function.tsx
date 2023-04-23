@@ -1,4 +1,4 @@
-import { IDatabase, IFunction, IPackage } from '@/d.ts';
+import { DbObjectType, IDatabase, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
 import Icon, { FolderOpenFilled, InfoOutlined, NumberOutlined } from '@ant-design/icons';
@@ -99,6 +99,7 @@ export function FunctionTreeNodeData(
     type: ResourceNodeType.Function,
     menuKey,
     pkg,
+    dbObjectType: DbObjectType.function,
     icon: (
       <Icon
         component={FunctionSvg}
