@@ -390,7 +390,9 @@ class SessionStore {
   @action
   public async getRecycleObjectList() {
     // ListRecycleObjects
-    const res = await request.get(`/api/v1/recyclebin/list/${generateDatabaseSid(this.sessionId)}`);
+    const res = await request.get(
+      `/api/v1/recyclebin/list/${generateDatabaseSid(null, this.sessionId)}`,
+    );
     const recycleObjects = res?.data || [];
     this.recycleObjects = recycleObjects.map((r: IRecycleObject, i: number) => ({
       ...r,
@@ -399,6 +401,19 @@ class SessionStore {
       uniqueId: `${(r.schema && r.schema + '.') || ''}${r.originName}.${i}`,
       // 生成唯一 id
       initialNewName: r.newName, // 保存原始重命名
+    }));
+  }
+
+  @action
+  public updateRecycleObjectName(obj) {
+    this.recycleObjects = obj;
+  }
+
+  @action
+  public resetNewNames() {
+    this.recycleObjects = this.recycleObjects.map((r) => ({
+      ...r,
+      newName: r.initialNewName,
     }));
   }
 

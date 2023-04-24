@@ -61,17 +61,22 @@ export async function fetchVariableList(type: ConnectionPropertyType, sessionId:
   );
 }
 
-export async function getDatabaseSessionList(): Promise<IDatabaseSession[]> {
+export async function getDatabaseSessionList(sessionId: string): Promise<IDatabaseSession[]> {
   const res = await request.get(
-    `/api/v1/dbsession/list/${generateVarSid(ConnectionPropertyType.GLOBAL)}`,
+    `/api/v1/dbsession/list/${generateVarSid(ConnectionPropertyType.GLOBAL, sessionId)}`,
   );
   return res?.data || [];
 }
 
-export async function getCloseDatabaseSessionSQL(sessions: IDatabaseSession[], closeType: string) {
+export async function getCloseDatabaseSessionSQL(
+  sessions: IDatabaseSession[],
+  closeType: string,
+  sessionId: string,
+) {
   const res = await request.patch(
     `/api/v1/dbsession/getDeleteSql/${generateVarSid(
       ConnectionPropertyType.GLOBAL,
+      sessionId,
     )}?closeType=${closeType}`,
     {
       data: sessions,

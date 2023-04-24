@@ -11,6 +11,11 @@
     position: relative;
     width: 100%;
     height: 100%;
+    :global {
+      .Resizer.vertical.disabled {
+        cursor: unset;
+      }
+    }
   }
 
   .activityBar {

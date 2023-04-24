@@ -24,9 +24,9 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore }) {
 
   useEffect(() => {
     const resizeHeight = throttle(() => {
-      setWrapperHeight(treeWrapperRef?.current?.offsetHeight - 24);
+      setWrapperHeight(treeWrapperRef?.current?.offsetHeight);
     }, 500);
-    setWrapperHeight(treeWrapperRef.current?.clientHeight - 24);
+    setWrapperHeight(treeWrapperRef.current?.clientHeight);
     window.addEventListener('resize', resizeHeight);
     return () => {
       window.removeEventListener('resize', resizeHeight);

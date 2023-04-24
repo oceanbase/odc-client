@@ -27,26 +27,24 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
       <div className={styles.activityBar}>{activityBar}</div>
 
       <div className={styles.splitPane}>
-        {sideBar ? (
-          <SplitPane
-            split="vertical"
-            minSize={120}
-            maxSize={480}
-            defaultSize={sideWidth}
-            pane2Style={{
-              minWidth: '1px',
-            }}
-            resizerStyle={{
-              background: 'transparent',
-            }}
-            onChange={handleChangeSiderWidth}
-          >
-            <div className={styles.sideBar}>{sideBar}</div>
-            <div className={styles.editorGroup}>{editorGroup}</div>
-          </SplitPane>
-        ) : (
+        <SplitPane
+          split="vertical"
+          allowResize={!!sideBar}
+          minSize={120}
+          size={sideBar ? sideWidth : 0}
+          maxSize={480}
+          defaultSize={sideWidth}
+          pane2Style={{
+            minWidth: '1px',
+          }}
+          resizerStyle={{
+            background: 'transparent',
+          }}
+          onChange={handleChangeSiderWidth}
+        >
+          <div className={styles.sideBar}>{sideBar}</div>
           <div className={styles.editorGroup}>{editorGroup}</div>
-        )}
+        </SplitPane>
       </div>
     </div>
   );
