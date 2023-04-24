@@ -9,7 +9,6 @@ import commonStore from './common';
 import connectionStore from './connection';
 import {
   getTabDataFromMetaStore,
-  openNewSQLPage,
   savePageStoreToMetaStore,
   saveSessionToMetaStore,
 } from './helper/page';
@@ -42,21 +41,6 @@ export class PageStore {
   @observable
   public activePageKey: string | null = null;
 
-  public defaultInitPageFunc = () => {
-    if (
-      !this.pages.find((page) => {
-        return page.type == PageType.PL || page.type == PageType.SQL;
-      })
-    ) {
-      openNewSQLPage();
-    }
-  };
-
-  /**
-   * Page 初始化函数
-   */
-  public initPageFunc = this.defaultInitPageFunc;
-
   @computed public get activePage() {
     return this.pages.find((p) => p.key === this.activePageKey);
   }
@@ -83,7 +67,6 @@ export class PageStore {
       return page;
     });
     this.activePageKey = meta?.activeKey;
-    this.initPageFunc();
   }
   /** 切换打开的page，更新一下URL */
   @action
@@ -317,7 +300,6 @@ export class PageStore {
       return null;
     }, true);
     // clearTabDataInMetaStore();
-    this.initPageFunc = this.defaultInitPageFunc;
     resetPageKey();
   }
 

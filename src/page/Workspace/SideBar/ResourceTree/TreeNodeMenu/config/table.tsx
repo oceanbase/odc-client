@@ -4,7 +4,7 @@ import { copyObj } from '@/component/TemplateInsertModal';
 import { DbObjectType, DragInsertType, ResourceTreeNodeMenuKeys } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
-import { openCreateTablePage, openNewSQLPage, openTableViewPage } from '@/store/helper/page';
+import { openCreateTablePage, openTableViewPage } from '@/store/helper/page';
 import modalStore from '@/store/modal';
 import pageStore from '@/store/page';
 import setting from '@/store/setting';
@@ -129,16 +129,6 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         modalStore.changeDataMockerModal(true, {
           tableName,
         });
-      },
-    },
-
-    {
-      key: ResourceTreeNodeMenuKeys.OPEN_SQL_WINDOW,
-      text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.table.OpenTheSqlWindow' }), //打开 SQL 窗口
-      ],
-      run(session, node) {
-        openNewSQLPage();
       },
     },
 

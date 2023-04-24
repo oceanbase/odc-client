@@ -61,6 +61,7 @@ function SQLExecuteModal(props: {
       onOk={doExecuteSQL}
     >
       <CommonIDE
+        session={session}
         bordered={true}
         language={
           session?.connection.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'

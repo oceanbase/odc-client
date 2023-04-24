@@ -271,8 +271,8 @@ const sqlActions: ToolBarActions = {
     isVisible: (ctx: SQLPage) => {
       return ctx.getSession()?.supportFeature.enableKillQuery;
     },
-    async action(ctx: any) {
-      sqlStore.stopExec(ctx.props.pageKey);
+    async action(ctx: SQLPage) {
+      sqlStore.stopExec(ctx.props.pageKey, ctx?.session?.sessionId);
     },
   },
 

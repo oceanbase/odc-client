@@ -7,7 +7,7 @@ import {
   IPartitionType,
   TaskType,
 } from '@/d.ts';
-import { default as connection, default as connectionStore } from '@/store/connection';
+import { default as connectionStore } from '@/store/connection';
 import schemaStore from '@/store/schema';
 import setting from '@/store/setting';
 import intl, { formatMessage } from '@/util/intl';
@@ -494,8 +494,8 @@ export function fixedEncodeURIComponent(str) {
 /**
  * 将后端回显的tableName添加正确的双引号
  */
-export function getQuoteTableName(tableName: string) {
-  const isMySQL = connection.connection.dbMode === ConnectionMode.OB_MYSQL;
+export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
+  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
   tableName = encodeIdentifiers(tableName, isMySQL);
   return isMySQL ? '`' + tableName + '`' : `"${tableName}"`;
 }

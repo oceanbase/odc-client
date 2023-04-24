@@ -27,7 +27,7 @@ interface IProps {
 const CheckConstraint: React.FC<IProps> = function ({ modified }) {
   const tableContext = useContext(TableContext);
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns();
+  const gridColumns: any[] = useColumns(tableContext?.session?.connection?.dialectType);
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.checkConstraints.map((index, idx) => {

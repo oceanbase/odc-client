@@ -1,3 +1,4 @@
+import { ConnectionMode } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
 import { getQuoteTableName } from '@/util/utils';
@@ -9,17 +10,18 @@ interface IProps {
   onSave: (values: Partial<ITableModel>) => void;
   visible: boolean;
   onCancel: () => void;
+  dbMode: ConnectionMode;
 }
 
 class TableRenameModal extends Component<IProps> {
   form = React.createRef<FormInstance>();
   public save = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    const { onSave, model } = this.props;
+    const { onSave, model, dbMode } = this.props;
     const data = await this.form.current.validateFields();
     if (!data) {
       return;
     }
-    if (getQuoteTableName(model.info.tableName) === data.tableName) {
+    if (getQuoteTableName(model.info.tableName, dbMode) === data.tableName) {
       message.error(
         formatMessage({
           id: 'odc.component.TableRenameModal.TheTableNameHasNot',
@@ -38,7 +40,7 @@ class TableRenameModal extends Component<IProps> {
   };
 
   public render() {
-    const { visible, onCancel, model } = this.props;
+    const { visible, onCancel, model, dbMode } = this.props;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
@@ -55,7 +57,7 @@ class TableRenameModal extends Component<IProps> {
       >
         <Form
           ref={this.form}
-          initialValues={{ tableName: getQuoteTableName(model?.info?.tableName) }}
+          initialValues={{ tableName: getQuoteTableName(model?.info?.tableName, dbMode) }}
           {...formItemLayout}
         >
           <Form.Item

@@ -337,7 +337,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     const { topTab, propsTab, view, dataLoading, resultSet, showExportResuleSetModal, formated } =
       this.state;
     const session = sessionManagerStore.sessionMap.get(sessionId);
-    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return (
       view && (

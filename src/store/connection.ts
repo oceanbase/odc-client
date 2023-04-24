@@ -82,7 +82,7 @@ export class ConnectionStore {
    */
   @observable
   public connection: Partial<IConnection> = {
-    dbMode: ConnectionMode.OB_ORACLE,
+    dialectType: ConnectionMode.OB_ORACLE,
   };
 
   /**
@@ -219,7 +219,7 @@ export class ConnectionStore {
        *
        */
       let firstDatabase =
-        this.connection.dbMode === ConnectionMode.OB_MYSQL
+        this.connection.dialectType === ConnectionMode.OB_MYSQL
           ? schemaStore.databases?.find((d) => d.name === 'information_schema')?.name
           : null;
       if (!firstDatabase) {
@@ -458,7 +458,7 @@ export class ConnectionStore {
     this.sessionId = '';
     this.subSessions = new Map();
     this.connection = {
-      dbMode: ConnectionMode.OB_ORACLE,
+      dialectType: ConnectionMode.OB_ORACLE,
     };
   }
 
@@ -477,7 +477,7 @@ export class ConnectionStore {
     if (!setting.enableMultiSession) {
       this.syncSubSessionFromSession();
     }
-    const isSuccess = await changeDelimiter(v, session?.sessionId);
+    const isSuccess = await changeDelimiter(v, session?.sessionId, '');
     runInAction(() => {
       if (isSuccess) {
         session.delimiter = v;
