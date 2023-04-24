@@ -1,10 +1,22 @@
+import {
+  getDeleteSQL,
+  getPurgeAllSQL,
+  getRecycleConfig,
+  getUpdateSQL,
+  updateRecycleConfig,
+} from '@/common/network/recycle';
+import { executeSQL } from '@/common/network/sql';
+import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import DisplayTable from '@/component/DisplayTable';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import Toolbar from '@/component/Toolbar';
 import { IRecycleConfig, IRecycleObject, ISqlExecuteResultStatus } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { SQLStore } from '@/store/sql';
+import notification from '@/util/notification';
+import { sortString } from '@/util/utils';
 import Icon, {
   ClearOutlined,
   DeleteOutlined,
@@ -17,13 +29,6 @@ import { Button, Drawer, Input, Layout, message, Modal, Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { formatMessage, FormattedMessage } from 'umi';
-// @ts-ignore
-import { getRecycleConfig, updateRecycleConfig } from '@/common/network/recycle';
-import { executeSQL } from '@/common/network/sql';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
-import DisplayTable from '@/component/DisplayTable';
-import notification from '@/util/notification';
-import { sortString } from '@/util/utils';
 import EditableTable from '../EditableTable';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import RecyleConfigContext from './context/RecyleConfigContext';
@@ -35,15 +40,18 @@ const ToolbarButton = Toolbar.Button;
 const { Search } = Input;
 const { Content } = Layout;
 
-@inject('sqlStore', 'connectionStore', 'pageStore', 'schemaStore')
+@inject('sqlStore', 'sessionManagerStore', 'pageStore')
 @observer
 export default class RecycleBinPage extends Component<
   {
     sqlStore: SQLStore;
-    connectionStore: ConnectionStore;
-    schemaStore: SchemaStore;
+    sessionManagerStore: SessionManagerStore;
     pageStore: PageStore;
     pageKey: string;
+    params: {
+      cid: number;
+      dbName: string;
+    };
   },
   {
     showEditModal: boolean;
@@ -71,22 +79,32 @@ export default class RecycleBinPage extends Component<
     recycleConfig: null,
   };
 
+  private session: SessionStore;
+
   public tableList: React.RefObject<HTMLDivElement> = React.createRef();
 
-  public componentDidMount() {
-    this.getRecycleObjectList();
-    this.getRecycleConfig();
+  public async componentDidMount() {
+    if (await this.initSession()) {
+      this.getRecycleObjectList();
+      this.getRecycleConfig();
+    }
   }
+
+  public initSession = async () => {
+    const { params, sessionManagerStore } = this.props;
+    const session = await sessionManagerStore.createSession(false, params.cid, params.dbName);
+    this.session = session;
+    return !!session;
+  };
   public getRecycleConfig = async () => {
-    const setting = await getRecycleConfig();
+    const setting = await getRecycleConfig(this.session?.sessionId);
     this.setState({
       recycleConfig: setting,
     });
   };
   public async getRecycleObjectList() {
-    const { schemaStore } = this.props;
     this.setState({ listLoading: true });
-    await schemaStore.getRecycleObjectList();
+    await this.session.getRecycleObjectList();
     this.setState({ listLoading: false });
   }
 
@@ -122,39 +140,44 @@ export default class RecycleBinPage extends Component<
    * 清空全部
    */
   public handleSubmitPurgeAll = async () => {
-    const { schemaStore } = this.props;
     this.setState({ showExecuteSQLModal: true });
 
-    const updateDML = await schemaStore.getPurgeAllSQL();
+    const updateDML = await getPurgeAllSQL(this.session.sessionId, this.session?.database?.dbName);
     // TODO: 获取修改对应的 SQL
     this.setState({ updateDML });
   };
 
   public handleDelete = async () => {
-    const { schemaStore } = this.props;
     const { selectedObjectNames } = this.state;
-    // @ts-ignore
-    const selectedObjects = schemaStore.recycleObjects.filter((r) =>
+
+    const selectedObjects = this.session.recycleObjects.filter((r) =>
       selectedObjectNames.has(r.uniqueId),
     );
 
     this.setState({ showExecuteSQLModal: true });
 
-    const updateDML = await schemaStore.getDeleteSQL(selectedObjects);
+    const updateDML = await getDeleteSQL(
+      selectedObjects,
+      this.session.sessionId,
+      this.session?.database?.dbName,
+    );
     this.setState({ updateDML });
   };
 
   public handleRestore = async () => {
-    const { schemaStore } = this.props;
     const { selectedObjectNames } = this.state;
-    // @ts-ignore
-    const selectedObjects = schemaStore.recycleObjects.filter((r) =>
+
+    const selectedObjects = this.session.recycleObjects.filter((r) =>
       selectedObjectNames.has(r.uniqueId),
     );
 
     this.setState({ showExecuteSQLModal: true });
 
-    const updateDML = await schemaStore.getUpdateSQL(selectedObjects);
+    const updateDML = await getUpdateSQL(
+      selectedObjects,
+      this.session.sessionId,
+      this.session?.database?.dbName,
+    );
     this.setState({ updateDML });
   };
 
@@ -162,28 +185,32 @@ export default class RecycleBinPage extends Component<
    * 执行 SQL
    */
   public handleExecuteUpdateDML = async () => {
-    const { sqlStore, schemaStore } = this.props;
+    const { sqlStore } = this.props;
     const { updateDML } = this.state;
 
     // 执行 DML
-    const result = await executeSQL(updateDML);
+    const result = await executeSQL(
+      updateDML,
+      this.session?.sessionId,
+      this.session?.database?.dbName,
+    );
 
     if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
       // 刷新
-      await schemaStore.getRecycleObjectList();
-      if (updateDML.toUpperCase().indexOf('FLASHBACK DATABASE') > -1) {
-        /**
-         * 重新刷新一下数据库
-         */
-        await schemaStore.getDatabaseList();
-      }
+      await this.session.getRecycleObjectList();
+      // if (updateDML.toUpperCase().indexOf('FLASHBACK DATABASE') > -1) {
+      //   /**
+      //    * 重新刷新一下数据库
+      //    */
+      //   await this.session.getDatabaseList();
+      // }
 
       // 关闭已打开的 drawer、modal
       this.setState({
         showExecuteSQLModal: false,
         showDeleteDrawer: false,
         showRestoreDrawer: false,
-        updateDML: null,
+        updateDML: '',
         selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
       });
 
@@ -197,8 +224,7 @@ export default class RecycleBinPage extends Component<
    * 在表格中编辑保存
    */
   public handleEditPropertyInCell = (newRows) => {
-    const { schemaStore } = this.props;
-    schemaStore.updateRecycleObjectName(newRows);
+    this.session.updateRecycleObjectName(newRows);
     this.triggerTableLayout();
   };
 
@@ -206,8 +232,7 @@ export default class RecycleBinPage extends Component<
    * 用户取消恢复回收站，需要恢复重命名
    */
   public handleCancelRestore = () => {
-    const { schemaStore } = this.props;
-    schemaStore.resetNewNames();
+    this.session.resetNewNames();
     this.setState({ showRestoreDrawer: false });
   };
 
@@ -246,7 +271,7 @@ export default class RecycleBinPage extends Component<
   };
 
   private changeSetting = async (config: Partial<IRecycleConfig>) => {
-    const isSuccess = await updateRecycleConfig(config);
+    const isSuccess = await updateRecycleConfig(config, this.session?.sessionId);
     if (isSuccess) {
       this.getRecycleConfig();
     }
@@ -254,11 +279,6 @@ export default class RecycleBinPage extends Component<
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-      schemaStore: { recycleObjects },
-    } = this.props;
-
     const {
       showDeleteDrawer,
       showRestoreDrawer,
@@ -349,10 +369,12 @@ export default class RecycleBinPage extends Component<
     ];
 
     // 当前选中的对象列表
-    const selectedObjects = recycleObjects.filter((r) => selectedObjectNames.has(r.uniqueId));
+    const selectedObjects = this.session?.recycleObjects.filter((r) =>
+      selectedObjectNames.has(r.uniqueId),
+    );
 
     // 查找原名称和对象名称，忽略大小写
-    const filteredRows = recycleObjects.filter(
+    const filteredRows = this.session?.recycleObjects.filter(
       (p) =>
         (p.id && p.id.toLowerCase().indexOf(searchKey.toLowerCase()) > -1) ||
         (p.objName && p.objName.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
@@ -481,10 +503,11 @@ export default class RecycleBinPage extends Component<
           </Spin>
         </Content>
         <ExecuteSQLModal
+          sessionStore={this.session}
           sql={updateDML}
           visible={showExecuteSQLModal}
           onSave={this.handleExecuteUpdateDML}
-          onCancel={() => this.setState({ showExecuteSQLModal: false, updateDML: null })}
+          onCancel={() => this.setState({ showExecuteSQLModal: false, updateDML: '' })}
           onChange={(sql) => this.setState({ updateDML: sql })}
         />
 

@@ -15,7 +15,8 @@ import { FormattedMessage } from 'umi';
 import { getCloseDatabaseSessionSQL, getDatabaseSessionList } from '@/common/network/sessionParams';
 import { executeSQL } from '@/common/network/sql';
 import { WorkspaceAcess } from '@/component/Acess';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import notification from '@/util/notification';
 import styles from './index.less';
 
@@ -24,14 +25,18 @@ const ToolbarButton = Toolbar.Button;
 const { Search } = Input;
 const { Content } = Layout;
 
-@inject('sqlStore', 'pageStore', 'schemaStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
 export default class SessionManagementPage extends Component<
   {
     sqlStore: SQLStore;
-    schemaStore?: SchemaStore;
+    sessionManagerStore?: SessionManagerStore;
     pageStore: PageStore;
     pageKey: string;
+    params: {
+      cid: number;
+      dbName: string;
+    };
   },
   {
     selectedRows: IDatabaseSession[];
@@ -55,8 +60,15 @@ export default class SessionManagementPage extends Component<
     isQuery: false,
     sessionList: [],
   };
+  private session: SessionStore;
 
-  public componentDidMount() {
+  public async componentDidMount() {
+    const { sessionManagerStore, params } = this.props;
+    const session = await sessionManagerStore.createSession(false, params.cid, params.dbName);
+    if (!session) {
+      return;
+    }
+    this.session = session;
     this.getDatabaseSessionList();
   }
 
@@ -67,7 +79,7 @@ export default class SessionManagementPage extends Component<
     });
 
     // 获取连接参数列表
-    const data = await getDatabaseSessionList();
+    const data = await getDatabaseSessionList(this.session?.sessionId);
     this.setState({ listLoading: false, sessionList: data });
   }
 
@@ -78,7 +90,8 @@ export default class SessionManagementPage extends Component<
     const { selectedRows } = this.state;
     this.setState({ showExecuteSQLModal: true });
 
-    const updateDML = (await getCloseDatabaseSessionSQL(selectedRows, 'SESSION')) || '';
+    const updateDML =
+      (await getCloseDatabaseSessionSQL(selectedRows, 'SESSION', this.session?.sessionId)) || '';
     this.setState({ updateDML });
   };
 
@@ -89,7 +102,8 @@ export default class SessionManagementPage extends Component<
     const { selectedRows } = this.state;
     this.setState({ showExecuteSQLModal: true });
 
-    const updateDML = (await getCloseDatabaseSessionSQL(selectedRows, 'QUERY')) || '';
+    const updateDML =
+      (await getCloseDatabaseSessionSQL(selectedRows, 'QUERY', this.session?.sessionId)) || '';
     this.setState({ updateDML, isQuery: true });
   };
 
@@ -98,7 +112,11 @@ export default class SessionManagementPage extends Component<
     const { updateDML, isQuery } = this.state;
 
     // 执行 DML
-    const result = await executeSQL(updateDML);
+    const result = await executeSQL(
+      updateDML,
+      this.session?.sessionId,
+      this.session?.database?.dbName,
+    );
 
     if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
       // 刷新
@@ -137,7 +155,6 @@ export default class SessionManagementPage extends Component<
   };
 
   public render() {
-    const { schemaStore } = this.props;
     const { showExecuteSQLModal, searchKey, selectedRows, listLoading, updateDML, sessionList } =
       this.state;
 
@@ -281,7 +298,7 @@ export default class SessionManagementPage extends Component<
               <div className="tools-left">
                 <WorkspaceAcess action={actionTypes.update}>
                   <>
-                    {schemaStore.enableKillSession && (
+                    {this.session?.supportFeature.enableKillSession && (
                       <ToolbarButton
                         isShowText
                         disabled={!selectedRows.length}
@@ -293,7 +310,7 @@ export default class SessionManagementPage extends Component<
                       />
                     )}
 
-                    {schemaStore.enableKillQuery && (
+                    {this.session?.supportFeature.enableKillQuery && (
                       <ToolbarButton
                         isShowText
                         disabled={!selectedRows.length}
@@ -346,6 +363,7 @@ export default class SessionManagementPage extends Component<
           </Spin>
         </Content>
         <ExecuteSQLModal
+          sessionStore={this.session}
           sql={updateDML}
           visible={showExecuteSQLModal}
           onSave={this.handleExecuteUpdateDML}

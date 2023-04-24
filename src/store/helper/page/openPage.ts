@@ -20,6 +20,7 @@ import {
   TriggerState,
   TypePropsTab,
 } from '@/d.ts';
+
 import {
   PropsTab as FunctionPropsTab,
   TopTab as FunctionTopTab,
@@ -42,13 +43,13 @@ import { formatMessage } from '@/util/intl';
 import { getPLScriptTemplate } from '@/util/sql';
 
 import { getTriggerByName } from '@/common/network/trigger';
+import SelectDatabase from '@/component/SelectDatabase';
 import plType from '@/constant/plType';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
 import { generateUniqKey } from '@/util/utils';
 import { message } from 'antd';
 import { generateResultSetColumns } from '..';
-import connection from '../../connection';
 import page from '../../page';
 import { generatePageKey, generatePageTitle } from '../pageKeyGenerate';
 import {
@@ -251,26 +252,16 @@ export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageS
     {},
   );
 }
-/** 会话属性 */
 
-export function openSessionParamsPage() {
-  page!.openPage(
-    PageType.SESSION_PARAM,
-    {
-      title: formatMessage({
-        id: 'workspace.header.session.params',
-      }),
-    },
-
-    {
-      sessionId: connection.connection.sid,
-      databaseId: 1,
-    },
-  );
-}
 /** 会话管理 */
 
-export function openSessionManagePage() {
+export async function openSessionManagePage(cid?: number, dbName?: string) {
+  if (!dbName || !cid) {
+    [cid, dbName] = await SelectDatabase();
+  }
+  if (!cid || !dbName) {
+    return;
+  }
   page!.openPage(
     PageType.SESSION_MANAGEMENT,
     {
@@ -280,14 +271,21 @@ export function openSessionManagePage() {
     },
 
     {
-      sessionId: connection.connection.sid,
+      cid,
+      dbName,
       databaseId: 1,
     },
   );
 }
 /** 回收站 */
 
-export function openRecycleBin() {
+export async function openRecycleBin(cid?: number, dbName?: string) {
+  if (!dbName || !cid) {
+    [cid, dbName] = await SelectDatabase();
+  }
+  if (!cid || !dbName) {
+    return;
+  }
   page.openPage(
     PageType.RECYCLE_BIN,
     {
@@ -297,7 +295,8 @@ export function openRecycleBin() {
     },
 
     {
-      sessionId: connection.connection.sid,
+      cid,
+      dbName,
       databaseId: 1,
     },
   );
