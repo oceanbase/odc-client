@@ -4,13 +4,12 @@ import { PureComponent, ReactNode } from 'react';
 import { CloseOutlined, EllipsisOutlined } from '@ant-design/icons';
 
 import { IPage, PageType } from '@/d.ts';
-import { Badge, Dropdown, Menu, Space, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, Space, Tabs, Tooltip, Typography } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 
 import { movePagePostion } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
-import DatabaseInfo from '../DatabaseInfo';
 import { pageMap } from './config';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
@@ -181,7 +180,12 @@ class WindowManager extends PureComponent<
             );
           })}
         </DraggableTabs>
-        {pages && pages.length === 0 && <DatabaseInfo />}
+        <Typography>
+          <Typography.Title level={3} style={{ padding: '30px 0px 10px 30px' }}>
+            欢迎使用 OceanBase Developer Center
+          </Typography.Title>
+        </Typography>
+        {/* {pages && pages.length === 0 && <DatabaseInfo />} */}
       </>
     );
   }

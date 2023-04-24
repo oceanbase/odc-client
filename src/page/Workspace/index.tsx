@@ -1,4 +1,5 @@
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import SelectDatabase from '@/component/SelectDatabase';
 import openNewVersionTip from '@/component/VersionModal/NewVersion';
 import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
@@ -69,12 +70,15 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     pageStore.setActivePageKeyAndPushUrl(activeKey);
   };
 
-  const handleOpenPage = () => {
-    openNewSQLPage();
+  const handleOpenPage = async () => {
+    const [cid, dbName] = await SelectDatabase();
+    if (cid && dbName) {
+      openNewSQLPage(cid, dbName);
+    }
   };
 
-  const openPageAfterTargetPage = (targetPage: IPage) => {
-    openNewSQLPage();
+  const openPageAfterTargetPage = async (targetPage: IPage) => {
+    await handleOpenPage();
     const { pages } = pageStore;
 
     if (pages.length < 3) {
