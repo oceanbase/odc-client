@@ -125,12 +125,8 @@ export async function generatePageKey(type: PageType, params: any = {}): Promise
       : `synonym-new-${pageKey++}`;
   } else if (type === PageType.TYPE || type === PageType.CREATE_TYPE) {
     key += params.typeName ? `type-${params.typeName}` : `type-new-${pageKey++}`;
-  } else if (type === PageType.EDIT_PACKAGE) {
-    key += `pk-edit-${params.packageName}-${params.packageType}`;
   } else if (type === PageType.TASKS) {
     key += 'tasks';
-  } else if (type === PageType.EDIT_PL) {
-    key += `view-${params.plName}`;
   } else if (type === PageType.OB_CLIENT) {
     key += `OBClient-${params.index}`;
   } else if (type === PageType.SQL_RESULTSET_VIEW) {

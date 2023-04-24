@@ -1,5 +1,6 @@
 import { ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
 import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
@@ -89,12 +90,13 @@ export async function generateCreateTableDDL(
   sessionId: string,
   dbName: string,
 ): Promise<string> {
+  const session = sessionManager.sessionMap.get(sessionId);
   const res = await request.post(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       dbName,
     )}/tables/generateCreateTableDDL`,
     {
-      data: convertTableToServerTable(data),
+      data: convertTableToServerTable(data, session?.connection?.dialectType),
     },
   );
 
@@ -117,14 +119,15 @@ export async function generateUpdateTableDDL(
   sessionId: string,
   dbName: string,
 ): Promise<string> {
+  const session = sessionManager.sessionMap.get(sessionId);
   const res = await request.post(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       dbName,
     )}/tables/generateUpdateTableDDL`,
     {
       data: {
-        previous: convertTableToServerTable(oldData),
-        current: convertTableToServerTable(newData),
+        previous: convertTableToServerTable(oldData, session?.connection?.dialectType),
+        current: convertTableToServerTable(newData, session?.connection?.dialectType),
       },
     },
   );

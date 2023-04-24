@@ -198,6 +198,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           </TabPane>
         </Tabs>
         <ExecuteSQLModal
+          sessionStore={session}
           sql={DDL}
           visible={!!DDL}
           readonly

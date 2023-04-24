@@ -1,5 +1,4 @@
 import EditorToolBar from '@/component/EditorToolBar';
-import type { ConnectionStore } from '@/store/connection';
 import snippetStore, {
   EnumSnippetAction,
   EnumSnippetType,
@@ -9,24 +8,19 @@ import snippetStore, {
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Modal, Select } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
-import { inject, observer } from 'mobx-react';
 import React, { PureComponent } from 'react';
 
 import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
-import { ConnectionMode } from '@/d.ts';
 
 const { Option } = Select;
 const { TextArea } = Input;
 interface IProps {
   visible: boolean;
   action: EnumSnippetAction;
-  connectionStore?: ConnectionStore;
   snippet: any;
   onClose: (isNeedReloadList?: boolean) => void;
 }
 
-@inject('schemaStore', 'connectionStore')
-@observer
 class SnippetFormDrawer extends PureComponent<IProps> {
   public formRef = React.createRef<FormInstance>();
 
@@ -133,14 +127,13 @@ class SnippetFormDrawer extends PureComponent<IProps> {
   };
 
   render() {
-    const { connectionStore, action, snippet, visible } = this.props;
-    const { connection } = connectionStore;
+    const { action, snippet, visible } = this.props;
 
     if (!action) {
       return null;
     }
 
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = false;
     const actionItem = SNIPPET_ACTIONS.find((actionItem) => actionItem.key === action);
     const initialValues = {
       prefix: snippet?.prefix,

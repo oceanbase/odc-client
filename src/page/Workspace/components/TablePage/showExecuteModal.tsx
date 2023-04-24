@@ -33,6 +33,7 @@ export default forwardRef<any, { session: SessionStore }>(function TableExecuteM
   );
   return (
     <ExecuteSQLModal
+      sessionStore={session}
       visible={visible}
       readonly
       sql={sql}

@@ -474,9 +474,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       }
       function clipSQL() {
         if (!tableColumns || (!columnName && !isSelectedRow)) {
-          copyToSQL(gridRef.current, columns);
+          copyToSQL(gridRef.current, columns, undefined, session?.connection?.dialectType);
         } else {
-          copyToSQL(gridRef.current, columns, table?.tableName);
+          copyToSQL(gridRef.current, columns, table?.tableName, session?.connection?.dialectType);
         }
       }
       function clipCsv() {

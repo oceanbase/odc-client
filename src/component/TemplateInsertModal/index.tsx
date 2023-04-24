@@ -166,7 +166,7 @@ async function getColumns(type: DbObjectType, name: string, sessionId: string) {
       return (
         (await getTableInfo(name, dbName, sessionId))?.columns
           ?.map((column) => {
-            return getQuoteTableName(column.name);
+            return getQuoteTableName(column.name, dbSession?.connection?.dialectType);
           })
           .join(', ') || ''
       );
@@ -175,7 +175,7 @@ async function getColumns(type: DbObjectType, name: string, sessionId: string) {
       return (
         (await getView(name, sessionId, dbName))?.columns
           ?.map((column) => {
-            return getQuoteTableName(column.columnName);
+            return getQuoteTableName(column.columnName, dbSession?.connection?.dialectType);
           })
           .join(', ') || ''
       );
@@ -192,6 +192,7 @@ export async function getCopyText(
   isEscape: boolean = false,
   sessionId: string,
 ) {
+  const dbSession = sessionManager.sessionMap.get(sessionId);
   const _escape = isEscape
     ? escape
     : function (b) {
@@ -206,7 +207,7 @@ export async function getCopyText(
         'SELECT ' +
           (await getColumns(objType, name, sessionId)) +
           ' FROM ' +
-          getQuoteTableName(name) +
+          getQuoteTableName(name, dbSession?.connection?.dialectType) +
           ';',
       );
     }
@@ -214,7 +215,7 @@ export async function getCopyText(
       return (
         '<com.oceanbase.odc.snippet>' +
         'INSERT INTO ' +
-        _escape(getQuoteTableName(name)) +
+        _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         '(' +
         _escape(await getColumns(objType, name, sessionId)) +
         ') VALUES(${1:expr}, ${2:expr});' +
@@ -225,7 +226,7 @@ export async function getCopyText(
       return (
         '<com.oceanbase.odc.snippet>' +
         'DELETE FROM ' +
-        _escape(getQuoteTableName(name)) +
+        _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         ' WHERE ${1:where_condition};' +
         '</com.oceanbase.odc.snippet>'
       );
@@ -234,7 +235,7 @@ export async function getCopyText(
       return (
         '<com.oceanbase.odc.snippet>' +
         'UPDATE ' +
-        _escape(getQuoteTableName(name)) +
+        _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         ' SET ${1:col_name1=expr1} WHERE ${2:where_condition};' +
         '</com.oceanbase.odc.snippet>'
       );

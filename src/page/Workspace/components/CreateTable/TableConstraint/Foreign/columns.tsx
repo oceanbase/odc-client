@@ -1,4 +1,4 @@
-import { IDatabase, ITable, ITableColumn } from '@/d.ts';
+import { ConnectionMode, IDatabase, ITable, ITableColumn } from '@/d.ts';
 import {
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
@@ -75,9 +75,10 @@ function ColumnSelect(props) {
 export function useColumns(
   columns: TableColumn[],
   databases: IDatabase[],
+  mode: ConnectionMode,
 ): Column<TableForeignConstraint, TableForeignConstraint>[] {
-  const enableColumn = useEnableColumn();
-  const deferColumn = useDeferColumn();
+  const enableColumn = useEnableColumn(mode);
+  const deferColumn = useDeferColumn(mode);
   const validColumns = useMemo(() => {
     return uniq(columns?.filter((column) => !!column.name?.trim()).map((column) => column.name));
   }, [columns]);

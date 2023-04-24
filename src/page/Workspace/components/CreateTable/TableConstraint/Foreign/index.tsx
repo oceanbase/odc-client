@@ -40,7 +40,11 @@ interface IProps {
 const ForeignConstraint: React.FC<IProps> = function ({ schemaStore, modified }) {
   const tableContext = useContext(TableContext);
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns(tableContext.columns, schemaStore.databases);
+  const gridColumns: any[] = useColumns(
+    tableContext.columns,
+    schemaStore.databases,
+    tableContext?.session?.connection?.dialectType,
+  );
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.foreignConstraints.map((index, idx) => {

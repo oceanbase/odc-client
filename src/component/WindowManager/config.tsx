@@ -3,8 +3,6 @@ import Icon from '@ant-design/icons';
 import { PageType } from '@/d.ts';
 import CreateTablePage from '@/page/Workspace/components/CreateTable';
 import CreateViewPage from '@/page/Workspace/components/CreateViewPage';
-import EditPackagePage from '@/page/Workspace/components/EditPackagePage';
-import EditPLPage from '@/page/Workspace/components/EditPLPage';
 import OBClientPage from '@/page/Workspace/components/OBClientPage';
 import PLPage from '@/page/Workspace/components/PLPage';
 import RecycleBinPage from '@/page/Workspace/components/RecycleBinPage';
@@ -184,25 +182,11 @@ export const pageMap = {
     color: 'var(--icon-color-3)',
   },
 
-  // 包编辑页
-  [PageType.EDIT_PACKAGE]: {
-    component: withConfirmModal(EditPackagePage),
-    icon: <Icon component={PackageSvg} />,
-    color: 'var(--icon-color-3)',
-  },
-
   // 包详情页
   [PageType.PACKAGE]: {
     component: withConfirmModal(PackagePage),
     icon: <Icon component={PackageSvg} />,
     color: 'var(--icon-color-3)',
-  },
-
-  // PL 编辑页
-  [PageType.EDIT_PL]: {
-    component: withConfirmModal(EditPLPage),
-    icon: <Icon component={ConsolePLSvg} />,
-    color: 'var(--icon-color-1)',
   },
 
   [PageType.OB_CLIENT]: {
