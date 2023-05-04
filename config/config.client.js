@@ -11,9 +11,6 @@ export default {
   targets: {
     chrome: 83,
   },
-  dynamicImport: {
-    loading: "@/component/Loading"
-  },
   proxy: {
     // 本地开发或者对内 Site 应用的开发环境的代理配置
     '/api/v1/webSocket/obclient': {
