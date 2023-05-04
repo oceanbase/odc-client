@@ -856,6 +856,10 @@ class PLPage extends Component<
     }
   }
 
+  public getSession() {
+    return this.session;
+  }
+
   public async saveScript() {
     const { userStore, pageStore, params, onChangeSaved, pageKey } = this.props;
     this.setState({

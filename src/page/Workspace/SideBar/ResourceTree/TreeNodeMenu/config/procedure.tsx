@@ -3,7 +3,11 @@ import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, DbObjectType, IProcedure, PageType } from '@/d.ts';
 import { PropsTab, TopTab } from '@/page/Workspace/components/ProcedurePage';
-import { openProcedureEditPageByProName, openProcedureViewPage } from '@/store/helper/page';
+import {
+  openBatchCompilePLPage,
+  openProcedureEditPageByProName,
+  openProcedureViewPage,
+} from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { formatMessage } from '@/util/intl';
@@ -24,6 +28,20 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         modal.changeCreateProcedureModalVisible(
           true,
           session?.sessionId,
+          session?.database?.dbName,
+        );
+      },
+    },
+    {
+      key: 'BATCH_COMPILE',
+      text: ['批量编译'],
+      actionType: actionTypes.create,
+      run(session, node) {
+        openBatchCompilePLPage(
+          PageType.BATCH_COMPILE_PROCEDURE,
+          DbObjectType.procedure,
+          formatMessage({ id: 'odc.components.ResourceTree.StoredProcedure' }),
+          session?.connection?.id,
           session?.database?.dbName,
         );
       },
