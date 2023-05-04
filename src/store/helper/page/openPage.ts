@@ -6,12 +6,12 @@ import {
   getTypemByName,
 } from '@/common/network';
 import {
+  DbObjectType,
   IFunction,
   IScript,
   ITrigger,
   ITriggerFormData,
   PageType,
-  ResourceTabKey,
   SynonymPropsTab,
   SynonymType,
   TaskPageScope,
@@ -916,12 +916,14 @@ export async function openSQLResultSetViewPage(name, resultSets) {
 
 // 批量编译PL页面
 export function openBatchCompilePLPage(
-  pageKey: PageType,
-  resourceKey: ResourceTabKey,
+  pageType: PageType,
+  dbObjectType: DbObjectType,
   label: string,
+  cid: number,
+  dbName: string,
 ) {
   page!.openPage(
-    pageKey,
+    pageType,
     {
       title: formatMessage(
         {
@@ -929,8 +931,9 @@ export function openBatchCompilePLPage(
         },
         { label: label },
       ), //`批量编译${label}`
+      key: `${cid}-${dbName}-${pageType}`,
     },
-    { resourceKey, type: pageKey },
+    { dbObjectType, type: pageType, cid, dbName },
   );
 }
 

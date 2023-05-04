@@ -169,7 +169,7 @@ export default class ProcedurePage extends Component<
     } = this.props;
     const session = sessionManagerStore?.sessionMap.get(sessionId);
     const { propsTab, procedure, formated } = this.state;
-    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     const tableColumns = [
       {

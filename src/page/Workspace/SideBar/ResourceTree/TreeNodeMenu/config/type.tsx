@@ -1,8 +1,8 @@
 import { deleteType, getType } from '@/common/network/type';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { IType, PageType, TypePropsTab } from '@/d.ts';
-import { openTypeViewPage } from '@/store/helper/page';
+import { DbObjectType, IType, PageType, TypePropsTab } from '@/d.ts';
+import { openBatchCompilePLPage, openTypeViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { formatMessage } from '@/util/intl';
@@ -20,6 +20,20 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       actionType: actionTypes.create,
       run(session, node) {
         modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
+    {
+      key: 'BATCH_COMPILE',
+      text: ['批量编译'],
+      actionType: actionTypes.create,
+      run(session, node) {
+        openBatchCompilePLPage(
+          PageType.BATCH_COMPILE_TYPE,
+          DbObjectType.type,
+          formatMessage({ id: 'odc.components.ResourceTree.Type' }), //类型
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],

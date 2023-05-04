@@ -1,8 +1,7 @@
 import StatusBar from '@/component/StatusBar';
 import { SQL_PAGE_RESULT_HEIGHT } from '@/constant';
-import { IPage, ResourceTabKey } from '@/d.ts';
+import { DbObjectType, IPage } from '@/d.ts';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { debounce } from 'lodash';
@@ -27,6 +26,9 @@ import {
   openTypeViewPage,
 } from '@/store/helper/page';
 
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
+import { useUpdate } from 'ahooks';
 import { setTimeout } from 'timers';
 import styles from './index.less';
 
@@ -47,11 +49,13 @@ export enum CompileStatus {
 }
 
 interface IProps {
-  schemaStore?: SchemaStore;
+  sessionManagerStore?: SessionManagerStore;
   sqlStore?: SQLStore;
   pageStore?: PageStore;
   params: {
-    resourceKey: ResourceTabKey;
+    dbObjectType: DbObjectType;
+    cid: number;
+    dbName: string;
   };
 
   pageKey: string;
@@ -65,13 +69,14 @@ interface IProps {
 
 const PLBatchCompilePage: React.FC<IProps> = (props) => {
   const {
-    schemaStore: { functions, types, packages, procedures, triggers },
+    sessionManagerStore,
     sqlStore,
     pageStore,
     pageKey,
-    params: { resourceKey },
+    params: { cid, dbName, dbObjectType },
   } = props;
   const [compileStatus, setCompileStatus] = useState<CompileStatus>();
+  const update = useUpdate();
   const [compileTime, setCompileTime] = useState<{
     startTime: number;
     endTime: number;
@@ -84,104 +89,142 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   const compileId = useRef(null);
   const { startTime, endTime } = compileTime ?? {};
 
+  const sessionRef = useRef<SessionStore>(null);
+  const session = sessionRef?.current;
+
+  async function createSession() {
+    const session = await sessionManagerStore.createSession(false, cid, dbName, false);
+    sessionRef.current = session;
+    update();
+  }
+
+  useEffect(() => {
+    createSession();
+    return () => {
+      if (sessionRef.current) {
+        sessionManagerStore.destorySession(sessionRef.current?.sessionId);
+      }
+    };
+  }, [cid, dbName]);
+
   const PL_ResourceMap = {
-    [ResourceTabKey.FUNCTION]: {
+    [DbObjectType.function]: {
       label: formatMessage({
         id: 'odc.components.PLBatchCompilePage.Function',
       }), //函数,
-      dataSource: functions.map(({ funName, status, errorMessage }) => {
+      dataSource: session?.database?.functions.map(({ funName, status, errorMessage }) => {
         return {
           name: funName,
           status,
           errorMessage,
         };
       }),
-      openViewPage: openFunctionViewPage,
-      openEditPage: openFunctionEditPageByFuncName,
+      openViewPage: (name) => {
+        openFunctionViewPage(name, undefined, undefined, session?.sessionId, dbName);
+      },
+      openEditPage: (name, type) => {
+        openFunctionEditPageByFuncName(name, session?.sessionId, dbName, cid);
+      },
       loadData: () => {
-        props.schemaStore.getFunctionList();
+        session?.database?.getFunctionList();
       },
     },
 
-    [ResourceTabKey.PACKAGE]: {
+    [DbObjectType.package]: {
       label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Bag' }), //包
-      dataSource: packages.map(({ packageName, status, errorMessage }) => {
+      dataSource: session?.database?.packages.map(({ packageName, status, errorMessage }) => {
         return {
           name: packageName,
           status,
           errorMessage,
         };
       }),
-      openViewPage: openPackageViewPage,
+      openViewPage: (name) => {
+        openPackageViewPage(name, undefined, true, dbName, session?.sessionId);
+      },
       openEditPage: async (title: string, type: string) => {
-        await props.schemaStore?.loadPackage(title);
-        const pkg = packages.find((packages: any) => packages.packageName === title);
+        await session?.database?.loadPackage(title);
+        const pkg = session?.database?.packages.find(
+          (packages: any) => packages.packageName === title,
+        );
         if (pkg?.packageHead) {
           const headSql = pkg.packageHead?.basicInfo?.ddl || '';
-          openPackageHeadPage(title, headSql);
+          openPackageHeadPage(title, headSql, cid, dbName);
         }
         if (pkg?.packageBody) {
           const bodySql = pkg.packageBody?.basicInfo?.ddl || '';
-          openPackageBodyPage(title, bodySql);
+          openPackageBodyPage(title, bodySql, cid, dbName);
         }
       },
       loadData: () => {
-        props.schemaStore.getPackageList();
+        session?.database?.getPackageList();
       },
     },
 
-    [ResourceTabKey.PROCEDURE]: {
+    [DbObjectType.procedure]: {
       label: formatMessage({
         id: 'odc.components.PLBatchCompilePage.StoredProcedure',
       }), //存储过程
-      dataSource: procedures.map(({ proName, status, errorMessage }) => {
+      dataSource: session?.database?.procedures.map(({ proName, status, errorMessage }) => {
         return {
           name: proName,
           status,
           errorMessage,
         };
       }),
-      openViewPage: openProcedureViewPage,
-      openEditPage: openProcedureEditPageByProName,
+      openViewPage: (name) => {
+        openProcedureViewPage(name, undefined, undefined, session?.sessionId, dbName);
+      },
+      openEditPage: (name, type) => {
+        openProcedureEditPageByProName(name, session?.sessionId, dbName, cid);
+      },
       loadData: () => {
-        props.schemaStore.getProcedureList();
+        session?.database?.getProcedureList();
       },
     },
 
-    [ResourceTabKey.TRIGGER]: {
+    [DbObjectType.trigger]: {
       label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Trigger' }), //触发器
-      dataSource: triggers.map(({ triggerName, status, errorMessage }) => {
+      dataSource: session?.database?.triggers.map(({ triggerName, status, errorMessage }) => {
         return {
           name: triggerName,
           status,
           errorMessage,
         };
       }),
-      openViewPage: openTriggerViewPage,
-      openEditPage: openTriggerEditPageByName,
+      openViewPage: (name) => {
+        openTriggerViewPage(name, undefined, undefined, undefined, session?.sessionId, dbName);
+      },
+      openEditPage: (name, type) => {
+        openTriggerEditPageByName(name, session?.sessionId, dbName, cid);
+      },
       loadData: () => {
-        props.schemaStore.getTriggerList();
+        session?.database?.getTriggerList();
       },
     },
 
-    [ResourceTabKey.TYPE]: {
+    [DbObjectType.type]: {
       label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Type' }), //类型
-      dataSource: types.map(({ typeName, status, errorMessage }) => {
+      dataSource: session?.database?.types.map(({ typeName, status, errorMessage }) => {
         return {
           name: typeName,
           status,
           errorMessage,
         };
       }),
-      openViewPage: openTypeViewPage,
-      openEditPage: openTypeEditPageByName,
+      openViewPage: (name) => {
+        openTypeViewPage(name, undefined, session?.sessionId, dbName);
+      },
+      openEditPage: (name, type) => {
+        openTypeEditPageByName(name, session?.sessionId, cid, dbName);
+      },
       loadData: () => {
-        props.schemaStore.getTypeList();
+        session?.database?.getTypeList();
       },
     },
   };
 
-  const plResource = PL_ResourceMap[resourceKey];
+  const plResource = PL_ResourceMap[dbObjectType];
   const { label, dataSource, openViewPage, openEditPage, loadData } = plResource;
 
   const setCompileId = (id: number) => {
@@ -192,7 +235,11 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     if (timeRef.current) {
       clearTimeout(timeRef.current);
     }
-    const res = await sqlStore.getBatchCompilePLResult(compileId.current);
+    const res = await sqlStore.getBatchCompilePLResult(
+      compileId.current,
+      session?.sessionId,
+      dbName,
+    );
     if (res) {
       setResult(res);
       setCompileStatus(res?.status);
@@ -217,7 +264,9 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   const handleCompile = async (type: CompileType) => {
     const params = {
       scope: type,
-      objectType: resourceKey,
+      objectType: dbObjectType,
+      sessionId: session?.sessionId,
+      dbName,
     };
     setCompileStatus(CompileStatus.RUNNING);
     setCompileTime({
@@ -236,7 +285,11 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     if (!compileId.current) {
       return;
     }
-    const res = await sqlStore.deleteBatchCompilePL(compileId.current);
+    const res = await sqlStore.deleteBatchCompilePL(
+      compileId.current,
+      session?.sessionId,
+      session?.database?.dbName,
+    );
     if (res && !isDestory) {
       await loadResult();
       setCompileStatus(CompileStatus.TERMINATED);
@@ -257,7 +310,6 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    loadData();
     handleSetConfirmModal();
     return () => {
       if (compileId.current) {
@@ -265,6 +317,10 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [sessionRef.current]);
 
   useEffect(() => {
     if ([CompileStatus.COMPLETED, CompileStatus.TERMINATED].includes(compileStatus)) {
@@ -375,4 +431,4 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('schemaStore', 'sqlStore', 'pageStore')(observer(PLBatchCompilePage));
+export default inject('sessionManagerStore', 'sqlStore', 'pageStore')(observer(PLBatchCompilePage));

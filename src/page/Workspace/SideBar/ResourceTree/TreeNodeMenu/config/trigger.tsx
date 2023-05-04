@@ -1,6 +1,7 @@
 import { actionTypes } from '@/component/Acess';
 import { DbObjectType, ITrigger, PageType, TriggerPropsTab, TriggerState } from '@/d.ts';
 import {
+  openBatchCompilePLPage,
   openCreateTriggerPage,
   openTriggerEditPageByName,
   openTriggerViewPage,
@@ -25,6 +26,20 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       actionType: actionTypes.create,
       run(session, node) {
         openCreateTriggerPage(null, session?.sessionId, session?.database?.dbName);
+      },
+    },
+    {
+      key: 'BATCH_COMPILE',
+      text: ['批量编译'],
+      actionType: actionTypes.create,
+      run(session, node) {
+        openBatchCompilePLPage(
+          PageType.BATCH_COMPILE_TRIGGER,
+          DbObjectType.trigger,
+          formatMessage({ id: 'odc.components.ResourceTree.Trigger' }),
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],

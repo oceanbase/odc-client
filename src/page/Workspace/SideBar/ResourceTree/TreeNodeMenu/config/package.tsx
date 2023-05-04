@@ -1,9 +1,10 @@
 import { deletePackage, getExportObjects, getPackageBodyCreateSQL } from '@/common/network';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { DbObjectType, IPackage } from '@/d.ts';
+import { DbObjectType, IPackage, PageType } from '@/d.ts';
 import { TopTab } from '@/page/Workspace/components/PackagePage';
 import {
+  openBatchCompilePLPage,
   openCreatePackageBodyPage,
   openPackageBodyPage,
   openPackageHeadPage,
@@ -31,6 +32,20 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
       run(session, node) {
         modal.changeCreatePackageModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
+    {
+      key: 'BATCH_COMPILE',
+      text: ['批量编译'],
+      actionType: actionTypes.create,
+      run(session, node) {
+        openBatchCompilePLPage(
+          PageType.BATCH_COMPILE_PACKAGE,
+          DbObjectType.package,
+          formatMessage({ id: 'odc.components.ResourceTree.Bag' }),
+          session?.connection?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],
