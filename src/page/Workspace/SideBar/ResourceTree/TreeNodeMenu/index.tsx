@@ -1,7 +1,8 @@
 import { AcessResult, canAcessWorkspace } from '@/component/Acess';
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
-import { Dropdown, Menu } from 'antd';
+import { InfoCircleFilled } from '@ant-design/icons';
+import { Dropdown, Menu, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { ResourceNodeType } from '../type';
 import MenuConfig from './config';
@@ -22,6 +23,16 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
    * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
    * 不可拖动
    */
+  const titleNode = (
+    <span className="ant-tree-title">
+      {node.title}
+      {node.warning ? (
+        <Tooltip placement="right" title={node.warning}>
+          <InfoCircleFilled style={{ color: 'var(--icon-color-3)', paddingLeft: 5 }} />
+        </Tooltip>
+      ) : null}
+    </span>
+  );
   const nodeChild = node.dbObjectType ? (
     <DragWrapper
       key={node.key + '-drag'}
@@ -38,10 +49,10 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
         };
       }}
     >
-      <span className="ant-tree-title">{node.title}</span>
+      {titleNode}
     </DragWrapper>
   ) : (
-    <span className="ant-tree-title">{node.title}</span>
+    titleNode
   );
   if (!isSessionValid || !menuItems?.length) {
     return nodeChild;
@@ -64,7 +75,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
           }}
         >
           {menuItems
-            ? menuItems.map((item: IMenuItemConfig) => {
+            ? menuItems.map((item: IMenuItemConfig, index) => {
                 // 菜单子项 显隐可独立配置
                 const disabledItem = item.disabled ? item.disabled(dbSession, node) : false;
                 const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
@@ -75,7 +86,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
                   if (item.children?.length) {
                     menuItems = [
                       <Menu.SubMenu
-                        key={item.key}
+                        key={item.key || index}
                         title={item.text}
                         className={styles.ellipsis}
                         disabled={disabledItem}
@@ -97,7 +108,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
                     menuItems = [
                       <Menu.Item
                         onClick={() => onMenuClick(item)}
-                        key={item.key}
+                        key={item.key || index}
                         className={styles.ellipsis}
                         disabled={disabledItem}
                       >

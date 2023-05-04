@@ -75,6 +75,7 @@ export function ProcedureTreeNodeData(
     type: ResourceNodeType.Procedure,
     menuKey,
     dbObjectType: DbObjectType.procedure,
+    warning: proc.status === 'INVALID' ? proc.errorMessage : null,
     pkg,
     icon: (
       <Icon

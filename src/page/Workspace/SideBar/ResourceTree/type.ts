@@ -73,6 +73,7 @@ interface ExtraData {
   pkg?: Partial<IPackage>;
   cid?: number;
   dbObjectType?: DbObjectType;
+  warning?: string;
 }
 
 export type TreeDataNode = DataNode & ExtraData;
