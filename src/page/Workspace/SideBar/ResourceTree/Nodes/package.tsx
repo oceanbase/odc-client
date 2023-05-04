@@ -210,6 +210,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
         key: pkgKey,
         type: ResourceNodeType.Package,
         data: pkg,
+        warning: pkg.status === 'INVALID' ? pkg.errorMessage : null,
         icon: (
           <Icon
             component={PackageSvg}

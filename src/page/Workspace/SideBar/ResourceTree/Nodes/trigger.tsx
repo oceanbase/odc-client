@@ -53,6 +53,7 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
         dbObjectType: DbObjectType.trigger,
         data: trigger,
         icon: icon,
+        warning: trigger.status === 'INVALID' ? trigger.errorMessage : null,
         sessionId: dbSession?.sessionId,
         isLeaf: true,
       };

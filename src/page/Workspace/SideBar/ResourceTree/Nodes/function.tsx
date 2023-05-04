@@ -100,6 +100,7 @@ export function FunctionTreeNodeData(
     menuKey,
     pkg,
     dbObjectType: DbObjectType.function,
+    warning: func.status === 'INVALID' ? func.errorMessage : null,
     icon: (
       <Icon
         component={FunctionSvg}
