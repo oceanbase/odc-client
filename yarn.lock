@@ -25,12 +25,12 @@
   resolved "https://registry.npm.alibaba-inc.com/@ali/anima-detect/download/@ali/anima-detect-1.0.3.tgz#3662d1866c0e5f35b1a96104f4596a325a59dd2d"
   integrity sha1-NmLRhmwOXzWxqWEE9FlqMlpZ3S0=
 
-"@alipay/monaco-plugin-ob@0.0.15":
-  version "0.0.15"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/monaco-plugin-ob/download/@alipay/monaco-plugin-ob-0.0.15.tgz#34bfe1a46530e9c3be7d846fc32bb57cf77e0e30"
-  integrity sha512-IVJxt/kKLjamYe2Oq1ut8zlxzwg9lT+BTrk0iKSNKXfrcB01RlJW2bTeeeVFB8S6JPu7KRYvCQ8dPsCgezRgqA==
+"@alipay/monaco-plugin-ob@0.0.16":
+  version "0.0.16"
+  resolved "https://registry.antgroup-inc.cn/@alipay/monaco-plugin-ob/-/monaco-plugin-ob-0.0.16.tgz#0d8b6266ff9e2a1773cc084b463bfe2f4d32868f"
+  integrity sha512-0PU9kqrLN8hRV2iMi06vbtxhh8JSSSPcZp2j3RreipSflNWcpTxH04ZO8kpCC3tE/lwh77BXcOZtDf5SjhtPAw==
   dependencies:
-    "@alipay/ob-parser-js" dev-S09001520464
+    "@alipay/ob-parser-js" "^2.0.1"
     antlr4 "~4.8.0"
     comlink "^4.3.1"
 
@@ -80,12 +80,12 @@
     antlr4 "~4.8.0"
     lodash "^4.17.20"
 
-"@alipay/ob-parser-js@dev-S09001520464":
-  version "0.0.9001520464-dev.45"
-  resolved "https://registry.antgroup-inc.cn/@alipay/ob-parser-js/-/ob-parser-js-0.0.9001520464-dev.45.tgz#4ad70ad2064e451b776a06d2ca78296274e03c44"
-  integrity sha512-2aWiCsu9mOuLhssVzcSi6bZ0T1DeFFJrSuRrr2hi2kVNHSvYBRqGzeDG/hIlOyByHTmfGPxa+6uUUHRA5HK4Tg==
+"@alipay/ob-parser-js@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-parser-js/-/ob-parser-js-2.0.1.tgz#33b44edbea1aa3b3d3edd557c132e7a7be6039ea"
+  integrity sha512-WP7+ua90WW/MWBEVP29Hp6JMIvBgmf1OFF1RFEqKPbc5oMi1fm+NjOBo1z6O3Zx0Mp3SAK0chnoEtfKRe9N6Kg==
   dependencies:
-    "@alipay/ob-sql-formatter" "^1.0.8"
+    "@alipay/ob-sql-formatter" "^1.0.9"
     antlr4 "~4.8.0"
     lodash "^4.17.20"
 
@@ -101,6 +101,11 @@
   version "1.0.8"
   resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-sql-formatter/download/@alipay/ob-sql-formatter-1.0.8.tgz#fae21b84196cdb29a2c2dc2a5714a5879da5abc0"
   integrity sha512-3a+xvpPAsnHbrlP0mzDo24nU81/sp90ueU3ElwPlbJz9j3E6jfl/OsE5Sa7Mwv+ozC9/WgCj0h9Bp3L/IsKTCg==
+
+"@alipay/ob-sql-formatter@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-sql-formatter/-/ob-sql-formatter-1.0.9.tgz#e712def7215832001546b2a182b840127ce289b5"
+  integrity sha512-FXG/xgk0yJlX4RUwmpLxxtVImZPkKWSIbX5/Sbt0BIpYRUh4eY6LH5hkJlUksD4vbuX1YXu4N4rP1n1lgr1mag==
 
 "@alipay/tracert-ap@4.4.9":
   version "4.4.9"

@@ -109,65 +109,68 @@ const ExecDetail: React.FC<IProps> = function (props) {
             value: queueTime,
           },
         ];
-        const StackedBar = (await import('@antv/g2plot')).StackedBar;
-        stackBarPlot.current = new StackedBar(stackBarBox.current, {
-          forceFit: true,
-          height: 140,
-          data,
-          colorField: 'label',
-          color: (label: string) => {
-            if (label === queueTimeLabel) {
-              return '#EC7F66';
-            }
-            if (label === execTimeLabel) {
-              return '#76DCB3';
-            }
-            return '#F8C64A';
-          },
-          barSize: 24,
-          yField: 'name',
-          xField: 'value',
-          stackField: 'label',
-          xAxis: {
-            visible: false,
-            tickLine: {
+        if (!stackBarPlot.current) {
+          const StackedBar = (await import('@antv/g2plot')).StackedBar;
+          stackBarPlot.current = new StackedBar(stackBarBox.current, {
+            forceFit: true,
+            height: 140,
+            data,
+            colorField: 'label',
+            color: (label: string) => {
+              if (label === queueTimeLabel) {
+                return '#EC7F66';
+              }
+              if (label === execTimeLabel) {
+                return '#76DCB3';
+              }
+              return '#F8C64A';
+            },
+            barSize: 24,
+            yField: 'name',
+            xField: 'value',
+            stackField: 'label',
+            xAxis: {
               visible: false,
+              tickLine: {
+                visible: false,
+              },
+
+              title: {
+                visible: false,
+              },
+
+              grid: {
+                visible: false,
+              },
+            },
+
+            yAxis: {
+              tickLine: {
+                visible: false,
+              },
+
+              label: {
+                visible: false,
+              },
+
+              title: {
+                visible: false,
+              },
             },
 
             title: {
               visible: false,
+              text: '',
             },
 
-            grid: {
-              visible: false,
+            legend: {
+              position: 'bottom-center',
             },
-          },
-
-          yAxis: {
-            tickLine: {
-              visible: false,
-            },
-
-            label: {
-              visible: false,
-            },
-
-            title: {
-              visible: false,
-            },
-          },
-
-          title: {
-            visible: false,
-            text: '',
-          },
-
-          legend: {
-            position: 'bottom-center',
-          },
-        });
-
-        stackBarPlot.current.render();
+          });
+          stackBarPlot.current.render();
+        } else {
+          stackBarPlot.current.changeData(data);
+        }
       } else {
         message.error(
           formatMessage({
@@ -183,6 +186,12 @@ const ExecDetail: React.FC<IProps> = function (props) {
     if (visible) {
       fetchExecDetail();
     }
+    return () => {
+      if (stackBarPlot.current) {
+        stackBarPlot.current?.destroy();
+        stackBarPlot.current = null;
+      }
+    };
   }, [sql, traceId, visible]);
 
   return (
@@ -193,10 +202,6 @@ const ExecDetail: React.FC<IProps> = function (props) {
       placement="right"
       closable
       onClose={() => {
-        if (stackBarPlot.current) {
-          stackBarPlot.current.destroy();
-          stackBarPlot.current = null;
-        }
         onClose();
       }}
       width="96vw"
@@ -348,6 +353,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
                         id: 'workspace.window.sql.explain.tab.detail.card.io.rpcCount',
                       })}
                       value={sqlExecuteDetailToShow?.rpcCount}
+                      valueStyle={{ fontSize: '24px' }}
                     />
                   </Col>
                   <Col span={8}>
@@ -356,6 +362,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
                         id: 'workspace.window.sql.explain.tab.detail.card.io.physicalRead',
                       })}
                       value={sqlExecuteDetailToShow?.physicalRead}
+                      valueStyle={{ fontSize: '24px' }}
                     />
                   </Col>
                   <Col span={8}>
@@ -364,6 +371,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
                         id: 'workspace.window.sql.explain.tab.detail.card.io.ssstoreRead',
                       })}
                       value={sqlExecuteDetailToShow?.ssstoreRead}
+                      valueStyle={{ fontSize: '24px' }}
                     />
                   </Col>
                 </Row>

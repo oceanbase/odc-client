@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import { Modal, notification } from 'antd';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { generateUniqKey } from './utils';
 export interface DescriptionProps {
   description: string;
@@ -10,32 +10,37 @@ export interface DescriptionProps {
     [key in string]: string;
   };
 }
-function ExtraMessage(props: {
+interface ExtraMessageProps {
   extraMessageParams: {
     [key in string]: string;
   };
-}) {
-  const { extraMessageParams } = props;
-
-  return (
-    <>
-      <div>
-        <strong>报错信息:</strong>
-      </div>
-      {Object.keys(extraMessageParams).map(
-        (key, index) =>
-          extraMessageParams[key] !== '' && (
-            <div key={index}>
-              <span style={{ color: 'var(--text-color-hint)' }}>{key}</span>:{' '}
-              <span>{extraMessageParams[key]}</span>
-            </div>
-          ),
-      )}
-    </>
-  );
 }
+const ExtraMessage: React.FC<ExtraMessageProps> = (props: ExtraMessageProps) => {
+  const { extraMessageParams } = props;
+  const extraMessageParamsKeys = Object.keys(extraMessageParams) || [];
+  if (extraMessageParamsKeys.length === 0) {
+    return <></>;
+  } else {
+    return (
+      <>
+        <div>
+          <strong>报错信息:</strong>
+        </div>
+        {extraMessageParamsKeys.map(
+          (key, index) =>
+            extraMessageParams[key] !== '' && (
+              <div key={index}>
+                <span style={{ color: 'var(--text-color-hint)' }}>{key}</span>:{' '}
+                <span>{extraMessageParams[key]}</span>
+              </div>
+            ),
+        )}
+      </>
+    );
+  }
+};
 function Description(props: DescriptionProps) {
-  const { description, requestId, isComponent = true, extraMessageParams = {} } = props;
+  const { description, requestId, isComponent = false, extraMessageParams = {} } = props;
   const [isOpen, setIsOpen] = useState(false);
 
   const openDetail = useCallback(() => {
