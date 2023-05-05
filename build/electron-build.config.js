@@ -11,6 +11,8 @@ const config = {
     hardenedRuntime: true,
     category: 'public.app-category.developer-tools',
     entitlements: "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist",
+    entitlementsInherit: "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist",
+    gatekeeperAssess: false,
     target: 'dmg',
   },
   dmg: {
