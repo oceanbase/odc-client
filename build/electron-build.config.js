@@ -6,8 +6,11 @@ console.log('buildMode: ', buildMode)
 const config = {
   productName: 'OceanBase Developer Center',
   compression: buildMode || 'normal',
+  afterSign: "electron-builder-notarize",
   mac: {
+    hardenedRuntime: true,
     category: 'public.app-category.developer-tools',
+    entitlements: "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist",
     target: 'dmg',
   },
   dmg: {
