@@ -114,7 +114,7 @@
     "cross-env": "^6.0.3",
     "css": "^3.0.0",
     "electron": "20.3.12",
-    "electron-builder": "23.3.3",
+    "electron-builder": "~24.3.0",
     "eventbusjs": "^0.2.0",
     "highlight.js": "^11.6.0",
     "immutability-helper": "^3.0.1",
