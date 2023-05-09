@@ -79,7 +79,7 @@ const Login: React.FC<{
         if (query.has('redirectTo')) {
           history.push(decodeURIComponent(query.get('redirectTo')));
         } else {
-          history.push('/connections');
+          history.push('/spaceIndex');
         }
       } else if (errCode === 'UserNotActive') {
         const { username, password } = params;

@@ -1,0 +1,39 @@
+.space-switch {
+  &:global(.ant-select) {
+    :global {
+      .ant-select-selector {
+        padding: 0 8px;
+        border: none;
+      }
+    }
+  }
+  :global {
+    .ant-select-arrow {
+      display: none;
+    }
+  }
+  &:not(.collapsed):hover {
+    :global {
+      .ant-select-arrow {
+        display: block;
+      }
+    }
+  }
+}
+.synergy,
+.private {
+  width: 16px;
+  height: 16px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 2px;
+}
+
+.synergy {
+  background: #1890ff;
+}
+.private {
+  background: #52c41a;
+}
