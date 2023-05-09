@@ -1,5 +1,4 @@
 import React from 'react';
-import Sider from './Sider';
 
 import { useParams } from 'umi';
 import Connection from './Connecion';
@@ -27,7 +26,6 @@ const Index: React.FC<IProps> = function () {
   const Component = Pages[pageKey].component;
   return (
     <div className={styles.index}>
-      <Sider />
       <div className={styles.content}>{Component ? <Component /> : ''}</div>
     </div>
   );

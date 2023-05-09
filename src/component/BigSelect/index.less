@@ -1,0 +1,33 @@
+.select-wrapper {
+}
+.select {
+  color: #000000;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  opacity: 0.85;
+  &:global(.ant-select-single):not(.ant-select-customize-input) {
+    :global {
+      .ant-select-selector {
+        padding: 0;
+      }
+      .ant-select-selection-item {
+        padding-right: 24px;
+      }
+      .ant-select-arrow {
+        right: 0;
+        color: rgba(0, 0, 0, 0.65);
+      }
+    }
+  }
+}
+.logo {
+  width: 24px;
+  height: 24px;
+  background: rgba(24, 144, 255, 1);
+  border-radius: 4px;
+}
+.select-footer {
+  padding: 10px 20px 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
