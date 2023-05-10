@@ -1,6 +1,10 @@
 .page-container {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   .page-container-header {
+    flex-grow: 0;
+    flex-shrink: 0;
     padding: 24px 24px 9px;
     &.bottom-border {
       border-bottom: 1px solid #f0f0f0;
@@ -41,6 +45,8 @@
     }
   }
   .page-container-main {
+    flex-grow: 1;
+    flex-shrink: 1;
     padding: 12px 24px;
   }
   :global {
