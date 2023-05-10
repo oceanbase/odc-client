@@ -1,7 +1,7 @@
-import Sider from '@/component/Sider';
 import { Outlet } from '@umijs/max';
 import React from 'react';
-import styles from './SpaceContainer.less';
+import styles from './index.less';
+import Sider from './Sider';
 
 interface ISpaceContainerProps {}
 const SpaceContainer: React.FC<ISpaceContainerProps> = (props) => {
