@@ -1,14 +1,18 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Menu, Space } from 'antd';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 import Database from './Database';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
 
+import { getProject } from '@/common/network/project';
+import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { isNumber } from 'lodash';
+import ProjectContext from './ProjectContext';
 
 const data = Array(10)
   ?.fill(0)
@@ -77,7 +81,7 @@ const Index: React.FC<IProps> = function () {
   const params = useParams<{ id: string; page: IPageType }>();
   const { id, page } = params;
   const Component = Pages[page].component;
-
+  const projectId = parseInt(id);
   const handleChange = (key: string) => {
     history.push(`/project/${id}/${key}`);
   };
@@ -86,11 +90,29 @@ const Index: React.FC<IProps> = function () {
     history.push(`/project/${value}/${page}`);
   };
 
+  const [project, setProject] = useState<IProject>(null);
+
+  async function fetchProject(projectId: number) {
+    const data = await getProject(projectId);
+    if (data) {
+      setProject(data);
+    }
+  }
+  const reloadProject = useCallback(() => {
+    fetchProject(projectId);
+  }, [project]);
+
+  useEffect(() => {
+    if (isNumber(projectId)) {
+      fetchProject(projectId);
+    }
+  }, [projectId]);
+
   return (
     <PageContainer
       titleProps={{
         type: TitleType.SELECT,
-        defaultValue: Number(params?.id),
+        defaultValue: projectId,
         options: options,
         onChange: handleProjectChange,
       }}
@@ -99,7 +121,9 @@ const Index: React.FC<IProps> = function () {
       tabBarExtraContent={<ExtraContent />}
       onTabChange={handleChange}
     >
-      <Component id={id} />
+      <ProjectContext.Provider value={{ project, projectId, reloadProject }}>
+        <Component key={id} id={id} />
+      </ProjectContext.Provider>
     </PageContainer>
   );
 };
