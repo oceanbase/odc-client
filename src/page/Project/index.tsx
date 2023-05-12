@@ -11,6 +11,7 @@ import User from './User';
 import { getProject } from '@/common/network/project';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { Link } from '@umijs/max';
 import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
 
@@ -120,6 +121,7 @@ const Index: React.FC<IProps> = function () {
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent />}
       onTabChange={handleChange}
+      bigSelectBottom={<Link to={'/project'}>查看所有项目</Link>}
     >
       <ProjectContext.Provider value={{ project, projectId, reloadProject }}>
         <Component key={id} id={id} />

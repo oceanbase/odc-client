@@ -1,5 +1,4 @@
 import { Select, Space } from 'antd';
-import { Link } from 'umi';
 import styles from './index.less';
 
 interface IBigSelectProps {
@@ -10,9 +9,10 @@ interface IBigSelectProps {
     label: string;
   }[];
   onChange?: (value: string | number) => void;
+  bottom?: React.ReactNode;
 }
 const BigSelect: React.FC<IBigSelectProps> = (props) => {
-  const { defaultValue, options, onChange } = props;
+  const { defaultValue, options, bottom, onChange } = props;
   return (
     <Space size={12} className={styles['select-wrapper']}>
       <div className={styles.logo}></div>
@@ -27,9 +27,7 @@ const BigSelect: React.FC<IBigSelectProps> = (props) => {
         dropdownRender={(menu) => (
           <>
             {menu}
-            <div className={styles['select-footer']}>
-              <Link to="/project">查看全部项目</Link>
-            </div>
+            {bottom ? <div className={styles['select-footer']}>{bottom}</div> : null}
           </>
         )}
       />

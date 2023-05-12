@@ -26,10 +26,12 @@ interface IPageContainerProps {
   tabActiveKey?: string;
   tabBarExtraContent?: ReactNode;
   onTabChange?: (key) => void;
+  bigSelectBottom?: React.ReactNode;
 }
 
 const PageContainer: React.FC<IPageContainerProps> = (props) => {
-  const { titleProps, tabList, tabActiveKey, tabBarExtraContent, onTabChange } = props;
+  const { titleProps, tabList, tabActiveKey, tabBarExtraContent, bigSelectBottom, onTabChange } =
+    props;
   const { title, type, options, defaultValue, showDivider, onChange } = titleProps;
 
   return (
@@ -53,7 +55,12 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
         )}
         {type === TitleType.TEXT && <div className={styles.title}>{title}</div>}
         {type === TitleType.SELECT && (
-          <BigSelect defaultValue={defaultValue} options={options} onChange={onChange} />
+          <BigSelect
+            bottom={bigSelectBottom}
+            defaultValue={defaultValue}
+            options={options}
+            onChange={onChange}
+          />
         )}
       </div>
       {tabList?.length && (

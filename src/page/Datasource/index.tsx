@@ -1,5 +1,6 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { EllipsisOutlined } from '@ant-design/icons';
+import { Link } from '@umijs/max';
 import { Button, Dropdown, Menu, Space } from 'antd';
 import React from 'react';
 import { history, useParams } from 'umi';
@@ -11,7 +12,7 @@ import { IPageType } from '@/d.ts/_index';
 
 const data = Array(10)
   ?.fill(0)
-  ?.map((item, index) => `项目 ${index + 1}`);
+  ?.map((item, index) => `source ${index + 1}`);
 const options = data?.map((item, index) => ({
   label: item,
   value: index + 1,
@@ -75,7 +76,7 @@ const Index: React.FC<IProps> = function () {
     history.push(`/datasource/${id}/${key}`);
   };
 
-  const handleProjectChange = (value: string) => {
+  const handleSelectChange = (value: string) => {
     history.push(`/datasource/${value}/${page}`);
   };
 
@@ -85,12 +86,13 @@ const Index: React.FC<IProps> = function () {
         type: TitleType.SELECT,
         defaultValue: Number(params?.id),
         options: options,
-        onChange: handleProjectChange,
+        onChange: handleSelectChange,
       }}
       tabList={tabs}
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent />}
       onTabChange={handleChange}
+      bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
     >
       <Component id={id} />
     </PageContainer>
