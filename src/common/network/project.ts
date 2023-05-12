@@ -1,5 +1,5 @@
 import { IResponseData } from '@/d.ts';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import request from '@/util/request';
 import * as mockjs from 'mockjs';
 
@@ -137,6 +137,62 @@ export async function updateProject(id: number, project: IProject): Promise<IPro
     },
   });
   const res = await request.put(`/api/v2/collaboration/projects/${id}`);
+
+  return res?.data;
+}
+
+export async function createProject(params: {
+  name: string;
+  description: string;
+  members: {
+    id: number;
+    role: ProjectRole;
+  }[];
+}): Promise<IProject> {
+  return mockjs.mock({
+    id: 3864,
+    name: '光主专受',
+    description: '',
+    'members|100': [
+      {
+        id: 9216,
+        accountName: '工全总',
+        name: '华当一飞求合',
+        role: 'DEVELOPER',
+      },
+      {
+        id: 9391,
+        accountName: '今派传行命',
+        name: '政快去眼',
+        role: 'DEVELOPER',
+      },
+      {
+        id: 6070,
+        accountName: '料厂条天',
+        name: '月价下认连外',
+        role: 'DEVELOPER',
+      },
+    ],
+    builtin: false,
+    organizationId: 9115,
+    createTime: '2003-07-31',
+    updateTime: '1974-05-17',
+    creator: {
+      id: 69,
+      name: '感公照格报',
+      accountName: '且全议样间',
+      roleNames: ['shchptnca'],
+    },
+    lastModifier: {
+      id: 2352,
+      name: '联风观五战',
+      accountName: '间习红',
+      roleNames: ['j', 'weryywjwpizwljdmvebcvkmp'],
+    },
+  });
+  const res = await request.post(`/api/v2/collaboration/projects`, {
+    data: params,
+  });
 
   return res?.data;
 }

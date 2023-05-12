@@ -1,12 +1,14 @@
 import { listProjects } from '@/common/network/project';
+import Reload from '@/component/Button/Reload';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from '@umijs/max';
-import { Button, List, Space } from 'antd';
+import { List, Space } from 'antd';
 import VirtualList from 'rc-virtual-list';
 import { useEffect, useRef, useState } from 'react';
+import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
 
@@ -27,21 +29,33 @@ const Project = () => {
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const navigate = useNavigate();
 
-  const appendData = async () => {
-    const res = await listProjects('', currentPage + 1, 20);
+  const appendData = async (currentPage, dataSource) => {
+    const res = await listProjects('', currentPage + 1, 40);
     if (res) {
       setCurrentPage(currentPage + 1);
-      setDataSource(dataSource.concat(res?.contents));
+      /**
+       * 去除重复
+       */
+      const existIds = new Set();
+      dataSource.forEach((item) => existIds.add(item.id));
+
+      setDataSource(dataSource.concat(res?.contents.filter((item) => !existIds.has(item.id))));
     }
   };
 
+  function reload() {
+    setCurrentPage(0);
+    setDataSource([]);
+    appendData(0, []);
+  }
+
   useEffect(() => {
-    appendData();
+    appendData(currentPage, dataSource);
   }, []);
 
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
-      appendData();
+      appendData(currentPage, dataSource);
     }
   };
 
@@ -58,10 +72,10 @@ const Project = () => {
         className={styles.content}
         header={
           <div className={styles.header}>
-            <Button type="primary">新建项目</Button>
+            <CreateProjectDrawer onCreate={() => reload()} />
             <Space size={12}>
               <SearchOutlined />
-              <ReloadOutlined />
+              <Reload onClick={reload} />
             </Space>
           </div>
         }

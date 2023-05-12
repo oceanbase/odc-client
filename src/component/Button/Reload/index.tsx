@@ -1,7 +1,7 @@
 import { ReloadOutlined } from '@ant-design/icons';
 
 export default function Reload({
-  size = '14px',
+  size = '13px',
   onClick,
 }: {
   size?: string;
