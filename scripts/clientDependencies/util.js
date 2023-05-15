@@ -11,7 +11,7 @@ exports.download = async function (ossPath, saveDir, fileName) {
     console.log('文件路径：', ossPath);
 
     if (!fs.existsSync(path.join(process.cwd(), saveDir))) {
-      fs.mkdirSync(path.join(process.cwd(), saveDir));
+      fs.mkdirSync(path.join(process.cwd(), saveDir), { recursive: true });
     }
 
     const file = fs.createWriteStream(savePath);
@@ -73,7 +73,7 @@ exports.oss = {
     const ins = this.oss.getOSSIns();
     const savePath = path.resolve(saveDir, fileName);
     if (!fs.existsSync(path.join(process.cwd(), saveDir))) {
-      fs.mkdirSync(path.join(process.cwd(), saveDir));
+      fs.mkdirSync(path.join(process.cwd(), saveDir), { recursive: true });
     }
     try {
       console.log(`Begin Download[${ossPath}]`)
@@ -118,5 +118,37 @@ exports.oss = {
       return false;
     }
     return false
+  },
+  getOSSFolderFiles: async (ossPath, nextToken) => {
+    const ins = this.oss.getOSSIns();
+    const realOSSPath = ossPath
+    let result = [];
+    try {
+      const res = await ins?.listV2({
+        prefix: realOSSPath,
+        'max-keys': 1000,
+        'continuation-token': nextToken,
+      });
+      if (res?.res?.status !== 200) {
+        console.error('error', res);
+        return null;
+      }
+      result = result.concat(res.objects);
+      const nextContinuationToken = res?.nextContinuationToken;
+      if (nextContinuationToken) {
+        const objects = await this.oss.getOSSFolderFiles(ossPath, nextContinuationToken);
+        if (objects === null) {
+          /**
+           * 上一个节点返回失败，则丢弃所有数据
+           */
+          return null;
+        }
+        result = result.concat(objects);
+      }
+      return result;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 }
