@@ -1,9 +1,10 @@
 import React from 'react';
+import SessionManager from './SessionManagementPage';
 interface IProps {
   id: string;
 }
 const Session: React.FC<IProps> = (props) => {
-  return <div className="">Page Datasource {props?.id} - Session </div>;
+  return <SessionManager dataSourceId={props.id} />;
 };
 
 export default Session;

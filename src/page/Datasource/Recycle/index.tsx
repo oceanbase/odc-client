@@ -1,9 +1,10 @@
 import React from 'react';
+import RecycleBin from './RecycleBinPage';
 interface IProps {
   id: string;
 }
 const Recycle: React.FC<IProps> = (props) => {
-  return <div className="">Page Datasource {props?.id} - Recycle </div>;
+  return <RecycleBin dataSourceId={props.id} />;
 };
 
 export default Recycle;
