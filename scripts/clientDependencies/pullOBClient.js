@@ -31,4 +31,3 @@ const run = async function () {
   console.log(tarPath, '删除完成');
 };
 
-run()
