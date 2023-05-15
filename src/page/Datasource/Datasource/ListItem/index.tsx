@@ -23,7 +23,10 @@ const ListItem: React.FC<IProps> = function ({ data, onClick }) {
   return (
     <div className={styles.item}>
       <div className={classNames(styles.base, styles.expand)}>
-        <PlusSquareOutlined />
+        <Icons
+          style={{ fontSize: 12, cursor: 'pointer', color: 'var(--icon-color-normal)' }}
+          component={PlusSquareOutlined}
+        />
       </div>
       <div onClick={() => onClick(data)} className={classNames(styles.base, styles.connectionName)}>
         <Space size={14}>

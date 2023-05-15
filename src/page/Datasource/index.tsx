@@ -54,7 +54,7 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '基本信息',
+    tab: '数据库',
     key: IPageType.Datasource_info,
   },
   {

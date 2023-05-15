@@ -16,7 +16,7 @@ const Database: React.FC<IProps> = ({ id }) => {
   const [data, setData] = useState<IDatabase[]>([]);
 
   const loadData = async (pageSize, current) => {
-    const res = await listDatabases(parseInt(id), current, pageSize);
+    const res = await listDatabases(parseInt(id), null, current, pageSize);
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
