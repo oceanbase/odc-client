@@ -129,3 +129,13 @@ export async function createDataBase(database: DeepPartial<IDatabase>): Promise<
   });
   return res?.data;
 }
+
+export async function updateDataBase(databaseIds: number[], projectId: number): Promise<Boolean> {
+  const res = await request.post(`/api/v2/database/databases/transfer`, {
+    data: {
+      databaseIds,
+      projectId,
+    },
+  });
+  return res?.data;
+}
