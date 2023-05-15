@@ -29,7 +29,6 @@ const ExtraContent = () => {
   return (
     <Space>
       <Button>命令行窗口</Button>
-      <Button type="primary">登录数据库</Button>
       <Dropdown.Button
         overlay={menu}
         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}

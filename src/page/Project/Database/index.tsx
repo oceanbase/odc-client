@@ -5,8 +5,8 @@ import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { Button } from 'antd';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import AddDataBaseButton from './AddDataBaseButton';
 interface IProps {
   id: string;
 }
@@ -15,7 +15,14 @@ const Database: React.FC<IProps> = ({ id }) => {
 
   const [data, setData] = useState<IDatabase[]>([]);
 
+  const params = useRef({
+    pageSize: 0,
+    current: 0,
+  });
+
   const loadData = async (pageSize, current) => {
+    params.current.pageSize = pageSize;
+    params.current.current = current;
     const res = await listDatabases(parseInt(id), null, current, pageSize);
     if (res) {
       setData(res?.contents);
@@ -23,8 +30,15 @@ const Database: React.FC<IProps> = ({ id }) => {
     }
   };
 
+  function reload() {
+    loadData(params.current.pageSize, params.current.current);
+  }
+
   return (
-    <TableCard title={<Button type="primary">添加数据库</Button>} extra={<Reload />}>
+    <TableCard
+      title={<AddDataBaseButton onSuccess={() => reload} projectId={parseInt(id)} />}
+      extra={<Reload onClick={reload} />}
+    >
       <MiniTable<IDatabase>
         rowKey={'id'}
         columns={[
@@ -66,7 +80,7 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: '操作',
             dataIndex: 'name',
-            width: 220,
+            width: 200,
             render(_, record) {
               return (
                 <Action.Group size={3}>

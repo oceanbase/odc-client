@@ -1,4 +1,5 @@
 import { IResponseData } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
 import { IProject } from '@/d.ts/project';
 import request from '@/util/request';
 import * as mockjs from 'mockjs';
@@ -78,5 +79,10 @@ export async function listDataSources(
     },
   });
 
+  return res?.data;
+}
+
+export async function getDataSource(id: number): Promise<IDatasource> {
+  const res = await request.get(`/api/v2/datasource/datasources/${id}`);
   return res?.data;
 }
