@@ -1,9 +1,10 @@
 import { listProjects } from '@/common/network/project';
+import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
+import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
-import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from '@umijs/max';
 import { List, Space } from 'antd';
 import VirtualList from 'rc-virtual-list';
@@ -27,10 +28,11 @@ const Project = () => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
   const [dataSource, setDataSource] = useState<IProject[]>([]);
+  const [projectSearchName, setProjectSearchName] = useState(null);
   const navigate = useNavigate();
 
   const appendData = async (currentPage, dataSource) => {
-    const res = await listProjects('', currentPage + 1, 40);
+    const res = await listProjects(projectSearchName, currentPage + 1, 40);
     if (res) {
       setCurrentPage(currentPage + 1);
       /**
@@ -74,8 +76,21 @@ const Project = () => {
           <div className={styles.header}>
             <CreateProjectDrawer onCreate={() => reload()} />
             <Space size={12}>
-              <SearchOutlined />
-              <Reload onClick={reload} />
+              <Search
+                onSearch={(v) => {
+                  setProjectSearchName(v);
+                  reload();
+                }}
+                searchTypes={[
+                  {
+                    label: '项目名称',
+                    value: 'projectName',
+                  },
+                ]}
+              />
+              <FilterIcon onClick={reload}>
+                <Reload />
+              </FilterIcon>
             </Space>
           </div>
         }

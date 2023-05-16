@@ -1,19 +1,50 @@
 import Action from '@/component/Action';
+import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import { Button } from 'antd';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
+import AddUserModal from './AddUserModal';
 interface IProps {
   id: string;
 }
 const User: React.FC<IProps> = ({ id }) => {
   const context = useContext(ProjectContext);
 
+  const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
+
+  const dataSource: (IProject['members'][0] & { roles: ProjectRole[] })[] = useMemo(() => {
+    const userMap = new Map<number, IProject['members'][0] & { roles: ProjectRole[] }>();
+    context?.project?.members?.forEach((mem) => {
+      const { id, role } = mem;
+      if (userMap.has(id)) {
+        userMap.get(id).roles.push(role);
+      } else {
+        userMap.set(id, {
+          ...mem,
+          roles: [role],
+        });
+      }
+    });
+    return [...userMap.values()];
+  }, [context?.project?.members]);
+
   return (
-    <TableCard title={<Button type="primary">添加成员</Button>} extra={<Reload />}>
+    <TableCard
+      title={
+        <Button type="primary" onClick={() => setAddUserModalVisiable(true)}>
+          添加成员
+        </Button>
+      }
+      extra={
+        <FilterIcon onClick={context.reloadProject}>
+          <Reload />
+        </FilterIcon>
+      }
+    >
       <MiniTable<IProject['members'][0]>
         rowKey={'id'}
         columns={[
@@ -28,8 +59,11 @@ const User: React.FC<IProps> = ({ id }) => {
           },
           {
             title: '项目角色',
-            dataIndex: 'role',
+            dataIndex: 'roles',
             width: 370,
+            render(v) {
+              return v?.join(' | ');
+            },
           },
           {
             title: '操作',
@@ -45,11 +79,19 @@ const User: React.FC<IProps> = ({ id }) => {
             },
           },
         ]}
-        dataSource={context?.project?.members}
+        dataSource={dataSource}
         pagination={{
-          total: context?.project?.members?.length,
+          total: dataSource?.length,
         }}
         loadData={(page) => {}}
+      />
+      <AddUserModal
+        visible={addUserModalVisiable}
+        close={() => setAddUserModalVisiable(false)}
+        onSuccess={() => {
+          context.reloadProject();
+        }}
+        project={context.project}
       />
     </TableCard>
   );

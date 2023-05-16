@@ -21,6 +21,7 @@ import type {
   IResponseData,
 } from '@/d.ts';
 import { actionTypes, IManagePagesKeys, IManagerResourceType } from '@/d.ts';
+import MaskDataPage from '@/page/Project/Setting/Algorithm';
 import type { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import resourceIcon from '@/svgr/resource.svg';
@@ -38,7 +39,6 @@ import React, { useEffect, useState } from 'react';
 import { history } from 'umi';
 import AutoAuthPage from './components/AutoAuthPage';
 import IndexPage from './components/IndexPage';
-import MaskDataPage from './components/MaskDataPage';
 import PublicConnection from './components/PublicConnectionPage';
 import RecordPage from './components/RecordPage';
 import ResourceGroup from './components/ResourceGroupPage';

@@ -7,10 +7,10 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Form, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import React, { useRef, useState } from 'react';
-import Status from '../CommonStatus';
-import { segementInfosMap } from '../FormMaskDataModal/component/customSegement';
-import RulePreview from '../FormMaskDataModal/component/rulePreview';
-import { getSliderData, segmentsMap } from '../FormMaskDataModal/config';
+import Status from './CommonStatus';
+import { segementInfosMap } from './FormMaskDataModal/component/customSegement';
+import RulePreview from './FormMaskDataModal/component/rulePreview';
+import { getSliderData, segmentsMap } from './FormMaskDataModal/config';
 import { getMaskTypesMap } from './index';
 import styles from './index.less';
 

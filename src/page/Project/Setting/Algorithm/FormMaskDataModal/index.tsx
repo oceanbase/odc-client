@@ -234,15 +234,7 @@ const FormMaskDataModal: React.FC<IProps> = (props) => {
     <>
       <Drawer
         width={720}
-        title={
-          isEdit
-            ? formatMessage({
-                id: 'odc.components.FormMaskDataModal.EditDesensitizationRules',
-              }) //编辑脱敏规则
-            : formatMessage({
-                id: 'odc.components.FormMaskDataModal.CreateADesensitizationRule',
-              }) //新建脱敏规则
-        }
+        title={isEdit ? '编辑脱敏算法' : '新建脱敏算法'}
         className={styles.maskData}
         footer={
           <Space>
@@ -288,9 +280,7 @@ const FormMaskDataModal: React.FC<IProps> = (props) => {
           onFieldsChange={handleEditStatus}
         >
           <Form.Item
-            label={formatMessage({
-              id: 'odc.components.FormMaskDataModal.RuleName',
-            })} /*规则名称*/
+            label={'算法名称'}
             name="name"
             validateTrigger="onBlur"
             rules={[
@@ -328,9 +318,7 @@ const FormMaskDataModal: React.FC<IProps> = (props) => {
             />
           </Form.Item>
           <Form.Item
-            label={formatMessage({
-              id: 'odc.components.FormMaskDataModal.RuleStatus',
-            })} /*规则状态*/
+            label="算法状态"
             name="enabled"
             rules={[
               {
@@ -358,12 +346,7 @@ const FormMaskDataModal: React.FC<IProps> = (props) => {
               </Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.FormMaskDataModal.RuleDetails',
-            })}
-            /*规则详情*/ required
-          >
+          <Form.Item label={'算法详情'} required>
             <RuleDetail onFieldChange={handleFieldChange} />
           </Form.Item>
           <Form.Item

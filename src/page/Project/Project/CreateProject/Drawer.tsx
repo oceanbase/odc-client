@@ -64,7 +64,7 @@ export default function CreateProjectDrawer(props: IProps) {
         visible={open}
         title="创建项目"
         footer={
-          <Space>
+          <Space style={{ float: 'right' }}>
             <Button onClick={onClose}>取消</Button>
             <Button loading={loading} type="primary" onClick={onSubmit}>
               确定
@@ -72,7 +72,7 @@ export default function CreateProjectDrawer(props: IProps) {
           </Space>
         }
       >
-        <CreateProject ref={createProject} />
+        <CreateProject key={open + ''} ref={createProject} />
       </Drawer>
     </>
   );

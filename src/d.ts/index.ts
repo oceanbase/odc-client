@@ -14,6 +14,19 @@ export interface IUser {
   role: string;
   enabled: boolean;
   roles?: IManagerRole[];
+  belongedToOrganizations: IOrganization[];
+}
+
+export interface IOrganization {
+  id: number;
+  createTime: string;
+  updateTime: string;
+  uniqueIdentifier: string;
+  name: string;
+  secret: string;
+  description: string;
+  builtin: boolean;
+  type: 'TEAM' | 'INDIVIDUAL';
 }
 
 export enum SQL_OBJECT_TYPE {
