@@ -13,7 +13,7 @@ interface IDocProps {
   overlayStyle?: { [key: string]: string };
 }
 
-const component: React.FC<IDocProps> = function (props) {
+const HelpDoc: React.FC<IDocProps> = function (props) {
   const { isTip = true, leftText, overlayStyle, doc: propDoc } = props;
   const doc = Doc[propDoc];
   const iconStyle = {
@@ -39,4 +39,4 @@ const component: React.FC<IDocProps> = function (props) {
   );
 };
 
-export default component;
+export default HelpDoc;

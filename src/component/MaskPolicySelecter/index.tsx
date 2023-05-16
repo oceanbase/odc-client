@@ -1,6 +1,6 @@
 import MaskPolicyManager from '@/component/MaskPolicyManager';
 import { IMaskRule } from '@/d.ts';
-import { getMaskTypesMap } from '@/page/Manage/components/MaskDataPage';
+import { getMaskTypesMap } from '@/page/Project/Setting/Algorithm';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { ExclamationCircleFilled, SettingOutlined } from '@ant-design/icons';

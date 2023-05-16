@@ -64,8 +64,10 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
           form={form}
           layout="vertical"
           onValuesChange={(changedValues) => {
-            fetchDataSource(changedValues?.dataSourceId);
-            fetchDatabases(projectId, changedValues?.dataSourceId, 1, 999999);
+            if (changedValues.hasOwnProperty('dataSourceId')) {
+              fetchDataSource(changedValues?.dataSourceId);
+              fetchDatabases(projectId, changedValues?.dataSourceId, 1, 999999);
+            }
           }}
         >
           <Row>
@@ -83,7 +85,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item label="环境">{dataSource?.environmentName}</Form.Item>
+              <Form.Item label="环境">{dataSource?.environmentName || '-'}</Form.Item>
             </Col>
           </Row>
           <Form.Item rules={[{ required: true }]} name={'databaseIds'} label="数据库">

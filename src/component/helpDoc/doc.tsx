@@ -427,4 +427,8 @@ export default {
       }
     </p>
   ),
+
+  projectOwner: <p>可管理项目所有数据库和成员</p>,
+  projectDBA: <p>可管理项目所有数据库</p>,
+  projectDev: <p>可访问项目所有数据库</p>,
 };

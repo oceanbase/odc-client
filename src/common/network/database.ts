@@ -14,7 +14,7 @@ export async function listDatabases(
     page: {
       totalElements: 200,
     },
-    ['contents|' + size]: [
+    ['contents|' + Math.min(size, 100)]: [
       {
         id: '@integer(0, 10000)',
         name: '@cword(3,6)',

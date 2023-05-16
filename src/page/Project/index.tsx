@@ -109,12 +109,19 @@ const Index: React.FC<IProps> = function () {
     }
   }, [projectId]);
 
+  const projectOptions = [
+    {
+      label: project?.name,
+      value: projectId,
+    },
+  ];
+
   return (
     <PageContainer
       titleProps={{
         type: TitleType.SELECT,
         defaultValue: projectId,
-        options: options,
+        options: projectOptions,
         onChange: handleProjectChange,
       }}
       tabList={tabs}

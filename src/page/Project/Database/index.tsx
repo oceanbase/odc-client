@@ -1,5 +1,6 @@
 import { listDatabases } from '@/common/network/database';
 import Action from '@/component/Action';
+import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
@@ -37,7 +38,11 @@ const Database: React.FC<IProps> = ({ id }) => {
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload} projectId={parseInt(id)} />}
-      extra={<Reload onClick={reload} />}
+      extra={
+        <FilterIcon onClick={reload}>
+          <Reload />
+        </FilterIcon>
+      }
     >
       <MiniTable<IDatabase>
         rowKey={'id'}
