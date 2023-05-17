@@ -238,6 +238,7 @@ export class UserStore {
     }
   }
 
+  @action
   public haveUserInfo() {
     return !isNil(this?.user?.id);
   }

@@ -77,6 +77,9 @@ export class SettingStore {
   public enableDBExport: boolean = false;
 
   @observable
+  public enableAll: boolean = false;
+
+  @observable
   public enableMockdata: boolean = false;
 
   /**

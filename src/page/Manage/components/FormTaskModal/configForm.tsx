@@ -151,7 +151,8 @@ const ConfigForm: React.FC<IProps> = (props) => {
       initialValues={
         !isEdit
           ? {
-              taskType: defaultTaskType,
+              taskType:
+                defaultTaskType === TaskPageType.ALL ? TaskPageType.EXPORT : defaultTaskType,
               degree: 1,
               riskLevelConfigs: [
                 {
@@ -235,20 +236,20 @@ const ConfigForm: React.FC<IProps> = (props) => {
               options={[
                 {
                   label: formatMessage({
-                    id: 'odc.components.FormTaskModal.Import',
-                  }),
-
-                  //导入
-                  value: TaskType.IMPORT,
-                },
-
-                {
-                  label: formatMessage({
                     id: 'odc.components.FormTaskModal.Export',
                   }),
 
                   //导出
                   value: TaskType.EXPORT,
+                },
+
+                {
+                  label: formatMessage({
+                    id: 'odc.components.FormTaskModal.Import',
+                  }),
+
+                  //导入
+                  value: TaskType.IMPORT,
                 },
 
                 {
@@ -271,6 +272,20 @@ const ConfigForm: React.FC<IProps> = (props) => {
 
                 {
                   label: formatMessage({
+                    id: 'odc.components.FormTaskModal.configForm.ShadowTable',
+                  }),
+                  //影子表
+                  value: TaskType.SHADOW,
+                },
+
+                {
+                  label: 'SQL 计划',
+                  value: TaskType.SQL_PLAN,
+                  disabled: true,
+                },
+
+                {
+                  label: formatMessage({
                     id: 'odc.components.FormTaskModal.configForm.PartitionPlan',
                   }),
                   //分区计划
@@ -279,27 +294,10 @@ const ConfigForm: React.FC<IProps> = (props) => {
                 },
 
                 {
-                  label: formatMessage({
-                    id: 'odc.components.FormTaskModal.configForm.ShadowTable',
-                  }),
-                  //影子表
-                  value: TaskType.SHADOW,
-                },
-
-                {
-                  label: formatMessage({
-                    id: 'odc.components.FormTaskModal.configForm.PermissionApplication',
-                  }),
-
-                  //权限申请
-                  value: TaskType.PERMISSION_APPLY,
-                },
-
-                {
-                  label: formatMessage({
-                    id: 'odc.components.FormTaskModal.configForm.PlannedChange',
-                  }), //计划变更
-                  value: TaskType.ALTER_SCHEDULE,
+                  label: '数据归档',
+                  //数据归档
+                  value: TaskType.DATA_SAVE,
+                  disabled: true,
                 },
               ]}
             />
