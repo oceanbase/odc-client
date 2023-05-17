@@ -9,6 +9,7 @@ import {
   IAutoAuthEvent,
   IAutoAuthRule,
   IConnectionType,
+  IManagerIntegration,
   IManagerPublicConnection,
   IManagerResourceGroup,
   IManagerResourceType,
@@ -17,6 +18,7 @@ import {
   IManagerUserPermission,
   IManageUserListParams,
   IMaskRule,
+  IntegrationType,
   IRequestListParamsV2,
   IResponseData,
   IUserConfig,
@@ -804,6 +806,93 @@ export async function updateAutoRule(data: Partial<IAutoAuthRule>): Promise<IAut
 export async function geteAutoRuleExists(name: string): Promise<boolean> {
   const result = await request.get(`/api/v2/management/auto/rules/exists`, {
     params: {
+      name,
+    },
+  });
+  return result?.data;
+}
+
+/**
+ * 创建外部集成
+ */
+export async function createIntegration(
+  data: Partial<IManagerIntegration>,
+): Promise<IManagerIntegration> {
+  const result = await request.post('/api/v2/integration/', {
+    data,
+  });
+  return result?.data;
+}
+
+/**
+ * 删除集成
+ */
+export async function deleteIntegration(id: number): Promise<IManagerIntegration> {
+  const result = await request.delete(`/api/v2/integration/${id}`);
+  return result?.data;
+}
+
+/**
+ * 更新集成
+ */
+export async function updateIntegration(
+  data: Partial<IManagerIntegration>,
+): Promise<IManagerIntegration> {
+  const result = await request.put(`/api/v2/integration/${data.id}`, {
+    data,
+  });
+  return result?.data;
+}
+
+/**
+ * 设置集成状态
+ */
+export async function setIntegration(data: {
+  id: number;
+  enabled: boolean;
+}): Promise<IManagerIntegration> {
+  const result = await request.post(`/api/v2/integration/${data.id}/setEnabled`, {
+    data,
+  });
+  return result?.data;
+}
+
+/**
+ * 获取集成详情
+ */
+export async function getIntegrationDetail(id: number): Promise<IManagerIntegration> {
+  const result = await request.get(`/api/v2/integration/${id}`);
+  return result?.data;
+}
+
+/**
+ * 获取集成列表
+ */
+export async function getIntegrationList(params?: {
+  name?: string;
+  type?: IntegrationType;
+  creatorName?: string;
+  enabled?: boolean[];
+  sort?: string;
+  page?: number;
+  size?: number;
+}): Promise<IResponseData<IManagerIntegration>> {
+  const result = await request.get('/api/v2/integration/', {
+    params,
+  });
+  return result?.data;
+}
+
+/**
+ * 获取集成名称是否重复
+ */
+export async function checkIntegrationExists(
+  type: IntegrationType,
+  name: string,
+): Promise<boolean> {
+  const result = await request.get(`/api/v2/integration/exists`, {
+    params: {
+      type,
       name,
     },
   });

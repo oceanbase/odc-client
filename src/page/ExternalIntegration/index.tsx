@@ -2,28 +2,27 @@ import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IPageType } from '@/d.ts/_index';
 import React from 'react';
 import { history, useParams } from 'umi';
-import ExternalIntegration_1 from './ExternalIntegration_1';
-import ExternalIntegration_2 from './ExternalIntegration_2';
+import SqlInterceptor from './SqlInterceptor';
 
 interface IProps {}
 
 const Pages = {
-  [IPageType.ExternalIntegration_1]: {
-    component: ExternalIntegration_1,
+  [IPageType.ExternalIntegration_Approval]: {
+    component: SqlInterceptor,
   },
-  [IPageType.ExternalIntegration_2]: {
-    component: ExternalIntegration_2,
+  [IPageType.ExternalIntegration_Sql]: {
+    component: SqlInterceptor,
   },
 };
 
 const tabs = [
   {
-    tab: '外部集成-1',
-    key: IPageType.ExternalIntegration_1,
+    tab: '审批集成',
+    key: IPageType.ExternalIntegration_Approval,
   },
   {
-    tab: '外部集成-2',
-    key: IPageType.ExternalIntegration_2,
+    tab: 'SQL 审核集成',
+    key: IPageType.ExternalIntegration_Sql,
   },
 ];
 
@@ -46,7 +45,7 @@ const Index: React.FC<IProps> = function () {
       tabActiveKey={page}
       onTabChange={handleChange}
     >
-      <Component id={id} />
+      <Component id={id} pageKey={page} />
     </PageContainer>
   );
 };

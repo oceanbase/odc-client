@@ -124,6 +124,8 @@ export enum IManagePagesKeys {
   SECURITY_AUDIT = 'security_audit',
   SYSTEM_CONFIG = 'system_config',
   MASK_DATA = 'mask_data',
+  INTEGRATION_APPROVAL = 'integration_approval',
+  SQL_INTERCEPTOR = 'sql_interceptor',
 }
 
 export interface IManagerUser {
@@ -250,6 +252,40 @@ export interface IManagerResourceGroup {
     id: number;
     enabled: boolean;
   }[];
+}
+// 外部集成
+export interface IManagerIntegration {
+  id: number;
+  type: IntegrationType;
+  name: string;
+  configuration: string;
+  enabled: boolean;
+  encryption: Encryption;
+  creatorId: number;
+  creatorName: string;
+  organizationId: number;
+  description: string;
+  createTime: number;
+  updateTime: number;
+  builtin: boolean;
+}
+
+interface Encryption {
+  enabled: boolean;
+  secret: string;
+  algorithm: EncryptionAlgorithm;
+}
+
+export enum EncryptionAlgorithm {
+  AES256_BASE64 = 'AES256_BASE64',
+  AES192_BASE64_4A = 'AES192_BASE64_4A',
+}
+
+export enum IntegrationType {
+  // 集成审批
+  APPROVAL = 'APPROVAL',
+  // SQL 审核集成
+  SQL_INTERCEPTOR = 'SQL_INTERCEPTOR',
 }
 
 export enum AuditEventType {
@@ -573,6 +609,14 @@ export interface IConnection {
   /**
    * @deprecated
    */
+  dbMode: ConnectionMode;
+  /**
+   * @deprecated
+   */
+  defaultDBName: string;
+  /**
+   * @deprecated
+   */
   copyFromSid: number;
   /**
    * @deprecated
@@ -712,6 +756,8 @@ export enum PageType {
   CREATE_SEQUENCE = 'CREATE_SEQUENCE',
   SEQUENCE = 'SEQUENCE',
   CREATE_PACKAGE = 'CREATE_PACKAGE',
+  EDIT_PACKAGE = 'EDIT_PACKAGE',
+  EDIT_PL = 'EDIT_PL',
   PACKAGE = 'PACKAGE',
   IMPORT = 'IMPORT',
   EXPORT = 'EXPORT',
@@ -1034,10 +1080,6 @@ export interface IFunction {
   createTime?: number;
   modifyTime?: number;
   errorMessage: string;
-  variables: {
-    varName: string;
-    varType: string;
-  }[];
 }
 
 export enum ParamMode {
@@ -1066,10 +1108,6 @@ export interface IProcedure {
   modifyTime: number;
   status: string;
   errorMessage: string;
-  variables: {
-    varName: string;
-    varType: string;
-  }[];
 }
 
 // 程序包
@@ -1085,10 +1123,6 @@ export interface IPackage {
 
     functions: any[];
     procedures: any[];
-    variables: {
-      varName: string;
-      varType: string;
-    }[];
   };
 
   packageHead: {
@@ -1101,10 +1135,6 @@ export interface IPackage {
 
     functions: any[];
     procedures: any[];
-    variables: {
-      varName: string;
-      varType: string;
-    }[];
   };
 
   packageName: string;
@@ -1239,13 +1269,6 @@ export interface ITriggerForm {
 export interface IType {
   typeName: string;
   type: TypeCode;
-  typeDetail: {
-    functions: IFunction[];
-    variables: {
-      varName: string;
-      varType: string;
-    }[];
-  };
   owner?: string;
   createTime?: number;
   lastDdlTime?: number;

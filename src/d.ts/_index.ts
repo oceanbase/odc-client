@@ -30,6 +30,6 @@ export enum IPageType {
   Secure_Approval = 'approval',
   Secure_Record = 'record',
   ExternalIntegration = 'externalIntegration',
-  ExternalIntegration_1 = 'abc',
-  ExternalIntegration_2 = 'bcd',
+  ExternalIntegration_Approval = 'approval',
+  ExternalIntegration_Sql = 'sql',
 }

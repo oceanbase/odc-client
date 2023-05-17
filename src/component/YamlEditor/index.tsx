@@ -25,7 +25,7 @@ interface IProps {
 }
 
 const YamlEditor = function ({ defaultValue, theme, readOnly, settingStore, onValueChange }, ref) {
-  const settingTheme = settingStore.theme.editorTheme;
+  const settingTheme = 'obwhite';
 
   const domRef = useRef<HTMLDivElement>(null);
 

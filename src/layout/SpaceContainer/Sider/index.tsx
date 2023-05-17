@@ -91,7 +91,7 @@ const Sider: React.FC<IProps> = function () {
               label="安全规范"
             />
           </Link>
-          <Link to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_1}`}>
+          <Link to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}>
             <MenuItem
               key={IPageType.ExternalIntegration}
               selected={selected === IPageType.ExternalIntegration}
