@@ -1,6 +1,7 @@
-import { updateProject } from '@/common/network/project';
+import { setProjectAchived, updateProject } from '@/common/network/project';
 import { IProject } from '@/d.ts/project';
-import { Button, Form, Input, message, Space } from 'antd';
+import { history } from '@umijs/max';
+import { Button, Form, Input, message, Popconfirm, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../ProjectContext';
 
@@ -29,6 +30,18 @@ export default function Info() {
     }
   }
 
+  async function deleteProject() {
+    const isSuccess = await setProjectAchived({
+      projectId: context?.projectId,
+      archived: true,
+    });
+    if (!isSuccess) {
+      return;
+    }
+    message.success('操作成功');
+    history.push('/project');
+  }
+
   return (
     <div style={{ padding: 24 }}>
       <Form
@@ -55,7 +68,9 @@ export default function Info() {
         <Button disabled={!isModify} type="primary" onClick={onSubmit}>
           确认修改
         </Button>
-        <Button danger>归档项目</Button>
+        <Popconfirm title={'该操作无法恢复，确定要归档项目吗？'} onConfirm={deleteProject}>
+          <Button danger>归档项目</Button>
+        </Popconfirm>
       </Space>
     </div>
   );

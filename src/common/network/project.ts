@@ -6,12 +6,14 @@ export async function listProjects(
   name: string = '',
   page: number,
   size: number,
+  archived: boolean = false,
 ): Promise<IResponseData<IProject>> {
   const res = await request.get(`/api/v2/collaboration/projects`, {
     params: {
       name,
       page,
       size,
+      archived,
     },
   });
 
@@ -45,4 +47,20 @@ export async function createProject(params: {
   });
 
   return res?.data;
+}
+
+export async function setProjectAchived(params: {
+  projectId: number;
+  archived: boolean;
+}): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/collaboration/projects/${params?.projectId}/setArchived`,
+    {
+      data: {
+        archived: params?.archived,
+      },
+    },
+  );
+
+  return !!res?.data;
 }
