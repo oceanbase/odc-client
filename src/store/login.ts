@@ -1,4 +1,5 @@
 import { getScriptList as getRemoteScriptList } from '@/common/network';
+import { switchCurrentOrganization } from '@/common/network/origanization';
 import { odcServerLoginUrl, odcServerLogoutUrl } from '@/common/network/other';
 import type { ISQLScript, IUser } from '@/d.ts';
 import request from '@/util/request';
@@ -147,6 +148,18 @@ export class UserStore {
       await setting.getUserConfig();
       await setting.getSystemConfig();
     }
+    return !!user;
+  }
+
+  @action
+  public async switchCurrentOrganization(id: number) {
+    const isSuccess = await switchCurrentOrganization(id);
+    if (!isSuccess) {
+      return false;
+    }
+    this.isUserFetched = false;
+    await this.getCurrentUser();
+    return true;
   }
 
   @action

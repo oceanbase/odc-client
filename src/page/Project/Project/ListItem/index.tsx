@@ -2,6 +2,7 @@ import { IProject } from '@/d.ts/project';
 import { FileZipFilled, UserOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
+import React, { forwardRef } from 'react';
 import styles from './index.less';
 
 interface IProps {
@@ -9,9 +10,12 @@ interface IProps {
   onClick: (p: IProject) => void;
 }
 
-export default function ListItem({ data, onClick }: IProps) {
+export default forwardRef(function ListItem(
+  { data, onClick }: IProps,
+  ref: React.Ref<HTMLDivElement>,
+) {
   return (
-    <div className={styles.item} onClick={onClick.bind(this, data)}>
+    <div ref={ref} className={styles.item} onClick={onClick.bind(this, data)}>
       <div className={classNames(styles.block, styles.status)}>
         <FileZipFilled style={{ color: 'var(--icon-blue-color)' }} />
       </div>
@@ -25,4 +29,4 @@ export default function ListItem({ data, onClick }: IProps) {
       </div>
     </div>
   );
-}
+});

@@ -20,7 +20,7 @@ export async function listDataSources(
     'contents|20': [
       {
         id: '@id',
-        name: '形这许速具',
+        name: '@name',
         type: 'OB_MYSQL',
         host: 'jmrxpdpxs.is',
         port: 4385,

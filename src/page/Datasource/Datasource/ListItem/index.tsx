@@ -1,7 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import classNames from 'classnames';
-import React from 'react';
+import React, { forwardRef } from 'react';
 import styles from './index.less';
 
 import Action from '@/component/Action';
@@ -19,9 +19,12 @@ interface IProps {
   onClick: (data: IDatasource) => void;
 }
 
-const ListItem: React.FC<IProps> = function ({ data, onClick }) {
+const ListItem: React.FC<IProps> = forwardRef<HTMLDivElement, IProps>(function (
+  { data, onClick },
+  ref,
+) {
   return (
-    <div className={styles.item}>
+    <div ref={ref} className={styles.item}>
       <div className={classNames(styles.base, styles.expand)}>
         <Icons
           style={{ fontSize: 12, cursor: 'pointer', color: 'var(--icon-color-normal)' }}
@@ -112,5 +115,5 @@ const ListItem: React.FC<IProps> = function ({ data, onClick }) {
       </div>
     </div>
   );
-};
+});
 export default ListItem;

@@ -1,4 +1,3 @@
-import { switchCurrentOrganization } from '@/common/network/origanization';
 import { IOrganization } from '@/d.ts';
 import { UserStore } from '@/store/login';
 import { TeamOutlined } from '@ant-design/icons';
@@ -21,7 +20,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
   };
 
   const switchOriganization = async (id: number, type: IOrganization['type']) => {
-    const isSuccess = await switchCurrentOrganization(id);
+    const isSuccess = await userStore.switchCurrentOrganization(id);
     if (isSuccess) {
       type === 'INDIVIDUAL' ? handleGoto('/sqlworkspace') : handleGoto('/project');
     }
