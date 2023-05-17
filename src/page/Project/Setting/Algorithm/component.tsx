@@ -1,5 +1,6 @@
 import { testMaskRule } from '@/common/network/manager';
 import HelpDoc from '@/component/helpDoc';
+import Status from '@/component/Manage/Status';
 import type { IMaskRule } from '@/d.ts';
 import { MaskRuleCustomSegmentsType, MaskRuleType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -7,7 +8,6 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Form, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import React, { useRef, useState } from 'react';
-import Status from './CommonStatus';
 import { segementInfosMap } from './FormMaskDataModal/component/customSegement';
 import RulePreview from './FormMaskDataModal/component/rulePreview';
 import { getSliderData, segmentsMap } from './FormMaskDataModal/config';
