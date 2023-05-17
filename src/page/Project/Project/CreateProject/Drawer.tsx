@@ -8,6 +8,7 @@ import { ProjectRole } from '@/d.ts/project';
 
 interface IProps {
   onCreate?: () => void;
+  disabled?: boolean;
 }
 
 export default function CreateProjectDrawer(props: IProps) {
@@ -55,7 +56,11 @@ export default function CreateProjectDrawer(props: IProps) {
   }
   return (
     <>
-      <Button type="primary" onClick={() => setOpen(true)}>
+      <Button
+        disabled={props.disabled}
+        type="primary"
+        onClick={props.disabled ? null : () => setOpen(true)}
+      >
         新建项目
       </Button>
       <Drawer

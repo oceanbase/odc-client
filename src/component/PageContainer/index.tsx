@@ -49,7 +49,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
             onChange={onTabChange}
           >
             {options?.map(({ label, value }) => {
-              return <Tabs.TabPane tab={label} key={label} />;
+              return <Tabs.TabPane tab={label} key={value} />;
             })}
           </Tabs>
         )}
