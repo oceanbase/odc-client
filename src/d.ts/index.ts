@@ -1613,6 +1613,7 @@ export enum TaskPageType {
   PERMISSION_APPLY = 'PERMISSION_APPLY',
   PARTITION_PLAN = 'PARTITION_PLAN',
   SQL_PLAN = 'SQL_PLAN',
+  DATASAVE = 'DATASAVE',
   SHADOW = 'SHADOWTABLE_SYNC',
   CREATED_BY_CURRENT_USER = 'createdByCurrentUser',
   APPROVE_BY_CURRENT_USER = 'approveByCurrentUser',
@@ -1629,6 +1630,7 @@ export enum TaskType {
   SQL_PLAN = 'SQL_PLAN',
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
   SHADOW = 'SHADOWTABLE_SYNC',
+  DATA_SAVE = 'DATA_SAVE',
 }
 
 export enum TaskSubType {

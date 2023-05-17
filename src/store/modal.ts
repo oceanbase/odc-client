@@ -218,6 +218,11 @@ export class ModalStore {
   }
 
   @action
+  public changeAllModal(isShow: boolean = true) {
+    // this.allModalVisible = isShow;
+  }
+
+  @action
   public changeImportModal(isShow: boolean = true, modalData?: Partial<ITable>) {
     this.importModalVisible = isShow;
     this.importModalData = isShow ? modalData : null;

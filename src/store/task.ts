@@ -64,7 +64,7 @@ export class TaskStore {
    * task page 的 tab
    */
   @observable
-  public taskPageType: TaskPageType = TaskPageType.CREATED_BY_CURRENT_USER;
+  public taskPageType: TaskPageType = TaskPageType.EXPORT;
 
   /**
    * 任务一级筛选范围

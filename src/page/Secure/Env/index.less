@@ -1,0 +1,93 @@
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 22px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+.dev {
+  color: rgba(19, 168, 168, 1);
+  background-color: rgba(230, 255, 251, 1);
+}
+
+.test {
+  color: rgba(24, 144, 255, 1);
+  background-color: rgba(230, 247, 255, 1);
+}
+
+.prod {
+  color: rgba(235, 47, 150, 1);
+  background-color: rgba(255, 240, 246, 1);
+}
+
+.smallTable {
+  :global {
+    .ant-table {
+      font-size: 12px;
+    }
+
+    .ant-table-thead > tr > th {
+      white-space: nowrap;
+
+      .ant-table-column-sorters {
+        padding: 0;
+      }
+    }
+
+    .ant-table-thead > tr > th {
+      height: 24px;
+      padding: 0 8px;
+    }
+
+    .ant-table-tbody > tr > td {
+      height: 40px;
+      padding: 0 8px;
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 400;
+      font-size: 12px;
+
+      font-family: PingFang SC;
+      line-height: 20px;
+    }
+
+    .ant-table-tbody > tr.ant-table-expanded-row > td {
+      height: 100%;
+      padding: 0 8px;
+    }
+
+    .ant-table-column-title {
+      color: var(--text-color-primary);
+    }
+
+    .ant-table-column-has-sorters {
+      position: relative;
+    }
+
+    .ant-table-column-sorter {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+    }
+  }
+
+  .odd {
+    background: var(--background-tertraiy-color);
+  }
+}
+.envDrawer {
+  :global {
+    .ant-drawer-content {
+      width: 520px;
+    }
+    .ant-drawer-header-title {
+      flex-direction: row-reverse;
+    }
+    .ant-drawer-body {
+      padding: 16px;
+    }
+  }
+}

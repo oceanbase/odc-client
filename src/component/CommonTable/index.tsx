@@ -144,11 +144,14 @@ const CommonTable: <RecordType extends object = any>(
   }));
 
   useEffect(() => {
-    setTimeout(() => {
+    const id = setTimeout(() => {
       computePageSize();
     }, 0);
     window.addEventListener('resize', resizeHeight);
-    return () => window.removeEventListener('resize', resizeHeight);
+    return () => {
+      clearTimeout(id);
+      window.removeEventListener('resize', resizeHeight);
+    };
   }, []);
 
   async function computePageSize() {
