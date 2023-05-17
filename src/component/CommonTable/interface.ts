@@ -18,7 +18,6 @@ export interface ITitleContent {
   };
   title?: string;
   description?: string;
-  enabledReload?: boolean;
   wrapperClass?: string;
 }
 export interface IFilterContent {
