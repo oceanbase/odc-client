@@ -15,6 +15,7 @@ export interface IUser {
   enabled: boolean;
   roles?: IManagerRole[];
   belongedToOrganizations: IOrganization[];
+  organizationId: number;
 }
 
 export interface IOrganization {

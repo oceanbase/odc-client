@@ -1,8 +1,8 @@
 export enum SpaceType {
   // 协同
-  SYNERGY = 'SYNERGY',
+  SYNERGY = 'TEAM',
   // 个人
-  PRIVATE = 'PRIVATE',
+  PRIVATE = 'INDIVIDUAL',
 }
 
 export enum IPageType {
