@@ -34,7 +34,7 @@ interface IProps {
   roles: IManagerRole[];
   onClose: () => void;
   reloadData?: () => void;
-  handleStatusChange?: (status: boolean, user: IManagerUser, callback: () => void) => void;
+  handleStatusChange?: (status: boolean, user: IManagerUser) => void;
 }
 
 interface IState {
@@ -288,11 +288,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
 
   private handleStatusChange = (e: RadioChangeEvent, isEdit: boolean) => {
     if (!e.target.value && isEdit) {
-      this.props.handleStatusChange(e.target.value, null, () => {
-        this.formRef.current.setFieldsValue({
-          enabled: true,
-        });
-      });
+      this.props.handleStatusChange(e.target.value, null);
     }
   };
 
