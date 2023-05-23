@@ -1,21 +1,23 @@
-import { getIntegrationDetail, getIntegrationList, setIntegration } from '@/common/network/manager';
+import {
+  deleteIntegration,
+  getIntegrationDetail,
+  getIntegrationList,
+  setIntegration,
+} from '@/common/network/manager';
 import { Acess, systemUpdatePermissions } from '@/component/Acess';
 import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
+import StatusSwitch from '@/component/StatusSwitch';
 import type { IManagerIntegration, IResponseData } from '@/d.ts';
-import {
-  IManagePagesKeys,
-  IManagerDetailTabs,
-  IManagerResourceType,
-  IntegrationType,
-} from '@/d.ts';
+import { IManagePagesKeys, IManagerResourceType, IntegrationType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import type { SettingStore } from '@/store/setting';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { Button, message, Modal, Space, Switch } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Button, message, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { FixedType } from 'rc-table/lib/interface';
 import React, { useRef, useState } from 'react';
@@ -25,7 +27,7 @@ import styles from './index.less';
 
 const pageMeta = {
   [IPageType.ExternalIntegration_Sql]: {
-    title: 'SQL 审核集成',
+    title: ' SQL 审核集成',
     type: IntegrationType.SQL_INTERCEPTOR,
   },
   [IPageType.ExternalIntegration_Approval]: {
@@ -40,10 +42,7 @@ interface IProps {
 }
 
 const SqlInterceptor: React.FC<IProps> = (props) => {
-  const {
-    settingStore: { serverSystemInfo },
-    pageKey,
-  } = props;
+  const { settingStore, pageKey } = props;
   const [list, setList] = useState<IResponseData<IManagerIntegration>>(null);
   const [editId, setEditId] = useState(null);
   const [detailId, setDetailId] = useState(null);
@@ -62,36 +61,11 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
     setDetailId(detailId);
   };
 
-  const handleStatusChange = (enabled: boolean, data: IManagerIntegration, callback = () => {}) => {
-    if (!enabled) {
-      Modal.confirm({
-        title: `确定要停用${title}吗？`,
-        content: (
-          <>
-            <div>被停用后用户将无法访问 {title}包含的连接</div>
-            <div>被停用的 {title}仍保留，支持启用</div>
-          </>
-        ),
-
-        cancelText: '取消',
-        okText: '确定',
-        centered: true,
-        onOk: () => {
-          if (data) {
-            handleEnable({
-              enabled,
-              data,
-            });
-          }
-        },
-        onCancel: callback,
-      });
-    } else {
-      handleEnable({
-        enabled,
-        data,
-      });
-    }
+  const handleStatusChange = (enabled: boolean, data: IManagerIntegration) => {
+    handleEnable({
+      enabled,
+      data,
+    });
   };
 
   const handleCloseDetailModal = () => {
@@ -149,6 +123,27 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
     openFormModal();
   };
 
+  const handleConfirmDelete = async (id: number) => {
+    const res = await deleteIntegration(id);
+    if (res) {
+      message.success('删除成功');
+      handleCloseAndReload();
+    }
+  };
+
+  const handleDelete = (param: React.Key | React.Key[]) => {
+    Modal.confirm({
+      title: `确认要删除${title}吗？`,
+      icon: <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />,
+      cancelText: '取消',
+      okText: '确定',
+      centered: true,
+      onOk: () => {
+        handleConfirmDelete(param as number);
+      },
+    });
+  };
+
   const getPageColumns = () => {
     return [
       {
@@ -161,7 +156,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
       },
 
       {
-        title: '更新时间',
+        title: '创建时间',
         width: 190,
         ellipsis: true,
         key: 'updateTime',
@@ -170,7 +165,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
         render: (updateTime) => getLocalFormatDateTime(updateTime),
       },
       {
-        title: '启用状态',
+        title: '状态',
         width: 115,
         ellipsis: true,
         key: 'enabled',
@@ -188,10 +183,12 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
         ],
         render: (enabled, record) => {
           return (
-            <Switch
-              size="small"
-              defaultChecked={enabled}
-              onChange={() => {
+            <StatusSwitch
+              checked={enabled}
+              onConfirm={() => {
+                handleStatusChange(!enabled, record);
+              }}
+              onCancel={() => {
                 handleStatusChange(!enabled, record);
               }}
             />
@@ -221,6 +218,14 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
                 >
                   编辑
                 </Action.Link>
+                <Action.Link
+                  disabled={record.builtIn}
+                  onClick={async () => {
+                    handleDelete(record.id);
+                  }}
+                >
+                  删除
+                </Action.Link>
               </Action.Group>
             </Acess>
           </Action.Group>
@@ -243,7 +248,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
           options: [
             {
               type: IOperationOptionType.button,
-              content: <span>新建 {title}</span>,
+              content: <span>新建{title}</span>,
               isPrimary: true,
               onClick: handleCreate,
             },
@@ -279,12 +284,6 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
         visible={detailModalVisible}
         title={title}
         detailId={detailId}
-        tabs={[
-          {
-            key: IManagerDetailTabs.DETAIL,
-            title: `${title}详情`,
-          },
-        ]}
         footer={
           <Space>
             <Button
@@ -301,7 +300,12 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
         onClose={handleCloseDetailModal}
         getDetail={() => getIntegrationDetail(detailId)}
         renderContent={(key, data) => (
-          <DetailContent activeKey={key} data={data} handleCloseAndReload={handleCloseAndReload} />
+          <DetailContent
+            title={title}
+            activeKey={key}
+            data={data}
+            handleCloseAndReload={handleCloseAndReload}
+          />
         )}
       />
     </>
