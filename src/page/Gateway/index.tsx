@@ -18,6 +18,7 @@ import { inject, observer } from 'mobx-react';
 import { action as customConnectAction, ICustomConnectAction } from './customConnect';
 import styles from './index.less';
 import { action as newCloudConnectionAction, INewCloudConnection } from './newCloudConnection';
+import { apply as ssoLoginAction, ISSOLogin } from './ssoLogin';
 import { action as taskAction, ITaskAction } from './task';
 import { action as tutorialAction, ITutorialAction } from './tutorial';
 const { Content } = Layout;
@@ -35,7 +36,8 @@ type IRemoteParams =
   | IStartAction
   | ITutorialAction
   | ITaskAction
-  | INewCloudConnection;
+  | INewCloudConnection
+  | ISSOLogin;
 
 interface GatewayProps {
   connectionStore?: ConnectionStore;
@@ -129,6 +131,10 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
         if (error) {
           setStatus(error);
         }
+        break;
+      }
+      case 'testLogin': {
+        ssoLoginAction();
         break;
       }
       default: {

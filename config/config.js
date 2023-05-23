@@ -69,6 +69,12 @@ const config = {
       // target: 'http://100.81.152.113:8989',
       target: 'http://11.124.9.83:7001/proxy/96',
     },
+    '/oauth2/': {
+      target: 'http://11.124.9.83:7001/proxy/96',
+    },
+    '/login/': {
+      target: 'http://11.124.9.83:7001/proxy/96',
+    }
   },
 
   locale: {

@@ -279,6 +279,7 @@ interface Encryption {
 export enum EncryptionAlgorithm {
   AES256_BASE64 = 'AES256_BASE64',
   AES192_BASE64_4A = 'AES192_BASE64_4A',
+  RAW = 'RAW',
 }
 
 export enum IntegrationType {
@@ -286,6 +287,7 @@ export enum IntegrationType {
   APPROVAL = 'APPROVAL',
   // SQL 审核集成
   SQL_INTERCEPTOR = 'SQL_INTERCEPTOR',
+  SSO = 'SSO',
 }
 
 export enum AuditEventType {
@@ -2799,3 +2801,81 @@ export interface IScript {
   content: string;
   scriptMeta: IScriptMeta;
 }
+
+export enum ISSOType {
+  OIDC = 'OIDC',
+  OAUTH2 = 'OAUTH2',
+}
+
+export enum IClientAuthenticationMethod {
+  basic = 'basic',
+  client_secret_basic = 'client_secret_basic',
+  post = 'post',
+  client_secret_post = 'client_secret_post',
+  client_secret_jwt = 'client_secret_jwt',
+  private_key_jwt = 'private_key_jwt',
+  none = 'none',
+}
+
+export enum IAuthorizationGrantType {
+  authorization_code = 'authorization_code',
+  refresh_token = 'refresh_token',
+  client_credentials = 'client_credentials',
+  password = 'password',
+}
+
+export enum IUserInfoAuthenticationMethod {
+  header = 'header',
+  form = 'form',
+  query = 'query',
+}
+
+export interface ISSO_OAUTH2_CONFIG {
+  registrationId: string;
+  clientId: string;
+  secret: string;
+  authUrl: string;
+  tokenUrl: string;
+  userInfoUrl: string;
+  scope: string[];
+  redirectUrl: string;
+  jwkSetUri?: string;
+  logoutUrl?: string;
+  clientAuthenticationMethod: IClientAuthenticationMethod;
+  authorizationGrantType: IAuthorizationGrantType;
+  userInfoAuthenticationMethod: IUserInfoAuthenticationMethod;
+  nestedAttributeField?: string;
+}
+
+export interface ISSO_OIDC_CONFIG {
+  registrationId: string;
+  clientId: string;
+  secret: string;
+  scope: string[];
+  issueUrl: string;
+  redirectUrl: string;
+}
+
+export interface ISSO_MAPPINGRULE {
+  userNickNameField: string;
+  organizationNameField: string;
+  userProfileViewType: 'FLAT' | 'NESTED';
+  userAccountNameField: string;
+  extraInfo?: {
+    attributeName: string;
+    expression: string;
+  }[];
+}
+export type ISSOConfig =
+  | {
+      name: string;
+      type: ISSOType.OAUTH2;
+      ssoParameter: ISSO_OAUTH2_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
+    }
+  | {
+      name: string;
+      type: ISSOType.OIDC;
+      ssoParameter: ISSO_OIDC_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
+    };

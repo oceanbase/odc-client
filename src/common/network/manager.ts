@@ -3,6 +3,7 @@ import {
   AuditEventResult,
   AuditEventType,
   ConnectionMode,
+  EncryptionAlgorithm,
   IAudit,
   IAuditEvent,
   IAuditExport,
@@ -21,6 +22,7 @@ import {
   IntegrationType,
   IRequestListParamsV2,
   IResponseData,
+  ISSOConfig,
   IUserConfig,
   TaskPageType,
 } from '@/d.ts';
@@ -897,4 +899,39 @@ export async function checkIntegrationExists(
     },
   });
   return result?.data;
+}
+
+export async function testClientRegistration(
+  config: ISSOConfig,
+  type: 'info' | 'test',
+): Promise<{
+  testLoginUrl: string;
+  testId: string;
+}> {
+  const res = await request.post('/api/v2/sso/test/start', {
+    data: {
+      name: config?.name,
+      type: IntegrationType.SSO,
+      configuration: JSON.stringify(config),
+      encryption: {
+        enabled: true,
+        algorithm: EncryptionAlgorithm.RAW,
+        secret: config.ssoParameter?.secret,
+      },
+      enabled: true,
+    },
+    params: {
+      type,
+    },
+  });
+  return res?.data;
+}
+
+export async function getTestUserInfo(testId: string): Promise<string> {
+  const res = await request.get('/api/v2/sso/test/info', {
+    params: {
+      testId,
+    },
+  });
+  return res?.data;
 }

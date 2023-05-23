@@ -5692,7 +5692,7 @@ bluebird@^3.5.0, bluebird@^3.5.5:
   resolved "https://registry.npm.alibaba-inc.com/bluebird/download/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha1-nyKcFb4nJFT/qXOs4NvueaGww28=
 
-blueimp-md5@^2.10.0:
+blueimp-md5@^2.10.0, blueimp-md5@^2.19.0:
   version "2.19.0"
   resolved "https://registry.npm.alibaba-inc.com/blueimp-md5/download/blueimp-md5-2.19.0.tgz#b53feea5498dcb53dc6ec4b823adb84b729c4af0"
   integrity sha1-tT/upUmNy1PcbsS4I624S3KcSvA=
