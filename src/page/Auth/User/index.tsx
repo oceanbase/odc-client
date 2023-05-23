@@ -14,6 +14,7 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import RoleList, { useRoleListByIds } from '@/component/Manage/RoleList';
+import StatusSwitch from '@/component/StatusSwitch';
 import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser, IResponseData } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
@@ -22,7 +23,7 @@ import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { encrypt, getFormatDateTime } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Button, Empty, message, Modal, Popover, Space, Switch, Tooltip, Typography } from 'antd';
+import { Button, Empty, message, Popover, Space, Tooltip, Typography } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import { inject, observer } from 'mobx-react';
 import type { FixedType } from 'rc-table/lib/interface';
@@ -160,11 +161,13 @@ class UserPage extends React.PureComponent<IProps, IState> {
         render: (enabled, record) => {
           const disabledOp = this.isAdminOrMe(record);
           return (
-            <Switch
-              size="small"
+            <StatusSwitch
               disabled={disabledOp}
-              defaultChecked={enabled}
-              onChange={() => {
+              checked={enabled}
+              onConfirm={() => {
+                this.handleStatusChange(!enabled, record);
+              }}
+              onCancel={() => {
                 this.handleStatusChange(!enabled, record);
               }}
             />
@@ -231,53 +234,11 @@ class UserPage extends React.PureComponent<IProps, IState> {
     });
   };
 
-  private handleStatusChange = (enabled: boolean, user: IManagerUser, callback = () => {}) => {
-    if (!enabled) {
-      Modal.confirm({
-        title: formatMessage({
-          id: 'odc.components.UserPage.AreYouSureYouWant',
-        }),
-        // 确定要停用用户吗？
-        content: (
-          <>
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.components.UserPage.DisabledUsersWillNotBe',
-                })
-                /* 被停用的用户将无法登录产品 */
-              }
-            </div>
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.components.UserPage.TheInformationOfTheDeactivated',
-                })
-                /* 被停用的用户账号信息仍保留，支持启用 */
-              }
-            </div>
-          </>
-        ),
-
-        cancelText: formatMessage({ id: 'odc.components.UserPage.Cancel' }), // 取消
-        okText: formatMessage({ id: 'odc.components.UserPage.Determine' }), // 确定
-        centered: true,
-        onOk: () => {
-          if (user) {
-            this.handleUserEnable({
-              user,
-              enabled,
-            });
-          }
-        },
-        onCancel: callback,
-      });
-    } else {
-      this.handleUserEnable({
-        user,
-        enabled,
-      });
-    }
+  private handleStatusChange = (enabled: boolean, user: IManagerUser) => {
+    this.handleUserEnable({
+      user,
+      enabled,
+    });
   };
 
   private handleUserEnable = async (data: { user: IManagerUser; enabled: boolean }) => {
