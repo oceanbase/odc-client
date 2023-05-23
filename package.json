@@ -106,6 +106,7 @@
     "array-move": "^4.0.0",
     "aws-sdk": "^2.1231.0",
     "bignumber.js": "^9.0.0",
+    "blueimp-md5": "^2.19.0",
     "cherio": "^1.0.0-rc.2",
     "classnames": "^2.2.6",
     "copy-to-clipboard": "^3.3.1",

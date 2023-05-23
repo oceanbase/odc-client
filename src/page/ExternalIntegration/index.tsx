@@ -3,6 +3,7 @@ import { IPageType } from '@/d.ts/_index';
 import React from 'react';
 import { history, useParams } from 'umi';
 import SqlInterceptor from './SqlInterceptor';
+import SSO from './SSO';
 
 interface IProps {}
 
@@ -12,6 +13,9 @@ const Pages = {
   },
   [IPageType.ExternalIntegration_Sql]: {
     component: SqlInterceptor,
+  },
+  [IPageType.ExternalIntegration_SSO]: {
+    component: SSO,
   },
 };
 
@@ -23,6 +27,10 @@ const tabs = [
   {
     tab: 'SQL 审核集成',
     key: IPageType.ExternalIntegration_Sql,
+  },
+  {
+    tab: 'SSO 集成',
+    key: IPageType.ExternalIntegration_SSO,
   },
 ];
 

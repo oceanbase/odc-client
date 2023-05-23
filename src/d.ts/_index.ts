@@ -33,4 +33,5 @@ export enum IPageType {
   ExternalIntegration = 'externalIntegration',
   ExternalIntegration_Approval = 'approval',
   ExternalIntegration_Sql = 'sql',
+  ExternalIntegration_SSO = 'sso',
 }
