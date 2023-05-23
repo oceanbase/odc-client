@@ -11,6 +11,7 @@ import { decrypt, encrypt } from '@/util/utils';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import {
   Button,
+  Checkbox,
   Drawer,
   Form,
   Input,
@@ -31,13 +32,14 @@ interface IProps {
   visible: boolean;
   editId?: number;
   onClose: () => void;
-  handleStatusChange?: (status: boolean, data: IManagerIntegration, callback: () => void) => void;
+  handleStatusChange?: (status: boolean, data: IManagerIntegration) => void;
   reloadData?: () => void;
 }
 
 const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
   const { type, title, visible, editId } = props;
   const [hasChange, setHasChange] = useState(false);
+  const [enableSecretEdit, setEnableSecretEdit] = useState(false);
   const [data, setData] = useState(null);
   const formRef = useRef<FormInstance>(null);
   const editorRef = useRef(null);
@@ -66,6 +68,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
   const handleClose = () => {
     formRef.current?.resetFields();
     setData(null);
+    setEnableSecretEdit(false);
     props.onClose();
   };
 
@@ -142,11 +145,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
 
   const handleStatusChange = (e: RadioChangeEvent) => {
     if (!e.target.value && isEdit) {
-      props.handleStatusChange(e.target.value, null, () => {
-        formRef.current.setFieldsValue({
-          status: true,
-        });
-      });
+      props.handleStatusChange(e.target.value, null);
     }
   };
 
@@ -167,10 +166,14 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
     });
   };
 
+  const handleCancelSecretEdit = () => {
+    setEnableSecretEdit(!enableSecretEdit);
+  };
+
   return (
     <>
       <Drawer
-        width={720}
+        width={564}
         title={`${isEdit ? '编辑' : '新建'}${title}`}
         className={styles.interceptor}
         footer={
@@ -193,7 +196,8 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             data || {
               enabled: true,
               encryption: {
-                enabled: false,
+                enabled: true,
+                algorithm: EncryptionAlgorithm.AES256_BASE64,
               },
             }
           }
@@ -224,19 +228,6 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             <Input placeholder="请输入名称" />
           </Form.Item>
           <Form.Item
-            className={styles.editor}
-            label={`${title}配置`}
-            name="configuration"
-            rules={[
-              {
-                required: true,
-                message: '请输入配置',
-              },
-            ]}
-          >
-            <YamlEditor ref={editorRef} onValueChange={handleChange} />
-          </Form.Item>
-          <Form.Item
             label={`${title}状态`}
             name="enabled"
             rules={[
@@ -252,7 +243,20 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             </Radio.Group>
           </Form.Item>
           <Form.Item
-            label="是否启用加密"
+            className={styles.editor}
+            label={`${title}配置`}
+            name="configuration"
+            rules={[
+              {
+                required: true,
+                message: '请输入配置',
+              },
+            ]}
+          >
+            <YamlEditor ref={editorRef} onValueChange={handleChange} />
+          </Form.Item>
+          <Form.Item
+            valuePropName="checked"
             name={['encryption', 'enabled']}
             rules={[
               {
@@ -261,60 +265,69 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
               },
             ]}
           >
-            <Radio.Group>
-              <Radio value={true}>启用</Radio>
-              <Radio value={false}>停用</Radio>
-            </Radio.Group>
+            <Checkbox>是否启用加密</Checkbox>
           </Form.Item>
-          <Form.Item shouldUpdate={true}>
+          <Form.Item shouldUpdate={true} noStyle>
             {({ getFieldValue }) => {
               const { enabled } = getFieldValue('encryption');
               if (!enabled) {
                 return null;
               }
               return (
-                <Space size={20}>
-                  <Form.Item
-                    label="加密算法"
-                    name={['encryption', 'algorithm']}
-                    rules={[
-                      {
-                        required: true,
-                        message: '请选择状态',
-                      },
-                    ]}
-                  >
-                    <Select
-                      style={{ width: '160px' }}
-                      options={[
+                <Space className={styles.block} direction="vertical">
+                  <Space size={20}>
+                    <Form.Item
+                      label="加密算法"
+                      name={['encryption', 'algorithm']}
+                      rules={[
                         {
-                          value: EncryptionAlgorithm.AES256_BASE64,
-                          label: EncryptionAlgorithm.AES256_BASE64,
-                        },
-                        {
-                          value: EncryptionAlgorithm.AES192_BASE64_4A,
-                          label: EncryptionAlgorithm.AES192_BASE64_4A,
+                          required: true,
+                          message: '请选择状态',
                         },
                       ]}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label="加密密钥"
-                    name={['encryption', 'secret']}
-                    rules={[
-                      {
-                        required: true,
-                        message: '请输入密钥',
-                      },
-                    ]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
+                    >
+                      <Select
+                        style={{ width: '232px' }}
+                        options={[
+                          {
+                            value: EncryptionAlgorithm.AES256_BASE64,
+                            label: EncryptionAlgorithm.AES256_BASE64,
+                          },
+                          {
+                            value: EncryptionAlgorithm.AES192_BASE64_4A,
+                            label: EncryptionAlgorithm.AES192_BASE64_4A,
+                          },
+                        ]}
+                      />
+                    </Form.Item>
+                    {!isEdit || enableSecretEdit ? (
+                      <Form.Item
+                        label="加密密钥"
+                        name={['encryption', 'secret']}
+                        rules={[
+                          {
+                            required: true,
+                            message: '请输入密钥',
+                          },
+                        ]}
+                      >
+                        <Input.Password style={{ width: '232px' }} />
+                      </Form.Item>
+                    ) : (
+                      <Form.Item label="加密密钥" required>
+                        <Input.Password style={{ width: '232px' }} value="******" disabled={true} />
+                      </Form.Item>
+                    )}
+                  </Space>
+                  {isEdit && (
+                    <Button type="link" onClick={handleCancelSecretEdit}>
+                      {enableSecretEdit ? '取消修改' : '修改密码'}
+                    </Button>
+                  )}
                 </Space>
               );
             }}
           </Form.Item>
-
           <Form.Item
             label="备注"
             name="description"

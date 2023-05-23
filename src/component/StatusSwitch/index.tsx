@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 const StatusSwitch: React.FC<{
   checked: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   title?: React.ReactNode;
   overlayStyle?: React.CSSProperties;
   onConfirm: () => void;
