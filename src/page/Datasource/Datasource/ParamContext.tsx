@@ -54,6 +54,7 @@ interface IParamContext {
   permissions: actionTypes[];
   setPermissions?: (v: actionTypes[]) => void;
   reloadTable?: () => Promise<boolean>;
+  editDatasource?: (id: number) => void;
 }
 
 const ParamContext: React.Context<IParamContext> = React.createContext({

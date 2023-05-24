@@ -1,9 +1,8 @@
 import { deleteConnection } from '@/common/network/connection';
-import { IConnection, IConnectionType } from '@/d.ts';
+import { IConnection } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import {
-  CopyOutlined,
   DeleteOutlined,
   EditOutlined,
   EllipsisOutlined,
@@ -30,12 +29,8 @@ enum Actions {
 
 const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   const context = useContext(ParamContext);
-  const isPublic = connection.visibleScope === IConnectionType.ORGANIZATION;
   async function edit() {
-    modalStore.changeAddConnectionModal(true, {
-      data: connection,
-      isEdit: true,
-    });
+    context.editDatasource?.(connection?.id);
   }
 
   async function copy() {
@@ -62,7 +57,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
         },
 
         {
-          name: connection.sessionName,
+          name: connection.name,
         },
       ),
 
@@ -116,13 +111,10 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
             }
           }}
         >
-          <Menu.Item disabled={isPublic} icon={<EditOutlined />} key={Actions.EDIT}>
+          <Menu.Item icon={<EditOutlined />} key={Actions.EDIT}>
             {formatMessage({ id: 'odc.List.MoreBtn.Edit' }) /*编辑*/}
           </Menu.Item>
-          <Menu.Item disabled={isPublic} icon={<CopyOutlined />} key={Actions.COPY}>
-            {formatMessage({ id: 'odc.List.MoreBtn.Copy' }) /*复制*/}
-          </Menu.Item>
-          <Menu.Item disabled={isPublic} icon={<DeleteOutlined />} key={Actions.REMOVE}>
+          <Menu.Item icon={<DeleteOutlined />} key={Actions.REMOVE}>
             {formatMessage({ id: 'odc.List.MoreBtn.Remove' }) /*移除*/}
           </Menu.Item>
           <Menu.Divider />

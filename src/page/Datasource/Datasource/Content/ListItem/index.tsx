@@ -16,6 +16,7 @@ interface IProps {
   tenant: React.ReactElement;
   host: React.ReactElement;
   action: React.ReactElement;
+  env: React.ReactElement;
   isConnecting?: boolean;
 }
 
@@ -26,6 +27,7 @@ const ListItem: React.FC<IProps> = function ({
   host,
   action,
   isConnecting,
+  env,
 }) {
   return (
     <Spin spinning={isConnecting}>
@@ -98,7 +100,7 @@ const ListItem: React.FC<IProps> = function ({
             </div>
           </Tooltip>
         )}
-
+        <div className={classNames(styles.base, styles.env)}>{env}</div>
         <div className={classNames(styles.base, styles.action)}>{action}</div>
       </div>
     </Spin>

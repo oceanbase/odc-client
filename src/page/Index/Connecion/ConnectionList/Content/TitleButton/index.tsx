@@ -112,7 +112,7 @@ const TitleButton: React.FC<IProps> = function (props) {
           <BatchImportButton
             ref={batchImportRef}
             type="button"
-            action="/api/v2/connect/connections/previewBatchImport"
+            action="/api/v2/datasource/datasources/previewBatchImport"
             description={formatMessage({
               id: 'odc.Content.TitleButton.TheFileMustContainConnection',
             })} /*文件需包含连接类型、主机端口、租户名、数据库账号等相关连接信息，建议使用连接配置模版*/

@@ -8,10 +8,11 @@ import ConIcon from '@/svgr/icon_connection.svg';
 import { encryptConnection } from '@/util/connection';
 import { formatMessage } from '@/util/intl';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Button, Empty, message, Popover, Space, Tooltip, Typography } from 'antd';
+import { Empty, message, Popover, Space, Tooltip, Typography } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import { inject, observer } from 'mobx-react';
 import React, { useRef } from 'react';
+import NewDatasourceButton from '../../NewDatasourceDrawer/NewButton';
 import styles from '../index.less';
 
 const enableBatchImport = true;
@@ -71,23 +72,15 @@ const TitleButton: React.FC<IProps> = function (props) {
   return (
     <>
       <Space>
-        <Button
-          type="primary"
-          onClick={() => {
-            const { modalStore } = props;
-            modalStore.changeAddConnectionModal();
+        <NewDatasourceButton
+          onSuccess={() => {
+            props.onReload();
           }}
-        >
-          {
-            formatMessage({
-              id: 'odc.Content.TitleButton.CreateAPersonalConnection',
-            }) /*新建个人连接*/
-          }
-        </Button>
+        />
         <BatchImportButton
           ref={batchImportRef}
           type="button"
-          action="/api/v2/connect/connections/previewBatchImport"
+          action="/api/v2/datasource/datasources/previewBatchImport"
           description={formatMessage({
             id: 'odc.Content.TitleButton.TheFileMustContainConnection',
           })} /*文件需包含连接类型、主机端口、租户名、数据库账号等相关连接信息，建议使用连接配置模版*/

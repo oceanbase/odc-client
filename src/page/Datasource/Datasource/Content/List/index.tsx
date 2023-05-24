@@ -1,6 +1,6 @@
 import { batchTest } from '@/common/network/connection';
 import { IConnection, IConnectionStatus } from '@/d.ts';
-import { message, Result, Space, Spin } from 'antd';
+import { message, Result, Space, Spin, Tag } from 'antd';
 import React, {
   forwardRef,
   useContext,
@@ -316,6 +316,7 @@ const List: React.FC<IProps> = forwardRef(function (
               <MoreBtn connection={connection} />
             </Space>
           }
+          env={<Tag color="blue">{connection?.environmentName || '无环境'}</Tag>}
         />
       );
     }

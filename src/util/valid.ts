@@ -27,7 +27,7 @@ export function checkNumberRange(min: number, max: number) {
 
 export function validTrimEmptyWithWarn(msg) {
   return async (rule: any, value: string, callback: any) => {
-    if (value?.trim()?.length !== value.length) {
+    if (value?.trim()?.length !== value?.length) {
       return Promise.reject(new Error(msg));
     }
     callback();
