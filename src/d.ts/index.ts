@@ -544,6 +544,8 @@ export interface IRequestListParamsV2 {
 export interface IConnection {
   id: number; // sid
   ownerId: number;
+  environmentId: number;
+  environmentName: string;
   sslConfig: {
     enabled: boolean;
     clientCertObjectId?: string;
@@ -552,12 +554,10 @@ export interface IConnection {
   };
 
   organizationId: number;
-  labelIds?: string[];
   creatorId: number; // userId
   creator: string;
   name: string; // 连接名称，sessionName
   dialectType: ConnectionMode; // dbMode
-  visibleScope: IConnectionType; // 可见范围，即连接类型
   host: string; // 主机，公有云连接格式为 {domain}:{port}
   port: number; // 端口，公有云连接不需要设置 port
   clusterName: string; // OceanBase 集群称，cluster 公有云连接不需要设置
@@ -567,9 +567,6 @@ export interface IConnection {
   passwordEncrypted: string;
   sysTenantUsername: string; // 系统租户账号用户名称，sysUser
   sysTenantPassword: string; // 系统租户账号密码，sysUserPassword, sysTenantUsername 为 null 时无效，空字符串表示空密码
-  readonlyUsername: string; // 只读账号用户名称
-  readonlyPassword: string; // 只读账号密码, readonlyUsername 为 null 时无效，空字符串表示空密码
-  defaultSchema: string; // 默认 schema，defaultDBName 数据库名
   queryTimeoutSeconds: number; // 查询超时时间（单位：秒），sessionTimeoutS
   createTime: number; // 创建时间，gmtCreated
   updateTime: number; // 修改时间，gmtModified
@@ -578,7 +575,6 @@ export interface IConnection {
     errorMessage: string;
   };
 
-  setTop: boolean;
   properties: any;
   copyFromId: number; // 从 copyFromSid 的配置拷贝密码字段的值，对应 /api/v1 的 copyFromSid <br>\n- 值为 null：不拷贝 <br>\n- 值不为 null： 则当密码字段为 null 时，从 copyFromSid 连接信息里拷贝密码字段
   lastAccessTime: string; // 最近一次访问连接时间
@@ -590,48 +586,6 @@ export interface IConnection {
   temp?: boolean; // 是否是隐藏连接
   cloudDBAddress?: string; // v1版本保留 v2版本后端没有这个字段，可能是前段动态生成的值
   sessionTimeout?: number; // 公有云字段, v1 是 sessionTimeoutS, 对应 v2的queryTimeoutSeconds
-  resourceGroups: {
-    name?: string; // 资源组名称
-    id: number; // 资源组 ID
-  }[];
-  // passwordUnencrypted: string; 不详，暂时保留
-  // sysTenantPasswordUnencrypted: string; 不详，暂时保留
-  /**
-   * 说明: 以下字段v2版本已废弃，考虑改造的影响范围，暂先保留，仅供前端消费
-   * 具体v1与v2字段对应关系，见字段注释
-   */
-  /**
-   * @deprecated
-   */
-  sid: string;
-  /**
-   * @deprecated
-   */
-  sessionName: string;
-  /**
-   * @deprecated
-   */
-  dbMode: ConnectionMode;
-  /**
-   * @deprecated
-   */
-  defaultDBName: string;
-  /**
-   * @deprecated
-   */
-  copyFromSid: number;
-  /**
-   * @deprecated
-   */
-  dbUser: string;
-  /**
-   * @deprecated
-   */
-  sysUser: string;
-  /**
-   * @deprecated
-   */
-  sysUserPassword: string;
   permittedActions?: string[];
   supportedOperations?: string[];
   type: ConnectType;
