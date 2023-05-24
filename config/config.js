@@ -28,6 +28,7 @@ const config = {
   publicPath,
   runtimePublicPath: {},
   hash: true,
+  esbuildMinifyIIFE: true,
   // tracert: {
   //   spmAPos: 'a3112',
   //   bizType: 'lu',
