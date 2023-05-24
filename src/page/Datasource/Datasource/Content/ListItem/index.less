@@ -3,6 +3,9 @@
   align-items: center;
   height: 40px;
   padding-right: 24px;
+  &:hover {
+    background-color: var(--hover-color);
+  }
 }
 .base {
   display: flex;
@@ -14,21 +17,19 @@
   text-overflow: ellipsis;
   border-bottom: 1px solid var(--odc-border-color);
 }
-.expand {
+.checkbox {
   flex-basis: 30px;
   flex-grow: 0;
   flex-shrink: 0;
-  padding-left: 12px;
 }
 .connectionName {
   flex-basis: 520px;
   flex-grow: 5;
   flex-shrink: 1;
   color: var(--text-color-primary);
-  cursor: pointer;
 }
 .cluster {
-  flex-basis: 288px;
+  flex-basis: 330px;
   flex-grow: 3;
   flex-shrink: 1;
   color: var(--text-color-secondary);
@@ -39,7 +40,7 @@
   }
 }
 .tenant {
-  flex-basis: 198px;
+  flex-basis: 206px;
   flex-grow: 2;
   flex-shrink: 1;
   color: var(--text-color-secondary);
@@ -50,7 +51,7 @@
   }
 }
 .host {
-  flex-basis: 170px;
+  flex-basis: 200px;
   flex-grow: 0;
   flex-shrink: 0;
   color: var(--text-color-secondary);
@@ -60,13 +61,13 @@
     }
   }
 }
-.tag {
-  flex-basis: 150px;
+.env {
+  flex-basis: 120px;
   flex-grow: 0;
   flex-shrink: 0;
 }
 .action {
-  flex-basis: 30px;
+  flex-basis: 50px;
   flex-grow: 0;
   flex-shrink: 0;
   justify-content: right;
