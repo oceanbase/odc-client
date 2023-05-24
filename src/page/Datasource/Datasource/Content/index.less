@@ -1,0 +1,37 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  flex-grow: 0;
+  flex-shrink: 0;
+  height: 40px;
+}
+.bar {
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 10px 0;
+}
+.list {
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.connectionPopover {
+  padding: 0;
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+  }
+}
+
+.pre-item {
+  display: flex;
+  align-items: center;
+  line-height: 22px;
+}
