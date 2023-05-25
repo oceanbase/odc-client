@@ -23,10 +23,11 @@ import { ConnectionMode } from 'aws-sdk/clients/appflow';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
-import { ManageContext } from '../Manage/context';
-import Approval from './Approval';
+import { ManageContext } from './context';
 import Env from './Env';
 import Record from './Record';
+import RiskLevel from './RiskLevel';
+import RiskSensitiveSpecification from './RiskSensitiveSepcification';
 import SQLDevelopmentSpecification from './SQLDevelopmentSpecification';
 
 interface IProps {
@@ -34,9 +35,6 @@ interface IProps {
 }
 
 const Pages = {
-  [IPageType.Secure_Approval]: {
-    component: Approval, // 审批流程
-  },
   [IPageType.Secure_Env]: {
     component: Env, // 环境
   },
@@ -46,6 +44,12 @@ const Pages = {
   [IPageType.SQL_Development_Specification]: {
     component: SQLDevelopmentSpecification, // SQL 开发规范
   },
+  [IPageType.RiskSensitiveSpecification]: {
+    component: RiskSensitiveSpecification, // SQL 开发规范
+  },
+  [IPageType.RiskLevel]: {
+    component: RiskLevel, // SQL 开发规范
+  },
 };
 
 const tabs = [
@@ -54,12 +58,16 @@ const tabs = [
     key: IPageType.Secure_Env,
   },
   {
-    tab: '审批流程',
-    key: IPageType.Secure_Approval,
-  },
-  {
     tab: 'SQL 开发规范',
     key: IPageType.SQL_Development_Specification,
+  },
+  {
+    tab: '风险识别规范',
+    key: IPageType.RiskSensitiveSpecification,
+  },
+  {
+    tab: '风险等级',
+    key: IPageType.RiskLevel,
   },
   {
     tab: '操作记录',

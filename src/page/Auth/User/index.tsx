@@ -18,7 +18,7 @@ import StatusSwitch from '@/component/StatusSwitch';
 import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser, IResponseData } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
-import { ManageContext } from '@/page/Manage/context';
+import { ManageContext } from '@/page/Secure/context';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { encrypt, getFormatDateTime } from '@/util/utils';

@@ -1,12 +1,12 @@
 import { canAcess } from '@/component/Acess';
 import Action from '@/component/Action';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { formatMessage } from '@umijs/max';
-import { Button, Descriptions, Drawer, Form, Input, Select, Table, Tabs } from 'antd';
+import { Button, Descriptions, Drawer, Input, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import classNames from 'classnames';
 import { useRef, useState } from 'react';
+import Condition from '../components/Condition';
+import RiskLevel from '../components/RiskLevel';
 import SecureTable from '../components/SecureTable';
 import {
   CommonTableBodyMode,
@@ -19,7 +19,7 @@ interface DataType {
   key: React.Key;
   id: number;
   specificationName: string;
-  description: string;
+  riskLevel: string;
   creator: string;
   createTime: string;
 }
@@ -41,7 +41,7 @@ const data: DataType[] = [
     key: '1',
     id: 1,
     specificationName: 'specificationName',
-    description: 'description',
+    riskLevel: 'low',
     creator: 'creator',
     createTime: 'createTime',
   },
@@ -49,7 +49,7 @@ const data: DataType[] = [
     key: '2',
     id: 2,
     specificationName: 'specificationName',
-    description: 'description',
+    riskLevel: 'middle',
     creator: 'creator',
     createTime: 'createTime',
   },
@@ -57,13 +57,13 @@ const data: DataType[] = [
     key: '3',
     id: 3,
     specificationName: 'specificationName',
-    description: 'description',
+    riskLevel: 'high',
     creator: 'creator',
     createTime: 'createTime',
   },
 ];
 
-enum RiskLevel {
+enum ERiskLevel {
   low = 'low',
   middle = 'middle',
   high = 'high',
@@ -72,13 +72,13 @@ interface SubTabletype {
   key: React.Key;
   specificationName: string;
   config: string;
-  riskLevel: RiskLevel;
+  riskLevel: ERiskLevel;
 }
 const subTableColumns: ColumnsType<SubTabletype> = [
   {
     key: 'specificationName',
     dataIndex: 'specificationName',
-    title: '规范名称',
+    title: '规则名称',
   },
   {
     key: 'config',
@@ -93,7 +93,7 @@ const subTableColumns: ColumnsType<SubTabletype> = [
     render: (_, { riskLevel }) => <CRiskLevel riskLevel={riskLevel} />,
   },
 ];
-const SQLDevelopmentSpecification: React.FC<any> = () => {
+const RiskSensitiveSpecification: React.FC<any> = () => {
   const tableRef = useRef(null);
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
@@ -102,7 +102,7 @@ const SQLDevelopmentSpecification: React.FC<any> = () => {
       key: '',
       specificationName: 'testSpecificationName',
       config: 'testConfig',
-      riskLevel: RiskLevel['middle'],
+      riskLevel: ERiskLevel['middle'],
     },
   ];
 
@@ -187,28 +187,34 @@ const SQLDevelopmentSpecification: React.FC<any> = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: '规范名称',
+      title: '规则名称',
       dataIndex: 'specificationName',
       key: 'specificationName',
+      width: 573,
     },
     {
-      title: '描述',
-      dataIndex: 'description',
-      key: 'description',
+      title: '风险等级',
+      dataIndex: 'riskLevel',
+      key: 'riskLevel',
+      width: 139,
+      render: (_, {}) => <RiskLevel level={0} />,
     },
     {
       title: '创建人',
       dataIndex: 'creator',
+      width: 120,
       key: 'creator',
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
+      width: 200,
     },
     {
       title: '操作',
       key: 'action',
+      width: 200,
       render: (value, record) => {
         return (
           <Action.Group size={4}>
@@ -243,21 +249,6 @@ const SQLDevelopmentSpecification: React.FC<any> = () => {
               }
             </Action.Link>
             <Action.Link
-              key={'copy'}
-              // visible={!record.builtIn}
-              onClick={async () => {
-                handleTask(record.id, OperationType.COPY);
-              }}
-            >
-              {
-                formatMessage({
-                  id: 'odc.components.TaskFlowPage.Copy',
-                })
-
-                /*复制*/
-              }
-            </Action.Link>
-            <Action.Link
               key={'delete'}
               // visible={!record.builtIn}
               onClick={async () => {
@@ -280,7 +271,7 @@ const SQLDevelopmentSpecification: React.FC<any> = () => {
   const operationOptions = [];
   operationOptions.push({
     type: IOperationOptionType.button,
-    content: '新建规范',
+    content: '新建风险识别规则',
     //新建流程
     isPrimary: true,
     onClick: handleCreate,
@@ -403,50 +394,7 @@ const SpecificationDrawer: React.FC<SpecificationDrawerProps> = ({
       }}
       className={styles.sqlDrawer}
     >
-      <>
-        <Form layout="vertical">
-          <Form.Item label="规范名称" name="specificationName">
-            <Input placeholder="请输入规范名称" />
-          </Form.Item>
-          <Form.Item
-            label="描述"
-            name="description"
-            tooltip={{ title: 'Tooltip with customize icon', icon: <InfoCircleOutlined /> }}
-          >
-            <Input.TextArea
-              autoSize={{
-                minRows: 2,
-                maxRows: 2,
-              }}
-              placeholder="请输入规范"
-            />
-          </Form.Item>
-          <Form.Item label="规则设置" name="specificationSetting">
-            <Tabs>
-              <Tabs.TabPane tab="SQL 检查规范" key={'sql-check'}>
-                <Table
-                  columns={subTableColumns}
-                  dataSource={dataSource}
-                  pagination={false}
-                  className={classNames(styles.tableSpin, styles.smallTable, {
-                    // [styles.scrollAble]: !!scrollHeight,
-                  })}
-                />
-              </Tabs.TabPane>
-              <Tabs.TabPane tab="SQL 窗口规范" key={'sql-window'}>
-                <Table
-                  columns={subTableColumns}
-                  dataSource={dataSource}
-                  pagination={false}
-                  className={classNames(styles.tableSpin, styles.smallTable, {
-                    // [styles.scrollAble]: !!scrollHeight,
-                  })}
-                />
-              </Tabs.TabPane>
-            </Tabs>
-          </Form.Item>
-        </Form>
-      </>
+      <Condition level={0} />
     </Drawer>
   );
 };
@@ -507,4 +455,4 @@ const Config: React.FC<Partial<ConfigProps>> = ({
     </div>
   );
 };
-export default SQLDevelopmentSpecification;
+export default RiskSensitiveSpecification;

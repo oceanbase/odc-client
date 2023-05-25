@@ -29,6 +29,8 @@ export enum IPageType {
   Secure_Env = 'env',
   Secure_Approval = 'approval',
   Secure_Record = 'record',
+  RiskSensitiveSpecification = 'RiskSensitiveSpecification',
+  RiskLevel = 'RiskLevel',
   SQL_Development_Specification = 'SQLDevelopmentSpecification',
   ExternalIntegration = 'externalIntegration',
   ExternalIntegration_Approval = 'approval',

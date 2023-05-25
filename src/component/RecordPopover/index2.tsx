@@ -1,6 +1,6 @@
 import { getAuditList } from '@/common/network/manager';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
-import { AuditEventMetaMap } from '@/page/Manage/components/RecordPage';
+import { AuditEventMetaMap } from '@/page/Secure/components/RecordPage';
 import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
 import { SyncOutlined } from '@ant-design/icons';

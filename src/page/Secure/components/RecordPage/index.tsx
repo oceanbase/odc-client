@@ -18,8 +18,8 @@ import type { DataNode } from 'antd/lib/tree';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import FormRecordExportModal from '../../components/FormRecordExportModal';
 import { ManageContext } from '../../context';
+import FormRecordExportModal from '../FormRecordExportModal';
 import { RecordContent, Status } from './component';
 
 const { RangePicker } = DatePicker;
@@ -791,7 +791,7 @@ export const getPageColumns = (params: {
     },
   ];
 };
-const RecordPage: React.FC<any> = () => {
+const RecordPage: React.FC<null> = () => {
   const { users, getPublicConnectionList, getUserList } = useContext(ManageContext);
   const tableRef = useRef<ITableInstance>();
   const [event, setEvent] = useState(null);
