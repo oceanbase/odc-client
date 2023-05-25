@@ -1,0 +1,36 @@
+.opBtn {
+  cursor: pointer;
+  &:global(.ant-timeline-item-last) {
+    :global {
+      .ant-timeline-item-content {
+        min-height: 22px;
+      }
+    }
+  }
+  &:global(.ant-timeline-item-last.ant-timeline-item) {
+    padding-bottom: 0;
+  }
+}
+
+.authNode {
+  &:global(.ant-timeline) {
+    padding-top: 12px;
+    :global {
+      .ant-timeline-item {
+        padding-bottom: 12px;
+      }
+      .ant-timeline-item-head-blue {
+        border: none;
+      }
+      .ant-timeline-item-tail {
+        height: calc(100% - 12px);
+        border-left: 1px solid var(--text-color-hint);
+      }
+      .ant-timeline-item-head {
+        width: 8px;
+        height: 8px;
+        background: var(--text-color-hint);
+      }
+    }
+  }
+}
