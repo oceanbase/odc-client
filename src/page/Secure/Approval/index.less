@@ -1,18 +1,11 @@
-.task {
-  display: flex;
-  height: 100%;
-  overflow: hidden;
-  .sider {
-    flex-grow: 0;
-    flex-shrink: 0;
-    height: 100%;
-  }
-  .content {
-    flex-grow: 1;
-    flex-shrink: 1;
-    width: calc(100% - 148px);
-    height: 100%;
-    padding-bottom: 12px;
-    padding-left: 16px;
-  }
+@import (reference) '~@/func.less';
+.ellipsis {
+  .odc-text-ellipsis();
+}
+.actions {
+  min-width: 100px;
+}
+
+.title {
+  white-space: pre;
 }
