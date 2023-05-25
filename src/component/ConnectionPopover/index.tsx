@@ -1,5 +1,6 @@
+import { hasSourceWriteAuth } from '@/component/Acess';
 import { ConnectTypeText } from '@/constant/label';
-import { IConnection } from '@/d.ts';
+import { IConnection, IConnectionType } from '@/d.ts';
 import { ClusterStore } from '@/store/cluster';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -61,13 +62,29 @@ const ConnectionPopover: React.FC<{
   }
 
   function renderConnectType() {
+    const { visibleScope, permittedActions } = connection;
     let typeText = null;
     if (!showType) {
       return null;
     }
-    typeText = formatMessage({
-      id: 'odc.component.ConnectionPopover.PersonalConnection',
-    });
+    if (visibleScope === IConnectionType.PRIVATE) {
+      typeText = formatMessage({
+        id: 'odc.component.ConnectionPopover.PersonalConnection',
+      });
+      //个人连接
+    } else {
+      const isPermittedActionsHasSourceWriteAuth = hasSourceWriteAuth(permittedActions);
+      typeText =
+        formatMessage({
+          id: 'odc.component.ConnectionPopover.PublicConnection',
+        }) +
+        '(' +
+        //公共连接
+        (isPermittedActionsHasSourceWriteAuth
+          ? formatMessage({ id: 'odc.component.ConnectionPopover.ReadWrite' }) //读写
+          : formatMessage({ id: 'odc.component.ConnectionPopover.ReadOnly' })) + //只读
+        ')';
+    }
     return (
       <div>
         {
@@ -159,6 +176,13 @@ const ConnectionPopover: React.FC<{
             /*数据库用户名：{connectionDbUser}*/
           }
         </div>
+        {showResourceGroups && (
+          <div>
+            {formatMessage({ id: 'odc.component.ConnectionPopover.ResourceGroup' }) /*资源组：*/}
+
+            {connection?.resourceGroups?.map((item) => item.name)?.join(' | ') || '-'}
+          </div>
+        )}
       </Space>
     </div>
   );

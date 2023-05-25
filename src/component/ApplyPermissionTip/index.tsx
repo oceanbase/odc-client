@@ -1,5 +1,5 @@
+import { hasSourceReadAuth } from '@/component/Acess';
 import ApplyPermissionButton from '@/component/ApplyPermissionButton';
-import { hasSourceReadAuth } from '@/page/Manage';
 import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Tooltip } from 'antd';
