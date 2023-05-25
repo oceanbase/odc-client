@@ -51,14 +51,14 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
                 <div className={styles.private}>
                   <Icon component={PersonalSvg} />
                 </div>
-                <span>{item.name}</span>
+                <span>{item.displayName}</span>
               </Space>
             ) : (
               <Space>
                 <div className={styles.synergy}>
                   <Icon component={GroupSvg} />
                 </div>
-                <span>{item.name}</span>
+                <span>{item.displayName}</span>
               </Space>
             ),
         };

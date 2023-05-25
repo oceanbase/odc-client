@@ -54,7 +54,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
                 <div className={styles.synergy}>
                   <Icon component={GroupSvg} />
                 </div>
-                <span className={styles.label}>{ori.name}</span>
+                <span className={styles.label}>{ori.displayName}</span>
                 <span className={styles.desc}>{ori.description}</span>
               </Space>
             );
@@ -69,7 +69,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
               <div className={styles.private}>
                 <Icon component={PersonalSvg} />
               </div>
-              <span className={styles.label}>{ori.name}</span>
+              <span className={styles.label}>{ori.displayName}</span>
               <span className={styles.desc}>{ori.description}</span>
             </Space>
           );
