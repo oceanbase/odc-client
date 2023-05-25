@@ -4,6 +4,7 @@ import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
 import { inject, observer } from 'mobx-react';
 import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
+import Header from '../Header';
 import ParamContext from '../ParamContext';
 import styles from './index.less';
 import List from './List';
@@ -42,6 +43,7 @@ const Content = function (props: IProps, ref) {
       <div className={styles.content}>
         <div className={styles.header}>
           <TitleButton onReload={reload} />
+          <Header />
         </div>
         <div className={styles.list}>
           <List ref={listRef} />

@@ -1,6 +1,6 @@
 import { batchTest } from '@/common/network/connection';
 import { IConnection, IConnectionStatus } from '@/d.ts';
-import { message, Result, Space, Spin, Tag } from 'antd';
+import { Result, Space, Spin, Tag } from 'antd';
 import React, {
   forwardRef,
   useContext,
@@ -18,7 +18,7 @@ import LoadingItem from '../ListItem/Loading';
 import ConnectionName from './ConnectionNameItem';
 import MoreBtn from './MoreBtn';
 
-import ShowConnectPassword from '@/component/ConnectPassowrd';
+import { IPageType } from '@/d.ts/_index';
 import { ClusterStore } from '@/store/cluster';
 import { CommonStore } from '@/store/common';
 import connection, { ConnectionStore } from '@/store/connection';
@@ -26,7 +26,7 @@ import { PageStore } from '@/store/page';
 import { SchemaStore } from '@/store/schema';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { clone, isNil } from 'lodash';
+import { clone } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { history } from 'umi';
 import TitleButton from '../TitleButton';
@@ -79,53 +79,7 @@ const List: React.FC<IProps> = forwardRef(function (
   }, []);
 
   async function openNewConnection(connection: IConnection) {
-    if (isConnecting) {
-      message.warn(
-        formatMessage({
-          id: 'odc.page.ConnectionList.IsInTheConnection',
-        }),
-
-        // 正在连接中
-      );
-      return;
-    }
-
-    let { password, clusterName, tenantName } = connection;
-
-    if (!connection.passwordSaved) {
-      password = (await ShowConnectPassword(connection.id.toString())) as string;
-      if (isNil(password)) {
-        return;
-      }
-      connection.password = password;
-    }
-    setIsConnecting(connection.id);
-
-    try {
-      connectionStore.setConnection(connection);
-
-      // 通知后端建立数据库长连接
-      await connectionStore.connect(connectionStore.connection.id?.toString(), password, {
-        tenantId: tenantName,
-        instanceId: clusterName,
-      });
-      if (connectionStore.sessionId) {
-        await connectionStore.get(connectionStore.sessionId); // 设置默认数据库
-
-        message.success(
-          formatMessage({
-            id: 'portal.connection.form.test.success',
-          }),
-        );
-
-        commonStore.updateTabKey();
-        history.push(pageStore.generatePagePath());
-      }
-    } catch (e) {
-      console.trace(e);
-    } finally {
-      setIsConnecting(null);
-    }
+    history.push(`/datasource/${connection.id}/${IPageType.Datasource_info}`);
   }
 
   function fetchNextConnectList() {
