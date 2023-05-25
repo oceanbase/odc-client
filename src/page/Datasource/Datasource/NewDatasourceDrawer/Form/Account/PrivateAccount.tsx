@@ -123,6 +123,7 @@ const PrivateAccount: React.FC<IProps> = function (props) {
                 <Input.Password
                   autoComplete="new-password"
                   disabled={!passwordEditable}
+                  defaultValue={''}
                   style={{
                     width: '100%',
                   }}
