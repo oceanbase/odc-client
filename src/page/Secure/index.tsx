@@ -23,6 +23,7 @@ import { ConnectionMode } from 'aws-sdk/clients/appflow';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
+import Approval from './Approval';
 import { ManageContext } from './context';
 import Env from './Env';
 import Record from './Record';
@@ -47,6 +48,9 @@ const Pages = {
   [IPageType.RiskSensitiveSpecification]: {
     component: RiskSensitiveSpecification, // SQL 开发规范
   },
+  [IPageType.Secure_Approval]: {
+    component: Approval, // 审批流程
+  },
   [IPageType.RiskLevel]: {
     component: RiskLevel, // SQL 开发规范
   },
@@ -68,6 +72,10 @@ const tabs = [
   {
     tab: '风险等级',
     key: IPageType.RiskLevel,
+  },
+  {
+    tab: '审批流程',
+    key: IPageType.Secure_Approval,
   },
   {
     tab: '操作记录',
