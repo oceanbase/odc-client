@@ -67,13 +67,7 @@ const Filter: React.FC<IProps> = function ({ connectionStore }) {
             alignItems: 'center',
           }}
         >
-          <Typography.Text strong>
-            {
-              formatMessage({
-                id: 'odc.Header.Filter.FilterConnections',
-              }) /*筛选连接*/
-            }
-          </Typography.Text>
+          <Typography.Text strong>筛选数据源</Typography.Text>
           <a onClick={clear}>{formatMessage({ id: 'odc.Header.Filter.Clear' }) /*清空*/}</a>
         </div>
       }

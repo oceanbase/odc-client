@@ -1,7 +1,9 @@
 import { testConnection } from '@/common/network/connection';
+import { listEnvironments } from '@/common/network/env';
 import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { isConnectTypeBeShardingType } from '@/util/connection';
+import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select, Space } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import Account from './Account';
@@ -45,6 +47,14 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     },
     [form],
   );
+
+  const {
+    data: environments,
+    loading,
+    run: doListEnvironments,
+  } = useRequest(listEnvironments, {
+    manual: true,
+  });
 
   async function test() {
     setTestResult(null);
@@ -149,10 +159,10 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         <AddressItems />
         <Account isEdit={isEdit} />
         <Form.Item rules={[{ required: true }]} label="环境" name={'environmentId'}>
-          <Select style={{ width: 208 }}>
-            <Option value="1000002">测试</Option>
-            <Option value="1000003">开发</Option>
-            <Option value="1000001">生产</Option>
+          <Select onFocus={() => doListEnvironments()} style={{ width: 208 }}>
+            {environments?.map((env) => {
+              return <Option value={env.id}>{env.name}</Option>;
+            })}
           </Select>
         </Form.Item>
         <Space style={{ width: '100%' }} direction="vertical">
