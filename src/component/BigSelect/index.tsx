@@ -1,5 +1,8 @@
+import Icon from '@ant-design/icons';
 import { Select, Space } from 'antd';
 import styles from './index.less';
+
+import ProjectSvg from '@/svgr/project_space.svg';
 
 interface IBigSelectProps {
   defaultValue?: string | number;
@@ -15,7 +18,9 @@ const BigSelect: React.FC<IBigSelectProps> = (props) => {
   const { defaultValue, options, bottom, onChange } = props;
   return (
     <Space size={12} className={styles['select-wrapper']}>
-      <div className={styles.logo}></div>
+      <div className={styles.logo}>
+        <Icon component={ProjectSvg} />
+      </div>
       <Select
         className={styles.select}
         defaultValue={defaultValue}
