@@ -270,6 +270,20 @@ export interface IManagerIntegration {
   builtin: boolean;
 }
 
+export interface ITaskFlow {
+  id: number;
+  name: string;
+  builtIn: boolean;
+  creator: {
+    id: number;
+    name: string;
+    accountName: string;
+    roleNames: string[];
+  };
+  enabled: boolean;
+  createTime: number;
+  description: string;
+}
 interface Encryption {
   enabled: boolean;
   secret: string;
