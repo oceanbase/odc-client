@@ -24,6 +24,7 @@ export interface IOrganization {
   updateTime: string;
   uniqueIdentifier: string;
   name: string;
+  displayName: string;
   secret: string;
   description: string;
   builtin: boolean;
