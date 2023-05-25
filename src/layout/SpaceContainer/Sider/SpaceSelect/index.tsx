@@ -1,6 +1,8 @@
 import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
-import { CheckOutlined, SwapOutlined, TeamOutlined } from '@ant-design/icons';
+import PersonalSvg from '@/svgr/personal_space.svg';
+import GroupSvg from '@/svgr/project_space.svg';
+import Icon, { CheckOutlined, SwapOutlined } from '@ant-design/icons';
 import { Select, Space } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
@@ -47,14 +49,14 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
             item.type === SpaceType.PRIVATE ? (
               <Space>
                 <div className={styles.private}>
-                  <TeamOutlined />
+                  <Icon component={PersonalSvg} />
                 </div>
                 <span>{item.name}</span>
               </Space>
             ) : (
               <Space>
                 <div className={styles.synergy}>
-                  <TeamOutlined />
+                  <Icon component={GroupSvg} />
                 </div>
                 <span>{item.name}</span>
               </Space>

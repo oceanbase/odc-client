@@ -1,13 +1,12 @@
 import { ConnectTypeText } from '@/constant/label';
-import { actionTypes, ConnectType } from '@/d.ts';
+import { ConnectType } from '@/d.ts';
 import { ConnectionStore } from '@/store/connection';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import { Popover, Space, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect } from 'react';
-import ParamContext, { PermissionText } from '../../ParamContext';
+import ParamContext from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';
 import CheckboxTag from './CheckboxTag';
 
@@ -28,19 +27,11 @@ const Filter: React.FC<IProps> = function ({ connectionStore }) {
 
   function clear() {
     context.setConnectType([]);
-    context.setPermissions([]);
-    context.setLabel([]);
   }
-  const { connectType, permissions, label } = context;
+  const { connectType } = context;
   let selectedNames = [];
   connectType?.forEach((c) => {
     selectedNames.push(ConnectTypeText[c]);
-  });
-  permissions?.forEach((c) => {
-    selectedNames.push(PermissionText[c]);
-  });
-  label?.forEach((c) => {
-    selectedNames.push([connectionStore.labels?.find((l) => l.id === c)?.labelName ?? c]);
   });
   if (selectedNames.length) {
     displayDom = (
@@ -104,50 +95,6 @@ const Filter: React.FC<IProps> = function ({ connectionStore }) {
                 ].map((v) => ({ label: ConnectTypeText[v], value: v }))}
                 onChange={(v) => {
                   context.setConnectType(v as ConnectType[]);
-                }}
-              />
-            </Space>
-            {!isClient() && (
-              <Space direction="vertical" size={5}>
-                <Typography.Text type="secondary">
-                  {
-                    formatMessage({
-                      id: 'odc.Header.Filter.Permission',
-                    }) /*权限*/
-                  }
-                </Typography.Text>
-                <CheckboxTag
-                  value={context?.permissions}
-                  options={[
-                    {
-                      label: PermissionText[actionTypes.writeAndReadConnect],
-                      value: actionTypes.writeAndReadConnect,
-                    },
-
-                    {
-                      label: PermissionText[actionTypes.readonlyconnect],
-                      value: actionTypes.readonlyconnect,
-                    },
-                  ]}
-                  onChange={(v) => {
-                    context.setPermissions(v as actionTypes[]);
-                  }}
-                />
-              </Space>
-            )}
-
-            <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">
-                {formatMessage({ id: 'odc.Header.Filter.Label' }) /*标签*/}
-              </Typography.Text>
-              <CheckboxTag
-                value={context?.label}
-                options={connectionStore.labels?.map((l) => ({
-                  label: l.labelName,
-                  value: l.id,
-                }))}
-                onChange={(v) => {
-                  context.setLabel(v as string[]);
                 }}
               />
             </Space>

@@ -264,17 +264,7 @@ export class ConnectionStore {
     hostPort?: string;
   }) {
     const res = await getConnectionList(params);
-    let result = res;
-    if (res?.contents) {
-      result = {
-        ...res,
-        // @ts-ignore
-        contents: res.contents?.map((c) => {
-          return reviseV2Field(c);
-        }),
-      };
-    }
-    return result;
+    return res;
   }
 
   /**
