@@ -63,7 +63,7 @@ const List: React.FC<IProps> = forwardRef(function (
    */
   const versionRef = useRef<number>(0);
   const context = useContext(ParamContext);
-  const { searchValue, connectType, permissions, sortType } = context;
+  const { searchValue, connectType, sortType } = context;
 
   const connectionList = useMemo(() => {
     return _connectionList.map((c) => {
@@ -207,7 +207,6 @@ const List: React.FC<IProps> = forwardRef(function (
         sort: sortType,
         page: currentPage,
         size: fetchSize,
-        permittedAction: permissions,
       });
 
       if (currentVersion !== versionRef.current) {
@@ -263,7 +262,7 @@ const List: React.FC<IProps> = forwardRef(function (
     setOffset(0);
     versionRef.current = versionRef.current + 1;
     fetchNextConnectList();
-  }, [searchValue, connectType, permissions, sortType]);
+  }, [searchValue, connectType, sortType]);
 
   useLayoutEffect(() => {
     if (version === 0) {

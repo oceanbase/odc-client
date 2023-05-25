@@ -51,8 +51,6 @@ interface IParamContext {
   setSortType?: (v: SortType) => void;
   connectType: ConnectType[];
   setConnectType?: (v: ConnectType[]) => void;
-  permissions: actionTypes[];
-  setPermissions?: (v: actionTypes[]) => void;
   reloadTable?: () => Promise<boolean>;
   editDatasource?: (id: number) => void;
 }
@@ -61,7 +59,6 @@ const ParamContext: React.Context<IParamContext> = React.createContext({
   searchValue: null,
   sortType: null,
   connectType: [],
-  permissions: [],
 });
 
 export default ParamContext;

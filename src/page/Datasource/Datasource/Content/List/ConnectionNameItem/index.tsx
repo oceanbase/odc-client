@@ -1,9 +1,9 @@
-import { IConnection, IConnectionStatus, IConnectionType } from '@/d.ts';
+import { IConnection, IConnectionStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Popover, Space, Tag, Tooltip } from 'antd';
+import { Popover, Space, Tooltip } from 'antd';
 import React from 'react';
 
-import WifiIcon from '@/svgr/Wifi.svg';
+import OBSvg from '@/svgr/source_ob.svg';
 import Icon, {
   ExclamationCircleFilled,
   Loading3QuartersOutlined,
@@ -24,7 +24,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
     return null;
   }
   function getStatusIcon() {
-    const { status, visibleScope } = connection;
+    const { status } = connection;
     switch (status?.status) {
       case IConnectionStatus.TESTING: {
         return (
@@ -51,7 +51,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
               id: 'odc.components.ConnectionCardList.ValidConnection',
             })}
           >
-            <Icon component={WifiIcon} className={styles.activeStatus} />
+            <Icon component={OBSvg} className={styles.activeStatus} />
           </Tooltip>
         );
       }
@@ -124,15 +124,6 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             {connection.name}
           </div>
         </Popover>
-        {connection.visibleScope === IConnectionType.ORGANIZATION ? (
-          <Tag>
-            {
-              formatMessage({
-                id: 'odc.List.ConnectionNameItem.Public',
-              }) /*公共*/
-            }
-          </Tag>
-        ) : null}
       </Space>
     </div>
   );

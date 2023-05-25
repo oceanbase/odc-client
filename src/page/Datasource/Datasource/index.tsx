@@ -14,7 +14,6 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
   const [searchType, setSearchType] = useState(null);
   const [sortType, setSortType] = useState<SortType>(null);
   const [connectType, setConnectType] = useState([]);
-  const [permissions, setPermissions] = useState([]);
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const contentRef = useRef<any>();
   const _searchValue = useMemo(() => {
@@ -36,8 +35,6 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
           setSortType,
           connectType,
           setConnectType,
-          permissions,
-          setPermissions,
           reloadTable: () => {
             return contentRef.current?.reload();
           },

@@ -150,9 +150,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         <Account isEdit={isEdit} />
         <Form.Item rules={[{ required: true }]} label="环境" name={'environmentId'}>
           <Select style={{ width: 208 }}>
-            <Option value="test">测试</Option>
-            <Option value="dev">开发</Option>
-            <Option value="prod">生产</Option>
+            <Option value="1000002">测试</Option>
+            <Option value="1000003">开发</Option>
+            <Option value="1000001">生产</Option>
           </Select>
         </Form.Item>
         <Space style={{ width: '100%' }} direction="vertical">

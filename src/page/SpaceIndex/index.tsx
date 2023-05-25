@@ -1,11 +1,14 @@
 import { IOrganization } from '@/d.ts';
 import { UserStore } from '@/store/login';
-import { TeamOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import { history } from 'umi';
 import styles from './index.less';
+
+import PersonalSvg from '@/svgr/personal_space.svg';
+import GroupSvg from '@/svgr/project_space.svg';
 
 interface IProps {
   userStore?: UserStore;
@@ -49,7 +52,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
                 onClick={() => switchOriganization(ori.id, ori.type)}
               >
                 <div className={styles.synergy}>
-                  <TeamOutlined />
+                  <Icon component={GroupSvg} />
                 </div>
                 <span className={styles.label}>{ori.name}</span>
                 <span className={styles.desc}>{ori.description}</span>
@@ -64,7 +67,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
               onClick={() => switchOriganization(ori.id, ori.type)}
             >
               <div className={styles.private}>
-                <TeamOutlined />
+                <Icon component={PersonalSvg} />
               </div>
               <span className={styles.label}>{ori.name}</span>
               <span className={styles.desc}>{ori.description}</span>

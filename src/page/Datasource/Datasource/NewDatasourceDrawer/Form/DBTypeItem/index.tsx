@@ -1,5 +1,5 @@
 import { ConnectType } from '@/d.ts';
-import OBSvg from '@/svgr/mysql.svg';
+import OBSvg from '@/svgr/source_ob.svg';
 import Icon from '@ant-design/icons';
 import { Form, Radio, Space } from 'antd';
 
@@ -41,8 +41,10 @@ export default function DBTypeItem() {
             options={[
               {
                 label: (
-                  <Space>
-                    <Icon style={{ fontSize: 18 }} component={OBSvg} />
+                  <Space style={{ verticalAlign: 'middle' }}>
+                    <div style={{ lineHeight: 1 }}>
+                      <Icon style={{ fontSize: 24 }} component={OBSvg} />
+                    </div>
                     OceanBase
                   </Space>
                 ),

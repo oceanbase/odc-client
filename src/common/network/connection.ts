@@ -203,13 +203,10 @@ export async function getConnectionList(params: {
   minPrivilege?: string;
   sessionLabelId?: string[];
   hostPort?: string;
-}): Promise<IResponseData<IConnection>> {
-  const { visibleScope = IConnectionType.PRIVATE, minPrivilege = 'readonlyconnect' } = params;
+}): Promise<IResponseData<IDatasource>> {
   const results = await request.get('/api/v2/datasource/datasources', {
     params: {
       ...params,
-      visibleScope,
-      minPrivilege,
     },
   });
 
