@@ -16,7 +16,7 @@ config.local.js
 .umi-production
 speed-measure.json
 release
-libraries/java/odc.jar
+libraries/java/*
 libraries/jre/*
 libraries/obclient/*
 .node
