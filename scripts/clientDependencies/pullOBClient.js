@@ -3,7 +3,7 @@ const tar = require('tar');
 const fs = require('fs');
 const path = require('path');
 
-const run = async function () {
+exports.run = async function () {
   console.log('开始下载 OBClient');
   const isSuccess = await oss.download(
     `library/obclient/1_2_8/windows/obclient.tar.gz`,
@@ -31,4 +31,3 @@ const run = async function () {
   console.log(tarPath, '删除完成');
 };
 
-run()
