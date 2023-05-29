@@ -1,12 +1,12 @@
 import { getUserList } from '@/common/network/manager';
 import { updateProject } from '@/common/network/project';
 import HelpDoc from '@/component/helpDoc';
+import SelectTransfer from '@/component/SelectTransfer';
 import { IManagerUser } from '@/d.ts';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { useRequest } from 'ahooks';
-import { Checkbox, Form, message, Modal, Transfer } from 'antd';
+import { Checkbox, Form, message, Modal } from 'antd';
 import { useEffect } from 'react';
-import styles from './index.less';
 interface IProps {
   close: () => void;
   onSuccess: () => void;
@@ -29,14 +29,14 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
   });
 
   useEffect(() => {
-    if (open) {
+    if (visible) {
       run({
         page: 1,
         size: 999999,
       });
       form.resetFields();
     }
-  }, [open]);
+  }, [visible]);
 
   const filterOption = (inputValue: string, option: IManagerUser) =>
     option.name.indexOf(inputValue) > -1;
@@ -114,8 +114,13 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
             ]}
           />
         </Form.Item>
-        <Form.Item rules={[{ required: true }]} name={'users'} valuePropName="targetKeys">
-          <Transfer
+        <Form.Item
+          rules={[{ required: true }]}
+          name={'users'}
+          valuePropName="checkedKeys"
+          trigger="onCheck"
+        >
+          {/* <Transfer
             className={styles.transfer}
             showSearch
             filterOption={filterOption}
@@ -126,6 +131,15 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
               };
             })}
             render={(item) => `${item.name}(${item.accountName})`}
+          /> */}
+          <SelectTransfer
+            treeData={userList?.contents?.map((item) => {
+              return {
+                key: item.id,
+                title: `${item.name}(${item.accountName})`,
+                isLeaf: true,
+              };
+            })}
           />
         </Form.Item>
       </Form>
