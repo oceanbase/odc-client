@@ -120,6 +120,7 @@ export default inject('userStore')(
           ['ssoParameter', 'authorizationGrantType'],
           ['ssoParameter', 'userInfoAuthenticationMethod'],
           ['ssoParameter', 'issueUrl'],
+          'mappingRule',
         ]);
         if (!value) {
           return;
@@ -180,6 +181,7 @@ export default inject('userStore')(
               authorizationGrantType: IAuthorizationGrantType.authorization_code,
               clientAuthenticationMethod: IClientAuthenticationMethod.client_secret_basic,
               scope: ['profile'],
+              userProfileViewType: 'FLAT',
             },
             mappingRule: {
               userProfileViewType: 'FLAT',
@@ -453,19 +455,16 @@ export default inject('userStore')(
           <Form.Item
             rules={[requiredRule]}
             name={['mappingRule', 'userAccountNameField']}
-            label="用户名"
+            label="用户名字段"
           >
             <Input style={{ width: 200 }} placeholder="请输入" />
           </Form.Item>
           <Form.Item
             rules={[requiredRule]}
             name={['mappingRule', 'userNickNameField']}
-            label="用户昵称"
+            label="用户昵称字段"
           >
             <Select mode="tags" style={{ width: 200 }} placeholder="请输入" />
-          </Form.Item>
-          <Form.Item name={['mappingRule', 'organizationNameField']} label="组织名称">
-            <Input style={{ width: 200 }} placeholder="请输入" />
           </Form.Item>
           <Form.Item
             rules={[requiredRule]}
@@ -492,7 +491,11 @@ export default inject('userStore')(
               const userProfileViewType = getFieldValue(['mappingRule', 'userProfileViewType']);
               if (userProfileViewType === 'NESTED') {
                 return (
-                  <Form.Item label="获取嵌套用户数据" name={'nestedAttributeField'}>
+                  <Form.Item
+                    label="获取嵌套用户数据"
+                    name={'nestedAttributeField'}
+                    rules={[requiredRule]}
+                  >
                     <Input style={{ width: '100%' }} placeholder="请输入" />
                   </Form.Item>
                 );

@@ -1,3 +1,4 @@
+import { VariableExpression } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Space } from 'antd';
@@ -26,11 +27,12 @@ export const operationOptions = [
 
 interface IProps {
   variables: string[];
+  variableExpression: VariableExpression;
 }
 
 const ConditionSelect: React.FC<IProps> = (props) => {
   const [isRequired, setIsRequired] = useState(true);
-  const { variables } = props;
+  const { variables, variableExpression = {} } = props;
   const variablesOptions = variables?.map((item) => ({
     label: item,
     value: item,
@@ -60,6 +62,10 @@ const ConditionSelect: React.FC<IProps> = (props) => {
     }
     setIsRequired(itemRequired);
     return itemRequired ? Promise.reject(new Error()) : Promise.resolve();
+  };
+
+  const getPromoteOption = (variable) => {
+    return (variableExpression[variable] || []).map((e) => ({ lable: e, value: e }));
   };
 
   return (
@@ -104,11 +110,15 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                     },
                   ]}
                 >
-                  <Input
-                    placeholder={formatMessage({
-                      id: 'odc.components.FormAutoAuthModal.conditionSelect.EnterAnIndexKeySuch',
-                    })} /*请输入索引键，如 dept[0].deptname*/
-                  />
+                  {getPromoteOption('User').length > 0 ? (
+                    <Select options={getPromoteOption('User')} />
+                  ) : (
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'odc.components.FormAutoAuthModal.conditionSelect.EnterAnIndexKeySuch',
+                      })} /*请输入索引键，如 dept[0].deptname*/
+                    />
+                  )}
                 </Form.Item>
                 <Form.Item
                   name={[name, 'operation']}

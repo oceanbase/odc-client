@@ -57,6 +57,7 @@ const UserDetail: React.FC<{
     createTime,
     updateTime,
     builtIn,
+    extraProperties,
   } = data;
   const [visible, setVisible] = useState(false);
   const relatedRoles = useRoleListByIds(roles, roleIds);
@@ -186,6 +187,14 @@ const UserDetail: React.FC<{
           /* 备注 */
         >
           {description}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'odc.components.UserPage.component.ExtraProperties',
+          })}
+          /* 自定义属性 */
+        >
+          {JSON.stringify(extraProperties || {})}
         </Descriptions.Item>
       </Descriptions>
       <Divider />

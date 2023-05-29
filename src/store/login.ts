@@ -180,7 +180,7 @@ export class UserStore {
   public async gotoLoginPageSSO() {
     const r = await request.get(odcServerLoginUrl, {
       params: {
-        odc_back_url: encodeURIComponent(location.href),
+        odc_back_url: location.href,
         notLogin: true,
       },
     });

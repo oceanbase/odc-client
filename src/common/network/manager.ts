@@ -20,6 +20,7 @@ import {
   IManageUserListParams,
   IMaskRule,
   IntegrationType,
+  IPromptVo,
   IRequestListParamsV2,
   IResponseData,
   ISSOConfig,
@@ -780,6 +781,18 @@ export async function getAutoRule(id: number): Promise<IAutoAuthRule> {
 export async function getAutoRuleEventList(): Promise<IAutoAuthEvent[]> {
   const result = await request.get('/api/v2/management/auto/eventMetadata');
   return result?.data?.contents;
+}
+
+/**
+ * 获取自动授权规则事件的推荐匹配表达式
+ */
+export async function getPromptExpression(eventName: string): Promise<IPromptVo> {
+  const result = await request.get('/api/v2/management/auto/rules/prompt', {
+    params: {
+      eventName,
+    },
+  });
+  return result?.data;
 }
 
 /**

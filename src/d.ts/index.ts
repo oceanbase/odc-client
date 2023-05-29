@@ -148,6 +148,7 @@ export interface IManagerUser {
     resourceIdentifier: number;
     action: string;
   }[];
+  extraProperties?: Record<string, string>;
   errorMessage?: string;
 }
 
@@ -2708,6 +2709,12 @@ export interface IAutoAuthEvent {
   variables: string[];
 }
 
+export interface IPromptVo {
+  variableExpression: VariableExpression;
+}
+
+export type VariableExpression = { [key: string]: string[] };
+
 export interface IAutoAuthRule {
   id?: number;
   name: string;
@@ -2827,7 +2834,6 @@ export interface ISSO_OIDC_CONFIG {
 
 export interface ISSO_MAPPINGRULE {
   userNickNameField: string;
-  organizationNameField: string;
   userProfileViewType: 'FLAT' | 'NESTED';
   userAccountNameField: string;
   extraInfo?: {
