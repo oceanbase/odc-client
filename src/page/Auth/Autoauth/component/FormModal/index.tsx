@@ -3,13 +3,19 @@ import {
   getAutoRule,
   getAutoRuleEventList,
   geteAutoRuleExists,
+  getPromptExpression,
   getPublicConnectionList,
   getRoleList,
   updateAutoRule,
 } from '@/common/network/manager';
 import { IResourceOption, ResourceSelector } from '@/component/Manage/ResourceSelector';
 import appConfig from '@/constant/appConfig';
-import type { IAutoAuthRule, IManagerPublicConnection, IManagerResourceGroup } from '@/d.ts';
+import type {
+  IAutoAuthRule,
+  IManagerPublicConnection,
+  IManagerResourceGroup,
+  VariableExpression,
+} from '@/d.ts';
 import { IManagerResourceType, IManagerRole } from '@/d.ts';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
@@ -91,6 +97,7 @@ const FormModal: React.FC<IProps> = (props) => {
   const [roles, setRoles] = useState<IManagerRole[]>([]);
   const [data, setData] = useState<Partial<IAutoAuthRuleFormData>>(null);
   const [events, setEvents] = useState([]);
+  const [variableExpression, setVariableExpression] = useState<VariableExpression>({});
   const [connectionAccessOptionsMap, setConnectionAccessOptionsMap] = useState<{
     [key: string]: IResourceOption[];
   }>({
@@ -147,6 +154,7 @@ const FormModal: React.FC<IProps> = (props) => {
           ],
         };
         form.setFieldsValue(defaultValue);
+        loadVariableExpression(defaultEvent.name);
         setData(defaultValue);
       }
     }
@@ -155,7 +163,8 @@ const FormModal: React.FC<IProps> = (props) => {
   const loadDetailData = async (id: number) => {
     const res = await getAutoRule(id);
     if (res) {
-      const { actions } = res;
+      const { actions, eventName } = res;
+      loadVariableExpression(eventName);
       const _actions = [];
       const hasRole = actions?.some((item) => item.action === 'BindRole');
       const hasPermission = actions?.some((item) => item.action === 'BindPermission');
@@ -210,6 +219,11 @@ const FormModal: React.FC<IProps> = (props) => {
     form?.resetFields();
     setData(null);
     props.onClose();
+  };
+
+  const loadVariableExpression = async (eventName: string) => {
+    const prompt = await getPromptExpression(eventName);
+    setVariableExpression(prompt.variableExpression);
   };
 
   const handleCreate = async (values: Partial<IAutoAuthRule>) => {
@@ -364,6 +378,20 @@ const FormModal: React.FC<IProps> = (props) => {
     });
   };
 
+  const handleEventChange = async (id: string) => {
+    loadVariableExpression(events?.find((e) => e.id === id)['name']);
+    form.setFieldsValue({
+      conditions: [
+        {
+          object: events[0]?.variables?.[0],
+          expression: undefined,
+          operation: 'contains',
+          value: undefined,
+        },
+      ],
+    });
+  };
+
   const iconStyle = {
     color: 'var(--text-color-hint)',
   };
@@ -509,6 +537,7 @@ const FormModal: React.FC<IProps> = (props) => {
                 id: 'odc.components.FormAutoAuthModal.PleaseSelectTriggerEvent',
               })}
               /*请选择触发事件*/ options={eventOtions}
+              onChange={handleEventChange}
               style={{ width: '240px' }}
             />
           </Form.Item>
@@ -543,7 +572,9 @@ const FormModal: React.FC<IProps> = (props) => {
             {({ getFieldValue }) => {
               const eventId = getFieldValue('eventId');
               const variables = events?.find((item) => item.id === eventId)?.variables;
-              return <ConditionSelect variables={variables} />;
+              return (
+                <ConditionSelect variables={variables} variableExpression={variableExpression} />
+              );
             }}
           </Form.Item>
           <Form.Item

@@ -2033,6 +2033,7 @@
   "odc.components.ResourceGroupPage.component.PublicConnection": "公共連接",
   "odc.components.FormRoleModal.RoleSaved": "角色保存成功",
   "odc.components.UserPage.component.Note": "備註",
+  "odc.components.UserPage.component.ExtraProperties": "自定義屬性",
   "odc.components.RolePage.component.Permissions": "權限",
   "odc.components.PublicConnectionPage.AreYouSureYouWant": "是否確定停用資源組?",
   "odc.component.ProcedureParam.Mode": "模式",

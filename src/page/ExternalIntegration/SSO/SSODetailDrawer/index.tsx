@@ -114,14 +114,11 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
         </Descriptions>
         {renderConfig()}
         <Descriptions column={2} title="用户字段映射">
-          <Descriptions.Item label="用户名">
+          <Descriptions.Item label="用户名字段">
             {configJson?.mappingRule?.userAccountNameField}
           </Descriptions.Item>
-          <Descriptions.Item label="用户昵称">
+          <Descriptions.Item label="用户昵称字段">
             {configJson?.mappingRule?.userNickNameField}
-          </Descriptions.Item>
-          <Descriptions.Item label="组织名称">
-            {configJson?.mappingRule?.organizationNameField}
           </Descriptions.Item>
           <Descriptions.Item label="用户信息数据结构类型">
             {configJson?.mappingRule?.userProfileViewType}
