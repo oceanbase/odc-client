@@ -409,6 +409,10 @@ export function isWin64() {
   return navigator.userAgent.toLowerCase().indexOf('win64') > -1;
 }
 
+export function isLinux() {
+  return navigator.userAgent.toLowerCase().indexOf('linux') > -1;
+}
+
 export function createAsyncTaskName(type: TaskType) {
   return `${type.toLowerCase()}_${connectionStore.connection.sessionName || ''}_${
     schemaStore.database.name || ''
