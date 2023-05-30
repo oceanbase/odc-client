@@ -1,5 +1,6 @@
 const { oss } = require('./util');
 const AdmZip = require('adm-zip');
+const execSync = require('child_process').execSync
 const fs = require('fs');
 const path = require('path');
 
@@ -23,6 +24,11 @@ exports.run = async function () {
   const jreZipPath = path.resolve(process.cwd(), 'libraries/jre/jre.zip');
   var zip = new AdmZip(jreZipPath);
   zip.extractAllTo(path.resolve(process.cwd(), 'libraries/jre/'), true);
+  if (platform.includes('linux')) {
+    execSync('chmod -R a+x ' + path.resolve(process.cwd(), 'libraries/jre/'), {
+      stdio: 'inherit'
+    })
+  }
   console.log('解压完成，删除压缩包');
   fs.unlinkSync(jreZipPath);
   console.log(jreZipPath, '删除完成');

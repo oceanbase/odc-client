@@ -30,6 +30,8 @@
     "prepack": "node ./scripts/clientDependencies/index.js",
     "pack-client:all": "node ./scripts/client/build.js all",
     "pack-client:mac": "node ./scripts/client/build.js mac",
+    "pack-client:linux_x86": "node ./scripts/client/build.js linux_x86",
+    "pack-client:linux_aarch64": "node ./scripts/client/build.js linux_aarch64",
     "pack-client:windows": "node ./scripts/client/build.js win",
     "copy:workers": "run-p copy:workers:*",
     "copy:workers:mysql": "cpx \" ./node_modules/@alipay/ob-language-sql-oceanbase-mysql/dist/min/*\" ./src/workers/",

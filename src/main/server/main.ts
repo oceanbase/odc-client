@@ -177,6 +177,7 @@ class MainServer {
     if (java) {
       JAVA_HOME = java.JAVA_HOME;
       javaBin = java.javaBin;
+      log.info('platform:', process.platform);
       if (process.platform === 'darwin') {
         /**
          * mac 需要给加一下执行权限
@@ -283,14 +284,25 @@ class MainServer {
     this.status = 'ready';
   }
 
+  /**
+   * windows SIGSTOP
+   */
+  private getSign() {
+    if (process.platform === 'linux' || process.platform === 'darwin') {
+      return 'SIGTERM';
+    }
+    return 'SIGSTOP';
+  }
+
   public async stopServer(force?: boolean) {
     // 尝试结束子进程（后端服务）
     // @see https://stackoverflow.com/questions/18694684/spawn-and-kill-a-process-in-node-js
+    const sign = this.getSign();
     if (this.process) {
       return new Promise((resolve) => {
         log.info(`Before Kill Main Server(pid=${this.process.pid})`);
         if (force) {
-          kill(this.process.pid, 'SIGSTOP', (error) => {
+          kill(this.process.pid, sign, (error) => {
             log.info('force stop ', error);
             log.info('停止进程完成');
             resolve(true);
@@ -298,7 +310,7 @@ class MainServer {
         } else {
           kill(this.process.pid, (error) => {
             setTimeout(() => {
-              this.process.kill('SIGSTOP');
+              this.process.kill(sign);
             }, 200);
             log.info('[kill tree pid]', error);
           });

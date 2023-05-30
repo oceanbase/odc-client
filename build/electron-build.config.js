@@ -34,6 +34,11 @@ const config = {
     menuCategory: 'OceanBase Developer Center',
     warningsAsErrors: false,
   },
+  linux: {
+    target: 'deb',
+    category: 'Development',
+    maintainer: 'OceanBase'
+  },
   directories: {
     output: 'release',
   },

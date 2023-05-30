@@ -26,6 +26,7 @@ const config = {
   // },
   // dynamicImportSyntax: {},
   publicPath,
+  esbuildMinifyIIFE: true,
   runtimePublicPath: {},
   hash: true,
   // tracert: {
