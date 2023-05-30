@@ -140,7 +140,7 @@ async function run() {
       /**
       * mac (jre)
       */
-      execSync('npm run prepack jre', {
+      execSync('npm run prepack jre jar', {
         stdio: 'inherit',
         env: {
           ...process.env,
@@ -153,7 +153,7 @@ async function run() {
       /**
        * win 64 (jre)
        */
-      execSync('npm run prepack jre jar obclient', {
+      execSync('npm run prepack jre obclient', {
         stdio: 'inherit',
         env: {
           ...process.env,
