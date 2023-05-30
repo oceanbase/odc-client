@@ -69,7 +69,7 @@ export async function checkJavaVersions(): Promise<boolean> {
     log.info('javaVersion:' + javaVersion);
     log.info('minVersion:' + minJDKVersion);
     if (javaVersion) {
-      let javaReleaseVersion = javaVersion.split('_')[1] || 9999;
+      let javaReleaseVersion = parseInt(javaVersion.split('_')[1]) || 9999;
       javaVersion = javaVersion.split('_')[0];
       if (
         compareVersions(javaVersion, minJDKVersion) === -1 ||
@@ -163,6 +163,7 @@ export function getJavaLogPath() {
 export function getJavaPath() {
   const isDevelopment = process.env.NODE_ENV === 'development';
   const isMac = process.platform === 'darwin';
+  const isLinux = process.platform === 'linux';
   let basePath = path.join(
     isDevelopment ? process.cwd() : process.resourcesPath || '',
     'libraries/jre',
@@ -176,7 +177,8 @@ export function getJavaPath() {
   }
   return {
     JAVA_HOME: basePath,
-    javaBin: isMac ? path.join(basePath, '/bin/java') : path.join(basePath, '/bin/java.exe'),
+    javaBin:
+      isMac || isLinux ? path.join(basePath, '/bin/java') : path.join(basePath, '/bin/java.exe'),
   };
 }
 

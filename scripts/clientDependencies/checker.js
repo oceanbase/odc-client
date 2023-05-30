@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const fileList = [
   path.resolve(process.cwd(), 'libraries/java/odc.jar'),
-  path.resolve(process.cwd(), 'libraries/obclient/obclient.exe'),
+  // path.resolve(process.cwd(), 'libraries/obclient/obclient.exe'),
 ];
 
 module.exports = function () {
