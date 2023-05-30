@@ -12,7 +12,7 @@ import { ModalStore } from '@/store/modal';
 import { SchemaStore } from '@/store/schema';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { formatBytes, isWin64 } from '@/util/utils';
+import { formatBytes, isLinux, isWin64 } from '@/util/utils';
 import { DeleteOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -132,7 +132,7 @@ const WorkbenchMenu: React.FC<IProps> = function ({
                 <FormattedMessage id="workspace.header.create.pl" />
               </Menu.Item>
             ) : null}
-            {(isClient() && !isWin64()) || !schemaStore.enableObclient ? null : (
+            {(isClient() && !isWin64() && !isLinux()) || !schemaStore.enableObclient ? null : (
               <Menu.Item key={MenuKey.OB_CLIENT}>
                 {
                   formatMessage({
