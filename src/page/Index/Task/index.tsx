@@ -1,4 +1,4 @@
-import TaskManaerPage from '@/page/Workspace/components/TaskManagePage';
+import TaskManaerPage from '@/component/Task';
 import { TaskStore } from '@/store/task';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect } from 'react';

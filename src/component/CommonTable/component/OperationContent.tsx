@@ -26,7 +26,7 @@ const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
       break;
     case IOperationOptionType.dropdown:
       operation = (
-        <Dropdown disabled={disabled} overlay={overlay} placement="bottomRight">
+        <Dropdown trigger={['click']} disabled={disabled} overlay={overlay} placement="bottomRight">
           {content}
         </Dropdown>
       );

@@ -1,6 +1,5 @@
 import { batchImportPrivateConnection } from '@/common/network/connection';
 import { actionTypes, canAcess } from '@/component/Acess';
-import ApplyPermissionButton from '@/component/ApplyPermissionButton';
 import BatchImportButton from '@/component/BatchImportButton';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IConnection, IConnectionType, IManagerResourceType } from '@/d.ts';
@@ -8,7 +7,6 @@ import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
 import ConIcon from '@/svgr/icon_connection.svg';
 import { encryptConnection } from '@/util/connection';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Empty, message, Popover, Space, Tooltip, Typography } from 'antd';
@@ -105,9 +103,6 @@ const TitleButton: React.FC<IProps> = function (props) {
             }) /*新建个人连接*/
           }
         </Button>
-        {!isClient() &&
-          !props.settingStore.serverSystemInfo?.applyPermissionHidden &&
-          (canAcessReadonly || canAcessConnect || canAcessApply) && <ApplyPermissionButton />}
         {enableBatchImport && visibleScope === IConnectionType.PRIVATE && (
           <BatchImportButton
             ref={batchImportRef}

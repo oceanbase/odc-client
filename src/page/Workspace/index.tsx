@@ -241,6 +241,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       if (!cid) {
         message.error('cid is not find');
       } else {
+        // TODO: session 应用的场景
         const session = await sessionManagerStore.createSession(true, toInteger(cid));
         if (session) {
           if (localLoginHistoy.isNewVersion()) {

@@ -1,4 +1,3 @@
-import ApplyPermission from '@/component/ApplyPermission';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
@@ -48,7 +47,6 @@ const Content = function (props: IProps, ref) {
         <div className={styles.list}>
           <List ref={listRef} />
         </div>
-        <ApplyPermission />
       </div>
     </PageContainer>
   );

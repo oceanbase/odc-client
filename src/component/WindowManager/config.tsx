@@ -40,6 +40,7 @@ import TypeSvg from '@/svgr/menuType.svg';
 
 import TaskSvg from '@/svgr/icon_task.svg';
 
+import TaskManaerPage from '@/component/Task';
 import CreateTriggerPage from '@/page/Workspace/components/CreateTriggerPage';
 import FunctionPage from '@/page/Workspace/components/FunctionPage';
 import PackagePage from '@/page/Workspace/components/PackagePage';
@@ -50,7 +51,6 @@ import SessionManagementPage from '@/page/Workspace/components/SessionManagement
 import SQLConfirmPage from '@/page/Workspace/components/SQLConfirmPage';
 import SQLResultSetViewPage from '@/page/Workspace/components/SQLResultSetViewPage';
 import SynonymPage from '@/page/Workspace/components/SynonymPage';
-import TaskManaerPage from '@/page/Workspace/components/TaskManagePage';
 import TriggerPage from '@/page/Workspace/components/TriggerPage';
 import TutorialPage from '@/page/Workspace/components/TutorialPage';
 import TypePage from '@/page/Workspace/components/TypePage';

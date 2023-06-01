@@ -1,4 +1,5 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import TaskManage from '@/component/Task';
 
 const Task = () => {
   return (
@@ -9,7 +10,7 @@ const Task = () => {
         showDivider: true,
       }}
     >
-      工单xxx
+      <TaskManage />
     </PageContainer>
   );
 };
