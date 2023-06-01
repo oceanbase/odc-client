@@ -1,5 +1,4 @@
 import { hasSourceReadAuth } from '@/component/Acess';
-import ApplyPermissionButton from '@/component/ApplyPermissionButton';
 import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Tooltip } from 'antd';
@@ -30,7 +29,6 @@ const ApplyPermissionTip: React.FC<IProps> = inject('connectionStore')(
                   }) /*当前数据库权限不足*/
                 }
               </div>
-              <ApplyPermissionButton showArrow type="link" />
             </>
           )
         }

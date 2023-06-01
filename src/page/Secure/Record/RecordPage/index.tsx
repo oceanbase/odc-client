@@ -89,11 +89,6 @@ export const AuditEventMetaMap = {
     id: 'odc.components.RecordPage.OperationRecords',
   }),
 
-  [AuditEventType.PERMISSION_APPLY]: formatMessage({
-    id: 'odc.components.RecordPage.ApplyForConnectionPermissions',
-  }),
-
-  //申请连接权限
   [AuditEventType.SHADOWTABLE_SYNC]: formatMessage({
     id: 'odc.components.RecordPage.ShadowTableSynchronization',
   }),
@@ -396,21 +391,7 @@ export const AuditEventActionMap = {
     id: 'odc.components.RecordPage.RollBack',
   }),
 
-  [AuditEventActionType.CREATE_PERMISSION_APPLY_TASK]: formatMessage({
-    id: 'odc.components.RecordPage.Create',
-  }),
-
-  //新建
-  [AuditEventActionType.APPROVE_PERMISSION_APPLY_TASK]: formatMessage({
-    id: 'odc.components.RecordPage.Pass',
-  }),
-
-  //通过
-  [AuditEventActionType.REJECT_PERMISSION_APPLY_TASK]: formatMessage({
-    id: 'odc.components.RecordPage.Reject',
-  }),
-
-  //拒绝 //回滚 // 操作记录
+  //回滚 // 操作记录
   [AuditEventActionType.EXPORT_AUDIT_EVENT]: formatMessage({
     id: 'odc.components.RecordPage.ExportOperationRecords',
   }),

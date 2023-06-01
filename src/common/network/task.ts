@@ -1,3 +1,4 @@
+import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import {
   CommonTaskLogType,
   CreateTaskRecord,
@@ -15,7 +16,6 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import { IShadowSyncAnalysisResult } from '@/page/Workspace/components/CreateShadowSyncModal/interface';
 import connection from '@/store/connection';
 import setting from '@/store/setting';
 import request from '@/util/request';

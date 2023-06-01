@@ -1,4 +1,3 @@
-import ApplyPermission from '@/component/ApplyPermission';
 import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
 import { inject, observer } from 'mobx-react';
@@ -44,7 +43,6 @@ const Content = function (props: IProps, ref) {
       <div className={styles.list}>
         <List ref={listRef} />
       </div>
-      <ApplyPermission />
     </div>
   );
 };
