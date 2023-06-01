@@ -7,19 +7,11 @@ import { isNil } from 'lodash';
 import { action, computed, observable } from 'mobx';
 import commonStore from './common';
 import connectionStore from './connection';
-import {
-  getTabDataFromMetaStore,
-  savePageStoreToMetaStore,
-  saveSessionToMetaStore,
-} from './helper/page';
-import {
-  generatePageKey,
-  generatePageTitle,
-  initPageKeys,
-  resetPageKey,
-} from './helper/pageKeyGenerate';
+import { savePageStoreToMetaStore } from './helper/page';
+import { generatePageKey, generatePageTitle, resetPageKey } from './helper/pageKeyGenerate';
 import login from './login';
-import { default as schema, default as schemaStore } from './schema';
+import { default as schemaStore } from './schema';
+import { makeSync } from './utils/metaSync';
 
 export interface IPageOptions {
   title?: string;
@@ -32,6 +24,15 @@ export interface IPageOptions {
 }
 
 export class PageStore {
+  @observable
+  public pageKey: number = 0;
+
+  @observable
+  public plPageKey: number = 0;
+
+  @observable
+  public plDebugPageKey: number = 0;
+
   @observable
   public databaseId: number;
 
@@ -53,20 +54,10 @@ export class PageStore {
   /** 初始化store */
   @action
   public async initStore() {
-    await initPageKeys();
-    await saveSessionToMetaStore(
-      connectionStore.sessionId,
-      connectionStore.connection.sessionName,
-      schema.database.name,
-    );
-    const meta = await getTabDataFromMetaStore();
-    this.pages = (meta?.pages || []).map((page) => {
-      if (page?.params?.isDocked) {
-        page.params.isDocked = false;
-      }
-      return page;
-    });
-    this.activePageKey = meta?.activeKey;
+    await makeSync(this, 'pages', 'pages', []);
+    await makeSync(this, 'pageKey', 'pageKey', 0);
+    await makeSync(this, 'plPageKey', 'plPageKey', 0);
+    await makeSync(this, 'plDebugPageKey', 'plDebugPageKey', 0);
   }
   /** 切换打开的page，更新一下URL */
   @action
@@ -295,10 +286,10 @@ export class PageStore {
   public async clear() {
     await this.updatePages(async (pages) => {
       return [];
-    }, true);
+    });
     await this.updateActiveKey(() => {
       return null;
-    }, true);
+    });
     // clearTabDataInMetaStore();
     resetPageKey();
   }
@@ -373,23 +364,15 @@ export class PageStore {
   }
 
   /** 更新多个page */
-  public async updatePages(
-    getNewPages: (oldPages: IPage[]) => Promise<IPage[]>,
-    keepMeta?: boolean,
-  ) {
+  public async updatePages(getNewPages: (oldPages: IPage[]) => Promise<IPage[]>) {
     this.pages = await getNewPages(this.pages);
-    !keepMeta && (await this.saveDataToMetaStore());
   }
 
   /** 更新activeKey */
-  private async updateActiveKey(
-    fn: (pages: IPage[], oldActiveKey: any) => any,
-    keepMeta?: boolean,
-  ) {
+  private async updateActiveKey(fn: (pages: IPage[], oldActiveKey: any) => any) {
     this.activePageKey = fn(this.pages, this.activePageKey);
     const pageType = this.getPageByKey(this.activePageKey)?.type;
     pageType && tracert.expoPage(pageType);
-    !keepMeta && (await savePageStoreToMetaStore(this.pages, this.activePageKey));
   }
 
   private async saveDataToMetaStore() {

@@ -1,11 +1,8 @@
 import { PageType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
-import { getTabDataFromMetaStore, savePageKeysToMetaStore } from './page';
-
-let pageKey = 0;
-let plPageKey = 0;
-let plDebugPageKey = 0;
+import page from '../page';
+import { savePageKeysToMetaStore } from './page';
 
 export const PLPageMap = {
   [PageType.BATCH_COMPILE_FUNCTION]: {
@@ -36,16 +33,9 @@ const isBatchCompilePL = (type: PageType) => {
 };
 
 export function resetPageKey() {
-  pageKey = 0;
-  plPageKey = 0;
-  plDebugPageKey = 0;
-}
-
-export async function initPageKeys() {
-  const tabData = (await getTabDataFromMetaStore()) || {};
-  pageKey = tabData.pageKey || 0;
-  plPageKey = tabData.plPageKey || 0;
-  plDebugPageKey = tabData.plDebugPageKey || 0;
+  page.pageKey = 0;
+  page.plPageKey = 0;
+  page.plDebugPageKey = 0;
 }
 
 export function generatePageTitle(type: PageType, key?: string): string {
@@ -84,17 +74,17 @@ export function generatePageTitle(type: PageType, key?: string): string {
 export async function generatePageKey(type: PageType, params: any = {}): Promise<string> {
   let key = `page-`;
   if (type === PageType.SQL) {
-    key = `sql-${params?.scriptId || 'new-' + pageKey++}`;
+    key = `sql-${params?.scriptId || 'new-' + page.pageKey++}`;
   } else if (type === PageType.PL) {
     if (params?.isDebug) {
-      key = `pl-debug-${params?.scriptId || 'new-' + plDebugPageKey++}`;
+      key = `pl-debug-${params?.scriptId || 'new-' + page.plDebugPageKey++}`;
     } else {
-      key = `pl-${params?.scriptId || 'new-' + plPageKey++}`;
+      key = `pl-${params?.scriptId || 'new-' + page.plPageKey++}`;
     }
   } else if (type === PageType.DATABASE) {
     key += `database-${params.databaseId}`;
   } else if (type === PageType.TABLE || type === PageType.CREATE_TABLE) {
-    key += params.tableName ? `table-${params.tableName}` : `table-new-${pageKey++}`;
+    key += params.tableName ? `table-${params.tableName}` : `table-new-${page.pageKey++}`;
   } else if (type === PageType.SESSION_PARAM) {
     key += 'session-param';
   } else if (type === PageType.SESSION_MANAGEMENT) {
@@ -102,29 +92,31 @@ export async function generatePageKey(type: PageType, params: any = {}): Promise
   } else if (type === PageType.RECYCLE_BIN) {
     key += 'recycle-bin';
   } else if (type === PageType.VIEW || type === PageType.CREATE_VIEW) {
-    key += params.viewName ? `view-${params.viewName}` : `view-new-${pageKey++}`;
+    key += params.viewName ? `view-${params.viewName}` : `view-new-${page.pageKey++}`;
   } else if (type === PageType.FUNCTION || type === PageType.CREATE_FUNCTION) {
-    key += params.funName ? `func-${params.funName}` : `func-new-${pageKey++}`;
+    key += params.funName ? `func-${params.funName}` : `func-new-${page.pageKey++}`;
   } else if (isBatchCompilePL(type)) {
     key += `batch-compile-pl-${generateUniqKey()}`;
   } else if (type === PageType.PROCEDURE || type === PageType.CREATE_PROCEDURE) {
-    key += params.proName ? `pro-${params.proName}` : `pro-new-${pageKey++}`;
+    key += params.proName ? `pro-${params.proName}` : `pro-new-${page.pageKey++}`;
   } else if (type === PageType.SEQUENCE || type === PageType.CREATE_SEQUENCE) {
-    key += params.sequenceName ? `sequence-${params.sequenceName}` : `sequence-new-${pageKey++}`;
+    key += params.sequenceName
+      ? `sequence-${params.sequenceName}`
+      : `sequence-new-${page.pageKey++}`;
   } else if (type === PageType.PACKAGE || type === PageType.CREATE_PACKAGE) {
-    key += params.packageName ? `pk-${params.packageName}` : `pk-new-${pageKey++}`;
+    key += params.packageName ? `pk-${params.packageName}` : `pk-new-${page.pageKey++}`;
   } else if (
     type === PageType.TRIGGER ||
     type === PageType.CREATE_TRIGGER ||
     type === PageType.CREATE_TRIGGER_SQL
   ) {
-    key += params.triggerName ? `trigger-${params.triggerName}` : `trigger-new-${pageKey++}`;
+    key += params.triggerName ? `trigger-${params.triggerName}` : `trigger-new-${page.pageKey++}`;
   } else if (type === PageType.SYNONYM || type === PageType.CREATE_SYNONYM) {
     key += params.synonymName
       ? `synonym-${params.synonymName}-${params.synonymType}`
-      : `synonym-new-${pageKey++}`;
+      : `synonym-new-${page.pageKey++}`;
   } else if (type === PageType.TYPE || type === PageType.CREATE_TYPE) {
-    key += params.typeName ? `type-${params.typeName}` : `type-new-${pageKey++}`;
+    key += params.typeName ? `type-${params.typeName}` : `type-new-${page.pageKey++}`;
   } else if (type === PageType.TASKS) {
     key += 'tasks';
   } else if (type === PageType.OB_CLIENT) {
@@ -132,6 +124,6 @@ export async function generatePageKey(type: PageType, params: any = {}): Promise
   } else if (type === PageType.SQL_RESULTSET_VIEW) {
     key += `resultview-${generateUniqKey()}`;
   }
-  await savePageKeysToMetaStore(pageKey, plPageKey, plDebugPageKey);
+  await savePageKeysToMetaStore(page.pageKey, page.plPageKey, page.plDebugPageKey);
   return key;
 }

@@ -14,7 +14,7 @@ class DefaultContainer extends React.Component<{
 }> {
   public render() {
     return (
-      <Layout style={{ minWidth: '960px' }}>
+      <Layout style={{ minWidth: '960px', height: '100%' }}>
         <Content className={styles.content}>
           <Outlet />
         </Content>

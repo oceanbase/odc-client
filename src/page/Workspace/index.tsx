@@ -6,7 +6,6 @@ import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import appConfig from '@/constant/appConfig';
 import type { IPage } from '@/d.ts';
 import localLoginHistoy from '@/service/localLoginHistoy';
-import type { CommonStore } from '@/store/common';
 import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -18,10 +17,8 @@ import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { extractResourceId } from '@/util/utils';
 import { useParams } from '@umijs/max';
 import { message, Modal } from 'antd';
-import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import ActivityBar from './ActivityBar/ index';
@@ -42,22 +39,13 @@ interface WorkspaceProps {
   userStore: UserStore;
   sqlStore: SQLStore;
   modalStore?: ModalStore;
-  commonStore: CommonStore;
   taskStore?: TaskStore;
   sessionManagerStore?: SessionManagerStore;
 }
 
 let beforeUnloadHandler: ((e: BeforeUnloadEvent) => void) | undefined;
 const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
-  const {
-    pageStore,
-    settingStore,
-    sqlStore,
-    modalStore,
-    commonStore,
-    taskStore,
-    sessionManagerStore,
-  } = props;
+  const { pageStore, settingStore, sqlStore, modalStore, taskStore, sessionManagerStore } = props;
 
   const { pages = [], activePageKey } = pageStore;
   const { serverSystemInfo } = settingStore;
@@ -233,25 +221,17 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       addPageUnloadListener();
-      commonStore.setTabKey(params.tabKey);
-      const resourceId = extractResourceId(params.sessionId);
-      const sessionId = resourceId?.sid;
-      const cid = sessionId?.split('-')?.[0];
+      await pageStore.initStore();
 
-      if (!cid) {
-        message.error('cid is not find');
-      } else {
-        // TODO: session 应用的场景
-        const session = await sessionManagerStore.createSession(true, toInteger(cid));
-        if (session) {
-          if (localLoginHistoy.isNewVersion()) {
-            localLoginHistoy.updateVersion();
-            settingStore.enableVersionTip && openNewVersionTip();
-          }
-          task.setTaskCreateEnabled(true);
-          setIsReady(true);
-        }
+      if (localLoginHistoy.isNewVersion()) {
+        localLoginHistoy.updateVersion();
+        settingStore.enableVersionTip && openNewVersionTip();
       }
+      setIsReady(true);
+      /**
+       * TODO
+       * 初始化项目列表，数据源列表
+       */
     }
     asyncEffect();
     return () => {
@@ -312,7 +292,6 @@ export default inject(
   'settingStore',
   'userStore',
   'sqlStore',
-  'commonStore',
   'modalStore',
   'taskStore',
   'sessionManagerStore',

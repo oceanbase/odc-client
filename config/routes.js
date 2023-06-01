@@ -44,8 +44,11 @@ module.exports = [
                 },
                 {
                   path: '/sqlworkspace',
+                  wrappers: [
+                    "@/layout/ThemeWrap"
+                  ],
                   name: 'sqlworkspace',
-                  component: '@/page/SqlWorkspace',
+                  component: '@/page/Workspace',
                 },
                 {
                   path: '/exception/403',

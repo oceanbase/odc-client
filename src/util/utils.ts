@@ -29,6 +29,9 @@ export function extractResourceId(id: string): {
   [key: string]: string;
 } {
   const r = {};
+  if (!id) {
+    return r;
+  }
   const s = id.split(':');
 
   for (let i = 0; i <= s.length; i += 2) {
