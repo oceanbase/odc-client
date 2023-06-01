@@ -21,7 +21,6 @@ import { action, observable, runInAction } from 'mobx';
 import authStore from './auth';
 import { initPageExpiredWork } from './helper/page';
 import userStore from './login';
-import page from './page';
 import schemaStore from './schema';
 import setting from './setting';
 
@@ -231,11 +230,6 @@ export class ConnectionStore {
         await schemaStore.selectDatabase(selectDatabase, true);
       }
       await initPageExpiredWork();
-
-      /**
-       * 初始化page信息
-       */
-      await page.initStore();
     } catch (e) {
       showReConnectModal();
       console.error(e);
