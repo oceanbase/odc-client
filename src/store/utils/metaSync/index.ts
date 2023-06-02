@@ -40,7 +40,7 @@ async function updateDB(key, value, propertyDBKey) {
   saveToDB();
 }
 
-export async function makeSync(
+export async function autoSave(
   obj: any,
   property: string,
   propertyDBKey: string,
