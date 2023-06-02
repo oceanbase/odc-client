@@ -11,7 +11,7 @@ import { savePageStoreToMetaStore } from './helper/page';
 import { generatePageKey, generatePageTitle, resetPageKey } from './helper/pageKeyGenerate';
 import login from './login';
 import { default as schemaStore } from './schema';
-import { makeSync } from './utils/metaSync';
+import { autoSave } from './utils/metaSync';
 
 export interface IPageOptions {
   title?: string;
@@ -54,10 +54,10 @@ export class PageStore {
   /** 初始化store */
   @action
   public async initStore() {
-    await makeSync(this, 'pages', 'pages', []);
-    await makeSync(this, 'pageKey', 'pageKey', 0);
-    await makeSync(this, 'plPageKey', 'plPageKey', 0);
-    await makeSync(this, 'plDebugPageKey', 'plDebugPageKey', 0);
+    await autoSave(this, 'pages', 'pages', []);
+    await autoSave(this, 'pageKey', 'pageKey', 0);
+    await autoSave(this, 'plPageKey', 'plPageKey', 0);
+    await autoSave(this, 'plDebugPageKey', 'plDebugPageKey', 0);
   }
   /** 切换打开的page，更新一下URL */
   @action
