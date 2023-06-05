@@ -1,4 +1,4 @@
-import type { ConnectionFilterStatus } from '@/d.ts';
+import type { ConnectionFilterStatus, IDataType } from '@/d.ts';
 import {
   AccountType,
   ConnectionMode,
@@ -13,10 +13,10 @@ import {
 } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import userStore from '@/store/login';
-import { isConnectTypeBeCloudType, reviseV2Field } from '@/util/connection';
+import { isConnectTypeBeCloudType } from '@/util/connection';
 import request from '@/util/request';
 import { decrypt, encrypt } from '@/util/utils';
-import { generateDatabaseSid, generateSessionSid } from './pathUtil';
+import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
 
 function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: boolean) {
@@ -97,7 +97,7 @@ export async function updateConnection(formData: IConnectionFormData) {
 }
 
 export async function updateConnectionFromConnection(c: IConnection) {
-  const res = await request.put(`/api/v2/connect/connections/${c.id}`, {
+  const res = await request.put(`/api/v2/datasource/datasources/${c.id}`, {
     data: { ...c, password: encrypt(c.password) },
   });
   return !!res && !res?.isError;
@@ -219,83 +219,47 @@ export async function getConnectionDetail(sid: number): Promise<IDatasource> {
   return results?.data;
 }
 
-export async function getSupportFeatures(
-  sessionId: any,
-  dbName: string,
-): Promise<
-  {
-    support: boolean;
-    supportType: string;
-  }[]
-> {
-  const res = await request.get(
-    `/api/v1/version-config/getSupportFeatures/${generateDatabaseSid(dbName, sessionId)}`,
-  );
-
-  return res?.data;
-}
-
 export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
   const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
   return data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
 }
 
-/**
- * 直接建立连接，不需要新建连接
- */
-export async function directConnect(sid: number, params: IConnectionFormData) {
-  const serverParams = {
-    ...generateConnectionParams(params),
-    sid: params.id,
-    sessionName: params.name,
-  };
-  const res = await request.put(`/api/v1/session/directConnect/sid:${sid}`, {
-    data: serverParams,
-  });
-  const sessionId = res?.data;
-  if (sessionId) {
-    return sessionId.substring(4);
-  }
-}
-
-export async function newSession(
-  sid: string,
-  password: string,
-  /**
-   * 存在的时候会忽略password和sid，用于创建子session
-   */
-  copiedFromSessionId: string,
-  cloudParams?: {
-    tenantId: any;
-    instanceId: any;
-  },
+export async function newSessionByDataBase(
+  databaseId: number,
   holdErrorTip?: boolean,
-) {
-  const { data } = await request.post(`/api/v2/connect/sessions?connectType=CONNECT_TYPE_OB`, {
-    data: {
-      connectionId: sid,
-      copiedFromSessionId,
-      password: encrypt(password),
-      cloudParams,
-    },
+): Promise<{
+  sessionId: string;
+  dataTypes: IDataType[];
+  support: {
+    support: boolean;
+    supportType: string;
+  }[];
+}> {
+  const { data } = await request.post(`/api/v2/datasource/databases/${databaseId}/sessions`, {
     params: {
       holdErrorTip,
     },
   });
-  if (data) {
-    // 不带 sid
-    const sessionId = data.substring(4);
-    return sessionId;
-  }
+  return data;
 }
 
-/**
- * 根据connectionID获取连接的详细信息
- */
-export async function getConnectionBySessionId(sessionId: string): Promise<IConnection> {
-  const connectionId = sessionId.split('-')[0];
-  const results = await request.get(`/api/v2/connect/connections/${connectionId}`);
-  return results?.data ? reviseV2Field(results.data) : results.data;
+export async function newSessionByDataSource(
+  dataSourceId: number,
+  holdErrorTip?: boolean,
+): Promise<{
+  sessionId: string;
+  dataTypes: IDataType[];
+  support: {
+    support: boolean;
+    supportType: string;
+  }[];
+}> {
+  const { data } = await request.post(`/api/v2/datasource/datasources/${dataSourceId}/sessions`, {
+    params: {
+      holdErrorTip,
+    },
+  });
+  return data;
 }
 
 export async function getTransactionInfo(sessionId?: string): Promise<{
@@ -338,89 +302,6 @@ export async function setTransactionInfo(
 }
 
 /**
- * 新建标签
- */
-export async function createConnectionLabel(formData: { labelColor: string; labelName: string }) {
-  const url = `/api/v1/session-label`;
-  const params = {
-    ...formData,
-  };
-  const res = await request.post(url, {
-    data: params,
-  });
-  return res?.data;
-}
-
-/**
- * 获取标签列表
- */
-export async function getConnectionLabelList(): Promise<IConnection[]> {
-  const results = await request.get(`/api/v1/session-label/list`);
-  return results?.data;
-}
-
-/**
- * 修改标签
- */
-export async function updateConnectionLabel(formData: {
-  id: number;
-  labelColor: string;
-  labelName: string;
-}) {
-  const url = `/api/v1/session-label/${formData.id}`;
-  const res = await request.put(url, {
-    data: formData,
-  });
-  return res?.data;
-}
-
-export async function setConnectionLabel(cid: any, labelId) {
-  const res = await request.post(`/api/v2/connect/connections/${cid}/setLabel`, {
-    data: !labelId ? [] : [labelId],
-  });
-  return res?.data;
-}
-
-/**
- * 删除标签
- */
-export async function deleteConnectionLabel(id: number) {
-  const params = {
-    id,
-  };
-  const res = await request.delete(`/api/v1/session-label/${id}`, {
-    data: params,
-  });
-  return res?.data;
-}
-
-/**
- * 置顶连接
- */
-export async function setConnectionTop(sid: number) {
-  const url = `/api/v2/connect/connections/${sid}/setTop`;
-  const res = await request.post(url, {
-    data: {
-      id: sid,
-    },
-  });
-  return res?.data;
-}
-
-/**
- * 取消置顶连接
- */
-export async function cancelConnectionTop(sid: number) {
-  const url = `/api/v2/connect/connections/${sid}/cancelSetTop`;
-  const res = await request.post(url, {
-    data: {
-      id: sid,
-    },
-  });
-  return res?.data;
-}
-
-/**
  * 获取连接名称是否重复
  */
 export async function getConnectionExists(params: { name: string }): Promise<boolean> {
@@ -448,16 +329,6 @@ export async function getClusterAndTenantList(visibleScope: IConnectionType): Pr
 export async function deleteConnection(cid: string): Promise<boolean> {
   const res = await request.delete(`/api/v2/datasource/datasources/${cid}`);
   return res?.data;
-}
-
-export async function switchSchema(sessionIds: string[], schema: string) {
-  const res = await request.post(`/api/v2/connect/sessions/switchSchema`, {
-    data: {
-      sessionIds,
-      schemaName: schema,
-    },
-  });
-  return !res?.isError;
 }
 
 /**
