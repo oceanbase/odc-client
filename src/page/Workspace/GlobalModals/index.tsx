@@ -1,10 +1,8 @@
-import AddConnectionDrawer from '@/component/AddConnectionDrawer';
 import CreateFunctionModal from '@/component/CreateFunctionModal';
 import CreatePackageModal from '@/component/CreatePackageModal';
 import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
-import { IConnectionType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -23,11 +21,6 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateTypeModal />
       <CreateFunctionModal />
       <CreateProcedureModal />
-      <AddConnectionDrawer
-        connectionType={IConnectionType.ORGANIZATION}
-        onlySys
-        key={`${modalStore.addConnectionVisible}connection`}
-      />
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
       <ScriptManageModal />
     </>

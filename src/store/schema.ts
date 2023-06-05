@@ -4,7 +4,6 @@
 import { formatMessage } from '@/util/intl';
 
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
-import { getSupportFeatures, switchSchema } from '@/common/network/connection';
 import {
   generateDatabaseSid,
   generateFunctionSid,
@@ -22,7 +21,6 @@ import { getTableColumnList, queryIdentities } from '@/common/network/table';
 import { getType, getTypeList } from '@/common/network/type';
 import type {
   ICreateView,
-  IDatabase,
   IDataType,
   IFunction,
   IPackage,
@@ -46,11 +44,9 @@ import schema from '@/store/schema';
 import request from '@/util/request';
 import { downloadFile, getBlobValueKey } from '@/util/utils';
 import { message } from 'antd';
-import { isFunction } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import connectionStore from './connection';
-import { saveSessionToMetaStore } from './helper/page';
-import { default as setting, default as settingStore } from './setting';
+import { default as setting } from './setting';
 export class SchemaStore {
   /** 数据库元信息 */
   @observable
@@ -302,61 +298,7 @@ export class SchemaStore {
   }
 
   @action
-  public async selectDatabase(dbName: string, firstTime: boolean = false) {
-    // 切换数据库
-    this.clearResourceTree();
-    const sessions = connectionStore.getAllSessionIds();
-    this.switchingDatabase = true;
-    if (!connectionStore.sessionId) {
-      return;
-    }
-    const isSuccess = await switchSchema(
-      sessions.map((s) => generateSessionSid(s)),
-      dbName,
-    );
-
-    if (!isSuccess) {
-      this.switchingDatabase = false;
-      throw new Error('switch database error');
-    } // 3. 选中当前数据库，补充详情
-
-    /**
-     * 在use database成功之后，需要去database list去找对应的详细信息，在这边大小写不一定是敏感的，所以需要找两次
-     * 第一次按照大小写敏感来找
-     * 第二次按照不敏感来找，不用担心找不到
-     * 这样可以保证只要use database成功后，database list里面肯定可以找到对应的信息
-     */
-    const selected =
-      this.databases.find((d) => d.name === dbName) ||
-      this.databases.find((d) => d.name.toLowerCase() === dbName?.toLowerCase());
-    this.database = { ...selected, name: selected && selected.name }; // 请求数据库详情
-
-    this.updateDatabaseDetail();
-    await saveSessionToMetaStore(
-      connectionStore.sessionId,
-      connectionStore.connection?.sessionName,
-      dbName,
-    );
-
-    if (selected) {
-      // 这里需要注意，不能同时发这些请求，因为后端数据库只有一个连接，同时发由于锁竞争不但不会快，还会由于连接竞争变慢
-      // 导致的结果就是，后面到达后端的请求必然超时。
-      // 3.1 获取数据库相关的字符集和排序规则、是否支持分区创建、函数以及存储过程
-      // 注意，只有第一次进入的时候才需要请求，后续切库不需要
-      if (firstTime) {
-        await Promise.all([
-          this.getDataTypeList(),
-          this.initSupportFeatures(),
-          this.getCollationList(),
-          this.getCharsetList(),
-        ]);
-      } // 4. 获取表列表
-
-      await this.getTableList();
-    }
-
-    this.switchingDatabase = false;
-  }
+  public async selectDatabase(dbName: string, firstTime: boolean = false) {}
 
   @action
   public async getCharsetList() {
@@ -382,70 +324,7 @@ export class SchemaStore {
   }
 
   @action
-  public async initSupportFeatures() {
-    const data = await getSupportFeatures();
-    const keyValueMap = {
-      support_show_foreign_key: 'enableShowForeignKey',
-      support_partition_modify: 'enableCreatePartition',
-      support_procedure: 'enableProcedure',
-      support_function: 'enableFunction',
-      support_constraint_modify: 'enableConstraintModify',
-      support_constraint: 'enableConstraint',
-      support_view: 'enableView',
-      support_sequence: 'enableSequence',
-      support_package: 'enablePackage',
-      support_rowid: 'enableRowId',
-      support_trigger: 'enableTrigger',
-      support_trigger_ddl: 'enableTriggerDDL',
-      support_trigger_compile: 'enableTriggerCompile',
-      support_trigger_alterstatus: 'enableTriggerAlterStatus',
-      support_trigger_references: 'enableTriggerReferences',
-      support_type: 'enableType',
-      support_synonym: 'enableSynonym',
-      support_recycle_bin: 'enableRecycleBin',
-      support_shadowtable: 'enableShadowSync',
-      support_partition_plan: 'enablePartitionPlan',
-      support_async: (allConfig) => {
-        this.enableAsync = settingStore.enableAsyncTask && allConfig['support_async'];
-      },
-      support_db_export: (allConfig) => {
-        this.enableDBExport = settingStore.enableDBExport && allConfig['support_db_export'];
-      },
-      support_db_import: (allConfig) => {
-        this.enableDBImport = settingStore.enableDBImport && allConfig['support_db_import'];
-      },
-      support_mock_data: (allConfig) => {
-        this.enableMockData = settingStore.enableMockdata && allConfig['support_mock_data'];
-      },
-      support_obclient: (allConfig) => {
-        this.enableObclient = settingStore.enableOBClient && allConfig['support_obclient'];
-      },
-      support_kill_session: (allConfig) => {
-        this.enableKillSession = allConfig['support_kill_session'];
-      },
-      support_kill_query: (allConfig) => {
-        this.enableKillQuery = allConfig['support_kill_query'];
-      },
-      support_sql_trace: 'enableSQLTrace',
-      support_sql_explain: 'enableSQLExplain',
-      support_pl_debug: (allConfig) => {
-        this.enablePLDebug = allConfig['support_pl_debug'];
-      },
-    };
-    const allConfig = {};
-    data?.forEach((item) => {
-      allConfig[item.supportType] = !!item.support;
-    });
-    data?.forEach((feature) => {
-      const { support, supportType } = feature;
-      const value = keyValueMap[supportType];
-      if (isFunction(value)) {
-        value(allConfig);
-      } else if (typeof value === 'string') {
-        this[value] = support;
-      }
-    });
-  }
+  public async initSupportFeatures() {}
   /** 表 */
 
   @action

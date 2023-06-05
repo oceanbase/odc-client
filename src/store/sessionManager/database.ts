@@ -1,5 +1,4 @@
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
-import { switchSchema } from '@/common/network/connection';
 import {
   generateDatabaseSid,
   generatePackageSid,
@@ -22,7 +21,6 @@ import {
 } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
-import logger from '@/util/logger';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
 
@@ -63,27 +61,12 @@ class DatabaseStore {
 
   static async createInstance(sessionId: string, dbName: string) {
     const db = new DatabaseStore(sessionId, dbName);
-    if (await db.init()) {
-      return db;
-    }
+    return db;
   }
 
   constructor(sessionId, dbName) {
     this.sessionId = sessionId;
     this.dbName = dbName;
-  }
-
-  async init(): Promise<boolean> {
-    try {
-      const isSuccess = await switchSchema([this.sessionId], this.dbName);
-      if (!isSuccess) {
-        return false;
-      }
-      return true;
-    } catch (e) {
-      logger.error('create database error', e);
-      return false;
-    }
   }
 
   @action
