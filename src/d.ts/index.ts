@@ -899,18 +899,6 @@ export interface IDatabaseShardRule {
   shardNum: number;
 }
 
-export interface IDatabase {
-  sid: string;
-  name: string;
-  size: string;
-  charset: string;
-  cid: string;
-  collation: string;
-  gmtCreated: number;
-  gmtModified: number;
-  shardConfiguration: IDatabaseShardRule;
-}
-
 export interface IDataType {
   databaseType: string;
   showType: ColumnShowType;

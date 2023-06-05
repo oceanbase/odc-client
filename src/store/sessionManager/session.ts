@@ -1,22 +1,16 @@
 import {
   changeDelimiter,
   getSessionStatus,
-  getSupportFeatures,
   getTransactionInfo,
-  newSession,
+  newSessionByDataBase,
+  newSessionByDataSource,
   setTransactionInfo,
 } from '@/common/network/connection';
 import { generateDatabaseSid, generateSessionSid } from '@/common/network/pathUtil';
 import { queryIdentities } from '@/common/network/table';
-import showReConnectModal from '@/component/ReconnectModal';
-import {
-  ConnectionMode,
-  IConnection,
-  IDatabase,
-  IDataType,
-  IRecycleObject,
-  ISessionStatus,
-} from '@/d.ts';
+import { IDataType, IRecycleObject, ISessionStatus } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import { IDatasource } from '@/d.ts/datasource';
 import logger from '@/util/logger';
 import request from '@/util/request';
 import { isFunction } from 'lodash';
@@ -29,9 +23,6 @@ const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
 
 class SessionStore {
-  @observable
-  public databases: IDatabase[] = [];
-
   /** 数据库元信息 */
   @observable
   public charsets: string[] = [];
@@ -39,6 +30,9 @@ class SessionStore {
   public collations: string[] = [];
   @observable
   public dataTypes: IDataType[] = [];
+
+  @observable
+  public odcDatabase: IDatabase;
 
   @observable
   public database: DatabaseStore;
@@ -93,7 +87,7 @@ class SessionStore {
 
   public sessionId: string;
 
-  public connection: IConnection = null;
+  public connection: IDatasource = null;
 
   public isAlive: boolean = false;
 
@@ -101,92 +95,92 @@ class SessionStore {
 
   private lastIdentitiesLoadTime: number = 0;
 
-  constructor(connection: IConnection) {
+  constructor(connection: IDatasource, database: IDatabase) {
     this.connection = connection;
+    this.odcDatabase = database;
   }
 
-  static async createInstance(
-    connection: IConnection,
-    dbName?: string,
-    password?: string,
-    parentSessionId?: string | number,
-    cloudParams?: any,
-    simpleMode?: boolean,
-  ) {
-    const session = new SessionStore(connection);
-    if (await session.init(dbName, password, parentSessionId, cloudParams, simpleMode)) {
+  static async createInstance(datasource: IDatasource, database: IDatabase) {
+    const session = new SessionStore(datasource, database);
+    if (await session.init()) {
       return session;
     }
     return null;
   }
 
-  static async recoverExistInstance(connection: IConnection, sessionId: string, dbName?: string) {
-    const session = new SessionStore(connection);
-    if (await session.initWithExistSessionId(sessionId, dbName)) {
-      return session;
-    }
-    return null;
-  }
+  // static async recoverExistInstance(connection: IConnection, sessionId: string, dbName?: string) {
+  //   const session = new SessionStore(connection);
+  //   if (await session.initWithExistSessionId(sessionId, dbName)) {
+  //     return session;
+  //   }
+  //   return null;
+  // }
 
   /**
-   * 创建一个 session ，并且初始化事务的状态，以及切换到对应的database上。
+   * 创建一个 session
+   * 数据源创建：不需要初始化 DB 与事务信息
+   *
+   * 数据库创建：需要初始化 DB 与事务信息。
    */
-  async init(
-    dbName?: string,
-    password?: string,
-    parantSessionId?: string | number,
-    cloudParams?: {
-      tenantId: any;
-      instanceId: any;
-    },
-    simpleMode?: boolean,
-  ): Promise<boolean> {
+  async init(): Promise<boolean> {
     try {
-      const sessionId = await newSession(
-        this.connection.id.toString(),
-        password,
-        parantSessionId?.toString(),
-        cloudParams,
-        true,
-      );
-      if (!sessionId) {
-        return false;
+      if (this.connection) {
+        /**
+         * 数据源模式
+         */
+        const data = await newSessionByDataSource(this.connection?.id, true);
+        if (!data) {
+          return false;
+        }
+        this.sessionId = data.sessionId;
+        this.dataTypes = data.dataTypes;
+        this.initSupportFeature(data.support);
+        this.isAlive = true;
+        return true;
+      } else {
+        /**
+         * 数据库模式
+         */
+        const data = await newSessionByDataBase(this.odcDatabase?.id, true);
+        if (!data) {
+          return false;
+        }
+        this.sessionId = data.sessionId;
+        this.dataTypes = data.dataTypes;
+        this.initSupportFeature(data.support);
+        this.isAlive = true;
+        return await this.initSessionBaseInfo();
       }
-      this.sessionId = sessionId;
-      this.isAlive = true;
-      return await this.initSessionBaseInfo(dbName, simpleMode);
     } catch (e) {
       logger.error('create session error', e);
       return false;
     }
   }
 
-  async initWithExistSessionId(sessionId: string, dbName?: string) {
-    this.sessionId = sessionId;
-    this.isAlive = true;
-    if (await this.initSessionBaseInfo(dbName)) {
-      return true;
-    } else {
-      showReConnectModal();
+  // async initWithExistSessionId(sessionId: string, dbName?: string) {
+  //   this.sessionId = sessionId;
+  //   this.isAlive = true;
+  //   if (await this.initSessionBaseInfo(dbName)) {
+  //     return true;
+  //   } else {
+  //     showReConnectModal();
+  //     return false;
+  //   }
+  // }
+
+  async initSessionBaseInfo() {
+    if (!this.odcDatabase) {
       return false;
     }
-  }
 
-  async initSessionBaseInfo(dbName?: string, simpleMode?: boolean) {
     try {
-      await this.getDatabaseList();
-      if (!this.databases?.length) {
-        return false;
-      }
-      await this.useDataBase(dbName);
+      await this.useDataBase(this.odcDatabase.name);
       if (!this.database) {
         return;
       }
-      await this.getSupportFeature(dbName);
       await this.initTransactionStatus();
       await this.initSessionTransaction();
-      await this.getDataTypeList();
-      if (!this.transState && !simpleMode) {
+      if (!this.transState) {
         return false;
       }
       return true;
@@ -200,13 +194,12 @@ class SessionStore {
    * 切换数据库
    */
   @action
-  async useDataBase(dbName?: string) {
-    const defaultDBName = this.getDefaultDBName(dbName);
-    if (!defaultDBName) {
+  async useDataBase(dbName: string) {
+    if (!dbName) {
       logger.error('getDefaultDBName error');
       return false;
     }
-    this.database = await DatabaseStore.createInstance(this.sessionId, defaultDBName);
+    this.database = await DatabaseStore.createInstance(this.sessionId, dbName);
     if (!this.database) {
       return false;
     }
@@ -214,44 +207,7 @@ class SessionStore {
   }
 
   @action
-  public async getDatabaseList() {
-    const result = await request.get(`/api/v1/database/list/${generateSessionSid(this.sessionId)}`);
-    runInAction(() => {
-      this.databases = result.data || [];
-    });
-  }
-
-  private getDefaultDBName(inputDBName: string): string {
-    inputDBName = inputDBName || this.connection.defaultSchema || '';
-    let firstDatabase =
-      this.connection.dialectType === ConnectionMode.OB_MYSQL
-        ? this.databases?.find((d) => d.name === 'information_schema')?.name
-        : null;
-    if (!firstDatabase) {
-      firstDatabase = this.databases[0].name;
-    }
-    let selectDatabase = inputDBName || firstDatabase;
-    const selected =
-      this.databases.find((d) => d.name === selectDatabase) ||
-      this.databases.find((d) => d.name.toLowerCase() === selectDatabase?.toLowerCase());
-    return selected?.name;
-  }
-
-  @action
-  public async getDataTypeList() {
-    if (this.dataTypes?.length) {
-      return;
-    }
-    const sid = generateDatabaseSid(this.database?.dbName, this.sessionId);
-    const ret = await request.get(
-      `/api/v1/version-config/datatype/list/${sid}?configKey=column_data_type`,
-    );
-    this.dataTypes = ret?.data || [];
-  }
-
-  @action
-  public async getSupportFeature(dbName) {
-    const data = await getSupportFeatures(this.sessionId, dbName);
+  public async initSupportFeature(data: any) {
     if (!data) {
       throw new Error('getSupportFeature error');
     }

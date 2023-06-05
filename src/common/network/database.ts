@@ -139,3 +139,8 @@ export async function updateDataBase(databaseIds: number[], projectId: number): 
   });
   return res?.data;
 }
+
+export async function getDatabase(databaseId: number): Promise<IDatabase> {
+  const res = await request.get(`/api/v2/database/databases/${databaseId}`);
+  return res?.data;
+}

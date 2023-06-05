@@ -1,5 +1,7 @@
-import { IConnection } from '@/d.ts';
-import request from '@/util/request';
+import { getDatabase } from '@/common/network/database';
+import { getDataSource } from '@/common/network/dataSource';
+import { IDatabase } from '@/d.ts/database';
+import { IDatasource } from '@/d.ts/datasource';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
@@ -10,47 +12,34 @@ export class SessionManagerStore {
   @observable
   public sessionMap: Map<string, SessionStore> = new Map();
 
-  /**
-   * 维护当前的database 的 master session。
-   * master session 主要是提供数据库对象等比较耗时间的资源维护，保持全局共用一份资源
-   * 同时，也可以让一些短耗时的操作直接走master Session，避免创建 Session 的成本
-   */
   @observable
-  public masterSessionIdMap: Map<ConnectionId, string> = new Map();
+  public connection: Map<number, IDatasource> = new Map();
 
   @observable
-  public connection: Map<number, IConnection> = new Map();
-
-  getMasterSession(cid?: ConnectionId) {
-    if (!cid) {
-      /**
-       * 暂时兼容老的逻辑
-       */
-      cid = Array.from(this.connection.keys())?.[0];
-    }
-    const sessionId = this.masterSessionIdMap.get(cid);
-    this.masterSessionIdMap.keys()?.[0];
-    this.sessionMap.keys()?.[0];
-    if (!sessionId) {
-      return null;
-    }
-    return this.sessionMap.get(sessionId);
-  }
+  public database: Map<number, IDatabase> = new Map();
 
   /**
    * 获取connection的信息
    */
-  async initConnection(connectionId: ConnectionId) {
-    if (this.connection.get(toInteger(connectionId))) {
+  async initConnection(connectionId: ConnectionId, databaseId: number) {
+    if (databaseId) {
+      /**
+       * 数据库模式
+       */
+      const database = await getDatabase(databaseId);
+      if (!database) {
+        return false;
+      }
+      this.database.set(databaseId, database);
+      this.connection.set(database.dataSource?.id, database?.dataSource);
       return true;
+    } else {
+      const datasource = await getDataSource(connectionId);
+      if (!datasource) {
+        return false;
+      }
+      this.connection.set(connectionId, datasource);
     }
-    const results = await request.get(`/api/v2/connect/connections/${connectionId}`);
-    let connection: IConnection = results?.data;
-    if (!connection) {
-      return false;
-    }
-    this.setConnection(connection);
-    return true;
   }
 
   /**
@@ -61,69 +50,54 @@ export class SessionManagerStore {
    */
   @action
   async createSession(
-    isMaster?: boolean,
-    cid?: ConnectionId,
-    dbName?: string,
-    simpleMode?: boolean,
+    datasourceId: ConnectionId,
+    databaseid: number,
   ): Promise<SessionStore | null> {
-    if (!(await this.initConnection(cid))) {
+    if (!(await this.initConnection(datasourceId, databaseid))) {
       return null;
     }
-    const connection = this.connection.get(toInteger(cid));
-    const session = await SessionStore.createInstance(
-      connection,
-      dbName || connection.defaultSchema,
-      null,
-      null,
-      null,
-      simpleMode || !isMaster,
-    );
+    const datasource = this.connection.get(toInteger(datasourceId));
+    const database = this.database.get(databaseid);
+    const session = await SessionStore.createInstance(datasource, database);
     runInAction(() => {
       if (session) {
         this.sessionMap.set(session.sessionId, session);
-        if (isMaster) {
-          this.masterSessionIdMap.set(toInteger(cid), session.sessionId);
-        }
       }
     });
 
     return session;
   }
 
-  @action
-  async createExistSession(
-    sessionId: string,
-    cid: ConnectionId,
-    isMaster?: boolean,
-  ): Promise<SessionStore | null> {
-    if (!(await this.initConnection(cid))) {
-      return null;
-    }
-    const connection = this.connection.get(toInteger(cid));
-    const session = await SessionStore.recoverExistInstance(
-      connection,
-      sessionId,
-      connection.defaultSchema,
-    );
-    if (session) {
-      this.sessionMap.set(session.sessionId, session);
-      if (isMaster) {
-        this.masterSessionIdMap.set(toInteger(cid), session.sessionId);
-      }
-    }
-    return session;
-  }
-
-  private setConnection(connection: IConnection) {
-    this.connection.set(connection.id, connection);
-  }
+  // @action
+  // async createExistSession(
+  //   sessionId: string,
+  //   cid: ConnectionId,
+  //   isMaster?: boolean,
+  // ): Promise<SessionStore | null> {
+  //   if (!(await this.initConnection(cid))) {
+  //     return null;
+  //   }
+  //   const connection = this.connection.get(toInteger(cid));
+  //   const session = await SessionStore.recoverExistInstance(
+  //     connection,
+  //     sessionId,
+  //     connection.defaultSchema,
+  //   );
+  //   if (session) {
+  //     this.sessionMap.set(session.sessionId, session);
+  //     if (isMaster) {
+  //       this.masterSessionIdMap.set(toInteger(cid), session.sessionId);
+  //     }
+  //   }
+  //   return session;
+  // }
 
   @action
   destoryStore(force: boolean = false) {
     this.connection.clear();
     SessionStore.batchDestory(Array.from(this.sessionMap.values()), force);
     this.sessionMap.clear();
-    this.masterSessionIdMap.clear();
+    this.database.clear();
   }
   @action
   destorySession(sessionId: string, force: boolean = false) {
