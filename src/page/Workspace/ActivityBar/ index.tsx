@@ -8,9 +8,9 @@ import {
 } from '@ant-design/icons';
 import React, { useContext } from 'react';
 
-import HelpItem from '@/page/Index/Sider/HelpItem';
-import MenuItem from '@/page/Index/Sider/MenuItem';
-import MineItem from '@/page/Index/Sider/MineItem';
+import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
+import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
+import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
 import { formatMessage } from '@/util/intl';
 import { Space } from 'antd';
 import ActivityBarButton from './ActivityBarButton';

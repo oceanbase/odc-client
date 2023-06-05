@@ -1,10 +1,9 @@
 import showErrorConfirmModal from '@/component/ErrorConfirmModal';
-import showReConnectModal from '@/component/ReconnectModal';
 import showSysAccountConfigModal from '@/component/SysAccountConfigModal';
 import { ODCErrorsCode } from '@/d.ts';
 import odc from '@/plugins/odc';
-import connection from '@/store/connection';
 import loginStore from '@/store/login';
+import { message } from 'antd';
 import { history } from 'umi';
 import { formatMessage } from '../intl';
 import notification from '../notification';
@@ -74,8 +73,7 @@ export function resolveODCError(
     }
     case ODCErrorsCode.ConnectionExpired:
     case ODCErrorsCode.ConnectionKilled: {
-      connection.setSessionDestroy();
-      showReConnectModal(errorMsgMap[errCode]);
+      message.error('Connection closed');
       return true;
     }
     case ODCErrorsCode.SysTenantAccountNotSet: {

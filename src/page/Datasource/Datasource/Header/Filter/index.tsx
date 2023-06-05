@@ -5,7 +5,7 @@ import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import { Popover, Space, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import ParamContext from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';
 import CheckboxTag from './CheckboxTag';
@@ -16,9 +16,6 @@ interface IProps {
 
 const Filter: React.FC<IProps> = function ({ connectionStore }) {
   const context = useContext(ParamContext);
-  useEffect(() => {
-    connectionStore.getLabelList();
-  }, []);
   let displayDom = (
     <FilterIcon>
       <FilterOutlined />

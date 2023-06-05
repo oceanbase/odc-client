@@ -3,16 +3,12 @@
  */
 import {
   changeDelimiter,
-  getConnectionLabelList,
   getConnectionList,
   getSessionStatus,
   getTransactionInfo,
-  newSession,
   setTransactionInfo,
-  switchSchema,
 } from '@/common/network/connection';
 import { generateSessionSid } from '@/common/network/pathUtil';
-import showReConnectModal from '@/component/ReconnectModal';
 import type { ConnectionFilterStatus, IConnection, IConnectionType, ISessionStatus } from '@/d.ts';
 import { ConnectionMode, ConnectType } from '@/d.ts';
 import { reviseV2Field } from '@/util/connection';
@@ -134,52 +130,7 @@ export class ConnectionStore {
    * 创建子session。具备自己的会话属性
    */
   @action
-  public createSubSessions = async (pageKey: string) => {
-    const { passwordSaved, id, tenantName, clusterName } = this.connection;
-    if (!setting.enableMultiSession) {
-      this.subSessions.set(pageKey, {
-        sessionId: this.sessionId,
-        delimiter: this.delimiter,
-        queryLimit: this.queryLimit,
-        delimiterLoading: false,
-        tableColumnInfoVisible: this.tableColumnInfoVisible,
-        autoCommit: this.autoCommit,
-      });
-      return this.sessionId;
-    }
-    const schemaName = schemaStore?.database?.name;
-    const sessionId = await newSession(
-      id.toString(),
-      null,
-      !passwordSaved ? this.sessionId : null,
-      {
-        tenantId: tenantName,
-        instanceId: clusterName,
-      },
-    );
-    if (sessionId) {
-      if (await switchSchema([generateSessionSid(sessionId)], schemaName)) {
-        const transactionInfo = await getTransactionInfo(sessionId);
-        if (this.sessionId && transactionInfo) {
-          /**
-           * 这里要判断一下当前主session是否被销毁，销毁情况下丢弃sub session
-           */
-          this.subSessions.set(pageKey, {
-            sessionId,
-            delimiter: transactionInfo.delimiter || DEFAULT_DELIMITER,
-            queryLimit: transactionInfo.queryLimit,
-            delimiterLoading: false,
-            tableColumnInfoVisible: DEFAULT_COLUMN_INFO_VISIBLE,
-            autoCommit: transactionInfo.autocommit,
-          });
-        }
-        this.initSessionTransaction(sessionId);
-      } else {
-        return null;
-      }
-    }
-    return sessionId;
-  };
+  public createSubSessions = async (pageKey: string) => {};
 
   /**
    * 系统初始化
@@ -202,11 +153,7 @@ export class ConnectionStore {
       await this.get(sessionId);
       // 获取数据库列表
       await schemaStore.getDatabaseList();
-      if (!schemaStore.databases.length) {
-        // 数据库列表为空，跳转到连接页
-        showReConnectModal();
-        return;
-      }
+
       this.isDestroy = false;
       await this.initTransactionStatus();
       this.initSessionTransaction();
@@ -231,7 +178,6 @@ export class ConnectionStore {
       }
       await initPageExpiredWork();
     } catch (e) {
-      showReConnectModal();
       console.error(e);
       return;
     }
@@ -282,28 +228,7 @@ export class ConnectionStore {
   // 通知后端建立数据库连接
   // @see yuque/afx-es/oceanbase/vbi4fv
   @action
-  public async connect(
-    id: string = this.connection.sid,
-    password?: string,
-    cloudParams?: {
-      tenantId: any;
-      instanceId: any;
-    },
-    holdErrorTip?: boolean,
-  ) {
-    const sessionId = await newSession(id, password, null, cloudParams, holdErrorTip);
-
-    if (sessionId) {
-      // 不带 sid
-      this.sessionId = sessionId;
-      this.lastSessionId = this.sessionId;
-      /**
-       * 创建session的时候要重置基本信息。
-       */
-      this.resetDelimiter();
-      return this.sessionId;
-    }
-  }
+  public async connect() {}
 
   public getAllSessionIds = () => {
     const sid = this.sessionId;
@@ -522,16 +447,6 @@ export class ConnectionStore {
       this.syncSubSessionFromSession();
     }
   };
-
-  @action
-  public async getLabelList() {
-    const labelList = await getConnectionLabelList();
-    if (labelList) {
-      // 这里需要后端改变排序顺序，最新的在前面
-      // 前端先兼容处理
-      this.labels = labelList.reverse();
-    }
-  }
 }
 
 export default new ConnectionStore();
