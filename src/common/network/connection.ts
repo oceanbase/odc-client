@@ -194,12 +194,10 @@ export async function getConnectionList(params: {
   dialectType?: ConnectionMode | ConnectionMode[];
   type?: ConnectType[] | ConnectType;
   status?: ConnectionFilterStatus;
-  permittedAction?: string | string[];
   fuzzySearchKeyword?: string;
   sort?: string;
   page?: number;
   size?: number;
-  visibleScope?: IConnectionType;
   minPrivilege?: string;
   sessionLabelId?: string[];
   hostPort?: string;

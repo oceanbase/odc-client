@@ -1,5 +1,6 @@
 import { fieldIconMap } from '@/constant';
-import { DbObjectType, IDatabase } from '@/d.ts';
+import { DbObjectType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import ViewSvg from '@/svgr/menuView.svg';
@@ -15,13 +16,6 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
     key: `${dbName}-view`,
     type: ResourceNodeType.ViewRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

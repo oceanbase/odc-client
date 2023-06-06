@@ -1,5 +1,5 @@
 import { fieldIconMap } from '@/constant';
-import { DbObjectType, IDatabase, IPartitionType } from '@/d.ts';
+import { DbObjectType, IPartitionType } from '@/d.ts';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { convertDataTypeToDataShowType } from '@/util/utils';
@@ -12,6 +12,7 @@ import {
 } from '../../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
+import { IDatabase } from '@/d.ts/database';
 import IndexSvg from '@/svgr/index.svg';
 import TableOutlined from '@/svgr/menuTable.svg';
 import PartitionSvg from '@/svgr/Partition.svg';
@@ -24,13 +25,6 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
     key: `${dbName}-table`,
     type: ResourceNodeType.TableRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

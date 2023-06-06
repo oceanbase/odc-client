@@ -1,0 +1,34 @@
+.sidetabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .header {
+    display: flex;
+    flex: 0;
+    flex-basis: 42px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    .tab {
+      color: var(--text-color-hint);
+      font-weight: 400;
+      cursor: pointer;
+      &.select {
+        color: var(--text-color-primary);
+        font-weight: 600;
+      }
+    }
+    .acion {
+      color: var(--icon-color-normal);
+      font-size: 13px;
+      cursor: pointer;
+      &:hover {
+        color: var(--icon-color-focus);
+      }
+    }
+  }
+  .content {
+    flex: 1;
+  }
+}

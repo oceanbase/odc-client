@@ -1,4 +1,4 @@
-import { DbObjectType, IDatabase, IFunction, IPackage } from '@/d.ts';
+import { DbObjectType, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
 import Icon, { FolderOpenFilled, InfoOutlined, NumberOutlined } from '@ant-design/icons';
@@ -6,6 +6,7 @@ import { ResourceNodeType, TreeDataNode } from '../type';
 
 import ParameterSvg from '@/svgr/Parameter.svg';
 
+import { IDatabase } from '@/d.ts/database';
 import FunctionSvg from '@/svgr/menuFunc.svg';
 
 const THEME = 'var(--icon-color-2)';

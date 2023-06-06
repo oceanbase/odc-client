@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 
 import { debounce } from 'lodash';
 import SplitPane from 'react-split-pane';
+import ActivityBarContext from '../context/ActivityBarContext';
 import styles from './index.less';
 
 interface IProps {
@@ -10,8 +11,13 @@ interface IProps {
   editorGroup: React.ReactNode;
 }
 
+const MinWidth = 180;
+
 const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, editorGroup }) {
-  const [sideWidth, setSideWidth] = useState(240);
+  const [sideWidth, setSideWidth] = useState(MinWidth * 2);
+  const minSizeEventCountRef = useRef(0);
+  const splitRef = useRef<SplitPane>();
+  const context = useContext(ActivityBarContext);
   const emitResizeEvent = useCallback(
     debounce(() => {
       window.dispatchEvent(new Event('resize'));
@@ -21,6 +27,27 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
   const handleChangeSiderWidth = (width: number) => {
     setSideWidth(width);
     emitResizeEvent();
+    if (width <= MinWidth) {
+      minSizeEventCountRef.current++;
+      if (minSizeEventCountRef.current > 30) {
+        minSizeEventCountRef.current = 0;
+        /**
+         * active设置split pane停止监听move事件，同时在下一次事件循环中设置activekey，确保让onmove事件优先处理完成。
+         */
+        splitRef.current?.setState(
+          {
+            active: false,
+          },
+          () => {
+            setTimeout(() => {
+              context.setActiveKey(null);
+            });
+          },
+        );
+      }
+    } else {
+      minSizeEventCountRef.current = 0;
+    }
   };
   return (
     <div className={styles.workbench}>
@@ -28,17 +55,22 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
 
       <div className={styles.splitPane}>
         <SplitPane
+          ref={splitRef}
           split="vertical"
           allowResize={!!sideBar}
-          minSize={120}
+          minSize={MinWidth}
           size={sideBar ? sideWidth : 0}
           maxSize={480}
           defaultSize={sideWidth}
           pane2Style={{
             minWidth: '1px',
           }}
+          pane1Style={{
+            minWidth: '1px',
+          }}
           resizerStyle={{
             background: 'transparent',
+            pointerEvents: sideBar ? 'unset' : 'none',
           }}
           onChange={handleChangeSiderWidth}
         >

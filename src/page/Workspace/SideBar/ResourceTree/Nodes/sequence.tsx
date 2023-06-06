@@ -1,8 +1,9 @@
-import { DbObjectType, IDatabase } from '@/d.ts';
+import { DbObjectType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import Icon, { FolderOpenFilled } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
+import { IDatabase } from '@/d.ts/database';
 import SequenceSvg from '@/svgr/menuSequence.svg';
 
 export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): TreeDataNode {
@@ -13,13 +14,6 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
     key: `${dbName}-sequence`,
     type: ResourceNodeType.SequenceRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

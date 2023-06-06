@@ -20,10 +20,10 @@ import { formatMessage } from '@/util/intl';
 import { useParams } from '@umijs/max';
 import { message, Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ActivityBar from './ActivityBar/ index';
-import ActivityBarContext from './ActivityBar/ActivityBarContext';
-import { ActivityBarItemType } from './ActivityBar/type';
+import ActivityBarContext from './context/ActivityBarContext';
+import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
@@ -46,11 +46,10 @@ interface WorkspaceProps {
 let beforeUnloadHandler: ((e: BeforeUnloadEvent) => void) | undefined;
 const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const { pageStore, settingStore, sqlStore, modalStore, taskStore, sessionManagerStore } = props;
-
+  const activityContext = useContext(ActivityBarContext);
   const { pages = [], activePageKey } = pageStore;
   const { serverSystemInfo } = settingStore;
   const params = useParams();
-  const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
 
   const [isReady, setIsReady] = useState<boolean>(false);
 
@@ -246,21 +245,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     };
   }, []);
   return (
-    <ActivityBarContext.Provider
-      value={{
-        activeKey: activityBarKey,
-        onChangeActiveKey(v) {
-          if (v === activityBarKey) {
-            setActivityBarKey(null);
-            return;
-          }
-          setActivityBarKey(v);
-        },
-      }}
-    >
+    <>
       <WorkBenchLayout
         activityBar={<ActivityBar />}
-        sideBar={activityBarKey !== null ? <SideBar /> : null}
+        sideBar={activityContext?.activeKey !== null ? <SideBar /> : null}
         editorGroup={
           <WindowManager
             pages={pages}
@@ -283,11 +271,11 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
           <GlobalModals />
         </>
       )}
-    </ActivityBarContext.Provider>
+    </>
   );
 };
 
-export default inject(
+const WorkspaceMobxWrap = inject(
   'pageStore',
   'settingStore',
   'userStore',
@@ -296,3 +284,11 @@ export default inject(
   'taskStore',
   'sessionManagerStore',
 )(observer(Workspace));
+
+export default function WorkSpaceWrap(props) {
+  return (
+    <WorkspaceStore>
+      <WorkspaceMobxWrap {...props} />
+    </WorkspaceStore>
+  );
+}

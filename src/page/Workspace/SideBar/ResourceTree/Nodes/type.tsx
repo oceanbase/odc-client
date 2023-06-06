@@ -1,11 +1,12 @@
-import { DbObjectType, IDatabase } from '@/d.ts';
+import { DbObjectType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import Icon, { FolderOpenFilled, InfoOutlined } from '@ant-design/icons';
+import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeNodeData } from './function';
 
 import TypeSvg from '@/svgr/menuType.svg';
 
+import { IDatabase } from '@/d.ts/database';
 import ParameterSvg from '@/svgr/Parameter.svg';
 
 const THEME = 'var(--icon-color-4)';
@@ -18,13 +19,6 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
     key: `${dbName}-type`,
     type: ResourceNodeType.TypeRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

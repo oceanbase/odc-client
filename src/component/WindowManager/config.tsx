@@ -95,14 +95,14 @@ export const pageMap = {
   [PageType.SESSION_PARAM]: {
     component: withConfirmModal(SessionParamPage),
     icon: <SettingOutlined />,
-    color: 'var(--icon-color-7)',
+    color: 'var(--icon-orange-color)',
   },
 
   // 会话管理页
   [PageType.SESSION_MANAGEMENT]: {
     component: withConfirmModal(SessionManagementPage),
     icon: <SettingOutlined />,
-    color: 'var(--icon-color-7)',
+    color: 'var(--icon-green-color)',
   },
 
   // 回收站页

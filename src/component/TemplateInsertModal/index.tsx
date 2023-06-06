@@ -44,13 +44,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
   };
 
   const handleOk = async () => {
-    const text = await getCopyText(
-      name,
-      type,
-      value,
-      true,
-      sessionManager.getMasterSession()?.sessionId,
-    );
+    const text = await getCopyText(name, type, value, true);
     localStorage.setItem(CLOSE_INSERT_PROMPT_KEY, String(closePrompt));
     onOk(text);
     if (closePrompt) {

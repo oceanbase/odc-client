@@ -1,5 +1,5 @@
+import { getConnectionDetail } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
-import { getDataSource } from '@/common/network/dataSource';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { toInteger } from 'lodash';
@@ -34,7 +34,7 @@ export class SessionManagerStore {
       this.connection.set(database.dataSource?.id, database?.dataSource);
       return true;
     } else {
-      const datasource = await getDataSource(connectionId);
+      const datasource = await getConnectionDetail(connectionId);
       if (!datasource) {
         return false;
       }

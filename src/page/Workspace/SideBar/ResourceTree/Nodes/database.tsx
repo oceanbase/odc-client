@@ -1,6 +1,6 @@
-import { IDatabase } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
-import { DatabaseOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeData } from './function';
 import { PackageTreeData } from './package';
@@ -11,6 +11,8 @@ import { TableTreeData } from './table';
 import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
+
+import DatabaseSvg from '@/svgr/database.svg';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,
@@ -44,7 +46,7 @@ export function DataBaseTreeData(
     sessionId: dbSession?.sessionId,
     data: database,
     cid,
-    icon: <DatabaseOutlined style={{ color: '#3FA3FF' }} />,
+    icon: <Icon component={DatabaseSvg} style={{ color: '#3FA3FF', fontSize: 14 }} />,
     children: dbSession
       ? [
           tableTreeData,
