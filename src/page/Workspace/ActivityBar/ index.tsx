@@ -1,4 +1,4 @@
-import { BulbOutlined, DatabaseFilled, ToolFilled, UserOutlined } from '@ant-design/icons';
+import { BulbOutlined, UserOutlined } from '@ant-design/icons';
 import React, { useContext } from 'react';
 
 import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
@@ -11,7 +11,9 @@ import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
 
+import DBSvg from '@/svgr/database_outline.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
+import ManagerSvg from '@/svgr/operate.svg';
 import CodeSvg from '@/svgr/Snippet.svg';
 import ActivityBarContext from '../context/ActivityBarContext';
 
@@ -30,7 +32,7 @@ const ActivityBar: React.FC<IProps> = function () {
     {
       title: ActivityBarItemTypeText[ActivityBarItemType.Database],
       key: ActivityBarItemType.Database,
-      icon: DatabaseFilled,
+      icon: DBSvg,
       isVisible: true,
     },
     {
@@ -48,7 +50,7 @@ const ActivityBar: React.FC<IProps> = function () {
     {
       title: ActivityBarItemTypeText[ActivityBarItemType.Manager],
       key: ActivityBarItemType.Manager,
-      icon: ToolFilled,
+      icon: ManagerSvg,
       isVisible: true,
     },
   ];

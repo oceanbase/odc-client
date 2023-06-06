@@ -5,10 +5,11 @@ import ResourceLayout from '../Layout';
 
 import { getConnectionList } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
-import ProjectSvg from '@/svgr/project_space.svg';
 import { useRequest } from 'ahooks';
 import { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
+
+import OBSvg from '@/svgr/source_ob.svg';
 
 export default function DatasourceTree() {
   const { data, loading, run } = useRequest(getConnectionList, {
@@ -30,7 +31,7 @@ export default function DatasourceTree() {
       return {
         title: item.name,
         key: item.id,
-        icon: <Icon component={ProjectSvg} />,
+        icon: <Icon component={OBSvg} style={{ fontSize: 16 }} />,
       };
     });
   }, [data]);

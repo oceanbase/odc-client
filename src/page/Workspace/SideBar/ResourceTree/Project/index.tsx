@@ -5,9 +5,10 @@ import ResourceLayout from '../Layout';
 
 import { listProjects } from '@/common/network/project';
 import { useRequest } from 'ahooks';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
+import { listDatabases } from '@/common/network/database';
 import ProjectSvg from '@/svgr/project_space.svg';
 
 export default function ProjectTree() {
@@ -16,6 +17,14 @@ export default function ProjectTree() {
   });
 
   const [selectKeys, setSelectKeys] = useState<any[]>([]);
+
+  const selectProject = useMemo(() => {
+    const key = selectKeys?.[0];
+    if (!key) {
+      return null;
+    }
+    return data?.contents?.find((item) => item.id == key);
+  }, [selectKeys, data]);
 
   const projects: TreeDataNode[] = useMemo(() => {
     return data?.contents?.map((item) => {
@@ -27,17 +36,36 @@ export default function ProjectTree() {
     });
   }, [data]);
 
+  const {
+    data: db,
+    reset,
+    run: runListDatabases,
+    loading: dbLoading,
+  } = useRequest(listDatabases, {
+    manual: true,
+  });
+
+  useEffect(() => {
+    console.log(selectKeys?.[0]);
+    if (selectKeys?.[0]) {
+      runListDatabases(selectKeys?.[0], null, 1, 9999);
+    } else {
+      reset();
+    }
+  }, [selectKeys?.[0]]);
+
   return (
     <ResourceLayout
       top={
         <div className={styles.container}>
           <div className={styles.search}>
-            <Input.Search style={{ width: '100%' }} size="small" />
+            <Input.Search placeholder="搜索项目名称" style={{ width: '100%' }} size="small" />
           </div>
           <div className={styles.list}>
-            <Spin spinning={loading}>
+            <Spin spinning={loading || dbLoading}>
               {projects?.length ? (
                 <Tree
+                  showIcon
                   selectedKeys={selectKeys}
                   onSelect={(keys) => {
                     setSelectKeys(keys);
@@ -53,7 +81,11 @@ export default function ProjectTree() {
           </div>
         </div>
       }
-      bottom={selectKeys?.length ? <ResourceTree databases={[]} /> : null}
+      bottom={
+        selectKeys?.length ? (
+          <ResourceTree title={selectProject?.name} databases={db?.contents} />
+        ) : null
+      }
     />
   );
 }
