@@ -1,7 +1,6 @@
-import { IDatabase } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import PackageSvg from '@/svgr/menuPkg.svg';
-import Icon, { FolderOpenFilled, InfoOutlined } from '@ant-design/icons';
+import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeNodeData } from './function';
 import { ProcedureTreeNodeData } from './procedure';
@@ -10,6 +9,7 @@ import PackageHeadSvg from '@/svgr/Package-header.svg';
 
 import PackageBodySvg from '@/svgr/Package-body.svg';
 
+import { IDatabase } from '@/d.ts/database';
 import ParameterSvg from '@/svgr/Parameter.svg';
 
 const THEME = 'var(--icon-color-3)';
@@ -22,13 +22,6 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
     key: `${dbName}-package`,
     type: ResourceNodeType.PackageRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

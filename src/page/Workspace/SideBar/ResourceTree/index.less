@@ -1,21 +1,55 @@
 .resourceTree {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  :global {
-    .ant-tree-title {
-      word-break: break-all;
+
+  .title {
+    display: flex;
+    flex: 0;
+    flex-basis: 36px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 12px;
+    .label {
+      font-weight: 600;
     }
-    .ant-tree-treenode {
-      .ant-tree-indent-unit {
-        width: 12px;
+  }
+  .search {
+    flex: 0;
+    padding: 0px 12px 4px 12px;
+  }
+  .tree {
+    flex: 1;
+    min-height: 0px;
+    :global {
+      .ant-tree-title {
+        word-break: break-all;
       }
-      > .ant-tree-switcher {
-        width: 16px;
-        line-height: 24px;
+
+      .ant-tree-treenode {
+        width: 100%;
+        color: var(--text-color-secondary);
+        .ant-tree-indent-unit {
+          width: 12px;
+        }
+
+        > .ant-tree-switcher {
+          width: 16px;
+          line-height: 24px;
+        }
+
+        .ant-tree-node-content-wrapper .ant-tree-iconEle {
+          width: 20px;
+        }
       }
-      .ant-tree-node-content-wrapper .ant-tree-iconEle {
-        width: 20px;
+      .ant-tree-node-content-wrapper {
+        padding-left: 0px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

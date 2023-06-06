@@ -1,5 +1,5 @@
+import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
-import { getDataSource, listDataSources } from '@/common/network/dataSource';
 import { useRequest } from 'ahooks';
 import { Button, Col, Form, message, Modal, Row, Select } from 'antd';
 import { useState } from 'react';
@@ -16,15 +16,15 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     manual: true,
   });
 
-  const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(listDataSources, {
-    defaultParams: [null, 1, 999999],
+  const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
+    defaultParams: [{ size: 99999, page: 1 }],
   });
 
   const {
     data: dataSource,
     loading: dataSourceLoading,
     run: fetchDataSource,
-  } = useRequest(getDataSource, {
+  } = useRequest(getConnectionDetail, {
     manual: true,
   });
 

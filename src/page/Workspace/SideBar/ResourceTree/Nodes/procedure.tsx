@@ -1,11 +1,12 @@
-import { DbObjectType, IDatabase, IPackage, IProcedure } from '@/d.ts';
+import { DbObjectType, IPackage, IProcedure } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
-import Icon, { FolderOpenFilled, InfoOutlined } from '@ant-design/icons';
+import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 import ParameterSvg from '@/svgr/Parameter.svg';
 
+import { IDatabase } from '@/d.ts/database';
 import ProcedureSvg from '@/svgr/menuProcedure.svg';
 
 const THEME = 'var(--icon-color-2)';
@@ -105,13 +106,6 @@ export function ProcedureTreeData(
     key: `${packageName}-${dbName}-procedure`,
     type: ResourceNodeType.ProcedureRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

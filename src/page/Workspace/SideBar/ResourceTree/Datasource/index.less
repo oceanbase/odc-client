@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+  padding-left: 12px;
+  .search {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 100%;
+    padding: 0px 12px 4px 0px;
+  }
+  .list {
+    flex: 1;
+    padding-right: 12px;
+    overflow: auto;
+    overflow-x: hidden;
+  }
+}

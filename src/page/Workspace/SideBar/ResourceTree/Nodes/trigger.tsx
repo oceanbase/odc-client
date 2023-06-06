@@ -1,8 +1,9 @@
-import { DbObjectType, IDatabase, TriggerState } from '@/d.ts';
+import { DbObjectType, TriggerState } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import TriggerSvg from '@/svgr/menuTrigger.svg';
 import { formatMessage } from '@/util/intl';
-import Icon, { FolderOpenFilled } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
@@ -19,13 +20,6 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
     key: `${dbName}-trigger`,
     type: ResourceNodeType.TriggerRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

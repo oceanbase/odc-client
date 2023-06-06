@@ -1,11 +1,4 @@
-import {
-  AppstoreFilled,
-  BulbOutlined,
-  CodeFilled,
-  DatabaseFilled,
-  ToolFilled,
-  UserOutlined,
-} from '@ant-design/icons';
+import { BulbOutlined, DatabaseFilled, ToolFilled, UserOutlined } from '@ant-design/icons';
 import React, { useContext } from 'react';
 
 import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
@@ -14,10 +7,13 @@ import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
 import { formatMessage } from '@/util/intl';
 import { Space } from 'antd';
 import ActivityBarButton from './ActivityBarButton';
-import ActivityBarContext from './ActivityBarContext';
 import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
+
+import TaskSvg from '@/svgr/icon_task.svg';
+import CodeSvg from '@/svgr/Snippet.svg';
+import ActivityBarContext from '../context/ActivityBarContext';
 
 interface IProps {}
 
@@ -40,13 +36,13 @@ const ActivityBar: React.FC<IProps> = function () {
     {
       title: ActivityBarItemTypeText[ActivityBarItemType.Script],
       key: ActivityBarItemType.Script,
-      icon: CodeFilled,
+      icon: CodeSvg,
       isVisible: true,
     },
     {
       title: ActivityBarItemTypeText[ActivityBarItemType.Job],
       key: ActivityBarItemType.Job,
-      icon: AppstoreFilled,
+      icon: TaskSvg,
       isVisible: true,
     },
     {
@@ -71,7 +67,11 @@ const ActivityBar: React.FC<IProps> = function () {
                   icon={item.icon}
                   isActive={context?.activeKey === item.key}
                   onClick={() => {
-                    context?.onChangeActiveKey(item.key);
+                    if (item.key === context.activeKey) {
+                      context.setActiveKey(null);
+                      return;
+                    }
+                    context?.setActiveKey(item.key);
                   }}
                 />
               );

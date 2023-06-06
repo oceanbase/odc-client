@@ -1036,6 +1036,10 @@ export interface IFunction {
   createTime?: number;
   modifyTime?: number;
   errorMessage: string;
+  variables: {
+    varName: string;
+    varType: string;
+  }[];
 }
 
 export enum ParamMode {
@@ -1064,6 +1068,10 @@ export interface IProcedure {
   modifyTime: number;
   status: string;
   errorMessage: string;
+  variables: {
+    varName: string;
+    varType: string;
+  }[];
 }
 
 // 程序包
@@ -1076,7 +1084,10 @@ export interface IPackage {
       createTime: number;
       modifyTime: number;
     };
-
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
     functions: any[];
     procedures: any[];
   };
@@ -1088,7 +1099,10 @@ export interface IPackage {
       createTime: number;
       modifyTime: number;
     };
-
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
     functions: any[];
     procedures: any[];
   };
@@ -1231,6 +1245,14 @@ export interface IType {
   ddl?: string;
   status?: string;
   errorMessage: string;
+  typeDetail: {
+    functions: IFunction[];
+    procedures: IProcedure[];
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
+  };
 }
 
 export enum TypeCode {

@@ -1,7 +1,8 @@
-import { DbObjectType, IDatabase } from '@/d.ts';
+import { DbObjectType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import SynonymSvg from '@/svgr/menuSynonym.svg';
-import Icon, { FolderOpenFilled } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 export function SynonymTreeData(
@@ -16,13 +17,6 @@ export function SynonymTreeData(
     key: `${dbName}-synonym-${isPublic}`,
     type: isPublic ? ResourceNodeType.PublicSynonymRoot : ResourceNodeType.SynonymRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };
