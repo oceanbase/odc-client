@@ -10,13 +10,13 @@
 }
 
 .dev {
-  color: rgba(0, 0, 0, 0.65);
-  background-color: rgba(0, 0, 0, 0.02);
+  color: rgba(19, 168, 168, 1);
+  background-color: rgba(230, 255, 251, 1);
 }
 
 .test {
-  color: rgba(19, 168, 168, 1);
-  background-color: rgba(230, 255, 251, 1);
+  color: rgba(24, 144, 255, 1);
+  background-color: rgba(230, 247, 255, 1);
 }
 
 .prod {
@@ -79,15 +79,10 @@
   }
 }
 .envDrawer {
+  height: 100%;
   :global {
-    .ant-drawer-content {
-      width: 960px;
-    }
-    .ant-drawer-header-title {
-      // flex-direction: row-reverse;
-    }
-    .ant-drawer-body {
-      padding: 16px;
+    .ant-tabs-nav {
+      padding-left: 0px;
     }
     .ant-tabs-tab {
       padding: 4px 12px;
@@ -103,14 +98,26 @@
     .ant-tabs-tab + .ant-tabs-tab {
       margin: 0 0 0 4px;
     }
-    .ant-tabs-tab:first-of-type {
-      margin-left: 4px;
-    }
     .ant-tabs-content {
       padding-top: 12px;
     }
-    .ant-tabs-top > .ant-tabs-nav::before {
-      // border-color: transparent;
-    }
+  }
+}
+
+.env {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  .sider {
+    flex: 0 0 144px;
+    height: 100%;
+  }
+  .content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: calc(100% - 148px);
+    height: 100%;
+    padding-bottom: 12px;
+    padding-left: 16px;
   }
 }
