@@ -885,13 +885,7 @@ const RecordPage: React.FC<any> = () => {
     <>
       <CommonTable
         ref={tableRef}
-        titleContent={{
-          title: formatMessage({
-            id: 'odc.components.RecordPage.OperationRecords',
-          }),
-
-          //操作记录
-        }}
+        titleContent={null}
         filterContent={{
           enabledSearch: false,
           filters: [

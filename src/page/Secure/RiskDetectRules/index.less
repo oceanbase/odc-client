@@ -81,34 +81,26 @@
 
 .sqlDrawer {
   :global {
-    .ant-tabs-tab {
-      padding: 4px 12px;
-      border: 1px solid #d9d9d9;
-      border-radius: 2px 2px 0 0;
+    .ant-drawer-body {
+      padding: 16px;
     }
+  }
+}
 
-    .ant-tabs-tab-active {
-      border-bottom-color: #ffffff;
-    }
-
-    .ant-tabs-ink-bar {
-      background: transparent;
-    }
-
-    .ant-tabs-tab + .ant-tabs-tab {
-      margin: 0 0 0 4px;
-    }
-
-    .ant-tabs-tab:first-of-type {
-      margin-left: 4px;
-    }
-
-    .ant-tabs-content {
-      padding-top: 12px;
-    }
-
-    .ant-tabs-top > .ant-tabs-nav::before {
-      // border-color: transparent;
-    }
+.env {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  .sider {
+    flex: 0 0 144px;
+    height: 100%;
+  }
+  .content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: calc(100% - 148px);
+    height: 100%;
+    padding-bottom: 12px;
+    padding-left: 16px;
   }
 }

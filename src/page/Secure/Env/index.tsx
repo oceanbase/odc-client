@@ -1,61 +1,62 @@
-import { getEnvironment, listEnvironments, updateEnvironment } from '@/common/network/env';
-import { listRulesets } from '@/common/network/ruleset';
+import { listEnvironments } from '@/common/network/env';
+import { getRuleset, updateRule } from '@/common/network/ruleset';
+import { EmptyLabel } from '@/component/CommonFilter';
+import StatusSwitch from '@/component/StatusSwitch';
+import { EnvPageType } from '@/d.ts';
 import { IEnvironment, TagType } from '@/d.ts/environment';
-import { Descriptions, Drawer, Form, message, Modal, Select, Space, Table, Tabs } from 'antd';
-import { useForm } from 'antd/es/form/Form';
+import { IRule, IRuleSet, RuleType } from '@/d.ts/rule';
+import { SecureStore } from '@/store/secure';
+import { Button, Descriptions, message, Space, Tabs } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import classNames from 'classnames';
-import React, { useEffect, useRef, useState } from 'react';
-import RiskLevel from '../components/RiskLevel';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import SecureLayout from '../components/SecureLayout';
+import SecureSider, { SiderItem } from '../components/SecureSider';
 import SecureTable from '../components/SecureTable';
 import { CommonTableBodyMode, CommonTableMode } from '../components/SecureTable/interface';
+import EditModal from './EditModal';
 import styles from './index.less';
 
+const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
+  const levelMap = {
+    0: '无需改进',
+    1: '建议改进',
+    2: '必须改进',
+  };
+  return <>{levelMap[level]}</>;
+};
+export const envNameMap = {
+  开发: 'DEV',
+  测试: 'TEST',
+  生产: 'PROD',
+};
 const EnvTag: React.FC<TagType> = ({ tabStyle, tabContent }) => (
   <div className={tabStyle}>{tabContent}</div>
 );
 const envTagMap = {
-  开发: <EnvTag tabContent={'开发'} tabStyle={classNames(styles.tab, styles.dev)} />,
-  测试: <EnvTag tabContent={'测试'} tabStyle={classNames(styles.tab, styles.test)} />,
-  生产: <EnvTag tabContent={'生产'} tabStyle={classNames(styles.tab, styles.prod)} />,
+  DEV: <EnvTag tabContent={'开发'} tabStyle={classNames(styles.tab, styles.dev)} />,
+  TEST: <EnvTag tabContent={'测试'} tabStyle={classNames(styles.tab, styles.test)} />,
+  PROD: <EnvTag tabContent={'生产'} tabStyle={classNames(styles.tab, styles.prod)} />,
 };
-
-const env = () => {
+interface InnerEnvProps {
+  envPageType: EnvPageType;
+  environment: IEnvironment;
+}
+const InnerEnv: React.FC<InnerEnvProps> = ({ envPageType, environment }) => {
   const tableRef = useRef<any>(null);
-  const [formRef] = useForm();
-  const [visible, setVisible] = useState<boolean>(false);
-  const [index, setIndex] = useState<number>(0);
-  const [selectedData, setSelectedData] = useState<IEnvironment>(null);
+  const [selectedData, setSelectedData] = useState<IRule>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [data, setData] = useState<IEnvironment[]>(null);
-  const [options, setOptions] = useState<
-    {
-      label: string;
-      value: string | number;
-    }[]
-  >([]);
-  const onClose = () => {
-    setVisible(false);
-  };
+  const [ruleSetData, setRuleSetData] = useState<IRuleSet>(null);
+  const [rules, setRules] = useState<IRule[]>([]);
+  const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
 
-  const onLoad = async () => {
-    const data = await listEnvironments();
-    setData(data);
-  };
-
-  const handleOpen = (data: IEnvironment) => {
-    setSelectedData(data);
-    setVisible(true);
-  };
-  const initData = async () => {
-    const data = await listEnvironments();
-    setData(data);
-  };
-  const handleUpdateEnvironment = async () => {
+  const handleCloseModal = () => {
     setModalVisible(false);
-    console.log(formRef.getFieldsValue());
-    data[index] = selectedData;
-    const flag = await updateEnvironment(selectedData.id, selectedData);
+  };
+  const handleUpdateEnvironment = async (rule: IRule) => {
+    setModalVisible(false);
+    const flag = await updateRule(ruleSetData.id, selectedData.id, rule);
     if (flag) {
       message.success('提交成功');
     } else {
@@ -64,267 +65,257 @@ const env = () => {
     // 刷新列表
     tableRef.current.reload();
   };
-  const handleViewSqlDevSpecification = async (id: number) => {
-    const res = await getEnvironment(id);
-    setModalVisible(true);
-  };
-  const handleOpenEditModal = async (record: IEnvironment) => {
+  const handleOpenEditModal = async (record: IRule) => {
     setSelectedData(record);
-    const opts = await listRulesets();
-    const resolveOpt = opts.map((opt) => ({
-      label: opt.name,
-      value: opt.id,
-    }));
-    setOptions(resolveOpt);
     setModalVisible(true);
   };
-  const handleCloseModal = () => {
-    setModalVisible(false);
-    formRef.resetFields();
+
+  const handleTabClick = (
+    key: string,
+    event: React.KeyboardEvent<Element> | React.MouseEvent<Element, MouseEvent>,
+  ) => {
+    setRuleType(key as RuleType);
   };
-  const getSqlDevSpecifications = async () => {};
+  const getColumns: (columnsFunction: {
+    handleSwtichRuleStatus: (rulesetId: number, rule: IRule) => void;
+  }) => ColumnsType<IRule> = ({ handleSwtichRuleStatus = () => {} }) => {
+    return [
+      {
+        title: '规则名称',
+        width: 218,
+        dataIndex: 'name',
+        key: 'name',
+        render: (text, record, index) => <>{record?.metadata?.name}</>,
+      },
+      {
+        title: '规则类型',
+        width: 94,
+        dataIndex: 'subTypes',
+        key: 'subTypes',
+        filters: [{ name: <EmptyLabel />, id: 0 }].concat([]).map(({ name, id }) => {
+          return {
+            text: name,
+            value: id,
+          };
+        }),
+        render: (text, record) => record?.metadata?.subTypes?.join(','),
+      },
+      {
+        title: '支持数据源',
+        width: 150,
+        dataIndex: 'appliedDialectTypes',
+        key: 'appliedDialectTypes',
+        filters: [
+          { text: 'OB_MYSQL', value: 'OB_MYSQL' },
+          { text: 'OB_ORACLE', value: 'OB_ORACLE' },
+          { text: 'ORACLE', value: 'ORACLE' },
+          { text: 'MYSQL', value: 'MYSQL' },
+          { text: 'UNKNOWN', value: 'UNKNOWN' },
+        ],
+      },
+      {
+        title: '配置值',
+        width: 378,
+        dataIndex: 'metadata',
+        key: 'metadata',
+        render: (_, record, index) => {
+          return '' + record.properties[record.metadata.propertyMetadatas?.[0]?.name];
+        },
+        // <PropertyComponentMap propertyMetadata={record.metadata?.propertyMetadatas?.[0]}/>,
+      },
+      {
+        title: '改进等级',
+        width: 92,
+        dataIndex: 'level',
+        key: 'level',
+        render: (_, record) => <RenderLevel level={record.level} />,
+      },
+      {
+        title: '状态',
+        width: 80,
+        dataIndex: 'status',
+        key: 'status',
+        render: (_, record, index) => {
+          return (
+            <StatusSwitch
+              key={index}
+              checked={record.enabled}
+              onConfirm={() => handleSwtichRuleStatus(ruleSetData.id, record)}
+              onCancel={() => handleSwtichRuleStatus(ruleSetData.id, record)}
+            />
+          );
+        },
+      },
+      {
+        title: '操作',
+        width: 80,
+        key: 'action',
+        render: (_, record, index) => (
+          <>
+            <Space>
+              <a onClick={() => handleOpenEditModal(record)}>编辑</a>
+            </Space>
+          </>
+        ),
+      },
+    ];
+  };
+  const handleInitRules = async (id: number) => {
+    const rulesets = await getRuleset(id);
+    setRuleSetData(rulesets);
+    setRules(rulesets?.rules || []);
+  };
+
+  const handleSwtichRuleStatus = async (rulesetId: number, rule: IRule) => {
+    const updateResult =
+      (await updateRule(rulesetId, rule.id, {
+        ...rule,
+        enabled: !rule.enabled,
+      })) || false;
+    if (updateResult) {
+      message.success('更新成功');
+      handleRulesReload();
+    } else {
+      message.success('更新失败');
+    }
+  };
+  const handleRulesReload = () => {
+    handleInitRules(environment.id);
+  };
+  const columns: ColumnsType<IRule> = getColumns({
+    handleSwtichRuleStatus,
+  });
   useEffect(() => {
-    initData();
-  }, []);
-  const columns: ColumnsType<IEnvironment> = [
-    {
-      title: '环境名称',
-      width: 200,
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record, index) => <>{text}</>,
-    },
-    {
-      title: '描述',
-      width: 400,
-      dataIndex: 'description',
-      key: 'description',
-      render: (text, record) => {
-        return <div>{text ? text : '默认描述'}</div>;
-      },
-    },
-    {
-      title: '标签样式',
-      width: 120,
-      dataIndex: 'tag',
-      key: 'tag',
-      render: (_, { name = '开发' }) => envTagMap[name],
-    },
-    {
-      title: 'SQL 开发规范',
-      width: 200,
-      dataIndex: 'sqlDevSpecification',
-      key: 'sqlDevSpecification',
-      render: (_, record, index) => {
-        return <a onClick={() => handleOpen(record)}>{record.rulesetName}</a>;
-      },
-    },
-    {
-      title: '操作',
-      width: 120,
-      key: 'action',
-      render: (_, record, index) => (
-        <>
-          <Space>
-            <a onClick={() => handleOpenEditModal(record)}>编辑</a>
-          </Space>
-        </>
-      ),
-    },
-  ];
+    environment && handleInitRules(environment.id);
+  }, [environment]);
   return (
     <>
-      <SecureTable
-        ref={tableRef}
-        mode={CommonTableMode.SMALL}
-        body={CommonTableBodyMode.BIG}
-        titleContent={null}
-        showToolbar={false}
-        showPagination={false}
-        filterContent={{}}
-        operationContent={{
-          options: [],
-        }}
-        onLoad={onLoad}
-        tableProps={{
-          columns,
-          dataSource: data,
-          pagination: false,
+      <div className={styles.envDrawer}>
+        <Descriptions column={1}>
+          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'标签样式'}>
+            {envTagMap[envPageType]}
+          </Descriptions.Item>
+          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
+            {ruleSetData?.description}
+          </Descriptions.Item>
+        </Descriptions>
+        <div style={{ position: 'relative' }}>
+          <Tabs activeKey={ruleType} onTabClick={handleTabClick}>
+            <Tabs.TabPane tab="SQL 检查规范" key={RuleType.SQL_CHECK} />
+            <Tabs.TabPane tab="SQL 窗口规范" key={RuleType.SQL_CONSOLE} />
+          </Tabs>
+          <Button
+            style={{
+              position: 'absolute',
+              right: '0px',
+              top: '0px',
+              borderBottom: 'none',
+            }}
+          >
+            恢复默认信息
+          </Button>
+        </div>
+        <SecureTable
+          ref={tableRef}
+          mode={CommonTableMode.SMALL}
+          body={CommonTableBodyMode.BIG}
+          titleContent={null}
+          showToolbar={false}
+          showPagination={false}
+          filterContent={{}}
+          operationContent={{
+            options: [],
+          }}
+          onLoad={null}
+          tableProps={{
+            columns:
+              ruleType === RuleType.SQL_CHECK
+                ? columns
+                : columns.filter((column) => column.key !== 'level'),
+            dataSource: rules,
+            rowKey: 'id',
+            pagination: false,
+            scroll: {
+              x: 1000,
+            },
+          }}
+        />
+      </div>
+      <EditModal
+        {...{
+          modalVisible,
+          ruleType,
+          rule: selectedData,
+          handleCloseModal,
+          handleUpdateEnvironment,
         }}
       />
-      <SetApprovalDrawer visible={visible} onClose={onClose} {...selectedData} />
-      <Modal
-        visible={modalVisible}
-        onCancel={handleCloseModal}
-        title={'编辑环境'}
-        width={480}
-        maskClosable={false}
-        centered={true}
-        onOk={handleUpdateEnvironment}
-      >
-        <Form layout="vertical" form={formRef} initialValues={{ selectedData }}>
-          <Form.Item
-            label={'SQL 开发规范'}
-            name={'rulesetName'}
-            rules={[
-              {
-                required: true,
-                message: 'Please input your username!',
-              },
-            ]}
-          >
-            <Select defaultValue={selectedData?.rulesetName || 'dev'} options={options} />
-          </Form.Item>
-        </Form>
-      </Modal>
+      {/* <SetApprovalDrawer visible={visible} onClose={onClose} {...selectedData} /> */}
     </>
   );
 };
-interface ApprovalDrawerProps {
-  visible: boolean;
-  onClose: () => void;
-  drawerTitle?: string;
-  name: string;
-  tag: string;
-  description: string;
-}
-interface SubDataType {
-  taskType: string;
-  specificationName: string;
-  config: string;
-  riskLevel: number;
-}
-const SetApprovalDrawer: React.FC<Partial<ApprovalDrawerProps>> = ({
-  visible,
-  onClose,
-  name,
-  tag,
-  description,
-}) => {
-  const rules: React.ReactNode[] = [];
-  const onSubmit = () => {
-    onClose();
+export function getEnvTypeList(env: IEnvironment): {
+  value: EnvPageType;
+  label: string;
+} {
+  return {
+    value: envNameMap[env.name] || env.name,
+    label: env.name,
   };
-  const cancel = () => {
-    onClose();
+}
+
+const Env: React.FC<{
+  secureStore: SecureStore;
+}> = ({ secureStore }) => {
+  const selectedFlag = 'envPageType';
+  const [environments, setEnvironments] = useState<IEnvironment[]>([]);
+  const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
+
+  const [filterEnv, setFilterEnv] = useState<IEnvironment[]>([]);
+
+  const handleItemClick = (name: string) => {
+    secureStore.changeEnvPageType(name as EnvPageType);
   };
-  const columns: ColumnsType<SubDataType> = [
-    {
-      title: '任务类型',
-      width: 240,
-      dataIndex: 'taskType',
-      key: 'taskType',
-    },
-    {
-      title: '规则名称',
-      width: 280,
-      dataIndex: 'specificationName',
-      key: 'specificationName',
-    },
-    {
-      title: '配置值',
-      width: 280,
-      dataIndex: 'config',
-      key: 'config',
-    },
-    {
-      title: '风险等级',
-      width: 120,
-      key: 'riskLevel',
-      dataIndex: 'riskLevel',
-      render: (_, record, index) => <RiskLevel level={record.riskLevel} />,
-    },
-  ];
-  const data: SubDataType[] = [
-    {
-      taskType: '数据库变更',
-      specificationName: '执行 SQL 类型',
-      config: 'Select',
-      riskLevel: 0,
-    },
-  ];
-  const dataCheck: SubDataType[] = [
-    {
-      taskType: '数据库变更-check',
-      specificationName: '执行 SQL 类型',
-      config: 'Select',
-      riskLevel: 0,
-    },
-  ];
-  const dataWindow: SubDataType[] = [
-    {
-      taskType: '数据库变更-window',
-      specificationName: '执行 SQL 类型',
-      config: 'Select',
-      riskLevel: 0,
-    },
-  ];
+
+  const initSiderData = async (environments?: IEnvironment[]) => {
+    const nameMap = new Map();
+    const resData = environments.map(getEnvTypeList).filter((environment) => {
+      if (!nameMap.has(environment.value)) {
+        nameMap.set(environment.value, environment.label);
+        return environment;
+      }
+    });
+    handleItemClick(resData[0]?.value);
+    setSiderItemList(resData);
+  };
+  const initData = async () => {
+    const envs = await listEnvironments();
+    setEnvironments(envs);
+    initSiderData(envs);
+  };
+
+  useEffect(() => {
+    initData();
+  }, []);
+  useLayoutEffect(() => {
+    const filterData = environments.filter(
+      (environment) =>
+        environment.name === secureStore.envPageType ||
+        envNameMap[environment.name] === secureStore.envPageType,
+    );
+    setFilterEnv(filterData);
+  }, [environments, secureStore.envPageType]);
   return (
-    <Drawer
-      visible={visible}
-      onClose={onClose}
-      placement="right"
-      title="SQL 开发规范详情"
-      footerStyle={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-      }}
-      className={classNames(styles.envDrawer)}
-      width={960}
-    >
-      <>
-        <Descriptions column={1}>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'风险识别规则名称'}>
-            {name}
-          </Descriptions.Item>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'关联环境'}>
-            {envTagMap[name]}
-          </Descriptions.Item>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
-            {description}
-          </Descriptions.Item>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'规则设置'}>
-            {' '}
-          </Descriptions.Item>
-        </Descriptions>
-      </>
-      {name === 'sqlDevSpecification' ? (
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-          className={classNames(styles.tableSpin, styles.smallTable, {
-            // [styles.scrollAble]: !!scrollHeight,
-          })}
-        />
-      ) : (
-        <Tabs>
-          <Tabs.TabPane tab="SQL 检查规范" key={'sql-check'}>
-            <Table
-              key={'sql-check-table'}
-              columns={columns}
-              dataSource={dataCheck}
-              pagination={false}
-              className={classNames(styles.tableSpin, styles.smallTable, {
-                // [styles.scrollAble]: !!scrollHeight,
-              })}
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="SQL 窗口规范" key={'sql-window'}>
-            <Table
-              key={'sql-window-table'}
-              columns={columns}
-              dataSource={dataWindow}
-              pagination={false}
-              className={classNames(styles.tableSpin, styles.smallTable, {
-                // [styles.scrollAble]: !!scrollHeight,
-              })}
-            />
-          </Tabs.TabPane>
-        </Tabs>
-      )}
-    </Drawer>
+    <SecureLayout>
+      <SecureSider
+        siderItemList={siderItemList}
+        selectedFlag={selectedFlag}
+        handleItemClick={handleItemClick}
+        secureStore={secureStore}
+      />
+      <InnerEnv envPageType={secureStore.envPageType} environment={filterEnv?.[0]} />
+    </SecureLayout>
   );
 };
 
-export default env;
+export default inject('secureStore')(observer(Env));

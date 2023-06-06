@@ -119,13 +119,14 @@ const CommonTable: <RecordType extends object = any>(
   const ALERT_INFO_HEIGHT = alertInfoVisible ? TABLE_ALERT_INFO_HEIGHT : 0;
   const TABLE_HEAD_HEIGHT =
     mode === CommonTableMode.BIG ? TABLE_BIG_HEAD_HEIGHT : TABLE_SMALL_HEAD_HEIGHT;
+  const SECURE_TABLE_PAGINATION_HEIGHT = showPagination ? TABLE_PAGINATION_HEIGHT : 0;
   const wrapperValidHeight = Math.max(
     wrapperHeight -
       TOOLBAR_HEIGHT -
       INFO_BAR_HEIGHT -
       ALERT_INFO_HEIGHT -
       TABLE_HEAD_HEIGHT -
-      TABLE_PAGINATION_HEIGHT,
+      SECURE_TABLE_PAGINATION_HEIGHT,
     100,
   );
   const scrollHeight = (tableProps?.pagination as TablePaginationConfig)?.pageSize
@@ -326,7 +327,7 @@ const CommonTable: <RecordType extends object = any>(
           [styles.showAlertInfo]: alertInfoVisible,
         },
         tableProps?.className,
-        mode === CommonTableMode.BIG ? null : styles.smallCommonTable,
+        // mode === CommonTableMode.BIG ? null : styles.smallCommonTable,
       )}
     >
       {showToolbar && (
@@ -375,7 +376,7 @@ const CommonTable: <RecordType extends object = any>(
             className={classNames(
               styles.tableSpin,
               mode === CommonTableMode.BIG ? styles.bigTable : styles.smallTable,
-              body === CommonTableBodyMode.BIG && styles.middleTableBody,
+              body === CommonTableBodyMode.BIG ? styles.bigTableBody : styles.smallTableBody,
               {
                 [styles.scrollAble]: !!scrollHeight,
               },

@@ -200,8 +200,16 @@
     background: var(--background-tertraiy-color);
   }
 }
-
-.middleTableBody {
+.smallTableBody {
+  :global {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      height: 24px;
+      padding: 0 8px;
+    }
+  }
+}
+.bigTableBody {
   :global {
     .ant-table-thead > tr > th {
       height: 24px;
