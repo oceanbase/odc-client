@@ -4,10 +4,12 @@ import React from 'react';
 import ListItem from '../components/ListItem';
 import styles from './index.less';
 
-import DeleteOutlined from '@/svgr/tabRecycle.svg';
-import SettingOutlined from '@/svgr/tabSession.svg';
 import { Space } from 'antd';
 import SideTabs from '../components/SideTabs';
+
+import TabRecycleSvg from '@/svgr/tabRecycle.svg';
+import SettingOutlined from '@/svgr/tabSession.svg';
+import VariableSvg from '@/svgr/variable.svg';
 
 const Manager: React.FC<{}> = function () {
   return (
@@ -40,12 +42,7 @@ const Manager: React.FC<{}> = function () {
                     key="sessionParams"
                     title="全局变量"
                     desc="查询和还原被删除的数据库对象"
-                    icon={
-                      <Icon
-                        component={SettingOutlined}
-                        style={{ fontSize: 18, color: 'var(--icon-orange-color)' }}
-                      />
-                    }
+                    icon={<Icon component={VariableSvg} style={{ fontSize: 18 }} />}
                     actions={[]}
                     onClick={() => {
                       openSessionManagePage();
@@ -55,12 +52,7 @@ const Manager: React.FC<{}> = function () {
                     key="recyleBin"
                     title="回收站"
                     desc="查询和还原被删除的数据库对象"
-                    icon={
-                      <Icon
-                        component={DeleteOutlined}
-                        style={{ fontSize: 18, color: 'var(--icon-color-6)' }}
-                      />
-                    }
+                    icon={<Icon component={TabRecycleSvg} style={{ fontSize: 18 }} />}
                     actions={[]}
                     onClick={() => {
                       openRecycleBin();

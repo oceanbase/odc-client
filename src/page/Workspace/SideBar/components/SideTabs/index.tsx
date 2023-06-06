@@ -49,7 +49,7 @@ export default function SideTabs({ tabs }: IProps) {
             );
           })}
         </Space>
-        <Space size={8} className={styles.actions}>
+        <Space size={10} className={styles.actions}>
           {selectTab?.actions?.map((action) => {
             return (
               <Tooltip title={action.title}>

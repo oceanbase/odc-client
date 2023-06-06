@@ -34,6 +34,7 @@ import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
 import DeleteOutlined from '@/svgr/tabRecycle.svg';
 import SettingOutlined from '@/svgr/tabSession.svg';
+import VariableSvg from '@/svgr/variable.svg';
 
 // @ts-ignore
 import TypeSvg from '@/svgr/menuType.svg';
@@ -94,7 +95,7 @@ export const pageMap = {
   // 会话参数页
   [PageType.SESSION_PARAM]: {
     component: withConfirmModal(SessionParamPage),
-    icon: <SettingOutlined />,
+    icon: <VariableSvg />,
     color: 'var(--icon-orange-color)',
   },
 
