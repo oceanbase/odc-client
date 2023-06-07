@@ -1618,6 +1618,24 @@ export enum TaskSubType {
   OTHER = 'OTHER',
 }
 
+export enum EnvPageType {
+  DEV = 'DEV',
+  TEST = 'TEST',
+  PROD = 'PROD',
+}
+
+export enum RiskDetectRuleType {
+  DEFAULT = 'DEFAULT',
+  LOW = 'LOW',
+  MIDDLE = 'MIDDLE',
+  HIGH = 'HIGH',
+}
+
+export enum EnvType {
+  DEV = 'DEV',
+  TEST = 'TEST',
+  PROD = 'PROD',
+}
 export interface IExportDbObject {
   dbObjectType: DbObjectType;
   objectName: string;
