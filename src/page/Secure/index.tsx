@@ -27,10 +27,8 @@ import Approval from './Approval';
 import { ManageContext } from './context';
 import Env from './Env';
 import Record from './Record';
+import RiskDetectRules from './RiskDetectRules';
 import RiskLevel from './RiskLevel';
-import RiskSensitiveSpecification from './RiskSensitiveSepcification';
-import SQLDevelopmentSpecification from './SQLDevelopmentSpecification';
-
 interface IProps {
   userStore?: UserStore;
 }
@@ -42,11 +40,8 @@ const Pages = {
   [IPageType.Secure_Record]: {
     component: Record, // 操作记录
   },
-  [IPageType.SQL_Development_Specification]: {
-    component: SQLDevelopmentSpecification, // SQL 开发规范
-  },
-  [IPageType.RiskSensitiveSpecification]: {
-    component: RiskSensitiveSpecification, // SQL 开发规范
+  [IPageType.RiskDetectRules]: {
+    component: RiskDetectRules, // SQL
   },
   [IPageType.Secure_Approval]: {
     component: Approval, // 审批流程
@@ -62,16 +57,12 @@ const tabs = [
     key: IPageType.Secure_Env,
   },
   {
-    tab: 'SQL 开发规范',
-    key: IPageType.SQL_Development_Specification,
+    tab: '风险等级',
+    key: IPageType.RiskLevel,
   },
   {
     tab: '风险识别规范',
-    key: IPageType.RiskSensitiveSpecification,
-  },
-  {
-    tab: '风险等级',
-    key: IPageType.RiskLevel,
+    key: IPageType.RiskDetectRules,
   },
   {
     tab: '审批流程',

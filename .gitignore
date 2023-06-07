@@ -21,3 +21,5 @@ libraries/jre/*
 libraries/obclient/*
 .node
 public/help-doc/*
+.devcontainer.Dockerfile
+.devcontainer.yml
