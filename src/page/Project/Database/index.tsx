@@ -6,6 +6,7 @@ import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
+import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import React, { useRef, useState } from 'react';
@@ -17,6 +18,9 @@ const Database: React.FC<IProps> = ({ id }) => {
   const [total, setTotal] = useState(0);
 
   const [data, setData] = useState<IDatabase[]>([]);
+
+  const [visible, setVisible] = useState(false);
+  const [database, setDatabase] = useState<IDatabase>(null);
 
   const params = useRef({
     pageSize: 0,
@@ -100,7 +104,15 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link key={'import'}>导入</Action.Link>
                   <Action.Link key={'ddl'}>数据库变更</Action.Link>
                   <Action.Link key={'login'}>登录数据库</Action.Link>
-                  <Action.Link key={'transfer'}>转移项目</Action.Link>
+                  <Action.Link
+                    key={'transfer'}
+                    onClick={() => {
+                      setVisible(true);
+                      setDatabase(record);
+                    }}
+                  >
+                    转移项目
+                  </Action.Link>
                 </Action.Group>
               );
             },
@@ -115,6 +127,12 @@ const Database: React.FC<IProps> = ({ id }) => {
           const current = page.current;
           loadData(pageSize, current);
         }}
+      />
+      <ChangeProjectModal
+        visible={visible}
+        database={database}
+        close={() => setVisible(false)}
+        onSuccess={() => reload()}
       />
     </TableCard>
   );
