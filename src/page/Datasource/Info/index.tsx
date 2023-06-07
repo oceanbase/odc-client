@@ -6,12 +6,16 @@ import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
 import { getLocalFormatDateTime } from '@/util/utils';
 import React, { useRef, useState } from 'react';
+import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
 interface IProps {
   id: string;
 }
 const Info: React.FC<IProps> = ({ id }) => {
   const [total, setTotal] = useState(0);
+
+  const [visible, setVisible] = useState(false);
+  const [database, setDatabase] = useState<IDatabase>(null);
 
   const lastParams = useRef({
     pageSize: 0,
@@ -81,7 +85,15 @@ const Info: React.FC<IProps> = ({ id }) => {
                 <Action.Group size={3}>
                   <Action.Link key={'login'}>登录</Action.Link>
                   <Action.Link key={'sync'}>同步</Action.Link>
-                  <Action.Link key={'transfer'}>转移</Action.Link>
+                  <Action.Link
+                    onClick={() => {
+                      setVisible(true);
+                      setDatabase(record);
+                    }}
+                    key={'transfer'}
+                  >
+                    转移
+                  </Action.Link>
                 </Action.Group>
               );
             },
@@ -96,6 +108,12 @@ const Info: React.FC<IProps> = ({ id }) => {
           const current = page.current;
           loadData(pageSize, current);
         }}
+      />
+      <ChangeProjectModal
+        visible={visible}
+        database={database}
+        close={() => setVisible(false)}
+        onSuccess={() => reload()}
       />
     </TableCard>
   );

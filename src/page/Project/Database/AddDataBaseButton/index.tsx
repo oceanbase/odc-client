@@ -1,7 +1,7 @@
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import { useRequest } from 'ahooks';
-import { Button, Col, Form, message, Modal, Row, Select } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Select, Tag } from 'antd';
 import { useState } from 'react';
 
 interface IProps {
@@ -11,7 +11,7 @@ interface IProps {
 
 export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [form] = Form.useForm<{ databaseIds: number }>();
+  const [form] = Form.useForm<{ databaseIds: number[] }>();
   const { run, loading } = useRequest(updateDataBase, {
     manual: true,
   });
@@ -46,7 +46,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     if (!formData) {
       return;
     }
-    const isSuccess = await run([formData?.databaseIds], projectId);
+    const isSuccess = await run(formData?.databaseIds, projectId);
     if (isSuccess) {
       message.success('添加成功');
       setOpen(false);
@@ -77,6 +77,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                   loading={dataSourceListLoading || dataSourceLoading}
                   style={{ width: 'calc(100% - 10px)' }}
                   placeholder="请选择"
+                  onChange={() => form.setFieldsValue({ databaseIds: [] })}
                 >
                   {dataSourceList?.contents?.map((item) => {
                     return <Select.Option key={item.id}>{item.name}</Select.Option>;
@@ -85,16 +86,28 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item label="环境">{dataSource?.environmentName || '-'}</Form.Item>
+              <Form.Item label="环境">
+                <Tag color={dataSource?.environmentStyle?.toLowerCase()}>
+                  {dataSource?.environmentName || '-'}
+                </Tag>
+              </Form.Item>
             </Col>
           </Row>
           <Form.Item rules={[{ required: true }]} name={'databaseIds'} label="数据库">
             <Select
+              mode="multiple"
               placeholder="请选择未分配项目的数据库"
               style={{ width: '100%' }}
               loading={databasesListLoading}
             >
               {databases?.contents?.map((p) => {
+                if (!p.project?.builtin) {
+                  return (
+                    <Select.Option disabled={true} key={p.id}>
+                      {p.name} - 已绑定项目：{p.project?.name}
+                    </Select.Option>
+                  );
+                }
                 return <Select.Option key={p.id}>{p.name}</Select.Option>;
               })}
             </Select>
