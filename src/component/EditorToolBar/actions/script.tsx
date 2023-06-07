@@ -1,6 +1,6 @@
 import { IEditor } from '@/component/MonacoEditor';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
-import PLPage from '@/page/Workspace/components/PLPage';
+import { PLPage } from '@/page/Workspace/components/PLPage';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
