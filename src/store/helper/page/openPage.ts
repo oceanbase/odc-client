@@ -126,7 +126,11 @@ export function openPackageViewPage(
     },
   );
 }
-export async function openNewSQLPage(cid: number, dbName: string) {
+export async function openNewSQLPage(
+  cid: number,
+  dbName: string,
+  databaseFrom: 'datasource' | 'project',
+) {
   const key = await generatePageKey(PageType.SQL);
   const title = generatePageTitle(PageType.SQL, key);
   page.openPage(
@@ -141,6 +145,7 @@ export async function openNewSQLPage(cid: number, dbName: string) {
       scriptText: '',
       cid,
       dbName,
+      databaseFrom,
     },
   );
 }
@@ -217,6 +222,7 @@ export async function openNewDefaultPLPage(
   value?: { sql: string; params: any },
   cid?: number,
   dbName?: string,
+  databaseFrom?: 'project' | 'datasource',
 ) {
   const key = await generatePageKey(PageType.PL, value?.params);
   const title = generatePageTitle(PageType.PL, key);
@@ -236,6 +242,7 @@ export async function openNewDefaultPLPage(
       plSchema: {
         params: [],
       },
+      databaseFrom,
     } as IPLPageParams,
   );
 }

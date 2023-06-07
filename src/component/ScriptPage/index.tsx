@@ -4,6 +4,7 @@ import GrammerHelpSider from '@/component/GrammerHelpSider';
 import StatusBar from '@/component/StatusBar';
 import { EDITOR_TOOLBAR_HEIGHT, SQL_PAGE_RESULT_HEIGHT } from '@/constant';
 import { DbObjectType } from '@/d.ts/index';
+import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect';
 import { IDebugStackItem } from '@/store/debug/type';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
@@ -80,6 +81,7 @@ export default class ScriptPage extends PureComponent<IProps> {
       >
         <Content style={{ position: 'relative' }}>
           {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
+          <SessionSelect />
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {
@@ -100,7 +102,7 @@ export default class ScriptPage extends PureComponent<IProps> {
           <DropWrapper
             style={{
               position: 'absolute',
-              top: EDITOR_TOOLBAR_HEIGHT + (isShowDebugStackBar ? 28 : 0),
+              top: EDITOR_TOOLBAR_HEIGHT + (isShowDebugStackBar ? 28 : 0) + 32,
               bottom: statusBar && statusBar.status ? 32 : 0,
               left: 0,
               right: 0,

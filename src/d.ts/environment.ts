@@ -12,6 +12,7 @@ export interface IEnvironment {
   updateTime: string;
   creator: ProjectUser;
   lastModifier: ProjectUser;
+  style: string;
 }
 export interface DataType {
   key: string;

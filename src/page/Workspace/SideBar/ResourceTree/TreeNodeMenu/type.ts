@@ -16,7 +16,7 @@ export interface IMenuItemConfig {
   isHide?: (session: SessionStore, node: TreeDataNode) => boolean;
   actionType?: actionTypes;
   children?: IMenuItemConfig[];
-  run?: (session: SessionStore, node: TreeDataNode) => void;
+  run?: (session: SessionStore, node: TreeDataNode, databaseFrom: 'datasource' | 'project') => void;
 }
 
 export interface IProps {
@@ -24,6 +24,7 @@ export interface IProps {
   options?: IOptions;
   dbSession: SessionStore;
   node: TreeDataNode;
+  databaseFrom: 'datasource' | 'project';
 }
 
 export interface IOptions {

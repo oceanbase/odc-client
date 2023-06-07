@@ -558,6 +558,7 @@ export interface IConnection {
   ownerId: number;
   environmentId: number;
   environmentName: string;
+  environmentStyle: string;
   sslConfig: {
     enabled: boolean;
     clientCertObjectId?: string;

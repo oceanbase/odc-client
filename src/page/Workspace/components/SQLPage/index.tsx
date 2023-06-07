@@ -36,6 +36,7 @@ import { inject, observer } from 'mobx-react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
+import SessionContextWrap from '../SessionContextWrap';
 import ExecDetail from '../SQLExplain/ExecDetail';
 import ExecPlan from '../SQLExplain/ExecPlan';
 import SQLResultSet, { recordsTabKey, sqlLintTabKey } from '../SQLResultSet';
@@ -70,27 +71,27 @@ interface ISQLPageState {
   lintResultSet: ISQLLintReuslt[];
 }
 
+interface IProps {
+  params?: ISQLPageParams;
+  sqlStore?: SQLStore;
+  userStore?: UserStore;
+  pageStore?: PageStore;
+  sessionManagerStore?: SessionManagerStore;
+  sessionId?: string;
+  pageKey?: string;
+  isSaved?: boolean;
+  page?: IPage;
+  startSaving?: boolean;
+  isShow?: boolean;
+  onUnsavedChange?: (pageKey: string) => void;
+  onChangeSaved?: (pageKey: string) => void;
+  onSetUnsavedModalTitle?: (title: string) => void;
+  onSetUnsavedModalContent?: (title: string) => void;
+}
+
 @inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore')
 @observer
-class SQLPage extends Component<
-  {
-    params?: ISQLPageParams;
-    sqlStore?: SQLStore;
-    userStore?: UserStore;
-    pageStore?: PageStore;
-    sessionManagerStore?: SessionManagerStore;
-    pageKey?: string;
-    isSaved?: boolean;
-    page?: IPage;
-    startSaving?: boolean;
-    isShow?: boolean;
-    onUnsavedChange?: (pageKey: string) => void;
-    onChangeSaved?: (pageKey: string) => void;
-    onSetUnsavedModalTitle?: (title: string) => void;
-    onSetUnsavedModalContent?: (title: string) => void;
-  },
-  ISQLPageState
-> {
+export class SQLPage extends Component<IProps, ISQLPageState> {
   public readonly state: ISQLPageState = {
     resultHeight: SQL_PAGE_RESULT_HEIGHT,
     initialSQL: this.props.params?.scriptText || '',
@@ -108,7 +109,7 @@ class SQLPage extends Component<
     updateDataDML: '',
     tipToShow: '',
     executePLLoading: false,
-    pageLoading: true,
+    pageLoading: false,
     resultSetIndex: 0,
     editingMap: {},
     lintResultSet: null,
@@ -121,7 +122,7 @@ class SQLPage extends Component<
 
   private timer: number | undefined;
 
-  public session: SessionStore;
+  private _session: SessionStore;
 
   constructor(props) {
     super(props);
@@ -135,7 +136,6 @@ class SQLPage extends Component<
   public async componentDidMount() {
     const { params, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent } = this.props;
     const pageName = pageKey.replace('spl-new-', '');
-    await this.initSession();
     onSetUnsavedModalTitle(
       formatMessage({
         id: 'workspace.window.sql.modal.close.title',
@@ -179,32 +179,7 @@ class SQLPage extends Component<
   };
 
   public getSession() {
-    return this.session;
-  }
-
-  public async initSession() {
-    const { sessionManagerStore, pageStore, pageKey, params } = this.props;
-    const session = this.getSession();
-    if (!session) {
-      const session = await sessionManagerStore.createSession(null, params?.cid);
-      if (session) {
-        this.session = session;
-        this.setState({
-          pageLoading: false,
-        });
-
-        return;
-      } else {
-        /**
-         * 申请session id 失败，关闭页面
-         */
-        pageStore.close(pageKey);
-        return;
-      }
-    }
-    this.setState({
-      pageLoading: false,
-    });
+    return this.props.sessionManagerStore?.sessionMap?.get(this.props.sessionId);
   }
 
   public async UNSAFE_componentWillReceiveProps(nextProps) {
@@ -231,7 +206,7 @@ class SQLPage extends Component<
   }
 
   public componentWillUnmount() {
-    const { pageKey, sqlStore, sessionManagerStore } = this.props;
+    const { pageKey, sqlStore } = this.props;
     const session = this.getSession();
 
     if (this.timer) {
@@ -241,7 +216,6 @@ class SQLPage extends Component<
     sqlStore.clear(pageKey);
     if (session) {
       executeTaskManager.stopTask(session.sessionId);
-      sessionManagerStore.destorySession(session.sessionId);
     }
   }
 
@@ -307,8 +281,8 @@ class SQLPage extends Component<
         const result = await getCurrentSQL(
           this.editor.getValue(),
           offset,
-          this.session?.connection.dialectType == ConnectionMode.OB_MYSQL,
-          this.session?.params?.delimiter,
+          this.getSession()?.connection.dialectType == ConnectionMode.OB_MYSQL,
+          this.getSession()?.params?.delimiter,
         );
 
         if (result) {
@@ -459,7 +433,7 @@ class SQLPage extends Component<
   };
   public handleRefreshResultSet = async (resultSetIndex: number) => {
     const { sqlStore, pageKey } = this.props;
-    await sqlStore.refreshResultSet(pageKey, resultSetIndex, this.session?.sessionId);
+    await sqlStore.refreshResultSet(pageKey, resultSetIndex, this.getSession()?.sessionId);
     this.triggerTableLayout();
   };
 
@@ -608,8 +582,8 @@ class SQLPage extends Component<
         columnList,
         true,
         editRows,
-        this.session?.sessionId,
-        this.session?.database?.dbName,
+        this.getSession()?.sessionId,
+        this.getSession()?.database?.dbName,
       );
 
       if (!res) {
@@ -923,7 +897,7 @@ class SQLPage extends Component<
             />,
 
             <ExecPlan
-              session={this.session}
+              session={this.getSession()}
               key="execPlan"
               visible={showExplainDrawer}
               selectedSQL={selectedSQL}
@@ -939,7 +913,7 @@ class SQLPage extends Component<
               key="execDetail"
               visible={showExecuteDetailDrawer}
               sql={execDetailSql}
-              session={this.session}
+              session={this.getSession()}
               traceId={execDetailTraceId}
               onClose={() => {
                 this.setState({
@@ -951,7 +925,7 @@ class SQLPage extends Component<
             />,
 
             <ExecuteSQLModal
-              sessionStore={this.session}
+              sessionStore={this.getSession()}
               key="executeSQLModal"
               tip={this.state.tipToShow}
               sql={updateDataDML}
@@ -1136,4 +1110,15 @@ class SQLPage extends Component<
   };
 }
 
-export default SQLPage;
+export default function (props: IProps) {
+  return (
+    <SessionContextWrap
+      defaultDatabaseId={props.params?.cid}
+      defaultMode={props.params?.databaseFrom}
+    >
+      {({ session }) => {
+        return <SQLPage sessionId={session?.sessionId} {...props} />;
+      }}
+    </SessionContextWrap>
+  );
+}

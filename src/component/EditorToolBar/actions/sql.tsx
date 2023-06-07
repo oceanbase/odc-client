@@ -3,7 +3,7 @@ import SQLConfig from '@/component/SQLConfig';
 import { getConfirmTitle } from '@/component/SubmitConfirm';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
-import SQLPage from '@/page/Workspace/components/SQLPage';
+import { SQLPage } from '@/page/Workspace/components/SQLPage';
 import setting from '@/store/setting';
 import sqlStore from '@/store/sql';
 import { formatMessage } from '@/util/intl';
@@ -149,7 +149,7 @@ const sqlActions: ToolBarActions = {
     statusFunc: (ctx: SQLPage) => {
       const { pageKey, sqlStore } = ctx.props;
       const { runningPageKey, rollbackPageKey, stopingPageKey, commitingPageKey } = sqlStore;
-      const transaction = ctx.session?.transState;
+      const transaction = ctx.getSession()?.transState;
       if (transaction?.transState === TransState.IDLE) {
         return IConStatus.DISABLE;
       }
@@ -208,7 +208,7 @@ const sqlActions: ToolBarActions = {
       const { pageKey, sqlStore } = ctx.props;
       const { runningPageKey, rollbackPageKey, stopingPageKey, commitingPageKey } = sqlStore;
       const sessionId = ctx.getSession()?.sessionId;
-      const transaction = ctx.session?.transState;
+      const transaction = ctx.getSession()?.transState;
       if (transaction?.transState === TransState.IDLE) {
         return IConStatus.DISABLE;
       }
@@ -272,7 +272,7 @@ const sqlActions: ToolBarActions = {
       return ctx.getSession()?.supportFeature.enableKillQuery;
     },
     async action(ctx: SQLPage) {
-      sqlStore.stopExec(ctx.props.pageKey, ctx?.session?.sessionId);
+      sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
     },
   },
 

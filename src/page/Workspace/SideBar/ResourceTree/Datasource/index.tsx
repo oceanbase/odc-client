@@ -109,6 +109,7 @@ export default function DatasourceTree() {
         selectKeys?.length ? (
           <div style={{ height: '100%', overflow: 'hidden' }}>
             <ResourceTree
+              databaseFrom="datasource"
               title={selectConnection?.name}
               key={selectKeys?.[0]}
               databases={db?.contents}

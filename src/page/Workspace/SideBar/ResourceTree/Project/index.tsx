@@ -83,7 +83,11 @@ export default function ProjectTree() {
       }
       bottom={
         selectKeys?.length ? (
-          <ResourceTree title={selectProject?.name} databases={db?.contents} />
+          <ResourceTree
+            databaseFrom="project"
+            title={selectProject?.name}
+            databases={db?.contents}
+          />
         ) : null
       }
     />

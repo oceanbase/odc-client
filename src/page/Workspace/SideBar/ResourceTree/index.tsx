@@ -16,9 +16,15 @@ interface IProps {
   sessionManagerStore?: SessionManagerStore;
   databases: IDatabase[];
   title: string;
+  databaseFrom: 'datasource' | 'project';
 }
 
-const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore, databases, title }) {
+const ResourceTree: React.FC<IProps> = function ({
+  sessionManagerStore,
+  databases,
+  title,
+  databaseFrom,
+}) {
   const [databaseSessions, setDatabaseSessions] = useState<Record<string, string>>({});
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -83,7 +89,9 @@ const ResourceTree: React.FC<IProps> = function ({ sessionManagerStore, database
       const { type, sessionId, key, dbObjectType } = node;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
 
-      return <TreeNodeMenu node={node} dbSession={dbSession} type={type} />;
+      return (
+        <TreeNodeMenu node={node} dbSession={dbSession} type={type} databaseFrom={databaseFrom} />
+      );
     },
     [databaseSessions],
   );
