@@ -5,19 +5,14 @@ import tracert from '@/util/tracert';
 import { message } from 'antd';
 import { isNil } from 'lodash';
 import { action, computed, observable } from 'mobx';
-import commonStore from './common';
-import connectionStore from './connection';
-import { savePageStoreToMetaStore } from './helper/page';
 import { generatePageKey, generatePageTitle, resetPageKey } from './helper/pageKeyGenerate';
 import login from './login';
-import { default as schemaStore } from './schema';
 import { autoSave } from './utils/metaSync';
 
 export interface IPageOptions {
   title?: string;
   key?: string;
   updateKey?: boolean;
-  updatePath?: boolean;
   path?: string;
   isSaved?: boolean;
   startSaving?: boolean;
@@ -72,20 +67,6 @@ export class PageStore {
     // } else {
     //   history.push(this.generatePagePath(PageType.DATABASE));
     // }
-  }
-
-  /**
-   * 生成页面路由路径
-   *
-   * @param type
-   * @param params
-   */
-  public generatePagePath(): string {
-    // 编码进 sessionId & dbName
-    let url = `/workspace/session/${commonStore.tabKey}/sid:${connectionStore.sessionId}:d:${
-      schemaStore?.database?.name || ''
-    }`;
-    return url;
   }
 
   /** Page是否需要唯一 */
@@ -148,7 +129,6 @@ export class PageStore {
     let { title, key } = options;
     key = key || (await generatePageKey(type, pageData));
     title = title || generatePageTitle(type, key);
-    const path = this.generatePagePath();
     const isUnique = this.isUnique(type, pageData);
     const existed = !!this.pages.find((p) => p.key === key);
     switch (type) {
@@ -181,7 +161,6 @@ export class PageStore {
         title,
         type,
         isSaved: true,
-        path,
         params: pageData,
       };
 
@@ -193,7 +172,6 @@ export class PageStore {
           title,
           type,
           isSaved: true,
-          path,
           params: pageData,
         });
       }
@@ -207,7 +185,7 @@ export class PageStore {
   /** New!!!更新page */
   @action
   public async updatePage(targetPageKey: string, options: IPageOptions = {}, pageData: any = {}) {
-    const { title, isSaved, startSaving, updateKey, updatePath } = options;
+    const { title, isSaved, startSaving, updateKey } = options;
     await this.updatePages(async (pages) => {
       const newPages = [];
       for (let i = 0; i < pages.length; i++) {
@@ -237,10 +215,6 @@ export class PageStore {
           if (updateKey) {
             p.key = await generatePageKey(p.type, pageData);
             await this.setActivePageKeyAndPushUrl(p.key);
-          }
-
-          if (updatePath) {
-            p.path = this.generatePagePath();
           }
         }
         newPages.push(p);
@@ -290,7 +264,6 @@ export class PageStore {
     await this.updateActiveKey(() => {
       return null;
     });
-    // clearTabDataInMetaStore();
     resetPageKey();
   }
 
@@ -360,7 +333,6 @@ export class PageStore {
       }
       return p;
     });
-    await this.saveDataToMetaStore();
   }
 
   /** 更新多个page */
@@ -373,10 +345,6 @@ export class PageStore {
     this.activePageKey = fn(this.pages, this.activePageKey);
     const pageType = this.getPageByKey(this.activePageKey)?.type;
     pageType && tracert.expoPage(pageType);
-  }
-
-  private async saveDataToMetaStore() {
-    await savePageStoreToMetaStore(this.pages, this.activePageKey);
   }
 
   public async patchMetaStoreUserId() {

@@ -2,7 +2,6 @@ import { PageType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import page from '../page';
-import { savePageKeysToMetaStore } from './page';
 
 export const PLPageMap = {
   [PageType.BATCH_COMPILE_FUNCTION]: {
@@ -124,6 +123,5 @@ export async function generatePageKey(type: PageType, params: any = {}): Promise
   } else if (type === PageType.SQL_RESULTSET_VIEW) {
     key += `resultview-${generateUniqKey()}`;
   }
-  await savePageKeysToMetaStore(page.pageKey, page.plPageKey, page.plDebugPageKey);
   return key;
 }

@@ -3,7 +3,6 @@ import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Dropdown, Menu, Tooltip } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { ResourceNodeType } from '../type';
 import MenuConfig from './config';
 import styles from './index.less';
@@ -137,4 +136,4 @@ TreeNodeMenu.defaultProps = {
   options: {},
 };
 
-export default inject('connectionStore')(observer(TreeNodeMenu));
+export default TreeNodeMenu;

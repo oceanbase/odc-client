@@ -185,12 +185,7 @@ class PLPage extends Component<
         },
       ),
     );
-    const session = await sessionManagerStore.createSession(
-      false,
-      params.cid,
-      params.dbName,
-      false,
-    );
+    const session = await sessionManagerStore.createSession(null, params.cid);
 
     if (session) {
       this.session = session;
@@ -904,7 +899,6 @@ class PLPage extends Component<
         {
           title: file.objectName,
           updateKey: true,
-          updatePath: true,
           startSaving: false,
           isSaved: true,
         },

@@ -1,7 +1,6 @@
 import {
   changeDelimiter,
   getSessionStatus,
-  getTransactionInfo,
   newSessionByDataBase,
   newSessionByDataSource,
   setTransactionInfo,
@@ -124,7 +123,7 @@ class SessionStore {
    */
   async init(): Promise<boolean> {
     try {
-      if (this.connection) {
+      if (!this.odcDatabase) {
         /**
          * 数据源模式
          */
@@ -134,7 +133,7 @@ class SessionStore {
         }
         this.sessionId = data.sessionId;
         this.dataTypes = data.dataTypes;
-        this.initSupportFeature(data.support);
+        this.initSupportFeature(data.supports);
         this.isAlive = true;
         return true;
       } else {
@@ -147,7 +146,7 @@ class SessionStore {
         }
         this.sessionId = data.sessionId;
         this.dataTypes = data.dataTypes;
-        this.initSupportFeature(data.support);
+        this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();
       }
@@ -178,8 +177,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.initTransactionStatus();
-      await this.initSessionTransaction();
+      await this.initSessionStatus();
       if (!this.transState) {
         return false;
       }
@@ -318,31 +316,23 @@ class SessionStore {
   }
 
   @action
-  public async initTransactionStatus() {
+  public async initSessionStatus() {
     try {
-      const data = await getTransactionInfo(this.sessionId);
-      this.params.autoCommit = data.autocommit;
-      this.params.delimiter = data.delimiter || DEFAULT_DELIMITER;
-      this.params.queryLimit = data.queryLimit;
-      this.params.obVersion = data.obVersion;
+      const data = await getSessionStatus(this.sessionId);
+
+      this.params.autoCommit = data?.settings?.autocommit;
+      this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
+      this.params.queryLimit = data?.settings?.queryLimit;
+      this.params.obVersion = data?.settings?.obVersion;
+      if (data?.session) {
+        this.transState = data?.session;
+      }
     } catch (e) {
       console.error(e);
       this.params.autoCommit = true;
     }
   }
 
-  @action
-  public async initSessionTransaction(sessionId?: string) {
-    sessionId = sessionId || this.sessionId;
-    if (!sessionId) {
-      return;
-    }
-    const data = await getSessionStatus(sessionId);
-    if (!data) {
-      return;
-    }
-    this.transState = data;
-  }
   @action
   public async getRecycleObjectList() {
     // ListRecycleObjects

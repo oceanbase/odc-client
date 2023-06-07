@@ -1,7 +1,7 @@
 import { DbObjectType, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
-import Icon, { FolderOpenFilled, InfoOutlined, NumberOutlined } from '@ant-design/icons';
+import Icon, { InfoOutlined, NumberOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 import ParameterSvg from '@/svgr/Parameter.svg';
@@ -130,13 +130,6 @@ export function FunctionTreeData(
     key: `${packageName}-pkg-${dbName}-function`,
     type: ResourceNodeType.FunctionRoot,
     data: database,
-    icon: (
-      <FolderOpenFilled
-        style={{
-          color: '#3FA3FF',
-        }}
-      />
-    ),
     sessionId: dbSession?.sessionId,
     isLeaf: false,
   };

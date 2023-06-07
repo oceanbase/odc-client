@@ -1,5 +1,4 @@
 import Toolbar from '@/component/Toolbar';
-import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Menu, Space, Spin } from 'antd';
 import { Observer, observer } from 'mobx-react';
@@ -11,7 +10,6 @@ interface IProps {
   ctx: any;
   actionGroupKey: string;
   loading?: boolean;
-  connectionStore?: ConnectionStore;
   /**
    * 右侧的自定义按钮
    */

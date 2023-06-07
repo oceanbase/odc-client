@@ -130,9 +130,7 @@ export default class TypePage extends Component<
 
     pageStore.updatePage(
       pageKey,
-      {
-        updatePath: true,
-      },
+      {},
 
       {
         typeName: type.typeName,

@@ -92,7 +92,7 @@ export default class RecycleBinPage extends Component<
 
   public initSession = async () => {
     const { params, sessionManagerStore } = this.props;
-    const session = await sessionManagerStore.createSession(false, params.cid, params.dbName);
+    const session = await sessionManagerStore.createSession(null, params.cid);
     this.session = session;
     return !!session;
   };

@@ -93,7 +93,7 @@ function SessionParamsTable(props: {
     if (success) {
       // 刷新
       await loadData();
-      await session.initTransactionStatus();
+      await session.initSessionStatus();
       setShowExecuteSQLModal(false);
       message.success(
         formatMessage({

@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons';
-import { Empty, Input, Spin, Tree, TreeDataNode } from 'antd';
+import { Empty, Input, Popover, Spin, Tree, TreeDataNode } from 'antd';
 import ResourceTree from '..';
 import ResourceLayout from '../Layout';
 
@@ -9,7 +9,10 @@ import { useRequest } from 'ahooks';
 import { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
+import ConnectionPopover from '@/component/ConnectionPopover';
+import { IDatasource } from '@/d.ts/datasource';
 import OBSvg from '@/svgr/source_ob.svg';
+import { toNumber } from 'lodash';
 
 export default function DatasourceTree() {
   const { data, loading, run } = useRequest(getConnectionList, {
@@ -35,6 +38,14 @@ export default function DatasourceTree() {
       };
     });
   }, [data]);
+
+  const datasourceMap = useMemo(() => {
+    const map = new Map<number, IDatasource>();
+    data?.contents?.forEach((c) => {
+      map.set(c.id, c);
+    });
+    return map;
+  }, [data?.contents]);
 
   const {
     data: db,
@@ -65,6 +76,19 @@ export default function DatasourceTree() {
             <Spin spinning={loading || dbLoading}>
               {datasource?.length ? (
                 <Tree
+                  titleRender={(node) => {
+                    return (
+                      <Popover
+                        overlayClassName={styles.connectionPopover}
+                        placement="rightBottom"
+                        content={
+                          <ConnectionPopover connection={datasourceMap.get(toNumber(node.key))} />
+                        }
+                      >
+                        {node.title}
+                      </Popover>
+                    );
+                  }}
                   selectedKeys={selectKeys}
                   onSelect={(keys) => {
                     setSelectKeys(keys);

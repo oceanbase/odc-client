@@ -104,7 +104,7 @@ export class SQLStore {
         this.commitingPageKey.add(pageKey);
       });
       const data = await executeSQL('commit;', sessionId, dbName);
-      sessionManager.sessionMap.get(sessionId)?.initSessionTransaction();
+      sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
@@ -120,7 +120,7 @@ export class SQLStore {
     try {
       this.rollbackPageKey.add(pageKey);
       const data = await executeSQL('rollback;', sessionId, dbName);
-      sessionManager.sessionMap.get(sessionId)?.initSessionTransaction();
+      sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
@@ -188,7 +188,7 @@ export class SQLStore {
     /**
      * 刷新一下delimiter
      */
-    session.initTransactionStatus();
+    session.initSessionStatus();
 
     // 判断结果集是否支持编辑
     // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持

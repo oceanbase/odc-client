@@ -4,6 +4,7 @@ import { DragInsertTypeText } from '@/constant/label';
 import { DbObjectType, DragInsertType } from '@/d.ts/index';
 import type { ModalStore } from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { getQuoteTableName } from '@/util/utils';
@@ -25,12 +26,13 @@ interface IProps {
   name: string;
   type: DbObjectType;
   settingStore?: SettingStore;
+  session: SessionStore;
   onClose: () => void;
   onOk: (insertText: string) => void;
 }
 
 const TemplateInsertModal: React.FC<IProps> = function (props) {
-  const { visible, name, type, settingStore, onClose, onOk, modalStore } = props;
+  const { visible, name, type, settingStore, onClose, onOk, modalStore, session } = props;
   const [value, setValue] = useState(DragInsertType.NAME);
   const [closePrompt, setClosePrompt] = useState(false);
 
@@ -44,7 +46,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
   };
 
   const handleOk = async () => {
-    const text = await getCopyText(name, type, value, true);
+    const text = await getCopyText(name, type, value, true, session?.sessionId);
     localStorage.setItem(CLOSE_INSERT_PROMPT_KEY, String(closePrompt));
     onOk(text);
     if (closePrompt) {

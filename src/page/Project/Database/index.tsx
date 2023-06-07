@@ -1,4 +1,5 @@
 import { listDatabases } from '@/common/network/database';
+import { listEnvironments } from '@/common/network/env';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
@@ -6,6 +7,7 @@ import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { useRequest } from 'ahooks';
 import React, { useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 interface IProps {
@@ -20,6 +22,8 @@ const Database: React.FC<IProps> = ({ id }) => {
     pageSize: 0,
     current: 0,
   });
+
+  const { data: envList } = useRequest(listEnvironments);
 
   const loadData = async (pageSize, current) => {
     params.current.pageSize = pageSize;
@@ -37,7 +41,7 @@ const Database: React.FC<IProps> = ({ id }) => {
 
   return (
     <TableCard
-      title={<AddDataBaseButton onSuccess={() => reload} projectId={parseInt(id)} />}
+      title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
       extra={
         <FilterIcon onClick={reload}>
           <Reload />
@@ -51,7 +55,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             title: '数据库名称',
             dataIndex: 'name',
             render: (name) => {
-              return <a>name</a>;
+              return <a>{name}</a>;
             },
           },
           {
@@ -73,6 +77,9 @@ const Database: React.FC<IProps> = ({ id }) => {
             title: '环境',
             dataIndex: 'organizationId',
             width: 100,
+            render(value, record, index) {
+              return envList?.find((env) => env.id == value)?.name || '-';
+            },
           },
           {
             title: '上一次同步时间',

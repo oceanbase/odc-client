@@ -90,7 +90,7 @@ export default class SequencePage extends Component<IProps, IState> {
     // 更新 url
     pageStore.updatePage(
       pageKey,
-      { updatePath: true },
+      {},
       {
         sequenceName: sequence.name,
         propsTab,

@@ -11,7 +11,7 @@ interface IProps {
 
 export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [form] = Form.useForm<{ databaseIds: number[] }>();
+  const [form] = Form.useForm<{ databaseIds: number }>();
   const { run, loading } = useRequest(updateDataBase, {
     manual: true,
   });
@@ -46,7 +46,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     if (!formData) {
       return;
     }
-    const isSuccess = await run(formData?.databaseIds, projectId);
+    const isSuccess = await run([formData?.databaseIds], projectId);
     if (isSuccess) {
       message.success('添加成功');
       setOpen(false);
@@ -66,7 +66,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(projectId, changedValues?.dataSourceId, 1, 999999);
+              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999);
             }
           }}
         >

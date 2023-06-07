@@ -37,7 +37,7 @@ export default function RecycleBin({ dataSourceId }: IProps) {
   };
 
   async function createSession(dataSourceId) {
-    const _session = await sessionManager.createSession(false, dataSourceId, '', false);
+    const _session = await sessionManager.createSession(dataSourceId, null);
     if (_session) {
       setSession(session);
     }

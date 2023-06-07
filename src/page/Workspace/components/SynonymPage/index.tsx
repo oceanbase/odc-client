@@ -84,9 +84,7 @@ export default class SynonymPage extends Component<
 
     pageStore.updatePage(
       pageKey,
-      {
-        updatePath: true,
-      },
+      {},
 
       {
         synonymName: synonym.synonymName,

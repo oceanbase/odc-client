@@ -56,8 +56,9 @@ export class SessionManagerStore {
     if (!(await this.initConnection(datasourceId, databaseid))) {
       return null;
     }
-    const datasource = this.connection.get(toInteger(datasourceId));
     const database = this.database.get(databaseid);
+    datasourceId = datasourceId || database?.dataSource?.id;
+    const datasource = this.connection.get(toInteger(datasourceId));
     const session = await SessionStore.createInstance(datasource, database);
     runInAction(() => {
       if (session) {
