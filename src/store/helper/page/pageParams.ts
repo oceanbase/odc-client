@@ -18,6 +18,7 @@ export interface IPLPageParams extends Partial<IScriptMeta> {
   typeName?: string;
   cid: number;
   dbName: string;
+  databaseFrom: 'datasource' | 'project';
 }
 
 export interface ISQLPageParams extends Partial<IScriptMeta> {
@@ -27,6 +28,7 @@ export interface ISQLPageParams extends Partial<IScriptMeta> {
   fromTask?: boolean;
   cid: number;
   dbName: string;
+  databaseFrom: 'datasource' | 'project';
 }
 
 export function createPackageHeadPageParams(packageName: string, sql: string, scriptId?: string) {

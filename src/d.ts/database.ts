@@ -1,4 +1,5 @@
 import { IDatasource } from './datasource';
+import { IEnvironment } from './environment';
 import { IProject } from './project';
 
 export enum DatabaseSyncStatus {
@@ -18,4 +19,5 @@ export interface IDatabase {
   charsetName: string;
   collationName: string;
   tableCount: number;
+  environment: IEnvironment;
 }

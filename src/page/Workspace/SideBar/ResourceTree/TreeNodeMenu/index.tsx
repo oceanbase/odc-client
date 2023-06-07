@@ -1,4 +1,4 @@
-import { AcessResult, canAcessWorkspace } from '@/component/Acess';
+import { AcessResult } from '@/component/Acess';
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
 import { InfoCircleFilled } from '@ant-design/icons';
@@ -9,7 +9,7 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 
 const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
-  const { type = '', dbSession, options, node } = props;
+  const { type = '', dbSession, databaseFrom, node } = props;
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
   const menuItems = MenuConfig[menuKey || type];
@@ -59,7 +59,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
 
   function onMenuClick(item: IMenuItemConfig) {
     const { run } = item;
-    run?.(dbSession, node);
+    run?.(dbSession, node, databaseFrom);
   }
   return (
     <Dropdown
@@ -78,8 +78,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
                 // 菜单子项 显隐可独立配置
                 const disabledItem = item.disabled ? item.disabled(dbSession, node) : false;
                 const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
-                const acessible =
-                  canAcessWorkspace(item.actionType, dbSession?.connection?.visibleScope) || true;
+                const acessible = true;
                 let menuItems = [];
                 if (!isHideItem && acessible) {
                   if (item.children?.length) {

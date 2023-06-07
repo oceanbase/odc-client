@@ -8,17 +8,17 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: 'NEW_SQL',
       text: ['新建 SQL 窗口'],
-      run(session, node) {
+      run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
-        openNewSQLPage(node.cid, database?.name);
+        openNewSQLPage(node.cid, database?.name, databaseFrom);
       },
     },
     {
       key: 'NEW_PL',
       text: ['新建匿名块窗口'],
-      run(session, node) {
+      run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
-        openNewDefaultPLPage(null, node.cid, database?.name);
+        openNewDefaultPLPage(null, node.cid, database?.name, databaseFrom);
       },
     },
     {
