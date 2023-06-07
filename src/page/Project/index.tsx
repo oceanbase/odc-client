@@ -11,6 +11,7 @@ import User from './User';
 import { getProject } from '@/common/network/project';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { gotoSQLWorkspace } from '@/util/route';
 import { Link } from '@umijs/max';
 import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
@@ -30,10 +31,12 @@ const menu = (
   </Menu>
 );
 
-const ExtraContent = () => {
+const ExtraContent = ({ projectId }) => {
   return (
     <Space size={12}>
-      <Button type="primary">登录数据库</Button>
+      <Button onClick={() => gotoSQLWorkspace(projectId)} type="primary">
+        登录数据库
+      </Button>
       <Dropdown.Button
         overlay={menu}
         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
@@ -126,7 +129,7 @@ const Index: React.FC<IProps> = function () {
       }}
       tabList={tabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent />}
+      tabBarExtraContent={<ExtraContent projectId={projectId} />}
       onTabChange={handleChange}
       bigSelectBottom={<Link to={'/project'}>查看所有项目</Link>}
     >
