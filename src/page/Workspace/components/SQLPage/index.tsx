@@ -186,12 +186,7 @@ class SQLPage extends Component<
     const { sessionManagerStore, pageStore, pageKey, params } = this.props;
     const session = this.getSession();
     if (!session) {
-      const session = await sessionManagerStore.createSession(
-        false,
-        params.cid,
-        params.dbName,
-        false,
-      );
+      const session = await sessionManagerStore.createSession(null, params?.cid);
       if (session) {
         this.session = session;
         this.setState({
@@ -397,7 +392,6 @@ class SQLPage extends Component<
         {
           title: newFile.objectName,
           updateKey: true,
-          updatePath: true,
           isSaved: true,
           startSaving: false,
         },
@@ -837,7 +831,7 @@ class SQLPage extends Component<
       params,
     } = this.props;
     const session = this.getSession();
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const {
       initialSQL,
       showSaveSQLModal,
@@ -999,7 +993,7 @@ class SQLPage extends Component<
       this.getSession()?.database?.dbName,
     );
 
-    this.getSession().initSessionTransaction(this.getSession()?.sessionId);
+    this.getSession().initSessionStatus();
     if (!results) {
       return;
     }

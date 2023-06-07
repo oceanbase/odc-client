@@ -1,4 +1,4 @@
-import { IDatabase } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';

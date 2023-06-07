@@ -184,9 +184,7 @@ export default class TriggerPage extends Component<
 
     pageStore.updatePage(
       pageKey,
-      {
-        updatePath: true,
-      },
+      {},
 
       {
         triggerName: trigger.triggerName,

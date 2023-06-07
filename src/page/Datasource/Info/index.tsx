@@ -46,7 +46,7 @@ const Info: React.FC<IProps> = ({ id }) => {
             title: '数据库名称',
             dataIndex: 'name',
             render: (name) => {
-              return <a>name</a>;
+              return <a>{name}</a>;
             },
           },
           {
@@ -61,7 +61,7 @@ const Info: React.FC<IProps> = ({ id }) => {
           },
           {
             title: '所属项目',
-            dataIndex: ['dataSource', 'name'],
+            dataIndex: ['project', 'name'],
             width: 160,
           },
           {

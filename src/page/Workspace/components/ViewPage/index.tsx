@@ -184,7 +184,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     // 更新 url
     pageStore.updatePage(
       pageKey,
-      { updatePath: true },
+      {},
       {
         viewName: view.viewName,
         topTab,
@@ -200,7 +200,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     // 更新 url
     pageStore.updatePage(
       pageKey,
-      { updatePath: true },
+      {},
       {
         viewName: view.viewName,
         topTab: TopTab.PROPS,
@@ -233,7 +233,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
         if (updatedViewName !== viewName) {
           pageStore.updatePage(
             pageKey,
-            { title: updatedViewName, updatePath: true, updateKey: true },
+            { title: updatedViewName, updateKey: true },
             {
               viewName: updatedViewName,
             },

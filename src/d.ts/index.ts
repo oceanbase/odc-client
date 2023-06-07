@@ -754,8 +754,6 @@ export interface IPage {
   startSaving?: boolean;
   isSaved: boolean;
   isDocked?: boolean; // 是否常驻
-
-  path: string;
   params?: any; // 附加参数
 }
 export interface ISQLPage extends IPage {

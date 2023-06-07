@@ -172,7 +172,7 @@ export default class ScriptPage extends PureComponent<IProps> {
   };
 
   render() {
-    const { statusBar, style, Result, ctx } = this.props;
+    const { statusBar, style, Result, ctx, session } = this.props;
     const { templateInsertModalVisible, templateName, offset } = this.state;
     return (
       <Layout
@@ -202,6 +202,7 @@ export default class ScriptPage extends PureComponent<IProps> {
         )}
         <StatusBar statusBar={statusBar} />
         <TemplateInsertModal
+          session={session}
           visible={templateInsertModalVisible}
           name={templateName}
           type={snippetStore.snippetDragging?.objType}

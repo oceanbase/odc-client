@@ -64,7 +64,7 @@ export default class SessionManagementPage extends Component<
 
   public async componentDidMount() {
     const { sessionManagerStore, params } = this.props;
-    const session = await sessionManagerStore.createSession(false, params.cid, params.dbName);
+    const session = await sessionManagerStore.createSession(null, params.cid);
     if (!session) {
       return;
     }

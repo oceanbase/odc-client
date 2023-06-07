@@ -4,8 +4,6 @@
 import {
   changeDelimiter,
   getConnectionList,
-  getSessionStatus,
-  getTransactionInfo,
   setTransactionInfo,
 } from '@/common/network/connection';
 import { generateSessionSid } from '@/common/network/pathUtil';
@@ -15,7 +13,6 @@ import { reviseV2Field } from '@/util/connection';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
 import authStore from './auth';
-import { initPageExpiredWork } from './helper/page';
 import userStore from './login';
 import schemaStore from './schema';
 import setting from './setting';
@@ -176,7 +173,6 @@ export class ConnectionStore {
         // 选择当前数据库
         await schemaStore.selectDatabase(selectDatabase, true);
       }
-      await initPageExpiredWork();
     } catch (e) {
       console.error(e);
       return;
@@ -276,44 +272,10 @@ export class ConnectionStore {
   }
 
   @action
-  public async initTransactionStatus() {
-    try {
-      // getTransactionInfo没有携带实参，内部会调用generateSessionSid，实际使用的是@/store/connection中(new ConnectionStore()).sessionId，也就是本文件中Connection类的sessionId需要在这里进行校验。
-      if (!this.sessionId) {
-        throw new Error('this.sessionId does not exist');
-      }
-      const data = await getTransactionInfo();
-      this.autoCommit = data.autocommit;
-      this.delimiter = data.delimiter || DEFAULT_DELIMITER;
-      this.queryLimit = data.queryLimit;
-      this.obVersion = data.obVersion;
-    } catch (e) {
-      console.error(e);
-      this.autoCommit = true;
-    }
-  }
+  public async initTransactionStatus() {}
 
   @action
-  public async initSessionTransaction(sessionId?: string) {
-    sessionId = sessionId || this.sessionId;
-    if (!sessionId) {
-      return;
-    }
-    const data = await getSessionStatus(sessionId);
-    if (!data) {
-      return;
-    }
-    if (!setting.enableMultiSession) {
-      this.transState = data;
-      this.syncSubSessionFromSession();
-    } else {
-      const subSession = [...this.subSessions.values()].find((e) => e.sessionId === sessionId);
-      if (!subSession) {
-        return;
-      }
-      subSession.transState = data;
-    }
-  }
+  public async initSessionTransaction(sessionId?: string) {}
 
   public getSessionTransaction(sessionId?: string) {
     sessionId = sessionId || this.sessionId;
@@ -330,25 +292,7 @@ export class ConnectionStore {
    * 处理子session的会话属性
    */
   @action
-  public async initSubSessionTransactionStatus(sessionId?: string) {
-    if (!setting.enableMultiSession) {
-      await this.initTransactionStatus();
-      this.syncSubSessionFromSession();
-      return;
-    }
-    const subSession = [...this.subSessions.values()].find((e) => e.sessionId === sessionId);
-    if (!subSession || !subSession.sessionId) {
-      return;
-    }
-    try {
-      const data = await getTransactionInfo(subSession.sessionId);
-      subSession.delimiter = data.delimiter || DEFAULT_DELIMITER;
-      subSession.queryLimit = data.queryLimit;
-      subSession.autoCommit = data.autocommit;
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  public async initSubSessionTransactionStatus(sessionId?: string) {}
 
   @action
   public async syncSubSessionFromSession() {

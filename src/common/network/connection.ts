@@ -228,7 +228,7 @@ export async function newSessionByDataBase(
 ): Promise<{
   sessionId: string;
   dataTypes: IDataType[];
-  support: {
+  supports: {
     support: boolean;
     supportType: string;
   }[];
@@ -247,7 +247,7 @@ export async function newSessionByDataSource(
 ): Promise<{
   sessionId: string;
   dataTypes: IDataType[];
-  support: {
+  supports: {
     support: boolean;
     supportType: string;
   }[];
@@ -260,23 +260,17 @@ export async function newSessionByDataSource(
   return data;
 }
 
-export async function getTransactionInfo(sessionId?: string): Promise<{
-  autocommit: boolean;
-  delimiter: string;
-  queryLimit: number;
-  obVersion: string;
+export async function getSessionStatus(sessionId?: string): Promise<{
+  settings: {
+    autocommit: boolean;
+    delimiter: string;
+    queryLimit: number;
+    obVersion: string;
+  };
+  session: ISessionStatus;
 }> {
   const sid = generateSessionSid(sessionId);
-  const res = await request.get(`/api/v1/transaction/getTransactionInfo/${sid}`);
-  return res?.data;
-}
-
-/**
- * 查询事务相关的信息
- */
-export async function getSessionStatus(sessionId?: string): Promise<ISessionStatus> {
-  const sid = generateSessionSid(sessionId);
-  const res = await request.get(`/api/v2/connect/sessions/${sid}/status`);
+  const res = await request.get(`/api/v2/datasource/sessions/${sessionId}/status`);
   return res?.data;
 }
 
@@ -292,9 +286,9 @@ export async function setTransactionInfo(
   sessionId?: string,
 ): Promise<boolean> {
   const sid = generateSessionSid(sessionId);
-  const infos = await getTransactionInfo(sessionId);
+  const infos = await getSessionStatus(sessionId);
   const res = await request.post(`/api/v1/transaction/setTransactionInfo/${sid}`, {
-    data: { ...infos, ...params },
+    data: { ...infos?.settings, ...params },
   });
   return res?.data;
 }

@@ -93,7 +93,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   const session = sessionRef?.current;
 
   async function createSession() {
-    const session = await sessionManagerStore.createSession(false, cid, dbName, false);
+    const session = await sessionManagerStore.createSession(null, cid);
     sessionRef.current = session;
     update();
   }
