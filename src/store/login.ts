@@ -32,9 +32,6 @@ export class UserStore {
   @observable
   public scriptStore: ScriptStore = new ScriptStore();
 
-  @observable
-  public script: ISQLScript | null = null;
-
   @action
   public async login(params: {
     username?: string;

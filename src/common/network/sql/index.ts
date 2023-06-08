@@ -18,7 +18,7 @@ export const executeSQL = _executeSQL;
 
 export async function stopExec(sessionId: string) {
   const sid = generateSessionSid(sessionId);
-  const res = await request.put(`/api/v2/connect/sessions/${sid}/killQuery`);
+  const res = await request.put(`/api/v2/datasource/sessions/${sid}/killQuery`);
   return res?.data;
 }
 
@@ -26,7 +26,7 @@ export async function uploadTableObject(file: File, sessionId: string) {
   if (setting.isUploadCloudStore) {
     return await uploadCloudTableObject(file, sessionId);
   }
-  const url = `/api/v2/connect/sessions/${generateSessionSid(sessionId)}/upload`;
+  const url = `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/upload`;
   const form = new FormData();
   form.append('file', file);
   const res = await request.post(url, {
@@ -142,7 +142,7 @@ export async function fetchResultCache(
   dbName: string,
 ) {
   const res = await request.get(
-    `/api/v2/connect/sessions/${generateDatabaseSid(dbName, sessionId)}/sqls/${sqlId}/content`,
+    `/api/v2/datasource/sessions/${generateDatabaseSid(dbName, sessionId)}/sqls/${sqlId}/content`,
     {
       params: {
         row: rowNum,
@@ -249,7 +249,7 @@ export async function runSQLLint(
   scriptContent: string,
 ): Promise<ISQLLintReuslt[]> {
   const res = await request.post(
-    `/api/v2/connect/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
+    `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
     {
       data: {
         delimiter,

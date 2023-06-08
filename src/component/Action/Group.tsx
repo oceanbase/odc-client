@@ -1,4 +1,4 @@
-import { EllipsisOutlined, LoadingOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, LoadingOutlined, MoreOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Menu, Space, Tooltip, Typography } from 'antd';
 import { isBoolean, max, omit } from 'lodash';
 import React from 'react';
@@ -19,6 +19,7 @@ export interface GroupProps {
   enableLoading?: boolean;
   /** 更多操作的自定义展示 */
   moreText?: string | React.ReactElement;
+  ellipsisIcon?: 'horizontal' | 'vertical';
 }
 
 type ellipsisType = 'default' | 'link';
@@ -43,7 +44,9 @@ export default ({
   shouldDisabled,
   enableLoading,
   moreText,
+  ellipsisIcon = 'horizontal',
 }: GroupProps) => {
+  const EllipsisIcon = ellipsisIcon === 'vertical' ? MoreOutlined : EllipsisOutlined;
   const visibleActions = Array.isArray(children)
     ? children.filter((c) => {
         if (isBoolean(c.props.visible) && shouldVisible)
@@ -89,15 +92,20 @@ export default ({
   if (ellipsisType === 'default') {
     moreDom = (
       <Button type={ellipsisType}>
-        {moreText ?? <EllipsisOutlined style={{ cursor: 'pointer' }} />}
+        {moreText ?? <EllipsisIcon style={{ cursor: 'pointer' }} />}
       </Button>
     );
   } else {
-    moreDom = (
-      <Typography.Link>
-        {moreText ?? <EllipsisOutlined style={{ cursor: 'pointer' }} />}
-      </Typography.Link>
-    );
+    moreDom =
+      ellipsisIcon === 'vertical' ? (
+        <Typography.Link style={{ color: 'var(--icon-color-normal)' }}>
+          {moreText ?? <EllipsisIcon style={{ cursor: 'pointer' }} />}
+        </Typography.Link>
+      ) : (
+        <Typography.Link>
+          {moreText ?? <EllipsisIcon style={{ cursor: 'pointer' }} />}
+        </Typography.Link>
+      );
   }
 
   return (

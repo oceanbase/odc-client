@@ -1342,7 +1342,7 @@ export class SchemaStore {
     } else {
       return (
         window.ODCApiHost +
-        `/api/v2/connect/sessions/${generateDatabaseSid(
+        `/api/v2/datasource/sessions/${generateDatabaseSid(
           null,
           sessionId,
         )}/sqls/${sqlId}/download?row=${rowIndex}&col=${columnIndex}`

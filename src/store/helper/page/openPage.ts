@@ -176,7 +176,7 @@ export async function openNewSQLPageWithResult(result, cid: number, dbName: stri
 }
 /** 根据scriptID打开sql或者pl的page */
 
-export async function openSQLPageByScript(scriptId: any, cid: number, dbName: string) {
+export async function openSQLPageByScript(scriptId: any, dbid: number, dbName: string) {
   const existPage = findPageByScriptIdAndType(scriptId);
 
   if (existPage) {
@@ -187,7 +187,7 @@ export async function openSQLPageByScript(scriptId: any, cid: number, dbName: st
   const file = await getScript(scriptId);
 
   if (file) {
-    const key = openSQLOrPLPage(file, cid, dbName);
+    const key = openSQLOrPLPage(file, dbid, dbName);
     return key;
   }
 
@@ -213,6 +213,7 @@ export async function openSQLOrPLPage(file: IScript, cid: number, dbName: string
       scriptId: file.scriptMeta.id,
       cid,
       dbName,
+      databaseFrom: 'datasource',
     },
   );
 

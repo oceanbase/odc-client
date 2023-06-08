@@ -303,7 +303,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             maxCount={1}
             action={
               window.ODCApiHost +
-              `/api/v2/connect/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
+              `/api/v2/datasource/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
             }
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',

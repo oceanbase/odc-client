@@ -85,6 +85,10 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
     this.emitResize();
   }, 200);
 
+  public getSession() {
+    return this.props.session;
+  }
+
   private emitResize = debounce(() => {
     window.dispatchEvent(new Event('resize'));
   }, 500);

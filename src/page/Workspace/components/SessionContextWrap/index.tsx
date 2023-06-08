@@ -18,6 +18,9 @@ export default function SessionContextWrap({ defaultDatabaseId, defaultMode, chi
     if (session) {
       sessionManager.destorySession(session.sessionId);
     }
+    if (!databaseId) {
+      return;
+    }
     const newSession = await sessionManager.createSession(null, databaseId);
     if (newSession) {
       if (from) {
