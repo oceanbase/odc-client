@@ -183,13 +183,13 @@ export function convertDataTypeToDataShowType(dt: string = '', map: IDataType[])
   // Oracle 模式会返回全大写数据格式，而后端规定的 map 为全小写，需要转换
   dt = (dt && dt.toLowerCase()) || ''; // 尝试去除括号里的精度匹配，例如 varchar(100)
 
-  let r = map.find(({ databaseType }) => {
+  let r = map?.find(({ databaseType }) => {
     dt = dt.replace(/\([^)]*\)/, '()');
     return dt === databaseType?.toLowerCase();
   }); // 如果未匹配上，连括号一起去除继续尝试匹配，例如 timestamp(6)
 
   if (!r) {
-    r = map.find(({ databaseType }) => {
+    r = map?.find(({ databaseType }) => {
       dt = dt.replace(/\(\)/, '');
       return dt === databaseType?.toLowerCase();
     });

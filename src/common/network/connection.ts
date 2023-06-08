@@ -227,7 +227,7 @@ export async function newSessionByDataBase(
   holdErrorTip?: boolean,
 ): Promise<{
   sessionId: string;
-  dataTypes: IDataType[];
+  dataTypeUnits: IDataType[];
   supports: {
     support: boolean;
     supportType: string;
@@ -246,7 +246,7 @@ export async function newSessionByDataSource(
   holdErrorTip?: boolean,
 ): Promise<{
   sessionId: string;
-  dataTypes: IDataType[];
+  dataTypeUnits: IDataType[];
   supports: {
     support: boolean;
     supportType: string;

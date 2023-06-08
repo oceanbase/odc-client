@@ -269,7 +269,11 @@ const List: React.FC<IProps> = forwardRef(function (
               <MoreBtn connection={connection} />
             </Space>
           }
-          env={<Tag color="blue">{connection?.environmentName || '无环境'}</Tag>}
+          env={
+            <Tag color={connection?.environmentStyle?.toLowerCase()}>
+              {connection?.environmentName || '无环境'}
+            </Tag>
+          }
         />
       );
     }

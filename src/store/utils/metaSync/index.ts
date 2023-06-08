@@ -14,15 +14,41 @@ function getOrganizationKey() {
  */
 const modifyCache = new Map<string, any>();
 
+let isSaving = false;
+let saveRequestCount = 0;
+
 const saveToDB = throttle(async function () {
   console.log('save to db');
-  for (let [key, value] of modifyCache.entries()) {
-    const oldData = (await getMetaStoreInstance().getItem(key)) || {};
-    await getMetaStoreInstance().setItem(key, {
-      ...oldData,
-      ...value,
-    });
-    modifyCache.delete(key);
+
+  if (isSaving) {
+    saveRequestCount++;
+    console.warn('db is saving');
+    return;
+  }
+  isSaving = true;
+  try {
+    for (let [key, value] of modifyCache.entries()) {
+      /**
+       * 这里需要提前删除，假如异步删除，会导致updateDB执行之后，还未save的情况下，cache就被删了。
+       */
+      modifyCache.delete(key);
+      const oldData = (await getMetaStoreInstance().getItem(key)) || {};
+      await getMetaStoreInstance().setItem(key, {
+        ...oldData,
+        ...value,
+      });
+      console.log('over', key);
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    isSaving = false;
+    console.log('save done');
+  }
+  if (saveRequestCount > 0) {
+    console.log('continue save');
+    saveRequestCount = 0;
+    saveToDB();
   }
 }, 500);
 

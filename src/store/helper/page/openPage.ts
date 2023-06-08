@@ -335,7 +335,7 @@ export function openTableViewPage(
   tableName: string,
   topTab: TableTopTab = TableTopTab.PROPS,
   propsTab: TablePropsTab = TablePropsTab.INFO,
-  sessionId: string,
+  databaseId: number,
 ) {
   page!.openPage(
     PageType.TABLE,
@@ -344,7 +344,7 @@ export function openTableViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       tableName,
       topTab,
       propsTab,
