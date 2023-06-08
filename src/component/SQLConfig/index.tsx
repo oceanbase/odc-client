@@ -172,7 +172,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
         }}
         placement="bottom"
         title=""
-        content={renderContent()}
+        content={session ? renderContent() : null}
         visible={visible}
         onVisibleChange={(v) => {
           setVisible(v);

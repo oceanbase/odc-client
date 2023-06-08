@@ -100,6 +100,9 @@ export class SQLStore {
   @action
   public async commit(pageKey: string, sessionId: string, dbName: string) {
     try {
+      if (!sessionId) {
+        return;
+      }
       runInAction(() => {
         this.commitingPageKey.add(pageKey);
       });
@@ -118,6 +121,9 @@ export class SQLStore {
   @action
   public async rollback(pageKey: string, sessionId: string, dbName: string) {
     try {
+      if (!sessionId) {
+        return;
+      }
       this.rollbackPageKey.add(pageKey);
       const data = await executeSQL('rollback;', sessionId, dbName);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();

@@ -62,7 +62,7 @@ export async function queryTableOrViewData(
   sessionId?: string,
 ) {
   const sid = generateDatabaseSid(dbName, sessionId);
-  const res = await request.post(`/api/v2/connect/sessions/${sid}/queryData`, {
+  const res = await request.post(`/api/v2/datasource/sessions/${sid}/queryData`, {
     data: {
       schemaName: dbName,
       tableOrViewName,
@@ -286,7 +286,7 @@ export async function getDataObjectDownloadUrl(
   } else {
     return (
       window.ODCApiHost +
-      `/api/v2/connect/sessions/${generateDatabaseSid(
+      `/api/v2/datasource/sessions/${generateDatabaseSid(
         dbName,
         sessionId,
       )}/sqls/${sqlId}/download?row=${rowIndex}&col=${columnIndex}`

@@ -48,30 +48,36 @@ export default function SessionSelect() {
 
   return (
     <>
-      <div className={styles.line}>
-        {context?.session ? (
-          <>
-            <div className={styles.tag}>
-              <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
-                {context?.session?.odcDatabase?.environment?.name}
-              </Tag>
-            </div>
-            <div className={styles.dataSource}>
-              {context?.from === 'datasource' ? renderDatasource() : renderProject()}
-            </div>
-            <span>/</span>
-            <div onClick={() => setVisible(true)} className={styles.database}>
-              {context?.session?.odcDatabase?.name} <DownOutlined />
-            </div>
-          </>
-        ) : (
-          <Spin
-            style={{ marginLeft: 20 }}
-            spinning={true}
-            indicator={<LoadingOutlined style={{ fontSize: 20 }} spin />}
-          />
-        )}
-      </div>
+      {!context?.databaseId ? (
+        <div className={styles.line}>
+          <a onClick={() => setVisible(true)}>请选择数据库</a>
+        </div>
+      ) : (
+        <div className={styles.line}>
+          {context?.session ? (
+            <>
+              <div className={styles.tag}>
+                <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
+                  {context?.session?.odcDatabase?.environment?.name}
+                </Tag>
+              </div>
+              <div className={styles.dataSource}>
+                {context?.from === 'datasource' ? renderDatasource() : renderProject()}
+              </div>
+              <span>/</span>
+              <div onClick={() => setVisible(true)} className={styles.database}>
+                {context?.session?.odcDatabase?.name} <DownOutlined />
+              </div>
+            </>
+          ) : (
+            <Spin
+              style={{ marginLeft: 20 }}
+              spinning={true}
+              indicator={<LoadingOutlined style={{ fontSize: 20 }} spin />}
+            />
+          )}
+        </div>
+      )}
       <SelectModal visible={visible} close={() => setVisible(false)} />
     </>
   );

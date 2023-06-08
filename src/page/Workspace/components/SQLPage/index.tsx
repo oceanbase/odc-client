@@ -401,6 +401,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
    * ======== 结果集操作相关 ===========
    */
   public doSQLLint = async () => {
+    if (!this.getSession()) {
+      return;
+    }
     if (this.state.lintResultSet) {
       this.hanldeCloseLintPage();
     }
@@ -952,6 +955,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     isSection?: boolean,
     sectionRange?: { begin: number; end: number },
   ) => {
+    if (!this.getSession()) {
+      return;
+    }
     const { sqlStore, pageKey } = this.props;
     this.debounceHighlightSelectionLine();
     if (!sql || !sql.replace(/\s/g, '')) {
@@ -967,7 +973,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.database?.dbName,
     );
 
-    this.getSession().initSessionStatus();
+    this.getSession()?.initSessionStatus();
     if (!results) {
       return;
     }

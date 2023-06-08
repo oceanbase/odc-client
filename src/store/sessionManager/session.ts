@@ -366,13 +366,13 @@ class SessionStore {
   @action
   public async destory(force: boolean = false) {
     this.isAlive = false;
-    await request.delete(`/api/v2/connect/sessions`, {
+    await request.delete(`/api/v2/datasource/sessions`, {
       data: { sessionIds: [generateSessionSid(this.sessionId)], delay: force ? null : 60 },
     });
   }
 
   static async batchDestory(sessions: SessionStore[], force: boolean = false) {
-    await request.delete(`/api/v2/connect/sessions`, {
+    await request.delete(`/api/v2/datasource/sessions`, {
       data: {
         sessionIds: sessions?.map((session) => generateSessionSid(session.sessionId)),
         delay: force ? null : 60,

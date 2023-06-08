@@ -25,7 +25,7 @@ class Task {
 
   private fetchData = async () => {
     const res = await request.get(
-      `/api/v2/connect/sessions/${generateSessionSid(this.sessionId)}/sqls/getResult`,
+      `/api/v2/datasource/sessions/${generateSessionSid(this.sessionId)}/sqls/getResult`,
       {
         params: {
           requestId: this.requestId,
@@ -120,7 +120,7 @@ export default async function executeSQL(
           ...params,
         };
 
-  const res = await request.post(`/api/v2/connect/sessions/${sid}/sqls/asyncExecute`, {
+  const res = await request.post(`/api/v2/datasource/sessions/${sid}/sqls/asyncExecute`, {
     data: serverParams,
   });
 
