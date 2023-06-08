@@ -53,6 +53,7 @@ export class PageStore {
     await autoSave(this, 'pageKey', 'pageKey', 0);
     await autoSave(this, 'plPageKey', 'plPageKey', 0);
     await autoSave(this, 'plDebugPageKey', 'plDebugPageKey', 0);
+    await autoSave(this, 'activePageKey', 'activePageKey', null);
   }
   /** 切换打开的page，更新一下URL */
   @action

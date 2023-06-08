@@ -1,6 +1,5 @@
 import { fieldIconMap } from '@/constant';
 import { DbObjectType, IPartitionType } from '@/d.ts';
-import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import Icon, { FolderOpenFilled } from '@ant-design/icons';
@@ -29,7 +28,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
     isLeaf: false,
   };
   if (tables) {
-    const dataTypes = sessionManager.sessionMap.get(dbSession?.sessionId)?.dataTypes;
+    const dataTypes = dbSession?.dataTypes;
     treeData.children = tables.map((table) => {
       const tableKey = `${dbName}-table-${table.info.tableName}`;
       let columnRoot: TreeDataNode;

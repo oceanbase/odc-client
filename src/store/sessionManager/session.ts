@@ -132,7 +132,7 @@ class SessionStore {
           return false;
         }
         this.sessionId = data.sessionId;
-        this.dataTypes = data.dataTypes;
+        this.dataTypes = data.dataTypeUnits;
         this.initSupportFeature(data.supports);
         this.isAlive = true;
         return true;
@@ -145,7 +145,7 @@ class SessionStore {
           return false;
         }
         this.sessionId = data.sessionId;
-        this.dataTypes = data.dataTypes;
+        this.dataTypes = data.dataTypeUnits;
         this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();

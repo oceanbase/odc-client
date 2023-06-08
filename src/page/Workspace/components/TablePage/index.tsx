@@ -23,6 +23,7 @@ import TableData from './TableData';
 import Toolbar from '@/component/Toolbar';
 import modal from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import styles from './index.less';
 
 const Content = Layout.Content;
@@ -38,7 +39,7 @@ interface IProps {
     topTab: TopTab;
     propsTab: PropsTab;
     constraintsTab: ConstraintType;
-    sessionId: string;
+    databaseId: number;
   };
 }
 
@@ -66,7 +67,7 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
   const executeRef = useRef<{
     showExecuteModal: (sql: any, tableName: any) => Promise<boolean>;
   }>();
-  const session = sessionManagerStore.sessionMap.get(params.sessionId);
+  const { session, loading } = useDBSession(params?.databaseId);
   const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
   const enableConstraint = session?.supportFeature?.enableConstraint;
@@ -75,7 +76,6 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
     if (table?.info?.tableName === params.tableName) {
       return;
     }
-    const session = sessionManagerStore.sessionMap.get(params.sessionId);
     const newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
     if (newTable) {
       setTable(newTable);
@@ -106,11 +106,13 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
 
   const refresh = useCallback(async () => {
     await fetchTable();
-  }, [params.tableName]);
+  }, [params.tableName, session]);
 
   useEffect(() => {
-    fetchTable();
-  }, []);
+    if (session) {
+      fetchTable();
+    }
+  }, [session]);
 
   useEffect(() => {
     if (params.topTab) {

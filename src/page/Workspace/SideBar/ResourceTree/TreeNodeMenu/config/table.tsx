@@ -43,7 +43,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           (node.data as ITableModel)?.info?.tableName,
           TopTab.PROPS,
           PropsTab.DDL,
-          session?.sessionId,
+          session?.odcDatabase?.id,
         );
       },
     },
@@ -68,7 +68,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
             propsTab = oldPropsTab;
           }
         }
-        openTableViewPage(tableName, TopTab.DATA, propsTab, session?.sessionId);
+        openTableViewPage(tableName, TopTab.DATA, propsTab, session?.odcDatabase?.id);
       },
     },
 
@@ -291,7 +291,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.COLUMN, session?.sessionId);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.COLUMN, session?.odcDatabase?.id);
       },
     },
 
@@ -312,7 +312,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.INDEX, session?.sessionId);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.INDEX, session?.odcDatabase?.id);
       },
     },
 
@@ -333,7 +333,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION, session?.sessionId);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION, session?.odcDatabase?.id);
       },
     },
 
@@ -354,7 +354,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.CONSTRAINT, session?.sessionId);
+        openTableViewPage(tableName, TopTab.PROPS, PropsTab.CONSTRAINT, session?.odcDatabase?.id);
       },
     },
 
