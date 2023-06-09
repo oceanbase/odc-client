@@ -7,13 +7,16 @@ import styles from './info.less';
 
 const SnippetInfoToolTip: React.FC<{
   snippet: ISnippet;
-}> = function ({ snippet, children }) {
+  hidden?: boolean;
+}> = function ({ snippet, hidden, children }) {
   return (
     <Popover
       placement="right"
       arrowPointAtCenter={true}
       overlayClassName={styles['snippet-popover']}
       title={<>{snippet.prefix}:</>}
+      showArrow={false}
+      open={hidden ? false : undefined}
       content={
         <div>
           <dl>

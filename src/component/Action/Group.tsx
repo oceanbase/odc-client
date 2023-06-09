@@ -138,10 +138,13 @@ export default ({
                 return (
                   <Menu.Item
                     key={(actionKey as string) ?? index.toString()}
-                    onClick={action.props.onClick}
                     style={{ minWidth: 120 }}
                     {...omit(action.props, 'disabled')}
                     disabled={actionDisabled}
+                    onClick={(info) => {
+                      info.domEvent.stopPropagation();
+                      action.props.onClick?.();
+                    }}
                   >
                     <Tooltip title={action.props.tooltip}>
                       {action.props.loading && <LoadingOutlined />} {action.props.children}

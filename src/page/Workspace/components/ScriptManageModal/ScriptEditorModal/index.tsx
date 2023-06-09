@@ -166,22 +166,22 @@ const ScriptEditorModal: React.FC<IProps> = function ({
             label={formatMessage({
               id: 'odc.ScriptManageModal.ScriptEditorModal.ScriptContent',
             })}
-            /*脚本内容*/
-            name="scriptText"
             style={{ height: 500 }}
             className={styles.sqlContent}
           >
-            <CommonIDE
-              session={null}
-              key={scriptKey}
-              bordered
-              initialSQL={script?.scriptText}
-              language={'sql'}
-              onSQLChange={(sql) => {
-                !changed && setChanged(true);
-                setScript(Object.assign({}, script, { scriptText: sql }));
-              }}
-            />
+            <div style={{ height: 500 }}>
+              <CommonIDE
+                session={null}
+                key={scriptKey}
+                bordered
+                initialSQL={script?.scriptText}
+                language={'sql'}
+                onSQLChange={(sql) => {
+                  !changed && setChanged(true);
+                  setScript(Object.assign({}, script, { scriptText: sql }));
+                }}
+              />
+            </div>
           </Form.Item>
         </Form>
       </Spin>

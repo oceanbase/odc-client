@@ -1,5 +1,8 @@
 import React from 'react';
 
+import Action from '@/component/Action';
+import Icon from '@ant-design/icons';
+import { IconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import styles from './index.less';
 
 interface IProps {
@@ -7,14 +10,17 @@ interface IProps {
   desc?: React.ReactNode;
   icon: React.ReactNode;
   actions: {
-    icon: React.ReactNode;
+    icon: IconComponentProps['component'];
     title: string;
     onClick: () => void;
   }[];
+  actionSize?: number;
   onClick?: () => void;
 }
 
-export default function ListItem({ title, desc, icon, actions, onClick }: IProps) {
+export default function ListItem({ title, actionSize, desc, icon, actions, onClick }: IProps) {
+  actionSize = actionSize || 1;
+
   return (
     <div
       onClick={onClick}
@@ -26,6 +32,23 @@ export default function ListItem({ title, desc, icon, actions, onClick }: IProps
         <div className={styles.title}>{title}</div>
         {desc ? <div className={styles.desc}>{desc}</div> : null}
       </div>
+      {!!actions?.length && (
+        <div className={styles.actions}>
+          <Action.Group ellipsisIcon="vertical" size={actionSize || 1}>
+            {actions?.map((action, i) => {
+              return (
+                <Action.Link tooltip={action.title} key={i} onClick={action.onClick}>
+                  {actionSize < i + 1 ? (
+                    action.title
+                  ) : (
+                    <Icon className={styles.icon} component={action.icon} />
+                  )}
+                </Action.Link>
+              );
+            })}
+          </Action.Group>
+        </div>
+      )}
     </div>
   );
 }

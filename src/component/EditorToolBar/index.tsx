@@ -67,7 +67,6 @@ export interface ToolBarActions<T = any> {
 @observer
 export default class EditorToolBar extends Component<IProps, IState> {
   // 单独触发 action
-
   public static async triggler(ctx: any, actionName: string) {
     const toolbarAction = ACTIONS[actionName] as ToolBarCommonAction<any>;
 

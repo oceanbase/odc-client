@@ -86,6 +86,8 @@ export class ActionLink extends React.PureComponent<BaseProps> {
         style={{ padding: 0 }}
         disabled={loading || disabled || this.state.disabled}
         onClick={(_) => {
+          _.stopPropagation();
+          _.preventDefault();
           const handle = onClick?.();
 
           if (enableLoading && (handle as Promise<void>)?.then) {

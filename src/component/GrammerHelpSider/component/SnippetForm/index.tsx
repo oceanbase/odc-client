@@ -29,6 +29,10 @@ class SnippetFormDrawer extends PureComponent<IProps> {
 
   private modal: any;
 
+  public getSession() {
+    return null;
+  }
+
   onClose = async () => {
     const self = this;
     const { action } = this.props;
