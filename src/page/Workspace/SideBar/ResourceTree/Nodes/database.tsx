@@ -40,7 +40,7 @@ export function DataBaseTreeData(
     dbSession?.supportFeature?.enableSynonym && SynonymTreeData(dbSession, database, true);
   return {
     title: dbName,
-    key: dbName,
+    key: database?.id,
     isLeaf: false,
     type: ResourceNodeType.Database,
     sessionId: dbSession?.sessionId,

@@ -64,7 +64,7 @@ const ResourceTree: React.FC<IProps> = function ({
   })();
 
   const loadData = useCallback(
-    async (treeNode: EventDataNode & TreeDataNode) => {
+    async (treeNode: EventDataNode<any> & TreeDataNode) => {
       const { type, data } = treeNode;
       switch (type) {
         case ResourceNodeType.Database: {
