@@ -120,6 +120,9 @@ const plActions: ToolBarActions = {
         );
         return;
       }
+      if (!ctx.getSession()) {
+        return;
+      }
       sqlStore.runningPageKey.add(pageKey);
       sqlStore.isCompiling = true;
       ctx.setState({
@@ -205,7 +208,9 @@ const plActions: ToolBarActions = {
         );
         return;
       }
-
+      if (!ctx.getSession()) {
+        return;
+      }
       // 匿名块运行前先执行格式校验
       if (!plName) {
         const resParse = await sqlStore.parsePL(
@@ -257,7 +262,9 @@ const plActions: ToolBarActions = {
         );
         return;
       }
-
+      if (!ctx.getSession()) {
+        return;
+      }
       // 匿名块调试前先执行格式校验
       if (!plName) {
         const resParse = await sqlStore.parsePL(

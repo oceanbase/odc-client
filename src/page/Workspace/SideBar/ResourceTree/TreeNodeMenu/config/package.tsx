@@ -12,9 +12,10 @@ import {
 } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
+import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -22,22 +23,10 @@ import { IMenuItemConfig } from '../type';
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageRoot]: [
     {
-      key: 'CREATE',
-      text: [
-        formatMessage({
-          id: 'odc.ResourceTree.config.treeNodesActions.CreateAPackage',
-        }),
-      ],
-      actionType: actionTypes.create,
-
-      run(session, node) {
-        modal.changeCreatePackageModalVisible(true, session?.sessionId, session?.database?.dbName);
-      },
-    },
-    {
       key: 'BATCH_COMPILE',
       text: ['批量编译'],
       actionType: actionTypes.create,
+      icon: BatchCompileSvg,
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PACKAGE,
@@ -46,6 +35,19 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           session?.connection?.id,
           session?.database?.dbName,
         );
+      },
+    },
+    {
+      key: 'CREATE',
+      text: [
+        formatMessage({
+          id: 'odc.ResourceTree.config.treeNodesActions.CreateAPackage',
+        }),
+      ],
+      actionType: actionTypes.create,
+      icon: PlusOutlined,
+      run(session, node) {
+        modal.changeCreatePackageModalVisible(true, session?.sessionId, session?.database?.dbName);
       },
     },
   ],
@@ -58,7 +60,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         }),
       ],
       actionType: actionTypes.create,
-
+      ellipsis: true,
       async run(session, node) {
         const pkg: IPackage = node.data;
         const sql = await getPackageBodyCreateSQL(
@@ -77,6 +79,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         }),
       ],
       actionType: actionTypes.update,
+      ellipsis: true,
       hasDivider: true,
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
@@ -103,6 +106,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
+      ellipsis: true,
       hasDivider: true,
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
@@ -128,6 +132,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           id: 'odc.ResourceTree.config.treeNodesActions.Delete',
         }),
       ],
+      ellipsis: true,
       actionType: actionTypes.delete,
       run(session, node) {
         const pkg: IPackage = node.data;
@@ -182,6 +187,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
       ],
+      ellipsis: true,
       actionType: actionTypes.create,
       async run(session, node) {
         const pkg: IPackage = node.data;
@@ -197,6 +203,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           id: 'odc.ResourceTree.config.treeNodesActions.See',
         }),
       ],
+      ellipsis: true,
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
         openPackageViewPage(
@@ -215,6 +222,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           id: 'odc.ResourceTree.config.treeNodesActions.Editing',
         }),
       ],
+      ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
       async run(session, node) {
@@ -235,6 +243,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
       ],
+      ellipsis: true,
       hasDivider: true,
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
@@ -254,11 +263,12 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           id: 'odc.ResourceTree.config.treeNodesActions.Delete',
         }),
       ],
+      ellipsis: true,
       actionType: actionTypes.delete,
-      run(session, node) {
+      run(session, node, databaseFrom) {
         packageMenusConfig[ResourceNodeType.Package]
           .find((item) => item.key === 'DELETE')
-          ?.run?.(session, node);
+          ?.run?.(session, node, databaseFrom);
       },
     },
     {
@@ -266,6 +276,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
       ],
+      ellipsis: true,
       actionType: actionTypes.create,
       async run(session, node) {
         const pkg: IPackage = node.data;

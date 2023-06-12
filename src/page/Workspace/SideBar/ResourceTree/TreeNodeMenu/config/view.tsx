@@ -8,7 +8,7 @@ import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -17,6 +17,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
   [ResourceNodeType.ViewRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.CREATE_VIEW,
+      icon: PlusOutlined,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.CreateAView' })],
       actionType: actionTypes.create,
       run(session, node) {
@@ -28,6 +29,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.ViewViewProperties' })],
+      ellipsis: true,
       run(session, node) {
         const view = node.data as IView;
         openViewViewPage(
@@ -43,6 +45,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_DATA,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.ViewViewData' })],
+      ellipsis: true,
       hasDivider: true,
       run(session, node) {
         const view = node.data as IView;
@@ -59,6 +62,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
     {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.view.Export' }), //导出
+      ellipsis: true,
       run(session, node) {
         const view = node.data as IView;
         modal.changeExportModal(true, {
@@ -70,6 +74,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
     {
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.view.Download' }), //下载
+      ellipsis: true,
       async run(session, node) {
         const view = node.data as IView;
         const viewObj = await getView(view.viewName, session.sessionId, session.database?.dbName);
@@ -83,6 +88,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.view.Copy' }), //复制
       ],
+      ellipsis: true,
       hasDivider: true,
       children: [
         {
@@ -161,6 +167,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
     {
       key: ResourceTreeNodeMenuKeys.DELETE_TABLE,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.Delete' })],
+      ellipsis: true,
       actionType: actionTypes.delete,
       run(session, node) {
         const view = node.data as IView;

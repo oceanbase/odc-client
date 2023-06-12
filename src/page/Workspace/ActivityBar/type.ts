@@ -1,8 +1,8 @@
 export enum ActivityBarItemType {
-  Database,
-  Script,
-  Job,
-  Manager,
+  Database = 'database',
+  Script = 'script',
+  Job = 'job',
+  Manager = 'manager',
 }
 
 export const ActivityBarItemTypeText = {

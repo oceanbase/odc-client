@@ -20,6 +20,7 @@ export default function DatasourceTree() {
   });
 
   const [selectKeys, setSelectKeys] = useState<any[]>([]);
+  const [searchKey, setSearchKey] = useState('');
 
   const selectConnection = useMemo(() => {
     const key = selectKeys?.[0];
@@ -30,14 +31,19 @@ export default function DatasourceTree() {
   }, [selectKeys, data]);
 
   const datasource: TreeDataNode[] = useMemo(() => {
-    return data?.contents?.map((item) => {
-      return {
-        title: item.name,
-        key: item.id,
-        icon: <Icon component={OBSvg} style={{ fontSize: 16 }} />,
-      };
-    });
-  }, [data]);
+    return data?.contents
+      ?.map((item) => {
+        if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
+          return null;
+        }
+        return {
+          title: item.name,
+          key: item.id,
+          icon: <Icon component={OBSvg} style={{ fontSize: 16 }} />,
+        };
+      })
+      .filter(Boolean);
+  }, [data, searchKey]);
 
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
@@ -70,7 +76,14 @@ export default function DatasourceTree() {
       top={
         <div className={styles.container}>
           <div className={styles.search}>
-            <Input.Search placeholder="搜索数据源" style={{ width: '100%' }} size="small" />
+            <Input.Search
+              onSearch={(v) => {
+                setSearchKey(v);
+              }}
+              placeholder="搜索数据源"
+              style={{ width: '100%' }}
+              size="small"
+            />
           </div>
           <div className={styles.list}>
             <Spin spinning={loading || dbLoading}>
@@ -79,6 +92,7 @@ export default function DatasourceTree() {
                   titleRender={(node) => {
                     return (
                       <Popover
+                        showArrow={false}
                         overlayClassName={styles.connectionPopover}
                         placement="rightBottom"
                         content={

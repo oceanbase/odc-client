@@ -20,6 +20,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
   [ResourceNodeType.PackageBody]: [
     {
       key: 'OVERVIEW',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
@@ -39,6 +40,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
 
     {
       key: 'EDIT',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
@@ -58,6 +60,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'COMPILE',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
       ],
@@ -85,6 +88,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'DOWNLOAD',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
       ],
@@ -102,6 +106,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
 
     {
       key: 'DELETE',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
@@ -155,6 +160,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'REFRESH',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
       ],
@@ -169,6 +175,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
   [ResourceNodeType.PackageBodyFunction]: [
     {
       key: 'OVERVIEW',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
@@ -186,6 +193,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'EDIT',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
@@ -206,6 +214,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
 
     {
       key: 'DEBUG',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
@@ -249,6 +258,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'RUN',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
@@ -291,6 +301,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
   [ResourceNodeType.PackageBodyProcedure]: [
     {
       key: 'OVERVIEW',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
@@ -308,6 +319,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'EDIT',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
@@ -328,6 +340,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
 
     {
       key: 'DEBUG',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
@@ -371,6 +384,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: 'RUN',
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Run',

@@ -5,7 +5,7 @@ import { Input, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadNode } from './helper';
 import styles from './index.less';
 import { DataBaseTreeData } from './Nodes/database';
@@ -42,18 +42,6 @@ const ResourceTree: React.FC<IProps> = function ({
   }, []);
 
   const treeData: TreeDataNode[] = (() => {
-    // const root: TreeDataNode[] = {
-    //   title: session.connection.name,
-    //   key: 'connection' + session.connection.id,
-    //   type: ResourceNodeType.Connection,
-    //   icon: <DisconnectOutlined style={{ color: '#3FA3FF' }} />,
-    //   children: databases?.map((database) => {
-    //     const dbName = database.name;
-    //     const dbSessionId = databaseSessions[dbName];
-    //     const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-    //     return DataBaseTreeData(dbSession, database);
-    //   }),
-    // };
     const root = databases?.map((database) => {
       const dbName = database.name;
       const dbSessionId = databaseSessions[dbName];
@@ -62,6 +50,27 @@ const ResourceTree: React.FC<IProps> = function ({
     });
     return root || [];
   })();
+
+  const filteredTreeData = useMemo(() => {
+    if (!searchValue || !searchValue?.trim()) {
+      return treeData;
+    }
+    return treeData.filter((dbNode) => {
+      let haveObj = false;
+      dbNode.children?.forEach((objRootNode: TreeDataNode) => {
+        let filterChildren: any = objRootNode.children?.filter((objNode) => {
+          return objNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase());
+        });
+        objRootNode.children = filterChildren;
+        if (filterChildren?.length) {
+          haveObj = true;
+        }
+      });
+      if (haveObj) {
+        return true;
+      }
+    });
+  }, [treeData, searchValue]);
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
@@ -118,7 +127,7 @@ const ResourceTree: React.FC<IProps> = function ({
           filterTreeNode={(node) =>
             node.title.toString().toLowerCase().includes(searchValue?.toLowerCase())
           }
-          treeData={treeData}
+          treeData={filteredTreeData}
           titleRender={renderNode}
           loadData={loadData}
           height={wrapperHeight}

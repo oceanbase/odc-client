@@ -248,7 +248,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     <>
       <WorkBenchLayout
         activityBar={<ActivityBar />}
-        sideBar={activityContext?.activeKey !== null ? <SideBar /> : null}
+        sideBar={<SideBar />}
         editorGroup={
           <WindowManager
             pages={pages}

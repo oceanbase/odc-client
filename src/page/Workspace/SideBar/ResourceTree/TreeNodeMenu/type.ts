@@ -1,5 +1,6 @@
 import { actionTypes } from '@/component/Acess';
 import SessionStore from '@/store/sessionManager/session';
+import type { IconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import React from 'react';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
@@ -16,6 +17,8 @@ export interface IMenuItemConfig {
   isHide?: (session: SessionStore, node: TreeDataNode) => boolean;
   actionType?: actionTypes;
   children?: IMenuItemConfig[];
+  ellipsis?: boolean;
+  icon?: IconComponentProps['component'];
   run?: (session: SessionStore, node: TreeDataNode, databaseFrom: 'datasource' | 'project') => void;
 }
 

@@ -7,7 +7,7 @@ import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -15,6 +15,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
   return [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.ViewSynonyms' }), //查看同义词
       ],
@@ -31,6 +32,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
 
     {
       key: ResourceTreeNodeMenuKeys.DELETE_SYNONYM,
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.sequence.Delete',
@@ -93,6 +95,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
     {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Export' }), //导出
+      ellipsis: true,
       run(session, node) {
         const synonym: Partial<ISynonym> = node.data;
         modal.changeExportModal(true, {
@@ -105,6 +108,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
     {
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Download' }), //下载
+      ellipsis: true,
       hasDivider: true,
       async run(session, node) {
         const synonym: Partial<ISynonym> = node.data;
@@ -122,6 +126,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
 
     {
       key: ResourceTreeNodeMenuKeys.REFRESH_SYNONYM,
+      ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.sequence.Refresh',
@@ -142,6 +147,7 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
       ],
+      icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
         modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
@@ -154,6 +160,7 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
       ],
+      icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
         modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);

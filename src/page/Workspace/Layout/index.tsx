@@ -18,6 +18,7 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
   const minSizeEventCountRef = useRef(0);
   const splitRef = useRef<SplitPane>();
   const context = useContext(ActivityBarContext);
+  const haveActiveKey = !!context?.activeKey;
   const emitResizeEvent = useCallback(
     debounce(() => {
       window.dispatchEvent(new Event('resize'));
@@ -57,9 +58,9 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
         <SplitPane
           ref={splitRef}
           split="vertical"
-          allowResize={!!sideBar}
+          allowResize={haveActiveKey}
           minSize={MinWidth}
-          size={sideBar ? sideWidth : 0}
+          size={haveActiveKey ? sideWidth : 0}
           maxSize={480}
           defaultSize={sideWidth}
           pane2Style={{
@@ -70,11 +71,16 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
           }}
           resizerStyle={{
             background: 'transparent',
-            pointerEvents: sideBar ? 'unset' : 'none',
+            pointerEvents: haveActiveKey ? 'unset' : 'none',
           }}
           onChange={handleChangeSiderWidth}
         >
-          <div className={styles.sideBar}>{sideBar}</div>
+          <div
+            style={{ minWidth: sideWidth, zIndex: !haveActiveKey ? -9999 : 'unset' }}
+            className={styles.sideBar}
+          >
+            {sideBar}
+          </div>
           <div className={styles.editorGroup}>{editorGroup}</div>
         </SplitPane>
       </div>
