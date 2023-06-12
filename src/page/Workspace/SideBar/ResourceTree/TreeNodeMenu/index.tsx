@@ -1,8 +1,10 @@
 import { AcessResult } from '@/component/Acess';
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
-import { InfoCircleFilled } from '@ant-design/icons';
-import { Dropdown, Menu, Tooltip } from 'antd';
+import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
+import { Dropdown, Tooltip } from 'antd';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
+import treeStyles from '../index.less';
 import { ResourceNodeType } from '../type';
 import MenuConfig from './config';
 import styles from './index.less';
@@ -12,7 +14,7 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
   const { type = '', dbSession, databaseFrom, node } = props;
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
-  const menuItems = MenuConfig[menuKey || type];
+  const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
   /**
    * 非database的情况下，必须存在session
    */
@@ -58,74 +60,123 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
   }
 
   function onMenuClick(item: IMenuItemConfig) {
+    if (!item) {
+      return;
+    }
     const { run } = item;
     run?.(dbSession, node, databaseFrom);
   }
-  return (
-    <Dropdown
-      overlay={
-        <Menu
-          style={{
-            width: '160px',
-          }}
-          onClick={(e) => {
-            e.domEvent.preventDefault();
-            e.domEvent.stopPropagation();
-          }}
-        >
-          {menuItems
-            ? menuItems.map((item: IMenuItemConfig, index) => {
-                // 菜单子项 显隐可独立配置
-                const disabledItem = item.disabled ? item.disabled(dbSession, node) : false;
-                const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
-                const acessible = true;
-                let menuItems = [];
-                if (!isHideItem && acessible) {
-                  if (item.children?.length) {
-                    menuItems = [
-                      <Menu.SubMenu
-                        key={item.key || index}
-                        title={item.text}
-                        className={styles.ellipsis}
-                        disabled={disabledItem}
-                      >
-                        {item.children.map((child) => {
-                          return (
-                            <Menu.Item
-                              onClick={() => onMenuClick(child)}
-                              key={child.key}
-                              className={styles.ellipsis}
-                            >
-                              {child.text}
-                            </Menu.Item>
-                          );
-                        })}
-                      </Menu.SubMenu>,
-                    ];
-                  } else {
-                    menuItems = [
-                      <Menu.Item
-                        onClick={() => onMenuClick(item)}
-                        key={item.key || index}
-                        className={styles.ellipsis}
-                        disabled={disabledItem}
-                      >
-                        {item.text}
-                      </Menu.Item>,
-                    ];
-                  }
-                }
-                return item.hasDivider && !disabledItem
-                  ? menuItems.concat(<Menu.Divider />)
-                  : menuItems;
-              })
-            : []}
-        </Menu>
+
+  let clickMap = {};
+
+  function getMenuItems(items: IMenuItemConfig[]) {
+    let menuItems: ItemType[] = [];
+    items.forEach((item: IMenuItemConfig, index) => {
+      // 菜单子项 显隐可独立配置
+      const disabledItem = item.disabled ? item.disabled(dbSession, node) : false;
+      const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
+      let menuItem: ItemType;
+      if (isHideItem) {
+        return;
       }
-      trigger={['contextMenu']}
-    >
-      {nodeChild}
-    </Dropdown>
+      clickMap[item.key] = item;
+      if (item.children?.length) {
+        menuItem = {
+          label: item.text,
+          key: item.key || index,
+          className: styles.ellipsis,
+          disabled: disabledItem,
+          children: item.children.map((child) => {
+            clickMap[child.key] = child;
+            return {
+              key: child.key,
+              className: styles.ellipsis,
+              label: child.text,
+            };
+          }),
+        };
+      } else {
+        menuItem = {
+          key: item.key || index,
+          className: styles.ellipsis,
+          label: item.text,
+          disabled: disabledItem,
+        };
+      }
+      menuItems.push(menuItem);
+      if (item.hasDivider) {
+        menuItems.push({
+          type: 'divider',
+        });
+      }
+    });
+    return menuItems;
+  }
+
+  let allItemsProp: ItemType[] = getMenuItems(menuItems);
+
+  function actionsRender() {
+    let ellipsisItems = menuItems.filter((item) => {
+      return item.ellipsis;
+    });
+
+    let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
+
+    return (
+      <div className={treeStyles.menuActions}>
+        {menuItems
+          .map((item) => {
+            if (item.ellipsis) {
+              return null;
+            }
+            return (
+              <Tooltip title={item.text}>
+                <div onClick={() => onMenuClick(item)} className={styles.actionItem}>
+                  <Icon component={item.icon || InfoCircleFilled} />
+                </div>
+              </Tooltip>
+            );
+          })
+          .filter(Boolean)}
+        {ellipsisItemsProp?.length ? (
+          <Dropdown
+            menu={{
+              style: {
+                width: '160px',
+              },
+              items: ellipsisItemsProp,
+              onClick: (info) => {
+                onMenuClick(clickMap[info.key]);
+              },
+            }}
+            trigger={['hover']}
+          >
+            <div className={styles.actionItem}>
+              <Icon component={MoreOutlined} />
+            </div>
+          </Dropdown>
+        ) : null}
+      </div>
+    );
+  }
+  return (
+    <>
+      <Dropdown
+        menu={{
+          style: {
+            width: '160px',
+          },
+          items: allItemsProp,
+          onClick: (info) => {
+            onMenuClick(clickMap[info.key]);
+          },
+        }}
+        trigger={['contextMenu']}
+      >
+        {nodeChild}
+      </Dropdown>
+      {actionsRender()}
+    </>
   );
 };
 

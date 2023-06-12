@@ -6,7 +6,7 @@ import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -20,6 +20,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.TreeNodeMenu.config.sequence.CreateASequence',
         }),
       ],
+      icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
         modal.changeCreateSequenceModalVisible(true, {
@@ -31,6 +32,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
   ],
   [ResourceNodeType.Sequence]: [
     {
+      ellipsis: true,
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.ViewSequence' })],
       run(session, node) {
@@ -46,6 +48,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
     {
       key: ResourceTreeNodeMenuKeys.UPDATE_SEQUENCE,
+      ellipsis: true,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Modify' })],
       actionType: actionTypes.update,
       async run(session, node) {
@@ -68,6 +71,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
     {
       key: ResourceTreeNodeMenuKeys.DELETE_SEQUENCE,
+      ellipsis: true,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Delete' })],
       actionType: actionTypes.delete,
       hasDivider: true,
@@ -105,6 +109,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
     {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
+      ellipsis: true,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Export' }), //导出
       run(session, node) {
         const sequenceInfo: ISequence = node.data;
@@ -116,6 +121,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
+      ellipsis: true,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Download' }), //下载
       hasDivider: true,
       async run(session, node) {
@@ -133,6 +139,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
     {
       key: ResourceTreeNodeMenuKeys.REFRESH_SEQUENCE,
+      ellipsis: true,
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Refresh' })],
       async run(session, node) {
         await session.database.getSequenceList();

@@ -10,9 +10,10 @@ import {
 } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
+import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import EventBus from 'eventbusjs';
 import { ResourceNodeType } from '../../type';
@@ -21,27 +22,29 @@ import { IMenuItemConfig } from '../type';
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ProcedureRoot]: [
     {
-      key: 'CREATE',
-      text: ['新建存储过程'],
-      actionType: actionTypes.create,
-      run(session, node) {
-        modal.changeCreateProcedureModalVisible(
-          true,
-          session?.sessionId,
-          session?.database?.dbName,
-        );
-      },
-    },
-    {
       key: 'BATCH_COMPILE',
       text: ['批量编译'],
       actionType: actionTypes.create,
+      icon: BatchCompileSvg,
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PROCEDURE,
           DbObjectType.procedure,
           formatMessage({ id: 'odc.components.ResourceTree.StoredProcedure' }),
           session?.connection?.id,
+          session?.database?.dbName,
+        );
+      },
+    },
+    {
+      key: 'CREATE',
+      text: ['新建存储过程'],
+      icon: PlusOutlined,
+      actionType: actionTypes.create,
+      run(session, node) {
+        modal.changeCreateProcedureModalVisible(
+          true,
+          session?.sessionId,
           session?.database?.dbName,
         );
       },
@@ -55,6 +58,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.See',
         }),
       ],
+      ellipsis: true,
       run(session, node) {
         const proc: IProcedure = node.data;
         openProcedureViewPage(
@@ -72,6 +76,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
+      ellipsis: true,
       actionType: actionTypes.update,
       async run(session, node) {
         const proc: IProcedure = node.data;
@@ -88,6 +93,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
       ],
+      ellipsis: true,
       isHide(session, node) {
         const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
         return isMySQL;
@@ -120,6 +126,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
       },
+      ellipsis: true,
       async run(session, node) {
         const proc: IProcedure = node.data;
         if (proc.status === 'INVALID') {
@@ -154,6 +161,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+      ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
       async run(session, node) {
@@ -180,6 +188,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
+      ellipsis: true,
       run(session, node) {
         const proc: IProcedure = node.data;
         modal.changeExportModal(true, {
@@ -193,6 +202,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
       ],
+      ellipsis: true,
       hasDivider: true,
       async run(session, node) {
         const proc: IProcedure = node.data;
@@ -214,6 +224,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
+      ellipsis: true,
       actionType: actionTypes.delete,
       run(session, node) {
         const proc: IProcedure = node.data;
@@ -265,6 +276,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
       ],
+      ellipsis: true,
       actionType: actionTypes.create,
       async run(session, node) {
         await session.database.getProcedureList();

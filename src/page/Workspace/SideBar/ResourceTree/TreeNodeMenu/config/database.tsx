@@ -7,7 +7,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
   [ResourceNodeType.Database]: [
     {
       key: 'NEW_SQL',
-      text: ['新建 SQL 窗口'],
+      text: ['打开 SQL 窗口'],
+      ellipsis: true,
       run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
         openNewSQLPage(node.cid, database?.name, databaseFrom);
@@ -15,7 +16,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'NEW_PL',
-      text: ['新建匿名块窗口'],
+      text: ['打开匿名块窗口'],
+      ellipsis: true,
       run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
         openNewDefaultPLPage(null, node.cid, database?.name, databaseFrom);
@@ -23,7 +25,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'NEW_OBCLIENT',
-      text: ['新建命令行窗口'],
+      text: ['打开命令行窗口'],
+      ellipsis: true,
       run(session, node) {
         const database: IDatabase = node.data;
         openOBClientPage(node?.cid, database?.name);

@@ -1,5 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 
+import classNames from 'classnames';
 import { ActivityBarItemType } from '../ActivityBar/type';
 import ActivityBarContext from '../context/ActivityBarContext';
 import styles from './index.less';
@@ -22,9 +23,27 @@ const SideBar: React.FC<IProps> = function () {
 
   const Component = items[activityBarContext?.activeKey];
 
+  const loadedKeys = useRef<Set<ActivityBarItemType>>(new Set());
+
+  loadedKeys.current.add(activityBarContext?.activeKey);
+
   return (
     <div className={styles.sideBar}>
-      <div className={styles.content}>{!!Component && <Component />}</div>
+      {Object.entries(items).map(([key, Component]: [ActivityBarItemType, any]) => {
+        if (loadedKeys.current.has(key) || key === activityBarContext?.activeKey) {
+          return (
+            <div
+              key={key}
+              className={classNames(styles.content, {
+                [styles?.active]: key === activityBarContext?.activeKey,
+              })}
+            >
+              <Component />
+            </div>
+          );
+        }
+        return null;
+      })}
     </div>
   );
 };

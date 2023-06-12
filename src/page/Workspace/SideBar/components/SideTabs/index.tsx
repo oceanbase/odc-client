@@ -1,7 +1,7 @@
 import Icon from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 
 import styles from './index.less';
 
@@ -27,7 +27,10 @@ interface IProps {
 
 export default function SideTabs({ tabs }: IProps) {
   const [selectTabKey, setSelectTabKey] = useState<string>(tabs?.[0]?.key);
+  const loadedKeys = useRef<Set<string>>(new Set());
   const selectTab: ITab = tabs.find((tab) => tab.key === selectTabKey);
+  loadedKeys.current.add(selectTabKey);
+
   return (
     <div className={styles.sidetabs}>
       <div className={styles.header}>
@@ -64,7 +67,24 @@ export default function SideTabs({ tabs }: IProps) {
           })}
         </Space>
       </div>
-      <div className={styles.content}>{selectTab?.render?.()}</div>
+      <div className={styles.content}>
+        {tabs
+          .map((tab) => {
+            if (loadedKeys.current.has(tab.key) || selectTab.key === tab.key) {
+              return (
+                <div
+                  key={tab.key}
+                  className={styles.component}
+                  style={{ zIndex: selectTab.key === tab.key ? 'unset' : -9999 }}
+                >
+                  {tab?.render?.()}
+                </div>
+              );
+            }
+            return null;
+          })
+          .filter(Boolean)}
+      </div>
     </div>
   );
 }

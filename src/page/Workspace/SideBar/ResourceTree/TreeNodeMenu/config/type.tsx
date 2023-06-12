@@ -5,9 +5,10 @@ import { DbObjectType, IType, PageType, TypePropsTab } from '@/d.ts';
 import { openBatchCompilePLPage, openTypeViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
+import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -15,17 +16,10 @@ import { IMenuItemConfig } from '../type';
 export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TypeRoot]: [
     {
-      key: 'CREATE',
-      text: [formatMessage({ id: 'odc.ResourceTree.actions.NewType' })],
-      actionType: actionTypes.create,
-      run(session, node) {
-        modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
-      },
-    },
-    {
       key: 'BATCH_COMPILE',
       text: ['批量编译'],
       actionType: actionTypes.create,
+      icon: BatchCompileSvg,
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_TYPE,
@@ -36,10 +30,20 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
         );
       },
     },
+    {
+      key: 'CREATE',
+      text: [formatMessage({ id: 'odc.ResourceTree.actions.NewType' })],
+      actionType: actionTypes.create,
+      icon: PlusOutlined,
+      run(session, node) {
+        modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
+      },
+    },
   ],
   [ResourceNodeType.Type]: [
     {
       key: 'OVERVIEW',
+      ellipsis: true,
       text: [formatMessage({ id: 'odc.ResourceTree.actions.ViewType' })],
       run(session, node) {
         const type: IType = node.data;
@@ -54,6 +58,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
 
     {
       key: 'DOWNLOAD',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
       ],
@@ -75,6 +80,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
 
     {
       key: 'DELETE',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
@@ -124,6 +130,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
     },
     {
       key: 'REFRESH',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
       ],

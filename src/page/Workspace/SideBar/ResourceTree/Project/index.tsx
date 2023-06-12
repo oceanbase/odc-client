@@ -17,6 +17,7 @@ export default function ProjectTree() {
   });
 
   const [selectKeys, setSelectKeys] = useState<any[]>([]);
+  const [searchKey, setSearchKey] = useState('');
 
   const selectProject = useMemo(() => {
     const key = selectKeys?.[0];
@@ -27,14 +28,19 @@ export default function ProjectTree() {
   }, [selectKeys, data]);
 
   const projects: TreeDataNode[] = useMemo(() => {
-    return data?.contents?.map((item) => {
-      return {
-        title: item.name,
-        key: item.id,
-        icon: <Icon component={ProjectSvg} />,
-      };
-    });
-  }, [data]);
+    return data?.contents
+      ?.map((item) => {
+        if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
+          return null;
+        }
+        return {
+          title: item.name,
+          key: item.id,
+          icon: <Icon component={ProjectSvg} />,
+        };
+      })
+      .filter(Boolean);
+  }, [data, searchKey]);
 
   const {
     data: db,
@@ -59,7 +65,14 @@ export default function ProjectTree() {
       top={
         <div className={styles.container}>
           <div className={styles.search}>
-            <Input.Search placeholder="搜索项目名称" style={{ width: '100%' }} size="small" />
+            <Input.Search
+              onSearch={(v) => {
+                setSearchKey(v);
+              }}
+              placeholder="搜索项目名称"
+              style={{ width: '100%' }}
+              size="small"
+            />
           </div>
           <div className={styles.list}>
             <Spin spinning={loading || dbLoading}>

@@ -14,23 +14,17 @@ import { deleteTrigger, getTriggerByName, setTriggerStatus } from '@/common/netw
 import { PLType } from '@/constant/plType';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
+import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TriggerRoot]: [
     {
-      key: 'CREATE_TRIGGER',
-      text: [formatMessage({ id: 'odc.ResourceTree.actions.CreateATrigger' })],
-      actionType: actionTypes.create,
-      run(session, node) {
-        openCreateTriggerPage(null, session?.sessionId, session?.database?.dbName);
-      },
-    },
-    {
       key: 'BATCH_COMPILE',
       text: ['批量编译'],
+      icon: BatchCompileSvg,
       actionType: actionTypes.create,
       run(session, node) {
         openBatchCompilePLPage(
@@ -42,11 +36,21 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         );
       },
     },
+    {
+      key: 'CREATE_TRIGGER',
+      text: [formatMessage({ id: 'odc.ResourceTree.actions.CreateATrigger' })],
+      actionType: actionTypes.create,
+      icon: PlusOutlined,
+      run(session, node) {
+        openCreateTriggerPage(null, session?.sessionId, session?.database?.dbName);
+      },
+    },
   ],
   [ResourceNodeType.Trigger]: [
     {
       key: 'OVERVIEW_TRIGGER',
       text: [formatMessage({ id: 'odc.ResourceTree.actions.ViewTriggers' })],
+      ellipsis: true,
       run(session, node) {
         const trigger: ITrigger = node.data;
         openTriggerViewPage(
@@ -66,6 +70,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
       actionType: actionTypes.update,
+      ellipsis: true,
       run(session, node) {
         const trigger: ITrigger = node.data;
         openTriggerEditPageByName(
@@ -78,6 +83,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     },
     {
       key: 'COMPILE_TRIGGER',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
       ],
@@ -90,6 +96,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     },
     {
       key: 'ENABLE_TRIGGER',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Enable' }), //启用
       ],
@@ -115,6 +122,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     },
     {
       key: 'DISABLE_TRIGGER',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Disable' }), //禁用
       ],
@@ -145,6 +153,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
     {
       key: 'EXPORT',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
@@ -158,6 +167,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     },
     {
       key: 'DOWNLOAD',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
       ],
@@ -178,6 +188,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
     {
       key: 'DELETE_TRIGGER',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
@@ -229,6 +240,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     },
     {
       key: 'REFRESH_TRIGGER',
+      ellipsis: true,
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
       ],
