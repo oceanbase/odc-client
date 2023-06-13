@@ -8,6 +8,7 @@ import { DbObjectType } from '@/d.ts';
 import { openCreateProcedurePage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { Form, Input, message, Modal } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import ProcedureParam from '../ProcedureParam';
@@ -24,9 +25,10 @@ const CreateProcedureModal: React.FC<IProps> = inject(
 )(
   observer((props) => {
     const { sessionManagerStore, modalStore } = props;
-    const sessionId = modalStore.createProcedureModalData.sessionId;
+    const databaseId = modalStore.createProcedureModalData.databaseId;
     const dbName = modalStore.createProcedureModalData.dbName;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
+    const { session } = useDBSession(databaseId);
+    const sessionId = session?.sessionId;
     const [form] = useForm();
     const visible = modalStore.createProcedureModalVisible;
     const paramsRef = useRef<{
@@ -53,7 +55,7 @@ const CreateProcedureModal: React.FC<IProps> = inject(
         if (!sql) {
           return;
         }
-        await openCreateProcedurePage(sql, sessionId, dbName);
+        await openCreateProcedurePage(sql, session?.odcDatabase?.id, dbName);
         modalStore.changeCreateProcedureModalVisible(false);
       },
       [modalStore, sessionId, dbName],

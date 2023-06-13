@@ -1,8 +1,9 @@
 import Icon from '@ant-design/icons';
-import { Space, Tooltip } from 'antd';
+import { Space } from 'antd';
 import classNames from 'classnames';
 import React, { ReactElement, useRef, useState } from 'react';
 
+import Action from '@/component/Action';
 import styles from './index.less';
 
 interface IActionProps {
@@ -16,7 +17,7 @@ export interface ITab {
     title: string;
     icon: React.ComponentType;
     key: string;
-    onClick: () => void;
+    onClick: () => Promise<void> | void;
   }[];
   render: () => ReactElement;
 }
@@ -52,20 +53,15 @@ export default function SideTabs({ tabs }: IProps) {
             );
           })}
         </Space>
-        <Space size={10} className={styles.actions}>
+        <Action.Group>
           {selectTab?.actions?.map((action) => {
             return (
-              <Tooltip title={action.title}>
-                <Icon
-                  onClick={action.onClick}
-                  className={styles.acion}
-                  component={action.icon}
-                  key={action.key}
-                />
-              </Tooltip>
+              <Action.Link replaceLoading={true} key={action.key} onClick={action.onClick}>
+                <Icon onClick={action.onClick} className={styles.acion} component={action.icon} />
+              </Action.Link>
             );
           })}
-        </Space>
+        </Action.Group>
       </div>
       <div className={styles.content}>
         {tabs

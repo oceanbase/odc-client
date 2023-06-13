@@ -155,7 +155,7 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
 
   return table ? (
     <>
-      <Content>
+      <div style={{ height: '100%' }}>
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
@@ -277,7 +277,7 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
             </TabPane>
           </Tabs>
         </TablePageContext.Provider>
-      </Content>
+      </div>
       <ShowExecuteModal session={session} ref={executeRef} />
     </>
   ) : (

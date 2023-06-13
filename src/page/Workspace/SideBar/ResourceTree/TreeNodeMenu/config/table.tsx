@@ -27,7 +27,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       actionType: actionTypes.create,
       async run(session, node) {
-        openCreateTablePage(session.sessionId, session.database.dbName);
+        openCreateTablePage(session?.odcDatabase?.id, session.database.dbName);
       },
     },
   ],

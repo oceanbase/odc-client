@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 
+import { Spin } from 'antd';
 import { debounce } from 'lodash';
 import SplitPane from 'react-split-pane';
 import styles from './layout.less';
@@ -7,9 +8,10 @@ import styles from './layout.less';
 interface IProps {
   top: React.ReactNode;
   bottom: React.ReactNode;
+  bottomLoading?: boolean;
 }
 
-const ResourceLayout: React.FC<IProps> = function ({ top, bottom }) {
+const ResourceLayout: React.FC<IProps> = function ({ top, bottom, bottomLoading }) {
   const maxHeight = document.body.clientHeight * 0.7;
   const [sideWidth, setSideWidth] = useState(300);
   const emitResizeEvent = useCallback(
@@ -42,7 +44,9 @@ const ResourceLayout: React.FC<IProps> = function ({ top, bottom }) {
           onChange={handleChangeSiderWidth}
         >
           <div className={styles.top}>{top}</div>
-          <div className={styles.bottom}>{bottom}</div>
+          <Spin spinning={bottomLoading} wrapperClassName={styles.bottom}>
+            {bottom}
+          </Spin>
         </SplitPane>
       </div>
     </div>

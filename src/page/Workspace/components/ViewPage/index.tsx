@@ -10,6 +10,7 @@ import { ConnectionMode } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -20,6 +21,8 @@ import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
 import { formatMessage, FormattedMessage } from 'umi';
 import DDLResultSet from '../DDLResultSet';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
@@ -52,7 +55,7 @@ interface IProps {
     viewName: string;
     topTab: TopTab;
     propsTab: PropsTab;
-    sessionId: string;
+    dbId: number;
     dbName: string;
   };
 
@@ -87,7 +90,7 @@ interface IViewPageState {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class ViewPage extends Component<IProps, IViewPageState> {
+class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageState> {
   public editor: IEditor;
 
   public readonly state: IViewPageState = {
@@ -249,7 +252,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   };
 
   public reloadView = async (viewName: string) => {
-    const view = await getView(viewName, this.props.params.sessionId, this.props.params.dbName);
+    const view = await getView(viewName, this.props.session?.sessionId, this.props.params.dbName);
     if (view) {
       this.setState({ view });
     } else {
@@ -260,7 +263,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   public reloadViewColumns = async (viewName: string) => {
     const { columns } = await getView(
       viewName,
-      this.props.params.sessionId,
+      this.props.session?.sessionId,
       this.props.params.dbName,
     );
     this.setState({
@@ -295,9 +298,15 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     limit: number = 1000,
   ) => {
     this.setState({ dataLoading: true });
-    const { sessionId, dbName } = this.props.params;
+    const { dbName } = this.props.params;
     try {
-      const viewData = await queryTableOrViewData(dbName, viewName, limit, false, sessionId);
+      const viewData = await queryTableOrViewData(
+        dbName,
+        viewName,
+        limit,
+        false,
+        this.props.session?.sessionId,
+      );
       if (viewData?.track) {
         notification.error(viewData);
       } else {
@@ -331,12 +340,12 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   public render() {
     const {
       pageKey,
-      params: { viewName, sessionId, dbName },
+      params: { viewName, dbName },
+      session,
       sessionManagerStore,
     } = this.props;
     const { topTab, propsTab, view, dataLoading, resultSet, showExportResuleSetModal, formated } =
       this.state;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
     const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return (
@@ -491,3 +500,13 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     );
   }
 }
+
+export default WrapSessionPage(function ViewPageWrap(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <ViewPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

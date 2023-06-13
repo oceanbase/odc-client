@@ -64,5 +64,13 @@
     height: 100%;
     border-top: 1px solid var(--odc-border-color);
     border-left: 1px solid var(--divider-color);
+    &:global(.ant-spin-nested-loading) {
+      height: 100%;
+      :global {
+        .ant-spin-container {
+          height: 100%;
+        }
+      }
+    }
   }
 }

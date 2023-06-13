@@ -91,7 +91,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
           name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
           width: 120,
           editor: WrapAutoCompleteEditor(
-            session.dataTypes.map((d) => d.databaseType.replace('()', '')),
+            session?.dataTypes.map((d) => d.databaseType.replace('()', '')),
           ),
         },
         {
@@ -121,7 +121,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
         name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
         width: 100,
         editor: WrapAutoCompleteEditor(
-          session.dataTypes.map((d) => d.databaseType.replace('()', '')),
+          session?.dataTypes.map((d) => d.databaseType.replace('()', '')),
         ),
       },
       isMySQL

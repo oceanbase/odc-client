@@ -17,7 +17,7 @@ export interface IProps {
     // 是否显示"上一步"
     hasPre?: boolean;
     isPackageBody: boolean;
-    sessionId: string;
+    databaseId: number;
     dbName: string;
   };
 

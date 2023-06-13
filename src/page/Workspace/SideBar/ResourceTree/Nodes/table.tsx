@@ -12,6 +12,8 @@ import {
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 import { IDatabase } from '@/d.ts/database';
+import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
+import { openTableViewPage } from '@/store/helper/page';
 import IndexSvg from '@/svgr/index.svg';
 import TableOutlined from '@/svgr/menuTable.svg';
 import PartitionSvg from '@/svgr/Partition.svg';
@@ -295,6 +297,14 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         type: ResourceNodeType.Table,
         data: table,
         dbObjectType: DbObjectType.table,
+        doubleClick(session, node, databaseFrom) {
+          openTableViewPage(
+            table.info.tableName,
+            TopTab.PROPS,
+            PropsTab.DDL,
+            session?.odcDatabase?.id,
+          );
+        },
         icon: (
           <TableOutlined
             style={{

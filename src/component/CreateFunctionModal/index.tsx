@@ -8,6 +8,7 @@ import { ConnectionMode, DbObjectType } from '@/d.ts';
 import { openCreateFunctionPageByRemote } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { AutoComplete, Col, Form, Input, message, Modal, Row } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
@@ -27,9 +28,9 @@ const CreateFunctionModal: React.FC<IProps> = inject(
 )(
   observer((props: IProps) => {
     const { modalStore, model, sessionManagerStore } = props;
-    const sessionId = modalStore?.createFunctionModalData?.sessionId;
+    const dbId = modalStore?.createFunctionModalData?.databaseId;
     const dbName = modalStore?.createFunctionModalData?.dbName;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
+    const { session } = useDBSession(dbId);
     const dbMode = session?.connection?.dialectType || ConnectionMode.OB_MYSQL;
     const [form] = useForm();
     const visible = modalStore.createFunctionModalVisible;
@@ -53,10 +54,15 @@ const CreateFunctionModal: React.FC<IProps> = inject(
 
     const onSave = useCallback(
       async (func: IFunction) => {
-        await openCreateFunctionPageByRemote(func, sessionId, dbName);
+        await openCreateFunctionPageByRemote(
+          func,
+          session?.sessionId,
+          dbName,
+          session?.odcDatabase?.id,
+        );
         modalStore.changeCreateFunctionModalVisible(false);
       },
-      [modalStore, sessionId, dbName],
+      [modalStore, session, dbName],
     );
 
     const save = useCallback(async () => {

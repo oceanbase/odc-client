@@ -1,4 +1,4 @@
-import Reload from '@/component/Button/Reload';
+import Action from '@/component/Action';
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { Input, Tree } from 'antd';
@@ -15,6 +15,7 @@ import { ResourceNodeType, TreeDataNode } from './type';
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
   databases: IDatabase[];
+  reloadDatabase: () => void;
   title: string;
   databaseFrom: 'datasource' | 'project';
 }
@@ -24,6 +25,7 @@ const ResourceTree: React.FC<IProps> = function ({
   databases,
   title,
   databaseFrom,
+  reloadDatabase,
 }) {
   const [databaseSessions, setDatabaseSessions] = useState<Record<string, string>>({});
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -110,7 +112,16 @@ const ResourceTree: React.FC<IProps> = function ({
       <div className={styles.title}>
         <span className={styles.label}>{title}</span>
         <span>
-          <Reload />
+          <Action.Group size={0} ellipsisIcon="vertical">
+            <Action.Link
+              key={'reload'}
+              onClick={() => {
+                reloadDatabase();
+              }}
+            >
+              刷新数据库列表
+            </Action.Link>
+          </Action.Group>
         </span>
       </div>
       <div className={styles.search}>
@@ -122,6 +133,7 @@ const ResourceTree: React.FC<IProps> = function ({
       </div>
       <div ref={treeWrapperRef} className={styles.tree}>
         <Tree
+          expandAction="click"
           defaultExpandedKeys={[]}
           showIcon
           filterTreeNode={(node) =>

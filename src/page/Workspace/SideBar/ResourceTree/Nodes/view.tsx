@@ -1,6 +1,8 @@
 import { fieldIconMap } from '@/constant';
 import { DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { PropsTab, TopTab } from '@/page/Workspace/components/ViewPage';
+import { openViewViewPage } from '@/store/helper/page';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import ViewSvg from '@/svgr/menuView.svg';
@@ -64,6 +66,15 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
         type: ResourceNodeType.View,
         data: view,
         dbObjectType: DbObjectType.view,
+        doubleClick(session, node, databaseFrom) {
+          openViewViewPage(
+            view.viewName,
+            TopTab.PROPS,
+            PropsTab.DDL,
+            session?.odcDatabase?.id,
+            session?.odcDatabase?.name,
+          );
+        },
         icon: (
           <Icon
             type="view"

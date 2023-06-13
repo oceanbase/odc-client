@@ -21,7 +21,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.CreateAView' })],
       actionType: actionTypes.create,
       run(session, node) {
-        openCreateViewPage(session?.sessionId, session?.database?.dbName);
+        openCreateViewPage(session?.odcDatabase?.id, session?.database?.dbName);
       },
     },
   ],
@@ -36,7 +36,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           view.viewName,
           TopTab.PROPS,
           PropsTab.INFO,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -53,7 +53,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           view.viewName,
           TopTab.DATA,
           PropsTab.INFO,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },

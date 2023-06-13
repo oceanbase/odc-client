@@ -1,4 +1,5 @@
 import { DbObjectType, IPackage } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 import { DataNode } from 'antd/lib/tree';
 
 export enum ResourceNodeType {
@@ -74,6 +75,11 @@ interface ExtraData {
   cid?: number;
   dbObjectType?: DbObjectType;
   warning?: string;
+  doubleClick?: (
+    session: SessionStore,
+    node: TreeDataNode,
+    databaseFrom: 'datasource' | 'project',
+  ) => void;
 }
 
 export type TreeDataNode = DataNode & ExtraData;

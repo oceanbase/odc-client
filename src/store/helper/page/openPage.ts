@@ -311,7 +311,7 @@ export async function openRecycleBin(cid?: number, dbName?: string) {
 }
 /** 创建表页面 */
 
-export function openCreateTablePage(sessionId: string, dbName: string) {
+export function openCreateTablePage(dbId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_TABLE,
     {
@@ -325,7 +325,7 @@ export function openCreateTablePage(sessionId: string, dbName: string) {
     },
 
     {
-      sessionId,
+      databaseId: dbId,
       dbName,
     },
   );
@@ -346,6 +346,7 @@ export function openTableViewPage(
 
     {
       databaseId,
+      databaseFrom: 'datasource',
       tableName,
       topTab,
       propsTab,
@@ -356,14 +357,14 @@ export function openTableViewPage(
 /**
  * 创建视图页面
  */
-export function openCreateViewPage(sessionId: string, dbName: string) {
+export function openCreateViewPage(dbId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_VIEW,
     {
       title: formatMessage({ id: 'workspace.window.createView.modal.title' }),
     },
     {
-      sessionId,
+      databaseId: dbId,
       dbName,
     },
   );
@@ -377,7 +378,7 @@ export function openViewViewPage(
   viewName: string,
   topTab: ViewTopTab = ViewTopTab.PROPS,
   propsTab: ViewPropsTab = ViewPropsTab.INFO,
-  sessionId: string,
+  dbId: number,
   dbName: string,
 ) {
   page!.openPage(
@@ -390,14 +391,14 @@ export function openViewViewPage(
       viewName,
       topTab,
       propsTab,
-      sessionId,
+      databaseId: dbId,
       dbName,
     },
   );
 }
 /** 创建函数页面 */
 
-export function openCreateFunctionPage(sql: string, sessionId: string, dbName: string) {
+export function openCreateFunctionPage(sql: string, databaseId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_FUNCTION,
     {
@@ -407,7 +408,7 @@ export function openCreateFunctionPage(sql: string, sessionId: string, dbName: s
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       sql,
       type: PageType.CREATE_FUNCTION,
@@ -420,7 +421,7 @@ export function openFunctionViewPage(
   functionName: string,
   topTab: FunctionTopTab = FunctionTopTab.PROPS,
   propsTab: FunctionPropsTab = FunctionPropsTab.INFO,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   page!.openPage(
@@ -430,7 +431,7 @@ export function openFunctionViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       funName: functionName,
       topTab,
@@ -444,15 +445,16 @@ export async function openCreateFunctionPageByRemote(
   func: IFunction,
   sessionId: string,
   dbName: string,
+  databaseId: number,
 ) {
   const sql = await getFunctionCreateSQL(func.funName, func, sessionId, dbName);
   if (sql) {
-    openCreateFunctionPage(sql, sessionId, dbName);
+    openCreateFunctionPage(sql, databaseId, dbName);
   }
 }
 /** 创建存储过程页面 */
 
-export function openCreateProcedurePage(sql: string, sessionId: string, dbName: string) {
+export function openCreateProcedurePage(sql: string, databaseId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_PROCEDURE,
     {
@@ -462,7 +464,7 @@ export function openCreateProcedurePage(sql: string, sessionId: string, dbName: 
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       sql,
       type: PageType.CREATE_PROCEDURE,
@@ -475,7 +477,7 @@ export function openProcedureViewPage(
   procedureName: string,
   topTab: ProcedureTopTab = ProcedureTopTab.PROPS,
   propsTab: ProcedurePropsTab = ProcedurePropsTab.INFO,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   page!.openPage(
@@ -485,7 +487,7 @@ export function openProcedureViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       proName: procedureName,
       topTab,

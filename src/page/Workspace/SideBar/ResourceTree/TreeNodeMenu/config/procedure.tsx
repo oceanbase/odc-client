@@ -44,7 +44,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       run(session, node) {
         modal.changeCreateProcedureModalVisible(
           true,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -65,7 +65,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           proc?.proName,
           TopTab.PROPS,
           PropsTab.DDL,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },

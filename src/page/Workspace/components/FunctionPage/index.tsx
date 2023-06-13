@@ -23,9 +23,12 @@ import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { PLType } from '@/constant/plType';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
 
@@ -54,7 +57,7 @@ interface IProps {
   params: {
     funName: string;
     propsTab: PropsTab;
-    sessionId: string;
+    databaseId: number;
     dbName: string;
   };
 
@@ -63,8 +66,8 @@ interface IProps {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class FunctionPage extends Component<
-  IProps,
+class FunctionPage extends Component<
+  IProps & { session: SessionStore },
   {
     propsTab: PropsTab;
     func: Partial<IFunction>;
@@ -109,11 +112,11 @@ export default class FunctionPage extends Component<
   };
 
   public reloadFunction = async (funName: string) => {
-    const { params } = this.props;
+    const { session, params } = this.props;
     const func: IFunction = await getFunctionByFuncName(
       funName,
       false,
-      params?.sessionId,
+      session?.sessionId,
       params?.dbName,
     );
     if (func) {
@@ -140,11 +143,10 @@ export default class FunctionPage extends Component<
   }
 
   public async editFunction(funName: string) {
-    const { params, sessionManagerStore } = this.props;
-    const session = sessionManagerStore.sessionMap.get(params.sessionId);
+    const { params, session } = this.props;
     await openFunctionEditPageByFuncName(
       funName,
-      params.sessionId,
+      session.sessionId,
       params.dbName,
       session?.connection?.id,
     );
@@ -169,11 +171,9 @@ export default class FunctionPage extends Component<
 
   public render() {
     const {
-      pageKey,
-      sessionManagerStore,
-      params: { funName, sessionId, dbName },
+      session,
+      params: { funName, dbName },
     } = this.props;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { propsTab, func, formated } = this.state;
     const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
@@ -338,3 +338,13 @@ export default class FunctionPage extends Component<
     );
   }
 }
+
+export default WrapSessionPage(function Component(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <FunctionPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);
