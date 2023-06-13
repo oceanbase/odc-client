@@ -1,6 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Card, message, Space, Tabs, Tooltip, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import BaseInfo from './BaseInfo';
 import {
   TableCheckConstraint,
@@ -18,12 +18,15 @@ import TableContext from './TableContext';
 import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import page from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
 import { inject, observer } from 'mobx-react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import Columns, { defaultColumn } from './Columns';
 import styles from './index.less';
 import Partition from './Partition';
@@ -36,7 +39,7 @@ interface IProps {
   pageKey: string;
   sessionManagerStore?: SessionManagerStore;
   params: {
-    sessionId: string;
+    dbId: number;
     dbName: string;
   };
 }
@@ -64,7 +67,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
     manual: true,
   });
 
-  const session = sessionManagerStore.sessionMap.get(params.sessionId);
+  const { session } = useContext(SessionContext);
 
   const isComplete = useMemo(() => {
     return (
@@ -76,6 +79,9 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
     );
   }, [info, columns]);
 
+  if (!session) {
+    return <WorkSpacePageLoading />;
+  }
   return (
     <Card
       className={styles.card}
@@ -120,7 +126,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                     foreignConstraints,
                     checkConstraints,
                   },
-                  params?.sessionId,
+                  session?.sessionId,
                   params?.dbName,
                 );
 
@@ -204,7 +210,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           readonly
           onCancel={() => setDDL('')}
           onSave={async () => {
-            const results = await executeSQL(DDL, params.sessionId, params.dbName);
+            const results = await executeSQL(DDL, session?.sessionId, params.dbName);
             const result = results?.find((result) => result.track);
             if (!result?.track) {
               // 关闭创建表页面
@@ -221,4 +227,4 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
     </Card>
   );
 };
-export default inject('sessionManagerStore')(observer(CreateTable));
+export default inject('sessionManagerStore')(observer(WrapSessionPage(CreateTable)));

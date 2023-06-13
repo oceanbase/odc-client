@@ -1,4 +1,3 @@
-import { AcessResult } from '@/component/Acess';
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
@@ -10,7 +9,7 @@ import MenuConfig from './config';
 import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 
-const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
+const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node } = props;
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
@@ -25,7 +24,16 @@ const TreeNodeMenu = (props: IProps & Partial<AcessResult>) => {
    * 不可拖动
    */
   const titleNode = (
-    <span className="ant-tree-title">
+    <span
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        if (!dbSession) {
+          return;
+        }
+        node.doubleClick?.(dbSession, node, databaseFrom);
+      }}
+      className="ant-tree-title"
+    >
       {node.title}
       {node.warning ? (
         <Tooltip placement="right" title={node.warning}>

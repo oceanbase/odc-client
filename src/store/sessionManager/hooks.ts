@@ -17,7 +17,7 @@ export function useDBSession(databaseId: number): {
   reset: () => void;
 } {
   const [session, setSession] = useState<SessionStore>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const unmountedRef = useUnmountedRef();
   /**
    * 创建新的 session 并且销毁老的 session

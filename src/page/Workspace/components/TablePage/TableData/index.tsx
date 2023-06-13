@@ -300,9 +300,7 @@ class TableData extends React.Component<
             sqlId={resultSet.sqlId}
             useUniqueColumnName={true}
             rows={resultSet.rows}
-            resultHeight={`calc(100vh - ${
-              GLOBAL_HEADER_HEIGHT + TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 1
-            }px)`}
+            resultHeight={`calc(100vh - ${TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 1}px)`}
             onRefresh={(limit) => this.reloadTableData(tableName, false, limit)}
             onExport={(limitToExport) =>
               this.setState({

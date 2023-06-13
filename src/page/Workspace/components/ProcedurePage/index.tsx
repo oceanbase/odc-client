@@ -24,9 +24,12 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
 
@@ -55,7 +58,7 @@ interface IProps {
   params: {
     proName: string;
     propsTab: PropsTab;
-    sessionId: string;
+    databaseId: number;
     dbName: string;
   };
 
@@ -64,8 +67,8 @@ interface IProps {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class ProcedurePage extends Component<
-  IProps,
+class ProcedurePage extends Component<
+  IProps & { session: SessionStore },
   {
     propsTab: PropsTab;
     procedure: Partial<IProcedure>;
@@ -108,8 +111,13 @@ export default class ProcedurePage extends Component<
   };
 
   public reloadProcedure = async (proName: string) => {
-    const { params } = this.props;
-    const procedure = await getProcedureByProName(proName, false, params.sessionId, params.dbName);
+    const { session, params } = this.props;
+    const procedure = await getProcedureByProName(
+      proName,
+      false,
+      session?.sessionId,
+      params.dbName,
+    );
     if (procedure) {
       procedure.params = procedure.params.map((param) => {
         const { dataType, dataLength } = parseDataType(param.dataType);
@@ -134,11 +142,10 @@ export default class ProcedurePage extends Component<
   }
 
   public async editProcedure(proName: string) {
-    const { params, sessionManagerStore } = this.props;
-    const session = sessionManagerStore?.sessionMap.get(params.sessionId);
+    const { params, sessionManagerStore, session } = this.props;
     await openProcedureEditPageByProName(
       proName,
-      params.sessionId,
+      session?.sessionId,
       params.dbName,
       session?.connection?.id,
     );
@@ -164,10 +171,10 @@ export default class ProcedurePage extends Component<
   public render() {
     const {
       pageKey,
-      params: { proName, sessionId, dbName },
+      params: { proName, dbName },
+      session,
       sessionManagerStore,
     } = this.props;
-    const session = sessionManagerStore?.sessionMap.get(sessionId);
     const { propsTab, procedure, formated } = this.state;
     const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
@@ -328,3 +335,13 @@ export default class ProcedurePage extends Component<
     );
   }
 }
+
+export default WrapSessionPage(function Component(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <ProcedurePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

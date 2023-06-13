@@ -120,7 +120,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         };
       }),
       openViewPage: (name) => {
-        openFunctionViewPage(name, undefined, undefined, session?.sessionId, dbName);
+        openFunctionViewPage(name, undefined, undefined, session?.odcDatabase?.id, dbName);
       },
       openEditPage: (name, type) => {
         openFunctionEditPageByFuncName(name, session?.sessionId, dbName, cid);
@@ -173,7 +173,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         };
       }),
       openViewPage: (name) => {
-        openProcedureViewPage(name, undefined, undefined, session?.sessionId, dbName);
+        openProcedureViewPage(name, undefined, undefined, session?.odcDatabase?.id, dbName);
       },
       openEditPage: (name, type) => {
         openProcedureEditPageByProName(name, session?.sessionId, dbName, cid);

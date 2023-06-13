@@ -5,19 +5,32 @@ import ResourceLayout from '../Layout';
 
 import { listProjects } from '@/common/network/project';
 import { useRequest } from 'ahooks';
-import { useEffect, useMemo, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 
 import { listDatabases } from '@/common/network/database';
 import ProjectSvg from '@/svgr/project_space.svg';
 
-export default function ProjectTree() {
+export default forwardRef(function ProjectTree(props, ref) {
   const { data, loading, run } = useRequest(listProjects, {
     defaultParams: [null, 1, 9999, null],
   });
 
   const [selectKeys, setSelectKeys] = useState<any[]>([]);
   const [searchKey, setSearchKey] = useState('');
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        reload() {
+          setSelectKeys([]);
+          return run(null, 1, 9999, null);
+        },
+      };
+    },
+    [run],
+  );
 
   const selectProject = useMemo(() => {
     const key = selectKeys?.[0];
@@ -94,9 +107,11 @@ export default function ProjectTree() {
           </div>
         </div>
       }
+      bottomLoading={dbLoading}
       bottom={
         selectKeys?.length ? (
           <ResourceTree
+            reloadDatabase={() => runListDatabases(selectKeys?.[0], null, 1, 9999)}
             databaseFrom="project"
             title={selectProject?.name}
             databases={db?.contents}
@@ -105,4 +120,4 @@ export default function ProjectTree() {
       }
     />
   );
-}
+});

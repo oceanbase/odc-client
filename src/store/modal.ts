@@ -108,19 +108,19 @@ export class ModalStore {
 
   @observable
   public createFunctionModalData = {
-    sessionId: '',
+    databaseId: null,
     dbName: '',
   };
 
   @action
   public changeCreateFunctionModalVisible(
     isShow: boolean = true,
-    sessionId?: string,
+    databaseId?: number,
     dbName?: string,
   ) {
     this.createFunctionModalVisible = isShow;
     this.createFunctionModalData = {
-      sessionId,
+      databaseId,
       dbName,
     };
   }
@@ -131,19 +131,19 @@ export class ModalStore {
 
   @observable
   public createProcedureModalData = {
-    sessionId: '',
+    databaseId: null,
     dbName: '',
   };
 
   @action
   public changeCreateProcedureModalVisible(
     isShow: boolean = true,
-    sessionId?: string,
+    databaseId?: number,
     dbName?: string,
   ) {
     this.createProcedureModalVisible = isShow;
     this.createProcedureModalData = {
-      sessionId,
+      databaseId,
       dbName,
     };
   }

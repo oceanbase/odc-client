@@ -42,7 +42,11 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
-        modal.changeCreateFunctionModalVisible(true, session?.sessionId, session?.database?.dbName);
+        modal.changeCreateFunctionModalVisible(
+          true,
+          session?.odcDatabase?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],
@@ -61,7 +65,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           func?.funName,
           TopTab.PROPS,
           PropsTab.DDL,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },

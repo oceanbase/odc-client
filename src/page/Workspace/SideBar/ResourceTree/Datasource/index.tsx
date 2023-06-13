@@ -6,7 +6,7 @@ import ResourceLayout from '../Layout';
 import { getConnectionList } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
-import { useEffect, useMemo, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
@@ -14,13 +14,26 @@ import { IDatasource } from '@/d.ts/datasource';
 import OBSvg from '@/svgr/source_ob.svg';
 import { toNumber } from 'lodash';
 
-export default function DatasourceTree() {
+export default forwardRef(function DatasourceTree(props, ref) {
   const { data, loading, run } = useRequest(getConnectionList, {
     defaultParams: [{ size: 9999, page: 1 }],
   });
 
   const [selectKeys, setSelectKeys] = useState<any[]>([]);
   const [searchKey, setSearchKey] = useState('');
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        reload() {
+          setSelectKeys([]);
+          return run({ size: 9999, page: 1 });
+        },
+      };
+    },
+    [run],
+  );
 
   const selectConnection = useMemo(() => {
     const key = selectKeys?.[0];
@@ -119,10 +132,12 @@ export default function DatasourceTree() {
           </div>
         </div>
       }
+      bottomLoading={dbLoading}
       bottom={
         selectKeys?.length ? (
           <div style={{ height: '100%', overflow: 'hidden' }}>
             <ResourceTree
+              reloadDatabase={() => runListDatabases(null, selectKeys?.[0], 1, 9999)}
               databaseFrom="datasource"
               title={selectConnection?.name}
               key={selectKeys?.[0]}
@@ -133,4 +148,4 @@ export default function DatasourceTree() {
       }
     />
   );
-}
+});
