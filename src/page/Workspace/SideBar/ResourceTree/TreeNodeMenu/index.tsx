@@ -139,7 +139,13 @@ const TreeNodeMenu = (props: IProps) => {
             }
             return (
               <Tooltip title={item.text}>
-                <div onClick={() => onMenuClick(item)} className={styles.actionItem}>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMenuClick(item);
+                  }}
+                  className={styles.actionItem}
+                >
                   <Icon component={item.icon || InfoCircleFilled} />
                 </div>
               </Tooltip>
@@ -154,6 +160,7 @@ const TreeNodeMenu = (props: IProps) => {
               },
               items: ellipsisItemsProp,
               onClick: (info) => {
+                info?.domEvent?.stopPropagation();
                 onMenuClick(clickMap[info.key]);
               },
             }}
@@ -176,6 +183,7 @@ const TreeNodeMenu = (props: IProps) => {
           },
           items: allItemsProp,
           onClick: (info) => {
+            info?.domEvent?.stopPropagation();
             onMenuClick(clickMap[info.key]);
           },
         }}

@@ -78,7 +78,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
     isSuccess: boolean;
     errMsg: string;
   }> = async (sql, type) => {
-    const { dbName } = this.props.params;
+    const dbName = this.props.session?.odcDatabase?.name;
     let isSuccess = false;
     let errMsg = '';
     const split = ![
@@ -214,8 +214,9 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
     options?: Record<string, any>,
   ) => {
     const { params, session } = this.props;
-    const { dbName } = params;
+    const dbName = this.props.session?.odcDatabase?.name;
     const sessionId = session?.sessionId;
+    const databaseId = session?.odcDatabase?.id;
     switch (pageType) {
       case PageType.TRIGGER: {
         const trigger = await getTriggerByName(name, session?.sessionId, dbName);
@@ -225,7 +226,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
             TriggerPropsTab.DDL,
             trigger.enableState,
             trigger,
-            session?.sessionId,
+            session?.odcDatabase?.id,
             dbName,
           );
         }
@@ -234,14 +235,14 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
       case PageType.TYPE: {
         const type = await getType(name, true, dbName, session?.sessionId);
         if (type) {
-          openTypeViewPage(name, TypePropsTab.DDL, sessionId, dbName);
+          openTypeViewPage(name, TypePropsTab.DDL, session?.odcDatabase?.id, dbName);
         }
         return;
       }
       case PageType.SYNONYM: {
         const synonym = await getSynonym(name, options?.synonymType, sessionId, dbName);
         if (synonym) {
-          openSynonymViewPage(name, options?.synonymType, sessionId, dbName);
+          openSynonymViewPage(name, options?.synonymType, session?.odcDatabase?.id, dbName);
         }
         return;
       }
@@ -253,7 +254,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
             params.isPackageBody ? TopTab.BODY : TopTab.HEAD,
             true,
             dbName,
-            sessionId,
+            databaseId,
           );
         }
         return;
@@ -261,7 +262,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
       case PageType.SEQUENCE: {
         const sequence = await getSequence(name, sessionId, dbName);
         if (sequence) {
-          openSequenceViewPage(name, undefined, sessionId, dbName);
+          openSequenceViewPage(name, undefined, session?.odcDatabase?.id, dbName);
         }
         return;
       }
@@ -307,13 +308,14 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
   };
   private handleGotoPre = async () => {
     const {
-      params: { preData, dbName },
+      params: { preData },
       session,
       pageStore,
       pageKey,
     } = this.props;
+    const dbName = this.props.session?.odcDatabase?.name;
     await pageStore.close(pageKey);
-    await openCreateTriggerPage(preData, session?.sessionId, dbName);
+    await openCreateTriggerPage(preData, session?.odcDatabase?.id, dbName);
   };
   private handleSqlChange = (sql: string) => {
     this.setState(
@@ -352,7 +354,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
 
   public render() {
     const {
-      params: { hasPre, dbName },
+      params: { hasPre },
       session,
       sessionManagerStore,
     } = this.props;

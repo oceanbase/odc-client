@@ -89,7 +89,7 @@ export class ModalStore {
   public createSequenceModalData: {
     isEdit?: boolean;
     data?: any;
-    sessionId: string;
+    databaseId: number;
     dbName: string;
   };
 
@@ -160,15 +160,15 @@ export class ModalStore {
 
   @observable
   public createPackageModalData = {
-    sessionId: '',
+    databaseId: null,
     dbName: '',
   };
 
   @action
-  public changeCreatePackageModalVisible(v: boolean, sessionId?: string, dbName?: string) {
+  public changeCreatePackageModalVisible(v: boolean, databaseId?: number, dbName?: string) {
     this.createPackageModalVisible = v;
     this.createPackageModalData = {
-      sessionId,
+      databaseId,
       dbName,
     };
   }
@@ -179,15 +179,15 @@ export class ModalStore {
 
   @observable
   public createSynonymModalData = {
-    sessionId: '',
+    databaseId: null,
     dbName: '',
   };
 
   @action
-  public changeCreateSynonymModalVisible(v: boolean, sessionId?: string, dbName?: string) {
+  public changeCreateSynonymModalVisible(v: boolean, databaseId?: number, dbName?: string) {
     this.createSynonymModalVisible = v;
     this.createSynonymModalData = {
-      sessionId,
+      databaseId,
       dbName,
     };
   }
@@ -198,15 +198,15 @@ export class ModalStore {
 
   @observable
   public createTypeModalData = {
-    sessionId: '',
+    databaseId: null,
     dbName: '',
   };
 
   @action
-  public changeCreateTypeModalVisible(v: boolean, sessionId?: string, dbName?: string) {
+  public changeCreateTypeModalVisible(v: boolean, databaseId?: number, dbName?: string) {
     this.createTypeModalVisible = v;
     this.createTypeModalData = {
-      sessionId,
+      databaseId,
       dbName,
     };
   }

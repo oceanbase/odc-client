@@ -1,10 +1,14 @@
+import { listDatabases } from '@/common/network/database';
 import { getSynonymCreateSQL, getSynonymList } from '@/common/network/synonym';
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { getViewListByDatabaseName } from '@/common/network/view';
 import { ISynonym, ITable, SynonymType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import SessionContextWrap from '@/page/Workspace/components/SessionContextWrap';
 import { openCreateSynonymPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { Button, Form, Input, Modal, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form';
@@ -21,6 +25,7 @@ interface IState {
   objectList: ITable[];
   tableOwner: string;
   objectType: ObjectType;
+  databases: IDatabase[];
   synonyms: {
     COMMON: ISynonym[];
     PUBLIC: ISynonym[];
@@ -38,13 +43,12 @@ enum ObjectType {
 
 const { Option } = Select;
 
-@inject('sessionManagerStore', 'modalStore')
-@observer
-export default class CreateSynonymModal extends Component<IProps, IState> {
+class CreateSynonymModal extends Component<IProps & { session: SessionStore }, IState> {
   public readonly state = {
     objectList: [],
     tableOwner: null,
     objectType: ObjectType.TABLE,
+    databases: [],
     synonyms: {
       COMMON: [],
       PUBLIC: [],
@@ -56,14 +60,34 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
   public componentDidMount() {
     const { createSynonymModalData } = this.props.modalStore;
     const { dbName } = createSynonymModalData;
-    this.loadSynoymList();
-    this.handleChangeTableOwner(dbName);
+    if (this.props.session) {
+      this.loadSynoymList();
+      this.handleChangeTableOwner(dbName);
+      this.loadDatabases();
+    }
+  }
+
+  componentDidUpdate(
+    prevProps: Readonly<IProps & { session: SessionStore }>,
+    prevState: Readonly<IState>,
+    snapshot?: any,
+  ): void {
+    if (prevProps.session !== this.props.session && this.props.session) {
+      this.loadSynoymList();
+      this.handleChangeTableOwner(this.props.modalStore?.createSynonymModalData?.dbName);
+      this.loadDatabases();
+    }
+  }
+
+  private async loadDatabases() {
+    const res = await listDatabases(null, this.props.session?.connection?.id, 1, 9999);
+    this.setState({
+      databases: res?.contents || [],
+    });
   }
 
   private loadSynoymList = async () => {
-    const { createSynonymModalData } = this.props.modalStore;
-    const { sessionId } = createSynonymModalData;
-    const session = this.props.sessionManagerStore.sessionMap.get(sessionId);
+    const { session } = this.props;
     const commonList = await getSynonymList(
       SynonymType.COMMON,
       session.database.dbName,
@@ -84,13 +108,23 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
 
   private handleConfirm = () => {
     const { createSynonymModalData } = this.props.modalStore;
-    const { sessionId, dbName } = createSynonymModalData;
+    const { dbName } = createSynonymModalData;
     this.formRef.current
       .validateFields()
       .then(async (values: ISynonym) => {
-        const sql = await getSynonymCreateSQL(values.synonymName, values, sessionId, dbName);
+        const sql = await getSynonymCreateSQL(
+          values.synonymName,
+          values,
+          this.props.session?.sessionId,
+          dbName,
+        );
         if (sql) {
-          openCreateSynonymPage(sql, values.synonymType, sessionId, dbName);
+          openCreateSynonymPage(
+            sql,
+            values.synonymType,
+            this.props.session?.odcDatabase?.id,
+            dbName,
+          );
           this.close();
         }
       })
@@ -140,13 +174,11 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
 
   private getObjectList = async (owner: string, type: ObjectType) => {
     let objectList = [];
-    const { createSynonymModalData } = this.props.modalStore;
-    const { sessionId } = createSynonymModalData;
-    const session = this.props.sessionManagerStore.sessionMap.get(sessionId);
+    const { session } = this.props;
     if (type === ObjectType.VIEW) {
-      objectList = await getViewListByDatabaseName(owner, sessionId);
+      objectList = await getViewListByDatabaseName(owner, session?.sessionId);
     } else {
-      objectList = await getTableListByDatabaseName(session.sessionId, owner);
+      objectList = await getTableListByDatabaseName(session?.sessionId, owner);
     }
     return objectList;
   };
@@ -176,13 +208,9 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
   };
 
   public render() {
-    const { sessionManagerStore, modalStore } = this.props;
-    const { objectList, tableOwner, objectType } = this.state;
+    const { sessionManagerStore, modalStore, session } = this.props;
+    const { objectList, tableOwner, objectType, databases } = this.state;
     const formItemStyle = { width: '328px' };
-    const { createSynonymModalData } = this.props.modalStore;
-    const { sessionId } = createSynonymModalData;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
-    const databases = session?.databases;
     return (
       <Modal
         width={480}
@@ -406,3 +434,20 @@ export default class CreateSynonymModal extends Component<IProps, IState> {
     );
   }
 }
+export default inject(
+  'sessionManagerStore',
+  'modalStore',
+)(
+  observer(function (props: IProps) {
+    return (
+      <SessionContextWrap
+        defaultDatabaseId={props?.modalStore?.createSynonymModalData?.databaseId}
+        defaultMode="datasource"
+      >
+        {({ session }) => {
+          return <CreateSynonymModal {...props} session={session} />;
+        }}
+      </SessionContextWrap>
+    );
+  }),
+);

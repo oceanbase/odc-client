@@ -24,7 +24,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       actionType: actionTypes.create,
       run(session, node) {
         modal.changeCreateSequenceModalVisible(true, {
-          sessionId: session?.sessionId,
+          databaseId: session?.odcDatabase?.id,
           dbName: session?.database?.dbName,
         });
       },
@@ -40,7 +40,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         openSequenceViewPage(
           sequence?.name,
           undefined,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -62,7 +62,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           modal.changeCreateSequenceModalVisible(true, {
             isEdit: true,
             data: sequence,
-            sessionId: session?.sessionId,
+            databaseId: session?.odcDatabase?.id,
             dbName: session?.database?.dbName,
           });
         }

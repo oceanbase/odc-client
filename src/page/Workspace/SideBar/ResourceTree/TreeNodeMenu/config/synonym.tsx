@@ -24,7 +24,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
         openSynonymViewPage(
           synonym.synonymName,
           synonymType,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -150,7 +150,11 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
-        modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
+        modal.changeCreateSynonymModalVisible(
+          true,
+          session?.odcDatabase?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],
@@ -163,7 +167,11 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
-        modal.changeCreateSynonymModalVisible(true, session?.sessionId, session?.database?.dbName);
+        modal.changeCreateSynonymModalVisible(
+          true,
+          session?.odcDatabase?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],

@@ -37,6 +37,7 @@ interface IProps {
   Result?: React.ReactNode;
   Others: any;
   session: SessionStore;
+  sessionSelectReadonly?: boolean;
   handleChangeSplitPane?: (size: number) => void;
 }
 
@@ -68,8 +69,17 @@ export default class ScriptPage extends PureComponent<IProps> {
   }
 
   renderPanels = () => {
-    const { ctx, language, toolbar, stackbar, editor, statusBar, settingStore, session } =
-      this.props;
+    const {
+      ctx,
+      language,
+      toolbar,
+      stackbar,
+      editor,
+      statusBar,
+      settingStore,
+      session,
+      sessionSelectReadonly,
+    } = this.props;
     const isShowDebugStackBar = !!stackbar?.list?.length;
     return (
       <Layout
@@ -81,7 +91,7 @@ export default class ScriptPage extends PureComponent<IProps> {
       >
         <Content style={{ position: 'relative' }}>
           {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
-          <SessionSelect />
+          <SessionSelect readonly={sessionSelectReadonly} />
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {

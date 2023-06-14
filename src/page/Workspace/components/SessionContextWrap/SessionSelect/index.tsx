@@ -8,9 +8,10 @@ import styles from './index.less';
 
 import PjSvg from '@/svgr/project_space.svg';
 import OBSvg from '@/svgr/source_ob.svg';
+import classNames from 'classnames';
 import SelectModal from './modal';
 
-export default function SessionSelect() {
+export default function SessionSelect({ readonly }: { readonly?: boolean }) {
   const context = useContext(SessionContext);
   const [visible, setVisible] = useState(false);
 
@@ -46,6 +47,43 @@ export default function SessionSelect() {
     );
   }
 
+  function renderSessionInfo() {
+    if (readonly) {
+      return (
+        <>
+          <div className={styles.tag}>
+            <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
+              {context?.session?.odcDatabase?.environment?.name}
+            </Tag>
+          </div>
+          <div className={classNames(styles.dataSource, styles.readonly)}>
+            {context?.from === 'datasource' ? renderDatasource() : renderProject()}
+          </div>
+          <span>/</span>
+          <div className={classNames(styles.database, styles.readonly)}>
+            {context?.session?.odcDatabase?.name}
+          </div>
+        </>
+      );
+    }
+    return (
+      <>
+        <div className={styles.tag}>
+          <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
+            {context?.session?.odcDatabase?.environment?.name}
+          </Tag>
+        </div>
+        <div className={styles.dataSource}>
+          {context?.from === 'datasource' ? renderDatasource() : renderProject()}
+        </div>
+        <span>/</span>
+        <div onClick={() => setVisible(true)} className={styles.database}>
+          {context?.session?.odcDatabase?.name} <DownOutlined />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       {!context?.databaseId ? (
@@ -55,30 +93,17 @@ export default function SessionSelect() {
       ) : (
         <div className={styles.line}>
           {context?.session ? (
-            <>
-              <div className={styles.tag}>
-                <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
-                  {context?.session?.odcDatabase?.environment?.name}
-                </Tag>
-              </div>
-              <div className={styles.dataSource}>
-                {context?.from === 'datasource' ? renderDatasource() : renderProject()}
-              </div>
-              <span>/</span>
-              <div onClick={() => setVisible(true)} className={styles.database}>
-                {context?.session?.odcDatabase?.name} <DownOutlined />
-              </div>
-            </>
+            renderSessionInfo()
           ) : (
             <Spin
               style={{ marginLeft: 20 }}
               spinning={true}
-              indicator={<LoadingOutlined style={{ fontSize: 20 }} spin />}
+              indicator={<LoadingOutlined style={{ fontSize: 18 }} spin />}
             />
           )}
         </div>
       )}
-      <SelectModal visible={visible} close={() => setVisible(false)} />
+      {!readonly && <SelectModal visible={visible} close={() => setVisible(false)} />}
     </>
   );
 }

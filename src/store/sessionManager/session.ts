@@ -197,7 +197,11 @@ class SessionStore {
       logger.error('getDefaultDBName error');
       return false;
     }
-    this.database = await DatabaseStore.createInstance(this.sessionId, dbName);
+    this.database = await DatabaseStore.createInstance(
+      this.sessionId,
+      dbName,
+      this.odcDatabase?.id,
+    );
     if (!this.database) {
       return false;
     }

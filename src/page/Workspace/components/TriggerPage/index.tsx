@@ -10,6 +10,7 @@ import { ConnectionMode, TriggerState } from '@/d.ts';
 import { openTriggerEditPageByName } from '@/store/helper/page';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -24,6 +25,8 @@ import { Button, Layout, message, Modal, Radio, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
@@ -74,10 +77,11 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
+  session: SessionStore;
   sessionManagerStore: SessionManagerStore;
   pageKey: string;
   params: {
-    sessionId: string;
+    databaseId: number;
     dbName: string;
     triggerName: string;
     propsTab: PropsTab;
@@ -89,7 +93,7 @@ interface IProps {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class TriggerPage extends Component<
+class TriggerPage extends Component<
   IProps,
   {
     propsTab: PropsTab;
@@ -204,9 +208,10 @@ export default class TriggerPage extends Component<
   };
   private reloadTrigger = async () => {
     const {
-      params: { triggerName, sessionId, dbName },
+      params: { triggerName, dbName },
+      session,
     } = this.props;
-    const trigger = await getTriggerByName(triggerName, sessionId, dbName);
+    const trigger = await getTriggerByName(triggerName, session?.sessionId, dbName);
     if (trigger) {
       this.setState({
         trigger,
@@ -223,11 +228,10 @@ export default class TriggerPage extends Component<
   };
   private editTrigger = () => {
     const {
-      params: { triggerName, sessionId, dbName },
-      sessionManagerStore,
+      params: { triggerName, dbName },
+      session,
     } = this.props;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
-    openTriggerEditPageByName(triggerName, sessionId, dbName, session?.connection?.id);
+    openTriggerEditPageByName(triggerName, session?.sessionId, dbName, session?.odcDatabase?.id);
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;
@@ -242,9 +246,8 @@ export default class TriggerPage extends Component<
     const {
       trigger: { triggerName, enableState },
     } = this.state;
-    const { sessionManagerStore, params } = this.props;
-    const session = sessionManagerStore.sessionMap.get(params?.sessionId);
-    session.database.getTriggerList();
+    const { session, params } = this.props;
+    session?.database.getTriggerList();
     this.props.pageStore.updatePageColor(triggerName, enableState === TriggerState.disabled);
     this.handleCloseBaseInfo(callback);
   };
@@ -274,9 +277,9 @@ export default class TriggerPage extends Component<
   public render() {
     const {
       sessionManagerStore,
-      params: { sessionId, dbName },
+      params: { dbName },
+      session,
     } = this.props;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { propsTab, trigger, isEditStatus, formated } = this.state;
     const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
@@ -613,3 +616,13 @@ export default class TriggerPage extends Component<
     );
   }
 }
+
+export default WrapSessionPage(function (props) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <TriggerPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

@@ -32,7 +32,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           PageType.BATCH_COMPILE_PACKAGE,
           DbObjectType.package,
           formatMessage({ id: 'odc.components.ResourceTree.Bag' }),
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -47,7 +47,11 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       actionType: actionTypes.create,
       icon: PlusOutlined,
       run(session, node) {
-        modal.changeCreatePackageModalVisible(true, session?.sessionId, session?.database?.dbName);
+        modal.changeCreatePackageModalVisible(
+          true,
+          session?.odcDatabase?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],
@@ -68,7 +72,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           session?.sessionId,
           session?.database?.dbName,
         );
-        openCreatePackageBodyPage(sql, session?.sessionId, session?.database?.dbName);
+        openCreatePackageBodyPage(sql, session?.odcDatabase?.id, session?.database?.dbName);
       },
     },
     {
@@ -89,15 +93,17 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         await openPackageHeadPage(
           pkg?.packageName,
           sql,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
-        await openPackageBodyPage(
-          pkg?.packageName,
-          bodysql,
-          session?.connection?.id,
-          session?.database?.dbName,
-        );
+        if (bodysql) {
+          await openPackageBodyPage(
+            pkg?.packageName,
+            bodysql,
+            session?.odcDatabase?.id,
+            session?.database?.dbName,
+          );
+        }
       },
     },
 
@@ -211,7 +217,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           TopTab.HEAD,
           true,
           session?.database?.dbName,
-          session?.sessionId,
+          session?.odcDatabase?.id,
         );
       },
     },
@@ -232,7 +238,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         await openPackageHeadPage(
           pkg?.packageName,
           sql,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },

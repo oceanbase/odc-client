@@ -9,6 +9,7 @@ import { ConnectionMode, ISequence } from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -22,6 +23,8 @@ import { Layout, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
 import { FormattedMessage } from 'umi';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
 const { Content } = Layout;
@@ -44,7 +47,7 @@ interface IProps {
   params: {
     sequenceName: string;
     propsTab: PropsTab;
-    sessionId: string;
+    databaseId: number;
     dbName: string;
   };
 
@@ -59,7 +62,7 @@ interface IState {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore', 'modalStore')
 @observer
-export default class SequencePage extends Component<IProps, IState> {
+class SequencePage extends Component<IProps & { session: SessionStore }, IState> {
   public editor: IEditor;
 
   public readonly state: IState = {
@@ -99,8 +102,8 @@ export default class SequencePage extends Component<IProps, IState> {
   };
 
   public reloadSequence = async (sequenceName: string) => {
-    const { params } = this.props;
-    const sequence = await getSequence(sequenceName, params.sessionId, params.dbName);
+    const { session } = this.props;
+    const sequence = await getSequence(sequenceName, session?.sessionId, session?.database?.dbName);
     sequence &&
       this.setState({
         sequence,
@@ -133,16 +136,15 @@ export default class SequencePage extends Component<IProps, IState> {
     this.props.modalStore.changeCreateSequenceModalVisible(true, {
       isEdit: true,
       data: sequence,
-      sessionId: this.props.params.sessionId,
+      databaseId: this.props.params.databaseId,
       dbName: this.props.params.dbName,
     });
   };
 
   public render() {
-    const { sessionManagerStore, params } = this.props;
+    const { params, session } = this.props;
     const { propsTab, formated } = this.state;
     const sequence = this.getSequence();
-    const session = sessionManagerStore.sessionMap.get(params.sessionId);
     const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return sequence ? (
@@ -310,3 +312,13 @@ export default class SequencePage extends Component<IProps, IState> {
     );
   }
 }
+
+export default WrapSessionPage(function (props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <SequencePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

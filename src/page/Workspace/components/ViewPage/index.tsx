@@ -56,7 +56,6 @@ interface IProps {
     topTab: TopTab;
     propsTab: PropsTab;
     dbId: number;
-    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
@@ -252,7 +251,11 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
   };
 
   public reloadView = async (viewName: string) => {
-    const view = await getView(viewName, this.props.session?.sessionId, this.props.params.dbName);
+    const view = await getView(
+      viewName,
+      this.props.session?.sessionId,
+      this.props.session?.odcDatabase?.name,
+    );
     if (view) {
       this.setState({ view });
     } else {
@@ -264,7 +267,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     const { columns } = await getView(
       viewName,
       this.props.session?.sessionId,
-      this.props.params.dbName,
+      this.props.session?.odcDatabase?.name,
     );
     this.setState({
       view: {
@@ -298,10 +301,9 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     limit: number = 1000,
   ) => {
     this.setState({ dataLoading: true });
-    const { dbName } = this.props.params;
     try {
       const viewData = await queryTableOrViewData(
-        dbName,
+        this.props.session?.odcDatabase?.name,
         viewName,
         limit,
         false,
@@ -340,7 +342,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
   public render() {
     const {
       pageKey,
-      params: { viewName, dbName },
+      params: { viewName },
       session,
       sessionManagerStore,
     } = this.props;
@@ -413,7 +415,12 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                         }
                         icon={<CloudDownloadOutlined />}
                         onClick={() => {
-                          downloadPLDDL(view?.viewName, 'VIEW', view?.ddl, dbName);
+                          downloadPLDDL(
+                            view?.viewName,
+                            'VIEW',
+                            view?.ddl,
+                            this.props.session?.odcDatabase?.name,
+                          );
                         }}
                       />
 
