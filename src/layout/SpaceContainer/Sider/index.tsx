@@ -1,3 +1,4 @@
+import MessageCount from '@/component/Task/component/MessageCount';
 import { IPageType } from '@/d.ts/_index';
 import LinkOutlined from '@/svgr/icon_connection.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
@@ -70,7 +71,11 @@ const Sider: React.FC<IProps> = function () {
               selected={selected === IPageType.Task}
               icon={TaskSvg}
               collapsed={collapsed}
-              label="工单"
+              label={
+                <MessageCount>
+                  <div style={{ width: '100px' }}>工单</div>
+                </MessageCount>
+              }
             />
           </Link>
           <Link to={`/${IPageType.Auth}/${IPageType.Auth_User}`}>

@@ -7,7 +7,7 @@ import styles from './index.less';
 interface IProps {
   collapsed: boolean;
   icon: any;
-  label: string;
+  label: React.ReactNode;
   selected?: boolean;
   disableTip?: boolean;
 }
@@ -39,7 +39,7 @@ export default function ({ collapsed, icon, label, selected, disableTip, ...rest
   return (
     <div {...rest} className={classNames(styles.item, { [styles.selected]: selected })}>
       <Icon style={{ fontSize: 14 }} component={icon} />
-      <span style={{ marginLeft: 12, lineHeight: 1 }}>{label}</span>
+      <span style={{ marginLeft: 12, lineHeight: 1, flex: 1 }}>{label}</span>
     </div>
   );
 }
