@@ -59,7 +59,6 @@ interface IProps {
     proName: string;
     propsTab: PropsTab;
     databaseId: number;
-    dbName: string;
   };
 
   onUnsavedChange: (pageKey: string) => void;
@@ -116,7 +115,7 @@ class ProcedurePage extends Component<
       proName,
       false,
       session?.sessionId,
-      params.dbName,
+      session?.odcDatabase.name,
     );
     if (procedure) {
       procedure.params = procedure.params.map((param) => {
@@ -146,8 +145,8 @@ class ProcedurePage extends Component<
     await openProcedureEditPageByProName(
       proName,
       session?.sessionId,
-      params.dbName,
-      session?.connection?.id,
+      session?.odcDatabase.name,
+      session?.odcDatabase?.id,
     );
   }
 
@@ -171,7 +170,7 @@ class ProcedurePage extends Component<
   public render() {
     const {
       pageKey,
-      params: { proName, dbName },
+      params: { proName },
       session,
       sessionManagerStore,
     } = this.props;
@@ -283,7 +282,12 @@ class ProcedurePage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(proName, PLType.PROCEDURE, procedure?.ddl, dbName);
+                      downloadPLDDL(
+                        proName,
+                        PLType.PROCEDURE,
+                        procedure?.ddl,
+                        session?.odcDatabase.name,
+                      );
                     }}
                   />
 

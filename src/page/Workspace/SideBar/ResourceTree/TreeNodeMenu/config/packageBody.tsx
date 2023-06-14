@@ -33,7 +33,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           TopTab.BODY,
           true,
           session?.database?.dbName,
-          session?.sessionId,
+          session?.odcDatabase?.id,
         );
       },
     },
@@ -53,7 +53,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         await openPackageBodyPage(
           pkg?.packageName,
           bodysql,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -73,7 +73,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pKey = await openPackageBodyPage(
           pkgInfo?.packageName,
           pkgInfo?.packageBody?.basicInfo?.ddl,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
         setTimeout(() => {
@@ -187,7 +187,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           TopTab.BODY,
           true,
           session?.database?.dbName,
-          session?.sessionId,
+          session?.odcDatabase?.id,
         );
       },
     },
@@ -206,7 +206,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         await openPackageBodyPage(
           pkg?.packageName,
           bodysql,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -242,7 +242,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.funName,
           PLType.FUNCTION,
           plSchema,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
 
@@ -283,7 +283,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.funName,
           PLType.FUNCTION,
           plSchema,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
 
@@ -313,7 +313,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           TopTab.BODY,
           true,
           session?.database?.dbName,
-          session?.sessionId,
+          session?.odcDatabase?.id,
         );
       },
     },
@@ -332,7 +332,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         await openPackageBodyPage(
           pkg?.packageName,
           bodysql,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -368,7 +368,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           plSchema.proName,
           PLType.PROCEDURE,
           plSchema,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
 
@@ -406,10 +406,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         plSchema.packageName = packageName;
         const scriptId = await openFunctionOrProcedureFromPackage(
           packageName,
-          plSchema.funName,
+          plSchema.proName,
           PLType.PROCEDURE,
           plSchema,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
 

@@ -28,8 +28,11 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import { openPackageBodyPage, openPackageHeadPage, updatePage } from '@/store/helper/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { throttle } from 'lodash';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
 const ToolbarButton = Toolbar.Button;
@@ -56,6 +59,7 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
+  session?: SessionStore;
   sessionManagerStore: SessionManagerStore;
   propsTab;
   pageKey: string;
@@ -64,7 +68,7 @@ interface IProps {
     propsTab: PropsTab;
     topTab: TopTab;
     dbName: string;
-    sessionId: string;
+    databaseId: number;
   };
 
   onUnsavedChange: (pageKey: string) => void;
@@ -84,7 +88,7 @@ interface IFunctionPageState {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class FunctionPage extends Component<IProps, IFunctionPageState> {
+class PackagePage extends Component<IProps, IFunctionPageState> {
   public editor_header: IEditor;
   public editor_body: IEditor;
 
@@ -143,10 +147,10 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
   public async componentDidMount() {
     const {
       sessionManagerStore,
-      params: { packageName, dbName, sessionId },
+      params: { packageName, dbName },
+      session,
     } = this.props;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
-    const pkg = await getPackage(packageName, session.sessionId, dbName);
+    const pkg = await getPackage(packageName, session?.sessionId, dbName);
     this.setState({
       pkg,
     });
@@ -162,9 +166,9 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
     async () => {
       const {
         sessionManagerStore,
-        params: { packageName, dbName, sessionId },
+        params: { packageName, dbName },
+        session,
       } = this.props;
-      const session = sessionManagerStore.sessionMap.get(sessionId);
       this.setState({
         reloading: true,
       });
@@ -208,24 +212,24 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
 
   public async handleEditPackage(pkgName: string, type: PropsTab) {
     const {
-      params: { packageName, sessionId },
+      params: { packageName },
       sessionManagerStore,
+      session,
     } = this.props;
     const pkg = this.getPackage(packageName);
-    const session = sessionManagerStore.sessionMap.get(sessionId);
     const { topTab } = this.state;
     if (topTab == TopTab.BODY) {
       openPackageBodyPage(
         pkgName,
         pkg.packageBody.basicInfo.ddl,
-        session?.connection?.id,
+        session?.odcDatabase?.id,
         session?.database?.dbName,
       );
     } else if (topTab == TopTab.HEAD) {
       openPackageHeadPage(
         pkgName,
         pkg.packageHead.basicInfo.ddl,
-        session?.connection?.id,
+        session?.odcDatabase?.id,
         session?.database?.dbName,
       );
     }
@@ -258,12 +262,12 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
     const {
       pageKey,
       sessionManagerStore,
-      params: { packageName, dbName, sessionId },
+      params: { packageName, dbName },
+      session,
     } = this.props;
     const { propsTab, ddlReadOnly, topTab, headerFormated, bodyFormated, reloading } = this.state;
     const pkg = this.getPackage(packageName);
-    const session = sessionManagerStore.sessionMap.get(sessionId);
-    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
 
     if (!pkg) {
       return null;
@@ -587,3 +591,13 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
     );
   }
 }
+
+export default WrapSessionPage(function (props) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <PackagePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

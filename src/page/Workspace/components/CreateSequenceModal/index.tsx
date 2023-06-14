@@ -12,6 +12,7 @@ import SQLExecuteModal from '@/component/SQLExecuteModal';
 import type { ISequence } from '@/d.ts';
 import { openCreateSequencePage } from '@/store/helper/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import styles from './index.less';
 
 interface IProps {
@@ -20,15 +21,16 @@ interface IProps {
 }
 
 const CreateSequenceModal: React.FC<IProps> = function (props) {
-  const { modalStore, sessionManagerStore } = props;
+  const { modalStore } = props;
   const { createSequenceModalData } = modalStore;
   const [executeSQL, setExecuteSQL] = useState();
   const [haveChanged, setHaveChanged] = useState(false);
   const [executeModalVisible, setExecuteModalVisible] = useState(false);
   const [form] = Form.useForm();
   const isEditMode = !!createSequenceModalData?.isEdit;
-  const { sessionId, dbName } = modalStore.createSequenceModalData || {};
-  const session = sessionManagerStore.sessionMap.get(sessionId);
+  const { databaseId, dbName } = modalStore.createSequenceModalData || {};
+  const { session } = useDBSession(databaseId);
+  const sessionId = session?.sessionId;
   useEffect(() => {
     if (modalStore.createSequenceModalVisible) {
       form.resetFields();
@@ -102,7 +104,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
   async function hanldleCreateSql(sequence: ISequence) {
     const sql = await getSequenceCreateSQL(sequence.name, sequence, sessionId, dbName);
     if (sql) {
-      openCreateSequencePage(sql, sessionId, dbName);
+      openCreateSequencePage(sql, session?.odcDatabase?.id, dbName);
       modalStore.changeCreateSequenceModalVisible(false);
     }
   }

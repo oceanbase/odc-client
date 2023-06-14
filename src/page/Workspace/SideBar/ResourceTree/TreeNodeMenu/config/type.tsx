@@ -25,7 +25,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           PageType.BATCH_COMPILE_TYPE,
           DbObjectType.type,
           formatMessage({ id: 'odc.components.ResourceTree.Type' }), //类型
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -36,7 +36,11 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       actionType: actionTypes.create,
       icon: PlusOutlined,
       run(session, node) {
-        modal.changeCreateTypeModalVisible(true, session?.sessionId, session?.database?.dbName);
+        modal.changeCreateTypeModalVisible(
+          true,
+          session?.odcDatabase?.id,
+          session?.database?.dbName,
+        );
       },
     },
   ],
@@ -50,7 +54,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
         openTypeViewPage(
           type?.typeName,
           TypePropsTab.DDL,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },

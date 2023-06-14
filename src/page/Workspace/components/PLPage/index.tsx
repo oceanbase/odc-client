@@ -373,8 +373,8 @@ export class PLPage extends Component<IProps, ISQLPageState> {
             isDebug: true,
           },
         },
-        this.props?.params?.cid,
-        this.props?.params?.dbName,
+        this.getSession()?.odcDatabase?.id,
+        this.getSession()?.odcDatabase?.name,
         this.props?.params?.databaseFrom,
       );
       return;
@@ -1040,6 +1040,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     } = this.state;
     const {} = this.state;
     this.setMobxListener();
+    const formatPLSchema = this.getFormatPLSchema();
     return (
       <ScriptPage
         session={this.getSession()}
@@ -1061,6 +1062,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           onValueChange: this.handleSQLChanged,
           onEditorCreated: this.handleEditorCreated,
         }}
+        sessionSelectReadonly={formatPLSchema?.plName || formatPLSchema?.packageName || debug}
         statusBar={isDebugMode ? this.getDebugStatusBar() : statusBar}
         Result={
           <PLDebugResultSet

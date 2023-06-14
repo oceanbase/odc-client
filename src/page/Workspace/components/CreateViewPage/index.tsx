@@ -55,7 +55,6 @@ interface IProps {
   resultHeight: number;
   params: {
     dbId: number;
-    dbName: string;
   };
 }
 
@@ -119,7 +118,7 @@ class CreateViewPage extends Component<
       pageKey,
       false,
       session?.sessionId,
-      params?.dbName,
+      session?.odcDatabase?.name,
     );
     if (!results || !results.length) {
       return;
@@ -152,7 +151,13 @@ class CreateViewPage extends Component<
           return view.viewName === realViewName;
         })
       ) {
-        openViewViewPage(realViewName, TopTab.PROPS, PropsTab.DDL, params.dbId, params.dbName);
+        openViewViewPage(
+          realViewName,
+          TopTab.PROPS,
+          PropsTab.DDL,
+          session?.odcDatabase?.id,
+          session?.odcDatabase?.name,
+        );
       }
     }
   };
@@ -515,7 +520,11 @@ class CreateViewPage extends Component<
       }),
     };
 
-    const sql = await getViewCreateSQL(reqCreateView, session?.sessionId, params.dbName);
+    const sql = await getViewCreateSQL(
+      reqCreateView,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
     if (sql) {
       sqlStore.clearExecuteRecords();
       this.sql = sql;

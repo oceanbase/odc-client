@@ -146,9 +146,9 @@ class FunctionPage extends Component<
     const { params, session } = this.props;
     await openFunctionEditPageByFuncName(
       funName,
-      session.sessionId,
+      session?.sessionId,
       params.dbName,
-      session?.connection?.id,
+      session?.odcDatabase?.id,
     );
   }
 
@@ -175,7 +175,7 @@ class FunctionPage extends Component<
       params: { funName, dbName },
     } = this.props;
     const { propsTab, func, formated } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
 
     const tableColumns = [
       {

@@ -9,7 +9,11 @@ interface IProps extends React.PropsWithChildren<any> {
   defaultMode: 'project' | 'datasource';
 }
 
-export default function SessionContextWrap({ defaultDatabaseId, defaultMode, children }: IProps) {
+export default function SessionContextWrap({
+  defaultDatabaseId,
+  defaultMode = 'datasource',
+  children,
+}: IProps) {
   const [session, _setSession] = useState<SessionStore>(null);
   const [databaseId, setDatabaseId] = useState(defaultDatabaseId);
   const [from, setFrom] = useState<'project' | 'datasource'>(defaultMode);

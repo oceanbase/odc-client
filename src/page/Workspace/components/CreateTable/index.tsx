@@ -40,7 +40,6 @@ interface IProps {
   sessionManagerStore?: SessionManagerStore;
   params: {
     dbId: number;
-    dbName: string;
   };
 }
 
@@ -127,7 +126,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                     checkConstraints,
                   },
                   session?.sessionId,
-                  params?.dbName,
+                  session?.odcDatabase?.name,
                 );
 
                 if (sql) {
@@ -210,7 +209,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           readonly
           onCancel={() => setDDL('')}
           onSave={async () => {
-            const results = await executeSQL(DDL, session?.sessionId, params.dbName);
+            const results = await executeSQL(DDL, session?.sessionId, session?.odcDatabase?.name);
             const result = results?.find((result) => result.track);
             if (!result?.track) {
               // 关闭创建表页面

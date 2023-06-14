@@ -59,14 +59,17 @@ class DatabaseStore {
 
   public readonly dbName: string = null;
 
-  static async createInstance(sessionId: string, dbName: string) {
-    const db = new DatabaseStore(sessionId, dbName);
+  public readonly databaseId: number = null;
+
+  static async createInstance(sessionId: string, dbName: string, databaseId: number) {
+    const db = new DatabaseStore(sessionId, dbName, databaseId);
     return db;
   }
 
-  constructor(sessionId, dbName) {
+  constructor(sessionId, dbName, databaseId) {
     this.sessionId = sessionId;
     this.dbName = dbName;
+    this.databaseId = databaseId;
   }
 
   @action
@@ -245,6 +248,7 @@ class DatabaseStore {
     const data = res?.data;
     const packageName = data?.packageName;
     if (data) {
+      const dbId = this.databaseId;
       function addKey(target, paramName) {
         const keyMap = {};
         target[paramName] = target[paramName]
@@ -262,7 +266,7 @@ class DatabaseStore {
                   returnType,
               ),
             );
-            const uniqKey = packageName + '.' + name + '*' + key;
+            const uniqKey = `id:${dbId}-` + packageName + '.' + name + '*' + key;
             if (keyMap[uniqKey]) {
               /**
                * 去除完全一致的子程序

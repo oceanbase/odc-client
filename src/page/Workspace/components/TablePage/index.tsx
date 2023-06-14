@@ -7,7 +7,7 @@ import { ExportOutlined } from '@ant-design/icons';
 import { Layout, Radio, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'umi';
 import { ITableModel } from '../CreateTable/interface';
 import TableColumns from './Columns';
@@ -23,7 +23,8 @@ import TableData from './TableData';
 import Toolbar from '@/component/Toolbar';
 import modal from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
-import { useDBSession } from '@/store/sessionManager/hooks';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
 const Content = Layout.Content;
@@ -59,7 +60,7 @@ export enum PropsTab {
   PARTITION = 'PARTITION',
 }
 
-const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pageStore, pageKey }) {
+const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
   const [table, setTable] = useState<Partial<ITableModel>>(null);
   const [version, setVersion] = useState(0);
   const [topTab, setTopTab] = useState(TopTab.PROPS);
@@ -67,7 +68,7 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
   const executeRef = useRef<{
     showExecuteModal: (sql: any, tableName: any) => Promise<boolean>;
   }>();
-  const { session, loading } = useDBSession(params?.databaseId);
+  const { session } = useContext(SessionContext);
   const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
   const enableConstraint = session?.supportFeature?.enableConstraint;
@@ -285,4 +286,7 @@ const TablePage: React.FC<IProps> = function ({ params, sessionManagerStore, pag
   );
 };
 
-export default inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage));
+export default WrapSessionPage(
+  inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage)),
+  true,
+);

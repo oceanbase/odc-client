@@ -31,7 +31,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           PageType.BATCH_COMPILE_PROCEDURE,
           DbObjectType.procedure,
           formatMessage({ id: 'odc.components.ResourceTree.StoredProcedure' }),
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -84,7 +84,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
         );
       },
     },
@@ -104,7 +104,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {
@@ -142,7 +142,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {
@@ -170,7 +170,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
         );
         setTimeout(() => {
           EventBus.dispatch('pageAction', null, {

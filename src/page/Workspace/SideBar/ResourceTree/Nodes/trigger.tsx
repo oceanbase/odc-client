@@ -34,7 +34,10 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
           <Icon
             component={TriggerSvg}
             style={{
-              color: trigger.enableState ? THEME.TRIGGER_ENABLE : THEME.TRIGGER_DISABLE,
+              color:
+                trigger.enableState === TriggerState.enabled
+                  ? THEME.TRIGGER_ENABLE
+                  : THEME.TRIGGER_DISABLE,
             }}
           />
         </Tooltip>

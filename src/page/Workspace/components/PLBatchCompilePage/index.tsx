@@ -6,7 +6,7 @@ import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { debounce } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import SplitPane from 'react-split-pane';
 import CompileResult from './components/CompileResult';
 import HeaderToolbar from './components/HeaderToolbar';
@@ -27,9 +27,9 @@ import {
 } from '@/store/helper/page';
 
 import { SessionManagerStore } from '@/store/sessionManager';
-import SessionStore from '@/store/sessionManager/session';
-import { useUpdate } from 'ahooks';
 import { setTimeout } from 'timers';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
 const TOOLBAR_HEIGHT = 38;
@@ -54,8 +54,7 @@ interface IProps {
   pageStore?: PageStore;
   params: {
     dbObjectType: DbObjectType;
-    cid: number;
-    dbName: string;
+    databaseId: number;
   };
 
   pageKey: string;
@@ -73,10 +72,9 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     sqlStore,
     pageStore,
     pageKey,
-    params: { cid, dbName, dbObjectType },
+    params: { dbObjectType },
   } = props;
   const [compileStatus, setCompileStatus] = useState<CompileStatus>();
-  const update = useUpdate();
   const [compileTime, setCompileTime] = useState<{
     startTime: number;
     endTime: number;
@@ -89,23 +87,9 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   const compileId = useRef(null);
   const { startTime, endTime } = compileTime ?? {};
 
-  const sessionRef = useRef<SessionStore>(null);
-  const session = sessionRef?.current;
+  const { session } = useContext(SessionContext);
 
-  async function createSession() {
-    const session = await sessionManagerStore.createSession(null, cid);
-    sessionRef.current = session;
-    update();
-  }
-
-  useEffect(() => {
-    createSession();
-    return () => {
-      if (sessionRef.current) {
-        sessionManagerStore.destorySession(sessionRef.current?.sessionId);
-      }
-    };
-  }, [cid, dbName]);
+  const dbName = session?.odcDatabase?.name;
 
   const PL_ResourceMap = {
     [DbObjectType.function]: {
@@ -123,7 +107,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         openFunctionViewPage(name, undefined, undefined, session?.odcDatabase?.id, dbName);
       },
       openEditPage: (name, type) => {
-        openFunctionEditPageByFuncName(name, session?.sessionId, dbName, cid);
+        openFunctionEditPageByFuncName(name, session?.sessionId, dbName, session?.odcDatabase?.id);
       },
       loadData: () => {
         session?.database?.getFunctionList();
@@ -140,7 +124,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         };
       }),
       openViewPage: (name) => {
-        openPackageViewPage(name, undefined, true, dbName, session?.sessionId);
+        openPackageViewPage(name, undefined, true, dbName, session?.odcDatabase?.id);
       },
       openEditPage: async (title: string, type: string) => {
         await session?.database?.loadPackage(title);
@@ -149,11 +133,11 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         );
         if (pkg?.packageHead) {
           const headSql = pkg.packageHead?.basicInfo?.ddl || '';
-          openPackageHeadPage(title, headSql, cid, dbName);
+          openPackageHeadPage(title, headSql, session?.odcDatabase?.id, dbName);
         }
         if (pkg?.packageBody) {
           const bodySql = pkg.packageBody?.basicInfo?.ddl || '';
-          openPackageBodyPage(title, bodySql, cid, dbName);
+          openPackageBodyPage(title, bodySql, session?.odcDatabase?.id, dbName);
         }
       },
       loadData: () => {
@@ -176,7 +160,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         openProcedureViewPage(name, undefined, undefined, session?.odcDatabase?.id, dbName);
       },
       openEditPage: (name, type) => {
-        openProcedureEditPageByProName(name, session?.sessionId, dbName, cid);
+        openProcedureEditPageByProName(name, session?.sessionId, dbName, session?.odcDatabase?.id);
       },
       loadData: () => {
         session?.database?.getProcedureList();
@@ -193,10 +177,17 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         };
       }),
       openViewPage: (name) => {
-        openTriggerViewPage(name, undefined, undefined, undefined, session?.sessionId, dbName);
+        openTriggerViewPage(
+          name,
+          undefined,
+          undefined,
+          undefined,
+          session?.odcDatabase?.id,
+          dbName,
+        );
       },
       openEditPage: (name, type) => {
-        openTriggerEditPageByName(name, session?.sessionId, dbName, cid);
+        openTriggerEditPageByName(name, session?.sessionId, dbName, session?.odcDatabase?.id);
       },
       loadData: () => {
         session?.database?.getTriggerList();
@@ -213,10 +204,10 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         };
       }),
       openViewPage: (name) => {
-        openTypeViewPage(name, undefined, session?.sessionId, dbName);
+        openTypeViewPage(name, undefined, session?.odcDatabase?.id, dbName);
       },
       openEditPage: (name, type) => {
-        openTypeEditPageByName(name, session?.sessionId, cid, dbName);
+        openTypeEditPageByName(name, session?.sessionId, session?.odcDatabase?.id, dbName);
       },
       loadData: () => {
         session?.database?.getTypeList();
@@ -320,7 +311,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     loadData();
-  }, [sessionRef.current]);
+  }, [session]);
 
   useEffect(() => {
     if ([CompileStatus.COMPLETED, CompileStatus.TERMINATED].includes(compileStatus)) {
@@ -431,4 +422,6 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('sessionManagerStore', 'sqlStore', 'pageStore')(observer(PLBatchCompilePage));
+export default WrapSessionPage(
+  inject('sessionManagerStore', 'sqlStore', 'pageStore')(observer(PLBatchCompilePage)),
+);

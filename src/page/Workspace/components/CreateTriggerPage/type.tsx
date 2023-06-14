@@ -5,6 +5,7 @@ import {
   ITriggerBaseInfoForm,
   ITriggerFormData,
 } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
@@ -35,7 +36,7 @@ export interface IProps {
   pageKey: string;
 
   params: {
-    sessionId: string;
+    databaseId: number;
     dbName: string;
     preData?: ITriggerFormData;
   };
@@ -59,4 +60,6 @@ export interface IState {
   advancedStatus: StepStatus;
 
   activeKey: Step;
+
+  databases: IDatabase[];
 }

@@ -93,7 +93,7 @@ export function openPackageViewPage(
   topTab: TopTab,
   showCode: boolean,
   dbName: string,
-  sessionId: string,
+  databaseId: number,
 ) {
   let propsTab = '';
   topTab = topTab || TopTab.HEAD;
@@ -122,7 +122,7 @@ export function openPackageViewPage(
       topTab,
       propsTab,
       dbName,
-      sessionId,
+      databaseId,
     },
   );
 }
@@ -497,7 +497,7 @@ export function openProcedureViewPage(
 }
 /** 创建程序包页面 */
 
-export function openCreatePackagePage(sql: string, sessionId: string, dbName: string) {
+export function openCreatePackagePage(sql: string, databaseId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_PACKAGE,
     {
@@ -508,7 +508,7 @@ export function openCreatePackagePage(sql: string, sessionId: string, dbName: st
 
     {
       sql,
-      sessionId,
+      databaseId,
       dbName,
       type: PageType.CREATE_PACKAGE,
     },
@@ -516,7 +516,7 @@ export function openCreatePackagePage(sql: string, sessionId: string, dbName: st
 }
 /** 创建程序包包体页面 */
 
-export function openCreatePackageBodyPage(sql: string, sessionId: string, dbName: string) {
+export function openCreatePackageBodyPage(sql: string, databaseId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_PACKAGE,
     {
@@ -526,7 +526,7 @@ export function openCreatePackageBodyPage(sql: string, sessionId: string, dbName
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       sql,
       type: PageType.CREATE_PACKAGE,
@@ -536,7 +536,7 @@ export function openCreatePackageBodyPage(sql: string, sessionId: string, dbName
 }
 /** 创建序列页面 */
 
-export function openCreateSequencePage(sql: string, sessionId: string, dbName: string) {
+export function openCreateSequencePage(sql: string, databaseId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_SEQUENCE,
     {
@@ -546,7 +546,7 @@ export function openCreateSequencePage(sql: string, sessionId: string, dbName: s
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       sql,
       type: PageType.CREATE_SEQUENCE,
@@ -558,7 +558,7 @@ export function openCreateSequencePage(sql: string, sessionId: string, dbName: s
 export function openSequenceViewPage(
   sequenceName: string,
   propsTab: SequencePropsTab = SequencePropsTab.INFO,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   page?.openPage(
@@ -568,7 +568,7 @@ export function openSequenceViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       sequenceName,
       propsTab,
@@ -710,7 +710,7 @@ export async function openOBClientPage(cid: number, dbName: string) {
  */
 export async function openCreateTriggerPage(
   preData: ITriggerFormData = null,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   await page!.openPage(
@@ -720,7 +720,7 @@ export async function openCreateTriggerPage(
     },
     {
       preData,
-      sessionId,
+      databaseId,
       dbName,
     },
   );
@@ -730,7 +730,7 @@ export async function openCreateTriggerPage(
 export async function openCreateTriggerSQLPage(
   sql: string,
   preData: ITriggerFormData,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   await page!.openPage(
@@ -739,7 +739,7 @@ export async function openCreateTriggerSQLPage(
       title: formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }), // 新建触发器
     },
     {
-      sessionId,
+      databaseId,
       dbName,
       sql,
       preData,
@@ -755,7 +755,7 @@ export function openTriggerViewPage(
   propsTab: TriggerPropsTab = TriggerPropsTab.DDL,
   triggerState: TriggerState,
   triggerData?: ITrigger,
-  sessionId?: string,
+  databaseId?: number,
   dbName?: string,
 ) {
   page.openPage(
@@ -765,7 +765,7 @@ export function openTriggerViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       triggerName,
       triggerData,
@@ -805,7 +805,7 @@ export async function openTriggerEditPageByName(
 export function openCreateSynonymPage(
   sql: string,
   synonymType?: SynonymType,
-  sessionId?: string,
+  databaseId?: number,
   dbName?: string,
 ) {
   page!.openPage(
@@ -815,7 +815,7 @@ export function openCreateSynonymPage(
     },
     {
       sql,
-      sessionId,
+      databaseId,
       dbName,
       synonymType,
       type: PageType.CREATE_SYNONYM,
@@ -827,7 +827,7 @@ export function openCreateSynonymPage(
 export function openSynonymViewPage(
   synonymName: string,
   synonymType: SynonymType,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   page.openPage(
@@ -837,7 +837,7 @@ export function openSynonymViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       synonymName,
       synonymType,
@@ -847,14 +847,14 @@ export function openSynonymViewPage(
 }
 /** 创建类型页面 */
 
-export function openCreateTypePage(sql: string, sessionId: string, dbName: string) {
+export function openCreateTypePage(sql: string, databaseId: number, dbName: string) {
   page!.openPage(
     PageType.CREATE_TYPE,
     {
       title: formatMessage({ id: 'odc.helper.page.openPage.NewType' }), // 新建类型
     },
     {
-      sessionId,
+      databaseId,
       dbName,
       sql,
       type: PageType.CREATE_TYPE,
@@ -866,7 +866,7 @@ export function openCreateTypePage(sql: string, sessionId: string, dbName: strin
 export function openTypeViewPage(
   typeName: string,
   propsTab: TypePropsTab = TypePropsTab.DDL,
-  sessionId: string,
+  databaseId: number,
   dbName: string,
 ) {
   page.openPage(
@@ -876,7 +876,7 @@ export function openTypeViewPage(
     },
 
     {
-      sessionId,
+      databaseId,
       dbName,
       typeName,
       propsTab,
@@ -943,7 +943,7 @@ export function openBatchCompilePLPage(
       ), //`批量编译${label}`
       key: `${cid}-${dbName}-${pageType}`,
     },
-    { dbObjectType, type: pageType, cid, dbName },
+    { dbObjectType, type: pageType, databaseId: cid, dbName },
   );
 }
 

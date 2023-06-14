@@ -10,6 +10,7 @@ import { ConnectionMode, TypePropsTab } from '@/d.ts';
 import { openTypeEditPageByName } from '@/store/helper/page';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -24,6 +25,8 @@ import {
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
@@ -75,7 +78,7 @@ interface IProps {
   params: {
     typeName: string;
     propsTab: TypePropsTab;
-    sessionId: string;
+    databaseId: number;
     dbName: string;
   };
 
@@ -84,8 +87,8 @@ interface IProps {
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class TypePage extends Component<
-  IProps,
+class TypePage extends Component<
+  IProps & { session: SessionStore },
   {
     propsTab: TypePropsTab;
     type: Partial<IType>;
@@ -140,9 +143,10 @@ export default class TypePage extends Component<
   };
   private reloadType = async () => {
     const {
-      params: { typeName, sessionId, dbName },
+      session,
+      params: { typeName, dbName },
     } = this.props;
-    const type = await getType(typeName, false, dbName, sessionId);
+    const type = await getType(typeName, false, dbName, session?.sessionId);
 
     if (type) {
       this.setState({
@@ -156,11 +160,10 @@ export default class TypePage extends Component<
   };
   private handleEditType = () => {
     const {
-      sessionManagerStore,
-      params: { typeName, dbName, sessionId },
+      session,
+      params: { typeName, dbName },
     } = this.props;
-    const session = sessionManagerStore.sessionMap.get(sessionId);
-    openTypeEditPageByName(typeName, session?.sessionId, session?.connection?.id, dbName);
+    openTypeEditPageByName(typeName, session?.sessionId, session?.odcDatabase?.id, dbName);
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;
@@ -180,10 +183,9 @@ export default class TypePage extends Component<
   };
 
   public render() {
-    const { params, sessionManagerStore } = this.props;
+    const { params, sessionManagerStore, session } = this.props;
     const { propsTab, type, formated } = this.state;
-    const session = sessionManagerStore.sessionMap.get(params?.sessionId);
-    const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
     return (
       type && (
@@ -342,3 +344,12 @@ export default class TypePage extends Component<
     );
   }
 }
+export default WrapSessionPage(function (props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <TypePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

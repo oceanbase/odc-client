@@ -31,7 +31,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           PageType.BATCH_COMPILE_TRIGGER,
           DbObjectType.trigger,
           formatMessage({ id: 'odc.components.ResourceTree.Trigger' }),
-          session?.connection?.id,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -42,7 +42,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       actionType: actionTypes.create,
       icon: PlusOutlined,
       run(session, node) {
-        openCreateTriggerPage(null, session?.sessionId, session?.database?.dbName);
+        openCreateTriggerPage(null, session?.odcDatabase?.id, session?.database?.dbName);
       },
     },
   ],
@@ -58,7 +58,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           TriggerPropsTab.DDL,
           trigger?.enableState,
           null,
-          session?.sessionId,
+          session?.odcDatabase?.id,
           session?.database?.dbName,
         );
       },
@@ -77,7 +77,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           trigger?.triggerName,
           session?.sessionId,
           session?.database?.dbName,
-          session?.connection?.id,
+          session?.odcDatabase?.id,
         );
       },
     },
