@@ -19,7 +19,9 @@ export function ProcedureTreeNodeData(
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
 ): TreeDataNode {
-  const funcKey = `${packageName}-${dbName}-procedure-${proc.proName}`;
+  const funcKey = `${
+    packageName ? '' : dbSession?.database?.procedureVersion
+  }-${packageName}-${dbName}-procedure-${proc.proName}`;
   let paramRoot: TreeDataNode;
   let variableRoot: TreeDataNode;
 

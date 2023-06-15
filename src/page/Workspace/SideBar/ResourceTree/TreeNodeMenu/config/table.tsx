@@ -10,7 +10,7 @@ import pageStore from '@/store/page';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -28,6 +28,17 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       actionType: actionTypes.create,
       async run(session, node) {
         openCreateTablePage(session?.odcDatabase?.id, session.database.dbName);
+      },
+    },
+    {
+      key: 'REFRESH',
+      text: [
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+      ],
+      icon: ReloadOutlined,
+      actionType: actionTypes.read,
+      async run(session, node) {
+        await session.database.getTableList();
       },
     },
   ],

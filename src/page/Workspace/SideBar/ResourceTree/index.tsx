@@ -76,6 +76,7 @@ const ResourceTree: React.FC<IProps> = function ({
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
+      console.log('load');
       const { type, data } = treeNode;
       switch (type) {
         case ResourceNodeType.Database: {
@@ -134,7 +135,6 @@ const ResourceTree: React.FC<IProps> = function ({
       <div ref={treeWrapperRef} className={styles.tree}>
         <Tree
           expandAction="click"
-          defaultExpandedKeys={[]}
           showIcon
           filterTreeNode={(node) =>
             node.title.toString().toLowerCase().includes(searchValue?.toLowerCase())
@@ -143,6 +143,7 @@ const ResourceTree: React.FC<IProps> = function ({
           titleRender={renderNode}
           loadData={loadData}
           height={wrapperHeight}
+          onLoad={(keys, info) => console.log(keys, info)}
           selectable={false}
         />
       </div>

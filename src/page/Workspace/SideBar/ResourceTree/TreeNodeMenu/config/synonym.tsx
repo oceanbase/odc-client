@@ -7,7 +7,7 @@ import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -157,6 +157,17 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         );
       },
     },
+    {
+      key: 'REFRESH',
+      text: [
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+      ],
+      icon: ReloadOutlined,
+      actionType: actionTypes.read,
+      async run(session, node) {
+        await session.database.getSynonymList();
+      },
+    },
   ],
   [ResourceNodeType.PublicSynonymRoot]: [
     {
@@ -172,6 +183,17 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
+      },
+    },
+    {
+      key: 'REFRESH',
+      text: [
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+      ],
+      icon: ReloadOutlined,
+      actionType: actionTypes.read,
+      async run(session, node) {
+        await session.database.getPublicSynonymList();
       },
     },
   ],

@@ -24,7 +24,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
   if (views) {
     const dataTypes = sessionManager.sessionMap.get(dbSession?.sessionId)?.dataTypes;
     treeData.children = views.map((view) => {
-      const viewKey = `${dbName}-view-${view.viewName}`;
+      const viewKey = `${dbSession?.database?.viewVersion}-${dbName}-view-${view.viewName}`;
       let columnRoot: TreeDataNode;
       if (view.columns) {
         columnRoot = {

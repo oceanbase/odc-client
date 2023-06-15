@@ -32,7 +32,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   if (tables) {
     const dataTypes = dbSession?.dataTypes;
     treeData.children = tables.map((table) => {
-      const tableKey = `${dbName}-table-${table.info.tableName}`;
+      const tableKey = `${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
       let columnRoot: TreeDataNode;
       if (table.columns) {
         columnRoot = {

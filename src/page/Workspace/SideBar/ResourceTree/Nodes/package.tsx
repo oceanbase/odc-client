@@ -27,7 +27,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   };
   if (packages) {
     treeData.children = packages.map((pkg) => {
-      const pkgKey = `${dbName}-package-${pkg.packageName}`;
+      const pkgKey = `${dbSession?.database?.packageVersion}-${dbName}-package-${pkg.packageName}`;
 
       const { packageHead, packageBody } = pkg;
 

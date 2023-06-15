@@ -6,7 +6,7 @@ import { ResourceNodeType, TreeDataNode } from './type';
 
 export async function loadNode(
   sessionManagerStore: SessionManagerStore,
-  treeNode: EventDataNode & TreeDataNode,
+  treeNode: EventDataNode<TreeDataNode>,
 ) {
   const { type, data, sessionId, packageName } = treeNode;
   switch (type) {
