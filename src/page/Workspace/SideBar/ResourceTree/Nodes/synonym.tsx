@@ -22,7 +22,9 @@ export function SynonymTreeData(
   };
   if (synonyms) {
     treeData.children = synonyms.map((synonym) => {
-      const key = `${dbName}-sequence-${synonym.synonymName}`;
+      const key = `${
+        isPublic ? dbSession?.database?.publicSynonymVersion : dbSession?.database?.synonymVersion
+      }-${dbName}-sequence-${synonym.synonymName}`;
       return {
         title: synonym.synonymName,
         key,

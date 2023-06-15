@@ -13,7 +13,7 @@ import pageStore from '@/store/page';
 import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import EventBus from 'eventbusjs';
 import { ResourceNodeType } from '../../type';
@@ -47,6 +47,17 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
+      },
+    },
+    {
+      key: 'REFRESH',
+      text: [
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+      ],
+      icon: ReloadOutlined,
+      actionType: actionTypes.read,
+      async run(session, node) {
+        await session.database.getFunctionList();
       },
     },
   ],

@@ -19,7 +19,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
   };
   if (sequences) {
     treeData.children = sequences.map((sequence) => {
-      const key = `${dbName}-sequence-${sequence.name}`;
+      const key = `${dbSession?.database?.sequenceVersion}-${dbName}-sequence-${sequence.name}`;
       return {
         title: sequence.name,
         key,

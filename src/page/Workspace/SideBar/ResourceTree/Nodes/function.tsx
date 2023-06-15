@@ -19,7 +19,9 @@ export function FunctionTreeNodeData(
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
 ): TreeDataNode {
-  const funcKey = `${packageName}-${dbName}-function-${func.funName}`;
+  const funcKey = `${
+    packageName ? '' : dbSession?.database?.functionVersion
+  }-${packageName}-${dbName}-function-${func.funName}`;
   let paramRoot: TreeDataNode;
   let returnroot: TreeDataNode;
   let variableRoot: TreeDataNode;

@@ -55,6 +55,22 @@ class DatabaseStore {
   @observable.shallow
   public types: Array<Partial<IType>> = [];
 
+  /**
+   * version 用来标识这个列表的获取时间，在很多场景下，需要感知当前对象的版本，以此来区分新老版本来做出对应的变化
+   * 这里的 version 目前使用时间戳来标识
+   */
+
+  public tableVersion: number = 0;
+  public viewVersion: number = 0;
+  public functionVersion: number = 0;
+  public procedureVersion: number = 0;
+  public sequenceVersion: number = 0;
+  public packageVersion: number = 0;
+  public triggerVersion: number = 0;
+  public synonymVersion: number = 0;
+  public publicSynonymVersion: number = 0;
+  public typeVersion: number = 0;
+
   public readonly sessionId: string = null;
 
   public readonly dbName: string = null;
@@ -90,6 +106,7 @@ class DatabaseStore {
             tableSize: table.tableSize,
           },
         })) || [];
+      this.tableVersion = Date.now();
     });
   }
 
@@ -114,6 +131,7 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/view/list/${sid}`);
     runInAction(() => {
+      this.viewVersion = Date.now();
       this.views = ret?.data || [];
     });
   }
@@ -142,6 +160,7 @@ class DatabaseStore {
       },
     });
     runInAction(() => {
+      this.functionVersion = Date.now();
       this.functions = ret?.data || [];
     });
   }
@@ -169,6 +188,7 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/procedure/list/${sid}`);
     runInAction(() => {
+      this.procedureVersion = Date.now();
       this.procedures = ret?.data || [];
     });
   }
@@ -196,6 +216,7 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const res = await request.get(`/api/v1/trigger/list/${sid}`);
     runInAction(() => {
+      this.triggerVersion = Date.now();
       this.triggers = res?.data || [];
     });
   }
@@ -204,6 +225,7 @@ class DatabaseStore {
   public async getSequenceList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = (await request.get(`/api/v1/sequence/list/${sid}`)) || {};
+    this.sequenceVersion = Date.now();
     this.sequences = ret?.data || [];
   }
 
@@ -211,6 +233,7 @@ class DatabaseStore {
   public async getTypeList() {
     const types = await getTypeList(this.dbName, this.sessionId);
 
+    this.typeVersion = Date.now();
     this.types = types || [];
   }
 
@@ -234,6 +257,7 @@ class DatabaseStore {
   public async getPackageList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/package/list/${sid}`);
+    this.packageVersion = Date.now();
     this.packages = ret?.data || [];
   }
 
@@ -316,6 +340,7 @@ class DatabaseStore {
   @action
   public async getSynonymList() {
     const synonym = await getSynonymList(SynonymType.COMMON, this.dbName, this.sessionId);
+    this.synonymVersion = Date.now();
 
     this.synonyms = synonym || [];
   }
@@ -323,6 +348,7 @@ class DatabaseStore {
   @action
   public async getPublicSynonymList() {
     const synonym = await getSynonymList(SynonymType.PUBLIC, this.dbName, this.sessionId);
+    this.publicSynonymVersion = Date.now();
 
     this.publicSynonyms = synonym || [];
   }

@@ -24,7 +24,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   };
   if (types) {
     treeData.children = types.map((type) => {
-      const pkgKey = `${dbName}-type-${type.typeName}`;
+      const pkgKey = `${dbSession?.database?.typeVersion}-${dbName}-type-${type.typeName}`;
 
       const { typeDetail } = type;
       const functions = typeDetail?.functions;

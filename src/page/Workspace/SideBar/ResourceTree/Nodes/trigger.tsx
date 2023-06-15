@@ -42,7 +42,7 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
           />
         </Tooltip>
       );
-      const key = `${dbName}-trigger-${trigger.triggerName}`;
+      const key = `${dbSession?.database?.triggerVersion}-${dbName}-trigger-${trigger.triggerName}`;
       return {
         title: trigger.triggerName,
         key,
