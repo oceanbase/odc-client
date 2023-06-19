@@ -26,6 +26,7 @@ import {
   openTypeViewPage,
 } from '@/store/helper/page';
 
+import { BatchCompilePage } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { setTimeout } from 'timers';
 import SessionContext from '../SessionContextWrap/context';
@@ -52,11 +53,7 @@ interface IProps {
   sessionManagerStore?: SessionManagerStore;
   sqlStore?: SQLStore;
   pageStore?: PageStore;
-  params: {
-    dbObjectType: DbObjectType;
-    databaseId: number;
-  };
-
+  params: BatchCompilePage['pageParams'];
   pageKey: string;
   page: IPage;
   onSetUnsavedModalTitle: (title: string) => void;

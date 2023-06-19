@@ -1,8 +1,9 @@
 import editorUtils from '@/util/editor';
 import React, { useRef, useState } from 'react';
-import SQLPage from '../SQLPage';
+import { SQLPage } from '../SQLPage';
 
 import { getTutorialById } from '@/common/network/other';
+import { TutorialPage as TutorialPageModel } from '@/store/helper/page/pages';
 import page from '@/store/page';
 import { useRequest } from 'ahooks';
 import { Skeleton } from 'antd';
@@ -11,7 +12,7 @@ import { renderMd } from './helper';
 import styles from './index.less';
 
 interface IProps {
-  params: any;
+  params: TutorialPageModel['pageParams'];
   pageKey?: string;
   closeSelf: () => void;
 }
