@@ -1,4 +1,4 @@
-import { ITriggerFormData, PageType, SynonymType } from '@/d.ts';
+import { SQLConfirmPage } from '@/store/helper/page/pages/create';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
@@ -8,18 +8,7 @@ export interface IProps {
   pageStore: PageStore;
   sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    sql: string;
-    synonymType: SynonymType;
-    // 上一步的表单数据
-    preData: ITriggerFormData;
-    type: PageType;
-    // 是否显示"上一步"
-    hasPre?: boolean;
-    isPackageBody: boolean;
-    databaseId: number;
-    dbName: string;
-  };
+  params: SQLConfirmPage['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }

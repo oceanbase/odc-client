@@ -1,6 +1,7 @@
 import { getConnectionList } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
+import { ConnectionMode } from '@/d.ts';
 import { useRequest } from 'ahooks';
 import { Col, Form, Modal, Radio, Row, Select, Tag } from 'antd';
 import { useContext, useEffect } from 'react';
@@ -8,11 +9,11 @@ import SessionContext from '../context';
 
 interface IProps {
   visible: boolean;
-
+  dialectTypes?: ConnectionMode[];
   close: () => void;
 }
 
-export default function SelectModal({ visible, close }: IProps) {
+export default function SelectModal({ visible, dialectTypes, close }: IProps) {
   const context = useContext(SessionContext);
   const [form] = Form.useForm();
 
@@ -65,7 +66,7 @@ export default function SelectModal({ visible, close }: IProps) {
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       title="切换数据库"
       width={520}
       onCancel={close}
@@ -113,6 +114,7 @@ export default function SelectModal({ visible, close }: IProps) {
                 <>
                   <Form.Item rules={[{ required: true }]} label="所属项目" name="project">
                     <Select
+                      showSearch
                       loading={projectLoading}
                       onChange={(value) => {
                         fetchDatabase(value, null, 1, 9999);
@@ -134,6 +136,7 @@ export default function SelectModal({ visible, close }: IProps) {
                   </Form.Item>
                   <Form.Item rules={[{ required: true }]} label="数据库" name="database">
                     <Select
+                      showSearch
                       loading={databaseLoading}
                       optionFilterProp="name"
                       style={{ width: '320px' }}
@@ -161,6 +164,7 @@ export default function SelectModal({ visible, close }: IProps) {
                       >
                         <Select
                           loading={datasourceLoading}
+                          showSearch
                           onChange={(value) => {
                             fetchDatabase(null, value, 1, 9999);
                             form.setFieldsValue({
@@ -170,13 +174,21 @@ export default function SelectModal({ visible, close }: IProps) {
                           optionFilterProp="name"
                           style={{ width: '320px' }}
                         >
-                          {datasourceList?.contents?.map((item) => {
-                            return (
-                              <Select.Option value={item.id} key={item.id}>
-                                {item.name}
-                              </Select.Option>
-                            );
-                          })}
+                          {datasourceList?.contents
+                            ?.map((item) => {
+                              if (
+                                dialectTypes?.length &&
+                                !dialectTypes.includes(item.dialectType)
+                              ) {
+                                return null;
+                              }
+                              return (
+                                <Select.Option value={item.id} key={item.id}>
+                                  {item.name}
+                                </Select.Option>
+                              );
+                            })
+                            .filter(Boolean)}
                         </Select>
                       </Form.Item>
                     </Col>
@@ -202,14 +214,23 @@ export default function SelectModal({ visible, close }: IProps) {
                       loading={databaseLoading}
                       optionFilterProp="name"
                       style={{ width: '320px' }}
+                      showSearch
                     >
-                      {databases?.contents?.map((item) => {
-                        return (
-                          <Select.Option value={item.id} key={item.id}>
-                            {item.name}
-                          </Select.Option>
-                        );
-                      })}
+                      {databases?.contents
+                        ?.map((item) => {
+                          if (
+                            dialectTypes?.length &&
+                            !dialectTypes.includes(item.dataSource?.dialectType)
+                          ) {
+                            return null;
+                          }
+                          return (
+                            <Select.Option value={item.id} key={item.id}>
+                              {item.name}
+                            </Select.Option>
+                          );
+                        })
+                        .filter(Boolean)}
                     </Select>
                   </Form.Item>
                 </>

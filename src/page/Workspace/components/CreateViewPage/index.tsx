@@ -3,6 +3,7 @@ import { IEditor } from '@/component/MonacoEditor';
 import ScriptPage from '@/component/ScriptPage';
 import { ConnectionMode, ICreateView, ICreateViewColumn, ICreateViewViewUnit } from '@/d.ts';
 import { openViewViewPage } from '@/store/helper/page';
+import { CreateViewPage as CreateViewPageModel } from '@/store/helper/page/pages/create';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -53,9 +54,7 @@ interface IProps {
   viewUnits: ICreateViewViewUnit[];
   operations: string[];
   resultHeight: number;
-  params: {
-    dbId: number;
-  };
+  params: CreateViewPageModel['pageParams'];
 }
 
 @inject('sqlStore', 'sessionManagerStore', 'pageStore')

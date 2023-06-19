@@ -5,6 +5,7 @@ import tracert from '@/util/tracert';
 import { message } from 'antd';
 import { isNil } from 'lodash';
 import { action, computed, observable } from 'mobx';
+import { Page } from './helper/page/pages/base';
 import { generatePageKey, generatePageTitle, resetPageKey } from './helper/pageKeyGenerate';
 import login from './login';
 import { autoSave } from './utils/metaSync';
@@ -181,6 +182,56 @@ export class PageStore {
       await this.setActivePageKeyAndPushUrl(key);
     }
     await this.updatePage(key, undefined, pageData);
+  }
+
+  @action
+  public async newOrOpenPage(page: Page, insertHead?: boolean) {
+    let { pageTitle, pageKey, pageParams, pageType } = page;
+    const isUnique = this.isUnique(pageType, pageParams);
+    const existed = !!this.pages.find((p) => p.key === pageKey);
+    switch (pageType) {
+      case PageType.SQL:
+      case PageType.PL: {
+        if (!existed && !isUnique) {
+          const count = this.pages.filter((page) => {
+            return page.type == pageType;
+          }).length;
+          if (count >= 32) {
+            message.error(
+              (pageType == PageType.PL ? 'PL' : 'SQL') +
+                formatMessage({
+                  id: 'odc.src.store.page.TheNumberOfWindowsCannot',
+                }),
+            );
+            return;
+          }
+        }
+        break;
+      }
+      default: {
+      }
+    }
+
+    /** 未打开的page或者未保存的page，则push进pages。 */
+    if (!(isUnique && existed)) {
+      const newPage = {
+        key: pageKey,
+        title: pageTitle,
+        type: pageType,
+        isSaved: true,
+        params: pageParams,
+      };
+
+      if (insertHead) {
+        this.pages = [].concat(newPage).concat(this.pages);
+      } else {
+        this.pages = this.pages.concat(newPage);
+      }
+    }
+    if (open) {
+      await this.setActivePageKeyAndPushUrl(pageKey);
+    }
+    await this.updatePage(pageKey, undefined, pageParams);
   }
 
   /** New!!!更新page */

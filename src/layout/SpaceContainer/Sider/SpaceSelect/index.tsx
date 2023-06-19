@@ -38,7 +38,7 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       value={userStore?.user?.organizationId}
       suffixIcon={<SwapOutlined />}
       dropdownMatchSelectWidth={144}
-      style={{ width: collapsed ? 40 : 144 }}
+      style={{ width: collapsed ? 30 : 144 }}
       bordered={false}
       menuItemSelectedIcon={<CheckOutlined />}
       onChange={handleChange}
@@ -51,14 +51,14 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
                 <div className={styles.private}>
                   <Icon component={PersonalSvg} />
                 </div>
-                <span>{item.displayName}</span>
+                <span>{item.displayName || '-'}</span>
               </Space>
             ) : (
               <Space>
                 <div className={styles.synergy}>
                   <Icon component={GroupSvg} />
                 </div>
-                <span>{item.displayName}</span>
+                <span>{item.displayName || '-'}</span>
               </Space>
             ),
         };

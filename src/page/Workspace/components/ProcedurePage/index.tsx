@@ -23,6 +23,7 @@ import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page';
+import { ProcedurePage as ProcedurePageModel } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { parseDataType } from '@/util/dataType';
@@ -55,11 +56,7 @@ interface IProps {
   pageStore: PageStore;
   sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    proName: string;
-    propsTab: PropsTab;
-    databaseId: number;
-  };
+  params: ProcedurePageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }

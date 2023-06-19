@@ -19,6 +19,7 @@ import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
+import { CreateTablePage } from '@/store/helper/page/pages/create';
 import page from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
@@ -38,9 +39,7 @@ const TabPane = Tabs.TabPane;
 interface IProps {
   pageKey: string;
   sessionManagerStore?: SessionManagerStore;
-  params: {
-    dbId: number;
-  };
+  params: CreateTablePage['pageParams'];
 }
 
 const defaultInfo: TableInfo = {

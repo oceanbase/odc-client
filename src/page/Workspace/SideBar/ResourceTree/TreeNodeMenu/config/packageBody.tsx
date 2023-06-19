@@ -8,11 +8,11 @@ import {
   openPackageBodyPage,
   openPackageViewPage,
 } from '@/store/helper/page';
+import { triggerActionAfterPLPageCreated } from '@/util/events';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import EventBus from 'eventbusjs';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
@@ -28,13 +28,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       ],
       run(session, node) {
         const pkgInfo: IPackage = node.data;
-        openPackageViewPage(
-          pkgInfo?.packageName,
-          TopTab.BODY,
-          true,
-          session?.database?.dbName,
-          session?.odcDatabase?.id,
-        );
+        openPackageViewPage(pkgInfo?.packageName, TopTab.BODY, true, session?.odcDatabase?.id);
       },
     },
 
@@ -50,12 +44,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pkgInfo: IPackage = node.data;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageBodyPage(
-          pkg?.packageName,
-          bodysql,
-          session?.odcDatabase?.id,
-          session?.database?.dbName,
-        );
+        await openPackageBodyPage(pkg?.packageName, bodysql, session?.odcDatabase?.id);
       },
     },
     {
@@ -70,20 +59,12 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
-        const pKey = await openPackageBodyPage(
+        const { pkgPage, isNew } = await openPackageBodyPage(
           pkgInfo?.packageName,
           pkgInfo?.packageBody?.basicInfo?.ddl,
           session?.odcDatabase?.id,
-          session?.database?.dbName,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: pKey,
-            params: {
-              action: 'COMPILE',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(pkgPage, 'compile', isNew);
       },
     },
     {
@@ -182,13 +163,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         }),
       ],
       run(session, node) {
-        openPackageViewPage(
-          node.pkg?.packageName,
-          TopTab.BODY,
-          true,
-          session?.database?.dbName,
-          session?.odcDatabase?.id,
-        );
+        openPackageViewPage(node.pkg?.packageName, TopTab.BODY, true, session?.odcDatabase?.id);
       },
     },
     {
@@ -203,12 +178,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pkgInfo = node.pkg;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageBodyPage(
-          pkg?.packageName,
-          bodysql,
-          session?.odcDatabase?.id,
-          session?.database?.dbName,
-        );
+        await openPackageBodyPage(pkg?.packageName, bodysql, session?.odcDatabase?.id);
       },
     },
 
@@ -237,7 +207,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         plSchema.ddl = targetPackage.packageBody.basicInfo.ddl; // 补充字段 packageName
 
         plSchema.packageName = packageName;
-        const scriptId = await openFunctionOrProcedureFromPackage(
+        const { plPage, isNew } = await openFunctionOrProcedureFromPackage(
           packageName,
           plSchema.funName,
           PLType.FUNCTION,
@@ -246,14 +216,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           session?.database?.dbName,
         );
 
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: plSchema.key,
-            params: {
-              action: 'DEBUG',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(plPage, 'debug', isNew);
       },
     },
     {
@@ -278,7 +241,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         plSchema.ddl = targetPackage.packageBody.basicInfo.ddl; // 补充字段 packageName
 
         plSchema.packageName = packageName;
-        const scriptId = await openFunctionOrProcedureFromPackage(
+        const { plPage, isNew } = await openFunctionOrProcedureFromPackage(
           packageName,
           plSchema.funName,
           PLType.FUNCTION,
@@ -287,14 +250,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           session?.database?.dbName,
         );
 
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: plSchema.key,
-            params: {
-              action: 'EXEC',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(plPage, 'run', isNew);
       },
     },
   ],
@@ -308,13 +264,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         }),
       ],
       run(session, node) {
-        openPackageViewPage(
-          node.pkg?.packageName,
-          TopTab.BODY,
-          true,
-          session?.database?.dbName,
-          session?.odcDatabase?.id,
-        );
+        openPackageViewPage(node.pkg?.packageName, TopTab.BODY, true, session?.odcDatabase?.id);
       },
     },
     {
@@ -329,12 +279,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         const pkgInfo = node.pkg;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageBodyPage(
-          pkg?.packageName,
-          bodysql,
-          session?.odcDatabase?.id,
-          session?.database?.dbName,
-        );
+        await openPackageBodyPage(pkg?.packageName, bodysql, session?.odcDatabase?.id);
       },
     },
 
@@ -363,7 +308,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         plSchema.ddl = targetPackage.packageBody.basicInfo.ddl; // 补充字段 packageName
 
         plSchema.packageName = packageName;
-        const scriptId = await openFunctionOrProcedureFromPackage(
+        const { plPage, isNew } = await openFunctionOrProcedureFromPackage(
           packageName,
           plSchema.proName,
           PLType.PROCEDURE,
@@ -371,15 +316,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
-
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: plSchema.key,
-            params: {
-              action: 'DEBUG',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(plPage, 'debug', isNew);
       },
     },
     {
@@ -404,7 +341,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         plSchema.ddl = targetPackage.packageBody.basicInfo.ddl; // 补充字段 packageName
 
         plSchema.packageName = packageName;
-        const scriptId = await openFunctionOrProcedureFromPackage(
+        const { plPage, isNew } = await openFunctionOrProcedureFromPackage(
           packageName,
           plSchema.proName,
           PLType.PROCEDURE,
@@ -412,15 +349,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
-
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: plSchema.key,
-            params: {
-              action: 'EXEC',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(plPage, 'run', isNew);
       },
     },
   ],

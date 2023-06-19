@@ -1,5 +1,5 @@
 import { getTableInfo } from '@/common/network/table';
-import { ConstraintType, DbObjectType } from '@/d.ts';
+import { DbObjectType } from '@/d.ts';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
@@ -21,6 +21,7 @@ import ShowTableBaseInfoForm from './ShowTableBaseInfoForm';
 import TableData from './TableData';
 
 import Toolbar from '@/component/Toolbar';
+import { TablePage as TablePageModel } from '@/store/helper/page/pages';
 import modal from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionContext from '../SessionContextWrap/context';
@@ -35,13 +36,7 @@ interface IProps {
   pageStore?: PageStore;
   settingStore?: SettingStore;
   sessionManagerStore?: SessionManagerStore;
-  params: {
-    tableName: string;
-    topTab: TopTab;
-    propsTab: PropsTab;
-    constraintsTab: ConstraintType;
-    databaseId: number;
-  };
+  params: TablePageModel['pageParams'];
 }
 
 // 顶层 Tab key 枚举

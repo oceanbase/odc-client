@@ -124,7 +124,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         };
       }),
       openViewPage: (name) => {
-        openPackageViewPage(name, undefined, true, dbName, session?.odcDatabase?.id);
+        openPackageViewPage(name, undefined, true, session?.odcDatabase?.id);
       },
       openEditPage: async (title: string, type: string) => {
         await session?.database?.loadPackage(title);
@@ -133,11 +133,11 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
         );
         if (pkg?.packageHead) {
           const headSql = pkg.packageHead?.basicInfo?.ddl || '';
-          openPackageHeadPage(title, headSql, session?.odcDatabase?.id, dbName);
+          openPackageHeadPage(title, headSql, session?.odcDatabase?.id);
         }
         if (pkg?.packageBody) {
           const bodySql = pkg.packageBody?.basicInfo?.ddl || '';
-          openPackageBodyPage(title, bodySql, session?.odcDatabase?.id, dbName);
+          openPackageBodyPage(title, bodySql, session?.odcDatabase?.id);
         }
       },
       loadData: () => {

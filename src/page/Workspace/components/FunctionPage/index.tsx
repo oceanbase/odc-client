@@ -22,6 +22,7 @@ import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { PLType } from '@/constant/plType';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
+import { FunctionPage as FunctionPageModel } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { parseDataType } from '@/util/dataType';
@@ -54,12 +55,7 @@ interface IProps {
   pageStore: PageStore;
   sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    funName: string;
-    propsTab: PropsTab;
-    databaseId: number;
-    dbName: string;
-  };
+  params: FunctionPageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
@@ -117,7 +113,7 @@ class FunctionPage extends Component<
       funName,
       false,
       session?.sessionId,
-      params?.dbName,
+      session?.database?.dbName,
     );
     if (func) {
       func.params = func.params.map((param) => {
@@ -147,7 +143,7 @@ class FunctionPage extends Component<
     await openFunctionEditPageByFuncName(
       funName,
       session?.sessionId,
-      params.dbName,
+      session?.database?.dbName,
       session?.odcDatabase?.id,
     );
   }
@@ -172,7 +168,7 @@ class FunctionPage extends Component<
   public render() {
     const {
       session,
-      params: { funName, dbName },
+      params: { funName },
     } = this.props;
     const { propsTab, func, formated } = this.state;
     const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
@@ -286,7 +282,7 @@ class FunctionPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl, dbName);
+                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl, session?.database?.dbName);
                     }}
                   />
 

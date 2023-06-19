@@ -3,7 +3,7 @@ import EditorToolBar from '@/component/EditorToolBar';
 import GrammerHelpSider from '@/component/GrammerHelpSider';
 import StatusBar from '@/component/StatusBar';
 import { EDITOR_TOOLBAR_HEIGHT, SQL_PAGE_RESULT_HEIGHT } from '@/constant';
-import { DbObjectType } from '@/d.ts/index';
+import { ConnectionMode, DbObjectType } from '@/d.ts/index';
 import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect';
 import { IDebugStackItem } from '@/store/debug/type';
 import SessionStore from '@/store/sessionManager/session';
@@ -38,6 +38,7 @@ interface IProps {
   Others: any;
   session: SessionStore;
   sessionSelectReadonly?: boolean;
+  dialectTypes?: ConnectionMode[];
   handleChangeSplitPane?: (size: number) => void;
 }
 
@@ -79,6 +80,7 @@ export default class ScriptPage extends PureComponent<IProps> {
       settingStore,
       session,
       sessionSelectReadonly,
+      dialectTypes,
     } = this.props;
     const isShowDebugStackBar = !!stackbar?.list?.length;
     return (
@@ -91,7 +93,7 @@ export default class ScriptPage extends PureComponent<IProps> {
       >
         <Content style={{ position: 'relative' }}>
           {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
-          <SessionSelect readonly={sessionSelectReadonly} />
+          <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {

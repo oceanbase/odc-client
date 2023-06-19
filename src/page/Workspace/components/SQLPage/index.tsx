@@ -134,8 +134,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }
 
   public async componentDidMount() {
-    const { params, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent } = this.props;
-    const pageName = pageKey.replace('spl-new-', '');
+    const { params, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent, page } = this.props;
     onSetUnsavedModalTitle(
       formatMessage({
         id: 'workspace.window.sql.modal.close.title',
@@ -149,15 +148,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         },
 
         {
-          name:
-            params.scriptName ||
-            formatMessage(
-              {
-                id: 'odc.components.SQLPage.SqlWindowPagename',
-              },
-
-              { pageName },
-            ),
+          name: page.title,
 
           // `SQL 窗口_${pageName}`
         },

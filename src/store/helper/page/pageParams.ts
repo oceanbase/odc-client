@@ -23,7 +23,6 @@ export interface IPLPageParams extends Partial<IScriptMeta> {
 
 export interface ISQLPageParams extends Partial<IScriptMeta> {
   scriptText: string;
-  scriptName?: string;
   scriptId?: string;
   fromTask?: boolean;
   cid: number;

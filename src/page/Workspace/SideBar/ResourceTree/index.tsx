@@ -143,7 +143,6 @@ const ResourceTree: React.FC<IProps> = function ({
           titleRender={renderNode}
           loadData={loadData}
           height={wrapperHeight}
-          onLoad={(keys, info) => console.log(keys, info)}
           selectable={false}
         />
       </div>

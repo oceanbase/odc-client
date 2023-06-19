@@ -11,11 +11,11 @@ import {
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
+import { triggerActionAfterPLPageCreated } from '@/util/events';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import EventBus from 'eventbusjs';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
@@ -111,20 +111,13 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       },
       async run(session, node) {
         const proc: IProcedure = node.data;
-        await openProcedureEditPageByProName(
+        const { plPage, isNew } = await openProcedureEditPageByProName(
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: proc.proName,
-            params: {
-              action: 'COMPILE',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(plPage, 'compile', isNew);
       },
     },
     {
@@ -149,20 +142,14 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
 
           return;
         }
-        await openProcedureEditPageByProName(
+        const { plPage, isNew } = await openProcedureEditPageByProName(
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: proc.proName,
-            params: {
-              action: 'DEBUG',
-            },
-          });
-        });
+
+        triggerActionAfterPLPageCreated(plPage, 'debug', isNew);
       },
     },
     {
@@ -177,20 +164,14 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       hasDivider: true,
       async run(session, node) {
         const proc: IProcedure = node.data;
-        await openProcedureEditPageByProName(
+        const { plPage, isNew } = await openProcedureEditPageByProName(
           proc?.proName,
           session?.sessionId,
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: node.title,
-            params: {
-              action: 'EXEC',
-            },
-          });
-        });
+
+        triggerActionAfterPLPageCreated(plPage, 'run', isNew);
       },
     },
 

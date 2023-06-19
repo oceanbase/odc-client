@@ -6,6 +6,7 @@ import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { ConnectionMode, ISequence } from '@/d.ts';
+import { SequencePage as SequencePageModel } from '@/store/helper/page/pages';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
@@ -44,12 +45,7 @@ interface IProps {
   sessionManagerStore: SessionManagerStore;
   modalStore?: ModalStore;
   pageKey: string;
-  params: {
-    sequenceName: string;
-    propsTab: PropsTab;
-    databaseId: number;
-    dbName: string;
-  };
+  params: SequencePageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
@@ -136,8 +132,8 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
     this.props.modalStore.changeCreateSequenceModalVisible(true, {
       isEdit: true,
       data: sequence,
-      databaseId: this.props.params.databaseId,
-      dbName: this.props.params.dbName,
+      databaseId: this.props.session?.odcDatabase?.id,
+      dbName: this.props.session?.odcDatabase?.name,
     });
   };
 
@@ -265,7 +261,12 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                   }
                   icon={<CloudDownloadOutlined />}
                   onClick={() => {
-                    downloadPLDDL(sequence?.name, 'SEQUENCE', sequence?.ddl, params.dbName);
+                    downloadPLDDL(
+                      sequence?.name,
+                      'SEQUENCE',
+                      sequence?.ddl,
+                      this.props.session?.odcDatabase?.name,
+                    );
                   }}
                 />
 

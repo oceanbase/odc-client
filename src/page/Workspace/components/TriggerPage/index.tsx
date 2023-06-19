@@ -6,8 +6,9 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ITrigger } from '@/d.ts';
-import { ConnectionMode, TriggerState } from '@/d.ts';
+import { ConnectionMode, TriggerPropsTab as PropsTab, TriggerState } from '@/d.ts';
 import { openTriggerEditPageByName } from '@/store/helper/page';
+import { TriggerPage as TriggerPageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -67,26 +68,13 @@ const tableColumns = [
 
 // 属性 Tab key 枚举
 
-export enum PropsTab {
-  BASE_INFO = 'INFO',
-  BASE_OBJECT = 'BASE_OBJECT',
-  CORRELATION = 'CORRELATION',
-  DDL = 'DDL',
-}
-
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
   session: SessionStore;
   sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    databaseId: number;
-    dbName: string;
-    triggerName: string;
-    propsTab: PropsTab;
-    triggerData: ITrigger;
-  };
+  params: TriggerPageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
@@ -208,10 +196,14 @@ class TriggerPage extends Component<
   };
   private reloadTrigger = async () => {
     const {
-      params: { triggerName, dbName },
+      params: { triggerName },
       session,
     } = this.props;
-    const trigger = await getTriggerByName(triggerName, session?.sessionId, dbName);
+    const trigger = await getTriggerByName(
+      triggerName,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
     if (trigger) {
       this.setState({
         trigger,
@@ -228,10 +220,15 @@ class TriggerPage extends Component<
   };
   private editTrigger = () => {
     const {
-      params: { triggerName, dbName },
+      params: { triggerName },
       session,
     } = this.props;
-    openTriggerEditPageByName(triggerName, session?.sessionId, dbName, session?.odcDatabase?.id);
+    openTriggerEditPageByName(
+      triggerName,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+      session?.odcDatabase?.id,
+    );
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;
@@ -275,11 +272,7 @@ class TriggerPage extends Component<
   };
 
   public render() {
-    const {
-      sessionManagerStore,
-      params: { dbName },
-      session,
-    } = this.props;
+    const { sessionManagerStore, session } = this.props;
     const { propsTab, trigger, isEditStatus, formated } = this.state;
     const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
@@ -561,7 +554,12 @@ class TriggerPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(trigger?.triggerName, PLType.TRIGGER, trigger?.ddl, dbName);
+                      downloadPLDDL(
+                        trigger?.triggerName,
+                        PLType.TRIGGER,
+                        trigger?.ddl,
+                        session?.odcDatabase?.name,
+                      );
                     }}
                   />
 

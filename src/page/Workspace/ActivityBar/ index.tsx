@@ -5,16 +5,18 @@ import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
 import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
 import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
 import { formatMessage } from '@/util/intl';
-import { Space } from 'antd';
+import { Divider, Space } from 'antd';
 import ActivityBarButton from './ActivityBarButton';
 import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
 
+import SpaceSelect from '@/layout/SpaceContainer/Sider/SpaceSelect';
 import DBSvg from '@/svgr/database_outline.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
 import ManagerSvg from '@/svgr/operate.svg';
 import CodeSvg from '@/svgr/Snippet.svg';
+import { isClient } from '@/util/env';
 import ActivityBarContext from '../context/ActivityBarContext';
 
 interface IProps {}
@@ -58,6 +60,13 @@ const ActivityBar: React.FC<IProps> = function () {
     <div className={styles.bar}>
       <div className={styles.top}>
         <Logo />
+        {!isClient() && (
+          <>
+            <SpaceSelect collapsed={true} />
+            <Divider style={{ marginTop: 6, marginBottom: 12 }} />
+          </>
+        )}
+
         <Space size={12} direction="vertical">
           {items
             .filter((item) => item.isVisible)

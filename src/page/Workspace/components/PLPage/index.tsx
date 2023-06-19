@@ -3,7 +3,7 @@ import PL_ACTIONS from '@/component/EditorToolBar/actions/pl';
 import EditPLParamsModal from '@/component/EditPLParamsModal';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
-import { IPLPageParams, openNewDefaultPLPage } from '@/store/helper/page';
+import { openNewDefaultPLPage } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SQLStore } from '@/store/sql';
@@ -31,7 +31,15 @@ import PL_TYPE, { PLType } from '@/constant/plType';
 import { DebugStore } from '@/store/debug';
 import { DebugStatus, IDebugStackItem } from '@/store/debug/type';
 import { debounceUpdatePageScriptText, updatePage } from '@/store/helper/page';
+import {
+  AnonymousPage,
+  PackageBodyPage,
+  PackageHeadPage,
+  PLEditPage,
+  PLPageType,
+} from '@/store/helper/page/pages/pl';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { IPLPageActionData, IPLPageCreatedEventData, ODCEventType } from '@/util/events/type';
 import notification from '@/util/notification';
 import { getPLEntryName } from '@/util/parser';
 import { checkPLNameChanged } from '@/util/pl';
@@ -62,7 +70,11 @@ export interface IStatusBar {
 }
 
 interface IProps {
-  params: IPLPageParams;
+  params:
+    | PLEditPage['pageParams']
+    | PackageHeadPage['pageParams']
+    | PackageBodyPage['pageParams']
+    | AnonymousPage['pageParams'];
   sqlStore: SQLStore;
   userStore: UserStore;
   pageStore: PageStore;
@@ -126,7 +138,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   public readonly state: ISQLPageState = {
     isReady: false,
     resultHeight: RESULT_HEIGHT,
-    initialSQL: (this.props.params && this.props.params.scriptText) || '',
+    initialSQL: this.props.params?.scriptText || '',
     showSaveSQLModal: false,
     executeSQLLoading: false,
     showEditPLParamsModal: false,
@@ -173,22 +185,30 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       onSetUnsavedModalTitle,
       onSetUnsavedModalContent,
     } = this.props;
-    onSetUnsavedModalTitle(formatMessage({ id: 'workspace.window.sql.modal.close.title' }));
-    onSetUnsavedModalContent(
-      formatMessage(
-        { id: 'workspace.window.sql.modal.close.content' },
-        {
-          name: params.scriptName || 'PL 窗口_' + pageKey.replace('pl-new-', ''),
-        },
-      ),
-    );
+    if (params?.plPageType === PLPageType.anonymous) {
+      onSetUnsavedModalTitle(formatMessage({ id: 'workspace.window.sql.modal.close.title' }));
+      onSetUnsavedModalContent(
+        formatMessage(
+          { id: 'workspace.window.sql.modal.close.content' },
+          {
+            name: params.scriptName || 'PL 窗口_' + pageKey.replace('pl-new-', ''),
+          },
+        ),
+      );
+    }
     this.setState({
       isReady: true,
     });
-    EventBus.addEventListener('pageAction', this.listenAction);
   }
 
-  public async UNSAFE_componentWillReceiveProps(nextProps) {
+  public registerEventBus() {
+    EventBus.addEventListener(ODCEventType.PLPageAction, this.listenAction);
+    EventBus.dispatch(ODCEventType.PLPageCreated, null, {
+      pageKey: this.props.pageKey,
+    } as IPLPageCreatedEventData);
+  }
+
+  public async UNSAFE_componentWillReceiveProps(nextProps, prevProps) {
     if (nextProps) {
       if (nextProps.startSaving) {
         this.handleSave();
@@ -203,12 +223,48 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       });
     }
   }
-  public listenAction = (e, { key, params }) => {
-    const { params: ps } = this.props;
-    if (ps?.fromPackage && ps.plSchema?.key === key) {
-      this.autoRunPLAction(params);
-    } else if (ps.scriptId == key) {
-      this.autoRunPLAction(params);
+  componentDidUpdate(
+    prevProps: Readonly<IProps>,
+    prevState: Readonly<ISQLPageState>,
+    snapshot?: any,
+  ): void {
+    /**
+     * 注册eventbus
+     */
+    if (
+      !this.props.sessionManagerStore.sessionMap.has(prevProps.sessionId) &&
+      this.props.sessionManagerStore.sessionMap.has(this.props.sessionId)
+    ) {
+      this.registerEventBus();
+    }
+  }
+  public listenAction = (e, data: IPLPageActionData) => {
+    const { sessionManagerStore, sessionId, params } = this.props;
+    const { action, databaseId, plName, plType } = data;
+    const session = sessionManagerStore.sessionMap.get(sessionId);
+    if (!session) {
+      return;
+    }
+    const { odcDatabase } = session;
+    if (odcDatabase?.id !== databaseId) {
+      return;
+    }
+    switch (params?.plPageType) {
+      case PLPageType.plEdit: {
+        if (params?.plName === plName && params?.plType === plType) {
+          this.autoRunPLAction(data);
+        }
+        return;
+      }
+      case PLPageType.pkgBody: {
+        if (params?.plSchema?.plName === plName && plType === PLType.PKG_BODY) {
+          this.autoRunPLAction(data);
+        }
+        return;
+      }
+      default: {
+        return;
+      }
     }
   };
 
@@ -228,25 +284,36 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     if (this.getSession()) {
       this.props.sessionManagerStore.destorySession(this.getSession().sessionId);
     }
-    EventBus.removeEventListener('pageAction', this.listenAction);
+    EventBus.removeEventListener(ODCEventType.PLPageAction, this.listenAction);
   }
 
   // 操作集 - 自动运行操作
-  public async autoRunPLAction(params: any) {
+  public async autoRunPLAction(params: IPLPageActionData) {
     const { action } = params;
     if (!action) {
       return;
     }
     clearTimeout(this.timerAutoRunPLAction);
     this.timerAutoRunPLAction = setTimeout(async () => {
-      if (action === 'COMPILE' || action === 'EXEC' || action === 'DEBUG') {
-        if (this.state.debug || this.props.sqlStore.runningPageKey.has(this.props.pageKey)) {
-          /**
-           * 当前正在调试或者运行编译的时候，不能继续触发
-           */
+      if (this.state.debug || this.props.sqlStore.runningPageKey.has(this.props.pageKey)) {
+        /**
+         * 当前正在调试或者运行编译的时候，不能继续触发
+         */
+        return;
+      }
+      switch (action) {
+        case 'compile': {
+          await EditorToolBar.triggler(this, `PL_COMPILE`);
           return;
         }
-        await EditorToolBar.triggler(this, `PL_${action}`);
+        case 'run': {
+          await EditorToolBar.triggler(this, `PL_EXEC`);
+          return;
+        }
+        case 'debug': {
+          await EditorToolBar.triggler(this, `PL_DEBUG`);
+          return;
+        }
       }
     }, 500);
   }
@@ -292,43 +359,23 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   };
 
   public getFormatPLSchema() {
-    const { pageKey, pageStore } = this.props;
-    const page = pageStore.pages.find((p) => p.key === pageKey);
-    const plSchema = page?.params?.plSchema || {};
-    const { scriptText } = this.props.params;
-    const r = page?.params?.plSchema ? { ...page.params.plSchema } : {};
+    const { params } = this.props;
+    const plSchema = params?.plSchema || {};
+    const { scriptText } = params;
+    const r: any = { ...plSchema };
     // 程序包内部 PL 加程序包名前缀
-    if (r.packageName) {
-      if (r.funName) {
-        r.funName = `${r.funName}`;
+    switch (params?.plPageType) {
+      case PLPageType.plEdit: {
+        r.plType = params?.plType;
+        r.plName = params?.plName;
+        break;
       }
-      if (r.proName) {
-        r.proName = `${r.proName}`;
-      }
-    }
-    if (r.proName) {
-      r.plName = r.proName || plSchema.proName;
-      r.plType = PL_TYPE.PROCEDURE;
-    }
-    if (r.funName) {
-      r.plName = r.funName || plSchema.funName;
-      r.plType = PL_TYPE.FUNCTION;
-    }
-    if (r.triggerName) {
-      r.plName = plSchema.triggerName;
-      r.plType = PL_TYPE.TRIGGER;
-    }
-    if (r.typeName) {
-      r.plName = plSchema.typeName;
-      r.plType = PL_TYPE.TYPE;
-    }
-    if (!r.proName && !r.funName && !r.triggerName && !r.typeName) {
-      r.ddl = scriptText;
-      if (!r.packageName) {
+      case PLPageType.anonymous: {
+        r.ddl = scriptText;
         r.plType = PLType.ANONYMOUSBLOCK;
+        break;
       }
     }
-
     return r;
   }
 
@@ -375,7 +422,9 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         },
         this.getSession()?.odcDatabase?.id,
         this.getSession()?.odcDatabase?.name,
-        this.props?.params?.databaseFrom,
+        this.props?.params?.plPageType === PLPageType.anonymous
+          ? this.props?.params?.databaseFrom
+          : undefined,
       );
       return;
     }
@@ -762,14 +811,24 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     await this.saveScript();
   };
 
+  /**
+   * 是否为程序包子程序
+   */
+  private isPackageProgram() {
+    return this.props.params?.plPageType === PLPageType.plEdit && this.props.params.fromPackage;
+  }
+
+  /**
+   * 提交PL DDL更改
+   */
   private async savePL(opts?: any) {
-    const { sqlStore, pageStore, params, onChangeSaved, pageKey, page } = this.props;
+    const { pageStore, params, onChangeSaved, pageKey, page } = this.props;
     const plSchema = this.getFormatPLSchema();
     const { plName, plType, packageName } = plSchema;
     const newPLEntryName = getPLEntryName(params.scriptText);
-    if (!params.fromPackage) {
+    if (!this.isPackageProgram()) {
       /** 暂时还检测不了程序包内的函数等 */
-      const plChanged = checkPLNameChanged(plName, newPLEntryName, plType, params.fromPackage);
+      const plChanged = checkPLNameChanged(plName, newPLEntryName, plType);
 
       if (plChanged) {
         message.error(
@@ -796,7 +855,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
 
     if (isSuccess) {
       let newParams;
-      if (!params.fromPackage) {
+      if (!this.isPackageProgram()) {
         if (plType === PL_TYPE.FUNCTION) {
           const newFunc = await getFunctionByFuncName(
             plName,
@@ -858,7 +917,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       isSavingScript: true,
     });
     try {
-      if (params.scriptId) {
+      if (params?.plPageType === PLPageType.anonymous && params.scriptId) {
         // 仅更新 SQL 内容
         const file = await updateScript(params.scriptId, params.scriptText, params.objectName);
         if (file) {
@@ -1063,6 +1122,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           onEditorCreated: this.handleEditorCreated,
         }}
         sessionSelectReadonly={formatPLSchema?.plName || formatPLSchema?.packageName || debug}
+        dialectTypes={[ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE]}
         statusBar={isDebugMode ? this.getDebugStatusBar() : statusBar}
         Result={
           <PLDebugResultSet
@@ -1104,7 +1164,9 @@ export default function (props: IProps) {
   return (
     <SessionContextWrap
       defaultDatabaseId={props.params?.cid}
-      defaultMode={props.params?.databaseFrom}
+      defaultMode={
+        props?.params?.plPageType === PLPageType?.anonymous ? props.params?.databaseFrom : undefined
+      }
     >
       {({ session }) => {
         return <PLPage sessionId={session?.sessionId} {...props} />;

@@ -11,11 +11,11 @@ import {
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
+import { triggerActionAfterPLPageCreated } from '@/util/events';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import EventBus from 'eventbusjs';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
@@ -111,20 +111,13 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
       async run(session, node) {
         const func: IFunction = node.data;
-        await openFunctionEditPageByFuncName(
+        const { plPage, isNew } = await openFunctionEditPageByFuncName(
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: func.funName,
-            params: {
-              action: 'COMPILE',
-            },
-          });
-        });
+        triggerActionAfterPLPageCreated(plPage, 'compile', isNew);
       },
     },
     {
@@ -149,20 +142,14 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
           return;
         }
-        await openFunctionEditPageByFuncName(
+        const { plPage, isNew } = await openFunctionEditPageByFuncName(
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: func.funName,
-            params: {
-              action: 'DEBUG',
-            },
-          });
-        });
+
+        triggerActionAfterPLPageCreated(plPage, 'debug', isNew);
       },
     },
     {
@@ -177,20 +164,14 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       hasDivider: true,
       async run(session, node) {
         const func: IFunction = node.data;
-        await openFunctionEditPageByFuncName(
+        const { plPage, isNew } = await openFunctionEditPageByFuncName(
           func?.funName,
           session?.sessionId,
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-        setTimeout(() => {
-          EventBus.dispatch('pageAction', null, {
-            key: node.title,
-            params: {
-              action: 'EXEC',
-            },
-          });
-        });
+
+        triggerActionAfterPLPageCreated(plPage, 'run', isNew);
       },
     },
 

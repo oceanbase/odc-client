@@ -8,11 +8,11 @@ import {
 import {
   DbObjectType,
   IFunction,
+  IProcedure,
   IScript,
   ITrigger,
   ITriggerFormData,
   PageType,
-  SynonymPropsTab,
   SynonymType,
   TaskPageScope,
   TaskPageType,
@@ -40,11 +40,10 @@ import {
   TopTab as ViewTopTab,
 } from '@/page/Workspace/components/ViewPage';
 import { formatMessage } from '@/util/intl';
-import { getPLScriptTemplate } from '@/util/sql';
 
 import { getTriggerByName } from '@/common/network/trigger';
 import SelectDatabase from '@/component/SelectDatabase';
-import plType from '@/constant/plType';
+import { PLType } from '@/constant/plType';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
 import { generateUniqKey } from '@/util/utils';
@@ -53,49 +52,41 @@ import { generateResultSetColumns } from '..';
 import page from '../../page';
 import { generatePageKey, generatePageTitle } from '../pageKeyGenerate';
 import {
-  createPackageBodyPageParams,
-  createPackageHeadPageParams,
-  IPLPageParams,
-} from './pageParams';
+  FunctionPage,
+  PackageViewPage,
+  ProcedurePage,
+  RecycleBinPage,
+  SequencePage,
+  SessionManagePage,
+  SQLPage,
+  SynonymPage,
+  TablePage,
+  TaskPage,
+  TriggerPage,
+  TypePage,
+  ViewPage,
+} from './pages';
+import { CreateTablePage, CreateTriggerPage, CreateViewPage, SQLConfirmPage } from './pages/create';
+import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './pages/pl';
 import { findPageByScriptIdAndType } from './util';
 
-export function openPackageHeadPage(packageName: string, sql: string, cid: number, dbName: string) {
-  const pageTitle = `${packageName}_head`;
-  page.openPage(
-    PageType.PL,
-    {
-      title: pageTitle,
-    },
-
-    Object.assign(createPackageHeadPageParams(packageName, sql, pageTitle), { cid, dbName }),
-  );
+export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
+  page.newOrOpenPage(new PackageHeadPage(databaseId, packageName, sql));
 }
-export async function openPackageBodyPage(
-  packageName: string,
-  sql: string,
-  cid: number,
-  dbName: string,
-) {
-  const pageTitle = `${packageName}_body`;
-  await page.openPage(
-    PageType.PL,
-    {
-      title: pageTitle,
-    },
+export async function openPackageBodyPage(packageName: string, sql: string, databaseId: number) {
+  let pkgPage = new PackageBodyPage(databaseId, packageName, sql);
+  const isNew = !page.pages.find((p) => p.key === pkgPage.pageKey);
+  await page.newOrOpenPage(pkgPage);
 
-    Object.assign(createPackageBodyPageParams(packageName, sql, pageTitle), { cid, dbName }),
-  );
-
-  return pageTitle;
+  return { pkgPage, isNew };
 }
 export function openPackageViewPage(
   packageName: string,
   topTab: TopTab,
   showCode: boolean,
-  dbName: string,
   databaseId: number,
 ) {
-  let propsTab = '';
+  let propsTab: PropsTab = null;
   topTab = topTab || TopTab.HEAD;
   if (topTab == TopTab.HEAD) {
     if (showCode) {
@@ -110,73 +101,22 @@ export function openPackageViewPage(
       propsTab = PropsTab.PACKAGE_BODY_INFO;
     }
   }
-
-  page.openPage(
-    PageType.PACKAGE,
-    {
-      title: packageName,
-    },
-
-    {
-      packageName,
-      topTab,
-      propsTab,
-      dbName,
-      databaseId,
-    },
-  );
+  const pkgPage = new PackageViewPage(databaseId, packageName, topTab, propsTab);
+  page.newOrOpenPage(pkgPage);
 }
-export async function openNewSQLPage(
-  cid: number,
-  dbName: string,
-  databaseFrom: 'datasource' | 'project',
-) {
-  const key = await generatePageKey(PageType.SQL);
-  const title = generatePageTitle(PageType.SQL, key);
-  page.openPage(
-    PageType.SQL,
-    {
-      key,
-      title,
-    },
-
-    {
-      scriptName: title,
-      scriptText: '',
-      cid,
-      dbName,
-      databaseFrom,
-    },
-  );
+export async function openNewSQLPage(cid: number, databaseFrom?: 'datasource' | 'project') {
+  const sqlPage = new SQLPage(cid, null, false, databaseFrom);
+  page.newOrOpenPage(sqlPage);
 }
-export async function openNewSQLPageWithResult(result, cid: number, dbName: string) {
-  const key = await generatePageKey(PageType.SQL);
-  const title = generatePageTitle(PageType.SQL, key);
-  sqlStore.resultSets.set(key, generateResultSetColumns(result));
+export async function openNewSQLPageWithResult(result, cid: number) {
+  const sqlPage = new SQLPage(cid);
+  sqlStore.resultSets.set(sqlPage.pageKey, generateResultSetColumns(result));
 
-  page.openPage(
-    PageType.SQL,
-    {
-      key,
-      title,
-    },
-
-    {
-      scriptName: title,
-      scriptText: result
-        ?.map((t) => {
-          return t.executeSql;
-        })
-        .join('\n'),
-      fromTask: true,
-      cid,
-      dbName,
-    },
-  );
+  page.newOrOpenPage(sqlPage);
 }
 /** 根据scriptID打开sql或者pl的page */
 
-export async function openSQLPageByScript(scriptId: any, dbid: number, dbName: string) {
+export async function openSQLPageByScript(scriptId: any, dbid: number) {
   const existPage = findPageByScriptIdAndType(scriptId);
 
   if (existPage) {
@@ -187,7 +127,7 @@ export async function openSQLPageByScript(scriptId: any, dbid: number, dbName: s
   const file = await getScript(scriptId);
 
   if (file) {
-    const key = openSQLOrPLPage(file, dbid, dbName);
+    const key = openSQLOrPLPage(file, dbid);
     return key;
   }
 
@@ -195,29 +135,12 @@ export async function openSQLPageByScript(scriptId: any, dbid: number, dbName: s
 }
 /** 打开已存在的SQL/匿名块Page */
 
-export async function openSQLOrPLPage(file: IScript, cid: number, dbName: string) {
-  const key = await generatePageKey(PageType.SQL, {
-    scriptId: file.scriptMeta.id,
-  });
+export async function openSQLOrPLPage(file: IScript, cid: number) {
+  const sqlPage = new SQLPage(cid, file);
 
-  page.openPage(
-    PageType.SQL,
-    {
-      key,
-      title: file.scriptMeta.objectName,
-    },
+  page.newOrOpenPage(sqlPage);
 
-    {
-      ...file.scriptMeta,
-      scriptText: file.content,
-      scriptId: file.scriptMeta.id,
-      cid,
-      dbName,
-      databaseFrom: 'datasource',
-    },
-  );
-
-  return key;
+  return sqlPage.pageKey;
 }
 export async function openNewDefaultPLPage(
   value?: { sql: string; params: any },
@@ -225,110 +148,41 @@ export async function openNewDefaultPLPage(
   dbName?: string,
   databaseFrom?: 'project' | 'datasource',
 ) {
-  const key = await generatePageKey(PageType.PL, value?.params);
-  const title = generatePageTitle(PageType.PL, key);
-  page.openPage(
-    PageType.PL,
-    {
-      key,
-      title,
-    },
-
-    {
-      scriptName: title,
-      isAnonymous: true,
-      scriptText: value?.sql ?? getPLScriptTemplate(),
-      cid,
-      dbName,
-      plSchema: {
-        params: [],
-      },
-      databaseFrom,
-    } as IPLPageParams,
-  );
+  let plPage = new AnonymousPage(cid, databaseFrom, value?.sql);
+  page.newOrOpenPage(plPage);
 }
 
 export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageScope) {
   taskStore.changeTaskManageVisible(true, taskType, taskPageScope);
-  page.openPage(
-    PageType.TASKS,
-    {
-      title: formatMessage({
-        id: 'odc.component.TaskPopover.TaskCenter',
-      }),
-    },
-    {},
-  );
+  page.newOrOpenPage(new TaskPage());
 }
 
 /** 会话管理 */
 
-export async function openSessionManagePage(cid?: number, dbName?: string) {
-  if (!dbName || !cid) {
-    [cid, dbName] = await SelectDatabase();
+export async function openSessionManagePage(datasourceId?: number) {
+  if (!datasourceId) {
+    [datasourceId] = await SelectDatabase();
   }
-  if (!cid || !dbName) {
+  if (!datasourceId) {
     return;
   }
-  page!.openPage(
-    PageType.SESSION_MANAGEMENT,
-    {
-      title: formatMessage({
-        id: 'workspace.header.session.management',
-      }),
-    },
-
-    {
-      cid,
-      dbName,
-      databaseId: 1,
-    },
-  );
+  page.newOrOpenPage(new SessionManagePage(datasourceId));
 }
 /** 回收站 */
 
-export async function openRecycleBin(cid?: number, dbName?: string) {
-  if (!dbName || !cid) {
-    [cid, dbName] = await SelectDatabase();
+export async function openRecycleBin(cid?: number) {
+  if (!cid) {
+    [cid] = await SelectDatabase();
   }
-  if (!cid || !dbName) {
+  if (!cid) {
     return;
   }
-  page.openPage(
-    PageType.RECYCLE_BIN,
-    {
-      title: formatMessage({
-        id: 'workspace.header.recycle',
-      }),
-    },
-
-    {
-      cid,
-      dbName,
-      databaseId: 1,
-    },
-  );
+  page.newOrOpenPage(new RecycleBinPage(cid));
 }
 /** 创建表页面 */
 
-export function openCreateTablePage(dbId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_TABLE,
-    {
-      title:
-        formatMessage({
-          id: 'workspace.header.create',
-        }) +
-        formatMessage({
-          id: 'workspace.header.create.table',
-        }),
-    },
-
-    {
-      databaseId: dbId,
-      dbName,
-    },
-  );
+export function openCreateTablePage(dbId: number) {
+  page.newOrOpenPage(new CreateTablePage(dbId));
 }
 /** Table详情页面 */
 
@@ -338,36 +192,14 @@ export function openTableViewPage(
   propsTab: TablePropsTab = TablePropsTab.INFO,
   databaseId: number,
 ) {
-  page!.openPage(
-    PageType.TABLE,
-    {
-      title: tableName,
-    },
-
-    {
-      databaseId,
-      databaseFrom: 'datasource',
-      tableName,
-      topTab,
-      propsTab,
-    },
-  );
+  page.newOrOpenPage(new TablePage(databaseId, tableName, topTab, propsTab));
 }
 
 /**
  * 创建视图页面
  */
-export function openCreateViewPage(dbId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_VIEW,
-    {
-      title: formatMessage({ id: 'workspace.window.createView.modal.title' }),
-    },
-    {
-      databaseId: dbId,
-      dbName,
-    },
-  );
+export function openCreateViewPage(dbId: number) {
+  page.newOrOpenPage(new CreateViewPage(dbId));
 }
 
 /**
@@ -381,38 +213,20 @@ export function openViewViewPage(
   dbId: number,
   dbName: string,
 ) {
-  page!.openPage(
-    PageType.VIEW,
-    {
-      title: viewName,
-    },
-
-    {
-      viewName,
-      topTab,
-      propsTab,
-      databaseId: dbId,
-      dbName,
-    },
-  );
+  page.newOrOpenPage(new ViewPage(dbId, viewName, topTab, propsTab));
 }
 /** 创建函数页面 */
 
 export function openCreateFunctionPage(sql: string, databaseId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_FUNCTION,
-    {
-      title: formatMessage({
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_FUNCTION,
+      databaseId,
+      formatMessage({
         id: 'workspace.window.createFunction.modal.title',
       }),
-    },
-
-    {
-      databaseId,
-      dbName,
       sql,
-      type: PageType.CREATE_FUNCTION,
-    },
+    ),
   );
 }
 /** 函数详情页面 */
@@ -424,20 +238,7 @@ export function openFunctionViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page!.openPage(
-    PageType.FUNCTION,
-    {
-      title: functionName,
-    },
-
-    {
-      databaseId,
-      dbName,
-      funName: functionName,
-      topTab,
-      propsTab,
-    },
-  );
+  page.newOrOpenPage(new FunctionPage(databaseId, functionName, topTab, propsTab));
 }
 /** 根据函数信息自动填充sql */
 
@@ -455,20 +256,15 @@ export async function openCreateFunctionPageByRemote(
 /** 创建存储过程页面 */
 
 export function openCreateProcedurePage(sql: string, databaseId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_PROCEDURE,
-    {
-      title: formatMessage({
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_PROCEDURE,
+      databaseId,
+      formatMessage({
         id: 'workspace.window.createProcedure.modal.title',
       }),
-    },
-
-    {
-      databaseId,
-      dbName,
       sql,
-      type: PageType.CREATE_PROCEDURE,
-    },
+    ),
   );
 }
 /** 存储过程详情页面 */
@@ -480,77 +276,49 @@ export function openProcedureViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page!.openPage(
-    PageType.PROCEDURE,
-    {
-      title: procedureName,
-    },
-
-    {
-      databaseId,
-      dbName,
-      proName: procedureName,
-      topTab,
-      propsTab,
-    },
-  );
+  page.newOrOpenPage(new ProcedurePage(databaseId, procedureName, topTab, propsTab));
 }
 /** 创建程序包页面 */
 
 export function openCreatePackagePage(sql: string, databaseId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_PACKAGE,
-    {
-      title: formatMessage({
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_PACKAGE,
+      databaseId,
+      formatMessage({
         id: 'workspace.window.createPackage.modal.title',
       }),
-    },
-
-    {
       sql,
-      databaseId,
-      dbName,
-      type: PageType.CREATE_PACKAGE,
-    },
+    ),
   );
 }
 /** 创建程序包包体页面 */
 
 export function openCreatePackageBodyPage(sql: string, databaseId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_PACKAGE,
-    {
-      title: formatMessage({
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_PACKAGE,
+      databaseId,
+      formatMessage({
         id: 'workspace.window.createPackageBody.modal.title',
       }),
-    },
-
-    {
-      databaseId,
-      dbName,
       sql,
-      type: PageType.CREATE_PACKAGE,
-      isPackageBody: true,
-    },
+      true,
+    ),
   );
 }
 /** 创建序列页面 */
 
 export function openCreateSequencePage(sql: string, databaseId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_SEQUENCE,
-    {
-      title: formatMessage({
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_SEQUENCE,
+      databaseId,
+      formatMessage({
         id: 'workspace.window.createSequence.modal.title',
       }),
-    },
-
-    {
-      databaseId,
-      dbName,
       sql,
-      type: PageType.CREATE_SEQUENCE,
-    },
+    ),
   );
 }
 /** Sequence 查看序列详情页面 */
@@ -561,19 +329,7 @@ export function openSequenceViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page?.openPage(
-    PageType.SEQUENCE,
-    {
-      title: sequenceName,
-    },
-
-    {
-      databaseId,
-      dbName,
-      sequenceName,
-      propsTab,
-    },
-  );
+  page.newOrOpenPage(new SequencePage(databaseId, sequenceName, propsTab));
 }
 /** 编辑存储过程页面 */
 
@@ -581,25 +337,13 @@ export async function openProcedureEditPageByProName(
   proName: string,
   sessionId: string,
   dbName: string,
-  cid: number,
+  databaseId: number,
 ) {
   const plSchema = await getProcedureByProName(proName, false, sessionId, dbName);
-  await page.openPage(
-    PageType.PL,
-    {
-      title: proName,
-    },
-
-    {
-      scriptId: proName,
-      plName: proName,
-      scriptText: plSchema.ddl,
-      plSchema,
-      plType: plType.PROCEDURE,
-      cid,
-      dbName,
-    },
-  );
+  const plPage = new PLEditPage(PLType.PROCEDURE, databaseId, proName, plSchema);
+  const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
+  await page.newOrOpenPage(plPage);
+  return { plPage, isNew };
 }
 /** 编辑函数页面-local */
 
@@ -607,31 +351,15 @@ export async function openFunctionOrProcedureFromPackage(
   packageName: string,
   subName: string,
   type: any,
-  plSchema: any,
-  cid: number,
+  plSchema: IFunction | IProcedure,
+  databaseId: number,
   dbName: string,
 ) {
   const plName = `${packageName}.${subName}`;
-  await page.openPage(
-    PageType.PL,
-    {
-      title: plName,
-      key: plSchema.key,
-    },
-
-    {
-      scriptId: plName,
-      plName,
-      plSchema,
-      fromPackage: true,
-      plType: type,
-      scriptText: plSchema.ddl,
-      cid,
-      dbName,
-    },
-  );
-
-  return plName;
+  const plPage = new PLEditPage(type, databaseId, plName, plSchema, true);
+  const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
+  await page.newOrOpenPage(plPage);
+  return { plPage, isNew };
 }
 /** 编辑函数页面-remote */
 
@@ -639,25 +367,13 @@ export async function openFunctionEditPageByFuncName(
   funcName: string,
   sessionId: string,
   dbName: string,
-  cid: number,
+  databaseId: number,
 ) {
   const plSchema = await getFunctionByFuncName(funcName, false, sessionId, dbName);
-  await page.openPage(
-    PageType.PL,
-    {
-      title: funcName,
-    },
-
-    {
-      scriptId: funcName,
-      plName: funcName,
-      scriptText: plSchema.ddl,
-      plSchema,
-      plType: plType.FUNCTION,
-      cid,
-      dbName,
-    },
-  );
+  let plPage = new PLEditPage(PLType.FUNCTION, databaseId, funcName, plSchema);
+  const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
+  await page.newOrOpenPage(plPage);
+  return { plPage, isNew };
 }
 
 export async function openOBClientPage(cid: number, dbName: string) {
@@ -713,17 +429,7 @@ export async function openCreateTriggerPage(
   databaseId: number,
   dbName: string,
 ) {
-  await page!.openPage(
-    PageType.CREATE_TRIGGER,
-    {
-      title: formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }), // 新建触发器
-    },
-    {
-      preData,
-      databaseId,
-      dbName,
-    },
-  );
+  await page.newOrOpenPage(new CreateTriggerPage(databaseId, preData));
 }
 /** 创建触发器页面 (SQL确认页面) */
 
@@ -733,19 +439,15 @@ export async function openCreateTriggerSQLPage(
   databaseId: number,
   dbName: string,
 ) {
-  await page!.openPage(
-    PageType.CREATE_TRIGGER_SQL,
-    {
-      title: formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }), // 新建触发器
-    },
-    {
+  await page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_TRIGGER_SQL,
       databaseId,
-      dbName,
+      formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }),
       sql,
+      false,
       preData,
-      hasPre: true,
-      type: PageType.CREATE_TRIGGER_SQL,
-    },
+    ),
   );
 }
 /** 触发器详情页面 */
@@ -758,21 +460,7 @@ export function openTriggerViewPage(
   databaseId?: number,
   dbName?: string,
 ) {
-  page.openPage(
-    PageType.TRIGGER,
-    {
-      title: triggerName,
-    },
-
-    {
-      databaseId,
-      dbName,
-      triggerName,
-      triggerData,
-      propsTab,
-      isDisabled: triggerState === TriggerState.disabled,
-    },
-  );
+  page.newOrOpenPage(new TriggerPage(databaseId, triggerName, triggerState, propsTab, triggerData));
 }
 /** 编辑触发器页面 */
 
@@ -780,25 +468,10 @@ export async function openTriggerEditPageByName(
   triggerName: string,
   sessionId: string,
   dbName: string,
-  cid: number,
+  databaseId: number,
 ) {
-  const plSchema = await getTriggerByName(triggerName, sessionId, dbName);
-  page.openPage(
-    PageType.PL,
-    {
-      title: triggerName,
-    },
-
-    {
-      scriptId: triggerName,
-      scriptText: plSchema.ddl,
-      triggerName,
-      plSchema,
-      plType: plType.TRIGGER,
-      cid,
-      dbName,
-    },
-  );
+  const plSchema: ITrigger = await getTriggerByName(triggerName, sessionId, dbName);
+  page.newOrOpenPage(new PLEditPage(PLType.TRIGGER, databaseId, triggerName, plSchema));
 }
 /** 创建同义词页面 */
 
@@ -808,18 +481,16 @@ export function openCreateSynonymPage(
   databaseId?: number,
   dbName?: string,
 ) {
-  page!.openPage(
-    PageType.CREATE_SYNONYM,
-    {
-      title: formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym' }), // 新建同义词
-    },
-    {
-      sql,
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_SYNONYM,
       databaseId,
-      dbName,
+      formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym' }),
+      sql,
+      false,
+      null,
       synonymType,
-      type: PageType.CREATE_SYNONYM,
-    },
+    ),
   );
 }
 /** 同义词详情页面 */
@@ -830,35 +501,18 @@ export function openSynonymViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.openPage(
-    PageType.SYNONYM,
-    {
-      title: synonymName,
-    },
-
-    {
-      databaseId,
-      dbName,
-      synonymName,
-      synonymType,
-      propsTab: SynonymPropsTab.DDL,
-    },
-  );
+  page.newOrOpenPage(new SynonymPage(databaseId, synonymName, synonymType));
 }
 /** 创建类型页面 */
 
 export function openCreateTypePage(sql: string, databaseId: number, dbName: string) {
-  page!.openPage(
-    PageType.CREATE_TYPE,
-    {
-      title: formatMessage({ id: 'odc.helper.page.openPage.NewType' }), // 新建类型
-    },
-    {
+  page.newOrOpenPage(
+    new SQLConfirmPage(
+      PageType.CREATE_TYPE,
       databaseId,
-      dbName,
+      formatMessage({ id: 'odc.helper.page.openPage.NewType' }),
       sql,
-      type: PageType.CREATE_TYPE,
-    },
+    ),
   );
 }
 /** 类型详情页面 */
@@ -869,45 +523,18 @@ export function openTypeViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.openPage(
-    PageType.TYPE,
-    {
-      title: typeName,
-    },
-
-    {
-      databaseId,
-      dbName,
-      typeName,
-      propsTab,
-    },
-  );
+  page.newOrOpenPage(new TypePage(databaseId, typeName, propsTab));
 }
 /** 编辑类型页面 */
 
 export async function openTypeEditPageByName(
   typeName: string,
   sessionId: string,
-  cid: number,
+  databaseId: number,
   dbName: string,
 ) {
   const plSchema = await getTypemByName(typeName, sessionId, dbName);
-  page.openPage(
-    PageType.PL,
-    {
-      title: typeName,
-    },
-
-    {
-      scriptId: typeName,
-      scriptText: plSchema.ddl,
-      typeName,
-      plSchema,
-      plType: plType.TYPE,
-      cid,
-      dbName,
-    },
-  );
+  page.newOrOpenPage(new PLEditPage(PLType.TYPE, databaseId, typeName, plSchema));
 }
 
 export async function openSQLResultSetViewPage(name, resultSets) {

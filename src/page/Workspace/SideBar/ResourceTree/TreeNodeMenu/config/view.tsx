@@ -21,7 +21,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.CreateAView' })],
       actionType: actionTypes.create,
       run(session, node) {
-        openCreateViewPage(session?.odcDatabase?.id, session?.database?.dbName);
+        openCreateViewPage(session?.odcDatabase?.id);
       },
     },
     {

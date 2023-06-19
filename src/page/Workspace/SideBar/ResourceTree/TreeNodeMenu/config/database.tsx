@@ -11,7 +11,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
-        openNewSQLPage(node.cid, database?.name, databaseFrom);
+        openNewSQLPage(node.cid, databaseFrom);
       },
     },
     {

@@ -70,7 +70,7 @@ export function getModelService(
       return [];
     },
     async getSchemaList() {
-      return sessionFunc()?.databases?.map((t) => t.name);
+      return [sessionFunc()?.database?.dbName].filter(Boolean);
     },
     async getFunctions() {
       if (!sessionFunc()?.database.functions) {
