@@ -3,6 +3,7 @@
  */
 import plType, { PLType } from '@/constant/plType';
 import { IScriptMeta } from '@/d.ts';
+import { SQLPage } from './pages';
 
 export interface IPLPageParams extends Partial<IScriptMeta> {
   packageName?: string;
@@ -21,14 +22,7 @@ export interface IPLPageParams extends Partial<IScriptMeta> {
   databaseFrom: 'datasource' | 'project';
 }
 
-export interface ISQLPageParams extends Partial<IScriptMeta> {
-  scriptText: string;
-  scriptId?: string;
-  fromTask?: boolean;
-  cid: number;
-  dbName: string;
-  databaseFrom: 'datasource' | 'project';
-}
+export type ISQLPageParams = SQLPage['pageParams'];
 
 export function createPackageHeadPageParams(packageName: string, sql: string, scriptId?: string) {
   return {

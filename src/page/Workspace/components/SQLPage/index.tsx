@@ -34,7 +34,7 @@ import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { Component } from 'react';
+import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
 import ExecDetail from '../SQLExplain/ExecDetail';
@@ -1107,15 +1107,15 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
 }
 
-export default function (props: IProps) {
+export default forwardRef(function (props: IProps, ref: React.ForwardedRef<SQLPage>) {
   return (
     <SessionContextWrap
       defaultDatabaseId={props.params?.cid}
       defaultMode={props.params?.databaseFrom}
     >
       {({ session }) => {
-        return <SQLPage sessionId={session?.sessionId} {...props} />;
+        return <SQLPage sessionId={session?.sessionId} {...props} ref={ref} />;
       }}
     </SessionContextWrap>
   );
-}
+});

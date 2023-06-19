@@ -50,8 +50,8 @@ import { generateUniqKey } from '@/util/utils';
 import { message } from 'antd';
 import { generateResultSetColumns } from '..';
 import page from '../../page';
-import { generatePageKey, generatePageTitle } from '../pageKeyGenerate';
 import {
+  BatchCompilePage,
   FunctionPage,
   PackageViewPage,
   ProcedurePage,
@@ -63,6 +63,7 @@ import {
   TablePage,
   TaskPage,
   TriggerPage,
+  TutorialPage,
   TypePage,
   ViewPage,
 } from './pages';
@@ -556,38 +557,12 @@ export function openBatchCompilePLPage(
   pageType: PageType,
   dbObjectType: DbObjectType,
   label: string,
-  cid: number,
+  databaseId: number,
   dbName: string,
 ) {
-  page!.openPage(
-    pageType,
-    {
-      title: formatMessage(
-        {
-          id: 'odc.helper.page.openPage.BatchCompilationLabel',
-        },
-        { label: label },
-      ), //`批量编译${label}`
-      key: `${cid}-${dbName}-${pageType}`,
-    },
-    { dbObjectType, type: pageType, databaseId: cid, dbName },
-  );
+  page.newOrOpenPage(new BatchCompilePage(pageType, dbObjectType, label, databaseId));
 }
 
 export async function openTutorialPage(docId: string) {
-  const key = await generatePageKey(PageType.SQL);
-  const title = generatePageTitle(PageType.TUTORIAL, key);
-  page.openPage(
-    PageType.TUTORIAL,
-    {
-      key,
-      title,
-    },
-
-    {
-      scriptName: title,
-      scriptText: '',
-      docId,
-    },
-  );
+  page.newOrOpenPage(new TutorialPage(docId, null));
 }

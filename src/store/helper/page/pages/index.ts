@@ -1,4 +1,5 @@
 import {
+  DbObjectType,
   IScript,
   IScriptMeta,
   ITrigger,
@@ -97,6 +98,28 @@ export class SQLPage extends Page {
         fromTask,
       };
     }
+  }
+}
+
+export class TutorialPage extends Page {
+  public pageParams: {
+    docId: string;
+    scriptText: string;
+    cid: number;
+    databaseFrom: 'datasource';
+  };
+
+  constructor(docId: string, databaseId: number) {
+    super();
+    this.pageKey = `tutorialpage-new-${page.pageKey++}`;
+    this.pageTitle = '--';
+    this.pageType = PageType.TUTORIAL;
+    this.pageParams = {
+      docId,
+      cid: databaseId,
+      scriptText: '',
+      databaseFrom: 'datasource',
+    };
   }
 }
 
@@ -339,6 +362,30 @@ export class TypePage extends Page {
       databaseId,
       typeName,
       propsTab,
+    };
+  }
+}
+
+export class BatchCompilePage extends Page {
+  public pageParams: {
+    type: PageType;
+    dbObjectType: DbObjectType;
+    databaseId: number;
+  };
+  constructor(pageType: PageType, dbObjectType: DbObjectType, label: string, databaseId: number) {
+    super();
+    this.pageKey = `batchcompile-databaseId:${databaseId}-pageType:${pageType}`;
+    this.pageTitle = formatMessage(
+      {
+        id: 'odc.helper.page.openPage.BatchCompilationLabel',
+      },
+      { label: label },
+    );
+    this.pageType = pageType;
+    this.pageParams = {
+      dbObjectType,
+      type: pageType,
+      databaseId,
     };
   }
 }
