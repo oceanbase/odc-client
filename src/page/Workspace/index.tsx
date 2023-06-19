@@ -60,7 +60,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const handleOpenPage = async () => {
     const [cid, dbName] = await SelectDatabase();
     if (cid && dbName) {
-      openNewSQLPage(cid, dbName);
+      openNewSQLPage(cid);
     }
   };
 

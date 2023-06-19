@@ -6,12 +6,19 @@ import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Popover, Space, Spin, Tag } from 'antd';
 import styles from './index.less';
 
+import { ConnectionMode } from '@/d.ts';
 import PjSvg from '@/svgr/project_space.svg';
 import OBSvg from '@/svgr/source_ob.svg';
 import classNames from 'classnames';
 import SelectModal from './modal';
 
-export default function SessionSelect({ readonly }: { readonly?: boolean }) {
+export default function SessionSelect({
+  readonly,
+  dialectTypes,
+}: {
+  readonly?: boolean;
+  dialectTypes?: ConnectionMode[];
+}) {
   const context = useContext(SessionContext);
   const [visible, setVisible] = useState(false);
 
@@ -103,7 +110,13 @@ export default function SessionSelect({ readonly }: { readonly?: boolean }) {
           )}
         </div>
       )}
-      {!readonly && <SelectModal visible={visible} close={() => setVisible(false)} />}
+      {!readonly && (
+        <SelectModal
+          dialectTypes={dialectTypes || []}
+          visible={visible}
+          close={() => setVisible(false)}
+        />
+      )}
     </>
   );
 }

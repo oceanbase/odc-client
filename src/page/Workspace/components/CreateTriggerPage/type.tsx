@@ -1,11 +1,6 @@
-import {
-  ITable,
-  ITableColumn,
-  ITriggerAdancedInfoForm,
-  ITriggerBaseInfoForm,
-  ITriggerFormData,
-} from '@/d.ts';
+import { ITable, ITableColumn, ITriggerAdancedInfoForm, ITriggerBaseInfoForm } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { CreateTriggerPage } from '@/store/helper/page/pages/create';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
@@ -35,11 +30,7 @@ export interface IProps {
 
   pageKey: string;
 
-  params: {
-    databaseId: number;
-    dbName: string;
-    preData?: ITriggerFormData;
-  };
+  params: CreateTriggerPage['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }

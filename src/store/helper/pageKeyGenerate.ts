@@ -70,7 +70,7 @@ export function generatePageTitle(type: PageType, key?: string): string {
   return title;
 }
 
-export async function generatePageKey(type: PageType, params: any = {}): Promise<string> {
+export function generatePageKey(type: PageType, params: any = {}): string {
   let key = `page-`;
   if (type === PageType.SQL) {
     key = `sql-${params?.scriptId || 'new-' + page.pageKey++}`;

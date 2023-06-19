@@ -8,6 +8,7 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IResultSet, IView } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
+import { ViewPage as ViewPageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -51,12 +52,7 @@ interface IProps {
   pageStore: PageStore;
   pageKey: string;
   sessionManagerStore: SessionManagerStore;
-  params: {
-    viewName: string;
-    topTab: TopTab;
-    propsTab: PropsTab;
-    dbId: number;
-  };
+  params: ViewPageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }

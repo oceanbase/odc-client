@@ -8,6 +8,7 @@ import { PLType } from '@/constant/plType';
 import type { IType } from '@/d.ts';
 import { ConnectionMode, TypePropsTab } from '@/d.ts';
 import { openTypeEditPageByName } from '@/store/helper/page';
+import { TypePage as TypePageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -75,12 +76,7 @@ interface IProps {
   pageStore: PageStore;
   sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    typeName: string;
-    propsTab: TypePropsTab;
-    databaseId: number;
-    dbName: string;
-  };
+  params: TypePageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
@@ -144,9 +140,9 @@ class TypePage extends Component<
   private reloadType = async () => {
     const {
       session,
-      params: { typeName, dbName },
+      params: { typeName },
     } = this.props;
-    const type = await getType(typeName, false, dbName, session?.sessionId);
+    const type = await getType(typeName, false, session?.odcDatabase?.name, session?.sessionId);
 
     if (type) {
       this.setState({
@@ -161,9 +157,14 @@ class TypePage extends Component<
   private handleEditType = () => {
     const {
       session,
-      params: { typeName, dbName },
+      params: { typeName },
     } = this.props;
-    openTypeEditPageByName(typeName, session?.sessionId, session?.odcDatabase?.id, dbName);
+    openTypeEditPageByName(
+      typeName,
+      session?.sessionId,
+      session?.odcDatabase?.id,
+      session?.odcDatabase?.name,
+    );
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;
@@ -289,7 +290,12 @@ class TypePage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(type?.typeName, PLType.TYPE, type?.ddl, params.dbName);
+                      downloadPLDDL(
+                        type?.typeName,
+                        PLType.TYPE,
+                        type?.ddl,
+                        session?.odcDatabase?.name,
+                      );
                     }}
                   />
 

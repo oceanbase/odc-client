@@ -35,7 +35,6 @@ export default class SessionManagementPage extends Component<
     pageKey: string;
     params: {
       cid: number;
-      dbName: string;
     };
   },
   {

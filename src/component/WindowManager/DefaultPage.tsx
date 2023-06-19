@@ -19,7 +19,7 @@ export default function DefaultPage() {
   return (
     <div style={{ marginLeft: '50%', marginTop: 100, transform: 'translateX(-50%)', width: 360 }}>
       <Typography.Title level={4}>快速开始</Typography.Title>
-      <div onClick={() => openNewSQLPage(null, null, 'datasource')} className={styles.item}>
+      <div onClick={() => openNewSQLPage(null, 'datasource')} className={styles.item}>
         <div className={styles.icon}>
           <Icon component={ConsoleSQLSvg} />
         </div>

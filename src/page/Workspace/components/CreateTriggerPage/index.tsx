@@ -61,7 +61,8 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
 
   componentDidMount() {
     const {
-      params: { preData = null, dbName },
+      session,
+      params: { preData = null },
     } = this.props;
     if (preData) {
       this.setState(
@@ -80,7 +81,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
         },
       );
     } else {
-      this.loadSchemaMode(dbName);
+      this.loadSchemaMode(session?.odcDatabase?.name);
     }
     this.loadDatabases();
   } // 获取 step对应的状态

@@ -67,7 +67,6 @@ interface IProps {
     packageName: string;
     propsTab: PropsTab;
     topTab: TopTab;
-    dbName: string;
     databaseId: number;
   };
 
@@ -147,10 +146,10 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
   public async componentDidMount() {
     const {
       sessionManagerStore,
-      params: { packageName, dbName },
+      params: { packageName },
       session,
     } = this.props;
-    const pkg = await getPackage(packageName, session?.sessionId, dbName);
+    const pkg = await getPackage(packageName, session?.sessionId, session?.odcDatabase?.name);
     this.setState({
       pkg,
     });
@@ -166,14 +165,14 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
     async () => {
       const {
         sessionManagerStore,
-        params: { packageName, dbName },
+        params: { packageName },
         session,
       } = this.props;
       this.setState({
         reloading: true,
       });
 
-      const pkg = await getPackage(packageName, session?.sessionId, dbName);
+      const pkg = await getPackage(packageName, session?.sessionId, session?.odcDatabase?.name);
       this.setState({
         pkg: pkg || this.state.pkg,
         reloading: false,
@@ -219,19 +218,9 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
     const pkg = this.getPackage(packageName);
     const { topTab } = this.state;
     if (topTab == TopTab.BODY) {
-      openPackageBodyPage(
-        pkgName,
-        pkg.packageBody.basicInfo.ddl,
-        session?.odcDatabase?.id,
-        session?.database?.dbName,
-      );
+      openPackageBodyPage(pkgName, pkg.packageBody.basicInfo.ddl, session?.odcDatabase?.id);
     } else if (topTab == TopTab.HEAD) {
-      openPackageHeadPage(
-        pkgName,
-        pkg.packageHead.basicInfo.ddl,
-        session?.odcDatabase?.id,
-        session?.database?.dbName,
-      );
+      openPackageHeadPage(pkgName, pkg.packageHead.basicInfo.ddl, session?.odcDatabase?.id);
     }
   }
 
@@ -260,14 +249,13 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
 
   public render() {
     const {
-      pageKey,
-      sessionManagerStore,
-      params: { packageName, dbName },
+      params: { packageName },
       session,
     } = this.props;
     const { propsTab, ddlReadOnly, topTab, headerFormated, bodyFormated, reloading } = this.state;
     const pkg = this.getPackage(packageName);
     const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+    const dbName = session?.odcDatabase?.name;
 
     if (!pkg) {
       return null;

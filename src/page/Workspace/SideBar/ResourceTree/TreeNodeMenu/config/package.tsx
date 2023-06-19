@@ -101,19 +101,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const sql = pkg?.packageHead?.basicInfo?.ddl || '';
         const bodysql = pkg?.packageBody?.basicInfo?.ddl || '';
-        await openPackageHeadPage(
-          pkg?.packageName,
-          sql,
-          session?.odcDatabase?.id,
-          session?.database?.dbName,
-        );
+        await openPackageHeadPage(pkg?.packageName, sql, session?.odcDatabase?.id);
         if (bodysql) {
-          await openPackageBodyPage(
-            pkg?.packageName,
-            bodysql,
-            session?.odcDatabase?.id,
-            session?.database?.dbName,
-          );
+          await openPackageBodyPage(pkg?.packageName, bodysql, session?.odcDatabase?.id);
         }
       },
     },
@@ -223,13 +213,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ellipsis: true,
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
-        openPackageViewPage(
-          pkgInfo?.packageName,
-          TopTab.HEAD,
-          true,
-          session?.database?.dbName,
-          session?.odcDatabase?.id,
-        );
+        openPackageViewPage(pkgInfo?.packageName, TopTab.HEAD, true, session?.odcDatabase?.id);
       },
     },
     {
@@ -246,12 +230,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         const pkgInfo: IPackage = node.data;
         const pkg: IPackage = await session?.database?.loadPackage(pkgInfo.packageName);
         const sql = pkg?.packageHead?.basicInfo?.ddl || '';
-        await openPackageHeadPage(
-          pkg?.packageName,
-          sql,
-          session?.odcDatabase?.id,
-          session?.database?.dbName,
-        );
+        await openPackageHeadPage(pkg?.packageName, sql, session?.odcDatabase?.id);
       },
     },
 

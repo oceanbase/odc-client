@@ -102,7 +102,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
       pageStore,
       session,
       pageKey,
-      params: { type, synonymType, isPackageBody, dbName },
+      params: { type, synonymType, isPackageBody },
     } = this.props;
     const { sql } = this.state;
     this.setState({
@@ -253,7 +253,6 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
             name,
             params.isPackageBody ? TopTab.BODY : TopTab.HEAD,
             true,
-            dbName,
             databaseId,
           );
         }
