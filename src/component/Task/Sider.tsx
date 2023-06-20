@@ -1,5 +1,4 @@
 import { TaskPageScope } from '@/d.ts';
-import { SchemaStore } from '@/store/schema';
 import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import Icon from '@ant-design/icons';
@@ -14,13 +13,12 @@ import styles from './index.less';
 
 interface IProps {
   settingStore?: SettingStore;
-  schemaStore?: SchemaStore;
   taskStore?: TaskStore;
 }
 
-const Sider: React.FC<IProps> = function ({ settingStore, schemaStore, taskStore }) {
+const Sider: React.FC<IProps> = function ({ settingStore, taskStore }) {
   const { taskPageScope } = taskStore;
-  const taskTypeList = getTaskTypeList(settingStore, schemaStore, taskStore);
+  const taskTypeList = getTaskTypeList(settingStore, taskStore);
   const firstEnabledTask = flatten(taskTypeList?.map((taskGroup) => taskGroup?.group))?.find(
     (item) => item?.enabled,
   );
@@ -77,4 +75,4 @@ const Sider: React.FC<IProps> = function ({ settingStore, schemaStore, taskStore
   return <div className={styles.taskSider}>{renderTaskTypeList()}</div>;
 };
 
-export default inject('settingStore', 'schemaStore', 'taskStore')(observer(Sider));
+export default inject('settingStore', 'taskStore')(observer(Sider));

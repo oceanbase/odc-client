@@ -1,23 +1,32 @@
-import { EXPORT_CONTENT } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
+import { EXPORT_CONTENT, IConnection } from '@/d.ts';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { Form, Radio, Select } from 'antd';
+import { Form, Radio } from 'antd';
 import { FormInstance } from 'antd/es/form';
-import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect } from 'react';
+import DatabaseSelect from '../../../../component/DatabaseSelect';
 import ExportSelecter from '../ExportSelecter';
 
 const FormItem = Form.Item;
 
 interface IProps {
   form: FormInstance<any>;
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
+  onConnectionChange: (data: IConnection) => void;
 }
 
-const ObjSelecterPanel: React.FC<IProps> = function ({ form, schemaStore, connectionStore }) {
-  const connectionName = connectionStore.connection?.name;
+const ObjSelecterPanel: React.FC<IProps> = function ({ form, onConnectionChange }) {
+  const databaseId = Form.useWatch('databaseId', form);
+  const { database } = useDBSession(databaseId);
+  const databaseName = database?.name;
+  const connection = database?.dataSource;
+  const connectionId = connection?.id;
+
+  useEffect(() => {
+    if (connection) {
+      onConnectionChange(connection);
+    }
+  }, [connection]);
+
   return (
     <>
       <FormItem
@@ -63,46 +72,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, schemaStore, connec
           </Radio.Button>
         </Radio.Group>
       </FormItem>
-      <FormItem
-        label={formatMessage({
-          id: 'odc.ExportDrawer.ExportForm.Database.1',
-        })}
-        /*所属库*/ name="databaseName"
-        required
-        extra={
-          formatMessage(
-            {
-              id: 'odc.ExportForm.ObjSelecterPanel.CurrentConnectionConnectionname',
-            },
-            { connectionName: connectionName },
-          ) //`当前连接: ${connectionName}`
-        }
-      >
-        <Select
-          style={{ width: 320 }}
-          onChange={() => {
-            form.setFieldsValue({
-              exportDbObjects: [],
-            });
-          }}
-          options={schemaStore?.databases?.map((item) => {
-            return {
-              label:
-                item.name === schemaStore.database.name
-                  ? formatMessage(
-                      {
-                        id: 'odc.ExportDrawer.ExportForm.ItemnameDefaultCurrentLibrary',
-                      },
-
-                      { itemName: item.name },
-                    )
-                  : //`${item.name} (默认当前库)`
-                    item.name,
-              value: item.name,
-            };
-          })}
-        />
-      </FormItem>
+      <DatabaseSelect />
       <FormItem
         label={
           formatMessage({ id: 'odc.ExportForm.ObjSelecterPanel.ExportRange' }) //导出范围
@@ -132,7 +102,6 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, schemaStore, connec
       <FormItem noStyle shouldUpdate>
         {({ getFieldValue }) => {
           const exportContent = getFieldValue('exportContent');
-          const databaseName = getFieldValue('databaseName');
           const exportAllObjects = getFieldValue('exportAllObjects');
           if (exportAllObjects) {
             return null;
@@ -150,6 +119,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, schemaStore, connec
                 <ExportSelecter
                   onlyTable={exportContent === EXPORT_CONTENT.DATA}
                   databaseName={databaseName}
+                  connectionId={connectionId}
                 />
               </FormItem>
             </>
@@ -160,4 +130,4 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, schemaStore, connec
   );
 };
 
-export default inject('connectionStore', 'schemaStore')(observer(ObjSelecterPanel));
+export default ObjSelecterPanel;

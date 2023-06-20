@@ -1,29 +1,30 @@
 import ExportCard from '@/component/ExportCard';
 import HelpDoc from '@/component/helpDoc';
 import connection from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Checkbox, Col, Form, Input, message, Radio, Row, Select, Space } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { List as VirtualList } from 'react-virtualized';
 import { IContentProps, IShaodwSyncData } from '../interface';
 
+import { getTableListByDatabaseName } from '@/common/network/table';
 import { getShadowSyncAnalysisResult, startShadowSyncAnalysis } from '@/common/network/task';
 import { DbObjsIcon } from '@/constant';
 import { useUnmountedRef } from 'ahooks';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { clone, cloneDeep } from 'lodash';
+import DatabaseSelect from '../../../component/DatabaseSelect';
 import styles from './index.less';
 
 const Option = Select.Option;
 
-interface IProps extends IContentProps {
-  schemaStore?: SchemaStore;
-}
+interface IProps extends IContentProps {}
 
-const SelectPanel = forwardRef<any, IProps>(function ({ schemaStore, data, setData }, ref) {
+const SelectPanel = forwardRef<any, IProps>(function (
+  { schemaName, connectionId, sessionId, data, setData },
+  ref,
+) {
   const [tables, setTables] = useState([]);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
   const [targetSearchValue, setTargetSearchValue] = useState(null);
@@ -93,7 +94,8 @@ const SelectPanel = forwardRef<any, IProps>(function ({ schemaStore, data, setDa
             return values.prefix ? `${values.name}${name}` : `${name}${values.name}`;
           });
           const taskId = await startShadowSyncAnalysis(
-            values.schemaName,
+            schemaName,
+            connectionId,
             originTableNames,
             destTableNames,
           );
@@ -131,11 +133,10 @@ const SelectPanel = forwardRef<any, IProps>(function ({ schemaStore, data, setDa
   );
 
   async function updateTables() {
-    const schemaName = form.getFieldValue('schemaName');
     if (!schemaName) {
       return;
     }
-    const tables = await schemaStore.getTableListByDatabaseName(schemaName);
+    const tables = await getTableListByDatabaseName(sessionId, schemaName);
     setTables(tables);
     setData({
       ...data,
@@ -151,7 +152,7 @@ const SelectPanel = forwardRef<any, IProps>(function ({ schemaStore, data, setDa
       clearTimeout(loopRef.current);
       loopRef.current = null;
     };
-  }, []);
+  }, [schemaName]);
 
   const TableIcon = DbObjsIcon.TABLE;
   const connectionName = connection.connection?.name;
@@ -201,36 +202,7 @@ const SelectPanel = forwardRef<any, IProps>(function ({ schemaStore, data, setDa
         });
       }}
     >
-      <Form.Item
-        extra={
-          formatMessage(
-            {
-              id: 'odc.CreateShadowSyncModal.SelectPanel.CurrentConnectionConnectionname',
-            },
-
-            { connectionName: connectionName },
-          )
-          //`当前连接: ${connectionName}`
-        }
-        name="schemaName"
-        label={formatMessage({
-          id: 'odc.CreateShadowSyncModal.SelectPanel.Library',
-        })}
-
-        /*所属库*/
-      >
-        <Select
-          onChange={() => {
-            updateTables();
-          }}
-        >
-          {schemaStore.databases?.map((db) => (
-            <Option key={db.name} value={db.name}>
-              {db.name}
-            </Option>
-          ))}
-        </Select>
-      </Form.Item>
+      <DatabaseSelect />
       <Form.Item
         extra={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyTheStructureOfThe',
@@ -477,4 +449,4 @@ const SelectPanel = forwardRef<any, IProps>(function ({ schemaStore, data, setDa
   );
 });
 
-export default inject('schemaStore')(observer(SelectPanel));
+export default SelectPanel;

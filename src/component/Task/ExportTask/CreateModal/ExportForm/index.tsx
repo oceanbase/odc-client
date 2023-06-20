@@ -1,10 +1,9 @@
+import { isReadonlyPublicConnection } from '@/component/Acess';
 import { formatMessage } from '@/util/intl';
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 
-import { ExportFormData } from '@/d.ts';
+import { ExportFormData, IConnection } from '@/d.ts';
 // compatible
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
 import { Form, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 
@@ -19,8 +18,6 @@ export enum FormType {
   Config,
 }
 interface IExportFormProps {
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
   modalStore?: ModalStore;
   formData: ExportFormData;
   ref?: React.Ref<{ valid: (callback: any) => void }>;
@@ -28,20 +25,13 @@ interface IExportFormProps {
   formType: FormType;
 }
 
-const ExportForm: React.FC<IExportFormProps> = inject(
-  'connectionStore',
-  'schemaStore',
-  'modalStore',
-)(
+const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const {
-        connectionStore: { connection },
-        formData,
-        formType,
-        onFormValueChange,
-      } = props;
+      const { formData, formType, onFormValueChange } = props;
       const [form] = useForm<ExportFormData>();
+      const [connection, setConnection] = useState<IConnection>(null);
+      const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
 
       async function valid(callback: (haveError, values) => void) {
         const values = await form.validateFields();
@@ -66,20 +56,27 @@ const ExportForm: React.FC<IExportFormProps> = inject(
       }
 
       useImperativeHandle(ref, () => {
-        return { valid };
+        return {
+          valid,
+          resetFields: form.resetFields,
+        };
       });
       function renderFormItem() {
         switch (formType) {
           case FormType.ObjSelecter: {
-            return <ObjSelecterPanel form={form} />;
+            return <ObjSelecterPanel form={form} onConnectionChange={handleConnectionChange} />;
           }
           case FormType.Config: {
-            return <ConfigPanel form={form} />;
+            return <ConfigPanel form={form} isReadonlyPublicConn={isReadonlyPublicConn} />;
           }
           default: {
             return null;
           }
         }
+      }
+
+      function handleConnectionChange(connection: IConnection) {
+        setConnection(connection);
       }
 
       return (

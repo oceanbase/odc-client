@@ -15,7 +15,6 @@ import TreeFilter from '@/component/TreeFilter';
 import UserPopover from '@/component/UserPopover';
 import type { ICycleTaskTriggerConfig, TaskRecord, TaskRecordParameters } from '@/d.ts';
 import { IConnectionType, SQLPlanTriggerStrategy, TaskPageType, TaskType } from '@/d.ts';
-import type { SchemaStore } from '@/store/schema';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
@@ -104,7 +103,6 @@ const taskStatusFilters = getStatusFilters(status);
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
-  schemaStore?: SchemaStore;
   taskStore?: TaskStore;
   settingStore?: SettingStore;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
@@ -120,12 +118,11 @@ interface IProps {
 }
 
 const TaskTable: React.FC<IProps> = inject(
-  'schemaStore',
   'taskStore',
   'settingStore',
 )(
   observer((props) => {
-    const { taskStore, schemaStore, settingStore, tableRef } = props;
+    const { taskStore, settingStore, tableRef } = props;
     const { tasks, taskPageScope, taskPageType } = taskStore;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
@@ -150,7 +147,7 @@ const TaskTable: React.FC<IProps> = inject(
       : //`创建任务上传的附件保留时间为 ${fileMaxRetainHours}小时`
         null;
 
-    const taskTypeList = getTaskTypeList(settingStore, schemaStore, task);
+    const taskTypeList = getTaskTypeList(settingStore, task);
 
     const taskTypes = flatten(
       taskTypeList?.map((a) => {

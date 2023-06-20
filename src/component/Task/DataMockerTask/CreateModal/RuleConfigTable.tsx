@@ -1,5 +1,4 @@
 import { ConnectionMode, IColumnSizeMap } from '@/d.ts';
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Form, Select, Table } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
@@ -21,7 +20,7 @@ interface IRuleConfigTableProps {
 
 const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
   const { value = [], form, columnSizeMap, readonly, dbMode } = props;
-  const taskDbMode = dbMode || connection.connection.dbMode;
+  const taskDbMode = dbMode;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);

@@ -16,7 +16,10 @@ enum TabKeys {
   SQL = 'sql',
 }
 
-const StructConfigPanel = forwardRef<any, IProps>(function ({ data, setData }, ref) {
+const StructConfigPanel = forwardRef<any, IProps>(function (
+  { data, setData, isReadonlyPublicConn },
+  ref,
+) {
   const [form] = Form.useForm();
   useImperativeHandle(ref, () => {
     return {
@@ -114,7 +117,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function ({ data, setData }, r
             id: 'odc.CreateShadowSyncModal.StructConfigPanel.TaskSettings',
           })} /*任务设置*/
         >
-          <TaskTimer />
+          <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',

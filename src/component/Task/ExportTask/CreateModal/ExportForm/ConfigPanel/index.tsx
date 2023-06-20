@@ -5,12 +5,9 @@ import SysFormItem from '@/component/SysFormItem';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
 import { EXPORT_CONTENT, EXPORT_TYPE, IMPORT_ENCODING } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, { useContext } from 'react';
 import FormContext from '../FormContext';
 
@@ -18,12 +15,10 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   form: FormInstance<any>;
+  isReadonlyPublicConn: boolean;
 }
-const ConfigPanel: React.FC<IProps> = function ({ connectionStore, form }) {
-  const { connection } = connectionStore;
+const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn }) {
   const formContext = useContext(FormContext);
   const exportFileMaxSizeOpt = [
     {
@@ -76,7 +71,6 @@ const ConfigPanel: React.FC<IProps> = function ({ connectionStore, form }) {
         {({ getFieldValue }) => {
           const exportContent = getFieldValue('exportContent');
           const dataTransferFormat = getFieldValue('dataTransferFormat');
-          const databaseName = getFieldValue('databaseName');
           const exportData = exportContent !== EXPORT_CONTENT.STRUCT;
           const exportStruct = exportContent !== EXPORT_CONTENT.DATA;
           const onlyExportStruct = exportContent === EXPORT_CONTENT.STRUCT;
@@ -489,7 +483,7 @@ const ConfigPanel: React.FC<IProps> = function ({ connectionStore, form }) {
         label={formatMessage({ id: 'odc.ExportForm.ConfigPanel.TaskSettings' })}
         /*任务设置*/ keepExpand
       >
-        <TaskTimer />
+        <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
       </FormItemPanel>
       {appConfig.connection.sys && appConfig.task.sys && (
         <FormItem noStyle shouldUpdate>
@@ -528,4 +522,4 @@ const ConfigPanel: React.FC<IProps> = function ({ connectionStore, form }) {
   );
 };
 
-export default inject('connectionStore', 'schemaStore')(observer(ConfigPanel));
+export default ConfigPanel;

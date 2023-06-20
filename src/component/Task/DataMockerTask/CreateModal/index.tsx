@@ -1,10 +1,7 @@
 import { createTask } from '@/common/network/task';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
+import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
-import { SchemaStore } from '@/store/schema';
-import { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, message, Modal, Space } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
@@ -16,20 +13,13 @@ import { IMockFormData } from './type';
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
-  taskStore?: TaskStore;
 }
 
-const CreateModal: React.FC<IProps> = inject(
-  'modalStore',
-  'schemaStore',
-  'connectionStore',
-  'taskStore',
-)(
+const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { modalStore, schemaStore, connectionStore, taskStore } = props;
+    const { modalStore } = props;
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
     const onClose = useCallback(() => {
       modalStore.changeDataMockerModal(false, null);
@@ -48,12 +38,16 @@ const CreateModal: React.FC<IProps> = inject(
       });
     }, [onClose]);
 
+    const handleDbModeChange = (mode: ConnectionMode) => {
+      setDbMode(mode);
+    };
+
     return (
       <Drawer
         visible={modalStore.dataMockerVisible}
         onClose={closeWithConfirm}
         destroyOnClose
-        width={960}
+        width={720}
         className="o-adaptive-drawer"
         title={formatMessage({
           id: 'odc.component.DataMockerDrawer.CreateSimulationData',
@@ -93,16 +87,19 @@ const CreateModal: React.FC<IProps> = inject(
                     return;
                   }
                   setConfirmLoading(true);
-                  const { connectionId, databaseName, executionStrategy, executionTime, ...rest } =
-                    values;
-                  const serverData = converFormToServerData(
-                    rest as any,
-                    connectionStore.connection.dbMode,
+                  const {
+                    connectionId,
                     databaseName,
-                  );
+                    databaseId,
+                    executionStrategy,
+                    executionTime,
+                    ...rest
+                  } = values;
+                  const serverData = converFormToServerData(rest as any, dbMode, databaseName);
 
                   const isSuccess = await createTask({
                     connectionId,
+                    databaseId,
                     databaseName,
                     executionStrategy,
                     executionTime:
@@ -139,7 +136,11 @@ const CreateModal: React.FC<IProps> = inject(
           </Space>
         }
       >
-        <DataMockerForm tableName={modalStore.dataMockerData?.tableName} ref={formRef} />
+        <DataMockerForm
+          tableName={modalStore.dataMockerData?.tableName}
+          onDbModeChange={handleDbModeChange}
+          ref={formRef}
+        />
       </Drawer>
     );
   }),

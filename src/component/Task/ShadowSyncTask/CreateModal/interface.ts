@@ -12,6 +12,7 @@ export interface IShaodwSyncData {
   executionTime?: number;
   errorStrategy?: ErrorStrategy;
   description?: string;
+  databaseId?: number;
 }
 
 export interface IShadowSyncAnalysisResult {
@@ -32,7 +33,11 @@ export interface IShadowSyncAnalysisResult {
 }
 
 export interface IContentProps {
+  schemaName: string;
+  sessionId: string;
+  connectionId: number;
   data: IShaodwSyncData;
+  isReadonlyPublicConn?: boolean;
   setData: (v: IShaodwSyncData) => void;
 }
 

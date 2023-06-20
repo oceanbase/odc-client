@@ -15,10 +15,9 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import {
   AutoComplete,
@@ -37,12 +36,11 @@ import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { getLocale } from 'umi';
+import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
   modalStore?: ModalStore;
 }
 
@@ -61,24 +59,23 @@ const defaultValue = {
 };
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const {
-    modalStore,
-    connectionStore: { connection },
-    schemaStore: { database },
-  } = props;
+  const { modalStore } = props;
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [formData, setFormData] = useState(null);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState(null);
   const [form] = Form.useForm();
+  const databaseId = Form.useWatch('databaseId', form);
+  const { database } = useDBSession(databaseId);
+  const connection = database?.dataSource ?? {};
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
 
   const { createSQLPlanVisible, SQLPlanEditId } = modalStore;
-  const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
   const isEdit = !!SQLPlanEditId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {
@@ -253,6 +250,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const {
+          connectionId,
+          databaseId,
           sqlContentType,
           sqlContent,
           sqlFiles,
@@ -320,8 +319,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         }
 
         const data = {
-          connectionId: connection.id,
-          databaseName: database.name,
+          connectionId,
+          databaseId,
           taskType: TaskType.ALTER_SCHEDULE,
           parameters,
           description,
@@ -483,6 +482,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={defaultValue}
         onFieldsChange={handleFieldsChange}
       >
+        <DatabaseSelect />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',
@@ -761,4 +761,4 @@ const CreateModal: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('connectionStore', 'schemaStore', 'modalStore')(observer(CreateModal));
+export default inject('modalStore')(observer(CreateModal));

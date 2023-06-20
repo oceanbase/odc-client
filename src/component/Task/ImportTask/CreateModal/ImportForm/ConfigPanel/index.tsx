@@ -1,52 +1,43 @@
+import { getTableListByDatabaseName } from '@/common/network/table';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
 import { EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { useUpdate } from 'ahooks';
 import { Form, FormInstance, Radio, Select } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import DatabaseSelect from '../../../../component/DatabaseSelect';
 import CsvMapping from '../../csvMapping';
 import CsvProvider from '../CsvProvider';
 import StructDataFormItem from '../formitem/StructDataFormItem';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 
 interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   form: FormInstance<any>;
   isSingleImport?: boolean;
 }
 
-const FileSelecterPanel: React.FC<IProps> = function ({
-  schemaStore,
-  connectionStore,
-  form,
-  isSingleImport,
-}) {
-  const { connection } = connectionStore;
-  const { name } = connection;
-  const update = useUpdate();
-
+const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport }) {
   const [tables, setTables] = useState([]);
+  const databaseId = Form.useWatch('databaseId', form);
+  const { session, database } = useDBSession(databaseId);
+  const connection = database?.dataSource ?? {};
+  const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
+  const databaseName = database?.name;
   async function fetchTable(dbName: string) {
-    const tables = await schemaStore.getTableListByDatabaseName(dbName);
+    const tables = await getTableListByDatabaseName(session?.sessionId, dbName);
     setTables(tables);
   }
   useEffect(() => {
-    const dbName = form.getFieldValue('databaseName');
-    if (!dbName) {
+    if (!databaseName) {
       return;
     }
-    fetchTable(dbName);
-  }, [form.getFieldValue('databaseName')]);
+    fetchTable(databaseName);
+  }, [databaseName]);
 
   return (
     <>
@@ -98,46 +89,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
                   </Radio.Button>
                 </Radio.Group>
               </FormItem>
-              <FormItem
-                label={formatMessage({
-                  id: 'odc.ImportDrawer.ImportForm.Database.1',
-                })}
-                /*所属库*/ name="databaseName"
-                required
-                extra={
-                  formatMessage(
-                    {
-                      id: 'odc.ImportForm.ConfigPanel.CurrentConnectionName',
-                    },
-
-                    { name: name },
-                  )
-                  //`当前连接: ${name}`
-                }
-              >
-                <Select
-                  style={{ width: 320 }}
-                  onChange={() => {
-                    update();
-                  }}
-                  options={schemaStore?.databases?.map((item) => {
-                    return {
-                      label:
-                        item.name === schemaStore.database.name
-                          ? formatMessage(
-                              {
-                                id: 'odc.ImportDrawer.ImportForm.ItemnameDefaultCurrentLibrary',
-                              },
-
-                              { itemName: item.name },
-                            )
-                          : //`${item.name} (默认当前库)`
-                            item.name,
-                      value: item.name,
-                    };
-                  })}
-                />
-              </FormItem>
+              <DatabaseSelect />
               {(isCsvFileType || isSingleImport) && (
                 <FormItem
                   required={isCsvFileType}
@@ -229,7 +181,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
                   </>
                 )}
 
-                <TaskTimer />
+                <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
               </FormItemPanel>
             </>
           );
@@ -260,4 +212,4 @@ const FileSelecterPanel: React.FC<IProps> = function ({
   );
 };
 
-export default inject('schemaStore', 'connectionStore')(observer(FileSelecterPanel));
+export default FileSelecterPanel;
