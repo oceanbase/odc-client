@@ -19,7 +19,6 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openSQLResultSetViewPage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -38,7 +37,6 @@ interface IProps {
   userStore?: UserStore;
   taskStore?: TaskStore;
   settingStore?: SettingStore;
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
   isDetailModal?: boolean;
   task: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
@@ -58,7 +56,6 @@ const ActionBar: React.FC<IProps> = inject(
   'taskStore',
   'userStore',
   'settingStore',
-  'connectionStore',
   'modalStore',
 )(
   observer((props) => {
@@ -66,7 +63,6 @@ const ActionBar: React.FC<IProps> = inject(
       taskStore,
       userStore: { user },
       settingStore,
-      connectionStore: { connection },
       isDetailModal,
       task,
       disabledSubmit = false,

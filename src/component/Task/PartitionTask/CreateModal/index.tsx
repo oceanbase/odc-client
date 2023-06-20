@@ -1,15 +1,15 @@
 import { checkConnectionPartitionPlan, createTask, getPartitionPlan } from '@/common/network/task';
 import { IPartitionPlanRecord, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, Modal, Select, Space, Tooltip } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import PartitionPolicyTable from '../../../../page/Workspace/components/PartitionPolicyTable';
+import DatabaseSelect from '../../component/DatabaseSelect';
 
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
@@ -59,31 +59,23 @@ export const enabledInspectTriggerStrategy = false;
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
 }
 
-const CreateModal: React.FC<IProps> = inject(
-  'modalStore',
-  'connectionStore',
-  'schemaStore',
-)(
+const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const {
-      modalStore,
-      connectionStore: { connection },
-      schemaStore,
-    } = props;
+    const { modalStore } = props;
     const { partitionVisible } = modalStore;
     const [partitionPlans, setPartitionPlans] = useState<IPartitionPlanRecord[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [disabledSubmit, setDisabledSubmit] = useState(true);
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
     const [form] = Form.useForm();
-
+    const databaseId = Form.useWatch('databaseId', form);
+    const { database } = useDBSession(databaseId);
+    const connectionId = database?.dataSource?.id;
     const loadData = async () => {
       const res = await getPartitionPlan({
-        connectionId: connection.id,
+        connectionId,
       });
 
       setPartitionPlans(
@@ -120,7 +112,6 @@ const CreateModal: React.FC<IProps> = inject(
         const inspectTriggerStrategy = IPartitionPlanInspectTriggerStrategy.NONE;
         const params = {
           taskType: TaskType.PARTITION_PLAN,
-          databaseName: schemaStore.database.name,
           description,
           connectionId,
           parameters: {
@@ -154,7 +145,7 @@ const CreateModal: React.FC<IProps> = inject(
     };
 
     const checkPartitionPlanExist = async () => {
-      const isExist = await checkConnectionPartitionPlan(connection.id);
+      const isExist = await checkConnectionPartitionPlan(connectionId);
       setHasPartitionPlan(isExist);
     };
 
@@ -219,35 +210,10 @@ const CreateModal: React.FC<IProps> = inject(
           layout="vertical"
           requiredMark="optional"
           initialValues={{
-            connectionId: connection.id,
             inspectTriggerStrategy: IPartitionPlanInspectTriggerStrategy.NONE,
           }}
         >
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.PartitionDrawer.Connection',
-            })} /*所属连接*/
-            name="connectionId"
-            required
-            extra={
-              hasPartitionPlan
-                ? formatMessage({
-                    id: 'odc.components.PartitionDrawer.APartitionPlanAlreadyExists',
-                  }) //当前连接已存在一个分区计划，任务审批通过后，原分区计划将终止
-                : null
-            }
-          >
-            <Select
-              style={{ width: 320 }}
-              disabled
-              options={[
-                {
-                  label: connection.sessionName,
-                  value: connection.id,
-                },
-              ]}
-            />
-          </Form.Item>
+          <DatabaseSelect />
           {enabledInspectTriggerStrategy && (
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {

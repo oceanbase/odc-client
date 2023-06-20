@@ -1,10 +1,8 @@
 import { ConnectionMode } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { convertColumnType } from '@/util/utils';
 import { Select } from 'antd';
 import { SelectProps } from 'antd/es/select';
-import { inject, observer } from 'mobx-react';
 import React from 'react';
 import { CharRuleType } from './RuleContent/ruleItems/CharItem';
 import { DateRuleType } from './RuleContent/ruleItems/DateItem';
@@ -200,38 +198,35 @@ function getRule(columnType: string, dbMode: ConnectionMode) {
 interface IRuleSelect extends SelectProps<string> {
   columnType: string;
   readonly?: boolean;
-  connectionStore?: ConnectionStore;
   dbMode?: ConnectionMode;
 }
 
-const RuleSelect: React.FC<IRuleSelect> = inject('connectionStore')(
-  observer((props) => {
-    const { dbMode, columnType, readonly = false, connectionStore, ...rest } = props;
-    const taskDbMode = dbMode || connectionStore.connection.dbMode;
-    const ruleOptions = getRule(columnType, taskDbMode);
-    if (readonly) {
-      return (
-        <span>
-          {
-            ruleOptions.find((r) => {
-              return r.value === rest.value;
-            })?.name
-          }
-        </span>
-      );
-    }
+const RuleSelect: React.FC<IRuleSelect> = (props) => {
+  const { dbMode, columnType, readonly = false, ...rest } = props;
+  const taskDbMode = dbMode;
+  const ruleOptions = getRule(columnType, taskDbMode);
+  if (readonly) {
     return (
-      <Select showSearch optionFilterProp="children" {...rest}>
-        {ruleOptions?.map((rule) => {
-          return (
-            <Option key={rule.value} value={rule.value}>
-              {rule.name}
-            </Option>
-          );
-        })}
-      </Select>
+      <span>
+        {
+          ruleOptions.find((r) => {
+            return r.value === rest.value;
+          })?.name
+        }
+      </span>
     );
-  }),
-);
+  }
+  return (
+    <Select showSearch optionFilterProp="children" {...rest}>
+      {ruleOptions?.map((rule) => {
+        return (
+          <Option key={rule.value} value={rule.value}>
+            {rule.name}
+          </Option>
+        );
+      })}
+    </Select>
+  );
+};
 
 export default RuleSelect;

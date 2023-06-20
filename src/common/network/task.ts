@@ -16,7 +16,6 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import connection from '@/store/connection';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
@@ -326,12 +325,13 @@ export async function checkConnectionPartitionPlan(id: number): Promise<boolean>
  */
 export async function startShadowSyncAnalysis(
   schemaName: string,
+  connectionId: number,
   originTableNames: string[],
   destTableNames: string[],
 ) {
   const result = await request.post('/api/v2/schema-sync/shadowTableSyncs', {
     data: {
-      connectionId: connection?.connection?.id,
+      connectionId,
       schemaName,
       originTableNames,
       destTableNames,

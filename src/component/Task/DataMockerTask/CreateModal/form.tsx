@@ -1,9 +1,9 @@
-import { getTableColumnList } from '@/common/network/table';
+import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
+import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import { ConnectionMode, ITable, TaskExecStrategy } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
 import { getColumnSizeMapFromColumns } from '@/util/column';
 import { formatMessage } from '@/util/intl';
@@ -13,6 +13,7 @@ import { FormInstance } from 'antd/es/form/Form';
 import { cloneDeep } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import DatabaseSelect from '../../component/DatabaseSelect';
 import RuleConfigTable from './RuleConfigTable';
 import { convertFormToServerColumns, getDefaultRule, getDefaultValue } from './RuleContent';
 import { IMockFormData, MockStrategy, MockStrategyTextMap } from './type';
@@ -20,62 +21,49 @@ import { IMockFormData, MockStrategy, MockStrategyTextMap } from './type';
 const { Option } = Select;
 
 interface IDataMockerFormProps {
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
   settingStore?: SettingStore;
   ref?: React.Ref<FormInstance>;
   tableName?: string;
+  onDbModeChange: (mode: ConnectionMode) => void;
 }
 
-const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
-  'connectionStore',
-  'schemaStore',
-  'settingStore',
-)(
+const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
   observer(
     forwardRef((props, ref) => {
-      const {
-        connectionStore: { connection },
-        schemaStore,
-        settingStore,
-        tableName,
-      } = props;
+      const { settingStore, tableName, onDbModeChange } = props;
       const [form] = Form.useForm<IMockFormData>();
       /**
        * 字段长度信息表
        */
       const [columnSizeMap, setColumnSizeMap] = useState({});
-      const [databaseName, setDatabaseName] = useState<string>(schemaStore.database.name);
+      const databaseId = Form.useWatch('databaseId', form);
+      const { session, database } = useDBSession(databaseId);
       const [tables, setTables] = useState<ITable[]>();
       const forceUpdate = useUpdate();
+      const databaseName = database?.name;
+      const dialectType = database?.dataSource?.dialectType;
+      const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
       const maxMockLimit = settingStore?.serverSystemInfo?.mockDataMaxRowCount || 1000000;
 
       useImperativeHandle(ref, () => form);
 
       const loadTables = async (value: string) => {
-        const tables = await schemaStore.getTableListByDatabaseName(value);
+        const tables = await getTableListByDatabaseName(session?.sessionId, value);
         setTables(tables);
-      };
-
-      const handleDatabaseChange = (value: string) => {
-        form.setFieldsValue({
-          databaseName: value,
-        });
-
-        setDatabaseName(value);
       };
 
       useEffect(() => {
         form.resetFields(['tableName', 'columns']);
-        loadTables(databaseName);
+        if (databaseName) {
+          loadTables(databaseName);
+        }
       }, [form, databaseName]);
 
-      /**
-       * 获取表列表
-       */
       useEffect(() => {
-        schemaStore.refreshTableList();
-      }, []);
+        if (dialectType) {
+          onDbModeChange(dialectType);
+        }
+      }, [dialectType]);
 
       /**
        * 更新表的列
@@ -86,7 +74,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
             form.resetFields(['columns']);
             setColumnSizeMap({});
             forceUpdate();
-            let columns = await getTableColumnList(value, databaseName);
+            let columns = await getTableColumnList(value, databaseName, session?.sessionId);
             if (columns?.length) {
               columns = columns.map((column) => {
                 /**
@@ -108,7 +96,8 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
                */
               form.setFieldsValue({
                 columns: columns.map((column) => {
-                  const rule: any = getDefaultRule(column.dataType, connection?.dbMode);
+                  const dbMode = database?.dataSource?.dialectType;
+                  const rule: any = getDefaultRule(column.dataType, dbMode);
 
                   return {
                     columnName: column.columnName,
@@ -116,7 +105,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
                     columnObj: column,
                     rule,
                     typeConfig: getDefaultValue(
-                      connection?.dbMode,
+                      dbMode,
                       column.dataType,
                       rule,
                       _sizeMap[column.columnName],
@@ -153,61 +142,11 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
             strategy: MockStrategy.IGNORE,
             totalCount: 1000,
             batchSize: 200,
-            connectionId: connection.id,
-            databaseName: schemaStore.database.name,
             executionStrategy: TaskExecStrategy.AUTO,
+            databaseName,
           }}
         >
-          <Row gutter={14}>
-            <Col span={12}>
-              <Form.Item
-                label={formatMessage({
-                  id: 'odc.component.DataMockerDrawer.form.Connection',
-                })}
-                /*所属连接*/ name="connectionId"
-                required
-              >
-                <Select
-                  disabled
-                  options={[
-                    {
-                      label: connection.sessionName,
-                      value: connection.id,
-                    },
-                  ]}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={formatMessage({
-                  id: 'odc.component.DataMockerDrawer.form.Database',
-                })}
-                /*所属库*/ name="databaseName"
-                required
-              >
-                <Select
-                  onChange={handleDatabaseChange}
-                  options={schemaStore?.databases?.map((item) => {
-                    return {
-                      label:
-                        item.name === schemaStore.database.name
-                          ? formatMessage(
-                              {
-                                id: 'odc.component.DataMockerDrawer.form.ItemnameDefaultCurrentLibrary',
-                              },
-
-                              { itemName: item.name },
-                            )
-                          : //`${item.name} (默认当前库)`
-                            item.name,
-                      value: item.name,
-                    };
-                  })}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+          <DatabaseSelect />
           <Row gutter={14}>
             <Col span={12}>
               <Form.Item
@@ -372,7 +311,11 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
 
             /* 规则设置 */
           >
-            <RuleConfigTable columnSizeMap={columnSizeMap} form={form} />
+            <RuleConfigTable
+              columnSizeMap={columnSizeMap}
+              form={form}
+              dbMode={database?.dataSource?.dialectType}
+            />
           </Form.Item>
           <FormItemPanel
             label={formatMessage({
@@ -380,7 +323,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject(
             })}
             /*任务设置*/ keepExpand
           >
-            <TaskTimer />
+            <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
           </FormItemPanel>
         </Form>
       );

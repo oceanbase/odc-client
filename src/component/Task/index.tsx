@@ -8,10 +8,8 @@ import {
   TaskRecord,
   TaskType,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import type { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
@@ -45,10 +43,8 @@ export const TaskExecStrategyMap = {
 };
 
 interface IProps {
-  schemaStore?: SchemaStore;
   taskStore?: TaskStore;
   userStore?: UserStore;
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
   tabHeight?: number;
 }
@@ -63,7 +59,7 @@ interface IState {
   status: TaskStatus;
 }
 
-@inject('schemaStore', 'userStore', 'taskStore', 'connectionStore', 'modalStore')
+@inject('userStore', 'taskStore', 'modalStore')
 @observer
 class TaskManaerPage extends React.Component<IProps, IState> {
   constructor(props: IProps) {

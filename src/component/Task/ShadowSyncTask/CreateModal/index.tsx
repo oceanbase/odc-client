@@ -1,5 +1,7 @@
+import { isReadonlyPublicConnection } from '@/component/Acess';
 import { ModalStore } from '@/store/modal';
 import schema from '@/store/schema';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -60,6 +62,12 @@ const CreateModal: React.FC<IProps> = function ({ modalStore }) {
     ...defaultData,
     schemaName: schema.database?.name,
   });
+  const { session, database } = useDBSession(data?.databaseId);
+  const schemaName = database?.name;
+  const sessionId = session?.sessionId;
+  const connectionId = database?.dataSource?.id;
+  const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
+
   function setData(v) {
     _setData(v);
     if (!isChanged) {
@@ -102,8 +110,8 @@ const CreateModal: React.FC<IProps> = function ({ modalStore }) {
       executionStrategy: data.executionStrategy,
       executionTime:
         data.executionStrategy === TaskExecStrategy.TIMER ? data.executionTime : undefined,
-      databaseName: data.schemaName,
-      connectionId: connection?.connection?.id,
+      // databaseName: schemaName,
+      // connectionId: connection?.connection?.id,
       description: data.description,
       parameters: {
         errorStrategy: data.errorStrategy,
@@ -190,7 +198,15 @@ const CreateModal: React.FC<IProps> = function ({ modalStore }) {
         </Space>
       }
     >
-      <Content data={data} setData={setData} ref={contentRef} />
+      <Content
+        schemaName={schemaName}
+        connectionId={connectionId}
+        isReadonlyPublicConn={isReadonlyPublicConn}
+        sessionId={sessionId}
+        data={data}
+        setData={setData}
+        ref={contentRef}
+      />
     </Drawer>
   );
 };

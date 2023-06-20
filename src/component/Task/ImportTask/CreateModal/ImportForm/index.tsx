@@ -9,9 +9,7 @@ import {
   IMPORT_TYPE,
 } from '@/d.ts';
 // compatible
-import type { ConnectionStore } from '@/store/connection';
 import type { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
 import { Form, message } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { inject, observer } from 'mobx-react';
@@ -22,8 +20,6 @@ import FormContext from './FormContext';
 
 interface IImportFormProps {
   formType: 'fileSelecter' | 'config';
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
   modalStore?: ModalStore;
   formData: ImportFormData;
   onChangeCsvColumnMappings: (csvColumnMappings: CsvColumnMapping[]) => void;
@@ -32,21 +28,10 @@ interface IImportFormProps {
   resolveTableColumnsToCsv: (tableName: string, databaseName?: string) => Promise<void>;
 }
 
-const ImportForm: React.FC<IImportFormProps> = inject(
-  'connectionStore',
-  'schemaStore',
-  'modalStore',
-)(
+const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const {
-        connectionStore: { connection },
-        schemaStore,
-        modalStore,
-        formData,
-        formType,
-        onFormValueChange,
-      } = props;
+      const { modalStore, formData, formType, onFormValueChange } = props;
       const [form] = useForm();
       const formConfigContext = useContext(FormConfigContext);
       const isSingleImport = !!modalStore.importModalData;

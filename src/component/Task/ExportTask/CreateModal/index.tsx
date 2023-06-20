@@ -10,18 +10,15 @@ import {
   TaskPageScope,
   TaskPageType,
 } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import { ModalStore } from '@/store/modal';
-import { SchemaStore } from '@/store/schema';
 import { selectFolder } from '@/util/client';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
 import React from 'react';
 import { FormattedMessage } from 'umi';
 import ExportForm, { FormType } from './ExportForm';
@@ -29,8 +26,6 @@ import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
 export interface IProps {
   modalStore?: ModalStore;
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
 }
 
 export interface IState {
@@ -41,7 +36,7 @@ export interface IState {
   isSaveDefaultConfig: boolean;
 }
 
-@inject('modalStore', 'connectionStore', 'schemaStore')
+@inject('modalStore')
 @observer
 class CreateModal extends React.Component<IProps, IState> {
   private _formRef = React.createRef<any>();
@@ -50,42 +45,14 @@ class CreateModal extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    const { connectionStore, schemaStore, modalStore } = props;
+    const { modalStore } = props;
     this.setDefaultConfig();
     this.state = {
       stepIndex: 0,
       submitting: false,
       isFormChanged: false,
       isSaveDefaultConfig: false,
-      formData: {
-        connectionId: connectionStore.connection.id,
-        databaseName: schemaStore.database.name,
-        executionStrategy: TaskExecStrategy.AUTO,
-        taskName: `${connectionStore.connection.sessionName || ''}_${
-          schemaStore.database.name || ''
-        }_${moment().format('YYYYMMDDHHmmss')}`,
-        dataTransferFormat: this.defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
-        exportContent: this.defaultConfig?.exportContent ?? EXPORT_CONTENT.DATA_AND_STRUCT,
-        batchCommit: this.defaultConfig?.batchCommit ?? false,
-        batchCommitNum: this.defaultConfig?.batchCommitNum ?? null,
-        skippedDataType: this.defaultConfig?.skippedDataType ?? [],
-        encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
-        maskStrategy: '',
-        globalSnapshot: this.defaultConfig?.globalSnapshot ?? false,
-        withDropDDL: this.defaultConfig?.withDropDDL ?? false,
-        mergeSchemaFiles: this.defaultConfig?.mergeSchemaFiles ?? false,
-        withColumnTitle: this.defaultConfig?.withColumnTitle ?? true,
-        blankToNull: this.defaultConfig?.blankToNull ?? true,
-        columnSeparator: this.defaultConfig?.columnSeparator ?? ',',
-        exportFileMaxSize:
-          this.defaultConfig?.exportFileMaxSize ??
-          formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }), //无限制
-        columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
-        lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
-        useSys: false,
-        exportAllObjects: false,
-        exportDbObjects: [],
-      },
+      formData: this.getDefaultFormData(),
     };
 
     if (modalStore.exportModalData) {
@@ -132,6 +99,7 @@ class CreateModal extends React.Component<IProps, IState> {
       this.props.modalStore.changeExportModal(false);
       return;
     }
+    this.resetFormData();
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ExportDrawer.AreYouSureYouWant',
@@ -217,6 +185,7 @@ class CreateModal extends React.Component<IProps, IState> {
             openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
           }
         } finally {
+          this.resetFormData();
           this.setState({
             submitting: false,
           });
@@ -245,6 +214,43 @@ class CreateModal extends React.Component<IProps, IState> {
     if (data) {
       this.defaultConfig = safeParseJson(data);
     }
+  };
+
+  private getDefaultFormData = () => {
+    return {
+      connectionId: null,
+      databaseId: null,
+      executionStrategy: TaskExecStrategy.AUTO,
+      taskName: null,
+      dataTransferFormat: this.defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
+      exportContent: this.defaultConfig?.exportContent ?? EXPORT_CONTENT.DATA_AND_STRUCT,
+      batchCommit: this.defaultConfig?.batchCommit ?? false,
+      batchCommitNum: this.defaultConfig?.batchCommitNum ?? null,
+      skippedDataType: this.defaultConfig?.skippedDataType ?? [],
+      encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
+      maskStrategy: '',
+      globalSnapshot: this.defaultConfig?.globalSnapshot ?? false,
+      withDropDDL: this.defaultConfig?.withDropDDL ?? false,
+      mergeSchemaFiles: this.defaultConfig?.mergeSchemaFiles ?? false,
+      withColumnTitle: this.defaultConfig?.withColumnTitle ?? true,
+      blankToNull: this.defaultConfig?.blankToNull ?? true,
+      columnSeparator: this.defaultConfig?.columnSeparator ?? ',',
+      exportFileMaxSize:
+        this.defaultConfig?.exportFileMaxSize ??
+        formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }), //无限制
+      columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
+      lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
+      useSys: false,
+      exportAllObjects: false,
+      exportDbObjects: [],
+    };
+  };
+
+  private resetFormData = () => {
+    this.setState({
+      stepIndex: 0,
+      formData: this.getDefaultFormData(),
+    });
   };
 
   render() {

@@ -5,8 +5,8 @@ import request from '@/util/request';
 export async function listDatabases(
   projectId: number,
   dataSourceId: number,
-  page: number,
-  size: number,
+  page?: number,
+  size?: number,
   name?: string,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {

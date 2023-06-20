@@ -11,11 +11,9 @@ import {
   TaskPageScope,
   TaskPageType,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import { formatBytes, safeParseJson } from '@/util/utils';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
@@ -30,8 +28,6 @@ import styles from './index.less';
 
 export interface IProps {
   modalStore?: ModalStore;
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
 }
 
 export interface IState {
@@ -48,7 +44,7 @@ export interface IState {
   isSaveDefaultConfig: boolean;
 }
 
-@inject('modalStore', 'connectionStore', 'schemaStore')
+@inject('modalStore')
 @observer
 class CreateModal extends React.Component<IProps, IState> {
   private _formRef = React.createRef<any>();
@@ -57,7 +53,6 @@ class CreateModal extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    const { connectionStore, schemaStore, modalStore } = props;
     this.setDefaultConfig();
     this.state = {
       stepIndex: 0,
@@ -66,28 +61,7 @@ class CreateModal extends React.Component<IProps, IState> {
       csvMappingErrors: null,
       submitting: false,
       isSaveDefaultConfig: false,
-      formData: {
-        useSys: false,
-        connectionId: connectionStore.connection.id,
-        databaseName: schemaStore.database.name,
-        executionStrategy: TaskExecStrategy.AUTO,
-        fileType: IMPORT_TYPE.ZIP,
-        encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
-        importFileName: null,
-        importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
-        batchCommitNum: this.defaultConfig?.batchCommitNum ?? 100,
-        truncateTableBeforeImport: this.defaultConfig?.truncateTableBeforeImport ?? false,
-        skippedDataType: this.defaultConfig?.skippedDataType ?? [],
-        replaceSchemaWhenExists: this.defaultConfig?.replaceSchemaWhenExists ?? false,
-        skipHeader: this.defaultConfig?.skipHeader ?? false,
-        blankToNull: this.defaultConfig?.blankToNull ?? true,
-        columnSeparator: this.defaultConfig?.columnSeparator ?? ',',
-        columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
-        lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
-        dataTransferFormat: FILE_DATA_TYPE.CSV,
-        stopWhenError: this.defaultConfig?.stopWhenError ?? true,
-        tableName: modalStore.importModalData?.tableName,
-      },
+      formData: this.getDefaultFormData(),
     };
   }
 
@@ -114,6 +88,7 @@ class CreateModal extends React.Component<IProps, IState> {
       this.props.modalStore.changeImportModal(false);
       return;
     }
+    this.resetFormData();
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ImportDrawer.AreYouSureYouWant',
@@ -225,7 +200,6 @@ class CreateModal extends React.Component<IProps, IState> {
           ...this.state.formData,
           ...values,
         };
-
         const { executionStrategy, executionTime } = data;
         if (executionStrategy === TaskExecStrategy.TIMER) {
           data.executionTime = executionTime?.valueOf();
@@ -261,6 +235,7 @@ class CreateModal extends React.Component<IProps, IState> {
         } catch (e) {
           console.error(e);
         } finally {
+          this.resetFormData();
           this.setState({
             submitting: false,
           });
@@ -386,6 +361,38 @@ class CreateModal extends React.Component<IProps, IState> {
     if (data) {
       this.defaultConfig = safeParseJson(data);
     }
+  };
+
+  private getDefaultFormData = () => {
+    return {
+      useSys: false,
+      connectionId: null,
+      databaseId: null,
+      executionStrategy: TaskExecStrategy.AUTO,
+      fileType: IMPORT_TYPE.ZIP,
+      encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
+      importFileName: null,
+      importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
+      batchCommitNum: this.defaultConfig?.batchCommitNum ?? 100,
+      truncateTableBeforeImport: this.defaultConfig?.truncateTableBeforeImport ?? false,
+      skippedDataType: this.defaultConfig?.skippedDataType ?? [],
+      replaceSchemaWhenExists: this.defaultConfig?.replaceSchemaWhenExists ?? false,
+      skipHeader: this.defaultConfig?.skipHeader ?? false,
+      blankToNull: this.defaultConfig?.blankToNull ?? true,
+      columnSeparator: this.defaultConfig?.columnSeparator ?? ',',
+      columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
+      lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
+      dataTransferFormat: FILE_DATA_TYPE.CSV,
+      stopWhenError: this.defaultConfig?.stopWhenError ?? true,
+      tableName: this.props.modalStore.importModalData?.tableName,
+    };
+  };
+
+  private resetFormData = () => {
+    this.setState({
+      stepIndex: 0,
+      formData: this.getDefaultFormData(),
+    });
   };
 
   render() {

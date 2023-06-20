@@ -1,5 +1,4 @@
 import { TaskPageType } from '@/d.ts';
-import { SchemaStore } from '@/store/schema';
 import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import { isClient } from '@/util/env';
@@ -7,7 +6,6 @@ import { formatMessage } from '@/util/intl';
 
 export function getTaskTypeList(
   settingStore: SettingStore,
-  schemaStore: SchemaStore,
   task?: TaskStore,
 ): {
   groupName: string;
@@ -87,7 +85,7 @@ export function getTaskTypeList(
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
           }),
           //影子表同步
-          enabled: schemaStore.enableShadowSync || task?.showAllSchemaTaskType,
+          enabled: task?.showAllSchemaTaskType,
         },
       ],
     },
@@ -108,7 +106,7 @@ export function getTaskTypeList(
             id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
           }),
           //分区计划
-          enabled: schemaStore.enablePartitionPlan || task?.showAllSchemaTaskType,
+          enabled: task?.showAllSchemaTaskType,
         },
       ],
     },

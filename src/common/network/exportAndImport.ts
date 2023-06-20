@@ -86,6 +86,7 @@ export async function createBatchExportTask(formData: ExportFormData) {
     data: {
       connectionId: formData?.connectionId,
       databaseName: formData?.databaseName,
+      databaseId: formData?.databaseId,
       taskType: TaskType.EXPORT,
       executionStrategy: formData?.executionStrategy,
       executionTime: formData?.executionTime,
@@ -175,6 +176,7 @@ export async function createBatchImportTask(
     data: {
       connectionId: formData?.connectionId,
       databaseName: formData?.databaseName,
+      databaseId: formData?.databaseId,
       taskType: TaskType.IMPORT,
       executionStrategy: formData?.executionStrategy,
       executionTime: formData?.executionTime,

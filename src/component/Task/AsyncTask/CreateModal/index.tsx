@@ -12,10 +12,9 @@ import {
   TaskPageType,
   TaskType,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
@@ -29,32 +28,22 @@ import {
   message,
   Modal,
   Radio,
-  Select,
   Space,
 } from 'antd';
-import type { FormInstance } from 'antd/lib/form';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { getLocale } from 'umi';
+import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {
   sqlStore?: SQLStore;
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   taskStore?: TaskStore;
   modalStore?: ModalStore;
-}
-
-interface IState {
-  sqlContentType: SQLContentType;
-  rollbackContentType: SQLContentType;
-  hasEdit: boolean;
-  confirmLoading: boolean;
 }
 
 enum ErrorStrategy {
@@ -62,27 +51,20 @@ enum ErrorStrategy {
   ABORT = 'ABORT',
 }
 
-@inject('sqlStore', 'schemaStore', 'connectionStore', 'taskStore', 'modalStore')
-@observer
-class CreateModal extends React.PureComponent<IProps, IState> {
-  public formRef = React.createRef<FormInstance>();
+const CreateModal: React.FC<IProps> = (props) => {
+  const { modalStore } = props;
+  const [form] = Form.useForm();
+  const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
+  const [rollbackContentType, setRollbackContentType] = useState(SQLContentType.TEXT);
+  const [hasEdit, setHasEdit] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const databaseId = Form.useWatch('databaseId', form);
+  const { database } = useDBSession(databaseId);
+  const connection = database?.dataSource;
+  const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
+  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
 
-  public readonly state = {
-    sqlContentType: SQLContentType.TEXT,
-    rollbackContentType: SQLContentType.TEXT,
-    hasEdit: false,
-    confirmLoading: false,
-  };
-
-  componentDidMount(): void {
-    const { modalStore } = this.props;
-    const { createAsyncTaskVisible, asyncTaskData } = modalStore;
-    if (createAsyncTaskVisible && asyncTaskData) {
-      this.handleSqlChange('sqlContent', asyncTaskData.sql);
-    }
-  }
-
-  private getFileIdAndNames = (files: UploadFile[]) => {
+  const getFileIdAndNames = (files: UploadFile[]) => {
     const ids = [];
     const names = [];
     files
@@ -98,7 +80,7 @@ class CreateModal extends React.PureComponent<IProps, IState> {
     };
   };
 
-  private checkFileSizeAmount(files: UploadFile[]): boolean {
+  const checkFileSizeAmount = (files: UploadFile[]): boolean => {
     const fileSizeAmount = files?.reduce((prev, current) => {
       return prev + current.size;
     }, 0);
@@ -115,14 +97,95 @@ class CreateModal extends React.PureComponent<IProps, IState> {
       return false;
     }
     return true;
-  }
+  };
 
-  private handleSubmit = () => {
-    this.formRef.current
+  const handleChange = (type: 'sqlContentType' | 'rollbackContentType', value: SQLContentType) => {
+    if (type === 'sqlContentType') {
+      setSqlContentType(value);
+    } else {
+      setRollbackContentType(value);
+    }
+  };
+
+  const handleSqlChange = (type: 'sqlContent' | 'rollbackSqlContent', sql: string) => {
+    form?.setFieldsValue({
+      [type]: sql,
+    });
+    setHasEdit(true);
+  };
+
+  const handleFieldsChange = () => {
+    setHasEdit(true);
+  };
+
+  const handleBeforeUpload = (file, type: 'sqlFiles' | 'rollbackSqlFiles') => {
+    const isLt20M = MAX_FILE_SIZE > file.size;
+    if (!isLt20M) {
+      setTimeout(() => {
+        setFormStatus(
+          type,
+          formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
+          }),
+          //文件最多不超过 256MB
+        );
+      }, 0);
+    }
+    return isLt20M;
+  };
+
+  const handleFileChange = (files: UploadFile[], type: 'sqlFiles' | 'rollbackSqlFiles') => {
+    form?.setFieldsValue({
+      [type]: files,
+    });
+
+    if (files.some((item) => item?.error?.isLimit)) {
+      setFormStatus(
+        type,
+        formatMessage({
+          id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
+        }),
+        //文件最多不超过 256MB
+      );
+    } else {
+      setFormStatus(type, '');
+    }
+  };
+
+  const setFormStatus = (fieldName: string, errorMessage: string) => {
+    form.setFields([
+      {
+        name: [fieldName],
+        errors: errorMessage ? [errorMessage] : [],
+      },
+    ]);
+  };
+
+  const handleCancel = (hasEdit: boolean) => {
+    if (hasEdit) {
+      Modal.confirm({
+        title: formatMessage({
+          id: 'odc.components.CreateAsyncTaskModal.AreYouSureYouWant.1',
+        }),
+
+        //确认取消数据库变更吗？
+        centered: true,
+        onOk: () => {
+          modalStore.changeCreateAsyncTaskModal(false);
+        },
+      });
+    } else {
+      modalStore.changeCreateAsyncTaskModal(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    form
       .validateFields()
       .then(async (values) => {
         const {
           connectionId,
+          databaseId,
           databaseName,
           executionStrategy,
           executionTime,
@@ -138,8 +201,8 @@ class CreateModal extends React.PureComponent<IProps, IState> {
           queryLimit,
           delimiter,
         } = values;
-        const sqlFileIdAndNames = this.getFileIdAndNames(sqlFiles);
-        const rollbackSqlFileIdAndNames = this.getFileIdAndNames(rollbackSqlFiles);
+        const sqlFileIdAndNames = getFileIdAndNames(sqlFiles);
+        const rollbackSqlFileIdAndNames = getFileIdAndNames(rollbackSqlFiles);
         const parameters = {
           timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
           errorStrategy,
@@ -153,13 +216,13 @@ class CreateModal extends React.PureComponent<IProps, IState> {
           delimiter,
         };
 
-        if (!this.checkFileSizeAmount(sqlFiles) || !this.checkFileSizeAmount(rollbackSqlFiles)) {
+        if (!checkFileSizeAmount(sqlFiles) || !checkFileSizeAmount(rollbackSqlFiles)) {
           return;
         }
         if (sqlContentType === SQLContentType.FILE) {
           delete parameters.sqlContent;
           if (sqlFiles?.some((item) => item?.error?.isLimit)) {
-            this.setFormStatus(
+            setFormStatus(
               'sqlFiles',
               formatMessage({
                 id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
@@ -170,7 +233,7 @@ class CreateModal extends React.PureComponent<IProps, IState> {
           }
 
           if (!sqlFileIdAndNames?.size || sqlFileIdAndNames?.size !== sqlFiles?.length) {
-            this.setFormStatus(
+            setFormStatus(
               'sqlFiles',
               formatMessage({
                 id: 'odc.components.CreateAsyncTaskModal.UploadAnSqlFile',
@@ -194,6 +257,7 @@ class CreateModal extends React.PureComponent<IProps, IState> {
         const data = {
           connectionId,
           databaseName,
+          databaseId,
           taskType: TaskType.ASYNC,
           executionStrategy,
           executionTime,
@@ -207,15 +271,10 @@ class CreateModal extends React.PureComponent<IProps, IState> {
           data.executionTime = undefined;
         }
 
-        this.setState({
-          confirmLoading: true,
-        });
-
+        setConfirmLoading(true);
         const res = await createTask(data);
-        this.handleCancel(false);
-        this.setState({
-          confirmLoading: false,
-        });
+        handleCancel(false);
+        setConfirmLoading(false);
 
         if (res) {
           openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
@@ -226,556 +285,425 @@ class CreateModal extends React.PureComponent<IProps, IState> {
       });
   };
 
-  private handleChange = (type: 'sqlContentType' | 'rollbackContentType', value: string) => {
-    this.setState({
-      [type]: value,
-    } as Pick<IState, 'sqlContentType' | 'rollbackContentType'>);
-  };
-
-  private handleSqlChange = (type: 'sqlContent' | 'rollbackSqlContent', sql: string) => {
-    this.formRef.current?.setFieldsValue({
-      [type]: sql,
-    });
-
-    this.setState({
-      hasEdit: true,
-    });
-  };
-
-  private handleFieldsChange = () => {
-    this.setState({
-      hasEdit: true,
-    });
-  };
-
-  private handleBeforeUpload = (file, type: 'sqlFiles' | 'rollbackSqlFiles') => {
-    const isLt20M = MAX_FILE_SIZE > file.size;
-    if (!isLt20M) {
-      setTimeout(() => {
-        this.setFormStatus(
-          type,
-          formatMessage({
-            id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
-          }),
-          //文件最多不超过 256MB
-        );
-      }, 0);
+  useEffect(() => {
+    const { createAsyncTaskVisible, asyncTaskData } = modalStore;
+    if (createAsyncTaskVisible && asyncTaskData) {
+      handleSqlChange('sqlContent', asyncTaskData.sql);
     }
-    return isLt20M;
-  };
+  }, []);
 
-  private handleFileChange = (files: UploadFile[], type: 'sqlFiles' | 'rollbackSqlFiles') => {
-    this.formRef.current?.setFieldsValue({
-      [type]: files,
-    });
+  return (
+    <Drawer
+      className={styles.asyncTask}
+      width={520}
+      title={formatMessage({
+        id: 'odc.components.CreateAsyncTaskModal.CreateDatabaseChanges',
+      })}
+      /*新建数据库变更*/
+      footer={
+        <Space>
+          <Button
+            onClick={() => {
+              handleCancel(hasEdit);
+            }}
+          >
+            {
+              formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.Cancel',
+              })
 
-    if (files.some((item) => item?.error?.isLimit)) {
-      this.setFormStatus(
-        type,
-        formatMessage({
-          id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
-        }),
-        //文件最多不超过 256MB
-      );
-    } else {
-      this.setFormStatus(type, '');
-    }
-  };
+              /* 取消 */
+            }
+          </Button>
+          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+            {
+              formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.New',
+              })
 
-  private setFormStatus = (fieldName: string, errorMessage: string) => {
-    this.formRef.current.setFields([
-      {
-        name: [fieldName],
-        errors: errorMessage ? [errorMessage] : [],
-      },
-    ]);
-  };
-
-  private handleCancel = (hasEdit: boolean) => {
-    if (hasEdit) {
-      Modal.confirm({
-        title: formatMessage({
-          id: 'odc.components.CreateAsyncTaskModal.AreYouSureYouWant.1',
-        }),
-
-        //确认取消数据库变更吗？
-        centered: true,
-        onOk: () => {
-          this.props.modalStore.changeCreateAsyncTaskModal(false);
-        },
-      });
-    } else {
-      this.props.modalStore.changeCreateAsyncTaskModal(false);
-    }
-  };
-
-  render() {
-    const {
-      modalStore,
-      connectionStore: { connection },
-      schemaStore,
-    } = this.props;
-    const { sqlContentType, rollbackContentType, hasEdit, confirmLoading } = this.state;
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
-    return (
-      <Drawer
-        className={styles.asyncTask}
-        width={520}
-        title={formatMessage({
-          id: 'odc.components.CreateAsyncTaskModal.CreateDatabaseChanges',
-        })}
-        /*新建数据库变更*/
-        footer={
-          <Space>
-            <Button
-              onClick={() => {
-                this.handleCancel(hasEdit);
-              }}
-            >
-              {
-                formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.Cancel',
-                })
-
-                /* 取消 */
-              }
-            </Button>
-            <Button type="primary" loading={confirmLoading} onClick={this.handleSubmit}>
-              {
-                formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.New',
-                })
-
-                /* 新建 */
-              }
-            </Button>
-          </Space>
-        }
-        visible={modalStore.createAsyncTaskVisible}
-        onClose={() => {
-          this.handleCancel(hasEdit);
+              /* 新建 */
+            }
+          </Button>
+        </Space>
+      }
+      visible={modalStore.createAsyncTaskVisible}
+      onClose={() => {
+        handleCancel(hasEdit);
+      }}
+    >
+      <Form
+        name="basic"
+        initialValues={{
+          executionStrategy: TaskExecStrategy.AUTO,
         }}
+        layout="vertical"
+        requiredMark="optional"
+        form={form}
+        onFieldsChange={handleFieldsChange}
       >
-        <Form
-          name="basic"
-          initialValues={{
-            connectionId: connection.id,
-            databaseName: schemaStore.database.name,
-            executionStrategy: TaskExecStrategy.AUTO,
-          }}
-          layout="vertical"
-          requiredMark="optional"
-          ref={this.formRef}
-          onFieldsChange={this.handleFieldsChange}
+        <DatabaseSelect />
+        <Form.Item
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.SqlContent',
+          })}
+          /* SQL 内容 */
+          name="sqlContentType"
+          initialValue={SQLContentType.TEXT}
+          rules={[
+            {
+              required: true,
+              message: formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.SelectSqlContent',
+              }),
+
+              // 请选择 SQL 内容
+            },
+          ]}
+        >
+          <Radio.Group
+            onChange={(e) => {
+              handleChange('sqlContentType', e.target.value);
+            }}
+          >
+            <Radio.Button value={SQLContentType.TEXT}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.SqlEntry',
+                })
+
+                /* SQL录入 */
+              }
+            </Radio.Button>
+            <Radio.Button value={SQLContentType.FILE}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.UploadAttachments',
+                })
+
+                /* 上传附件 */
+              }
+            </Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          name="sqlContent"
+          className={`${styles.sqlContent} ${
+            sqlContentType !== SQLContentType.TEXT && styles.hide
+          }`}
+          rules={[
+            {
+              required: sqlContentType === SQLContentType.TEXT,
+              message: formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.EnterTheSqlContent',
+              }),
+
+              // 请填写 SQL 内容
+            },
+          ]}
+          style={{ height: '280px' }}
+        >
+          <CommonIDE
+            initialSQL={modalStore.asyncTaskData?.sql}
+            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            onSQLChange={(sql) => {
+              handleSqlChange('sqlContent', sql);
+            }}
+          />
+        </Form.Item>
+        <Form.Item
+          name="sqlFiles"
+          className={sqlContentType !== SQLContentType.FILE && styles.hide}
+        >
+          <ODCDragger
+            accept=".sql"
+            uploadFileOpenAPIName="UploadFile"
+            onBeforeUpload={(file) => {
+              return handleBeforeUpload(file, 'sqlFiles');
+            }}
+            multiple={true}
+            tip={formatMessage({
+              id: 'odc.component.OSSDragger2.YouCanDragAndDrop',
+            })}
+            maxCount={500}
+            action={getAsyncTaskUploadUrl()}
+            headers={{
+              'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
+              'Accept-Language': getLocale(),
+            }}
+            onFileChange={(files) => {
+              handleFileChange(files, 'sqlFiles');
+            }}
+          >
+            <p className={styles.tip}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.ClickOrDragMultipleFiles',
+                })
+                /*点击或将多个文件拖拽到这里上传*/
+              }
+            </p>
+            <p className={styles.desc}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe.2',
+                })
+                /*文件最多不超过 256MB ，支持扩展名 .sql*/
+              }
+            </p>
+          </ODCDragger>
+        </Form.Item>
+        <Form.Item
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.RollbackScheme',
+          })}
+          /*回滚方案*/
+          name="rollbackContentType"
+          initialValue={SQLContentType.TEXT}
+        >
+          <Radio.Group
+            onChange={(e) => {
+              handleChange('rollbackContentType', e.target.value);
+            }}
+          >
+            <Radio.Button value={SQLContentType.TEXT}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.SqlEntry',
+                })
+
+                /* SQL录入 */
+              }
+            </Radio.Button>
+            <Radio.Button value={SQLContentType.FILE}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.UploadAttachments',
+                })
+
+                /* 上传附件 */
+              }
+            </Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          name="rollbackSqlContent"
+          className={`${styles.sqlContent} ${
+            rollbackContentType !== SQLContentType.TEXT && styles.hide
+          }`}
+          style={{ height: '280px' }}
+        >
+          <CommonIDE
+            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            onSQLChange={(sql) => {
+              handleSqlChange('rollbackSqlContent', sql);
+            }}
+          />
+        </Form.Item>
+        <Form.Item
+          name="rollbackSqlFiles"
+          className={rollbackContentType !== SQLContentType.FILE && styles.hide}
+        >
+          <ODCDragger
+            accept=".sql"
+            uploadFileOpenAPIName="UploadFile"
+            onBeforeUpload={(file) => {
+              return handleBeforeUpload(file, 'rollbackSqlFiles');
+            }}
+            multiple={true}
+            maxCount={500}
+            action={getAsyncTaskUploadUrl()}
+            headers={{
+              'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
+              'Accept-Language': getLocale(),
+            }}
+            onFileChange={(files) => {
+              handleFileChange(files, 'rollbackSqlFiles');
+            }}
+          >
+            <p className={styles.tip}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.ClickOrDragMultipleFiles',
+                })
+                /*点击或将多个文件拖拽到这里上传*/
+              }
+            </p>
+            <p className={styles.desc}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe.2',
+                })
+                /*文件最多不超过 256MB ，支持扩展名 .sql*/
+              }
+            </p>
+          </ODCDragger>
+        </Form.Item>
+        <Form.Item
+          name="delimiter"
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.Separator',
+          })}
+          /* 分隔符 */ initialValue=";"
+          required
+          rules={[
+            {
+              required: true,
+              message: formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.EnterADelimiter',
+              }),
+
+              //请输入分隔符
+            },
+          ]}
+        >
+          <AutoComplete
+            style={{ width: 90 }}
+            options={[';', '/', '//', '$', '$$'].map((value) => {
+              return {
+                value,
+              };
+            })}
+          />
+        </Form.Item>
+        <Form.Item
+          name="queryLimit"
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.QueryResultLimits',
+          })}
+          /* 查询结果限制 */
+          initialValue={1000}
+          required
+          rules={[
+            {
+              required: true,
+              message: formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.EnterAQueryResultLimit',
+              }),
+
+              //请输入查询结果限制
+            },
+          ]}
+        >
+          <InputNumber min={1} max={10000 * 100} />
+        </Form.Item>
+        <FormItemPanel
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.TaskSettings',
+          })}
+          /*任务设置*/ keepExpand
         >
           <Form.Item
             label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.Connection',
+              id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',
             })}
-            /*所属连接*/ name="connectionId"
-            required
-          >
-            <Select
-              style={{ width: 320 }}
-              disabled
-              options={[
-                {
-                  label: connection.sessionName,
-                  value: connection.id,
-                },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.Database',
-            })}
-            /*所属库*/ name="databaseName"
-            required
-          >
-            <Select
-              style={{ width: 320 }}
-              options={schemaStore?.databases?.map((item) => {
-                return {
-                  label:
-                    item.name === schemaStore.database.name
-                      ? formatMessage(
-                          {
-                            id: 'odc.components.CreateAsyncTaskModal.ItemnameDefaultCurrentLibrary',
-                          },
-
-                          { itemName: item.name },
-                        )
-                      : //`${item.name} (默认当前库)`
-                        item.name,
-                  value: item.name,
-                };
-              })}
-            />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.SqlContent',
-            })}
-            /* SQL 内容 */
-            name="sqlContentType"
-            initialValue={SQLContentType.TEXT}
+            /* 任务错误处理 */
+            name="errorStrategy"
+            initialValue={ErrorStrategy.ABORT}
             rules={[
               {
                 required: true,
                 message: formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.SelectSqlContent',
+                  id: 'odc.components.CreateAsyncTaskModal.SelectTaskErrorHandling',
                 }),
 
-                // 请选择 SQL 内容
+                // 请选择任务错误处理
               },
             ]}
           >
-            <Radio.Group
-              onChange={(e) => {
-                this.handleChange('sqlContentType', e.target.value);
-              }}
-            >
-              <Radio.Button value={SQLContentType.TEXT}>
+            <Radio.Group>
+              <Radio value={ErrorStrategy.ABORT}>
                 {
                   formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.SqlEntry',
+                    id: 'odc.components.CreateAsyncTaskModal.StopATask',
                   })
 
-                  /* SQL录入 */
+                  /* 停止任务 */
                 }
-              </Radio.Button>
-              <Radio.Button value={SQLContentType.FILE}>
+              </Radio>
+              <Radio value={ErrorStrategy.CONTINUE}>
                 {
                   formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.UploadAttachments',
+                    id: 'odc.components.CreateAsyncTaskModal.IgnoreErrorsContinueTasks',
                   })
 
-                  /* 上传附件 */
+                  /* 忽略错误继续任务 */
                 }
-              </Radio.Button>
+              </Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item
-            name="sqlContent"
-            className={`${styles.sqlContent} ${
-              sqlContentType !== SQLContentType.TEXT && styles.hide
-            }`}
-            rules={[
-              {
-                required: sqlContentType === SQLContentType.TEXT,
-                message: formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.EnterTheSqlContent',
-                }),
-
-                // 请填写 SQL 内容
-              },
-            ]}
-            style={{ height: '280px' }}
-          >
-            <CommonIDE
-              initialSQL={modalStore.asyncTaskData?.sql}
-              language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
-              onSQLChange={(sql) => {
-                this.handleSqlChange('sqlContent', sql);
-              }}
-            />
-          </Form.Item>
-          <Form.Item
-            name="sqlFiles"
-            className={sqlContentType !== SQLContentType.FILE && styles.hide}
-          >
-            <ODCDragger
-              accept=".sql"
-              uploadFileOpenAPIName="UploadFile"
-              onBeforeUpload={(file) => {
-                return this.handleBeforeUpload(file, 'sqlFiles');
-              }}
-              multiple={true}
-              tip={formatMessage({
-                id: 'odc.component.OSSDragger2.YouCanDragAndDrop',
-              })}
-              maxCount={500}
-              action={getAsyncTaskUploadUrl()}
-              headers={{
-                'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
-                'Accept-Language': getLocale(),
-              }}
-              onFileChange={(files) => {
-                this.handleFileChange(files, 'sqlFiles');
-              }}
-            >
-              <p className={styles.tip}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.ClickOrDragMultipleFiles',
-                  })
-                  /*点击或将多个文件拖拽到这里上传*/
-                }
-              </p>
-              <p className={styles.desc}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe.2',
-                  })
-                  /*文件最多不超过 256MB ，支持扩展名 .sql*/
-                }
-              </p>
-            </ODCDragger>
-          </Form.Item>
+          <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
+        </FormItemPanel>
+        {!isReadonlyPublicConn && (
           <Form.Item
             label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.RollbackScheme',
+              id: 'odc.components.CreateAsyncTaskModal.ExecutionTimeout',
             })}
-            /*回滚方案*/
-            name="rollbackContentType"
-            initialValue={SQLContentType.TEXT}
-          >
-            <Radio.Group
-              onChange={(e) => {
-                this.handleChange('rollbackContentType', e.target.value);
-              }}
-            >
-              <Radio.Button value={SQLContentType.TEXT}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.SqlEntry',
-                  })
-
-                  /* SQL录入 */
-                }
-              </Radio.Button>
-              <Radio.Button value={SQLContentType.FILE}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.UploadAttachments',
-                  })
-
-                  /* 上传附件 */
-                }
-              </Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
-            name="rollbackSqlContent"
-            className={`${styles.sqlContent} ${
-              rollbackContentType !== SQLContentType.TEXT && styles.hide
-            }`}
-            style={{ height: '280px' }}
-          >
-            <CommonIDE
-              language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
-              onSQLChange={(sql) => {
-                this.handleSqlChange('rollbackSqlContent', sql);
-              }}
-            />
-          </Form.Item>
-          <Form.Item
-            name="rollbackSqlFiles"
-            className={rollbackContentType !== SQLContentType.FILE && styles.hide}
-          >
-            <ODCDragger
-              accept=".sql"
-              uploadFileOpenAPIName="UploadFile"
-              onBeforeUpload={(file) => {
-                return this.handleBeforeUpload(file, 'rollbackSqlFiles');
-              }}
-              multiple={true}
-              maxCount={500}
-              action={getAsyncTaskUploadUrl()}
-              headers={{
-                'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
-                'Accept-Language': getLocale(),
-              }}
-              onFileChange={(files) => {
-                this.handleFileChange(files, 'rollbackSqlFiles');
-              }}
-            >
-              <p className={styles.tip}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.ClickOrDragMultipleFiles',
-                  })
-                  /*点击或将多个文件拖拽到这里上传*/
-                }
-              </p>
-              <p className={styles.desc}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe.2',
-                  })
-                  /*文件最多不超过 256MB ，支持扩展名 .sql*/
-                }
-              </p>
-            </ODCDragger>
-          </Form.Item>
-          <Form.Item
-            name="delimiter"
-            label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.Separator',
-            })}
-            /* 分隔符 */ initialValue=";"
-            required
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.EnterADelimiter',
-                }),
-
-                //请输入分隔符
-              },
-            ]}
-          >
-            <AutoComplete
-              style={{ width: 90 }}
-              options={[';', '/', '//', '$', '$$'].map((value) => {
-                return {
-                  value,
-                };
-              })}
-            />
-          </Form.Item>
-          <Form.Item
-            name="queryLimit"
-            label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.QueryResultLimits',
-            })}
-            /* 查询结果限制 */
-            initialValue={1000}
-            required
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.EnterAQueryResultLimit',
-                }),
-
-                //请输入查询结果限制
-              },
-            ]}
-          >
-            <InputNumber min={1} max={10000 * 100} />
-          </Form.Item>
-          <FormItemPanel
-            label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.TaskSettings',
-            })}
-            /*任务设置*/ keepExpand
+            /* 执行超时时间 */ required
           >
             <Form.Item
               label={formatMessage({
-                id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',
+                id: 'odc.components.CreateAsyncTaskModal.Hours',
               })}
-              /* 任务错误处理 */
-              name="errorStrategy"
-              initialValue={ErrorStrategy.ABORT}
+              /* 小时 */
+              name="timeoutMillis"
               rules={[
                 {
                   required: true,
                   message: formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.SelectTaskErrorHandling',
+                    id: 'odc.components.CreateAsyncTaskModal.EnterATimeoutPeriod',
                   }),
 
-                  // 请选择任务错误处理
+                  // 请输入超时时间
+                },
+                {
+                  type: 'number',
+                  max: 480,
+                  message: formatMessage({
+                    id: 'odc.components.CreateAsyncTaskModal.MaximumLengthOfHours',
+                  }),
+
+                  // 最大不超过480小时
                 },
               ]}
+              initialValue={48}
+              noStyle
             >
-              <Radio.Group>
-                <Radio value={ErrorStrategy.ABORT}>
-                  {
-                    formatMessage({
-                      id: 'odc.components.CreateAsyncTaskModal.StopATask',
-                    })
-
-                    /* 停止任务 */
-                  }
-                </Radio>
-                <Radio value={ErrorStrategy.CONTINUE}>
-                  {
-                    formatMessage({
-                      id: 'odc.components.CreateAsyncTaskModal.IgnoreErrorsContinueTasks',
-                    })
-
-                    /* 忽略错误继续任务 */
-                  }
-                </Radio>
-              </Radio.Group>
+              <InputNumber min={0} precision={1} />
             </Form.Item>
-            <TaskTimer />
-          </FormItemPanel>
-          {!isReadonlyPublicConnection(connection) && (
-            <Form.Item
-              label={formatMessage({
-                id: 'odc.components.CreateAsyncTaskModal.ExecutionTimeout',
-              })}
-              /* 执行超时时间 */ required
-            >
-              <Form.Item
-                label={formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.Hours',
-                })}
-                /* 小时 */
-                name="timeoutMillis"
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'odc.components.CreateAsyncTaskModal.EnterATimeoutPeriod',
-                    }),
-
-                    // 请输入超时时间
-                  },
-                  {
-                    type: 'number',
-                    max: 480,
-                    message: formatMessage({
-                      id: 'odc.components.CreateAsyncTaskModal.MaximumLengthOfHours',
-                    }),
-
-                    // 最大不超过480小时
-                  },
-                ]}
-                initialValue={48}
-                noStyle
-              >
-                <InputNumber min={0} precision={1} />
-              </Form.Item>
-              <span className={styles.hour}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.Hours',
-                  })
-
-                  /* 小时 */
-                }
-              </span>
-            </Form.Item>
-          )}
-
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.TaskDescription',
-            })}
-            /* 任务描述 */
-            name="description"
-            rules={[
+            <span className={styles.hour}>
               {
-                max: 200,
-                message: formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.TheTaskDescriptionCannotExceed',
-                }),
+                formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.Hours',
+                })
 
-                // 任务描述不超过 200 个字符
-              },
-            ]}
-          >
-            <Input.TextArea rows={6} />
+                /* 小时 */
+              }
+            </span>
           </Form.Item>
-        </Form>
-      </Drawer>
-    );
-  }
-}
+        )}
 
-export default CreateModal;
+        <Form.Item
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.TaskDescription',
+          })}
+          /* 任务描述 */
+          name="description"
+          rules={[
+            {
+              max: 200,
+              message: formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.TheTaskDescriptionCannotExceed',
+              }),
+
+              // 任务描述不超过 200 个字符
+            },
+          ]}
+        >
+          <Input.TextArea rows={6} />
+        </Form.Item>
+      </Form>
+    </Drawer>
+  );
+};
+
+export default inject('sqlStore', 'taskStore', 'modalStore')(observer(CreateModal));
