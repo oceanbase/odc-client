@@ -46,19 +46,20 @@ import SelectDatabase from '@/component/SelectDatabase';
 import { PLType } from '@/constant/plType';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
-import { generateUniqKey } from '@/util/utils';
 import { message } from 'antd';
 import { generateResultSetColumns } from '..';
 import page from '../../page';
 import {
   BatchCompilePage,
   FunctionPage,
+  OBClientPage,
   PackageViewPage,
   ProcedurePage,
   RecycleBinPage,
   SequencePage,
   SessionManagePage,
   SQLPage,
+  SQLResultSetPage,
   SynonymPage,
   TablePage,
   TaskPage,
@@ -72,12 +73,12 @@ import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './p
 import { findPageByScriptIdAndType } from './util';
 
 export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
-  page.newOrOpenPage(new PackageHeadPage(databaseId, packageName, sql));
+  page.openPage(new PackageHeadPage(databaseId, packageName, sql));
 }
 export async function openPackageBodyPage(packageName: string, sql: string, databaseId: number) {
   let pkgPage = new PackageBodyPage(databaseId, packageName, sql);
   const isNew = !page.pages.find((p) => p.key === pkgPage.pageKey);
-  await page.newOrOpenPage(pkgPage);
+  await page.openPage(pkgPage);
 
   return { pkgPage, isNew };
 }
@@ -103,17 +104,17 @@ export function openPackageViewPage(
     }
   }
   const pkgPage = new PackageViewPage(databaseId, packageName, topTab, propsTab);
-  page.newOrOpenPage(pkgPage);
+  page.openPage(pkgPage);
 }
 export async function openNewSQLPage(cid: number, databaseFrom?: 'datasource' | 'project') {
   const sqlPage = new SQLPage(cid, null, false, databaseFrom);
-  page.newOrOpenPage(sqlPage);
+  page.openPage(sqlPage);
 }
 export async function openNewSQLPageWithResult(result, cid: number) {
   const sqlPage = new SQLPage(cid);
   sqlStore.resultSets.set(sqlPage.pageKey, generateResultSetColumns(result));
 
-  page.newOrOpenPage(sqlPage);
+  page.openPage(sqlPage);
 }
 /** 根据scriptID打开sql或者pl的page */
 
@@ -139,7 +140,7 @@ export async function openSQLPageByScript(scriptId: any, dbid: number) {
 export async function openSQLOrPLPage(file: IScript, cid: number) {
   const sqlPage = new SQLPage(cid, file);
 
-  page.newOrOpenPage(sqlPage);
+  page.openPage(sqlPage);
 
   return sqlPage.pageKey;
 }
@@ -150,12 +151,12 @@ export async function openNewDefaultPLPage(
   databaseFrom?: 'project' | 'datasource',
 ) {
   let plPage = new AnonymousPage(cid, databaseFrom, value?.sql);
-  page.newOrOpenPage(plPage);
+  page.openPage(plPage);
 }
 
 export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageScope) {
   taskStore.changeTaskManageVisible(true, taskType, taskPageScope);
-  page.newOrOpenPage(new TaskPage());
+  page.openPage(new TaskPage());
 }
 
 /** 会话管理 */
@@ -167,7 +168,7 @@ export async function openSessionManagePage(datasourceId?: number) {
   if (!datasourceId) {
     return;
   }
-  page.newOrOpenPage(new SessionManagePage(datasourceId));
+  page.openPage(new SessionManagePage(datasourceId));
 }
 /** 回收站 */
 
@@ -178,12 +179,12 @@ export async function openRecycleBin(cid?: number) {
   if (!cid) {
     return;
   }
-  page.newOrOpenPage(new RecycleBinPage(cid));
+  page.openPage(new RecycleBinPage(cid));
 }
 /** 创建表页面 */
 
 export function openCreateTablePage(dbId: number) {
-  page.newOrOpenPage(new CreateTablePage(dbId));
+  page.openPage(new CreateTablePage(dbId));
 }
 /** Table详情页面 */
 
@@ -193,14 +194,14 @@ export function openTableViewPage(
   propsTab: TablePropsTab = TablePropsTab.INFO,
   databaseId: number,
 ) {
-  page.newOrOpenPage(new TablePage(databaseId, tableName, topTab, propsTab));
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab));
 }
 
 /**
  * 创建视图页面
  */
 export function openCreateViewPage(dbId: number) {
-  page.newOrOpenPage(new CreateViewPage(dbId));
+  page.openPage(new CreateViewPage(dbId));
 }
 
 /**
@@ -214,12 +215,12 @@ export function openViewViewPage(
   dbId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new ViewPage(dbId, viewName, topTab, propsTab));
+  page.openPage(new ViewPage(dbId, viewName, topTab, propsTab));
 }
 /** 创建函数页面 */
 
 export function openCreateFunctionPage(sql: string, databaseId: number, dbName: string) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_FUNCTION,
       databaseId,
@@ -239,7 +240,7 @@ export function openFunctionViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new FunctionPage(databaseId, functionName, topTab, propsTab));
+  page.openPage(new FunctionPage(databaseId, functionName, topTab, propsTab));
 }
 /** 根据函数信息自动填充sql */
 
@@ -257,7 +258,7 @@ export async function openCreateFunctionPageByRemote(
 /** 创建存储过程页面 */
 
 export function openCreateProcedurePage(sql: string, databaseId: number, dbName: string) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_PROCEDURE,
       databaseId,
@@ -277,12 +278,12 @@ export function openProcedureViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new ProcedurePage(databaseId, procedureName, topTab, propsTab));
+  page.openPage(new ProcedurePage(databaseId, procedureName, topTab, propsTab));
 }
 /** 创建程序包页面 */
 
 export function openCreatePackagePage(sql: string, databaseId: number, dbName: string) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_PACKAGE,
       databaseId,
@@ -296,7 +297,7 @@ export function openCreatePackagePage(sql: string, databaseId: number, dbName: s
 /** 创建程序包包体页面 */
 
 export function openCreatePackageBodyPage(sql: string, databaseId: number, dbName: string) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_PACKAGE,
       databaseId,
@@ -311,7 +312,7 @@ export function openCreatePackageBodyPage(sql: string, databaseId: number, dbNam
 /** 创建序列页面 */
 
 export function openCreateSequencePage(sql: string, databaseId: number, dbName: string) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_SEQUENCE,
       databaseId,
@@ -330,7 +331,7 @@ export function openSequenceViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new SequencePage(databaseId, sequenceName, propsTab));
+  page.openPage(new SequencePage(databaseId, sequenceName, propsTab));
 }
 /** 编辑存储过程页面 */
 
@@ -343,7 +344,7 @@ export async function openProcedureEditPageByProName(
   const plSchema = await getProcedureByProName(proName, false, sessionId, dbName);
   const plPage = new PLEditPage(PLType.PROCEDURE, databaseId, proName, plSchema);
   const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
-  await page.newOrOpenPage(plPage);
+  await page.openPage(plPage);
   return { plPage, isNew };
 }
 /** 编辑函数页面-local */
@@ -359,7 +360,7 @@ export async function openFunctionOrProcedureFromPackage(
   const plName = `${packageName}.${subName}`;
   const plPage = new PLEditPage(type, databaseId, plName, plSchema, true);
   const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
-  await page.newOrOpenPage(plPage);
+  await page.openPage(plPage);
   return { plPage, isNew };
 }
 /** 编辑函数页面-remote */
@@ -373,7 +374,7 @@ export async function openFunctionEditPageByFuncName(
   const plSchema = await getFunctionByFuncName(funcName, false, sessionId, dbName);
   let plPage = new PLEditPage(PLType.FUNCTION, databaseId, funcName, plSchema);
   const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
-  await page.newOrOpenPage(plPage);
+  await page.openPage(plPage);
   return { plPage, isNew };
 }
 
@@ -406,21 +407,8 @@ export async function openOBClientPage(cid: number, dbName: string) {
     );
     return;
   }
-  page.openPage(
-    PageType.OB_CLIENT,
-    {
-      title:
-        formatMessage({ id: 'odc.helper.page.openPage.CommandLineWindow' }) + // 命令行窗口_
-        currentNum,
-    },
-
-    {
-      time: Date.now(),
-      index: currentNum,
-      cid,
-      dbName,
-    },
-  );
+  const cPage = new OBClientPage(cid, currentNum);
+  page.openPage(cPage);
 }
 /**
  * 创建触发器页面 (表单)
@@ -430,7 +418,7 @@ export async function openCreateTriggerPage(
   databaseId: number,
   dbName: string,
 ) {
-  await page.newOrOpenPage(new CreateTriggerPage(databaseId, preData));
+  await page.openPage(new CreateTriggerPage(databaseId, preData));
 }
 /** 创建触发器页面 (SQL确认页面) */
 
@@ -440,7 +428,7 @@ export async function openCreateTriggerSQLPage(
   databaseId: number,
   dbName: string,
 ) {
-  await page.newOrOpenPage(
+  await page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_TRIGGER_SQL,
       databaseId,
@@ -461,7 +449,7 @@ export function openTriggerViewPage(
   databaseId?: number,
   dbName?: string,
 ) {
-  page.newOrOpenPage(new TriggerPage(databaseId, triggerName, triggerState, propsTab, triggerData));
+  page.openPage(new TriggerPage(databaseId, triggerName, triggerState, propsTab, triggerData));
 }
 /** 编辑触发器页面 */
 
@@ -472,7 +460,7 @@ export async function openTriggerEditPageByName(
   databaseId: number,
 ) {
   const plSchema: ITrigger = await getTriggerByName(triggerName, sessionId, dbName);
-  page.newOrOpenPage(new PLEditPage(PLType.TRIGGER, databaseId, triggerName, plSchema));
+  page.openPage(new PLEditPage(PLType.TRIGGER, databaseId, triggerName, plSchema));
 }
 /** 创建同义词页面 */
 
@@ -482,7 +470,7 @@ export function openCreateSynonymPage(
   databaseId?: number,
   dbName?: string,
 ) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_SYNONYM,
       databaseId,
@@ -502,12 +490,12 @@ export function openSynonymViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new SynonymPage(databaseId, synonymName, synonymType));
+  page.openPage(new SynonymPage(databaseId, synonymName, synonymType));
 }
 /** 创建类型页面 */
 
 export function openCreateTypePage(sql: string, databaseId: number, dbName: string) {
-  page.newOrOpenPage(
+  page.openPage(
     new SQLConfirmPage(
       PageType.CREATE_TYPE,
       databaseId,
@@ -524,7 +512,7 @@ export function openTypeViewPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new TypePage(databaseId, typeName, propsTab));
+  page.openPage(new TypePage(databaseId, typeName, propsTab));
 }
 /** 编辑类型页面 */
 
@@ -535,21 +523,11 @@ export async function openTypeEditPageByName(
   dbName: string,
 ) {
   const plSchema = await getTypemByName(typeName, sessionId, dbName);
-  page.newOrOpenPage(new PLEditPage(PLType.TYPE, databaseId, typeName, plSchema));
+  page.openPage(new PLEditPage(PLType.TYPE, databaseId, typeName, plSchema));
 }
 
 export async function openSQLResultSetViewPage(name, resultSets) {
-  await page.openPage(
-    PageType.SQL_RESULTSET_VIEW,
-    {
-      title: name,
-      key: 'sql_resultset_view-' + generateUniqKey(),
-    },
-
-    {
-      resultSets: generateResultSetColumns(resultSets),
-    },
-  );
+  await page.openPage(new SQLResultSetPage(null, resultSets, name));
 }
 
 // 批量编译PL页面
@@ -560,9 +538,9 @@ export function openBatchCompilePLPage(
   databaseId: number,
   dbName: string,
 ) {
-  page.newOrOpenPage(new BatchCompilePage(pageType, dbObjectType, label, databaseId));
+  page.openPage(new BatchCompilePage(pageType, dbObjectType, databaseId));
 }
 
 export async function openTutorialPage(docId: string) {
-  page.newOrOpenPage(new TutorialPage(docId, null));
+  page.openPage(new TutorialPage(docId, null));
 }

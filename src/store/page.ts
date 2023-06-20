@@ -6,29 +6,19 @@ import { message } from 'antd';
 import { isNil } from 'lodash';
 import { action, computed, observable } from 'mobx';
 import { Page } from './helper/page/pages/base';
-import { generatePageKey, generatePageTitle, resetPageKey } from './helper/pageKeyGenerate';
 import login from './login';
 import { autoSave } from './utils/metaSync';
 
 export interface IPageOptions {
   title?: string;
   key?: string;
-  updateKey?: boolean;
+  updateKey?: string;
   path?: string;
   isSaved?: boolean;
   startSaving?: boolean;
 }
 
 export class PageStore {
-  @observable
-  public pageKey: number = 0;
-
-  @observable
-  public plPageKey: number = 0;
-
-  @observable
-  public plDebugPageKey: number = 0;
-
   @observable
   public databaseId: number;
 
@@ -51,9 +41,6 @@ export class PageStore {
   @action
   public async initStore() {
     await autoSave(this, 'pages', 'pages', []);
-    await autoSave(this, 'pageKey', 'pageKey', 0);
-    await autoSave(this, 'plPageKey', 'plPageKey', 0);
-    await autoSave(this, 'plDebugPageKey', 'plDebugPageKey', 0);
     await autoSave(this, 'activePageKey', 'activePageKey', null);
   }
   /** 切换打开的page，更新一下URL */
@@ -119,73 +106,8 @@ export class PageStore {
     }
   }
 
-  /** New!!!打开一个新page */
   @action
-  public async openPage(
-    type: PageType = PageType.SQL,
-    options: IPageOptions = {},
-    pageData: any = {},
-    insertHead: boolean = false,
-    open: boolean = true,
-  ) {
-    let { title, key } = options;
-    key = key || (await generatePageKey(type, pageData));
-    title = title || generatePageTitle(type, key);
-    const isUnique = this.isUnique(type, pageData);
-    const existed = !!this.pages.find((p) => p.key === key);
-    switch (type) {
-      case PageType.SQL:
-      case PageType.PL: {
-        if (!existed && !isUnique) {
-          const count = this.pages.filter((page) => {
-            return page.type == type;
-          }).length;
-          if (count >= 32) {
-            message.error(
-              (type == PageType.PL ? 'PL' : 'SQL') +
-                formatMessage({
-                  id: 'odc.src.store.page.TheNumberOfWindowsCannot',
-                }),
-            );
-            return;
-          }
-        }
-        break;
-      }
-      default: {
-      }
-    }
-
-    /** 未打开的page或者未保存的page，则push进pages。 */
-    if (!(isUnique && existed)) {
-      const newPage = {
-        key,
-        title,
-        type,
-        isSaved: true,
-        params: pageData,
-      };
-
-      if (insertHead) {
-        this.pages = [].concat(newPage).concat(this.pages);
-      } else {
-        this.pages = this.pages.concat({
-          key,
-          title,
-          type,
-          isSaved: true,
-          params: pageData,
-        });
-      }
-    }
-    if (open) {
-      await this.setActivePageKeyAndPushUrl(key);
-    }
-    await this.updatePage(key, undefined, pageData);
-  }
-
-  @action
-  public async newOrOpenPage(page: Page, insertHead?: boolean) {
+  public async openPage(page: Page, insertHead?: boolean) {
     let { pageTitle, pageKey, pageParams, pageType } = page;
     const isUnique = this.isUnique(pageType, pageParams);
     const existed = !!this.pages.find((p) => p.key === pageKey);
@@ -265,7 +187,7 @@ export class PageStore {
 
           // 更新 pageKey
           if (updateKey) {
-            p.key = await generatePageKey(p.type, pageData);
+            p.key = updateKey;
             await this.setActivePageKeyAndPushUrl(p.key);
           }
         }
@@ -316,7 +238,6 @@ export class PageStore {
     await this.updateActiveKey(() => {
       return null;
     });
-    resetPageKey();
   }
 
   /** 部分常驻页面不应该被清除，也保留SQL和匿名快 */

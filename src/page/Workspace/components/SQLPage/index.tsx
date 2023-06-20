@@ -20,6 +20,7 @@ import {
   ITableColumn,
 } from '@/d.ts';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
+import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
@@ -351,12 +352,15 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (!isError) {
       existedScriptId = newFile.id;
       await userStore.scriptStore.getScriptList(); // 更新页面标题 & url
-
+      const sqlPage = new SQLPageModel(params?.cid, {
+        scriptMeta: newFile,
+        content: params?.scriptText,
+      });
       pageStore.updatePage(
         pageKey,
         {
           title: newFile.objectName,
-          updateKey: true,
+          updateKey: sqlPage.pageKey,
           isSaved: true,
           startSaving: false,
         },

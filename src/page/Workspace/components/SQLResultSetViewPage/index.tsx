@@ -1,15 +1,14 @@
 import CommonIDE from '@/component/CommonIDE';
 import { TAB_HEADER_HEIGHT, WORKSPACE_HEADER_HEIGHT } from '@/constant';
-import { ConnectionMode, IResultSet } from '@/d.ts';
+import { ConnectionMode } from '@/d.ts';
 import { ConnectionStore } from '@/store/connection';
+import { SQLResultSetPage } from '@/store/helper/page/pages';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 
 interface IProps {
   connectionStore?: ConnectionStore;
-  params: {
-    resultSets: IResultSet[];
-  };
+  params: SQLResultSetPage['pageParams'];
 }
 
 const SQLResultSetViewPage: React.FC<IProps> = (props) => {
@@ -23,6 +22,7 @@ const SQLResultSetViewPage: React.FC<IProps> = (props) => {
       }}
     >
       <CommonIDE
+        session={null}
         language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
         initialSQL={props.params?.resultSets
           ?.map((r) => {
