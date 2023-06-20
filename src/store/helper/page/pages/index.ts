@@ -1,5 +1,6 @@
 import {
   DbObjectType,
+  IResultSet,
   IScript,
   IScriptMeta,
   ITrigger,
@@ -31,6 +32,8 @@ import {
 } from '@/page/Workspace/components/ViewPage';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
+import { PLPageMap } from '../../pageKeyGenerate';
 import { Page } from './base';
 
 export class PackageViewPage extends Page {
@@ -66,8 +69,29 @@ export class SQLPage extends Page {
     cid: number;
     fromTask?: boolean;
     databaseFrom: 'datasource' | 'project';
+    pageIndex?: number;
   } & Partial<IScriptMeta>;
 
+  static getTitleByParams(params: SQLPage['pageParams']) {
+    if (params?.scriptId) {
+      return params?.objectName;
+    }
+    return `${formatMessage({ id: 'workspace.header.create.sql' })}_${params?.pageIndex}`;
+  }
+  public findCurrentNum() {
+    const indexList = page.pages
+      ?.filter?.((p) => p.type === PageType.SQL)
+      ?.map((p) => p.params?.pageIndex)
+      ?.filter(Boolean);
+    let i = 1;
+    while (true) {
+      if (indexList.includes(i)) {
+        i++;
+      } else {
+        return i;
+      }
+    }
+  }
   constructor(
     databaseId: number,
     script?: IScript,
@@ -78,7 +102,7 @@ export class SQLPage extends Page {
     this.pageType = PageType.SQL;
     if (script) {
       this.pageKey = `sqlpage-scriptId:${script.scriptMeta?.id}`;
-      this.pageTitle = script.scriptMeta?.objectName;
+      this.pageTitle = '--';
       this.pageParams = {
         ...script,
         scriptText: script.content,
@@ -87,11 +111,11 @@ export class SQLPage extends Page {
         cid: databaseId,
       };
     } else {
-      this.pageKey = `sqlpage-new-no:${page.pageKey++}`;
-      this.pageTitle = `${formatMessage({ id: 'workspace.header.create.sql' })}_${
-        page.pageKey - 1
-      }`;
+      const pageIndex = this.findCurrentNum();
+      this.pageKey = `sqlpage-new-no:${generateUniqKey()}`;
+      this.pageTitle = '--';
       this.pageParams = {
+        pageIndex: pageIndex,
         scriptText: '',
         cid: databaseId,
         databaseFrom,
@@ -111,7 +135,7 @@ export class TutorialPage extends Page {
 
   constructor(docId: string, databaseId: number) {
     super();
-    this.pageKey = `tutorialpage-new-${page.pageKey++}`;
+    this.pageKey = `tutorialpage-new-${generateUniqKey()}`;
     this.pageTitle = '--';
     this.pageType = PageType.TUTORIAL;
     this.pageParams = {
@@ -372,20 +396,62 @@ export class BatchCompilePage extends Page {
     dbObjectType: DbObjectType;
     databaseId: number;
   };
-  constructor(pageType: PageType, dbObjectType: DbObjectType, label: string, databaseId: number) {
-    super();
-    this.pageKey = `batchcompile-databaseId:${databaseId}-pageType:${pageType}`;
-    this.pageTitle = formatMessage(
+  static getTitleByParams(params: BatchCompilePage['pageParams']) {
+    return `${formatMessage(
       {
         id: 'odc.helper.page.openPage.BatchCompilationLabel',
       },
-      { label: label },
-    );
+      { label: PLPageMap?.[params?.type]?.label ?? '' },
+    )}`;
+  }
+  constructor(pageType: PageType, dbObjectType: DbObjectType, databaseId: number) {
+    super();
+    this.pageKey = `batchcompile-databaseId:${databaseId}-pageType:${pageType}`;
+    this.pageTitle = '--';
     this.pageType = pageType;
     this.pageParams = {
       dbObjectType,
       type: pageType,
       databaseId,
+    };
+  }
+}
+
+export class SQLResultSetPage extends Page {
+  public pageParams: {
+    resultSets: IResultSet[];
+    databaseId: number;
+  };
+  constructor(databaseId: number, resultSets: IResultSet[], title: string) {
+    super();
+    this.pageKey = 'sql_resultset_view-' + generateUniqKey();
+    this.pageTitle = title;
+    this.pageType = PageType.SQL_RESULTSET_VIEW;
+    this.pageParams = {
+      resultSets,
+      databaseId,
+    };
+  }
+}
+export class OBClientPage extends Page {
+  public pageParams: {
+    time: number;
+    index: number;
+    dataSourceId: number;
+  };
+  static getTitleByParams(params: OBClientPage['pageParams']) {
+    return formatMessage({ id: 'odc.helper.page.openPage.CommandLineWindow' }) + params?.index;
+  }
+  constructor(dataSourceId: number, currentNum: number) {
+    super();
+    this.pageKey = 'obclientPage-' + generateUniqKey();
+    this.pageTitle = '--';
+    this.pageType = PageType.OB_CLIENT;
+
+    this.pageParams = {
+      time: Date.now(),
+      index: currentNum,
+      dataSourceId,
     };
   }
 }

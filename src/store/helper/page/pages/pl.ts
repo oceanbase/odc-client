@@ -3,6 +3,7 @@ import { IFunction, IProcedure, ITrigger, IType, PageType } from '@/d.ts';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { getPLScriptTemplate } from '@/util/sql';
+import { generateUniqKey } from '@/util/utils';
 import { Page } from './base';
 
 export enum PLPageType {
@@ -97,11 +98,30 @@ export class AnonymousPage extends PLPage {
       params: any[];
     };
     databaseFrom: 'datasource' | 'project';
+    pageIndex: number;
   };
+  static getTitleByParams(params: AnonymousPage['pageParams']) {
+    return `${formatMessage({ id: 'workspace.header.create.pl' })}_${params?.pageIndex}`;
+  }
+  public findCurrentNum() {
+    const indexList = page.pages
+      ?.filter?.((p) => p.type === PageType.PL)
+      ?.map((p) => p.params?.pageIndex)
+      ?.filter(Boolean);
+    let i = 1;
+    while (true) {
+      if (indexList.includes(i)) {
+        i++;
+      } else {
+        return i;
+      }
+    }
+  }
   constructor(databaseId: number, databaseFrom: 'project' | 'datasource', sql: string) {
     super(PLType.ANONYMOUSBLOCK, databaseId);
-    this.pageKey = `pl-new-${page.plPageKey++}`;
-    this.pageTitle = `${formatMessage({ id: 'workspace.header.create.pl' })}_${page.plPageKey - 1}`;
+    const pageIndex = this.findCurrentNum();
+    this.pageKey = `pl-new-${generateUniqKey()}`;
+    this.pageTitle = '--';
     this.pageParams = {
       plPageType: PLPageType.anonymous,
       cid: databaseId,
@@ -112,6 +132,7 @@ export class AnonymousPage extends PLPage {
         params: [],
       },
       databaseFrom,
+      pageIndex,
     };
   }
 }

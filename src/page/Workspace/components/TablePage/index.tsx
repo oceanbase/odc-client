@@ -85,11 +85,12 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
           ...newTable,
           info: Object.assign({}, newTable?.info, { tableName: newTableName }),
         });
+        const tablePage = new TablePageModel(params?.databaseId, newTableName);
         await pageStore.updatePage(
           pageKey,
           {
             title: newTableName,
-            updateKey: true,
+            updateKey: tablePage.pageKey,
           },
 
           {

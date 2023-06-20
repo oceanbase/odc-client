@@ -9,6 +9,7 @@ import HelpDoc from '@/component/helpDoc';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import Toolbar from '@/component/Toolbar';
 import CreateTableBaseInfoForm from '@/page/Workspace/components/CreateTable/BaseInfo';
+import { TablePage } from '@/store/helper/page/pages';
 import page from '@/store/page';
 import { getLocalFormatDateTime } from '@/util/utils';
 import type { FormInstance } from 'antd/es/form';
@@ -82,11 +83,14 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                       if (newData.info.tableName !== table.info?.tableName) {
                         const newTableName = newData.info.tableName;
                         await session.database.getTableList();
+                        const params = page.pages.find((p) => p.key === pageKey)
+                          ?.params as TablePage['pageParams'];
+                        const tablePage = new TablePage(params?.databaseId, newTableName);
                         await page.updatePage(
                           pageKey,
                           {
                             title: newTableName,
-                            updateKey: true,
+                            updateKey: tablePage?.pageKey,
                           },
 
                           {

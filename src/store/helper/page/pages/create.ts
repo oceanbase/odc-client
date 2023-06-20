@@ -1,6 +1,6 @@
 import { ITriggerFormData, PageType, SynonymType } from '@/d.ts';
-import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { Page } from './base';
 
 export class CreateTablePage extends Page {
@@ -9,7 +9,7 @@ export class CreateTablePage extends Page {
   };
   constructor(databaseId: number) {
     super();
-    this.pageKey = `createTablePage-${page.pageKey++}`;
+    this.pageKey = `createTablePage-${generateUniqKey()}`;
     this.pageTitle =
       formatMessage({
         id: 'workspace.header.create',
@@ -30,7 +30,7 @@ export class CreateViewPage extends Page {
   };
   constructor(databaseId: number) {
     super();
-    this.pageKey = `createViewPage-${page.pageKey++}`;
+    this.pageKey = `createViewPage-${generateUniqKey()}`;
     this.pageTitle = formatMessage({ id: 'workspace.window.createView.modal.title' });
     this.pageType = PageType.CREATE_VIEW;
     this.pageParams = {
@@ -49,6 +49,16 @@ export class SQLConfirmPage extends Page {
     hasPre?: boolean;
     synonymType?: SynonymType;
   };
+  static getTitleByParams(params: SQLConfirmPage['pageParams']) {
+    if (params?.isPackageBody) {
+      return formatMessage({
+        id: 'workspace.window.createPackageBody.modal.title',
+      });
+    }
+    return formatMessage({
+      id: 'workspace.window.createPackage.modal.title',
+    });
+  }
   constructor(
     type: PageType,
     databaseId: number,
@@ -59,7 +69,7 @@ export class SQLConfirmPage extends Page {
     synonymType?: SynonymType,
   ) {
     super();
-    this.pageKey = `sqlconfirmpage-type:${type}-${page.pageKey++}`;
+    this.pageKey = `sqlconfirmpage-type:${type}-${generateUniqKey()}`;
     this.pageTitle = title;
     this.pageType = type;
     this.pageParams = {
@@ -83,7 +93,7 @@ export class CreateTriggerPage extends Page {
   constructor(databaseId: number, preData: ITriggerFormData) {
     super();
     (this.pageTitle = formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' })), // 新建触发器
-      (this.pageKey = `createTrigger-${page.pageKey++}`);
+      (this.pageKey = `createTrigger-${generateUniqKey()}`);
     this.pageType = PageType.CREATE_TRIGGER;
     this.pageParams = {
       preData,

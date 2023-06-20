@@ -7,6 +7,7 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
 import { generateSessionSid } from '@/common/network/pathUtil';
+import { OBClientPage } from '@/store/helper/page/pages';
 import { ModalStore } from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -21,10 +22,7 @@ const { Text } = Typography;
 interface IOBClientProps {
   modalStore?: ModalStore;
   settingStore?: SettingStore;
-  params: {
-    cid: number;
-    dbName: string;
-  };
+  params: OBClientPage['pageParams'];
 }
 
 interface IOBClientState {
@@ -80,13 +78,19 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     }
   }
 
+  private disposeSession() {
+    if (this.session) {
+      sessionManager.destorySession(this.session?.sessionId);
+    }
+  }
+
   private initTerminal = async () => {
     const { settingStore, params } = this.props;
     const dom = this.xtermRef.current;
     if (!dom) {
       return;
     }
-    const session = await sessionManager.createSession(null, params?.cid);
+    const session = await sessionManager.createSession(params?.dataSourceId, null);
     if (!session) {
       return;
     }
@@ -212,6 +216,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
 
   componentWillUnmount() {
     clearTimeout(this._pingClock);
+    this.disposeSession();
     if (this.xtermInstance) {
       this.xtermInstance.dispose();
     }
@@ -228,6 +233,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
       this.ws.close();
     }
     clearTimeout(this._pingClock);
+    this.disposeSession();
     this.initTerminal();
   };
 

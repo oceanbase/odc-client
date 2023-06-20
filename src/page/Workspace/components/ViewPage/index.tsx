@@ -210,7 +210,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
   public handleExecuteViewDML = async () => {
     const {
       sqlStore,
-      params: { viewName },
+      params: { viewName, databaseId },
       pageKey,
       pageStore,
     } = this.props;
@@ -229,9 +229,10 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
 
         // TODO: 可能修改表名，需要更新 URL，Page title，左侧资源树
         if (updatedViewName !== viewName) {
+          const viewPage = new ViewPageModel(databaseId, updatedViewName);
           pageStore.updatePage(
             pageKey,
-            { title: updatedViewName, updateKey: true },
+            { title: updatedViewName, updateKey: viewPage.pageKey },
             {
               viewName: updatedViewName,
             },

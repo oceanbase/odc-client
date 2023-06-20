@@ -950,11 +950,16 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     if (file) {
       await userStore.scriptStore.getScriptList();
       // 更新页面标题 & url
+      const plPage = new AnonymousPage(
+        params?.cid,
+        (params as AnonymousPage['pageParams'])?.databaseFrom,
+        params?.scriptText,
+      );
       pageStore.updatePage(
         pageKey,
         {
           title: file.objectName,
-          updateKey: true,
+          updateKey: plPage?.pageKey,
           startSaving: false,
           isSaved: true,
         },
