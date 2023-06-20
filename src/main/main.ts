@@ -13,7 +13,7 @@ import { openMainWebWindow } from './windows/mainWeb';
 import startScreen from './windows/startScreen';
 
 Sentry.init({
-  dsn: 'https://5ffd98e764c143e09a4cc2970ff6896a@obc-sentry.oceanbase.com/6',
+  dsn: 'https://859452cf23044aeda8677a8bdcc53081@obc-sentry.oceanbase.com/3',
 });
 
 initRenderService();
