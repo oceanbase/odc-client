@@ -18,6 +18,7 @@ import styles from './index.less';
 
 interface IProps {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 enum StepKeys {
@@ -54,7 +55,7 @@ const defaultData: IShaodwSyncData = {
   errorStrategy: ErrorStrategy.ABORT,
 };
 
-const CreateModal: React.FC<IProps> = function ({ modalStore }) {
+const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   const [isChanged, setIsChanged] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [nextLoading, setNextLoading] = useState(false);
@@ -107,6 +108,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore }) {
     }
     const isSuccess = await createTask({
       taskType: TaskType.SHADOW,
+      projectId,
       executionStrategy: data.executionStrategy,
       executionTime:
         data.executionStrategy === TaskExecStrategy.TIMER ? data.executionTime : undefined,

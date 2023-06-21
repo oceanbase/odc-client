@@ -26,6 +26,7 @@ import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
 export interface IProps {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 export interface IState {
@@ -112,6 +113,7 @@ class CreateModal extends React.Component<IProps, IState> {
     });
   };
   private submit = () => {
+    const { projectId } = this.props;
     this._formRef.current?.valid(async (haveError, values) => {
       if (!haveError) {
         let exportFilePath;
@@ -129,6 +131,7 @@ class CreateModal extends React.Component<IProps, IState> {
           const formData = {
             ...this.state.formData,
             ...values,
+            projectId,
             exportFilePath,
           };
           const { exportContent, exportFileMaxSize } = formData;

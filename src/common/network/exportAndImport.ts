@@ -85,6 +85,7 @@ export async function createBatchExportTask(formData: ExportFormData) {
   const ret = await request.post('/api/v2/flow/flowInstances/', {
     data: {
       connectionId: formData?.connectionId,
+      projectId: formData?.projectId,
       databaseName: formData?.databaseName,
       databaseId: formData?.databaseId,
       taskType: TaskType.EXPORT,
@@ -175,6 +176,7 @@ export async function createBatchImportTask(
   const ret = await request.post('/api/v2/flow/flowInstances/', {
     data: {
       connectionId: formData?.connectionId,
+      projectId: formData?.projectId,
       databaseName: formData?.databaseName,
       databaseId: formData?.databaseId,
       taskType: TaskType.IMPORT,

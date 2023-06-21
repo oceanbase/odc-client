@@ -42,6 +42,7 @@ const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 enum ErrorStrategy {
@@ -59,7 +60,7 @@ const defaultValue = {
 };
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore } = props;
+  const { modalStore, projectId } = props;
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [formData, setFormData] = useState(null);
   const [hasEdit, setHasEdit] = useState(false);
@@ -320,6 +321,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
         const data = {
           connectionId,
+          projectId,
           databaseId,
           taskType: TaskType.ALTER_SCHEDULE,
           parameters,

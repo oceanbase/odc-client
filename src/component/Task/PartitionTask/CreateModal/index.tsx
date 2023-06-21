@@ -59,11 +59,12 @@ export const enabledInspectTriggerStrategy = false;
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { modalStore } = props;
+    const { modalStore, projectId } = props;
     const { partitionVisible } = modalStore;
     const [partitionPlans, setPartitionPlans] = useState<IPartitionPlanRecord[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -114,6 +115,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           taskType: TaskType.PARTITION_PLAN,
           description,
           connectionId,
+          projectId,
           parameters: {
             connectionPartitionPlan: {
               connectionId,
