@@ -44,6 +44,7 @@ interface IProps {
   sqlStore?: SQLStore;
   taskStore?: TaskStore;
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 enum ErrorStrategy {
@@ -52,7 +53,7 @@ enum ErrorStrategy {
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore } = props;
+  const { modalStore, projectId } = props;
   const [form] = Form.useForm();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [rollbackContentType, setRollbackContentType] = useState(SQLContentType.TEXT);
@@ -256,6 +257,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         }
         const data = {
           connectionId,
+          projectId,
           databaseName,
           databaseId,
           taskType: TaskType.ASYNC,

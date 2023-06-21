@@ -47,6 +47,7 @@ interface IProps {
   userStore?: UserStore;
   modalStore?: ModalStore;
   tabHeight?: number;
+  projectId?: number;
 }
 
 interface IState {
@@ -87,7 +88,8 @@ class TaskManaerPage extends React.Component<IProps, IState> {
   };
 
   public loadTaskList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
-    const { taskPageType } = this.props.taskStore;
+    const { projectId, taskStore } = this.props;
+    const { taskPageType } = taskStore;
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { status, executeTime, databaseName: schema, creator, connection, id } = filters ?? {};
     const { column, order } = sorter ?? {};
@@ -106,6 +108,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
     const params = {
       fuzzySearchKeyword: id ? id : undefined,
       taskType: isAllScope ? taskPageType : undefined,
+      projectId,
       status,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
@@ -133,7 +136,8 @@ class TaskManaerPage extends React.Component<IProps, IState> {
   };
 
   public loadCycleTaskList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
-    const { taskPageType } = this.props.taskStore;
+    const { projectId, taskStore } = this.props;
+    const { taskPageType } = taskStore;
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const {
       cycleTaskStatus: status,
@@ -159,6 +163,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
     const params = {
       id: id ? id : undefined,
       type: isAllScope ? taskPageType : undefined,
+      projectId,
       status,
       databaseNames: databaseName,
       connectionId: connectionIds,
@@ -255,6 +260,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
   };
 
   render() {
+    const { projectId } = this.props;
     const {
       detailId,
       detailType,
@@ -306,13 +312,13 @@ class TaskManaerPage extends React.Component<IProps, IState> {
             });
           }}
         />
-        <AsyncTaskCreateModal />
-        <DataMockerTaskCreateModal />
-        <ExportTaskCreateModal />
-        <ImportTaskCreateModal />
-        <PartitionTaskCreateModal />
-        <SQLPlanTaskCreateModal />
-        <ShadowSyncTaskCreateModal />
+        <AsyncTaskCreateModal projectId={projectId} />
+        <DataMockerTaskCreateModal projectId={projectId} />
+        <ExportTaskCreateModal projectId={projectId} />
+        <ImportTaskCreateModal projectId={projectId} />
+        <PartitionTaskCreateModal projectId={projectId} />
+        <SQLPlanTaskCreateModal projectId={projectId} />
+        <ShadowSyncTaskCreateModal projectId={projectId} />
       </>
     );
   }

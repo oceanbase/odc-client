@@ -1698,6 +1698,7 @@ export enum EXPORT_CONTENT {
 
 export interface ExportFormData {
   connectionId: number;
+  projectId?: number;
   databaseName?: string;
   databaseId: number;
   executionStrategy: TaskExecStrategy;
@@ -1780,6 +1781,7 @@ export interface ImportFormData {
   tableName?: string;
   databaseId: number;
   connectionId: number;
+  projectId?: number;
   databaseName?: string;
   executionStrategy: TaskExecStrategy;
   executionTime?: number;
@@ -2031,6 +2033,7 @@ export interface ITaskLog {}
 
 export interface CreateTaskRecord {
   connectionId: number;
+  projectId?: number;
   databaseId: number;
   taskType: TaskType;
   parameters: Record<string, any>;

@@ -28,6 +28,7 @@ import styles from './index.less';
 
 export interface IProps {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 export interface IState {
@@ -194,11 +195,13 @@ class CreateModal extends React.Component<IProps, IState> {
     });
   };
   private submit = async () => {
+    const { projectId } = this.props;
     await this._formRef.current.valid(async (haveError, values) => {
       if (!haveError) {
         const data = {
           ...this.state.formData,
           ...values,
+          projectId,
         };
         const { executionStrategy, executionTime } = data;
         if (executionStrategy === TaskExecStrategy.TIMER) {

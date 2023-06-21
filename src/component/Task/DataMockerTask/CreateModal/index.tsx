@@ -13,11 +13,12 @@ import { IMockFormData } from './type';
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { modalStore } = props;
+    const { modalStore, projectId } = props;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
@@ -99,6 +100,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
                   const isSuccess = await createTask({
                     connectionId,
+                    projectId,
                     databaseId,
                     databaseName,
                     executionStrategy,

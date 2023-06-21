@@ -129,6 +129,7 @@ export class TaskStore {
   @action
   public getTaskList = async (params?: {
     taskType?: TaskPageType;
+    projectId?: number;
     connection?: number;
     fuzzySearchKeyword?: string;
     status?: string[];
@@ -157,6 +158,7 @@ export class TaskStore {
   @action
   public getCycleTaskList = async (params?: {
     connectionId?: number[];
+    projectId?: number;
     creator?: string;
     databaseName?: string[];
     id?: number;
