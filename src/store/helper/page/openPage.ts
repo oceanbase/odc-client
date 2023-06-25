@@ -58,6 +58,7 @@ import {
   RecycleBinPage,
   SequencePage,
   SessionManagePage,
+  SessionParamsPage,
   SQLPage,
   SQLResultSetPage,
   SynonymPage,
@@ -118,7 +119,7 @@ export async function openNewSQLPageWithResult(result, cid: number) {
 }
 /** 根据scriptID打开sql或者pl的page */
 
-export async function openSQLPageByScript(scriptId: any, dbid: number) {
+export async function openSQLPageByScript(scriptId: any, dbid?: number) {
   const existPage = findPageByScriptIdAndType(scriptId);
 
   if (existPage) {
@@ -169,6 +170,18 @@ export async function openSessionManagePage(datasourceId?: number) {
     return;
   }
   page.openPage(new SessionManagePage(datasourceId));
+}
+
+/** 全局变量 */
+
+export async function openSessionParamsPage(datasourceId?: number) {
+  if (!datasourceId) {
+    [datasourceId] = await SelectDatabase();
+  }
+  if (!datasourceId) {
+    return;
+  }
+  page.openPage(new SessionParamsPage(datasourceId));
 }
 /** 回收站 */
 

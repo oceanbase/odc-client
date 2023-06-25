@@ -1,16 +1,13 @@
 import { executeSQL } from '@/common/network/sql';
 import { ConnectionMode, ISqlExecuteResultStatus } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { message, Modal } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { useCallback, useEffect, useState } from 'react';
 import CommonIDE from '../CommonIDE';
 
 function SQLExecuteModal(props: {
-  sqlStore?: SQLStore;
   isPL?: boolean;
   sql?: string;
   visible?: boolean;
@@ -74,4 +71,4 @@ function SQLExecuteModal(props: {
     </Modal>
   );
 }
-export default inject('sqlStore')(observer(SQLExecuteModal));
+export default SQLExecuteModal;

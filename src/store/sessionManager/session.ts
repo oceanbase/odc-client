@@ -340,9 +340,7 @@ class SessionStore {
   @action
   public async getRecycleObjectList() {
     // ListRecycleObjects
-    const res = await request.get(
-      `/api/v1/recyclebin/list/${generateDatabaseSid(null, this.sessionId)}`,
-    );
+    const res = await request.get(`/api/v1/recyclebin/list/${generateSessionSid(this.sessionId)}`);
     const recycleObjects = res?.data || [];
     this.recycleObjects = recycleObjects.map((r: IRecycleObject, i: number) => ({
       ...r,

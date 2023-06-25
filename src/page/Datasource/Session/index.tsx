@@ -4,7 +4,7 @@ interface IProps {
   id: string;
 }
 const Session: React.FC<IProps> = (props) => {
-  return <SessionManager dataSourceId={props.id} />;
+  return <SessionManager dataSourceId={parseInt(props.id)} />;
 };
 
 export default Session;

@@ -6,31 +6,24 @@ import {
   updateRecycleConfig,
 } from '@/common/network/recycle';
 import { executeSQL } from '@/common/network/sql';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
-import DisplayTable from '@/component/DisplayTable';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
+import MiniTable from '@/component/Table/MiniTable';
 import Toolbar from '@/component/Toolbar';
 import { IRecycleConfig, IRecycleObject, ISqlExecuteResultStatus } from '@/d.ts';
-import { PageStore } from '@/store/page';
-import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { SQLStore } from '@/store/sql';
+import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { sortString } from '@/util/utils';
-import Icon, {
-  ClearOutlined,
-  DeleteOutlined,
-  ExclamationCircleFilled,
-  RedoOutlined,
-  SettingOutlined,
-  SyncOutlined,
-} from '@ant-design/icons';
-import { Button, Drawer, Input, Layout, message, Modal, Spin } from 'antd';
-import { inject, observer } from 'mobx-react';
+import { ExclamationCircleFilled, SettingOutlined, SyncOutlined } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
+import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import React, { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
 import EditableTable from '../EditableTable';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
+import SessionContextWrap from '../SessionContextWrap';
+import SessionSelect from '../SessionContextWrap/SessionSelect';
 import RecyleConfigContext from './context/RecyleConfigContext';
 import styles from './index.less';
 import RecycleConfig from './RecyleConfig';
@@ -38,21 +31,15 @@ import RecycleConfig from './RecyleConfig';
 const ToolbarButton = Toolbar.Button;
 
 const { Search } = Input;
-const { Content } = Layout;
 
-@inject('sqlStore', 'sessionManagerStore', 'pageStore')
-@observer
-export default class RecycleBinPage extends Component<
-  {
-    sqlStore: SQLStore;
-    sessionManagerStore: SessionManagerStore;
-    pageStore: PageStore;
-    pageKey: string;
-    params: {
-      cid: number;
-      dbName: string;
-    };
-  },
+interface IProps {
+  session: SessionStore;
+  datasourceId: number;
+  showDatasource?: boolean;
+}
+
+class RecycleBin extends Component<
+  IProps,
   {
     showEditModal: boolean;
     showExecuteSQLModal: boolean;
@@ -84,18 +71,11 @@ export default class RecycleBinPage extends Component<
   public tableList: React.RefObject<HTMLDivElement> = React.createRef();
 
   public async componentDidMount() {
-    if (await this.initSession()) {
-      this.getRecycleObjectList();
-      this.getRecycleConfig();
-    }
+    this.session = this.props.session;
+    this.getRecycleObjectList();
+    this.getRecycleConfig();
   }
 
-  public initSession = async () => {
-    const { params, sessionManagerStore } = this.props;
-    const session = await sessionManagerStore.createSession(null, params.cid);
-    this.session = session;
-    return !!session;
-  };
   public getRecycleConfig = async () => {
     const setting = await getRecycleConfig(this.session?.sessionId);
     this.setState({
@@ -185,7 +165,6 @@ export default class RecycleBinPage extends Component<
    * 执行 SQL
    */
   public handleExecuteUpdateDML = async () => {
-    const { sqlStore } = this.props;
     const { updateDML } = this.state;
 
     // 执行 DML
@@ -290,7 +269,7 @@ export default class RecycleBinPage extends Component<
       recycleConfig,
     } = this.state;
 
-    const columns = [
+    const columns: ColumnsType<IRecycleObject> = [
       {
         dataIndex: 'id',
         title: formatMessage({
@@ -382,46 +361,39 @@ export default class RecycleBinPage extends Component<
 
     return (
       <>
-        <Content style={{ position: 'relative' }}>
-          <Spin spinning={listLoading}>
+        <Spin wrapperClassName={styles.wrap} spinning={listLoading}>
+          <div className={styles.toolbar}>
             <Toolbar>
-              <div className="tools-left">
-                <WorkspaceAcess action={actionTypes.delete}>
-                  <>
-                    <ToolbarButton
-                      isShowText
-                      disabled={!selectedObjectNames.size}
-                      text={
-                        formatMessage({
-                          id: 'odc.components.RecycleBinPage.Delete',
-                        }) //删除
-                      }
-                      icon={<DeleteOutlined />}
-                      onClick={() => this.setState({ showDeleteDrawer: true })}
-                    />
+              <div style={{ paddingLeft: 12 }} className="tools-left">
+                <Space size={12}>
+                  <ToolbarButton
+                    type="BUTTON"
+                    disabled={!selectedObjectNames.size}
+                    text={
+                      formatMessage({
+                        id: 'odc.components.RecycleBinPage.Delete',
+                      }) //删除
+                    }
+                    onClick={() => this.setState({ showDeleteDrawer: true })}
+                  />
 
-                    <ToolbarButton
-                      isShowText
-                      disabled={!selectedObjectNames.size}
-                      text={<FormattedMessage id="workspace.window.recyclebin.button.restore" />}
-                      icon={<RedoOutlined />}
-                      onClick={() => this.setState({ showRestoreDrawer: true })}
-                    />
+                  <ToolbarButton
+                    type="BUTTON"
+                    disabled={!selectedObjectNames.size}
+                    text={<FormattedMessage id="workspace.window.recyclebin.button.restore" />}
+                    onClick={() => this.setState({ showRestoreDrawer: true })}
+                  />
 
-                    <WorkspaceAcess action={actionTypes.delete}>
-                      <ToolbarButton
-                        isShowText
-                        text={
-                          formatMessage({
-                            id: 'odc.components.RecycleBinPage.Clear',
-                          }) //清空
-                        }
-                        icon={<Icon component={ClearOutlined} />}
-                        onClick={this.handleOpenPurgeAllModal}
-                      />
-                    </WorkspaceAcess>
-                  </>
-                </WorkspaceAcess>
+                  <ToolbarButton
+                    type="BUTTON"
+                    text={
+                      formatMessage({
+                        id: 'odc.components.RecycleBinPage.Clear',
+                      }) //清空
+                    }
+                    onClick={this.handleOpenPurgeAllModal}
+                  />
+                </Space>
               </div>
               <div className="tools-right">
                 <Search
@@ -463,45 +435,51 @@ export default class RecycleBinPage extends Component<
                 />
               </div>
             </Toolbar>
-            <div className={styles.table}>
-              <DisplayTable
-                rowKey="uniqueId"
-                bordered
-                columns={columns}
-                dataSource={filteredRows}
-                rowSelection={{
-                  selectedRowKeys: Array.from(selectedObjectNames),
-                  onChange: (selectedRowKeys: string[], rows: IRecycleObject[]) => {
-                    this.handleRowSelected(selectedRowKeys);
-                  },
-                  selections: [
-                    {
-                      key: 'all-data',
-                      text: formatMessage({
-                        id: 'odc.components.RecycleBinPage.SelectAllObjects',
-                      }),
-                      //选择所有对象
-                      onSelect: () => {
-                        this.handleRowSelected(filteredRows.map((row) => row.uniqueId));
-                      },
-                    },
-
-                    {
-                      key: 'cancel-all-data',
-                      text: formatMessage({
-                        id: 'odc.components.RecycleBinPage.CancelAllObjects',
-                      }),
-                      //取消所有对象
-                      onSelect: () => {
-                        this.handleCancelAllSelected(filteredRows);
-                      },
-                    },
-                  ],
-                }}
-              />
+          </div>
+          {this.props.showDatasource ? (
+            <div className={styles.datasourceSelect}>
+              <SessionSelect />
             </div>
-          </Spin>
-        </Content>
+          ) : null}
+          <div className={styles.table}>
+            <MiniTable
+              loadData={(page) => {}}
+              rowKey="uniqueId"
+              bordered
+              columns={columns}
+              dataSource={filteredRows}
+              rowSelection={{
+                selectedRowKeys: Array.from(selectedObjectNames),
+                onChange: (selectedRowKeys: string[], rows: IRecycleObject[]) => {
+                  this.handleRowSelected(selectedRowKeys);
+                },
+                selections: [
+                  {
+                    key: 'all-data',
+                    text: formatMessage({
+                      id: 'odc.components.RecycleBinPage.SelectAllObjects',
+                    }),
+                    //选择所有对象
+                    onSelect: () => {
+                      this.handleRowSelected(filteredRows.map((row) => row.uniqueId));
+                    },
+                  },
+
+                  {
+                    key: 'cancel-all-data',
+                    text: formatMessage({
+                      id: 'odc.components.RecycleBinPage.CancelAllObjects',
+                    }),
+                    //取消所有对象
+                    onSelect: () => {
+                      this.handleCancelAllSelected(filteredRows);
+                    },
+                  },
+                ],
+              }}
+            />
+          </div>
+        </Spin>
         <ExecuteSQLModal
           sessionStore={this.session}
           sql={updateDML}
@@ -578,4 +556,22 @@ export default class RecycleBinPage extends Component<
       window.dispatchEvent(new Event('resize'));
     });
   }
+}
+
+export default function WrapRecycleBin(props: Omit<IProps, 'session'>) {
+  return (
+    <SessionContextWrap
+      defaultDatabaseId={null}
+      datasourceMode
+      defaultDatasourceId={props.datasourceId}
+    >
+      {({ session }) => {
+        return !session ? (
+          <WorkSpacePageLoading />
+        ) : (
+          <RecycleBin key={session?.sessonId} session={session} {...props} />
+        );
+      }}
+    </SessionContextWrap>
+  );
 }

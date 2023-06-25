@@ -18,7 +18,7 @@ const SessionParamDrawer: React.FC<IProps> = function ({ visible, sessionId, onC
           id: 'odc.components.SessionParamPage.SessionParamDrawer.SessionVariables',
         }) //会话变量
       }
-      visible={visible}
+      open={visible}
       onClose={() => {
         onClose();
       }}
