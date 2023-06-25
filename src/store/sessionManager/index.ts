@@ -39,6 +39,7 @@ export class SessionManagerStore {
         return false;
       }
       this.connection.set(connectionId, datasource);
+      return true;
     }
   }
 

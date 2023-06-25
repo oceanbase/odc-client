@@ -104,7 +104,7 @@ export class SQLPage extends Page {
       this.pageKey = `sqlpage-scriptId:${script.scriptMeta?.id}`;
       this.pageTitle = '--';
       this.pageParams = {
-        ...script,
+        ...script?.scriptMeta,
         scriptText: script.content,
         scriptId: script.scriptMeta?.id,
         databaseFrom,
@@ -165,11 +165,26 @@ export class SessionManagePage extends Page {
   };
   constructor(cid: number) {
     super();
-    this.pageKey = 'session-management-page';
+    this.pageKey = `session-management-page-${generateUniqKey()}`;
     this.pageType = PageType.SESSION_MANAGEMENT;
     this.pageTitle = formatMessage({
       id: 'workspace.header.session.management',
     });
+    this.pageParams = {
+      cid,
+    };
+  }
+}
+
+export class SessionParamsPage extends Page {
+  public pageParams: {
+    cid: number;
+  };
+  constructor(cid: number) {
+    super();
+    this.pageKey = `session-params-page-${generateUniqKey()}`;
+    this.pageType = PageType.SESSION_PARAM;
+    this.pageTitle = '--';
     this.pageParams = {
       cid,
     };
@@ -181,7 +196,7 @@ export class RecycleBinPage extends Page {
   };
   constructor(cid: number) {
     super();
-    this.pageKey = 'recycle-bin-page';
+    this.pageKey = `recycle-bin-page-${generateUniqKey()}`;
     this.pageType = PageType.RECYCLE_BIN;
     this.pageTitle = formatMessage({
       id: 'workspace.header.recycle',

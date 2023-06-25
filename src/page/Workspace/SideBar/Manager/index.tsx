@@ -1,4 +1,4 @@
-import { openRecycleBin, openSessionManagePage } from '@/store/helper/page';
+import { openRecycleBin, openSessionManagePage, openSessionParamsPage } from '@/store/helper/page';
 import Icon from '@ant-design/icons';
 import React from 'react';
 import ListItem from '../components/ListItem';
@@ -45,7 +45,7 @@ const Manager: React.FC<{}> = function () {
                     icon={<Icon component={VariableSvg} style={{ fontSize: 18 }} />}
                     actions={[]}
                     onClick={() => {
-                      openSessionManagePage();
+                      openSessionParamsPage();
                     }}
                   />
                   <ListItem

@@ -21,6 +21,7 @@ import { inject, observer } from 'mobx-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'umi';
 import EditableTable, { RowType } from '../EditableTable';
+import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
 const ToolbarButton = Toolbar.Button;
 const Search = Input.Search;
@@ -37,8 +38,10 @@ function SessionParamsTable(props: {
   tip?: string;
   bordered?: boolean;
   sessionManagerStore?: SessionManagerStore;
+  showDatasource?: boolean;
 }) {
-  const { sessionManagerStore, connectionPropertyType, sessionId, tip, bordered } = props;
+  const { sessionManagerStore, connectionPropertyType, sessionId, tip, bordered, showDatasource } =
+    props;
   const [listLoading, setListLoading] = useState(false);
   const [showExecuteSQLModal, setShowExecuteSQLModal] = useState(false);
   const [updateDML, setupdateDML] = useState('');
@@ -166,7 +169,7 @@ function SessionParamsTable(props: {
                   text={<FormattedMessage id="workspace.window.session.button.edit" />}
                   icon={<EditOutlined />}
                   onClick={handleOpenEditModal}
-                  disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
+                  // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
                 />
               </WorkspaceAcess>
             </div>
@@ -188,6 +191,11 @@ function SessionParamsTable(props: {
               />
             </div>
           </Toolbar>
+          {showDatasource ? (
+            <div style={{ flex: 0 }}>
+              <SessionSelect />
+            </div>
+          ) : null}
           {tip ? <Alert showIcon message={tip} /> : null}
           <div className={styles.table}>
             <EditableTable

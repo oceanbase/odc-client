@@ -20,6 +20,7 @@ export enum IPageType {
   Datasource_info = 'info',
   Datasource_session = 'session',
   Datasource_recycle = 'recycle',
+  Datasource_obclient = 'obclient',
   Task = 'task',
   Auth = 'auth',
   Auth_User = 'user',

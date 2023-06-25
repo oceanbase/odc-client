@@ -6,37 +6,47 @@ import SessionContext from './context';
 
 interface IProps extends React.PropsWithChildren<any> {
   defaultDatabaseId: number;
-  defaultMode: 'project' | 'datasource';
+  defaultDatasourceId?: number;
+  datasourceMode?: boolean;
+  defaultMode?: 'project' | 'datasource';
 }
 
 export default function SessionContextWrap({
   defaultDatabaseId,
+  defaultDatasourceId,
+  datasourceMode,
   defaultMode = 'datasource',
   children,
 }: IProps) {
   const [session, _setSession] = useState<SessionStore>(null);
   const [databaseId, setDatabaseId] = useState(defaultDatabaseId);
+  const [datasourceId, setDatasourceId] = useState(defaultDatasourceId);
   const [from, setFrom] = useState<'project' | 'datasource'>(defaultMode);
 
-  async function selectSession(databaseId: number, from?: 'project' | 'datasource') {
+  async function selectSession(
+    databaseId: number,
+    datasourceId: number,
+    from?: 'project' | 'datasource',
+  ) {
     if (session) {
       sessionManager.destorySession(session.sessionId);
     }
-    if (!databaseId) {
+    if (!databaseId && !datasourceId) {
       return;
     }
-    const newSession = await sessionManager.createSession(null, databaseId);
+    const newSession = await sessionManager.createSession(datasourceId, databaseId);
     if (newSession) {
       if (from) {
         setFrom(from);
       }
+      setDatasourceId(datasourceId);
       setDatabaseId(databaseId);
       _setSession(newSession);
     }
   }
 
   useEffect(() => {
-    selectSession(defaultDatabaseId, defaultMode);
+    selectSession(defaultDatabaseId, defaultDatasourceId, defaultMode);
   }, []);
 
   useUnmount(() => {
@@ -51,6 +61,8 @@ export default function SessionContextWrap({
         session,
         selectSession: selectSession,
         databaseId,
+        datasourceMode,
+        datasourceId,
         from,
       }}
     >

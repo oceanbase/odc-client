@@ -1,36 +1,39 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Link } from '@umijs/max';
-import { Button, Dropdown, Menu, Space } from 'antd';
-import React from 'react';
+import { Button, Dropdown, Modal, Space } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 import Info from './Info';
 import Recycle from './Recycle';
 import Session from './Session';
 
+import { deleteConnection, getConnectionDetail } from '@/common/network/connection';
+import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
+import { isNumber } from 'lodash';
+import OBClientPage from './OBClient';
 
-const data = Array(10)
-  ?.fill(0)
-  ?.map((item, index) => `source ${index + 1}`);
-const options = data?.map((item, index) => ({
-  label: item,
-  value: index + 1,
-}));
-
-const menu = (
-  <Menu>
-    <Menu.Item>菜单项一</Menu.Item>
-    <Menu.Item>菜单项二</Menu.Item>
-  </Menu>
-);
-
-const ExtraContent = () => {
+const ExtraContent = ({ cid }: { cid: number }) => {
   return (
     <Space>
-      <Button>命令行窗口</Button>
       <Dropdown.Button
-        overlay={menu}
+        menu={{
+          items: [
+            {
+              label: '删除',
+              key: 'delete',
+              async onClick() {
+                Modal.confirm({
+                  title: '确认删除吗？',
+                  async onOk() {
+                    await deleteConnection(cid?.toString());
+                  },
+                });
+              },
+            },
+          ],
+        }}
         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
       />
     </Space>
@@ -49,6 +52,9 @@ const Pages = {
   [IPageType.Datasource_session]: {
     component: Session,
   },
+  [IPageType.Datasource_obclient]: {
+    component: OBClientPage,
+  },
 };
 
 const tabs = [
@@ -64,12 +70,17 @@ const tabs = [
     tab: '回收站',
     key: IPageType.Datasource_recycle,
   },
+  {
+    tab: '命令行窗口',
+    key: IPageType.Datasource_obclient,
+  },
 ];
 
 const Index: React.FC<IProps> = function () {
   const params = useParams<{ id: string; page: IPageType }>();
   const { id, page } = params;
   const Component = Pages[page].component;
+  const cid = parseInt(id);
 
   const handleChange = (key: string) => {
     history.push(`/datasource/${id}/${key}`);
@@ -79,17 +90,42 @@ const Index: React.FC<IProps> = function () {
     history.push(`/datasource/${value}/${page}`);
   };
 
+  const [connection, setConnection] = useState<IDatasource>(null);
+
+  async function fetchDatasource(cid: number) {
+    const data = await getConnectionDetail(cid);
+    if (data) {
+      setConnection(data);
+    }
+  }
+  const reloadDatasource = useCallback(() => {
+    fetchDatasource(cid);
+  }, [cid]);
+
+  useEffect(() => {
+    if (isNumber(cid)) {
+      fetchDatasource(cid);
+    }
+  }, [cid]);
+
+  const options = [
+    {
+      label: connection?.name,
+      value: cid,
+    },
+  ];
+
   return (
     <PageContainer
       titleProps={{
         type: TitleType.SELECT,
-        defaultValue: Number(params?.id),
+        defaultValue: cid,
         options: options,
         onChange: handleSelectChange,
       }}
       tabList={tabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent />}
+      tabBarExtraContent={<ExtraContent cid={cid} />}
       onTabChange={handleChange}
       bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
     >

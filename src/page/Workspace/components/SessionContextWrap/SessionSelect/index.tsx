@@ -53,47 +53,62 @@ export default function SessionSelect({
       </Popover>
     );
   }
-
+  function renderEnv() {
+    if (!context?.session?.odcDatabase?.environment?.name) {
+      return null;
+    }
+    return (
+      <div className={styles.tag}>
+        <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
+          {context?.session?.odcDatabase?.environment?.name}
+        </Tag>
+      </div>
+    );
+  }
   function renderSessionInfo() {
     if (readonly) {
       return (
         <>
-          <div className={styles.tag}>
-            <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
-              {context?.session?.odcDatabase?.environment?.name}
-            </Tag>
-          </div>
+          {renderEnv()}
           <div className={classNames(styles.dataSource, styles.readonly)}>
-            {context?.from === 'datasource' ? renderDatasource() : renderProject()}
+            {context?.from === 'datasource' || context.datasourceMode
+              ? renderDatasource()
+              : renderProject()}
           </div>
-          <span>/</span>
-          <div className={classNames(styles.database, styles.readonly)}>
-            {context?.session?.odcDatabase?.name}
-          </div>
+          {!context.datasourceMode && (
+            <>
+              <span>/</span>
+              <div className={classNames(styles.database, styles.readonly)}>
+                {context?.session?.odcDatabase?.name}
+              </div>
+            </>
+          )}
         </>
       );
     }
     return (
       <>
-        <div className={styles.tag}>
-          <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
-            {context?.session?.odcDatabase?.environment?.name}
-          </Tag>
+        {renderEnv()}
+        <div onClick={() => setVisible(true)} className={styles.dataSource}>
+          {context?.from === 'datasource' || context.datasourceMode
+            ? renderDatasource()
+            : renderProject()}
         </div>
-        <div className={styles.dataSource}>
-          {context?.from === 'datasource' ? renderDatasource() : renderProject()}
-        </div>
-        <span>/</span>
-        <div onClick={() => setVisible(true)} className={styles.database}>
-          {context?.session?.odcDatabase?.name} <DownOutlined />
-        </div>
+        {!context.datasourceMode && (
+          <>
+            <span>/</span>
+            <div onClick={() => setVisible(true)} className={styles.database}>
+              {context?.session?.odcDatabase?.name} <DownOutlined />
+            </div>
+          </>
+        )}
       </>
     );
   }
 
   return (
     <>
-      {!context?.databaseId ? (
+      {!context?.databaseId && !context?.datasourceId ? (
         <div className={styles.line}>
           <a onClick={() => setVisible(true)}>请选择数据库</a>
         </div>

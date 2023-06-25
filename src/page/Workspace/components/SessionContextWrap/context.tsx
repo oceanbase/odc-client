@@ -4,13 +4,15 @@ import React from 'react';
 interface ISessionContext {
   session: SessionStore;
   databaseId?: number;
+  datasourceId?: number;
+  datasourceMode?: boolean;
   from?: 'project' | 'datasource';
-  selectSession: (databaseId: number, from: 'project' | 'datasource') => void;
+  selectSession: (databaseId: number, datasourceId: number, from: 'project' | 'datasource') => void;
 }
 
 const SessionContext = React.createContext<ISessionContext>({
   session: null,
-  selectSession(databaseId, from) {},
+  selectSession(databaseId, datasourceId, from) {},
 });
 
 export default SessionContext;

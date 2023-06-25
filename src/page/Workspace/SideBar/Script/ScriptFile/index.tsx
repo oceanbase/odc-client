@@ -63,7 +63,7 @@ export default inject('userStore')(
                   name={script.objectName}
                   script={script}
                   onClick={() => {
-                    openSQLPageByScript(script.id, null, null);
+                    openSQLPageByScript(script.id, null);
                   }}
                   editFile={() => {
                     setEditingScriptId(script.id);
