@@ -7,7 +7,6 @@ import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import CreateSequenceModal from '../components/CreateSequenceModal';
-import ScriptManageModal from '../components/ScriptManageModal';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -22,7 +21,6 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateFunctionModal />
       <CreateProcedureModal />
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
-      <ScriptManageModal />
     </>
   );
 };

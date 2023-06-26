@@ -1,7 +1,7 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Link } from '@umijs/max';
-import { Button, Dropdown, Modal, Space } from 'antd';
+import { Link, useNavigate } from '@umijs/max';
+import { Button, Dropdown, message, Modal, Space } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 import Info from './Info';
@@ -15,6 +15,7 @@ import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
 
 const ExtraContent = ({ cid }: { cid: number }) => {
+  const nav = useNavigate();
   return (
     <Space>
       <Dropdown.Button
@@ -27,7 +28,11 @@ const ExtraContent = ({ cid }: { cid: number }) => {
                 Modal.confirm({
                   title: '确认删除吗？',
                   async onOk() {
-                    await deleteConnection(cid?.toString());
+                    const isSuccess = await deleteConnection(cid?.toString());
+                    if (isSuccess) {
+                      message.success('删除成功');
+                      nav('/datasource');
+                    }
                   },
                 });
               },

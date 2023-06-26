@@ -3,7 +3,7 @@ import Icon from '@ant-design/icons';
 import { PageType } from '@/d.ts';
 import CreateTablePage from '@/page/Workspace/components/CreateTable';
 import CreateViewPage from '@/page/Workspace/components/CreateViewPage';
-import OBClientPage from '@/page/Workspace/components/OBClientPage';
+import OBClientPage from '@/page/Workspace/components/OBClientPage/Page';
 import PLPage from '@/page/Workspace/components/PLPage';
 import RecycleBinPage from '@/page/Workspace/components/RecycleBinPage/Page';
 import SessionParamPage from '@/page/Workspace/components/SessionParamPage';
