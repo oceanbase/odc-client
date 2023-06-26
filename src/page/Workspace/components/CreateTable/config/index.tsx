@@ -1,6 +1,5 @@
 import { ConnectionMode } from '@/d.ts';
 import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
-import { ConnectionStore } from '@/store/connection';
 import { TableColumn } from '../interface';
 import MySQLColumnExtra from './MySQLColumnExtra';
 import OracleColumnExtra from './OracleColumnExtra';
@@ -9,7 +8,7 @@ export type columnExtraComponent = React.FC<{
   column: TableColumn;
   originColumns: TableColumn[];
   onChange: (newColumn: TableColumn) => void;
-  connectionStore?: ConnectionStore;
+  dialectType?: ConnectionMode;
 }>;
 
 interface ICreateConfig {

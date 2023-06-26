@@ -6,7 +6,6 @@ import { TAB_HEADER_HEIGHT } from '@/constant';
 import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import { PageStore } from '@/store/page';
-import schema from '@/store/schema';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
@@ -103,7 +102,7 @@ class TableData extends React.Component<
 
     try {
       const data = await queryTableOrViewData(
-        schema.database?.name,
+        session?.database?.dbName,
         tableName,
         limit,
         session.supportFeature.enableRowId,

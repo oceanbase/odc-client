@@ -1,6 +1,5 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
-import { EllipsisOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Menu, Space } from 'antd';
+import { Button, Menu, Space } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 import Database from './Database';
@@ -8,21 +7,14 @@ import Setting from './Setting';
 import Task from './Task';
 import User from './User';
 
-import { getProject } from '@/common/network/project';
+import { getProject, listProjects } from '@/common/network/project';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { gotoSQLWorkspace } from '@/util/route';
 import { Link } from '@umijs/max';
+import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
-
-const data = Array(10)
-  ?.fill(0)
-  ?.map((item, index) => `项目 ${index + 1}`);
-const options = data?.map((item, index) => ({
-  label: item,
-  value: index + 1,
-}));
 
 const menu = (
   <Menu>
@@ -37,10 +29,10 @@ const ExtraContent = ({ projectId }) => {
       <Button onClick={() => gotoSQLWorkspace(projectId)} type="primary">
         登录数据库
       </Button>
-      <Dropdown.Button
+      {/* <Dropdown.Button
         overlay={menu}
         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
-      />
+      /> */}
     </Space>
   );
 };
@@ -112,19 +104,35 @@ const Index: React.FC<IProps> = function () {
     }
   }, [projectId]);
 
-  const projectOptions = [
+  const { data } = useRequest(listProjects, {
+    defaultParams: [null, 1, 10],
+  });
+
+  const options = [
     {
       label: project?.name,
       value: projectId,
     },
-  ];
+  ].concat(
+    data?.contents
+      ?.map((p) => {
+        if (p.id === projectId) {
+          return null;
+        }
+        return {
+          label: p.name,
+          value: p.id,
+        };
+      })
+      ?.filter(Boolean) || [],
+  );
 
   return (
     <PageContainer
       titleProps={{
         type: TitleType.SELECT,
         defaultValue: projectId,
-        options: projectOptions,
+        options: options,
         onChange: handleProjectChange,
       }}
       tabList={tabs}

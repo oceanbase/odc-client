@@ -34,3 +34,8 @@ export enum AccessMode {
 }
 
 export type IDatasource = IConnection;
+
+export enum ConnectionPropertyType {
+  GLOBAL = 'global',
+  SESSION = 'session',
+}

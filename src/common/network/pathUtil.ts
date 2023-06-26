@@ -1,14 +1,14 @@
 /**
  * 后端的API需要的path
  */
-import connection, { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import { encodeObjName } from '@/util/utils';
 
 export function generateDatabaseSid(databaseName: string = '', sessionId?: string): string {
-  return `sid:${sessionId || connection.sessionId}:d:${encodeObjName(databaseName)}`;
+  return `sid:${sessionId}:d:${encodeObjName(databaseName)}`;
 }
 export function generateSessionSid(sessionId?: string): string {
-  return `sid:${sessionId || connection.sessionId}`;
+  return `sid:${sessionId}`;
 }
 
 export function generateTableSid(

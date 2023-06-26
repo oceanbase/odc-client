@@ -1,5 +1,5 @@
 import { IConnectionProperty, IDatabaseSession } from '@/d.ts';
-import { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import request from '@/util/request';
 import { generateVarSid } from './pathUtil';
 

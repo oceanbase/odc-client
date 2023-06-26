@@ -828,7 +828,13 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const newPLEntryName = getPLEntryName(params.scriptText);
     if (!this.isPackageProgram()) {
       /** 暂时还检测不了程序包内的函数等 */
-      const plChanged = checkPLNameChanged(plName, newPLEntryName, plType);
+      const plChanged = checkPLNameChanged(
+        plName,
+        newPLEntryName,
+        plType,
+        false,
+        this.getSession()?.database?.dbName,
+      );
 
       if (plChanged) {
         message.error(
@@ -1158,6 +1164,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
             onCancel={() => this.setState({ showEditPLParamsModal: false })}
             onSave={this.handleUpdatedPLParams}
             plSchema={plSchema}
+            connectionMode={this.getSession()?.connection?.dialectType}
           />,
         ]}
       />

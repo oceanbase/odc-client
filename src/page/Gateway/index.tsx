@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { formatMessage, history } from 'umi';
 
 import { decrypt } from '@/common/network/other';
-import { ConnectionStore } from '@/store/connection';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
@@ -40,7 +39,6 @@ type IRemoteParams =
   | ISSOLogin;
 
 interface GatewayProps {
-  connectionStore?: ConnectionStore;
   pageStore?: PageStore;
   userStore?: UserStore;
   settingStore?: SettingStore;
@@ -226,9 +224,4 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
   );
 };
 
-export default inject(
-  'connectionStore',
-  'pageStore',
-  'userStore',
-  'settingStore',
-)(observer(Gateway));
+export default inject('pageStore', 'userStore', 'settingStore')(observer(Gateway));

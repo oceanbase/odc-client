@@ -1,12 +1,10 @@
 import { ConnectionMode } from '@/d.ts';
-import connection from '@/store/connection';
 import { dataTypesIns } from '@/util/dataType';
 
-export function getTypeByColumnName(columnName: string) {
+export function getTypeByColumnName(columnName: string, dialectType) {
   if (!columnName) {
     return null;
   }
-  const dialectType = connection.connection.dialectType;
   const matchArr = [
     {
       type: dialectType === ConnectionMode.OB_MYSQL ? 'int' : 'NUMBER',

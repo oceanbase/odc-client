@@ -207,6 +207,7 @@ const Columns: React.FC<IProps> = function ({}) {
                 tableContext.setColumns(newColumns);
               }
             }}
+            dialectType={session?.connection?.dialectType}
           />
         </div>
       )}

@@ -1,20 +1,16 @@
 import { ConnectTypeText } from '@/constant/label';
 import { ConnectType } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import { Popover, Space, Typography } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, { useContext } from 'react';
 import ParamContext from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';
 import CheckboxTag from './CheckboxTag';
 
-interface IProps {
-  connectionStore?: ConnectionStore;
-}
+interface IProps {}
 
-const Filter: React.FC<IProps> = function ({ connectionStore }) {
+const Filter: React.FC<IProps> = function ({}) {
   const context = useContext(ParamContext);
   let displayDom = (
     <FilterIcon>
@@ -98,4 +94,4 @@ const Filter: React.FC<IProps> = function ({ connectionStore }) {
   );
 };
 
-export default inject('connectionStore')(observer(Filter));
+export default Filter;

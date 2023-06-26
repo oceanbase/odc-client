@@ -182,7 +182,6 @@ class WindowManager extends PureComponent<
           })}
         </DraggableTabs>
         <DefaultPage />
-        {/* {pages && pages.length === 0 && <DatabaseInfo />} */}
       </>
     );
   }

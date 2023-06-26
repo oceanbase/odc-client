@@ -202,11 +202,5 @@ const Index: React.FC<IProps> = function ({ userStore }) {
     </PageContainer>
   );
 };
-export default inject(
-  'userStore',
-  'settingStore',
-  'schemaStore',
-  'taskStore',
-  'modalStore',
-)(observer(Index));
+export default inject('userStore', 'settingStore', 'taskStore', 'modalStore')(observer(Index));
 // export default Index;

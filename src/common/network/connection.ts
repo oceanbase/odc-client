@@ -201,6 +201,7 @@ export async function getConnectionList(params: {
   minPrivilege?: string;
   sessionLabelId?: string[];
   hostPort?: string;
+  name?: string;
 }): Promise<IResponseData<IDatasource>> {
   const results = await request.get('/api/v2/datasource/datasources', {
     params: {

@@ -9,6 +9,7 @@ import { ModalStore } from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { generateUniqKey } from '@/util/utils';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { AttachAddon } from './attach';
 import styles from './index.less';
@@ -286,7 +287,9 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
         size="small"
         title={!this.props.simpleHeader ? this.rendertitle() : this.renderExtra()}
         extra={!this.props.simpleHeader ? this.renderExtra() : null}
-        className={styles.main}
+        className={classNames(styles.main, {
+          [styles.simpleHeader]: this.props.simpleHeader,
+        })}
         bodyStyle={{ paddingBottom: '0px' }}
       >
         <div style={{ height: '100%', width: '100%', position: 'relative' }} ref={this.xtermRef} />

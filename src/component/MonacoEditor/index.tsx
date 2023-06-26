@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as monaco from 'monaco-editor';
 
 import appConfig from '@/constant/appConfig';
-import { ConnectionStore } from '@/store/connection';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
@@ -21,7 +20,6 @@ export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
 export interface IProps {
   sessionStore?: SessionStore;
   settingStore?: SettingStore;
-  connectionStore?: ConnectionStore;
   /**
    * 默认值
    */
@@ -52,7 +50,6 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     theme,
     readOnly,
     settingStore,
-    connectionStore,
     sessionStore,
     onValueChange,
     onEditorCreated,
@@ -114,7 +111,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       getModelService(
         {
           modelId: editorRef.current.getModel().id,
-          delimiter: connectionStore.delimiter,
+          delimiter: sessionRef.current?.params?.delimiter,
         },
         () => sessionRef.current,
       ),
@@ -207,4 +204,4 @@ const MonacoEditor: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject('settingStore', 'connectionStore')(observer(MonacoEditor));
+export default inject('settingStore')(observer(MonacoEditor));

@@ -19,6 +19,7 @@ import { ExclamationCircleFilled, SettingOutlined, SyncOutlined } from '@ant-des
 import { FormattedMessage } from '@umijs/max';
 import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import classNames from 'classnames';
 import React, { Component } from 'react';
 import EditableTable from '../EditableTable';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
@@ -36,6 +37,7 @@ interface IProps {
   session: SessionStore;
   datasourceId: number;
   showDatasource?: boolean;
+  simpleHeader?: boolean;
 }
 
 class RecycleBin extends Component<
@@ -269,6 +271,8 @@ class RecycleBin extends Component<
       recycleConfig,
     } = this.state;
 
+    const { simpleHeader } = this.props;
+
     const columns: ColumnsType<IRecycleObject> = [
       {
         dataIndex: 'id',
@@ -362,9 +366,9 @@ class RecycleBin extends Component<
     return (
       <>
         <Spin wrapperClassName={styles.wrap} spinning={listLoading}>
-          <div className={styles.toolbar}>
-            <Toolbar>
-              <div style={{ paddingLeft: 12 }} className="tools-left">
+          <div className={classNames(styles.toolbar, { [styles.simpleHeader]: simpleHeader })}>
+            <Toolbar style={{ borderBottom: 'none', height: simpleHeader ? 32 : 38 }}>
+              <div style={{ paddingLeft: simpleHeader ? '0px' : '12px' }} className="tools-left">
                 <Space size={12}>
                   <ToolbarButton
                     type="BUTTON"

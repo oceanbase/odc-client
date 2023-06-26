@@ -2,15 +2,20 @@ import PageContainer, { TitleType } from '@/component/PageContainer';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from '@umijs/max';
 import { Button, Dropdown, message, Modal, Space } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { history, useParams } from 'umi';
 import Info from './Info';
 import Recycle from './Recycle';
 import Session from './Session';
 
-import { deleteConnection, getConnectionDetail } from '@/common/network/connection';
+import {
+  deleteConnection,
+  getConnectionDetail,
+  getConnectionList,
+} from '@/common/network/connection';
 import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
+import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
 
@@ -84,8 +89,10 @@ const tabs = [
 const Index: React.FC<IProps> = function () {
   const params = useParams<{ id: string; page: IPageType }>();
   const { id, page } = params;
-  const Component = Pages[page].component;
   const cid = parseInt(id);
+
+  const activeKeys = useRef<Set<string>>(new Set());
+  activeKeys.current.add(page);
 
   const handleChange = (key: string) => {
     history.push(`/datasource/${id}/${key}`);
@@ -113,12 +120,33 @@ const Index: React.FC<IProps> = function () {
     }
   }, [cid]);
 
+  const { data } = useRequest(getConnectionList, {
+    defaultParams: [
+      {
+        page: 1,
+        size: 10,
+      },
+    ],
+  });
+
   const options = [
     {
       label: connection?.name,
       value: cid,
     },
-  ];
+  ].concat(
+    data?.contents
+      ?.map((c) => {
+        if (c.id === cid) {
+          return null;
+        }
+        return {
+          label: c.name,
+          value: c.id,
+        };
+      })
+      ?.filter(Boolean) || [],
+  );
 
   return (
     <PageContainer
@@ -134,7 +162,29 @@ const Index: React.FC<IProps> = function () {
       onTabChange={handleChange}
       bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
     >
-      <Component id={id} />
+      {Object.entries(Pages)
+        .map(([key, Page]) => {
+          if (activeKeys.current.has(key) || key === page) {
+            return (
+              <div
+                key={key}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  overflow: 'auto',
+                  padding: '12px 24px',
+                  zIndex: key === page ? 'unset' : -999,
+                }}
+              >
+                <Page.component key={id} id={id} />
+              </div>
+            );
+          }
+        })
+        .filter(Boolean)}
     </PageContainer>
   );
 };

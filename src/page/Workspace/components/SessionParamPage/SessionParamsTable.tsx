@@ -8,7 +8,7 @@ import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
 import { actionTypes, IConnectionProperty } from '@/d.ts';
-import { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';

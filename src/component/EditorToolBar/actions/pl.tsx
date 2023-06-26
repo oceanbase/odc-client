@@ -153,20 +153,6 @@ const plActions: ToolBarActions = {
           (r.data = {
             COMPILE: res,
           });
-        // switch (compilePlType) {
-        //   case 'PACKAGE': {
-        //     schemaStore.getPackageList();
-        //     break;
-        //   }
-        //   case 'FUNCTION': {
-        //     schemaStore.refreshFunctionList();
-        //     break;
-        //   }
-        //   case 'PROCEDURE': {
-        //     schemaStore.refreshProcedureList();
-        //     break;
-        //   }
-        // }
       }
       sqlStore.runningPageKey.delete(pageKey);
       sqlStore.isCompiling = false;

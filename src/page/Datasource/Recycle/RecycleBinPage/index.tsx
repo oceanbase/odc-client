@@ -5,5 +5,5 @@ interface IProps {
 }
 
 export default function RecycleBin({ dataSourceId }: IProps) {
-  return <RecycleBinPage datasourceId={parseInt(dataSourceId)} />;
+  return <RecycleBinPage simpleHeader datasourceId={parseInt(dataSourceId)} />;
 }

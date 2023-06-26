@@ -1,4 +1,14 @@
 .main {
+  &.simpleHeader {
+    :global {
+      .ant-card-head {
+        padding-left: 0px;
+      }
+      .ant-card-head > .ant-card-head-wrapper > .ant-card-head-title {
+        padding-top: 0px;
+      }
+    }
+  }
   &:global(.ant-card) {
     display: flex;
     flex-direction: column;
