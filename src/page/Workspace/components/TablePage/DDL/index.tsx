@@ -28,8 +28,8 @@ const TableDDL: React.FC<IProps> = function ({}) {
     setFormated(!formated);
   };
   return (
-    <>
-      <Toolbar>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Toolbar style={{ flex: 0 }}>
         <ToolbarButton
           text={
             formated
@@ -70,7 +70,8 @@ const TableDDL: React.FC<IProps> = function ({}) {
       </Toolbar>
       <div
         style={{
-          height: `calc(100vh - ${48 + 34 + 39 + 50}px)`,
+          flex: 1,
+          // height: `calc(100vh - ${48 + 34 + 39 + 50}px)`,
           overflow: 'hidden',
           position: 'relative',
         }}
@@ -84,7 +85,7 @@ const TableDDL: React.FC<IProps> = function ({}) {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

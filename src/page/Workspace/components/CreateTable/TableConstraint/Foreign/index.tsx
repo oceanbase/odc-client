@@ -47,7 +47,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
   }, [tableContext?.session]);
   const gridColumns: any[] = useColumns(
     tableContext.columns,
-    data?.contents,
+    data?.contents || [],
     tableContext?.session?.connection?.dialectType,
   );
   const gridRef = useRef<DataGridRef>();
