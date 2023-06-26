@@ -10,6 +10,7 @@ import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
+import { toInteger } from 'lodash';
 import React, { useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 interface IProps {
@@ -59,8 +60,11 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: '数据库名称',
             dataIndex: 'name',
-            render: (name) => {
-              return <a>{name}</a>;
+            render: (name, record) => {
+              if (!record.existed) {
+                return name;
+              }
+              return <a onClick={() => gotoSQLWorkspace(toInteger(id), null, record.id)}>{name}</a>;
             },
           },
           {
@@ -99,6 +103,9 @@ const Database: React.FC<IProps> = ({ id }) => {
             dataIndex: 'name',
             width: 200,
             render(_, record) {
+              if (!record.existed) {
+                return '-';
+              }
               return (
                 <Action.Group size={3}>
                   <Action.Link key={'export'}>导出</Action.Link>
