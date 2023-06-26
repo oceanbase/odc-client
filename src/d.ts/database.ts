@@ -20,4 +20,5 @@ export interface IDatabase {
   collationName: string;
   tableCount: number;
   environment: IEnvironment;
+  existed: boolean;
 }

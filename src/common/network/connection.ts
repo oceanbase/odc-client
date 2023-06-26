@@ -339,3 +339,7 @@ export async function batchDeleteConnection(ids: (string | number)[]): Promise<b
   });
   return res?.data;
 }
+export async function syncDatasource(dsId: number): Promise<boolean> {
+  const res = await request.post(`/api/v2/datasource/datasources/${dsId}/sync`);
+  return !!res?.data;
+}

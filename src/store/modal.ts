@@ -151,9 +151,6 @@ export class ModalStore {
   @observable
   public versionModalVisible: boolean = false;
 
-  @observable
-  public scriptManageModalVisible: boolean = false;
-
   /** create package */
   @observable
   public createPackageModalVisible: boolean = false;
@@ -272,11 +269,6 @@ export class ModalStore {
   @action
   public changeVersionModalVisible(isShow: boolean = true) {
     this.versionModalVisible = isShow;
-  }
-
-  @action
-  public changeScriptManageModalVisible(isShow: boolean = true) {
-    this.scriptManageModalVisible = isShow;
   }
 
   @action

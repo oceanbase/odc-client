@@ -28,7 +28,11 @@ type DeepPartial<T> = {
 
 export async function createDataBase(database: DeepPartial<IDatabase>): Promise<Boolean> {
   const res = await request.post(`/api/v2/database/databases`, {
-    data: database,
+    data: {
+      ...database,
+      projectId: database?.project?.id,
+      dataSourceId: database?.dataSource?.id,
+    },
   });
   return res?.data;
 }
@@ -45,5 +49,14 @@ export async function updateDataBase(databaseIds: number[], projectId: number): 
 
 export async function getDatabase(databaseId: number): Promise<IDatabase> {
   const res = await request.get(`/api/v2/database/databases/${databaseId}`);
+  return res?.data;
+}
+
+export async function deleteDatabase(databaseIds: number[]): Promise<boolean> {
+  const res = await request.delete(`/api/v2/database/databases`, {
+    data: {
+      databaseIds,
+    },
+  });
   return res?.data;
 }
