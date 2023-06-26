@@ -107,7 +107,7 @@ class EditPLParamasModal extends Component<IProps> {
               //   },
               // ]}
             >
-              <ValueInput />
+              <ValueInput connectionMode={this.props.connectionMode} />
             </Form.Item>
           );
         },

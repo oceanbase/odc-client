@@ -1,4 +1,4 @@
-import { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import { SessionParamsPage } from '@/store/helper/page/pages';

@@ -13,6 +13,7 @@ import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import MiniTable from '@/component/Table/MiniTable';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { ColumnsType } from 'antd/es/table';
+import classNames from 'classnames';
 import SessionContextWrap from '../SessionContextWrap';
 import SessionContext from '../SessionContextWrap/context';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
@@ -27,6 +28,7 @@ interface IProps {
   sessionManagerStore?: SessionManagerStore;
   defaultDatasouceId: number;
   showDatasource?: boolean;
+  simpleHeader?: boolean;
 }
 
 function SessionManagementPage(props: IProps) {
@@ -195,7 +197,7 @@ function SessionManagementPage(props: IProps) {
       context.datasourceId,
       type,
     );
-    if (!data?.find((item) => !item.killed)) {
+    if (data && !data?.find((item) => !item.killed)) {
       await fetchDatabaseSessionList();
       message.success('关闭成功');
       setSelectedRows([]);
@@ -219,9 +221,12 @@ function SessionManagementPage(props: IProps) {
   return (
     <>
       <Spin wrapperClassName={styles.wrap} spinning={listLoading}>
-        <div className={styles.toolbar}>
-          <Toolbar>
-            <div style={{ paddingLeft: '12px' }} className="tools-left">
+        <div className={classNames(styles.toolbar, { [styles.simpleHeader]: props.simpleHeader })}>
+          <Toolbar style={{ borderBottom: 'none', height: props.simpleHeader ? 32 : 38 }}>
+            <div
+              style={{ paddingLeft: props.simpleHeader ? '0px' : '12px' }}
+              className="tools-left"
+            >
               <Space size={16}>
                 {session?.supportFeature?.enableKillSession && (
                   <ToolbarButton

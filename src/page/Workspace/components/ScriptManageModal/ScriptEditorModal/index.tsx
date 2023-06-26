@@ -3,7 +3,6 @@ import CommonIDE from '@/component/CommonIDE';
 import { updatePageByScriptId } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, Modal, Space, Spin } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
 
@@ -189,4 +188,4 @@ const ScriptEditorModal: React.FC<IProps> = function ({
   );
 };
 
-export default inject('connectionStore')(observer(ScriptEditorModal));
+export default ScriptEditorModal;

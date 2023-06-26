@@ -1,4 +1,4 @@
-import { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
 import { Drawer } from 'antd';
 import React from 'react';

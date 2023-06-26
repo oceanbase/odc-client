@@ -2,7 +2,6 @@ import { clearModalConfirm } from '@/component/ErrorConfirmModal';
 import OBLogin from '@/component/Login';
 import { SPACE_REGEX } from '@/constant';
 import { ODCErrorsCode } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import type { UserStore } from '@/store/login';
 import loginStore from '@/store/login';
 import type { SettingStore } from '@/store/setting';
@@ -15,7 +14,6 @@ import { history } from 'umi';
 
 const Login: React.FC<{
   userStore: UserStore;
-  connectionStore: ConnectionStore;
   settingStore?: SettingStore;
 }> = (props) => {
   const { settingStore, userStore } = props;
@@ -189,4 +187,4 @@ const Login: React.FC<{
   );
 };
 
-export default inject('userStore', 'connectionStore', 'settingStore')(observer(Login));
+export default inject('userStore', 'settingStore')(observer(Login));

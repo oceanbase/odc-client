@@ -8,5 +8,5 @@ interface IProps {
 }
 
 export default function SessionManager({ dataSourceId }: IProps) {
-  return <SessionManage defaultDatasouceId={dataSourceId} />;
+  return <SessionManage simpleHeader defaultDatasouceId={dataSourceId} />;
 }

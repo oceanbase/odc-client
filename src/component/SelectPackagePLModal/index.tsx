@@ -13,7 +13,7 @@ interface IProps {
   onSave: (data: any) => void;
 }
 
-@inject('pageStore', 'schemaStore')
+@inject('pageStore')
 @observer
 class SelectPackagePLModal extends Component<IProps> {
   public formRef = React.createRef<FormInstance>();

@@ -1,29 +1,35 @@
-import { ConnectionMode, IDatabase, ITable, ITableColumn } from '@/d.ts';
+import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
+import { ConnectionMode, ITable, ITableColumn } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import {
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
 } from '@/d.ts/table';
-import schemaStore from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import { Column } from '@alipay/ob-react-data-grid';
 import { useRequest } from 'ahooks';
 import { uniq } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { SelectEditor, WrapSelectEditor } from '../../../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../../../EditableTable/Editors/TextEditor';
 import { TableColumn, TableForeignConstraint } from '../../interface';
+import TableContext from '../../TableContext';
 import { useDeferColumn, useEnableColumn } from '../baseColumn';
 
 function TableSelect(props) {
   const { row } = props;
   const schemaname = row['schemaname'];
+  const tableContext = useContext(TableContext);
   const [tableList, setTableList] = useState<ITable[]>([]);
-  const { loading, run: _fetchTable } = useRequest(schemaStore?.getTableListByDatabaseName, {
+  const { loading, run: _fetchTable } = useRequest(getTableListByDatabaseName, {
     manual: true,
   });
 
   const fetchTable = async () => {
-    const list = await _fetchTable(schemaname);
+    if (!tableContext?.session?.sessionId) {
+      return;
+    }
+    const list = await _fetchTable(tableContext?.session?.sessionId, schemaname);
     setTableList(list);
   };
   useEffect(() => {
@@ -32,7 +38,7 @@ function TableSelect(props) {
     } else {
       setTableList([]);
     }
-  }, [schemaname]);
+  }, [schemaname, tableContext?.session]);
   return (
     <SelectEditor
       loading={loading}
@@ -46,13 +52,18 @@ function TableSelect(props) {
 function ColumnSelect(props) {
   const { row } = props;
   const tableName = row['tableName'];
+  const tableContext = useContext(TableContext);
   const [columnList, setColumnList] = useState<ITableColumn[]>([]);
-  const { loading, run: _fetchTable } = useRequest(schemaStore?.getTableColumnList, {
+  const { loading, run: _fetchTable } = useRequest(getTableColumnList, {
     manual: true,
   });
 
   const fetchColumns = async () => {
-    const list = await _fetchTable(tableName, false, row['schemaname']);
+    const sessionId = tableContext?.session?.sessionId;
+    if (!sessionId) {
+      return;
+    }
+    const list = await _fetchTable(tableName, row['schemaname'], sessionId);
     setColumnList(list);
   };
   useEffect(() => {
@@ -61,7 +72,7 @@ function ColumnSelect(props) {
     } else {
       setColumnList([]);
     }
-  }, [tableName]);
+  }, [tableName, tableContext?.session]);
   return (
     <SelectEditor
       loading={loading}

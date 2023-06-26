@@ -1,4 +1,4 @@
-import { batchTest } from '@/common/network/connection';
+import { batchTest, getConnectionList } from '@/common/network/connection';
 import { IConnection, IConnectionStatus } from '@/d.ts';
 import { Result, Space, Spin, Tag } from 'antd';
 import React, {
@@ -21,9 +21,7 @@ import MoreBtn from './MoreBtn';
 import { IPageType } from '@/d.ts/_index';
 import { ClusterStore } from '@/store/cluster';
 import { CommonStore } from '@/store/common';
-import connection, { ConnectionStore } from '@/store/connection';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { clone } from 'lodash';
@@ -34,15 +32,13 @@ import TitleButton from '../TitleButton';
 interface IProps {
   width: number;
   height: number;
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
   commonStore?: CommonStore;
   pageStore?: PageStore;
   clusterStore?: ClusterStore;
 }
 
 const List: React.FC<IProps> = forwardRef(function (
-  { width, height, connectionStore, commonStore, pageStore, clusterStore },
+  { width, height, commonStore, pageStore, clusterStore },
   ref,
 ) {
   const [_connectionList, setConnectionList] = useState<IConnection[]>([]);
@@ -151,7 +147,7 @@ const List: React.FC<IProps> = forwardRef(function (
         }
       }
       const currentPage = Math.floor(offset / fetchSize) + 1;
-      const result = await connection.getList({
+      const result = await getConnectionList({
         clusterName: [searchValue.type == SearchType.CLUSTER ? searchValue.value : null],
         tenantName: [searchValue.type == SearchType.TENANT ? searchValue.value : null],
         name: searchValue.type == SearchType.NAME ? searchValue.value : null,
@@ -375,7 +371,6 @@ function AutoSizerWrap(props, ref) {
 }
 
 export default inject(
-  'connectionStore',
   'commonStore',
   'pageStore',
   'clusterStore',

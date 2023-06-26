@@ -2,6 +2,7 @@ import { syncDatasource } from '@/common/network/connection';
 import { deleteDatabase, listDatabases } from '@/common/network/database';
 import Action from '@/component/Action';
 import Reload from '@/component/Button/Reload';
+import HelpDoc from '@/component/helpDoc';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
@@ -87,7 +88,11 @@ const Info: React.FC<IProps> = ({ id }) => {
             dataIndex: 'name',
             render: (name, record) => {
               if (!record.existed) {
-                return name;
+                return (
+                  <HelpDoc leftText isTip={false} title="当前数据库不存在">
+                    {name}
+                  </HelpDoc>
+                );
               }
               return (
                 <a
@@ -142,11 +147,14 @@ const Info: React.FC<IProps> = ({ id }) => {
                   </Action.Link>
                   <Popconfirm
                     title="确认删除吗？"
+                    disabled={record.existed}
                     onConfirm={() => {
                       return deleteDB(record.id);
                     }}
                   >
-                    <Action.Link key={'delete'}>删除</Action.Link>
+                    <Action.Link disabled={record.existed} key={'delete'}>
+                      删除
+                    </Action.Link>
                   </Popconfirm>
                 </Action.Group>
               );

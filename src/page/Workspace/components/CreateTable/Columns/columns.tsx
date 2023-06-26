@@ -68,7 +68,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
               /**
                * 类型为空的时候，自动推断
                */
-              const type = getTypeByColumnName(value);
+              const type = getTypeByColumnName(value, dialectType);
               if (type) {
                 newRow = {
                   ...newRow,

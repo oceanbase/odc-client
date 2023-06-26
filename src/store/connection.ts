@@ -40,12 +40,6 @@ export enum ConnectionEditMode {
   NEW = 'NEW',
   EDIT = 'EDIT',
 }
-
-export enum ConnectionPropertyType {
-  GLOBAL = 'global',
-  SESSION = 'session',
-}
-
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
 const DEFAULT_COLUMN_INFO_VISIBLE = true;
