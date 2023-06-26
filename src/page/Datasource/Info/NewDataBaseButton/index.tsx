@@ -3,6 +3,7 @@ import { listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input, message, Modal, Select, Space } from 'antd';
+import { toInteger } from 'lodash';
 import { useState } from 'react';
 
 interface IProps {
@@ -39,6 +40,9 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
       charsetName: formData.charsetName,
       project: {
         id: formData?.projectId,
+      },
+      dataSource: {
+        id: toInteger(dataSourceId),
       },
     });
     if (isSuccess) {
