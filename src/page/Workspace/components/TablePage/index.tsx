@@ -20,6 +20,7 @@ import ShowExecuteModal from './showExecuteModal';
 import ShowTableBaseInfoForm from './ShowTableBaseInfoForm';
 import TableData from './TableData';
 
+import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import Toolbar from '@/component/Toolbar';
 import { TablePage as TablePageModel } from '@/store/helper/page/pages';
 import modal from '@/store/modal';
@@ -152,7 +153,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
 
   return table ? (
     <>
-      <div style={{ height: '100%' }}>
+      <div style={{ height: '100%', overflow: 'auto' }}>
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
@@ -278,7 +279,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
       <ShowExecuteModal session={session} ref={executeRef} />
     </>
   ) : (
-    <Spin style={{ marginLeft: '50%', marginTop: 40 }} />
+    <WorkSpacePageLoading />
   );
 };
 

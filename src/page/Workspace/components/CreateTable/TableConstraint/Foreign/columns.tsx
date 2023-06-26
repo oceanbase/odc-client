@@ -101,7 +101,7 @@ export function useColumns(
       databases.map((d) => d.name),
       false,
     );
-  }, []);
+  }, [databases]);
 
   const onDeleteSelect = useMemo(() => {
     return WrapSelectEditor(
