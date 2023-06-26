@@ -67,7 +67,13 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
             return <ObjSelecterPanel form={form} onConnectionChange={handleConnectionChange} />;
           }
           case FormType.Config: {
-            return <ConfigPanel form={form} isReadonlyPublicConn={isReadonlyPublicConn} />;
+            return (
+              <ConfigPanel
+                form={form}
+                isReadonlyPublicConn={isReadonlyPublicConn}
+                connection={connection}
+              />
+            );
           }
           default: {
             return null;

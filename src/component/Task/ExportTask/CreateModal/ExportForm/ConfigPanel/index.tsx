@@ -4,7 +4,7 @@ import MaskPolicySelecter from '@/component/MaskPolicySelecter';
 import SysFormItem from '@/component/SysFormItem';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
-import { EXPORT_CONTENT, EXPORT_TYPE, IMPORT_ENCODING } from '@/d.ts';
+import { EXPORT_CONTENT, EXPORT_TYPE, IConnection, IMPORT_ENCODING } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
@@ -17,8 +17,9 @@ const Option = Select.Option;
 interface IProps {
   form: FormInstance<any>;
   isReadonlyPublicConn: boolean;
+  connection: IConnection;
 }
-const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn }) {
+const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, connection }) {
   const formContext = useContext(FormContext);
   const exportFileMaxSizeOpt = [
     {
@@ -513,6 +514,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn }) 
                 form={form}
                 randomKey={Math.random()}
                 enforce={false}
+                connection={connection}
               />
             );
           }}

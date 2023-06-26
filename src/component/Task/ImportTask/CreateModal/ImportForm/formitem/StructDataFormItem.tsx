@@ -1,16 +1,20 @@
 import DataTypeSelect from '@/component/DataTypeSelect';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
-import { FILE_DATA_TYPE, IMPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
+import { FILE_DATA_TYPE, IDataType, IMPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Checkbox, Col, Form, InputNumber, Radio, Row } from 'antd';
 import React from 'react';
 
 const FormItem = Form.Item;
 
-interface IProps {}
+interface IProps {
+  isOracle: boolean;
+  dataTypes: IDataType[];
+}
 
 const StructDataFormItem: React.FC<IProps> = function (props) {
+  const { isOracle, dataTypes } = props;
   return (
     <FormItem noStyle shouldUpdate>
       {({ getFieldValue }) => {
@@ -96,7 +100,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                                 </span>
                               }
                             >
-                              <DataTypeSelect />
+                              <DataTypeSelect isOracle={isOracle} dataTypes={dataTypes} />
                             </FormItem>
                           )
                         );

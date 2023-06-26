@@ -5,10 +5,7 @@ import {
   IDataType,
   IndexRange,
   IPartitionType,
-  TaskType,
 } from '@/d.ts';
-import { default as connectionStore } from '@/store/connection';
-import schemaStore from '@/store/schema';
 import setting from '@/store/setting';
 import intl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
@@ -411,12 +408,6 @@ export function encodeRegexpStr(value: string) {
 
 export function isWin64() {
   return navigator.userAgent.toLowerCase().indexOf('win64') > -1;
-}
-
-export function createAsyncTaskName(type: TaskType) {
-  return `${type.toLowerCase()}_${connectionStore.connection.sessionName || ''}_${
-    schemaStore.database.name || ''
-  }_${moment().format('YYYYMMDDHHmmss')}`;
 }
 
 export function downloadFile(downloadUrl: string) {

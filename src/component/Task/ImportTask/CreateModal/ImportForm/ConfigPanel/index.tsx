@@ -4,7 +4,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
-import { EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
+import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Form, FormInstance, Radio, Select } from 'antd';
@@ -25,9 +25,10 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport }) 
   const [tables, setTables] = useState([]);
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
-  const connection = database?.dataSource ?? {};
-  const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
+  const connection = database?.dataSource;
   const databaseName = database?.name;
+  const dataTypes = session?.dataTypes ?? [];
+  const isOracle = connection?.dialectType === ConnectionMode.OB_ORACLE;
   async function fetchTable(dbName: string) {
     const tables = await getTableListByDatabaseName(session?.sessionId, dbName);
     setTables(tables);
@@ -139,7 +140,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport }) 
                 </CsvProvider.Consumer>
               )}
 
-              <StructDataFormItem />
+              <StructDataFormItem isOracle={isOracle} dataTypes={dataTypes} />
               <FormItemPanel
                 label={formatMessage({
                   id: 'odc.ImportForm.ConfigPanel.TaskSettings',
@@ -205,6 +206,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport }) 
             }
           }}
           randomKey={Math.random()}
+          connection={connection}
           form={form}
         />
       )}
