@@ -1594,6 +1594,7 @@ export enum TaskPageType {
   CREATED_BY_CURRENT_USER = 'createdByCurrentUser',
   APPROVE_BY_CURRENT_USER = 'approveByCurrentUser',
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  DATA_ARCHIVE = 'DATA_ARCHIVE',
 }
 
 export enum TaskType {
@@ -1606,6 +1607,8 @@ export enum TaskType {
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
   SHADOW = 'SHADOWTABLE_SYNC',
   DATA_SAVE = 'DATA_SAVE',
+  DATA_ARCHIVE = 'DATA_ARCHIVE',
+  MIGRATION = 'DATA_ARCHIVE',
 }
 
 export enum TaskSubType {
@@ -1935,6 +1938,16 @@ export interface TaskRecord<P> {
   progressPercentage: number;
 }
 
+export interface ICycleSubTaskRecord {
+  createTime: number;
+  id: number;
+  jobGroup: TaskPageType.DATA_ARCHIVE | TaskPageType.SQL_PLAN;
+  jobName: string;
+  resultJson: string;
+  status: TaskStatus;
+  updateTime: number;
+}
+
 export type TaskRecordParameters =
   | IDataTransferTaskParams
   | IAsyncTaskParams
@@ -1984,17 +1997,62 @@ export interface ICycleTaskRecord {
     sqlObjectIds?: string[];
     sqlObjectNames?: string[];
   };
-
-  triggerConfig: ICycleTaskTriggerConfig;
-  // 待后端补充
+  triggerConfig?: ICycleTaskTriggerConfig;
   connection: {
     id: number;
     name: string;
     dbMode: ConnectionMode;
   };
-
   maxRiskLevel?: number;
   description?: string;
+}
+
+export interface IDataArchiveTaskRecord {
+  approvable: boolean;
+  candidateApprovers: any;
+  completeTime: number;
+  connection: {
+    id: number;
+    name: string;
+    dbMode: ConnectionMode;
+  };
+  createTime: number;
+  creator: {
+    id: number;
+    name: string;
+    accountName: string;
+    roleNames: string[];
+  };
+  databaseName: string;
+  description: string;
+  executionStrategy: TaskExecStrategy;
+  executionTime: number;
+  id: number;
+  maxRiskLevel: number;
+  nodeList: ITaskFlowNode[];
+  parameters: {
+    progressPercentage: number;
+    projectId: number;
+    rollbackable: boolean;
+    status: TaskStatus;
+    subTypes?: unknown;
+    type: TaskType;
+    triggerConfig: ICycleTaskTriggerConfig;
+    scheduleTaskParameters: {
+      deleteAfterMigration: boolean;
+      name: string;
+      sourceDatabaseId: number;
+      targetDataBaseId: number;
+      tables: {
+        conditionExpression: string;
+        tableName: string;
+      }[];
+      variables: {
+        name: string;
+        pattern: string;
+      }[];
+    };
+  };
 }
 
 export interface IAsyncTaskResultSet {
@@ -2116,6 +2174,30 @@ export interface IAlterScheduleTaskParams {
   triggerConfig: ICycleTaskTriggerConfig;
 }
 
+export interface IDataArchiveTaskParams {
+  type: TaskType.DATA_ARCHIVE;
+  taskId: number;
+  operationType: TaskOperationType;
+  allowConcurrent: boolean;
+  description: string;
+  misfireStrategy: string;
+  triggerConfig: ICycleTaskTriggerConfig;
+  scheduleTaskParameters: {
+    deleteAfterMigration: boolean;
+    name: string;
+    sourceDatabaseId: number;
+    targetDataBaseId: number;
+    tables: {
+      conditionExpression: string;
+      tableName: string;
+    }[];
+    variables: {
+      name: string;
+      pattern: string;
+    }[];
+  };
+}
+
 export interface IConnectionPartitionPlan {
   connectionId: number;
   flowInstanceId?: number;
@@ -2128,6 +2210,8 @@ export enum TaskExecStrategy {
   AUTO = 'AUTO',
   MANUAL = 'MANUAL',
   TIMER = 'TIMER',
+  START_NOW = 'START_NOW',
+  START_AT = 'START_AT',
 }
 
 export enum TaskFlowNodeType {
@@ -2188,6 +2272,8 @@ export type TaskDetail<P> = TaskRecord<P>;
 
 export type CycleTaskDetail = ICycleTaskRecord;
 
+export type DataArchiveTaskDetail = IDataArchiveTaskRecord;
+
 export interface IAsyncTaskParams {
   sqlContent: string;
   sqlFileName: string;
@@ -2221,6 +2307,21 @@ export enum TaskStatus {
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',
   TERMINATION = 'TERMINATION',
+  TIMEOUT = 'TIMEOUT',
+}
+
+export enum SubTaskStatus {
+  PREPARING = 'PREPARING', // 已创建
+  RUNNING = 'RUNNING', // 运行中
+  DONE = 'DONE', // 执行完成
+  FAILED = 'FAILED', // 执行失败
+  CANCELED = 'CANCELED', // 执行取消
+}
+
+export enum StatusNodeType {
+  FLOW_TASK = 'FLOW_TASK',
+  CYCLE_TASK = 'CYCLE_TASK',
+  SUB_TASK = 'SUB_TASK',
 }
 
 export enum TaskNodeStatus {

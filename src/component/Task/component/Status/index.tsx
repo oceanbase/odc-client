@@ -1,4 +1,11 @@
-import { TaskFlowNodeType, TaskNodeStatus, TaskStatus, TaskType } from '@/d.ts';
+import {
+  StatusNodeType,
+  SubTaskStatus,
+  TaskFlowNodeType,
+  TaskNodeStatus,
+  TaskStatus,
+  TaskType,
+} from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
   CheckCircleFilled,
@@ -11,6 +18,7 @@ import {
 import { Space } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
+import { isCycleTask } from '../../helper';
 
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
@@ -77,11 +85,11 @@ export const nodeStatus = {
 
 export const status = {
   [TaskStatus.APPROVING]: {
-    icon: <ExclamationCircleFilled style={{ color: '#1890ff' }} />,
+    icon: <ExclamationCircleFilled style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Approving' }), //审批中
   },
   [TaskStatus.WAIT_FOR_CONFIRM]: {
-    icon: <ExclamationCircleFilled style={{ color: '#1890ff' }} />,
+    icon: <ExclamationCircleFilled style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Approving' }), //审批中
   },
   [TaskStatus.WAIT_FOR_EXECUTION]: {
@@ -100,35 +108,35 @@ export const status = {
     text: formatMessage({ id: 'odc.component.TaskStatus.ToBeExecuted' }), //待执行
   },
   [TaskStatus.CREATED]: {
-    icon: <LoadingOutlined style={{ color: '#1890ff' }} />,
+    icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Queuing' }), //排队中
   },
   [TaskStatus.EXECUTING]: {
-    icon: <LoadingOutlined style={{ color: '#1890ff' }} />,
+    icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Executing' }), //执行中
   },
   [TaskStatus.ROLLBACKING]: {
-    icon: <LoadingOutlined style={{ color: '#1890ff' }} />,
+    icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.RollingBack' }), //回滚中
   },
   [TaskStatus.EXECUTION_SUCCEEDED]: {
-    icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ExecutionSucceeded' }), //执行成功
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#f5222d' }} />,
+    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.EXECUTION_EXPIRED]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ExecutionExpiration' }), //执行过期
   },
   [TaskStatus.APPROVAL_EXPIRED]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalExpired.1' }), //审批过期
   },
   [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({
       id: 'odc.component.TaskStatus.PendingExecutionExpiration',
     }),
@@ -136,23 +144,23 @@ export const status = {
     //等待执行过期
   },
   [TaskStatus.EXECUTION_FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#f5222d' }} />,
+    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Failed.2' }), //执行失败
   },
   [TaskStatus.ROLLBACK_FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#f5222d' }} />,
+    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.RollbackFailed' }), //回滚失败
   },
   [TaskStatus.ROLLBACK_SUCCEEDED]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.RolledBack' }), //已回滚
   },
   [TaskStatus.CANCELLED]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Terminated' }), //已终止
   },
   [TaskStatus.COMPLETED]: {
-    icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Completed' }), //已完成
   },
 };
@@ -160,28 +168,52 @@ export const status = {
 // 周期任务状态
 export const cycleStatus = {
   [TaskStatus.APPROVING]: {
-    icon: <ExclamationCircleFilled style={{ color: '#1890ff' }} />,
+    icon: <ExclamationCircleFilled style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Approving' }), //审批中
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#f5222d' }} />,
+    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.APPROVAL_EXPIRED]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalExpired.1' }), //审批过期
   },
   [TaskStatus.ENABLED]: {
-    icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Enabled' }), //已启用
   },
   [TaskStatus.PAUSE]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Disabled' }), //已禁用
   },
   [TaskStatus.TERMINATION]: {
-    icon: <StopFilled style={{ color: 'rgba(0,0,0,0.45)' }} />,
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Terminated' }), //已终止
+  },
+};
+
+// 子任务状态（仅周期任务有）
+export const subTaskStatus = {
+  [SubTaskStatus.DONE]: {
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
+    text: '已完成',
+  },
+  [SubTaskStatus.CANCELED]: {
+    icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
+    text: '已取消',
+  },
+  [SubTaskStatus.FAILED]: {
+    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    text: '失败',
+  },
+  [SubTaskStatus.PREPARING]: {
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
+    text: '已创建',
+  },
+  [SubTaskStatus.RUNNING]: {
+    icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
+    text: '执行中',
   },
 };
 
@@ -189,12 +221,28 @@ interface IProps {
   status: TaskStatus;
   progress: number;
   type?: TaskType;
+  isSubTask?: boolean;
 }
 
+const statusMap = {
+  [StatusNodeType.FLOW_TASK]: status,
+  [StatusNodeType.CYCLE_TASK]: cycleStatus,
+  [StatusNodeType.SUB_TASK]: subTaskStatus,
+};
+
 const StatusLabel: React.FC<IProps> = (props) => {
-  const { status: _status, progress, type = '' } = props;
+  const { status: _status, progress, type, isSubTask } = props;
   // todo: 未来取消 TaskType.ASYNC, 因为task已统一，所有类型task的status均是一致的，不需要使用taskType进行区分；
-  const statusObj = type === TaskType.SQL_PLAN ? cycleStatus[_status] : status?.[_status];
+  let statusInfo: Record<string, { icon: React.ReactNode; text: string }> =
+    statusMap[StatusNodeType.FLOW_TASK];
+  if (isCycleTask(type)) {
+    if (isSubTask) {
+      statusInfo = statusMap[StatusNodeType.SUB_TASK];
+    } else {
+      statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
+    }
+  }
+  const statusObj = statusInfo[_status];
   return (
     <Space style={{ overflow: 'hidden', maxWidth: '100%' }} size={5}>
       {statusObj ? (

@@ -19,12 +19,15 @@ import React from 'react';
 import AsyncTaskCreateModal from './AsyncTask';
 import ApprovalModal from './component/ApprovalModal';
 import TaskTable from './component/TaskTable';
+import DataArchiveTaskCreateModal from './DataArchiveTask';
 import DataMockerTaskCreateModal from './DataMockerTask';
 import DetailModal from './DetailModal';
 import ExportTaskCreateModal from './ExportTask';
+import { isCycleTask, isCycleTaskPage } from './helper';
 import ImportTaskCreateModal from './ImportTask';
 import PartitionTaskCreateModal from './PartitionTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
+
 import Sider from './Sider';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
 
@@ -80,7 +83,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
 
   public loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { taskPageType } = this.props.taskStore;
-    if (taskPageType === TaskPageType.SQL_PLAN) {
+    if (isCycleTaskPage(taskPageType)) {
       await this.loadCycleTaskList(args, executeDate);
     } else {
       await this.loadTaskList(args, executeDate);
@@ -203,7 +206,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
   ) => {
     const { id, type, status } = task ?? {};
     this.setState({
-      detailId: type === TaskType.SQL_PLAN ? task?.approveInstanceId : id,
+      detailId: isCycleTask(type) ? task?.approveInstanceId : id,
       detailType: type,
       approvalVisible: visible,
       approvalStatus,
@@ -249,6 +252,9 @@ class TaskManaerPage extends React.Component<IProps, IState> {
         break;
       case TaskPageType.SHADOW:
         modalStore.changeShadowSyncVisible(true);
+        break;
+      case TaskPageType.DATA_ARCHIVE:
+        modalStore.changeDataArchiveModal(true);
         break;
       default:
     }
@@ -319,6 +325,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
         <PartitionTaskCreateModal projectId={projectId} />
         <SQLPlanTaskCreateModal projectId={projectId} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
+        <DataArchiveTaskCreateModal />
       </>
     );
   }

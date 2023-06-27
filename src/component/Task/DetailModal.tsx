@@ -1,5 +1,6 @@
 import {
   getCycleTaskDetail,
+  getDataArchiveSubTask,
   getTaskDetail,
   getTaskList,
   getTaskLog,
@@ -10,8 +11,8 @@ import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
 import type {
-  IAsyncTaskParams,
   IConnectionPartitionPlan,
+  ICycleSubTaskRecord,
   IPartitionPlanParams,
   IPartitionPlanRecord,
   ITaskResult,
@@ -28,11 +29,12 @@ import {
 } from '@/d.ts';
 import React, { useEffect, useRef, useState } from 'react';
 import TaskTools from './component/ActionBar';
+import { DataArchiveTaskContent } from './DataArchiveTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
 import { TaskDetailType } from './interface';
 import PartitionTaskContent from './PartitionTask';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
-import SqlPlanTaskContent from './SQLPlanTask';
+import { SqlPlanTaskContent } from './SQLPlanTask';
 
 interface IProps {
   type: TaskType;
@@ -79,7 +81,7 @@ const taskContentMap = {
 const DetailModal: React.FC<IProps> = React.memo((props) => {
   const { type, visible, detailId, partitionPlan } = props;
   const [task, setTask] = useState<TaskDetail<TaskRecordParameters>>(null);
-  const [subTasks, setSubTasks] = useState<TaskRecord<IAsyncTaskParams>[]>(null);
+  const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
@@ -109,6 +111,16 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   } else if (task?.type === TaskType.PARTITION_PLAN) {
     taskContent = (
       <PartitionTaskContent
+        task={task as TaskDetail<IPartitionPlanParams>}
+        result={result}
+        hasFlow={hasFlow}
+        partitionPlans={partitionPlan?.tablePartitionPlans}
+        onPartitionPlansChange={handlePartitionPlansChange}
+      />
+    );
+  } else if (task?.type === TaskType.DATA_ARCHIVE) {
+    taskContent = (
+      <DataArchiveTaskContent
         task={task as TaskDetail<IPartitionPlanParams>}
         result={result}
         hasFlow={hasFlow}
@@ -180,13 +192,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   };
 
-  const getResult = async function () {
-    const data = await getTaskResult(detailId);
-    setLoading(false);
-    setResult(data as ITaskResult);
-  };
-
-  const getExecuteRecord = async function () {
+  const loadSubTask = async function () {
     const data = await getTaskList({
       createdByCurrentUser: false,
       approveByCurrentUser: false,
@@ -195,6 +201,26 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     });
     setLoading(false);
     setSubTasks(data?.contents as any[]);
+  };
+
+  const loadDataArchiveSubTask = async function () {
+    const data = await getDataArchiveSubTask(task?.id);
+    setLoading(false);
+    setSubTasks(data?.contents as any[]);
+  };
+
+  const getResult = async function () {
+    const data = await getTaskResult(detailId);
+    setLoading(false);
+    setResult(data as ITaskResult);
+  };
+
+  const getExecuteRecord = async function () {
+    if (type === TaskType.DATA_ARCHIVE) {
+      loadDataArchiveSubTask();
+    } else {
+      loadSubTask();
+    }
   };
 
   const getOperationRecord = async function () {
@@ -251,7 +277,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const loadData = () => {
-    if ([TaskType.SQL_PLAN].includes(type)) {
+    if ([TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(type)) {
       loadCycleTaskData();
     } else {
       loadTaskData();

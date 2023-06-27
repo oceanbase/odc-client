@@ -1,8 +1,16 @@
-import { TaskPageType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+
+export const isCycleTask = (type: TaskType) => {
+  return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(type);
+};
+
+export const isCycleTaskPage = (type: TaskPageType) => {
+  return [TaskPageType.SQL_PLAN, TaskPageType.DATA_ARCHIVE].includes(type);
+};
 
 export function getTaskTypeList(
   settingStore: SettingStore,
@@ -107,6 +115,11 @@ export function getTaskTypeList(
           }),
           //分区计划
           enabled: task?.showAllSchemaTaskType,
+        },
+        {
+          value: TaskPageType.DATA_ARCHIVE,
+          label: '数据归档',
+          enabled: true,
         },
       ],
     },

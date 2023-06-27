@@ -32,6 +32,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { isCycleTask } from '../../helper';
 
 interface IProps {
   userStore?: UserStore;
@@ -846,7 +847,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const getTools = (task) => {
-      return task?.type === TaskType.SQL_PLAN ? getCycleTaskTools(task) : getTaskTools(task);
+      return isCycleTask(task?.type) ? getCycleTaskTools(task) : getTaskTools(task);
     };
 
     const btnTools = !isDetailModal

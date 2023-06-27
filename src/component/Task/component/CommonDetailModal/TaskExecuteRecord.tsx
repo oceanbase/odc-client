@@ -1,80 +1,60 @@
 import DisplayTable from '@/component/DisplayTable';
-import TaskTools from '@/component/Task/component/ActionBar';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
-import StatusLabel, { status } from '@/component/Task/component/Status';
+import StatusLabel, { subTaskStatus } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import { IAsyncTaskParams, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import styles from './index.less';
+import TaskTools from './TaskTools';
 
-const statusFilters = Object.keys(status).map((key) => {
+const TaskLabelMap = {
+  [TaskType.DATA_ARCHIVE]: '数据归档',
+};
+
+const statusFilters = Object.keys(subTaskStatus).map((key) => {
   return {
-    text: status?.[key].text,
+    text: subTaskStatus?.[key].text,
     value: key,
   };
 });
 
-function getDatabaseFilters(databases: { databaseName: string }[]) {
-  const databaseFilters: {
-    text: string;
-    value: string;
-  }[] = [];
-
-  databases?.forEach((item) => {
-    const isInclude = databaseFilters.some((filter) => filter.value === item.databaseName);
-    if (!isInclude) {
-      databaseFilters.push({
-        text: item.databaseName,
-        value: item.databaseName,
-      });
-    }
-  });
-  return databaseFilters;
-}
-
 const getConnectionColumns = (params: {
-  databaseFilters: {
-    text: string;
-    value: string;
-  }[];
-
   onReloadList: () => void;
   onApprovalVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
 }) => {
-  const { databaseFilters, onReloadList, onApprovalVisible, onDetailVisible } = params;
+  const { onReloadList, onApprovalVisible, onDetailVisible } = params;
   return [
     {
       dataIndex: 'id',
-      title: formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskExecuteRecord.TaskNumber',
-      }), //任务编号
+      title: '任务编号',
       ellipsis: true,
       width: 80,
     },
 
     {
-      dataIndex: 'databaseName',
-      title: formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskExecuteRecord.Library',
-      }), //所属库
+      dataIndex: 'jobGroup',
+      title: '任务类型',
       ellipsis: true,
       width: 200,
       filterIcon: <FilterOutlined />,
-      filters: databaseFilters,
+      filters: [
+        {
+          text: '数据归档',
+          value: TaskType.DATA_ARCHIVE,
+        },
+      ],
       onFilter: (value: string, record) => {
-        return value === record.databaseName;
+        return value === record.jobGroup;
       },
+      render: (jobGroup) => TaskLabelMap[jobGroup],
     },
 
     {
       dataIndex: 'createTime',
-      title: formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskExecuteRecord.CreationTime',
-      }), //创建时间
+      title: '创建时间',
       ellipsis: true,
       width: 180,
       render: (createTime) => getFormatDateTime(createTime),
@@ -82,9 +62,7 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'status',
-      title: formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskExecuteRecord.TaskStatus',
-      }), //任务状态
+      title: '任务状态',
       ellipsis: true,
       width: 140,
       filters: statusFilters,
@@ -93,15 +71,20 @@ const getConnectionColumns = (params: {
         return value === record.status;
       },
       render: (status, record) => {
-        return <StatusLabel status={status} progress={Math.floor(record.progressPercentage)} />;
+        return (
+          <StatusLabel
+            type={record.jobGroup}
+            status={status}
+            isSubTask
+            progress={Math.floor(record.progressPercentage)}
+          />
+        );
       },
     },
 
     {
       dataIndex: 'action',
-      title: formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskExecuteRecord.Operation',
-      }), //操作
+      title: '操作',
       ellipsis: true,
       width: 92,
       render: (_, record) => {
@@ -119,6 +102,7 @@ const getConnectionColumns = (params: {
 };
 
 interface IProps {
+  task: any;
   subTasks: TaskRecord<IAsyncTaskParams>[];
   onReload: () => void;
 }
@@ -129,7 +113,6 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const [detailVisible, setDetailVisible] = useState(false);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
-  const databaseFilters = getDatabaseFilters(subTasks);
 
   const handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters>,
@@ -155,7 +138,6 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         className={styles.subTaskTable}
         rowKey="id"
         columns={getConnectionColumns({
-          databaseFilters,
           onReloadList: onReload,
           onApprovalVisible: handleApprovalVisible,
           onDetailVisible: handleDetailVisible,

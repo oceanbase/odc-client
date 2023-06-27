@@ -30,7 +30,7 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 import type { FixedType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
-import { getTaskTypeList } from '../../helper';
+import { getTaskTypeList, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
 
@@ -81,6 +81,10 @@ export const TaskTypeMap = {
   [TaskType.ALTER_SCHEDULE]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
   }), //计划变更
+
+  [TaskType.SQL_PLAN]: 'SQL 计划',
+
+  [TaskType.DATA_ARCHIVE]: '数据归档',
 };
 
 export const getStatusFilters = (status: {
@@ -123,7 +127,8 @@ const TaskTable: React.FC<IProps> = inject(
 )(
   observer((props) => {
     const { taskStore, settingStore, tableRef } = props;
-    const { tasks, taskPageScope, taskPageType } = taskStore;
+    const { tasks, cycleTasks, taskPageScope, taskPageType } = taskStore;
+    const currentTask = isCycleTaskPage(taskPageType) ? cycleTasks : tasks;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
     });
@@ -416,7 +421,11 @@ const TaskTable: React.FC<IProps> = inject(
           filters: taskStatusFilters,
           filteredValue: filters?.status || null,
           render: (status, record) => (
-            <StatusLabel status={status} progress={Math.floor(record.progressPercentage)} />
+            <StatusLabel
+              status={status}
+              type={record?.type}
+              progress={Math.floor(record.progressPercentage)}
+            />
           ),
         },
 
@@ -541,12 +550,12 @@ const TaskTable: React.FC<IProps> = inject(
           className: styles.commonTable,
           rowClassName: styles.tableRrow,
           columns: columns as any,
-          dataSource: tasks?.contents,
+          dataSource: currentTask?.contents,
           rowKey: 'id',
           loading: loading,
           pagination: {
-            current: tasks?.page?.number,
-            total: tasks?.page?.totalElements,
+            current: currentTask?.page?.number,
+            total: currentTask?.page?.totalElements,
           },
           scroll: {
             x: 900,

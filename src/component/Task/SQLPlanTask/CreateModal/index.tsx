@@ -69,7 +69,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
-  const connection = database?.dataSource ?? {};
+  const connection = database?.dataSource;
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;

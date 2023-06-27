@@ -68,6 +68,9 @@ export class ModalStore {
   public partitionVisible: boolean = false;
 
   @observable
+  public dataArchiveVisible: boolean = false;
+
+  @observable
   public createSQLPlanVisible: boolean = false;
 
   @observable
@@ -256,6 +259,11 @@ export class ModalStore {
   }
 
   @action
+  public changeDataArchiveModal(isShow: boolean = true) {
+    this.dataArchiveVisible = isShow;
+  }
+
+  @action
   public changeCreateSQLPlanTaskModal(isShow: boolean = true, id?: number) {
     this.createSQLPlanVisible = isShow;
     this.SQLPlanEditId = isShow ? id : null;
@@ -288,6 +296,7 @@ export class ModalStore {
     this.userConfigModalVisible = false;
     this.applyPermissionVisible = false;
     this.partitionVisible = false;
+    this.dataArchiveVisible = false;
     this.dataMockerData = null;
     this.createSequenceModalVisible = false;
     this.versionModalVisible = false;
