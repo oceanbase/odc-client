@@ -102,7 +102,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     connectionId,
                     projectId,
                     databaseId,
-                    databaseName,
                     executionStrategy,
                     executionTime:
                       executionStrategy === TaskExecStrategy.TIMER ? executionTime : undefined,

@@ -84,7 +84,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           }}
         </Form.Item>
       </Space>
-      <Space size={24}>
+      <Space size={24} align="start">
         <Form.Item
           label="源端数据库"
           name="databaseId"

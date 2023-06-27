@@ -62,7 +62,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskRecord task={task} />;
       break;
     case TaskDetailType.EXECUTE_RECORD:
-      content = <TaskExecuteRecord subTasks={subTasks} onReload={onReload} />;
+      content = <TaskExecuteRecord task={task} subTasks={subTasks} onReload={onReload} />;
       break;
     case TaskDetailType.OPERATION_RECORD:
       content = <TaskOperationRecord opRecord={opRecord} />;
@@ -100,6 +100,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.SHADOW,
     TaskType.SQL_PLAN,
     TaskType.ALTER_SCHEDULE,
+    TaskType.DATA_ARCHIVE,
   ].includes(task?.type);
   const hasLog = [
     TaskType.ASYNC,
@@ -164,7 +165,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
             </Radio.Button>
           )}
 
-          {[TaskType.SQL_PLAN].includes(task?.type) && (
+          {[TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(task?.type) && (
             <>
               <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>
                 {
