@@ -1,58 +1,59 @@
-import { SecureStore } from '@/store/secure';
+import { Spin } from 'antd';
 import classNames from 'classnames';
-import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 export interface SiderItem {
   value: any;
   label: string;
 }
-
 export interface SecureSiderProps {
-  secureStore: SecureStore;
   siderData: SiderItem[];
   initData: () => void;
-  handleItemClick: (v: string) => void;
+  handleItemClick: (v: any) => void;
 }
 export interface ISecureSiderProps {
-  secureStore: SecureStore;
+  loading?: boolean;
   siderItemList: SiderItem[];
-  selectedFlag: string;
-  handleItemClick: (v: string) => void;
+  selectedItem: any;
+  handleItemClick: (v: any) => void;
 }
 const SecureSider: React.FC<ISecureSiderProps> = ({
+  loading = false,
   siderItemList,
-  secureStore,
-  selectedFlag,
+  selectedItem,
   handleItemClick,
 }) => {
+  const handleSelected = (v) => {
+    return selectedItem === v;
+  };
   function renderList() {
     if (siderItemList?.length === 0) {
       return null;
     }
     return (
-      <div className={styles.siderItemList}>
-        {siderItemList.map((item) => {
-          return (
-            <div
-              className={classNames(
-                {
-                  [styles.selected]: secureStore[`${selectedFlag}`] === item.value,
-                },
-                styles.item,
-              )}
-              key={item.value}
-              onClick={() => {
-                handleItemClick(item.value);
-              }}
-            >
-              {item.label}
-            </div>
-          );
-        })}
-      </div>
+      <Spin spinning={loading}>
+        <div className={styles.siderItemList}>
+          {siderItemList.map((item) => {
+            return (
+              <div
+                className={classNames(
+                  {
+                    [styles.selected]: handleSelected(item.value),
+                  },
+                  styles.item,
+                )}
+                key={item.value}
+                onClick={() => {
+                  handleItemClick(item);
+                }}
+              >
+                {item.label}
+              </div>
+            );
+          })}
+        </div>
+      </Spin>
     );
   }
-
   return <div className={styles.secureSider}>{renderList()}</div>;
 };
-export default inject('secureStore')(observer(SecureSider));
+export default SecureSider;

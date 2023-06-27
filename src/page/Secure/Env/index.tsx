@@ -1,20 +1,20 @@
 import { listEnvironments } from '@/common/network/env';
-import { getRuleset, updateRule } from '@/common/network/ruleset';
-import { EmptyLabel } from '@/component/CommonFilter';
+import { getRuleset, listRules, statsRules, updateRule } from '@/common/network/ruleset';
 import StatusSwitch from '@/component/StatusSwitch';
-import { EnvPageType } from '@/d.ts';
 import { IEnvironment, TagType } from '@/d.ts/environment';
-import { IRule, IRuleSet, RuleType } from '@/d.ts/rule';
-import { SecureStore } from '@/store/secure';
-import { Button, Descriptions, message, Space, Tabs } from 'antd';
+import { IRule, RuleType } from '@/d.ts/rule';
+import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import classNames from 'classnames';
-import { inject, observer } from 'mobx-react';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import SecureTable from '../components/SecureTable';
-import { CommonTableBodyMode, CommonTableMode } from '../components/SecureTable/interface';
+import {
+  CommonTableBodyMode,
+  CommonTableMode,
+  ITableLoadOptions,
+} from '../components/SecureTable/interface';
 import EditModal from './EditModal';
 import styles from './index.less';
 
@@ -40,30 +40,155 @@ const envTagMap = {
   PROD: <EnvTag tabContent={'生产'} tabStyle={classNames(styles.tab, styles.prod)} />,
 };
 interface InnerEnvProps {
-  envPageType: EnvPageType;
-  environment: IEnvironment;
+  selectedRecord: {
+    value: number;
+    label: string;
+    envId: number;
+    rulesetId: number;
+    style: string;
+    description: string;
+  };
+  // environment: IEnvironment;
+  onLoad: () => void;
+  tableLoading: boolean;
+  exSearch: (args: ITableLoadOptions) => Promise<any>;
+  exReload: (args: ITableLoadOptions) => Promise<any>;
+  rules: IRule[];
+  ruleType: RuleType;
+  setRuleType: (value: any) => void;
+
+  subTypeFilters: { text: string; value: string }[];
+  supportedDialectTypeFilters: { text: string; value: string }[];
+  handleInitRules: (id: number, ruleType: RuleType) => void;
 }
-const InnerEnv: React.FC<InnerEnvProps> = ({ envPageType, environment }) => {
+
+const getColumns: (columnsFunction: {
+  selectedRecord: any;
+  subTypeFilters: { text: string; value: string }[];
+  supportedDialectTypeFilters: { text: string; value: string }[];
+  handleOpenEditModal: (record: IRule) => void;
+  handleSwtichRuleStatus: (rulesetId: number, rule: IRule) => void;
+}) => ColumnsType<IRule> = ({
+  selectedRecord,
+  subTypeFilters,
+  supportedDialectTypeFilters,
+  handleOpenEditModal = () => {},
+  handleSwtichRuleStatus = () => {},
+}) => {
+  return [
+    {
+      title: '规则名称',
+      width: 218,
+      dataIndex: 'name',
+      key: 'name',
+      // fixed: 'left',
+      render: (text, record, index) => <>{record?.metadata?.name}</>,
+    },
+    {
+      title: '规则类型',
+      // width: 94,
+      dataIndex: 'subTypes',
+      key: 'subTypes',
+      filters: subTypeFilters,
+      render: (text, record) => record?.metadata?.subTypes?.join(','),
+    },
+    {
+      title: '支持数据源',
+      // width: 150,
+      dataIndex: 'supportedDialectTypes',
+      key: 'supportedDialectTypes',
+      filters: supportedDialectTypeFilters,
+      render: (text, record) =>  record?.appliedDialectTypes?.join(','),//record.metadata?.supportedDialectTypes?.join(','),
+    },
+    {
+      title: '配置值',
+      // width: 378,
+      dataIndex: 'metadata',
+      key: 'metadata',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '378px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          }
+        }
+      },
+      render: (_, record, index) => {
+        return <Tooltip title={''+record.properties[record.metadata.propertyMetadatas?.[0]?.name]} placement="top" arrowPointAtCenter>
+        {'' + record.properties[record.metadata.propertyMetadatas?.[0]?.name]}
+      </Tooltip>
+      },
+    },
+    {
+      title: '改进等级',
+      // width: 92,
+      dataIndex: 'level',
+      key: 'level',
+      render: (_, record) => <RenderLevel level={record.level} />,
+    },
+    {
+      title: '状态',
+      // width: 80,
+      dataIndex: 'status',
+      key: 'status',
+      render: (_, record, index) => {
+        return (
+          <StatusSwitch
+            key={index}
+            checked={record.enabled}
+            onConfirm={() => handleSwtichRuleStatus(selectedRecord.rulesetId, record)}
+            onCancel={() => handleSwtichRuleStatus(selectedRecord.rulesetId, record)}
+          />
+        );
+      },
+    },
+    {
+      title: '操作',
+      width: 80,
+      key: 'action',
+      // fixed: 'right',
+      render: (_, record, index) => (
+        <>
+          <Space>
+            <a onClick={() => handleOpenEditModal(record)}>编辑</a>
+          </Space>
+        </>
+      ),
+    },
+  ];
+};
+const InnerEnv: React.FC<InnerEnvProps> = ({
+  onLoad,
+  tableLoading,
+  selectedRecord,
+  subTypeFilters,
+  supportedDialectTypeFilters,
+  rules,
+  handleInitRules,
+  ruleType,
+  setRuleType,
+  exReload,
+  exSearch,
+}) => {
   const tableRef = useRef<any>(null);
   const [selectedData, setSelectedData] = useState<IRule>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [ruleSetData, setRuleSetData] = useState<IRuleSet>(null);
-  const [rules, setRules] = useState<IRule[]>([]);
-  const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
 
   const handleCloseModal = () => {
     setModalVisible(false);
   };
   const handleUpdateEnvironment = async (rule: IRule) => {
     setModalVisible(false);
-    const flag = await updateRule(ruleSetData.id, selectedData.id, rule);
+    const flag = await updateRule(selectedRecord.rulesetId, selectedData.id, rule);
     if (flag) {
       message.success('提交成功');
     } else {
       message.error('提交失败');
     }
     // 刷新列表
-    tableRef.current.reload();
+    onLoad();
   };
   const handleOpenEditModal = async (record: IRule) => {
     setSelectedData(record);
@@ -75,95 +200,6 @@ const InnerEnv: React.FC<InnerEnvProps> = ({ envPageType, environment }) => {
     event: React.KeyboardEvent<Element> | React.MouseEvent<Element, MouseEvent>,
   ) => {
     setRuleType(key as RuleType);
-  };
-  const getColumns: (columnsFunction: {
-    handleSwtichRuleStatus: (rulesetId: number, rule: IRule) => void;
-  }) => ColumnsType<IRule> = ({ handleSwtichRuleStatus = () => {} }) => {
-    return [
-      {
-        title: '规则名称',
-        width: 218,
-        dataIndex: 'name',
-        key: 'name',
-        render: (text, record, index) => <>{record?.metadata?.name}</>,
-      },
-      {
-        title: '规则类型',
-        width: 94,
-        dataIndex: 'subTypes',
-        key: 'subTypes',
-        filters: [{ name: <EmptyLabel />, id: 0 }].concat([]).map(({ name, id }) => {
-          return {
-            text: name,
-            value: id,
-          };
-        }),
-        render: (text, record) => record?.metadata?.subTypes?.join(','),
-      },
-      {
-        title: '支持数据源',
-        width: 150,
-        dataIndex: 'appliedDialectTypes',
-        key: 'appliedDialectTypes',
-        filters: [
-          { text: 'OB_MYSQL', value: 'OB_MYSQL' },
-          { text: 'OB_ORACLE', value: 'OB_ORACLE' },
-          { text: 'ORACLE', value: 'ORACLE' },
-          { text: 'MYSQL', value: 'MYSQL' },
-          { text: 'UNKNOWN', value: 'UNKNOWN' },
-        ],
-      },
-      {
-        title: '配置值',
-        width: 378,
-        dataIndex: 'metadata',
-        key: 'metadata',
-        render: (_, record, index) => {
-          return '' + record.properties[record.metadata.propertyMetadatas?.[0]?.name];
-        },
-        // <PropertyComponentMap propertyMetadata={record.metadata?.propertyMetadatas?.[0]}/>,
-      },
-      {
-        title: '改进等级',
-        width: 92,
-        dataIndex: 'level',
-        key: 'level',
-        render: (_, record) => <RenderLevel level={record.level} />,
-      },
-      {
-        title: '状态',
-        width: 80,
-        dataIndex: 'status',
-        key: 'status',
-        render: (_, record, index) => {
-          return (
-            <StatusSwitch
-              key={index}
-              checked={record.enabled}
-              onConfirm={() => handleSwtichRuleStatus(ruleSetData.id, record)}
-              onCancel={() => handleSwtichRuleStatus(ruleSetData.id, record)}
-            />
-          );
-        },
-      },
-      {
-        title: '操作',
-        width: 80,
-        key: 'action',
-        render: (_, record, index) => (
-          <>
-            <Space>
-              <a onClick={() => handleOpenEditModal(record)}>编辑</a>
-            </Space>
-          </>
-        ),
-      },
-    ];
-  };
-  const handleInitRules = async (id: number) => {
-    const rulesets = await getRuleset(id);
-    setRuleSetData(rulesets);
-    setRules(rulesets?.rules || []);
   };
 
   const handleSwtichRuleStatus = async (rulesetId: number, rule: IRule) => {
@@ -180,66 +216,83 @@ const InnerEnv: React.FC<InnerEnvProps> = ({ envPageType, environment }) => {
     }
   };
   const handleRulesReload = () => {
-    handleInitRules(environment.id);
+    handleInitRules(selectedRecord.value, ruleType);
   };
   const columns: ColumnsType<IRule> = getColumns({
+    selectedRecord,
+    handleOpenEditModal,
     handleSwtichRuleStatus,
+    subTypeFilters,
+    supportedDialectTypeFilters,
   });
   useEffect(() => {
-    environment && handleInitRules(environment.id);
-  }, [environment]);
+    selectedRecord && ruleType && handleInitRules(selectedRecord?.value, ruleType);
+  }, [selectedRecord, ruleType]);
   return (
     <>
-      <div className={styles.envDrawer}>
+      <div className={styles.innerEnv}>
+        <Space className={styles.tag}>
+          <div className={styles.tagLabel}>标签样式: </div>
+          <Tag color={selectedRecord?.style?.toLowerCase()}>{selectedRecord?.label}</Tag>
+        </Space>
         <Descriptions column={1}>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'标签样式'}>
-            {envTagMap[envPageType]}
-          </Descriptions.Item>
           <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
-            {ruleSetData?.description}
+            {selectedRecord?.description}
           </Descriptions.Item>
         </Descriptions>
-        <div style={{ position: 'relative' }}>
-          <Tabs activeKey={ruleType} onTabClick={handleTabClick}>
-            <Tabs.TabPane tab="SQL 检查规范" key={RuleType.SQL_CHECK} />
-            <Tabs.TabPane tab="SQL 窗口规范" key={RuleType.SQL_CONSOLE} />
-          </Tabs>
-          <Button
-            style={{
-              position: 'absolute',
-              right: '0px',
-              top: '0px',
-              borderBottom: 'none',
-            }}
-          >
-            恢复默认信息
-          </Button>
+        <Tabs type="card" size='small' className={styles.tabs} activeKey={ruleType} onTabClick={handleTabClick}>
+          <Tabs.TabPane tab="SQL 检查规范" key={RuleType.SQL_CHECK} />
+          <Tabs.TabPane tab="SQL 窗口规范" key={RuleType.SQL_CONSOLE} />
+        </Tabs>
+        <div style={{ height: '100%', flexGrow: 1, marginTop: '12px' }}>
+          {ruleType === RuleType.SQL_CHECK ? (
+            <SecureTable
+              ref={tableRef}
+              mode={CommonTableMode.SMALL}
+              body={CommonTableBodyMode.BIG}
+              titleContent={null}
+              showToolbar={false}
+              showPagination={false}
+              filterContent={{}}
+              operationContent={{
+                options: [],
+              }}
+              exReload={exReload}
+              exSearch={exSearch}
+              onLoad={null}
+              tableProps={{
+                columns: columns,
+                dataSource: rules,
+                rowKey: 'id',
+                pagination: false,
+                loading: tableLoading,
+              }}
+            />
+          ) : (
+            <SecureTable
+              ref={tableRef}
+              mode={CommonTableMode.SMALL}
+              body={CommonTableBodyMode.BIG}
+              titleContent={null}
+              showToolbar={false}
+              showPagination={false}
+              filterContent={{}}
+              operationContent={{
+                options: [],
+              }}
+              exReload={exReload}
+              exSearch={exSearch}
+              onLoad={null}
+              tableProps={{
+                columns: columns.filter((column) => column.key !== 'level'),
+                dataSource: rules,
+                rowKey: 'id',
+                pagination: false,
+                loading: tableLoading,
+              }}
+            />
+          )}
         </div>
-        <SecureTable
-          ref={tableRef}
-          mode={CommonTableMode.SMALL}
-          body={CommonTableBodyMode.BIG}
-          titleContent={null}
-          showToolbar={false}
-          showPagination={false}
-          filterContent={{}}
-          operationContent={{
-            options: [],
-          }}
-          onLoad={null}
-          tableProps={{
-            columns:
-              ruleType === RuleType.SQL_CHECK
-                ? columns
-                : columns.filter((column) => column.key !== 'level'),
-            dataSource: rules,
-            rowKey: 'id',
-            pagination: false,
-            scroll: {
-              x: 1000,
-            },
-          }}
-        />
       </div>
       <EditModal
         {...{
@@ -255,67 +308,167 @@ const InnerEnv: React.FC<InnerEnvProps> = ({ envPageType, environment }) => {
   );
 };
 export function getEnvTypeList(env: IEnvironment): {
-  value: EnvPageType;
+  value: number;
   label: string;
+  envId: number;
+  rulesetId: number;
+  style: string;
+  description: string;
 } {
   return {
-    value: envNameMap[env.name] || env.name,
+    value: env.id,
     label: env.name,
+    envId: env.id,
+    rulesetId: env.rulesetId,
+    style: env.style,
+    description: env.description,
   };
 }
 
-const Env: React.FC<{
-  secureStore: SecureStore;
-}> = ({ secureStore }) => {
-  const selectedFlag = 'envPageType';
-  const [environments, setEnvironments] = useState<IEnvironment[]>([]);
+const Env: React.FC<{}> = ({}) => {
+  const [selectedItem, setSelectedItem] = useState<number>();
+  // const [environments, setEnvironments] = useState<IEnvironment[]>([]);
   const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
+  const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
+  const [siderLoading, setSiderLoading] = useState<boolean>(false);
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const [subTypeFilters, setSubTypeFilters] = useState([]);
+  const [supportedDialectTypeFilters, setSupportedDialectTypeFilters] = useState([]);
+  const [rules, setRules] = useState<IRule[]>([]);
 
-  const [filterEnv, setFilterEnv] = useState<IEnvironment[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<{
+    value: number;
+    label: string;
+    envId: number;
+    rulesetId: number;
+    style: string;
+    description: string;
+  }>();
 
-  const handleItemClick = (name: string) => {
-    secureStore.changeEnvPageType(name as EnvPageType);
+  const handleInitRules = async (id: number, ruleType: RuleType) => {
+    setTableLoading(true);
+    const rulesets = await listRules(id, { types: ruleType });
+    const rawData = await statsRules(id, ruleType);
+    setSubTypeFilters(
+      rawData?.subTypes?.distinct?.map((d) => ({
+        text: d,
+        value: d,
+      })),
+    );
+    setSupportedDialectTypeFilters(
+      rawData?.supportedDialectTypes?.distinct?.map((d) => ({
+        text: d,
+        value: d,
+      })),
+    );
+    // setRuleSetData(rulesets);
+    setRules(rulesets || []);
+    setTableLoading(false);
   };
 
-  const initSiderData = async (environments?: IEnvironment[]) => {
-    const nameMap = new Map();
-    const resData = environments.map(getEnvTypeList).filter((environment) => {
-      if (!nameMap.has(environment.value)) {
-        nameMap.set(environment.value, environment.label);
-        return environment;
-      }
-    });
-    handleItemClick(resData[0]?.value);
+  const handleItemClick = (item: {
+    value: number;
+    label: string;
+    envId: number;
+    rulesetId: number;
+    style: string;
+    description: string;
+  }) => {
+    setSelectedItem(item.envId);
+    setSelectedRecord(item);
+  };
+
+  const initSiderData = async (envs?: IEnvironment[]) => {
+    setSiderLoading(false);
+    const resData = envs.map(getEnvTypeList);
+
+    console.log(resData);
+    handleItemClick(resData[0]);
     setSiderItemList(resData);
+    setSiderLoading(false);
   };
-  const initData = async () => {
+
+  const onLoad = async () => {
     const envs = await listEnvironments();
-    setEnvironments(envs);
     initSiderData(envs);
   };
+  const exSearch = async (args: ITableLoadOptions) => {
+    const { filters } = args ?? {};
+    const { subTypes, supportedDialectTypes } = filters ?? {};
 
-  useEffect(() => {
-    initData();
-  }, []);
-  useLayoutEffect(() => {
-    const filterData = environments.filter(
-      (environment) =>
-        environment.name === secureStore.envPageType ||
-        envNameMap[environment.name] === secureStore.envPageType,
+    setTableLoading(true);
+    const rulesets = await listRules(selectedRecord.rulesetId, {
+      types: ruleType,
+      subTypes,
+      supportedDialectTypes,
+    });
+    const rawData = await statsRules(selectedRecord.rulesetId, ruleType);
+    setSubTypeFilters(
+      rawData?.subTypes?.distinct?.map((d) => ({
+        text: d,
+        value: d,
+      })),
     );
-    setFilterEnv(filterData);
-  }, [environments, secureStore.envPageType]);
+    setSupportedDialectTypeFilters(
+      rawData?.supportedDialectTypes?.distinct?.map((d) => ({
+        text: d,
+        value: d,
+      })),
+    );
+    // setRuleSetData(rulesets);
+    setRules(rulesets || []);
+    setTableLoading(false);
+  };
+  const exReload = async (args: ITableLoadOptions) => {
+    const { searchValue } = args ?? {};
+    setTableLoading(true);
+    const rulesets = await getRuleset(selectedRecord.value, RuleType.SQL_CHECK);
+    const rawData = await statsRules(selectedRecord.value, RuleType.SQL_CHECK);
+    setSubTypeFilters(
+      rawData?.subTypes?.distinct?.map((d) => ({
+        text: d,
+        value: d,
+      })),
+    );
+    setSupportedDialectTypeFilters(
+      rawData?.supportedDialectTypes?.distinct?.map((d) => ({
+        text: d,
+        value: d,
+      })),
+    );
+    setRules(rulesets?.rules || []);
+    setTableLoading(false);
+  };
+  useEffect(() => {
+    onLoad();
+  }, []);
   return (
     <SecureLayout>
       <SecureSider
+        loading={siderLoading}
         siderItemList={siderItemList}
-        selectedFlag={selectedFlag}
+        selectedItem={selectedItem}
         handleItemClick={handleItemClick}
-        secureStore={secureStore}
       />
-      <InnerEnv envPageType={secureStore.envPageType} environment={filterEnv?.[0]} />
+      {/* <Spin spinning={loading}>
+      </Spin> */}
+      <InnerEnv
+        {...{
+          rules,
+          selectedRecord,
+          handleInitRules,
+          tableLoading,
+          onLoad,
+          exSearch,
+          ruleType,
+          setRuleType,
+          exReload,
+          subTypeFilters,
+          supportedDialectTypeFilters,
+        }}
+      />
     </SecureLayout>
   );
 };
 
-export default inject('secureStore')(observer(Env));
+export default Env;

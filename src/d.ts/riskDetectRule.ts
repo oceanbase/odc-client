@@ -1,22 +1,25 @@
 import { ProjectUser } from './project';
-export interface Condition {
-  id: number;
-  ruleId: number;
+import { IRiskLevel } from './riskLevel';
+export interface RiskDetectRuleCondition {
+  id?: number;
   expression: string;
   operation: string;
   value: string;
 }
 export interface Action {
-  id: number;
+  id?: number;
   level: number;
   description: string;
   organizationId: number;
 }
 export interface IRiskDetectRule {
-  id: number;
+  id?: number;
   name: string;
   organizationId: number;
-  conditions: Condition[];
-  action: Action;
+  conditions: RiskDetectRuleCondition[];
+  riskLevelId: number;
+  riskLevel: IRiskLevel;
+  builtIn: boolean;
   creator: ProjectUser;
+  createTime: number;
 }

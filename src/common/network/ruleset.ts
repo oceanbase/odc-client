@@ -1,4 +1,4 @@
-import { IRule, IRuleSet } from '@/d.ts/rule';
+import { IRule, IRuleSet, RuleType } from '@/d.ts/rule';
 import request from '@/util/request';
 import * as mockjs from 'mockjs';
 
@@ -154,108 +154,37 @@ export async function listRulesets(): Promise<IRuleSet[]> {
   return ret?.data?.contents || [];
 }
 
-export async function listRules(rulesetId: number): Promise<IRule> {
-  return mockjs.mock({
-    successful: '@boolean(0, 10, false)',
-    httpStatus: {},
-    timestamp: '@now',
-    durationMillis: '@integer(0, 10000)',
-    traceId: '@guid',
-    requestId: '@guid',
-    server: '@string("lower", 0, 32)',
-    data: {
-      page: {
-        totalElements: '@integer(0, 10000)',
-        totalPages: '@integer(0, 10000)',
-        number: '@integer(0, 10000)',
-        size: '@integer(0, 10000)',
-      },
-      'contents|1-3': [
-        {
-          id: '@integer(0, 10000)',
-          metadata: {
-            id: '@integer(0, 10000)',
-            name: '@cword(3,6)',
-            description: '@cparagraph(0,3)',
-            type: 'SQL_CHECK',
-            'subTypes|1-3': ['@string("lower", 0, 32)'],
-            'supportedDialectTypes|1-3': ['OB_MYSQL'],
-            'propertyMetadatas|1-3': [
-              {
-                name: '@cword(3,6)',
-                description: '@cparagraph(0,3)',
-                type: 'BOOLEAN',
-                componentType: 'INPUT_STRING',
-                defaultValue: {},
-                'candidates|1-3': [{}],
-              },
-            ],
-            builtIn: '@boolean(1, 9, false)',
-          },
-          rulesetId: '@integer(0, 10000)',
-          level: '@integer(0, 10000)',
-          'appliedDialectTypes|1-3': ['OB_MYSQL'],
-          properties: {},
-          enabled: '@boolean(1, 9, false)',
-          organizationId: '@integer(0, 10000)',
-          createTime: '@date',
-          updateTime: '@date',
-        },
-      ],
-      stats: {},
-    },
+export async function listRules(rulesetId: number, params: any): Promise<IRule[]> {
+  const ret = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules`, {
+    params
   });
-  const ret = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules`);
-  return ret?.successful;
+  return ret?.data?.contents;
 }
 
-export async function getRuleset(id: number): Promise<IRuleSet> {
-  const ret = await request.get(`/api/v2/regulation/rulesets/${id}`);
+export async function getRuleset(
+  id: number,
+  ruleType: RuleType = RuleType.SQL_CHECK,
+): Promise<IRuleSet> {
+  const ret = await request.get(`/api/v2/regulation/rulesets/${id}`, {
+    params: {
+      types: [ruleType],
+    },
+  });
   return ret?.data || {};
 }
 
 export async function getRule(rulesetId: number, ruleId: number): Promise<IRule> {
-  return mockjs.mock({
-    successful: '@boolean(0, 10, false)',
-    httpStatus: {},
-    timestamp: '@now',
-    durationMillis: '@integer(0, 10000)',
-    traceId: '@guid',
-    requestId: '@guid',
-    server: '@string("lower", 0, 32)',
-    data: {
-      id: '@integer(0, 10000)',
-      metadata: {
-        id: '@integer(0, 10000)',
-        name: '@cword(3,6)',
-        description: '@cparagraph(0,3)',
-        type: 'SQL_CHECK',
-        'subTypes|1-3': ['@string("lower", 0, 32)'],
-        'supportedDialectTypes|1-3': ['OB_MYSQL'],
-        'propertyMetadatas|1-3': [
-          {
-            name: '@cword(3,6)',
-            description: '@cparagraph(0,3)',
-            type: 'BOOLEAN',
-            componentType: 'INPUT_STRING',
-            defaultValue: {},
-            'candidates|1-3': [{}],
-          },
-        ],
-        builtIn: '@boolean(1, 9, false)',
-      },
-      rulesetId: '@integer(0, 10000)',
-      level: '@integer(0, 10000)',
-      'appliedDialectTypes|1-3': ['OB_MYSQL'],
-      properties: {},
-      enabled: '@boolean(1, 9, false)',
-      organizationId: '@integer(0, 10000)',
-      createTime: '@date',
-      updateTime: '@date',
-    },
-  });
   const ret = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules/${ruleId}`);
   return ret?.data;
+}
+
+export async function statsRules(rulesetId: number, type: RuleType) {
+  const rawData = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules/stats`, {
+    params: {
+      type: [type],
+    },
+  });
+  return rawData?.data;
 }
 
 export async function createRuleset(ruleset: IRuleSet): Promise<boolean> {
