@@ -1,5 +1,5 @@
 import { getUserList } from '@/common/network/manager';
-import { updateProject } from '@/common/network/project';
+import { addProjectMember } from '@/common/network/project';
 import HelpDoc from '@/component/helpDoc';
 import SelectTransfer from '@/component/SelectTransfer';
 import { IManagerUser } from '@/d.ts';
@@ -27,6 +27,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
   } = useRequest(getUserList, {
     manual: true,
   });
+  const addedUsers = new Set(project?.members?.map((m) => m.id) || []);
 
   useEffect(() => {
     if (visible) {
@@ -46,22 +47,13 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
     if (!formData) {
       return;
     }
-    const oldUsers = project.members;
-    const tmp = new Set();
-    oldUsers.forEach((u) => {
-      tmp.add(u.id + '@' + u.role);
-    });
-    const newUsers = [...oldUsers];
+    const newUsers = [];
     const { roles, users } = formData;
     userList?.contents?.forEach((user) => {
       if (!users.includes(user.id)) {
         return;
       }
       roles.forEach((role) => {
-        const key = user.id + '@' + role;
-        if (tmp.has(key)) {
-          return;
-        }
         newUsers.push({
           id: user.id,
           role: role,
@@ -70,8 +62,8 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
         });
       });
     });
-    const isSuccess = await updateProject(project.id, {
-      ...project,
+    const isSuccess = await addProjectMember({
+      projectId: project?.id,
       members: newUsers,
     });
     if (isSuccess) {
@@ -133,13 +125,18 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
             render={(item) => `${item.name}(${item.accountName})`}
           /> */}
           <SelectTransfer
-            treeData={userList?.contents?.map((item) => {
-              return {
-                key: item.id,
-                title: `${item.name}(${item.accountName})`,
-                isLeaf: true,
-              };
-            })}
+            treeData={userList?.contents
+              ?.map((item) => {
+                if (addedUsers.has(item.id)) {
+                  return null;
+                }
+                return {
+                  key: item.id,
+                  title: `${item.name}(${item.accountName})`,
+                  isLeaf: true,
+                };
+              })
+              .filter(Boolean)}
           />
         </Form.Item>
       </Form>
