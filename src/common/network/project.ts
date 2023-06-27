@@ -64,3 +64,46 @@ export async function setProjectAchived(params: {
 
   return !!res?.data;
 }
+
+export async function deleteProjectMember(params: {
+  projectId: number;
+  userId: number;
+}): Promise<boolean> {
+  const res = await request.delete(
+    `/api/v2/collaboration/projects/${params?.projectId}/members/${params?.userId}`,
+  );
+
+  return !!res?.data;
+}
+
+export async function updateProjectMember(params: {
+  projectId: number;
+  userId: number;
+  members: {
+    id: number;
+    role: ProjectRole;
+  }[];
+}): Promise<boolean> {
+  const res = await request.put(
+    `/api/v2/collaboration/projects/${params?.projectId}/members/${params?.userId}`,
+    {
+      data: params?.members,
+    },
+  );
+
+  return !!res?.data;
+}
+
+export async function addProjectMember(params: {
+  projectId: number;
+  members: {
+    id: number;
+    role: ProjectRole;
+  }[];
+}): Promise<boolean> {
+  const res = await request.post(`/api/v2/collaboration/projects/${params?.projectId}/members`, {
+    data: params?.members,
+  });
+
+  return !!res?.data;
+}

@@ -1,13 +1,15 @@
+import { deleteProjectMember } from '@/common/network/project';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IProject, ProjectRole } from '@/d.ts/project';
-import { Button } from 'antd';
+import { Button, message, Popconfirm } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
+import UpdateUserModal from './UpdateUserModal';
 interface IProps {
   id: string;
 }
@@ -15,6 +17,8 @@ const User: React.FC<IProps> = ({ id }) => {
   const context = useContext(ProjectContext);
 
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
+
+  const [editUserId, setEditUserId] = useState<number>(null);
 
   const dataSource: (IProject['members'][0] & { roles: ProjectRole[] })[] = useMemo(() => {
     const userMap = new Map<number, IProject['members'][0] & { roles: ProjectRole[] }>();
@@ -31,6 +35,21 @@ const User: React.FC<IProps> = ({ id }) => {
     });
     return [...userMap.values()];
   }, [context?.project?.members]);
+
+  async function deleteUser(id: number) {
+    const isSuccess = await deleteProjectMember({
+      projectId: context?.project?.id,
+      userId: id,
+    });
+    if (isSuccess) {
+      message.success('删除成功');
+      context.reloadProject();
+    }
+  }
+
+  async function updateUser(id: number) {
+    setEditUserId(id);
+  }
 
   return (
     <TableCard
@@ -72,8 +91,12 @@ const User: React.FC<IProps> = ({ id }) => {
             render(_, record) {
               return (
                 <Action.Group size={3}>
-                  <Action.Link key={'export'}>编辑</Action.Link>
-                  <Action.Link key={'import'}>移除</Action.Link>
+                  <Action.Link onClick={() => updateUser(record.id)} key={'export'}>
+                    编辑
+                  </Action.Link>
+                  <Popconfirm title="确定删除该成员吗？" onConfirm={() => deleteUser(record.id)}>
+                    <Action.Link key={'import'}>移除</Action.Link>
+                  </Popconfirm>
                 </Action.Group>
               );
             },
@@ -92,6 +115,20 @@ const User: React.FC<IProps> = ({ id }) => {
           context.reloadProject();
         }}
         project={context.project}
+      />
+      <UpdateUserModal
+        visible={!!editUserId}
+        userId={editUserId}
+        close={() => {
+          setEditUserId(null);
+        }}
+        onSuccess={() => {
+          context.reloadProject();
+        }}
+        projectId={context.project?.id}
+        roles={
+          context.project?.members?.filter((m) => m.id === editUserId)?.map((m) => m.role) || []
+        }
       />
     </TableCard>
   );
