@@ -16,6 +16,9 @@ module.exports = [
             {
               path: '/',
               component: '../layout/SpaceContainer',
+              wrappers: [
+                "@/layout/OrganizationListenWrap"
+              ],
               routes: [
                 { path: '/project', component: '@/page/Project/Project' },
                 { path: '/project/:id/:page', component: '@/page/Project' },
@@ -45,6 +48,7 @@ module.exports = [
                 {
                   path: '/sqlworkspace',
                   wrappers: [
+                    "@/layout/OrganizationListenWrap",
                     "@/layout/ThemeWrap"
                   ],
                   name: 'sqlworkspace',

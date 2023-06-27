@@ -105,6 +105,9 @@ const MonacoEditor: React.FC<IProps> = function (props) {
 
   async function initPlugin() {
     const module = await import('./plugins/ob-language/index');
+    if (!editorRef.current?.getModel?.()) {
+      return;
+    }
     const plugin = module.register();
     plugin.setModelOptions(
       editorRef.current.getModel().id,
@@ -133,6 +136,9 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       readOnly: readOnly,
     });
     await initPlugin();
+    if (!editorRef.current?.getModel?.()) {
+      return;
+    }
     monaco.editor.setModelLanguage(editorRef.current.getModel(), language || 'sql');
     editorRef.current.onDidChangeModelContent((e) => {
       /**

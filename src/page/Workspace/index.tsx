@@ -19,9 +19,8 @@ import { formatMessage } from '@/util/intl';
 import { useParams } from '@umijs/max';
 import { message, Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ActivityBar from './ActivityBar/ index';
-import ActivityBarContext from './context/ActivityBarContext';
 import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
@@ -45,7 +44,6 @@ interface WorkspaceProps {
 let beforeUnloadHandler: ((e: BeforeUnloadEvent) => void) | undefined;
 const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const { pageStore, settingStore, sqlStore, modalStore, taskStore, sessionManagerStore } = props;
-  const activityContext = useContext(ActivityBarContext);
   const { pages = [], activePageKey } = pageStore;
   const { serverSystemInfo } = settingStore;
   const params = useParams();
@@ -231,7 +229,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     asyncEffect();
     return () => {
       appConfig.workspace.unMount?.();
-      pageStore.clear();
       sqlStore.reset();
       modalStore.clear();
       taskStore.clear();
@@ -281,10 +278,12 @@ const WorkspaceMobxWrap = inject(
   'sessionManagerStore',
 )(observer(Workspace));
 
-export default function WorkSpaceWrap(props) {
-  return (
-    <WorkspaceStore>
-      <WorkspaceMobxWrap {...props} />
-    </WorkspaceStore>
-  );
-}
+export default inject('userStore')(
+  observer(function WorkSpaceWrap(props: WorkspaceProps) {
+    return (
+      <WorkspaceStore key={props.userStore?.user?.organizationId}>
+        <WorkspaceMobxWrap {...props} />
+      </WorkspaceStore>
+    );
+  }),
+);
