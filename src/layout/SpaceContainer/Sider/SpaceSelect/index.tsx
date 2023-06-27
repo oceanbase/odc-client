@@ -25,8 +25,6 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
 
     if (ori?.type === SpaceType.SYNERGY) {
       history.push('/project');
-    } else {
-      history.push('/sqlworkspace');
     }
   };
 

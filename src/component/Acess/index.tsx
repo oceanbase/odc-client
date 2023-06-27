@@ -7,7 +7,6 @@ import {
   IManagerResourceType as resourceTypes,
 } from '@/d.ts';
 import authStore, { AuthStore, AuthStoreContext } from '@/store/auth';
-import connectionStore from '@/store/connection';
 import { isString } from 'lodash';
 import { observer } from 'mobx-react';
 import React, { ReactElement, useContext } from 'react';
@@ -259,16 +258,12 @@ function withWorkspaceAcess(action: actionTypes) {
     RenderComponent: React.ComponentType<P>,
   ): React.ComponentType<P & Partial<AcessResult>> {
     return observer((props: P) => {
-      const { connection } = connectionStore;
       const { accessible: hasWorkspaceAcess } = useAcess({
         action,
-        resourceIdentifier: `${resourceTypes.workspace}:${connection.sid}`,
+        resourceIdentifier: `${resourceTypes.workspace}:${''}`,
       });
       // 个人链接，无权限限制
-      if (connection.visibleScope === IConnectionType.PRIVATE) {
-        return <RenderComponent {...props} accessible={true} />;
-      }
-      return <RenderComponent {...props} accessible={true || hasWorkspaceAcess} />;
+      return <RenderComponent {...props} accessible={true} />;
     });
   };
 }
@@ -292,7 +287,7 @@ const WorkspaceAcess = ({ fallback = <NoAuth />, children, action }: WorkspaceAc
 const canAcessWorkspace = (action: actionTypes, connectionType: IConnectionType): boolean => {
   if (!action) return true;
   return canAcess({
-    resourceIdentifier: `${resourceTypes.workspace}:${connectionStore.connection.sid}`,
+    resourceIdentifier: `${resourceTypes.workspace}:${''}`,
     action,
   }).accessible;
 };
@@ -306,10 +301,7 @@ export function hasSourceReadAuth(auths: string[] = []) {
 }
 // 公共只读连接
 export function isReadonlyPublicConnection(connection: Partial<IConnection>) {
-  return (
-    connection?.visibleScope === IConnectionType.ORGANIZATION &&
-    hasSourceReadAuth(connection?.permittedActions)
-  );
+  return hasSourceReadAuth(connection?.permittedActions);
 }
 
 export {

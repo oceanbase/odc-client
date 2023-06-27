@@ -9,6 +9,7 @@ import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
 import SQLConfigContext from '@/component/SQLConfig/SQLConfigContext';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { getPageTitleText } from '@/component/WindowManager/helper';
 import { SQL_PAGE_RESULT_HEIGHT } from '@/constant';
 import {
   ConnectionMode,
@@ -149,7 +150,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         },
 
         {
-          name: page.title,
+          name: getPageTitleText(page),
 
           // `SQL 窗口_${pageName}`
         },

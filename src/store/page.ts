@@ -20,9 +20,6 @@ export interface IPageOptions {
 
 export class PageStore {
   @observable
-  public databaseId: number;
-
-  @observable
   public pages: IPage[] = [];
 
   @observable

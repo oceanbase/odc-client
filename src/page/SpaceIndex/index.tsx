@@ -7,6 +7,7 @@ import React from 'react';
 import { history } from 'umi';
 import styles from './index.less';
 
+import { SpaceType } from '@/d.ts/_index';
 import PersonalSvg from '@/svgr/personal_space.svg';
 import GroupSvg from '@/svgr/project_space.svg';
 
@@ -25,7 +26,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
   const switchOriganization = async (id: number, type: IOrganization['type']) => {
     const isSuccess = await userStore.switchCurrentOrganization(id);
     if (isSuccess) {
-      type === 'INDIVIDUAL' ? handleGoto('/sqlworkspace') : handleGoto('/project');
+      type === SpaceType.PRIVATE ? handleGoto('/sqlworkspace') : handleGoto('/project');
     }
   };
 
