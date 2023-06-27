@@ -1,20 +1,26 @@
-import { Condition, IRiskDetectRule } from '@/d.ts/riskDetectRule';
+import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
 import { Descriptions, Drawer } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useRef } from 'react';
+import { RiskLevelMapProps } from '.';
+import RiskLevelLabel from '../components/RiskLevelLabel';
 import SecureTable from '../components/SecureTable';
 import { CommonTableBodyMode, CommonTableMode } from '../components/SecureTable/interface';
-
 interface ViewRiskDetectDrawerDrawer {
   viewDrawerVisible: boolean;
+  riskLevel: RiskLevelMapProps;
   setViewDrawerVisible: (v: boolean) => void;
-  riskDetectRule: IRiskDetectRule;
+  selectedRecord: IRiskDetectRule;
 }
 const ViewRiskDetectDrawer: React.FC<ViewRiskDetectDrawerDrawer> = ({
   viewDrawerVisible,
+  riskLevel,
   setViewDrawerVisible,
-  riskDetectRule,
+  selectedRecord,
 }) => {
+  // useEffect(() => {
+
+  // }, [])
   return (
     <Drawer
       title={'风险识别规则详情'}
@@ -26,21 +32,21 @@ const ViewRiskDetectDrawer: React.FC<ViewRiskDetectDrawerDrawer> = ({
     >
       <Descriptions column={1}>
         <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'等级'}>
-          {riskDetectRule?.name}
+          <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
         </Descriptions.Item>
         <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'规则名称'}>
-          {riskDetectRule?.creator?.name}
+          {selectedRecord?.creator?.name}
         </Descriptions.Item>
         <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'条件'}>
           &nbsp;
         </Descriptions.Item>
       </Descriptions>
-      <SubTable data={riskDetectRule?.conditions} />
+      <SubTable data={selectedRecord?.conditions} />
     </Drawer>
   );
 };
 
-const subTableColumns: ColumnsType<Condition> = [
+const subTableColumns: ColumnsType<RiskDetectRuleCondition> = [
   {
     key: 'config',
     width: 928,

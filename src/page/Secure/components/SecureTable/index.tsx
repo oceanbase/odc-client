@@ -59,6 +59,8 @@ interface IProps<RecordType> {
   // 是否展示 操作连 筛选区&自定义操作区 分割标记
   isSplit?: boolean;
   // 行选择 相关配置
+  exSearch?: (args: ITableLoadOptions) => Promise<any>;
+  exReload?: (args: ITableLoadOptions) => Promise<any>;
   rowSelecter?: IRowSelecter<RecordType>;
   // 是否启用 列宽可拖拽
   enableResize?: boolean;
@@ -94,6 +96,8 @@ const CommonTable: <RecordType extends object = any>(
     enableResize = false,
     showPagination = true,
     onLoad,
+    exSearch,
+    exReload,
     onChange,
   } = props;
   const { columns, dataSource, scroll, ...rest } = tableProps;
@@ -151,6 +155,9 @@ const CommonTable: <RecordType extends object = any>(
     },
     resetSelectedRows: () => {
       setSelectedRowKeys([]);
+    },
+    initHeight: () => {
+      setWrapperHeight(tableRef?.current?.offsetHeight);
     },
   }));
 
@@ -212,6 +219,14 @@ const CommonTable: <RecordType extends object = any>(
   function handleSearch(value: string) {
     setSearchValue(value);
     setPagination(null);
+    console.log(value);
+    exSearch?.({
+      searchValue: value,
+      filters,
+      sorter,
+      pagination: null,
+      pageSize,
+    });
     onChange?.({
       searchValue: value,
       filters,
@@ -230,6 +245,13 @@ const CommonTable: <RecordType extends object = any>(
     setFilters(_filter);
     setSorter(_sorter);
     setPagination(paginationValue);
+    exSearch?.({
+      searchValue,
+      filters: _filter,
+      sorter: _sorter,
+      pagination: paginationValue,
+      pageSize,
+    })
     onChange?.({
       searchValue,
       filters: _filter,
@@ -347,7 +369,7 @@ const CommonTable: <RecordType extends object = any>(
           onFilterChange={handleFilterChange}
           onSearchChange={handleSearch}
           onTabChange={handleTabChange}
-          onReload={handleReload}
+          onReload={exReload ? exReload : handleReload}
           onOperationClick={handleOperationClick}
         />
       )}
