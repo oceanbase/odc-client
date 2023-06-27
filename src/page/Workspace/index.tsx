@@ -14,7 +14,6 @@ import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useParams } from '@umijs/max';
 import { message, Modal } from 'antd';
@@ -41,7 +40,6 @@ interface WorkspaceProps {
   sessionManagerStore?: SessionManagerStore;
 }
 
-let beforeUnloadHandler: ((e: BeforeUnloadEvent) => void) | undefined;
 const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const { pageStore, settingStore, sqlStore, modalStore, taskStore, sessionManagerStore } = props;
   const { pages = [], activePageKey } = pageStore;
@@ -180,40 +178,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     pageStore.setPageUnsaved(targetPageKey);
   };
 
-  /**
-   * 不是客户端的话，需要监听关闭事件，然后断开数据库连接
-   */
-
-  const addPageUnloadListener = () => {
-    if (!isClient()) {
-      beforeUnloadHandler = (e: BeforeUnloadEvent) => {
-        if (window._forceRefresh) {
-          return;
-        }
-        e.preventDefault();
-
-        if (typeof _closeMsg === 'string') {
-          e.returnValue = _closeMsg;
-        } // send with keepalive
-        sessionManagerStore.destoryStore(true);
-        return _closeMsg;
-      }; // 在页面关闭前通知后端尝试断开数据库长连接
-
-      window.addEventListener('beforeunload', beforeUnloadHandler);
-    }
-  };
-
-  const clearPageLoadListener = () => {
-    if (beforeUnloadHandler) {
-      window.removeEventListener('beforeunload', beforeUnloadHandler);
-    }
-  };
-
   useEffect(() => {
     async function asyncEffect() {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
-      addPageUnloadListener();
       await pageStore.initStore();
 
       if (localLoginHistoy.isNewVersion()) {
@@ -232,9 +200,9 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       sqlStore.reset();
       modalStore.clear();
       taskStore.clear();
-      clearPageLoadListener();
       executeTaskManager.stopAllTask();
       task.setTaskCreateEnabled();
+      sessionManagerStore.destoryStore(true);
     };
   }, []);
   return (
@@ -280,6 +248,12 @@ const WorkspaceMobxWrap = inject(
 
 export default inject('userStore')(
   observer(function WorkSpaceWrap(props: WorkspaceProps) {
+    useEffect(() => {
+      window.name = 'sqlworkspace';
+      return () => {
+        window.name = null;
+      };
+    }, []);
     return (
       <WorkspaceStore key={props.userStore?.user?.organizationId}>
         <WorkspaceMobxWrap {...props} />
