@@ -1,5 +1,6 @@
 import { ReloadOutlined } from '@ant-design/icons';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
+import ResourceTreeContext, { ResourceTreeTab } from '../../context/ResourceTreeContext';
 import SideTabs, { ITab } from '../components/SideTabs';
 import DatasourceTree from './Datasource';
 import ProjectTree from './Project';
@@ -7,10 +8,11 @@ import ProjectTree from './Project';
 export default function ResourceTreeContainer() {
   const sourceRef = useRef<any>();
   const projectRef = useRef<any>();
+  const resourcetreeContext = useContext(ResourceTreeContext);
 
   const datasource: ITab = {
     title: '数据源',
-    key: 'datasource',
+    key: ResourceTreeTab.datasource,
     render() {
       return <DatasourceTree ref={sourceRef} />;
     },
@@ -27,7 +29,7 @@ export default function ResourceTreeContainer() {
   };
   const project: ITab = {
     title: '项目',
-    key: 'project',
+    key: ResourceTreeTab.project,
     render() {
       return <ProjectTree ref={projectRef} />;
     },
@@ -42,5 +44,11 @@ export default function ResourceTreeContainer() {
       },
     ],
   };
-  return <SideTabs tabs={[datasource, project]} />;
+  return (
+    <SideTabs
+      selectTabKey={resourcetreeContext.selectTabKey}
+      setSelectTabKey={resourcetreeContext?.setSelectTabKey}
+      tabs={[datasource, project]}
+    />
+  );
 }

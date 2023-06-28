@@ -1,9 +1,10 @@
 import Icon from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
-import React, { ReactElement, useRef, useState } from 'react';
+import React, { ReactElement, useRef } from 'react';
 
 import Action from '@/component/Action';
+import { useControllableValue } from 'ahooks';
 import styles from './index.less';
 
 interface IActionProps {
@@ -24,10 +25,17 @@ export interface ITab {
 
 interface IProps {
   tabs: ITab[];
+  selectTabKey?: string;
+  setSelectTabKey?: (v: string) => void;
 }
 
-export default function SideTabs({ tabs }: IProps) {
-  const [selectTabKey, setSelectTabKey] = useState<string>(tabs?.[0]?.key);
+export default function SideTabs(props: IProps) {
+  const tabs = props.tabs;
+  const [selectTabKey, setSelectTabKey] = useControllableValue(props, {
+    defaultValue: tabs?.[0]?.key,
+    valuePropName: 'selectTabKey',
+    trigger: 'setSelectTabKey',
+  });
   const loadedKeys = useRef<Set<string>>(new Set());
   const selectTab: ITab = tabs.find((tab) => tab.key === selectTabKey);
   loadedKeys.current.add(selectTabKey);
@@ -40,6 +48,7 @@ export default function SideTabs({ tabs }: IProps) {
             const isSelect = tab.key === selectTabKey;
             return (
               <div
+                key={tab.key}
                 onClick={() => {
                   if (isSelect) {
                     return;

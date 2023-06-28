@@ -5,10 +5,11 @@ import ResourceLayout from '../Layout';
 
 import { listProjects } from '@/common/network/project';
 import { useRequest } from 'ahooks';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 
 import { listDatabases } from '@/common/network/database';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import ProjectSvg from '@/svgr/project_space.svg';
 
 export default forwardRef(function ProjectTree(props, ref) {
@@ -16,8 +17,13 @@ export default forwardRef(function ProjectTree(props, ref) {
     defaultParams: [null, 1, 9999, null],
   });
 
-  const [selectKeys, setSelectKeys] = useState<any[]>([]);
   const [searchKey, setSearchKey] = useState('');
+  const context = useContext(ResourceTreeContext);
+
+  const selectKeys = [context.selectProjectId].filter(Boolean);
+  function setSelectKeys(keys) {
+    return context.setSelectProjectId(keys?.[0]);
+  }
 
   useImperativeHandle(
     ref,
@@ -25,6 +31,7 @@ export default forwardRef(function ProjectTree(props, ref) {
       return {
         reload() {
           setSelectKeys([]);
+          context?.setSelectProjectId(null);
           return run(null, 1, 9999, null);
         },
       };

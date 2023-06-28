@@ -6,11 +6,12 @@ import ResourceLayout from '../Layout';
 import { getConnectionList } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import OBSvg from '@/svgr/source_ob.svg';
 import { toNumber } from 'lodash';
 
@@ -19,8 +20,14 @@ export default forwardRef(function DatasourceTree(props, ref) {
     defaultParams: [{ size: 9999, page: 1 }],
   });
 
-  const [selectKeys, setSelectKeys] = useState<any[]>([]);
   const [searchKey, setSearchKey] = useState('');
+
+  const context = useContext(ResourceTreeContext);
+
+  const selectKeys = [context.selectDatasourceId].filter(Boolean);
+  function setSelectKeys(keys) {
+    return context.setSelectDatasourceId(keys?.[0]);
+  }
 
   useImperativeHandle(
     ref,
@@ -28,6 +35,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
       return {
         reload() {
           setSelectKeys([]);
+          context?.setSelectDatasourceId(null);
           return run({ size: 9999, page: 1 });
         },
       };

@@ -125,7 +125,7 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
           <SyncOutlined onClick={handleReload} />
         </Space>
       }
-      visible={visible}
+      open={visible}
       onClose={handleCloseDrawer}
     >
       <RecordTable

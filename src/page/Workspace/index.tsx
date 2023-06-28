@@ -15,11 +15,13 @@ import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
 import { formatMessage } from '@/util/intl';
-import { useParams } from '@umijs/max';
+import { history, useLocation, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
+import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ActivityBar from './ActivityBar/ index';
+import ResourceTreeContext, { ResourceTreeTab } from './context/ResourceTreeContext';
 import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
@@ -44,7 +46,25 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const { pageStore, settingStore, sqlStore, modalStore, taskStore, sessionManagerStore } = props;
   const { pages = [], activePageKey } = pageStore;
   const { serverSystemInfo } = settingStore;
-  const params = useParams();
+  const location = useLocation();
+  const [params] = useSearchParams(location.hash);
+  const resourceTreeContext = useContext(ResourceTreeContext);
+  function resolveParams() {
+    const projectId = toInteger(params.get('projectId'));
+    const databaseId = toInteger(params.get('databaseId'));
+    const datasourceId = toInteger(params.get('datasourceId'));
+    if (projectId) {
+      resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
+      resourceTreeContext?.setSelectProjectId(projectId);
+    } else if (datasourceId) {
+      resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
+      resourceTreeContext?.setSelectDatasourceId(datasourceId);
+    }
+    history.push('/sqlworkspace');
+  }
+  useEffect(() => {
+    resolveParams();
+  }, [params]);
 
   const [isReady, setIsReady] = useState<boolean>(false);
 

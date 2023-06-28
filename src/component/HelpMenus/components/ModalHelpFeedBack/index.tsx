@@ -25,7 +25,7 @@ export default class ModalHelp extends PureComponent<{
         className={styles.modalFeedback}
         title=""
         centered
-        visible={this.props.showModal}
+        open={this.props.showModal}
         onCancel={this.props.onCancel}
         footer={null}
       >

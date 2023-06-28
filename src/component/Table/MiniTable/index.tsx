@@ -2,10 +2,11 @@ import { Table, TablePaginationConfig } from 'antd';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { TableProps } from 'antd/es/table';
+import { FilterValue } from 'antd/lib/table/interface';
 import styles from './index.less';
 
 interface IProps<T> extends TableProps<T> {
-  loadData: (page: TablePaginationConfig) => void;
+  loadData: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
 }
 
 export default function MiniTable<T extends object>({ loadData, ...restProps }: IProps<T>) {
@@ -30,10 +31,13 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
 
   useEffect(() => {
     if (pageSize > 0) {
-      loadData?.({
-        pageSize,
-        current: 1,
-      });
+      loadData?.(
+        {
+          pageSize,
+          current: 1,
+        },
+        {},
+      );
     }
   }, [pageSize]);
 
@@ -43,8 +47,8 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
     pageSize: pageSize,
   };
 
-  cloneProps.onChange = function (page) {
-    loadData(page);
+  cloneProps.onChange = function (page, filters, s, e) {
+    loadData(page, filters);
   };
 
   return (

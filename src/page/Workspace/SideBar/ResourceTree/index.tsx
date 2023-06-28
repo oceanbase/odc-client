@@ -68,7 +68,10 @@ const ResourceTree: React.FC<IProps> = function ({
           haveObj = true;
         }
       });
-      if (haveObj) {
+      if (
+        haveObj ||
+        dbNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase())
+      ) {
         return true;
       }
     });

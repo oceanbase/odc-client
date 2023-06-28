@@ -21,8 +21,6 @@ const items = {
 const SideBar: React.FC<IProps> = function () {
   const activityBarContext = useContext(ActivityBarContext);
 
-  const Component = items[activityBarContext?.activeKey];
-
   const loadedKeys = useRef<Set<ActivityBarItemType>>(new Set());
 
   loadedKeys.current.add(activityBarContext?.activeKey);
