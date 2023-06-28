@@ -21,6 +21,7 @@ import FormContext from './FormContext';
 interface IImportFormProps {
   formType: 'fileSelecter' | 'config';
   modalStore?: ModalStore;
+  projectId: number;
   formData: ImportFormData;
   onChangeCsvColumnMappings: (csvColumnMappings: CsvColumnMapping[]) => void;
   onFormValueChange: (values: any) => void;
@@ -31,7 +32,7 @@ interface IImportFormProps {
 const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const { modalStore, formData, formType, onFormValueChange } = props;
+      const { modalStore, formData, formType, projectId, onFormValueChange } = props;
       const [form] = useForm();
       const formConfigContext = useContext(FormConfigContext);
       const isSingleImport = !!modalStore.importModalData;
@@ -62,7 +63,9 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
             return <FileSelecterPanel isSingleImport={isSingleImport} form={form} />;
           }
           case 'config': {
-            return <ConfigPanel isSingleImport={isSingleImport} form={form} />;
+            return (
+              <ConfigPanel isSingleImport={isSingleImport} form={form} projectId={projectId} />
+            );
           }
           default: {
             return null;

@@ -20,6 +20,7 @@ export enum FormType {
 interface IExportFormProps {
   modalStore?: ModalStore;
   formData: ExportFormData;
+  projectId: number;
   ref?: React.Ref<{ valid: (callback: any) => void }>;
   onFormValueChange: any;
   formType: FormType;
@@ -28,7 +29,7 @@ interface IExportFormProps {
 const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const { formData, formType, onFormValueChange } = props;
+      const { formData, formType, onFormValueChange, projectId } = props;
       const [form] = useForm<ExportFormData>();
       const [connection, setConnection] = useState<IConnection>(null);
       const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
@@ -64,7 +65,13 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
       function renderFormItem() {
         switch (formType) {
           case FormType.ObjSelecter: {
-            return <ObjSelecterPanel form={form} onConnectionChange={handleConnectionChange} />;
+            return (
+              <ObjSelecterPanel
+                form={form}
+                projectId={projectId}
+                onConnectionChange={handleConnectionChange}
+              />
+            );
           }
           case FormType.Config: {
             return (

@@ -399,7 +399,7 @@ class CreateModal extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { modalStore } = this.props;
+    const { modalStore, projectId } = this.props;
     const {
       formData,
       stepIndex,
@@ -470,6 +470,7 @@ class CreateModal extends React.Component<IProps, IState> {
               <ImportForm
                 formType={currentStep?.key}
                 formData={formData}
+                projectId={projectId}
                 onFormValueChange={(values) => {
                   this.setState({
                     isFormChanged: true,
