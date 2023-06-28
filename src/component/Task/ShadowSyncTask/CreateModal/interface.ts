@@ -36,6 +36,7 @@ export interface IContentProps {
   schemaName: string;
   sessionId: string;
   connectionId: number;
+  projectId: number;
   data: IShaodwSyncData;
   isReadonlyPublicConn?: boolean;
   setData: (v: IShaodwSyncData) => void;

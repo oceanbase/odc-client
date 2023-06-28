@@ -1,7 +1,7 @@
 import BigSelect from '@/component/BigSelect';
 import { Tabs } from 'antd';
 import classnames from 'classnames';
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import styles from './index.less';
 
 export enum TitleType {
@@ -22,6 +22,7 @@ interface IPageContainerProps {
     showDivider?: boolean;
     onChange?: (value: string) => void;
   };
+  containerWrapStyle?: CSSProperties;
   tabList?: { key: string; tab: ReactNode }[];
   tabActiveKey?: string;
   tabBarExtraContent?: ReactNode;
@@ -30,7 +31,7 @@ interface IPageContainerProps {
 }
 
 const PageContainer: React.FC<IPageContainerProps> = (props) => {
-  const { titleProps, tabList, tabActiveKey, tabBarExtraContent, bigSelectBottom, onTabChange } =
+  const { titleProps, tabList, tabActiveKey, tabBarExtraContent, bigSelectBottom, onTabChange, containerWrapStyle } =
     props;
   const { title, type, options, defaultValue, showDivider, onChange } = titleProps;
 
@@ -74,7 +75,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
           })}
         </Tabs>
       )}
-      <div className={styles['page-container-main']}>{props?.children}</div>
+      <div className={styles['page-container-main']} style={containerWrapStyle}>{props?.children}</div>
     </div>
   );
 };

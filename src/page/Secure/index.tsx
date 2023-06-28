@@ -41,13 +41,13 @@ const Pages = {
     component: Record, // 操作记录
   },
   [IPageType.RiskDetectRules]: {
-    component: RiskDetectRules, // SQL
+    component: RiskDetectRules, // 风险识别规则
   },
   [IPageType.Secure_Approval]: {
     component: Approval, // 审批流程
   },
   [IPageType.RiskLevel]: {
-    component: RiskLevel, // SQL 开发规范
+    component: RiskLevel, // 风险等级
   },
 };
 
@@ -61,7 +61,7 @@ const tabs = [
     key: IPageType.RiskLevel,
   },
   {
-    tab: '风险识别规范',
+    tab: '风险识别规则',
     key: IPageType.RiskDetectRules,
   },
   {
@@ -179,6 +179,10 @@ const Index: React.FC<IProps> = function ({ userStore }) {
         type: TitleType.TEXT,
         title: '安全规范',
       }}
+      containerWrapStyle={
+        [IPageType.Secure_Env, IPageType.RiskDetectRules].includes(page) ? {
+        padding: "0px 12px"
+      } : {}}
       tabList={tabs}
       tabActiveKey={page}
       onTabChange={handleChange}

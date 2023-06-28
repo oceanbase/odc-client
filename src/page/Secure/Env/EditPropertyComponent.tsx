@@ -20,21 +20,36 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
   switch (componentType) {
     case ComponentType.INPUT_STRING: {
       return (
-        <Form.Item label={label} name={name}>
+        <Form.Item label={label} name={name} rules={[
+          {
+            required: true,
+            message: `请输入${label}`
+          }
+        ]}>
           <Input />
         </Form.Item>
       );
     }
     case ComponentType.INPUT_NUMBER: {
       return (
-        <Form.Item label={label} name={name}>
+        <Form.Item label={label} name={name} rules={[
+          {
+            required: true,
+            message: `请输入${label}`
+          }
+        ]}>
           <InputNumber defaultValue={defaultValue} />
         </Form.Item>
       );
     }
     case ComponentType.RADIO: {
       return (
-        <Form.Item label={label} name={name}>
+        <Form.Item label={label} name={name} rules={[
+          {
+            required: true,
+            message: `请选择${label}`
+          }
+        ]}>
           <Radio.Group defaultValue={defaultValue}>
             {candidates.map((candidate, index) => {
               return (
@@ -49,34 +64,36 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     }
     case ComponentType.SELECT_SINGLE: {
       return (
-        <Form.Item label={label} name={name}>
+        <Form.Item label={label} name={name} rules={[
+          {
+            required: true,
+            message: `请选择${label}`
+          }
+        ]}>
           <Select />
         </Form.Item>
       );
     }
     case ComponentType.SELECT_MULTIPLE: {
-      // const options = candidates.map((candidate) => {
-      //   return {
-      //     value: candidate,
-      //     label: candidate,
-      //   };
-      // });
-      // console.log(defaultValue, options);
       return (
-        <Form.Item label={label} name={name}>
+        <Form.Item label={label} name={name} rules={[
+          {
+            required: true,
+            message: `请选择${label}`
+          }
+        ]}>
           <Select mode="multiple" options={options} defaultValue={defaultValue} />
         </Form.Item>
       );
     }
     case ComponentType.SELECT_TAGS: {
-      // const options = candidates.map((candidate) => {
-      //   return {
-      //     value: candidate,
-      //     label: candidate,
-      //   };
-      // });
       return (
-        <Form.Item label={label} name={name}>
+        <Form.Item label={label} name={name} rules={[
+          {
+            required: true,
+            message: `请选择${label}`
+          }
+        ]}>
           <Select mode="tags" options={options} defaultValue={defaultValue} />
         </Form.Item>
       );

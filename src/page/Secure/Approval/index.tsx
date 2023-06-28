@@ -1,7 +1,7 @@
 import {
   deleteTaskFlow,
   getIntegrationList,
-  getRoleList,
+  getResourceRoles,
   getTaskFlowList,
 } from '@/common/network/manager';
 import { actionTypes, canAcess } from '@/component/Acess';
@@ -9,20 +9,44 @@ import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
-import type { IManagerIntegration, IManagerRole, IResponseData, ITaskFlow } from '@/d.ts';
+import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { message, Modal } from 'antd';
+import { message, Modal, Space } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
 import React from 'react';
 import FormModal from './component/FormModal';
 
 import styles from './index.less';
+
+const renderTime = (time) => {
+  return (
+    <Space size={4}>
+      <span>{time}</span>
+      <span>小时</span>
+    </Space>
+  );
+};
+
+const renderNodes = (nodes: ITaskFlowNode[]) => {
+  return nodes
+    ?.map((item) => {
+      if (item.autoApproval) {
+        return '自动审批';
+      }
+      return item.resourceRoleName || item.externalApprovalName;
+    })
+    ?.join(' -> ');
+};
+
 interface IProps {}
 
 interface IState {
   flowList: IResponseData<ITaskFlow>;
-  roles: IManagerRole[];
+  roles: {
+    name: string;
+    id: number;
+  }[];
   integrations: IManagerIntegration[];
   editId: number;
   detailId: number;
@@ -47,24 +71,54 @@ class Approval extends React.PureComponent<IProps, IState> {
     return [
       {
         title: '流程名称',
+        width: 200,
         dataIndex: 'name',
-        key: 'name',
         ellipsis: true,
         fixed: 'left' as FixedType,
       },
 
       {
         title: '审批流程',
-        width: 200,
-        dataIndex: 'creatorName',
+        dataIndex: 'nodes',
         className: styles.title,
-        key: 'creatorName',
+        ellipsis: true,
+        render: renderNodes,
+      },
+      {
+        title: '审批有效期',
+        width: 132,
+        dataIndex: 'approvalExpirationIntervalSeconds',
+        className: styles.title,
+        ellipsis: true,
+        render: renderTime,
+      },
+      {
+        title: '执行等待有效期',
+        width: 132,
+        dataIndex: 'waitExecutionExpirationIntervalSeconds',
+        className: styles.title,
+        ellipsis: true,
+        render: renderTime,
+      },
+      {
+        title: '执行有效期',
+        width: 132,
+        dataIndex: 'executionExpirationIntervalSeconds',
+        className: styles.title,
+        ellipsis: true,
+        render: renderTime,
+      },
+      {
+        title: '使用数量',
+        width: 180,
+        dataIndex: 'referencedCount',
+        className: styles.title,
+        key: 'referencedCount',
         ellipsis: true,
       },
-
       {
         title: '操作',
-        width: 132,
+        width: 200,
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => (
@@ -122,24 +176,17 @@ class Approval extends React.PureComponent<IProps, IState> {
   };
 
   private loadData = async (args: ITableLoadOptions) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
-    const { enabled, creatorName } = filters ?? {};
+    const { searchValue = '', sorter, pagination, pageSize } = args ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
 
     const data = {
       name: searchValue,
-      enabled: enabled,
-      creatorName: creatorName,
       sort: column?.dataIndex,
       page: current,
       size: pageSize,
     };
 
-    // enabled filter
-    data.enabled = enabled?.length ? enabled : undefined;
-    // creatorName filter
-    data.creatorName = creatorName?.length ? creatorName : undefined;
     // sorter
     data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const flowList = await getTaskFlowList(data);
@@ -149,9 +196,13 @@ class Approval extends React.PureComponent<IProps, IState> {
   };
 
   loadRoles = async () => {
-    const roles = await getRoleList();
+    const res = await getResourceRoles();
+    const roles = res?.contents.map(({ roleName, id }) => ({
+      name: roleName,
+      id,
+    }));
     this.setState({
-      roles: roles?.contents,
+      roles,
     });
   };
 

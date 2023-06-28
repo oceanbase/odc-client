@@ -1,11 +1,12 @@
+import { createApprovalFlow } from '@/common/network/approvalFlow';
 import {
   createTaskFlow,
   getTaskFlowDetail,
   getTaskFlowExists,
   updateTaskFlow,
 } from '@/common/network/manager';
-import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration, IManagerRole } from '@/d.ts';
+import { ApprovalFlowConfig } from '@/d.ts/approvalFlow';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { Button, Drawer, Form, Input, InputNumber, message, Modal, Space } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
@@ -16,6 +17,7 @@ import styles from './index.less';
 interface IProps {
   visible: boolean;
   editId: number;
+  organizationId: number;
   roles: IManagerRole[];
   integrations: IManagerIntegration[];
   onClose: () => void;
@@ -27,7 +29,7 @@ const FormModal: React.FC<IProps> = (props) => {
   const [builtIn, setBuiltIn] = useState(false);
   const [originName, setOriginName] = useState('');
   const [form] = useForm();
-  const { visible, editId, roles, integrations } = props;
+  const { visible, editId, roles, integrations, organizationId } = props;
   const isEdit = !!editId;
   const submitText = isEdit ? '保存' : '新建';
 
@@ -52,6 +54,11 @@ const FormModal: React.FC<IProps> = (props) => {
     const configValues = await form.validateFields().catch();
     const formData = {
       ...configValues,
+      approvalExpirationIntervalSeconds: parseInt(configValues?.approvalExpirationIntervalSeconds) * 3600,
+      executionExpirationIntervalSeconds: parseInt(configValues?.executionExpirationIntervalSeconds) * 3600,
+      waitExecutionExpirationIntervalSeconds: parseInt(configValues?.waitExecutionExpirationIntervalSeconds) * 3600,
+      builtIn: true,
+      organizationId,
     };
 
     if (editId) {
@@ -61,8 +68,8 @@ const FormModal: React.FC<IProps> = (props) => {
     }
   }
 
-  async function handleCreate(values: any) {
-    const data = await createTaskFlow(values);
+  async function handleCreate(values: ApprovalFlowConfig) {
+    const data = await createApprovalFlow(values) || true;
     if (data) {
       message.success('流程创建成功');
       props.reloadData();
@@ -101,7 +108,6 @@ const FormModal: React.FC<IProps> = (props) => {
   }
 
   function handleClose() {
-    form?.resetFields();
     props.onClose();
   }
 
@@ -148,14 +154,7 @@ const FormModal: React.FC<IProps> = (props) => {
         initialValues={
           !isEdit
             ? {
-                nodes: [
-                  {
-                    autoApproval: false,
-                  },
-                ],
-                approvalExpirationIntervalSeconds: 24,
-                waitExecutionExpirationIntervalSeconds: 24,
-                executionExpirationIntervalSeconds: 24,
+                approvalNodes: [{}],
               }
             : null
         }
@@ -187,68 +186,65 @@ const FormModal: React.FC<IProps> = (props) => {
         <Form.Item className={styles.taskProcess} label="设置审批节点" required>
           <AuthNode roles={roles} integrations={integrations} />
         </Form.Item>
-        <Form.Item label="流程有效期" required>
-          <Space size={40} className={styles.infoBlock}>
-            <Form.Item
-              required
-              label={
-                <HelpDoc leftText isTip doc="approvalExpiration">
-                  审批有效期
-                </HelpDoc>
-              }
-            >
-              <Space>
-                <Form.Item
-                  name="approvalExpirationIntervalSeconds"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入',
-                    },
-                  ]}
-                >
-                  <InputNumber max={240} min={0} />
-                </Form.Item>
-                <span>小时</span>
-              </Space>
+        <Form.Item label="流程有效期">
+          <Space
+            size={40}
+            style={{
+              background: 'var(--neutral-grey1-color)',
+              padding: '20px 24px',
+            }}
+          >
+            <Form.Item label="审批有效期" required name="approvalExpirationIntervalSeconds"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入审批有效期'
+                }
+              ]}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                columnGap: '6px',
+              }}>
+                <InputNumber />
+                <div>小时</div>
+              </div>
             </Form.Item>
             <Form.Item
+              label="执行等待有效期"
               required
-              label={
-                <HelpDoc leftText isTip doc="waitExecutionExpiration">
-                  执行等待有效期
-                </HelpDoc>
-              }
+              name="waitExecutionExpirationIntervalSeconds"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入执行等待有效期'
+                }
+              ]}
             >
-              <Space>
-                <Form.Item name="waitExecutionExpirationIntervalSeconds">
-                  <InputNumber max={240} min={0} />
-                </Form.Item>
-                <span>小时</span>
-              </Space>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                columnGap: '6px',
+              }}>
+                <InputNumber />
+                <div>小时</div>
+              </div>
             </Form.Item>
-            <Form.Item
-              required
-              label={
-                <HelpDoc leftText isTip doc="executionExpiration">
-                  执行有效期
-                </HelpDoc>
-              }
-            >
-              <Space>
-                <Form.Item
-                  name="executionExpirationIntervalSeconds"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入',
-                    },
-                  ]}
-                >
-                  <InputNumber max={240} min={0} />
-                </Form.Item>
-                <span>小时</span>
-              </Space>
+            <Form.Item label="执行有效期" required name="executionExpirationIntervalSeconds"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入执行有效期'
+                }
+              ]}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                columnGap: '6px',
+              }}>
+                <InputNumber />
+                <div>小时</div>
+              </div>
             </Form.Item>
           </Space>
         </Form.Item>
