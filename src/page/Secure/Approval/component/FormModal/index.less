@@ -1,4 +1,22 @@
 .taskModal {
+  .infoLabel {
+    padding: 4px 0 4px 0;
+    font-size: 12px;
+    line-height: 1.5715;
+  }
+  .infoBlock {
+    width: 100%;
+    padding: 12px;
+    background: var(--neutral-grey6-color);
+    border-radius: 2px;
+    :global {
+      .ant-space-item {
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
   :global {
     .ant-drawer-footer {
       display: flex;
