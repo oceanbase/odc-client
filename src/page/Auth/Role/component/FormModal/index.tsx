@@ -213,7 +213,7 @@ const FormModal: React.FC<IProps> = (props) => {
       if (visible) {
         setPermissionActiveKey('connectionAccessPermissions');
         setData(defaultData);
-        formRef.current.setFieldsValue(defaultData);
+        formRef.current?.setFieldsValue(defaultData);
       }
     }
   }, [editId, visible]);
