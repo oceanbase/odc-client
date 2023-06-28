@@ -199,7 +199,11 @@ export default class EditorToolBar extends Component<IProps, IState> {
       if (isShrink) {
         if (i === actionGroups.length - 1) {
           buttonsArr.push(
-            <Toolbar.ButtonPopover content={<Space>{_tmpArr}</Space>} icon={'ELLIPSIS_MENU'} />,
+            <Toolbar.ButtonPopover
+              key={`${i}-tool-buttom`}
+              content={<Space>{_tmpArr}</Space>}
+              icon={'ELLIPSIS_MENU'}
+            />,
           );
         }
       } else {

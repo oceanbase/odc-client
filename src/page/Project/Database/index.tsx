@@ -10,6 +10,7 @@ import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
+import { Tag } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
@@ -27,14 +28,16 @@ const Database: React.FC<IProps> = ({ id }) => {
   const params = useRef({
     pageSize: 0,
     current: 0,
+    environmentId: null,
   });
 
   const { data: envList } = useRequest(listEnvironments);
 
-  const loadData = async (pageSize, current) => {
+  const loadData = async (pageSize, current, environmentId) => {
     params.current.pageSize = pageSize;
     params.current.current = current;
-    const res = await listDatabases(parseInt(id), null, current, pageSize);
+    params.current.environmentId = environmentId;
+    const res = await listDatabases(parseInt(id), null, current, pageSize, null, environmentId);
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
@@ -42,7 +45,7 @@ const Database: React.FC<IProps> = ({ id }) => {
   };
 
   function reload() {
-    loadData(params.current.pageSize, params.current.current);
+    loadData(params.current.pageSize, params.current.current, params.current.environmentId);
   }
 
   return (
@@ -84,10 +87,21 @@ const Database: React.FC<IProps> = ({ id }) => {
           },
           {
             title: '环境',
-            dataIndex: 'organizationId',
+            dataIndex: 'environmentId',
+            filters: envList?.map((env) => {
+              return {
+                text: env.name,
+                value: env.id,
+              };
+            }),
+            filterMultiple: false,
             width: 100,
             render(value, record, index) {
-              return envList?.find((env) => env.id == value)?.name || '-';
+              return (
+                <Tag color={record?.environment?.style?.toLowerCase()}>
+                  {record?.environment?.name}
+                </Tag>
+              );
             },
           },
           {
@@ -137,10 +151,10 @@ const Database: React.FC<IProps> = ({ id }) => {
         pagination={{
           total,
         }}
-        loadData={(page) => {
+        loadData={(page, filters) => {
           const pageSize = page.pageSize;
           const current = page.current;
-          loadData(pageSize, current);
+          loadData(pageSize, current, filters['environmentId']?.[0]);
         }}
       />
       <ChangeProjectModal

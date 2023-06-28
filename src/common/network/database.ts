@@ -8,6 +8,7 @@ export async function listDatabases(
   page?: number,
   size?: number,
   name?: string,
+  environmentId?: number,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -16,6 +17,7 @@ export async function listDatabases(
       name,
       page,
       size,
+      environmentId,
     },
   });
 
