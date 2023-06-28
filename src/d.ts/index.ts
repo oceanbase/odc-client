@@ -276,16 +276,25 @@ export interface ITaskFlow {
   id: number;
   name: string;
   builtIn: boolean;
-  creator: {
-    id: number;
-    name: string;
-    accountName: string;
-    roleNames: string[];
-  };
-  enabled: boolean;
+  approvalExpirationIntervalSeconds: number;
+  executionExpirationIntervalSeconds: number;
+  waitExecutionExpirationIntervalSeconds: number;
+  referencedCount: number;
+  nodes: ITaskFlowNode[];
+  organizationId: number;
   createTime: number;
   description: string;
 }
+
+export interface ITaskFlowNode {
+  resourceRoleId: number;
+  resourceRoleName: string;
+  externalApprovalId: number;
+  externalApprovalName: string;
+  autoApproval: boolean;
+  sequenceNumber: number;
+}
+
 interface Encryption {
   enabled: boolean;
   secret: string;

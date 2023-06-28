@@ -1,3 +1,4 @@
+import type { ITaskFlow } from '@/d.ts';
 import {
   AuditEventActionType,
   AuditEventResult,
@@ -13,7 +14,6 @@ import {
   IManagerIntegration,
   IManagerPublicConnection,
   IManagerResourceGroup,
-  IManagerResourceType,
   IManagerRole,
   IManagerUser,
   IManagerUserPermission,
@@ -25,9 +25,7 @@ import {
   IResponseData,
   ISSOConfig,
   IUserConfig,
-  TaskPageType,
 } from '@/d.ts';
-import type { ITaskFlowConfig } from '@/page/Manage/interface';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
 interface IRoleForUpdate extends IManagerRole {
@@ -474,8 +472,8 @@ export async function setSystemConfig(
 /**
  * 新建任务流程
  */
-export async function createTaskFlow(data: Partial<ITaskFlowConfig>): Promise<ITaskFlowConfig> {
-  const result = await request.post('/api/v2/flow/flowConfigs/', {
+export async function createTaskFlow(data: Partial<ITaskFlow>): Promise<ITaskFlow> {
+  const result = await request.post('/api/v2/regulation/approvalFlows', {
     data,
   });
   return result?.data;
@@ -484,32 +482,17 @@ export async function createTaskFlow(data: Partial<ITaskFlowConfig>): Promise<IT
 /**
  * 删除任务流程
  */
-export async function deleteTaskFlow(id: number): Promise<ITaskFlowConfig> {
-  const result = await request.delete(`/api/v2/flow/flowConfigs/${id}`);
+export async function deleteTaskFlow(id: number): Promise<ITaskFlow> {
+  const result = await request.delete(`/api/v2/regulation/approvalFlows/${id}`);
   return result?.data;
 }
 
 /**
  * 更新任务流程
  */
-export async function updateTaskFlow(data: Partial<ITaskFlowConfig>): Promise<ITaskFlowConfig> {
-  const result = await request.put(`/api/v2/flow/flowConfigs/${data.id}`, {
+export async function updateTaskFlow(data: Partial<ITaskFlow>): Promise<ITaskFlow> {
+  const result = await request.put(`/api/v2/regulation/approvalFlows/${data.id}`, {
     data,
-  });
-  return result?.data;
-}
-
-/**
- * 设置任务流程状态
- */
-export async function setTaskFlowEnable(data: {
-  id: number;
-  enabled: boolean;
-}): Promise<ITaskFlowConfig> {
-  const result = await request.post(`/api/v2/flow/flowConfigs/${data.id}/setEnabled`, {
-    data: {
-      enabled: data.enabled,
-    },
   });
   return result?.data;
 }
@@ -517,8 +500,8 @@ export async function setTaskFlowEnable(data: {
 /**
  * 获取任务流程详情
  */
-export async function getTaskFlowDetail(id: number): Promise<ITaskFlowConfig> {
-  const result = await request.get(`/api/v2/flow/flowConfigs/${id}`);
+export async function getTaskFlowDetail(id: number): Promise<ITaskFlow> {
+  const result = await request.get(`/api/v2/regulation/approvalFlows/${id}`);
   return result?.data;
 }
 
@@ -528,17 +511,12 @@ export async function getTaskFlowDetail(id: number): Promise<ITaskFlowConfig> {
 export async function getTaskFlowList(
   params?: Partial<{
     name: string;
-    taskType: TaskPageType;
-    creatorName: number;
-    enabled: boolean;
     sort: string;
-    resourceId: number;
-    resourceType: IManagerResourceType;
     page: number;
     size: number;
   }>,
-): Promise<IResponseData<ITaskFlowConfig>> {
-  const result = await request.get('/api/v2/flow/flowConfigs/', {
+): Promise<IResponseData<ITaskFlow>> {
+  const result = await request.get('/api/v2/regulation/approvalFlows', {
     params,
   });
   return result?.data;
@@ -552,28 +530,6 @@ export async function getTaskFlowExists(name: string): Promise<boolean> {
     data: {
       name,
     },
-  });
-  return result?.data;
-}
-
-/**
- * 任务流程名称 批量删除
- */
-export async function batchDeleteTaskFlow(ids: number[]): Promise<boolean> {
-  const result = await request.post('/api/v2/flow/flowConfigs/batchDelete', {
-    data: ids,
-  });
-  return result?.data;
-}
-
-/**
- * 任务流程 优先级设置
- */
-export async function updatePriority(
-  data: Record<TaskPageType, ITaskFlowConfig[]>,
-): Promise<IResponseData<ITaskFlowConfig>> {
-  const result = await request.put('/api/v2/flow/flowConfigs/setPriority', {
-    data,
   });
   return result?.data;
 }
