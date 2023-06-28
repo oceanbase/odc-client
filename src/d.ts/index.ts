@@ -202,6 +202,13 @@ export enum IManagerRolePermissionType {
   systemOperationPermissions = 'systemOperationPermissions',
 }
 
+export interface IResourceRole {
+  id: number;
+  resourceType: string;
+  roleName: string;
+  description: string;
+}
+
 export interface IResponseData<T> {
   contents: T[];
   page: {

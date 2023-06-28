@@ -19,9 +19,10 @@ const FormItem = Form.Item;
 interface IProps {
   form: FormInstance<any>;
   isSingleImport?: boolean;
+  projectId: number;
 }
 
-const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport }) {
+const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport, projectId }) {
   const [tables, setTables] = useState([]);
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
@@ -90,7 +91,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport }) 
                   </Radio.Button>
                 </Radio.Group>
               </FormItem>
-              <DatabaseSelect />
+              <DatabaseSelect projectId={projectId} />
               {(isCsvFileType || isSingleImport) && (
                 <FormItem
                   required={isCsvFileType}

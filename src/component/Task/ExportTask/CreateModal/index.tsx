@@ -257,7 +257,7 @@ class CreateModal extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { modalStore } = this.props;
+    const { modalStore, projectId } = this.props;
     const { formData, submitting, stepIndex, isSaveDefaultConfig } = this.state;
     const currentStep = this.steps[stepIndex],
       prevStep = this.steps[stepIndex - 1],
@@ -317,6 +317,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 });
               }}
               formData={formData}
+              projectId={projectId}
               ref={this._formRef}
               formType={currentStep.key}
             />

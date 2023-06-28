@@ -215,7 +215,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             inspectTriggerStrategy: IPartitionPlanInspectTriggerStrategy.NONE,
           }}
         >
-          <DatabaseSelect />
+          <DatabaseSelect projectId={projectId} />
           {enabledInspectTriggerStrategy && (
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {

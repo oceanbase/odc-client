@@ -139,6 +139,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       >
         <DataMockerForm
           tableName={modalStore.dataMockerData?.tableName}
+          projectId={projectId}
           onDbModeChange={handleDbModeChange}
           ref={formRef}
         />

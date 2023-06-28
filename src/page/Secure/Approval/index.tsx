@@ -1,7 +1,7 @@
 import {
   deleteTaskFlow,
   getIntegrationList,
-  getRoleList,
+  getResourceRoles,
   getTaskFlowList,
 } from '@/common/network/manager';
 import { actionTypes, canAcess } from '@/component/Acess';
@@ -9,13 +9,7 @@ import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
-import type {
-  IManagerIntegration,
-  IManagerRole,
-  IResponseData,
-  ITaskFlow,
-  ITaskFlowNode,
-} from '@/d.ts';
+import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { message, Modal, Space } from 'antd';
@@ -49,7 +43,10 @@ interface IProps {}
 
 interface IState {
   flowList: IResponseData<ITaskFlow>;
-  roles: IManagerRole[];
+  roles: {
+    name: string;
+    id: number;
+  }[];
   integrations: IManagerIntegration[];
   editId: number;
   detailId: number;
@@ -199,9 +196,13 @@ class Approval extends React.PureComponent<IProps, IState> {
   };
 
   loadRoles = async () => {
-    const roles = await getRoleList();
+    const res = await getResourceRoles();
+    const roles = res?.contents.map(({ roleName, id }) => ({
+      name: roleName,
+      id,
+    }));
     this.setState({
-      roles: roles?.contents,
+      roles,
     });
   };
 

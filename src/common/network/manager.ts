@@ -22,6 +22,7 @@ import {
   IntegrationType,
   IPromptVo,
   IRequestListParamsV2,
+  IResourceRole,
   IResponseData,
   ISSOConfig,
   IUserConfig,
@@ -531,6 +532,16 @@ export async function getTaskFlowExists(name: string): Promise<boolean> {
       name,
     },
   });
+  return result?.data;
+}
+
+/**
+ * 获取任务流程中的角色列表
+ */
+export async function getResourceRoles(
+  params?: IRequestListParamsV2,
+): Promise<IResponseData<IResourceRole>> {
+  const result = await request.get('/api/v2/iam/resourceRoles');
   return result?.data;
 }
 

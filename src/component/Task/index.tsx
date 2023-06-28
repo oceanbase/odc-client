@@ -325,7 +325,7 @@ class TaskManaerPage extends React.Component<IProps, IState> {
         <PartitionTaskCreateModal projectId={projectId} />
         <SQLPlanTaskCreateModal projectId={projectId} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
-        <DataArchiveTaskCreateModal />
+        <DataArchiveTaskCreateModal projectId={projectId} />
       </>
     );
   }
