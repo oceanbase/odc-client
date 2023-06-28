@@ -9,7 +9,6 @@ import userStore from '@/store/login';
 import modalStore from '@/store/modal';
 import pageStore from '@/store/page';
 import schemaStore from '@/store/schema';
-import secureStore from '@/store/secure';
 import sessionManagerStore from '@/store/sessionManager';
 import settingStore from '@/store/setting';
 import snippetStore from '@/store/snippet';
@@ -28,7 +27,6 @@ export default function (props) {
       commonStore={commonStore}
       modalStore={modalStore}
       taskStore={taskStore}
-      secureStore={secureStore}
       snippetStore={snippetStore}
       authStore={authStore}
       debugStore={debugStore}

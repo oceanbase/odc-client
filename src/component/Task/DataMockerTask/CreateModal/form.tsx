@@ -24,13 +24,14 @@ interface IDataMockerFormProps {
   settingStore?: SettingStore;
   ref?: React.Ref<FormInstance>;
   tableName?: string;
+  projectId: number;
   onDbModeChange: (mode: ConnectionMode) => void;
 }
 
 const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
   observer(
     forwardRef((props, ref) => {
-      const { settingStore, tableName, onDbModeChange } = props;
+      const { settingStore, tableName, projectId, onDbModeChange } = props;
       const [form] = Form.useForm<IMockFormData>();
       /**
        * 字段长度信息表
@@ -146,7 +147,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             databaseName,
           }}
         >
-          <DatabaseSelect />
+          <DatabaseSelect projectId={projectId} />
           <Row gutter={14}>
             <Col span={12}>
               <Form.Item

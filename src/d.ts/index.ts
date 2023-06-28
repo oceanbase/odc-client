@@ -202,6 +202,13 @@ export enum IManagerRolePermissionType {
   systemOperationPermissions = 'systemOperationPermissions',
 }
 
+export interface IResourceRole {
+  id: number;
+  resourceType: string;
+  roleName: string;
+  description: string;
+}
+
 export interface IResponseData<T> {
   contents: T[];
   page: {
@@ -276,16 +283,25 @@ export interface ITaskFlow {
   id: number;
   name: string;
   builtIn: boolean;
-  creator: {
-    id: number;
-    name: string;
-    accountName: string;
-    roleNames: string[];
-  };
-  enabled: boolean;
+  approvalExpirationIntervalSeconds: number;
+  executionExpirationIntervalSeconds: number;
+  waitExecutionExpirationIntervalSeconds: number;
+  referencedCount: number;
+  nodes: ITaskFlowNode[];
+  organizationId: number;
   createTime: number;
   description: string;
 }
+
+export interface ITaskFlowNode {
+  resourceRoleId: number;
+  resourceRoleName: string;
+  externalApprovalId: number;
+  externalApprovalName: string;
+  autoApproval: boolean;
+  sequenceNumber: number;
+}
+
 interface Encryption {
   enabled: boolean;
   secret: string;

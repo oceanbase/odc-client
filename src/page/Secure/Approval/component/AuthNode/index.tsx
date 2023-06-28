@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Checkbox, Form, Space, Timeline } from 'antd';
+import { Button, Checkbox, Form, Space, Timeline } from 'antd';
 import React from 'react';
 import { NodeSelector } from '../NodeSelector';
 import styles from './index.less';
@@ -19,7 +19,7 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
   return (
     <>
       <Form.List
-        name="approvalNodes"
+        name="nodes"
         rules={[
           {
             validator: handleValid,
@@ -47,13 +47,14 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                   <Space>
                     <Form.Item noStyle shouldUpdate>
                       {({ getFieldValue }) => {
-                        const fieldkey = ['approvalNodes', field.name, 'externalApproval'];
+                        const fieldkey = ['nodes', field.name, 'externalApproval'];
                         const isExternalApproval = getFieldValue(fieldkey);
-                        const approvalNodes = getFieldValue('approvalNodes');
+                        const approvalNodes = getFieldValue('nodes');
                         const nodes = isExternalApproval ? integrations : roles;
+                        const name = isExternalApproval ? 'externalApprovalId' : 'resourceRoleId';
                         const selectedNodes = nodes
                           ?.filter((item) =>
-                            approvalNodes?.find((node) => node?.roleId === item?.id),
+                            approvalNodes?.find((node) => node?.[name] === item?.id),
                           )
                           ?.map((item) => ({
                             id: item.id,
@@ -63,7 +64,7 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                         return (
                           <NodeSelector
                             title={title}
-                            name={[field.name, 'roleId']}
+                            name={[field.name, name]}
                             selectedNodes={selectedNodes}
                             nodes={nodes}
                           />
@@ -72,11 +73,11 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                     </Form.Item>
                     <Form.Item noStyle shouldUpdate>
                       {({ getFieldValue }) => {
-                        const fieldkey = ['approvalNodes', field.name, 'externalApproval'];
+                        const fieldkey = ['nodes', field.name, 'externalApproval'];
                         const isExternalApproval = getFieldValue(fieldkey);
                         return (
                           <Form.Item
-                            name={[field.name, 'autoApprove']}
+                            name={[field.name, 'autoApproval']}
                             valuePropName="checked"
                             noStyle
                           >
@@ -97,9 +98,9 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
             ))}
             <Timeline.Item className={styles.opBtn}>
               <Space split={<span className={styles.desc}>|</span>}>
-                <span className={styles.btnLink} onClick={() => add()}>
+                <Button type="link" onClick={() => add({ autoApproval: false })}>
                   添加审批节点
-                </span>
+                </Button>
               </Space>
               <Form.ErrorList errors={errors} />
             </Timeline.Item>

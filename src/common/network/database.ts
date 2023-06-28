@@ -3,8 +3,8 @@ import { IDatabase } from '@/d.ts/database';
 import request from '@/util/request';
 
 export async function listDatabases(
-  projectId: number,
-  dataSourceId: number,
+  projectId?: number,
+  dataSourceId?: number,
   page?: number,
   size?: number,
   name?: string,

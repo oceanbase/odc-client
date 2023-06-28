@@ -11,10 +11,11 @@ const FormItem = Form.Item;
 
 interface IProps {
   form: FormInstance<any>;
+  projectId: number;
   onConnectionChange: (data: IConnection) => void;
 }
 
-const ObjSelecterPanel: React.FC<IProps> = function ({ form, onConnectionChange }) {
+const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnectionChange }) {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const databaseName = database?.name;
@@ -72,7 +73,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, onConnectionChange 
           </Radio.Button>
         </Radio.Group>
       </FormItem>
-      <DatabaseSelect />
+      <DatabaseSelect projectId={projectId} />
       <FormItem
         label={
           formatMessage({ id: 'odc.ExportForm.ObjSelecterPanel.ExportRange' }) //导出范围

@@ -22,7 +22,7 @@ const Option = Select.Option;
 interface IProps extends IContentProps {}
 
 const SelectPanel = forwardRef<any, IProps>(function (
-  { schemaName, connectionId, sessionId, data, setData },
+  { schemaName, connectionId, sessionId, projectId, data, setData },
   ref,
 ) {
   const [tables, setTables] = useState([]);
@@ -202,7 +202,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
         });
       }}
     >
-      <DatabaseSelect />
+      <DatabaseSelect projectId={projectId} />
       <Form.Item
         extra={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyTheStructureOfThe',

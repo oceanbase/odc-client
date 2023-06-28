@@ -45,6 +45,7 @@ const defaultValue = {
 
 interface IProps {
   modalStore?: ModalStore;
+  projectId?: number;
 }
 
 const getVariables = (
@@ -72,7 +73,7 @@ const getVariables = (
 };
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore } = props;
+  const { modalStore, projectId } = props;
   const [formData, setFormData] = useState(null);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -320,7 +321,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <Input style={{ width: '320px' }} placeholder="请输入" />
         </Form.Item>
-        <DatabaseSelect showTargetDatabase />
+        <Space align="start">
+          <DatabaseSelect label="源端数据库" projectId={projectId} />
+          <DatabaseSelect label="目标数据库" name="targetDatabase" projectId={projectId} />
+        </Space>
         <VariableConfig />
         <ArchiveRange tables={tables} />
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
