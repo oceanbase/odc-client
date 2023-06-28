@@ -49,6 +49,9 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const location = useLocation();
   const [params] = useSearchParams(location.hash);
   const resourceTreeContext = useContext(ResourceTreeContext);
+
+  const [isReady, setIsReady] = useState<boolean>(false);
+
   function resolveParams() {
     const projectId = toInteger(params.get('projectId'));
     const databaseId = toInteger(params.get('databaseId'));
@@ -56,17 +59,20 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     if (projectId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
+      databaseId && openNewSQLPage(databaseId, 'project');
     } else if (datasourceId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
+      databaseId && openNewSQLPage(databaseId, 'datasource');
     }
     history.push('/sqlworkspace');
   }
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
     resolveParams();
-  }, [params]);
-
-  const [isReady, setIsReady] = useState<boolean>(false);
+  }, [params, isReady]);
 
   const handleActivatePage = (activeKey: string) => {
     pageStore.setActivePageKeyAndPushUrl(activeKey);
