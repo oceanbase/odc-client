@@ -63,12 +63,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             {...restField}
                             style={{ width: '400px' }}
                             name={[name, 'conditionExpression']}
-                            rules={[
-                              {
-                                required: true,
-                                message: '请输入',
-                              },
-                            ]}
                           >
                             <Input placeholder="请输入过滤条件" />
                           </Form.Item>

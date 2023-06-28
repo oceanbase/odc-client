@@ -64,30 +64,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
             <div className={styles.infoBlock}>
               {fields.map(({ key, name, ...restField }) => (
                 <Space key={key} align="baseline">
-                  <Form.Item
-                    {...restField}
-                    style={{ width: '194px' }}
-                    name={[name, 'name']}
-                    rules={[
-                      {
-                        required: true,
-                        message: '请输入',
-                      },
-                    ]}
-                  >
+                  <Form.Item {...restField} style={{ width: '194px' }} name={[name, 'name']}>
                     <Input placeholder="请输入" />
                   </Form.Item>
-                  <Form.Item
-                    {...restField}
-                    style={{ width: '170px' }}
-                    name={[name, 'format']}
-                    rules={[
-                      {
-                        required: true,
-                        message: '请选择',
-                      },
-                    ]}
-                  >
+                  <Form.Item {...restField} style={{ width: '170px' }} name={[name, 'format']}>
                     <Select placeholder="请选择" options={timeFormatOptions} />
                   </Form.Item>
                   <Form.List name={[name, 'pattern']}>
@@ -101,12 +81,6 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {...restField}
                                 style={{ width: '80px' }}
                                 name={[name, 'operator']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: '请选择',
-                                  },
-                                ]}
                               >
                                 <Select
                                   placeholder="请选择"
@@ -118,12 +92,6 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {...restField}
                                 style={{ width: '80px' }}
                                 name={[name, 'step']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: '请输入',
-                                  },
-                                ]}
                               >
                                 <InputNumber placeholder="请输入" min={1} style={{ width: 80 }} />
                               </Form.Item>
@@ -131,12 +99,6 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {...restField}
                                 style={{ width: '80px' }}
                                 name={[name, 'unit']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: '请选择',
-                                  },
-                                ]}
                               >
                                 <Select
                                   placeholder="请选择"
