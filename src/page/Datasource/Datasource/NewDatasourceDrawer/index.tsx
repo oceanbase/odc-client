@@ -13,12 +13,20 @@ import DatasourceForm, { IFormRef } from './Form';
 interface IProps {
   visible: boolean;
   isEdit?: boolean;
+  isPersonal?: boolean;
   id?: number;
   close: () => void;
   onSuccess: () => void;
 }
 
-export default function NewDatasourceDrawer({ visible, isEdit, id, close, onSuccess }: IProps) {
+export default function NewDatasourceDrawer({
+  visible,
+  isEdit,
+  isPersonal,
+  id,
+  close,
+  onSuccess,
+}: IProps) {
   const formRef = useRef<IFormRef>();
 
   const { data, loading, run } = useRequest(getConnectionDetail, {
@@ -130,7 +138,13 @@ export default function NewDatasourceDrawer({ visible, isEdit, id, close, onSucc
       }
     >
       <Spin spinning={loading}>
-        <DatasourceForm originDatasource={data} isEdit={isEdit} key={visible + ''} ref={formRef} />
+        <DatasourceForm
+          isPersonal={isPersonal}
+          originDatasource={data}
+          isEdit={isEdit}
+          key={visible + ''}
+          ref={formRef}
+        />
       </Spin>
     </Drawer>
   );

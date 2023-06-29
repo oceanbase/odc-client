@@ -212,7 +212,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       await pageStore.initStore();
-      console.log(pageStore.pages?.map((p) => p.params));
       if (localLoginHistoy.isNewVersion()) {
         localLoginHistoy.updateVersion();
         settingStore.enableVersionTip && openNewVersionTip();
