@@ -1,5 +1,5 @@
 import { listDatabases } from '@/common/network/database';
-import { Form, Select } from 'antd';
+import { Form, Select, Space, Tag, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 interface IProps {
@@ -8,13 +8,21 @@ interface IProps {
   projectId?: number;
 }
 
+const { Text } = Typography;
+
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const { label = '数据库', name = 'databaseId', projectId } = props;
   const [database, setDatabase] = useState([]);
   const [project, setProject] = useState(null);
 
-  const databaseOptions = database?.map(({ name, id }) => ({
-    label: name,
+  const databaseOptions = database?.map(({ name, id, environment, project }) => ({
+    label: (
+      <Space size={2} data-label={name}>
+        <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+        <span>{name}</span>
+        <Text type="secondary">{project.name}</Text>
+      </Space>
+    ),
     value: id,
   }));
 
@@ -25,7 +33,6 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
 
   const handleDatabaseChange = (value) => {
     const project = database?.find((item) => item.id === value)?.project;
-    loadDatabase(project?.id);
     setProject(project);
   };
 
@@ -38,7 +45,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       <Select
         showSearch
         filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          (option?.label?.props?.['data-label'] ?? '').toLowerCase().includes(input.toLowerCase())
         }
         style={{ width: '320px' }}
         options={databaseOptions}
