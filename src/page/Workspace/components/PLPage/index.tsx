@@ -278,9 +278,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       clearTimeout(this.timerAutoRunPLAction);
     }
     sqlStore.clear(pageKey);
-    if (plSchema && plSchema.plName) {
-      sqlStore.removeRunningPL(plSchema.plName);
-    }
     if (this.getSession()) {
       this.props.sessionManagerStore.destorySession(this.getSession().sessionId);
     }
