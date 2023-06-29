@@ -1,6 +1,5 @@
 import { ISqlExecuteResultStatus } from '@/d.ts';
 import { generateUniqKey } from '@/util/utils';
-import schema from '../schema';
 
 export function generateResultSetColumns(record, oldKey?: string) {
   if (!record) {
@@ -41,7 +40,7 @@ export function generateResultSetColumns(record, oldKey?: string) {
           ...r?.resultSetMetaData,
           columnList,
         },
-        schemaName: schema?.database?.name,
+        schemaName: record?.table?.tableName,
         columns,
         rows: r.rows?.map((row, i) => {
           return row.reduce(
