@@ -1,4 +1,4 @@
-import { SchemaComparingResult, TaskExecStrategy } from '@/d.ts';
+import { ConnectionMode, SchemaComparingResult, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 
 export interface IShaodwSyncData {
@@ -38,6 +38,7 @@ export interface IContentProps {
   connectionId: number;
   projectId: number;
   data: IShaodwSyncData;
+  connectionMode: ConnectionMode;
   isReadonlyPublicConn?: boolean;
   setData: (v: IShaodwSyncData) => void;
 }

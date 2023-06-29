@@ -152,9 +152,7 @@ export class TaskPage extends Page {
     super();
     this.pageKey = 'taskpage';
     this.pageType = PageType.TASKS;
-    this.pageTitle = formatMessage({
-      id: 'odc.component.TaskPopover.TaskCenter',
-    });
+    this.pageTitle = '工单';
     this.pageParams = {};
   }
 }

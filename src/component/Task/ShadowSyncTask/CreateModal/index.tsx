@@ -1,6 +1,5 @@
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import { ModalStore } from '@/store/modal';
-import schema from '@/store/schema';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Modal, Space } from 'antd';
@@ -11,8 +10,7 @@ import SelectPanel from './SelectPanel';
 import StructConfigPanel from './StructConfigPanel';
 
 import { createTask } from '@/common/network/task';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
-import connection from '@/store/connection';
+import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import styles from './index.less';
 
@@ -61,13 +59,15 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   const [nextLoading, setNextLoading] = useState(false);
   const [data, _setData] = useState({
     ...defaultData,
-    schemaName: schema.database?.name,
   });
   const { session, database } = useDBSession(data?.databaseId);
   const schemaName = database?.name;
   const sessionId = session?.sessionId;
-  const connectionId = database?.dataSource?.id;
-  const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
+  const connection = database?.dataSource;
+  const connectionId = connection?.id;
+  const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
+  const connectionMode =
+    connection?.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle';
 
   function setData(v) {
     _setData(v);
@@ -117,7 +117,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       description: data.description,
       parameters: {
         errorStrategy: data.errorStrategy,
-        connectionId: connection?.connection?.id,
+        connectionId,
         schemaName: data.schemaName,
         comparingTaskId: data.shadowAnalysisData?.id,
       },
@@ -206,6 +206,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         isReadonlyPublicConn={isReadonlyPublicConn}
         sessionId={sessionId}
         data={data}
+        connectionMode={connectionMode as ConnectionMode}
         setData={setData}
         ref={contentRef}
       />

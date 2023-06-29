@@ -34,7 +34,7 @@ export default function DefaultPage() {
         </div>
         <div className={styles.label}>打开匿名块窗口</div>
       </div>
-      <div onClick={() => context?.setActiveKey(ActivityBarItemType.Job)} className={styles.item}>
+      <div onClick={() => context?.setActiveKey(ActivityBarItemType.Task)} className={styles.item}>
         <div className={styles.icon}>
           <Icon component={TaskSvg} />
         </div>

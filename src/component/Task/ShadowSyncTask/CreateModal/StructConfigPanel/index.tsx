@@ -17,7 +17,7 @@ enum TabKeys {
 }
 
 const StructConfigPanel = forwardRef<any, IProps>(function (
-  { data, setData, isReadonlyPublicConn },
+  { data, setData, isReadonlyPublicConn, connectionMode },
   ref,
 ) {
   const [form] = Form.useForm();
@@ -109,6 +109,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
             skip={skip}
             cancelSkip={cancelSkip}
             data={data?.shadowAnalysisData}
+            connectionMode={connectionMode}
           />
         </Form.Item>
         <FormItemPanel

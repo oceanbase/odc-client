@@ -13,7 +13,6 @@ import {
   TaskRecord,
   TaskRecordParameters,
 } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
@@ -27,7 +26,6 @@ interface IProps {
   userStore?: UserStore;
   taskStore?: TaskStore;
   settingStore?: SettingStore;
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
   isDetailModal?: boolean;
   task: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
@@ -47,7 +45,6 @@ const ActionBar: React.FC<IProps> = inject(
   'taskStore',
   'userStore',
   'settingStore',
-  'connectionStore',
   'modalStore',
 )(
   observer((props) => {
