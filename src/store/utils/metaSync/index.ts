@@ -53,7 +53,6 @@ const saveToDB = throttle(async function () {
 }, 500);
 
 async function updateDB(key, value, propertyDBKey) {
-  console.log('update to db');
   let cacheValue = modifyCache.get(key);
   if (!cacheValue) {
     cacheValue = {};
@@ -71,9 +70,14 @@ export async function autoSave(
   property: string,
   propertyDBKey: string,
   defaultValue: any,
-) {
+): Promise<() => void> {
   let timer;
   let mobxDisposer: IReactionDisposer;
+  function saveDisposer() {
+    console.log('dispose');
+    mobxDisposer?.();
+    mobxDisposer = null;
+  }
   async function reset() {
     console.log('register meta sync');
     if (timer) {
@@ -117,11 +121,6 @@ export async function autoSave(
     return;
   }
 
-  reaction(
-    () => getOrganizationKey(),
-    () => {
-      reset();
-    },
-  );
-  reset();
+  await reset();
+  return saveDisposer;
 }
