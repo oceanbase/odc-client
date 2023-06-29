@@ -7,7 +7,9 @@ export async function updateRiskDetectRule(
   id: number,
   riskDetectRule: IRiskDetectRule,
 ): Promise<boolean> {
-  const ret = await request.put(`/api/v2/regulation/riskDetectRules/${id}`, riskDetectRule);
+  const ret = await request.put(`/api/v2/regulation/riskDetectRules/${id}`, {
+    data: riskDetectRule,
+  });
   return ret?.successful;
 }
 

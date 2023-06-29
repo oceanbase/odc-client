@@ -180,9 +180,12 @@ const Index: React.FC<IProps> = function ({ userStore }) {
         title: '安全规范',
       }}
       containerWrapStyle={
-        [IPageType.Secure_Env, IPageType.RiskDetectRules].includes(page) ? {
-        padding: "0px 12px"
-      } : {}}
+        [IPageType.Secure_Env, IPageType.RiskDetectRules].includes(page)
+          ? {
+              padding: '0px 12px',
+            }
+          : {}
+      }
       tabList={tabs}
       tabActiveKey={page}
       onTabChange={handleChange}

@@ -47,7 +47,6 @@ const EditModal: React.FC<EditModalProps> = ({
   };
   useEffect(() => {
     if (modalVisible) {
-      console.log(rule);
       const {
         appliedDialectTypes = [],
         level = 0,
