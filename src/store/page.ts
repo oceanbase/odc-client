@@ -19,6 +19,8 @@ export interface IPageOptions {
 }
 
 export class PageStore {
+  private _saveDisposers: (() => void)[] = [];
+
   @observable
   public pages: IPage[] = [];
 
@@ -37,8 +39,12 @@ export class PageStore {
   /** 初始化store */
   @action
   public async initStore() {
-    await autoSave(this, 'pages', 'pages', []);
-    await autoSave(this, 'activePageKey', 'activePageKey', null);
+    this._saveDisposers.map((disposer) => {
+      disposer();
+    });
+    this._saveDisposers = [];
+    this._saveDisposers.push(await autoSave(this, 'pages', 'pages', []));
+    this._saveDisposers.push(await autoSave(this, 'activePageKey', 'activePageKey', null));
   }
   /** 切换打开的page，更新一下URL */
   @action

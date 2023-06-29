@@ -64,8 +64,11 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
       databaseId && openNewSQLPage(databaseId, 'datasource');
+    } else {
+      return;
     }
-    history.push('/sqlworkspace');
+    console.log('openPage', projectId, datasourceId, databaseId);
+    history.replace('/sqlworkspace');
   }
   useEffect(() => {
     if (!isReady) {
@@ -209,7 +212,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       await pageStore.initStore();
-
+      console.log(pageStore.pages?.map((p) => p.params));
       if (localLoginHistoy.isNewVersion()) {
         localLoginHistoy.updateVersion();
         settingStore.enableVersionTip && openNewVersionTip();
@@ -237,19 +240,21 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
         activityBar={<ActivityBar />}
         sideBar={<SideBar />}
         editorGroup={
-          <WindowManager
-            pages={pages}
-            activeKey={activePageKey}
-            onActivatePage={handleActivatePage}
-            onOpenPage={handleOpenPage}
-            onOpenPageAfterTarget={openPageAfterTargetPage}
-            onClosePage={handleClosePage}
-            onCloseOtherPage={handleCloseOtherPage}
-            onCloseAllPage={handleCloseAllPage}
-            onSavePage={handleSavePage}
-            onStartSavingPage={handleStartSavingPage}
-            onUnsavedChangePage={handelUnsavedChangePage}
-          />
+          isReady ? (
+            <WindowManager
+              pages={pages}
+              activeKey={activePageKey}
+              onActivatePage={handleActivatePage}
+              onOpenPage={handleOpenPage}
+              onOpenPageAfterTarget={openPageAfterTargetPage}
+              onClosePage={handleClosePage}
+              onCloseOtherPage={handleCloseOtherPage}
+              onCloseAllPage={handleCloseAllPage}
+              onSavePage={handleSavePage}
+              onStartSavingPage={handleStartSavingPage}
+              onUnsavedChangePage={handelUnsavedChangePage}
+            />
+          ) : null
         }
       />
       {isReady && (
