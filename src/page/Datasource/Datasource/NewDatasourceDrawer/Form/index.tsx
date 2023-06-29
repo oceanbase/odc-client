@@ -23,10 +23,11 @@ export interface IFormRef {
 interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
+  isPersonal?: boolean;
 }
 
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
-  { isEdit, originDatasource }: IProps,
+  { isEdit, originDatasource, isPersonal }: IProps,
   ref,
 ) {
   const [form] = Form.useForm();
@@ -130,6 +131,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         test,
         testResult,
         isEdit,
+        isPersonal,
       }}
     >
       <Form
@@ -158,13 +160,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         </Form.Item>
         <AddressItems />
         <Account isEdit={isEdit} />
-        <Form.Item rules={[{ required: true }]} label="环境" name={'environmentId'}>
-          <Select onFocus={() => doListEnvironments()} style={{ width: 208 }}>
-            {environments?.map((env) => {
-              return <Option value={env.id}>{env.name}</Option>;
-            })}
-          </Select>
-        </Form.Item>
+        {isPersonal ? null : (
+          <Form.Item rules={[{ required: true }]} label="环境" name={'environmentId'}>
+            <Select onFocus={() => doListEnvironments()} style={{ width: 208 }}>
+              {environments?.map((env) => {
+                return <Option value={env.id}>{env.name}</Option>;
+              })}
+            </Select>
+          </Form.Item>
+        )}
         <Space style={{ width: '100%' }} direction="vertical">
           <Form.Item shouldUpdate noStyle>
             {({ getFieldValue }) => {
