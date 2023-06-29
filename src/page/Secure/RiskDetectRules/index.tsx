@@ -1,11 +1,11 @@
+import { listEnvironments } from '@/common/network/env';
 import { deleteRiskDetectRule, listRiskDetectRules } from '@/common/network/riskDetectRule';
 import { listRiskLevels } from '@/common/network/riskLevel';
-import Action from '@/component/Action';
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { message, Popconfirm, Space, Spin } from 'antd';
+import { message, Popconfirm, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -20,8 +20,8 @@ import {
   ITableLoadOptions,
 } from '../components/SecureTable/interface';
 import FormRiskDetectDrawer from './FormRiskDetectDrawer';
-import ViewRiskDetectDrawer from './ViewRiskDetectDrawer';
 import styles from './index.less';
+import ViewRiskDetectDrawer from './ViewRiskDetectDrawer';
 
 export const riskDetectRuleNameMap = {
   默认风险: 'DEFAULT',
@@ -54,6 +54,11 @@ export function getRuleDecetedList(riskLevel: IRiskLevel): RiskLevelMapProps {
     style: riskLevel.style,
   };
 }
+
+export interface SelectItemProps {
+  label: string;
+  value: string;
+}
 interface InnerRiskDetectRulesProps {
   userStore: UserStore;
   loading: boolean;
@@ -80,9 +85,40 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<IRiskDetectRule>();
+  const [environmentIdMap, setEnvironmentIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
+  const [taskTypeIdMap, setTaskTypeIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
+  const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
+  const [environmentOptions, setEnvironmentOptions] = useState<SelectItemProps[]>([]);
+  const [taskTypeOptions, setTaskTypeOptions] = useState<SelectItemProps[]>([]);
+  const [sqlCheckResultOptions, setSqlCheckResultOptions] = useState<SelectItemProps[]>([]);
 
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
+  const init = async () => {
+    const envOptions = await getEnvironmentOptions();
+    const envIdMap = {};
+    envOptions?.forEach(({ value, label }) => (envIdMap[value] = label));
+    setEnvironmentIdMap(envIdMap);
+    setEnvironmentOptions(envOptions);
+
+    const taskTypeOptions = await getTaskTypeOptions();
+    const taskTypeIdMap = {};
+    taskTypeOptions?.forEach(({ label, value }) => (taskTypeIdMap[value] = label));
+    setTaskTypeIdMap(taskTypeIdMap);
+    setTaskTypeOptions(taskTypeOptions);
+
+    const sqlCheckResultOptions = await getSqlCheckResultOptions();
+    const sqlChekcResultMap = {};
+    sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap[value] = label));
+    setSqlCheckResultIdMap(sqlChekcResultMap);
+    setSqlCheckResultOptions(sqlCheckResultOptions);
+  };
   const handleDrawerView = (riskDetectRule: IRiskDetectRule) => {
     setIsEdit(false);
     setSelectedRecord({ ...riskDetectRule });
@@ -97,6 +133,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
 
   const handleDrawerCreate = () => {
     setIsEdit(false);
+    console.log(riskLevel);
     setFormModalVisible(true);
   };
   const loadData = async (args: ITableLoadOptions) => {
@@ -143,17 +180,29 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
       render: (value, record) => {
         return (
           <Space>
-            <a onClick={() => {
+            <a
+              onClick={() => {
                 handleDrawerView(record);
-              }}>查看</a>
-            <a onClick={async () => {
+              }}
+            >
+              查看
+            </a>
+            <a
+              onClick={async () => {
                 handleDrawerEdit(record);
-              }}>编辑</a>
-            <Popconfirm title={'是否确定删除？'} okText={'确定'} cancelText={'取消'} onConfirm={() => {
+              }}
+            >
+              编辑
+            </a>
+            <Popconfirm
+              title={'是否确定删除？'}
+              okText={'确定'}
+              cancelText={'取消'}
+              onConfirm={() => {
                 handleDelete(record.id);
-              }} >
-              
-            <a >删除</a>
+              }}
+            >
+              <a>删除</a>
             </Popconfirm>
           </Space>
         );
@@ -171,7 +220,9 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
   operationOptions.push({
     type: IOperationOptionType.icon,
   });
-
+  useEffect(() => {
+    init();
+  }, []);
   return (
     <div className={styles.innerRiskDetectRules}>
       <SecureTable
@@ -211,6 +262,10 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
           selectedRecord,
           formModalVisible,
           setFormModalVisible,
+          environmentIdMap,
+          environmentOptions,
+          taskTypeOptions,
+          sqlCheckResultOptions,
           reload,
         }}
       />
@@ -219,6 +274,9 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
           organizationId,
           viewDrawerVisible,
           setViewDrawerVisible,
+          environmentIdMap,
+          taskTypeIdMap,
+          sqlCheckResultIdMap,
           riskLevel,
           selectedRecord,
         }}
@@ -298,12 +356,12 @@ const RiskDetectRules: React.FC<{
   }, []);
   return (
     <SecureLayout>
-    <SecureSider
-      loading={siderLoading}
-      siderItemList={siderItemList}
-      selectedItem={selectedItem}
-      handleItemClick={handleItemClick}
-    />
+      <SecureSider
+        loading={siderLoading}
+        siderItemList={siderItemList}
+        selectedItem={selectedItem}
+        handleItemClick={handleItemClick}
+      />
       <InnerRiskDetectRules
         {...{
           loading,
@@ -320,3 +378,73 @@ const RiskDetectRules: React.FC<{
   );
 };
 export default inject('userStore')(observer(RiskDetectRules));
+
+const getEnvironmentOptions = async () => {
+  const rawData = (await listEnvironments()) || [];
+  const newEnvOptions = rawData?.map((rd) => {
+    return {
+      label: rd.name,
+      value: '' + rd.id,
+    };
+  });
+  return newEnvOptions;
+};
+
+const getTaskTypeOptions = () => {
+  const newTaskTypeOptions = [
+    {
+      label: 'IMPORT',
+      value: 'import',
+    },
+    {
+      label: 'EXPORT',
+      value: 'export',
+    },
+    {
+      label: 'MOCKDATA',
+      value: 'mockdata',
+    },
+    {
+      label: 'ASYNC',
+      value: 'async',
+    },
+    {
+      label: 'PARTITION_PLAN',
+      value: 'partition_plan',
+    },
+    {
+      label: 'SQL_PLAN',
+      value: 'sql_plan',
+    },
+    {
+      label: 'ALTER_SCHEDULE',
+      value: 'alter_schedule',
+    },
+    {
+      label: 'SHADOWTABLE_SYNC',
+      value: 'shadowtable_sync',
+    },
+    {
+      label: 'DATA_SAVE',
+      value: 'data_save',
+    },
+  ];
+  return newTaskTypeOptions;
+};
+const getSqlCheckResultOptions = () => {
+  const sqlCheckResultOptions = [
+    {
+      label: '无需改进',
+      value: '' + 1,
+    },
+    {
+      label: '建议改进',
+      value: '' + 2,
+    },
+    {
+      label: '必须改进',
+      value: '' + 3,
+    },
+  ];
+  return sqlCheckResultOptions;
+};
