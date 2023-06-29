@@ -46,9 +46,6 @@ export class SQLStore {
   @observable.shallow
   public lockedResultSets: IResultSet[] = []; // 编译|运行|调试中的 PL 对象 name, state
 
-  @observable
-  public runningPLMap: Map<string, string> = new Map();
-
   /** 正在执行提交的Page */
   @observable
   public commitingPageKey: Set<string> = new Set();
@@ -74,21 +71,6 @@ export class SQLStore {
   public isCompiling: boolean = false;
 
   public debugLogs: ILogItem[] = [];
-
-  @action
-  public getRunningPL(plName: string) {
-    return this.runningPLMap.get(plName);
-  }
-
-  @action
-  public setRunningPL(plName: string, status: string) {
-    this.runningPLMap.set(plName, PL_RUNNING_STATUS[status]);
-  }
-
-  @action
-  public removeRunningPL(plName: string) {
-    this.runningPLMap.delete(plName);
-  }
 
   @action
   public deleteRecords(keys: string[]) {
@@ -278,11 +260,9 @@ export class SQLStore {
   @action
   public async compilePL(plName: string, obDbObjectType: string, sessionId, dbName) {
     const sid = generateDatabaseSid(dbName, sessionId);
-    this.setRunningPL(plName, 'COMPLIE');
     const res = await request.post(`/api/v1/pl/compile/${sid}`, {
       data: { obDbObjectType, plName },
     });
-    this.removeRunningPL(plName);
     return res && res.data;
   }
 
@@ -330,7 +310,6 @@ export class SQLStore {
   public async execPL(plSchema: any, ignoreError?: boolean, sessionId?: string, dbName?: string) {
     const sid = generateDatabaseSid(dbName, sessionId);
     const { plName } = plSchema;
-    this.setRunningPL(plName, 'EXEC');
     let res;
     let dbms;
     if (plSchema.proName) {
@@ -350,7 +329,6 @@ export class SQLStore {
     } else {
       const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
       if (data?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS && ignoreError) {
-        this.removeRunningPL(plName);
         return {
           status: 'FAIL',
           errorMessage: data?.[0]?.track,
@@ -362,8 +340,7 @@ export class SQLStore {
         };
       }
     }
-
-    this.removeRunningPL(plName); // {"errCode":null,"errMsg":"ORA-00904: invalid identifier 'CHZ' in 'field list'","data":null,"importantMsg":false}
+    // {"errCode":null,"errMsg":"ORA-00904: invalid identifier 'CHZ' in 'field list'","data":null,"importantMsg":false}
     // {"errCode":null,"errMsg":null,"data":{"funName":"F_ADD","ddl":"CREATE OR REPLACE function f_add(\np1 in integer, \np2 in integer) \nreturn integer as \nbegin \nreturn p1 + p2;\nend;","definer":"CHZ","status":null,"createTime":1606274473000,"modifyTime":1606274473000,"returnType":"integer","returnValue":"33","params":null,"varibales":[],"types":[]},"importantMsg":false}
 
     if (res.errMsg) {
@@ -509,7 +486,6 @@ export class SQLStore {
     this.records = [];
     this.stopingPageKey = new Set();
     this.runningPageKey = new Set();
-    this.runningPLMap = new Map();
     this.rollbackPageKey = new Set();
     this.lockedResultSets = [];
     this.isRunningSection = new Set();

@@ -13,7 +13,7 @@ interface IProps {
 
 const ResourceLayout: React.FC<IProps> = function ({ top, bottom, bottomLoading }) {
   const maxHeight = document.body.clientHeight * 0.7;
-  const [sideWidth, setSideWidth] = useState(300);
+  const [sideWidth, setSideWidth] = useState(150);
   const emitResizeEvent = useCallback(
     debounce(() => {
       window.dispatchEvent(new Event('resize'));

@@ -32,6 +32,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
 ) {
   const [form] = Form.useForm();
 
+  const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
+
   const [testResult, setTestResult] = useState<{
     active: boolean;
     errorCode: IConnectionTestErrorType;
@@ -171,11 +173,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           <Form.Item shouldUpdate noStyle>
             {({ getFieldValue }) => {
               return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
-                <SysForm
-                  formRef={form}
-                  isEdit={isEdit}
-                  sysAccountExist={!!getFieldValue('sysTenantUsername') && isEdit}
-                />
+                <SysForm formRef={form} isEdit={isEdit} sysAccountExist={sysAccountExist} />
               );
             }}
           </Form.Item>
