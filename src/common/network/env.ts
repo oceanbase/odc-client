@@ -4,7 +4,7 @@ import * as mockjs from 'mockjs';
 
 export async function listEnvironments(): Promise<IEnvironment[]> {
   const ret = await request.get(`/api/v2/collaboration/environments`);
-  return ret?.data.contents || [];
+  return ret?.data?.contents || [];
 }
 
 export async function updateEnvironment(id: number, data: IEnvironment): Promise<boolean> {
