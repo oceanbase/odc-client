@@ -44,8 +44,8 @@ const ActivityBar: React.FC<IProps> = function () {
       isVisible: true,
     },
     {
-      title: ActivityBarItemTypeText[ActivityBarItemType.Job],
-      key: ActivityBarItemType.Job,
+      title: ActivityBarItemTypeText[ActivityBarItemType.Task],
+      key: ActivityBarItemType.Task,
       icon: TaskSvg,
       isVisible: true,
     },

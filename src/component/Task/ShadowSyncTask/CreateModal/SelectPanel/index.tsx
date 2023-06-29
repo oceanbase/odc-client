@@ -1,6 +1,5 @@
 import ExportCard from '@/component/ExportCard';
 import HelpDoc from '@/component/helpDoc';
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Checkbox, Col, Form, Input, message, Radio, Row, Select, Space } from 'antd';
@@ -155,7 +154,6 @@ const SelectPanel = forwardRef<any, IProps>(function (
   }, [schemaName]);
 
   const TableIcon = DbObjsIcon.TABLE;
-  const connectionName = connection.connection?.name;
 
   function handleSelect(event: CheckboxChangeEvent, index: number = -1) {
     const checked = event.target.checked;

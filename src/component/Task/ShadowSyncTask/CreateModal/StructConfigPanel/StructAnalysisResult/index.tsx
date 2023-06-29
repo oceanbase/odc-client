@@ -2,7 +2,6 @@ import CommonTable from '@/component/CommonTable';
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
 import { ConnectionMode, SchemaComparingResult } from '@/d.ts';
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Tabs } from 'antd';
 import { useMemo, useRef, useState } from 'react';
@@ -19,11 +18,12 @@ enum TabKeys {
 interface IProps {
   data: IShadowSyncAnalysisResult;
   resultData?: ShadowTableSyncTaskResult;
+  connectionMode: ConnectionMode;
   skip?: (keys: number[]) => void;
   cancelSkip?: (keys: number[]) => void;
 }
 
-export default function ({ data, resultData, skip, cancelSkip }: IProps) {
+export default function ({ data, resultData, connectionMode, skip, cancelSkip }: IProps) {
   const [activeKey, setActiveKey] = useState(TabKeys.SYNC);
   const SQLViewRef = useRef<IViewRef>();
   const isViewMode = !!resultData;
@@ -159,19 +159,11 @@ export default function ({ data, resultData, skip, cancelSkip }: IProps) {
               position: 'relative',
             }}
           >
-            <MonacoEditor
-              value={data?.allDDL}
-              readOnly
-              language={
-                connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                  ? 'obmysql'
-                  : 'oboracle'
-              }
-            />
+            <MonacoEditor value={data?.allDDL} readOnly language={connectionMode} />
           </div>
         </Tabs.TabPane>
       </Tabs>
-      <RecordSQLView ref={SQLViewRef} taskId={data?.id} />
+      <RecordSQLView ref={SQLViewRef} taskId={data?.id} connectionMode={connectionMode} />
     </>
   );
 }

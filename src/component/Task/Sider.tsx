@@ -1,4 +1,5 @@
-import { TaskPageScope } from '@/d.ts';
+import { TaskPageScope, TaskPageType } from '@/d.ts';
+import { openTasksPage } from '@/store/helper/page';
 import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import Icon from '@ant-design/icons';
@@ -14,14 +15,23 @@ import styles from './index.less';
 interface IProps {
   settingStore?: SettingStore;
   taskStore?: TaskStore;
+  className?: string;
+  isPage?: boolean;
 }
 
-const Sider: React.FC<IProps> = function ({ settingStore, taskStore }) {
+const Sider: React.FC<IProps> = function ({ settingStore, taskStore, className, isPage }) {
   const { taskPageScope } = taskStore;
   const taskTypeList = getTaskTypeList(settingStore, taskStore);
   const firstEnabledTask = flatten(taskTypeList?.map((taskGroup) => taskGroup?.group))?.find(
     (item) => item?.enabled,
   );
+
+  const handleClick = (value: TaskPageType) => {
+    if (isPage) {
+      openTasksPage();
+    }
+    taskStore.changeTaskPageType(value);
+  };
 
   function renderTaskTypeList() {
     return taskTypeList
@@ -50,7 +60,7 @@ const Sider: React.FC<IProps> = function ({ settingStore, taskStore }) {
                     styles.groupItem,
                   )}
                   key={item.value}
-                  onClick={() => taskStore.changeTaskPageType(item.value)}
+                  onClick={() => handleClick(item.value)}
                 >
                   {item.label}
                 </div>
@@ -72,7 +82,7 @@ const Sider: React.FC<IProps> = function ({ settingStore, taskStore }) {
     };
   }, []);
 
-  return <div className={styles.taskSider}>{renderTaskTypeList()}</div>;
+  return <div className={`${styles.taskSider} ${className}`}>{renderTaskTypeList()}</div>;
 };
 
 export default inject('settingStore', 'taskStore')(observer(Sider));

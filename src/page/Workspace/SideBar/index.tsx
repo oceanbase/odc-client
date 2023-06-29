@@ -4,17 +4,17 @@ import classNames from 'classnames';
 import { ActivityBarItemType } from '../ActivityBar/type';
 import ActivityBarContext from '../context/ActivityBarContext';
 import styles from './index.less';
-import Job from './Job';
 import Manager from './Manager';
 import ResourceTree from './ResourceTree/Container';
 import Script from './Script';
+import Task from './Task';
 
 interface IProps {}
 
 const items = {
   [ActivityBarItemType.Database]: ResourceTree,
   [ActivityBarItemType.Script]: Script,
-  [ActivityBarItemType.Job]: Job,
+  [ActivityBarItemType.Task]: Task,
   [ActivityBarItemType.Manager]: Manager,
 };
 

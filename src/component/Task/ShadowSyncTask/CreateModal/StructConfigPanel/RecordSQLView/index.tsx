@@ -2,7 +2,6 @@ import { getShadowSyncAnalysisRecordResult } from '@/common/network/task';
 import MonacoEditor from '@/component/MonacoEditor';
 import SimpleTextItem from '@/component/SimpleTextItem';
 import { ConnectionMode } from '@/d.ts';
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Drawer, Row, Space, Spin } from 'antd';
@@ -13,7 +12,10 @@ export interface IViewRef {
   open: (record: IShadowSyncAnalysisResult['tables'][number]) => void;
 }
 
-const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, ref) {
+const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: ConnectionMode }>(function (
+  { taskId, connectionMode },
+  ref,
+) {
   const [visiable, setVisiable] = useState(false);
   const { loading, run: runGetShadowSyncAnalysisRecordResult } = useRequest(
     getShadowSyncAnalysisRecordResult,
@@ -76,15 +78,7 @@ const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, 
                 position: 'relative',
               }}
             >
-              <MonacoEditor
-                value={record?.originTableDDL}
-                readOnly
-                language={
-                  connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                    ? 'obmysql'
-                    : 'oboracle'
-                }
-              />
+              <MonacoEditor value={record?.originTableDDL} readOnly language={connectionMode} />
             </div>
           </div>
           <div>
@@ -103,15 +97,7 @@ const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, 
                 position: 'relative',
               }}
             >
-              <MonacoEditor
-                value={record?.destTableDDL}
-                readOnly
-                language={
-                  connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                    ? 'obmysql'
-                    : 'oboracle'
-                }
-              />
+              <MonacoEditor value={record?.destTableDDL} readOnly language={connectionMode} />
             </div>
           </div>
           <div>
@@ -129,15 +115,7 @@ const RecordSQLView = forwardRef<any, { taskId: string }>(function ({ taskId }, 
                 position: 'relative',
               }}
             >
-              <MonacoEditor
-                value={record?.comparingDDL}
-                readOnly
-                language={
-                  connection?.connection?.dialectType === ConnectionMode.OB_MYSQL
-                    ? 'obmysql'
-                    : 'oboracle'
-                }
-              />
+              <MonacoEditor value={record?.comparingDDL} readOnly language={connectionMode} />
             </div>
           </div>
         </Space>
