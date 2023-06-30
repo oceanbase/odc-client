@@ -88,6 +88,9 @@ export class SnippetStore {
   @observable
   public snippets: ISnippet[] = [];
 
+  @observable
+  public loading: boolean = false;
+
   public registerEditor(cfg: { language: string }) {
     // this.editorFactory = cfg.factory;
     this.language = cfg.language;
@@ -95,20 +98,16 @@ export class SnippetStore {
 
   @action
   public async resetSnippets() {
-    const { language } = this;
-
-    if (!language) {
-      return;
+    this.loading = true;
+    try {
+      const customerSnippets = await queryCustomerSnippets();
+      addSnippet(null, customerSnippets);
+      this.snippets = customerSnippets;
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.loading = false;
     }
-
-    const customerSnippets = await queryCustomerSnippets();
-    addSnippet(language, customerSnippets);
-    this.snippets = customerSnippets;
-    // editorFactory.resetSQLSnippet(customerSnippets, language);
-    // this.snippets = editorFactory
-    //   .getSQLMode(language)
-    //   .getSnippets()
-    //   .filter((snippet) => !!snippet.snippetType);
   }
 
   @action

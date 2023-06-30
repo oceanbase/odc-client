@@ -17,17 +17,19 @@ import SQLExplain from '../index';
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 import styles from './index.less';
 
 interface IProps {
   visible: boolean;
+  session: SessionStore;
   sql?: string;
   traceId?: string;
   onClose: () => void;
 }
 
 const ExecDetail: React.FC<IProps> = function (props) {
-  const { visible, sql, traceId, onClose } = props;
+  const { visible, sql, traceId, session, onClose } = props;
   const [loadingExplain, setLoadingExplain] = useState(false);
   const [sqlExecuteExplainToShow, setSqlExecuteExplainToShow] = useState<ISQLExplain | string>(
     null,
@@ -48,9 +50,19 @@ const ExecDetail: React.FC<IProps> = function (props) {
       setSqlExecuteExplainToShow(null);
       setLoadingExplain(true);
 
-      const detail = await getSQLExecuteDetail(sql, traceId);
+      const detail = await getSQLExecuteDetail(
+        sql,
+        traceId,
+        session?.sessionId,
+        session?.database?.dbName,
+      );
       const sqlId = detail?.sqlId;
-      const explain = await getSQLExecuteExplain(sql, sqlId);
+      const explain = await getSQLExecuteExplain(
+        sql,
+        sqlId,
+        session?.sessionId,
+        session?.database?.dbName,
+      );
       setLoadingExplain(false);
 
       if (explain && detail) {

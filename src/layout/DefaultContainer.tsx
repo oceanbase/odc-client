@@ -3,7 +3,7 @@ import { Outlet } from '@umijs/max';
 import { Layout } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import styles from './AppContainer.less';
+import styles from './DefaultContainer.less';
 
 const { Content } = Layout;
 
@@ -14,7 +14,7 @@ class DefaultContainer extends React.Component<{
 }> {
   public render() {
     return (
-      <Layout style={{ minWidth: '960px' }}>
+      <Layout style={{ minWidth: '960px', height: '100%' }}>
         <Content className={styles.content}>
           <Outlet />
         </Content>

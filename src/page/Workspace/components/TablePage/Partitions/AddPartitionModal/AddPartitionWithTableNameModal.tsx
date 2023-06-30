@@ -1,5 +1,6 @@
 import { generateUpdateTableDDL, getTableInfo } from '@/common/network/table';
 import { IPartitionType } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 import { generateUniqKey } from '@/util/utils';
 import { cloneDeep } from 'lodash';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
@@ -12,14 +13,16 @@ import {
 } from '../../../CreateTable/interface';
 import TablePageContext from '../../context';
 
-interface IProps {}
+interface IProps {
+  session: SessionStore;
+}
 
-const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function (props, ref) {
+const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function ({ session }, ref) {
   const modalRef = useRef<any>();
   const [table, setTable] = useState(null);
 
   async function onRefresh(tableName) {
-    const table = await getTableInfo(tableName);
+    const table = await getTableInfo(tableName, session?.database?.dbName, session?.sessionId);
     if (table) {
       setTable(table);
     }
@@ -92,6 +95,8 @@ const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function (props, 
                   partitions: newValues,
                 },
                 table,
+                session?.sessionId,
+                session?.database?.dbName,
               );
               return updateTableDML;
             }

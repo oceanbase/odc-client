@@ -27,7 +27,10 @@ interface IProps {
 const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
   const tableContext = useContext(TableContext);
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns(tableContext.columns);
+  const gridColumns: any[] = useColumns(
+    tableContext.columns,
+    tableContext?.session?.connection?.dialectType,
+  );
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.uniqueConstraints.map((index, idx) => {

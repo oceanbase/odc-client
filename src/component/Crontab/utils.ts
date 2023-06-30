@@ -213,7 +213,7 @@ const getCronLabel = (name: CronInputName, value: number | string) => {
 
 export const getCronExecuteCycleUnitByObject = (name: CronInputName, value: number[]) => {
   return value
-    .sort((a, b) => a - b)
+    ?.sort((a, b) => a - b)
     ?.map((i) => getCronLabel(name, i))
     ?.join('、');
 };

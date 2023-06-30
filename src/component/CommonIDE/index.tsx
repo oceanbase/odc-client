@@ -2,6 +2,7 @@ import { TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
 import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { Tabs, Tooltip } from 'antd';
 import classnames from 'classnames';
@@ -63,6 +64,7 @@ interface ICommonIDEProps {
    * 是否添加边框
    */
   bordered?: boolean;
+  session: SessionStore;
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -82,6 +84,10 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
     });
     this.emitResize();
   }, 200);
+
+  public getSession() {
+    return this.props.session;
+  }
 
   private emitResize = debounce(() => {
     window.dispatchEvent(new Event('resize'));
@@ -119,6 +125,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
       log,
       resultSets,
       toolbarActions,
+      session,
     } = this.props;
 
     const { resultHeight } = this.state;
@@ -184,6 +191,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                       >
                         {!!set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS ? (
                           <DDLResultSet
+                            session={session}
                             key={set.uniqKey || i}
                             showExplain={false}
                             showPagination={true}

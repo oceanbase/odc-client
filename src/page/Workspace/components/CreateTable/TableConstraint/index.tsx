@@ -1,8 +1,8 @@
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Tabs } from 'antd';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTableConfig } from '../config';
+import TableContext from '../TableContext';
 import CheckConstraint from './Check';
 import Foreign from './Foreign';
 import PrimaryConstaint from './Primary';
@@ -22,7 +22,8 @@ interface IProps {
 }
 
 const TableConstraint: React.FC<IProps> = function ({ modified }) {
-  const config = useTableConfig(connection);
+  const tableContext = useContext(TableContext);
+  const config = useTableConfig(tableContext?.session?.connection.dialectType);
   return (
     <Tabs className={'odc-left-tabs'} tabPosition="left">
       <TabPane

@@ -102,8 +102,8 @@ export default class DDLResultSetFilter extends Component<
     return (
       <Popover
         trigger="click"
-        visible={visible}
-        onVisibleChange={this.handleVisibleChange}
+        open={visible}
+        onOpenChange={this.handleVisibleChange}
         content={
           <div className={styles.wrapper}>
             <Input.Search

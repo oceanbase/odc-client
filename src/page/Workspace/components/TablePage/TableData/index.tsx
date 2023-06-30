@@ -1,14 +1,12 @@
 import { executeSQL } from '@/common/network/sql';
-import { getTableColumnList, queryTableOrViewData } from '@/common/network/table';
+import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { TAB_HEADER_HEIGHT } from '@/constant';
-import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable, ITableColumn } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
+import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
-import schema from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
@@ -25,16 +23,15 @@ const GLOBAL_HEADER_HEIGHT = 40;
 const TABBAR_HEIGHT = 46;
 interface ITableDataProps {
   sqlStore?: SQLStore;
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   pageStore?: PageStore;
   settingStore?: SettingStore;
   table: Partial<ITable>;
   tableName: string;
   pageKey: string;
+  session: SessionStore;
 }
 
-@inject('sqlStore', 'schemaStore', 'connectionStore', 'pageStore', 'settingStore')
+@inject('sqlStore', 'pageStore', 'settingStore')
 @observer
 class TableData extends React.Component<
   ITableDataProps,
@@ -54,7 +51,6 @@ class TableData extends React.Component<
     showDataExecuteSQLModal: boolean;
     updateDataDML: string;
     tipToShow: string;
-    columns: ITableColumn[];
   }
 > {
   constructor(props) {
@@ -68,7 +64,6 @@ class TableData extends React.Component<
       updateDataDML: '',
       tipToShow: '',
       resultSet: null,
-      columns: [],
     };
   }
 
@@ -95,7 +90,7 @@ class TableData extends React.Component<
     keepInitialSQL: boolean = false,
     limit: number = 1000,
   ) => {
-    const { schemaStore, table } = this.props;
+    const { table, session } = this.props;
 
     if (!tableName || !table?.columns?.length) {
       return;
@@ -107,21 +102,16 @@ class TableData extends React.Component<
 
     try {
       const data = await queryTableOrViewData(
-        schema.database?.name,
+        session?.database?.dbName,
         tableName,
         limit,
-        schemaStore.enableRowId,
+        session.supportFeature.enableRowId,
+        session?.sessionId,
       );
       let resultSet = generateResultSetColumns([data])?.[0];
       if (resultSet) {
         this.setState({
           resultSet,
-        });
-      }
-      const columns = await getTableColumnList(tableName);
-      if (columns) {
-        this.setState({
-          columns,
         });
       }
     } catch (e) {
@@ -133,9 +123,8 @@ class TableData extends React.Component<
     }
   };
   public handleSaveRowData = async (newRows: any[], limit: number, autoCommit: boolean) => {
-    const { schemaStore, tableName, table, connectionStore } = this.props;
+    const { tableName, session } = this.props;
     const { resultSet } = this.state;
-    const { enableRowId } = schemaStore;
     const originRows = resultSet.rows;
     const columns = resultSet.columns;
     let tipToShow = '';
@@ -188,12 +177,14 @@ class TableData extends React.Component<
       );
       return;
     }
-    const res = await schemaStore.batchGetDataModifySQL(
+    const res = await batchGetDataModifySQL(
       resultSet.resultSetMetaData?.table?.databaseName,
       tableName,
-      this.state.columns,
+      resultSet.resultSetMetaData?.columnList,
       true,
       editRows,
+      session.sessionId,
+      session?.database?.dbName,
     );
     if (!res) {
       return;
@@ -211,8 +202,7 @@ class TableData extends React.Component<
     }
 
     if (autoCommit) {
-      sql =
-        sql + (connectionStore.delimiter === ';' ? '' : connectionStore.delimiter) + '\ncommit;';
+      sql = sql + (session.params.delimiter === ';' ? '' : session.params.delimiter) + '\ncommit;';
     }
 
     this.setState({
@@ -223,15 +213,19 @@ class TableData extends React.Component<
   };
 
   public handleExecuteDataDML = async () => {
-    const { sqlStore, tableName, connectionStore } = this.props;
+    const { session, tableName } = this.props;
 
     try {
-      const result = await executeSQL(this.state.updateDataDML);
+      const result = await executeSQL(
+        this.state.updateDataDML,
+        session.sessionId,
+        session.database.dbName,
+      );
 
       if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
         let msg;
 
-        if (connectionStore.autoCommit) {
+        if (session.params.autoCommit) {
           msg = formatMessage({
             id: 'odc.TablePage.TableData.SubmittedSuccessfully',
           }); // 提交成功
@@ -268,7 +262,7 @@ class TableData extends React.Component<
   };
 
   render() {
-    const { tableName, connectionStore, pageKey, table, settingStore } = this.props;
+    const { tableName, pageKey, table, settingStore, session } = this.props;
     const {
       dataLoading,
       resultSet,
@@ -278,7 +272,7 @@ class TableData extends React.Component<
       isEditing,
     } = this.state;
 
-    const isOracle = connectionStore.connection?.dbMode === ConnectionMode.OB_ORACLE;
+    const isOracle = session.connection?.dialectType === ConnectionMode.OB_ORACLE;
     const exportSQL = generateSelectSql(false, isOracle, tableName);
 
     return (
@@ -286,13 +280,14 @@ class TableData extends React.Component<
         {resultSet && (
           <DDLResultSet
             key={this._resultSetKey}
-            autoCommit={connectionStore?.autoCommit}
+            autoCommit={session?.params.autoCommit}
             showExplain={false}
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
-            table={{ ...table, columns: this.state.columns }}
+            table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
+            session={session}
             onUpdateEditing={(editing) => {
               this.setState({
                 isEditing: editing,
@@ -304,9 +299,7 @@ class TableData extends React.Component<
             sqlId={resultSet.sqlId}
             useUniqueColumnName={true}
             rows={resultSet.rows}
-            resultHeight={`calc(100vh - ${
-              GLOBAL_HEADER_HEIGHT + TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 1
-            }px)`}
+            resultHeight={`calc(100vh - ${TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 1}px)`}
             onRefresh={(limit) => this.reloadTableData(tableName, false, limit)}
             onExport={(limitToExport) =>
               this.setState({
@@ -319,6 +312,7 @@ class TableData extends React.Component<
 
         <ExportResultSetModal
           visible={showExportResuleSetModal}
+          session={session}
           sql={exportSQL}
           tableName={resultSet?.resultSetMetaData?.table?.tableName}
           onClose={() =>
@@ -329,6 +323,7 @@ class TableData extends React.Component<
         />
 
         <ExecuteSQLModal
+          sessionStore={session}
           tip={this.state.tipToShow}
           sql={updateDataDML}
           visible={showDataExecuteSQLModal}

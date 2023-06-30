@@ -1,0 +1,76 @@
+.layout {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .splitPane {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    :global {
+      .Resizer.vertical.disabled {
+        cursor: unset;
+      }
+    }
+  }
+
+  .activityBar {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .top {
+    z-index: 10;
+    width: 100%;
+    // box-shadow: 1px 0 4px 0 rgba(184, 198, 211, 0.4);
+    height: 100%;
+
+    :global {
+      .ant-tree-switcher {
+        display: none;
+      }
+
+      .ant-tree-treenode {
+        width: 100%;
+      }
+
+      .ant-tree-node-content-wrapper {
+        width: 100%;
+        min-height: 28px;
+        overflow: hidden;
+        line-height: 28px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .ant-tree-iconEle {
+        height: 28px;
+        line-height: 28px;
+      }
+
+      .ant-tree-node-selected {
+        color: var(--text-color-link);
+        background-color: var(--code-background-hover-color);
+      }
+    }
+  }
+
+  .bottom {
+    height: 100%;
+    border-top: 1px solid var(--odc-border-color);
+    border-left: 1px solid var(--divider-color);
+    &:global(.ant-spin-nested-loading) {
+      height: 100%;
+      :global {
+        .ant-spin-container {
+          height: 100%;
+        }
+      }
+    }
+  }
+}

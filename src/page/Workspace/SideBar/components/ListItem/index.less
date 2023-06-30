@@ -1,0 +1,48 @@
+.item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 4px 8px;
+  overflow: hidden;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+  .icon {
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding-right: 4px;
+    font-size: 14px;
+  }
+  .body {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 100%;
+    font-size: 12px;
+    .title {
+      width: 100%;
+      overflow: hidden;
+      color: var(--text-color-primary);
+      line-height: 20px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .desc {
+      width: 100%;
+      overflow: hidden;
+      color: var(--text-color-hint);
+      line-height: 20px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .actions {
+    position: absolute;
+    top: 8px;
+    right: 4px;
+  }
+}
+
+.icon {
+  color: var(--icon-color-normal);
+  font-size: 14px;
+}

@@ -1,15 +1,12 @@
 import { ConnectionMode } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { getDialectTypeFromConnectType } from '@/util/connection';
 import { formatMessage } from '@/util/intl';
 import { MenuOutlined } from '@ant-design/icons';
 import { Dropdown, Input, Menu } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, { useMemo } from 'react';
 
 interface IProps {
   value?: string;
-  connectionStore?: ConnectionStore;
+  connectionMode?: ConnectionMode;
   onChange?: (v: string) => void;
 }
 
@@ -18,9 +15,8 @@ export const ValueList = {
   NULL: Symbol('null').toString(),
 };
 
-const ValueInput: React.FC<IProps> = function ({ value, connectionStore, onChange }) {
-  const isOracle =
-    getDialectTypeFromConnectType(connectionStore.connection?.type) === ConnectionMode.OB_ORACLE;
+const ValueInput: React.FC<IProps> = function ({ value, connectionMode, onChange }) {
+  const isOracle = connectionMode === ConnectionMode.OB_ORACLE;
   value = value === null ? ValueList.NULL : value;
   const [inputValue, inputPlaceholder, menuValue] = useMemo(() => {
     const menuObj = Object.entries(ValueList).find(([key, _value]) => _value === value);
@@ -93,4 +89,4 @@ const ValueInput: React.FC<IProps> = function ({ value, connectionStore, onChang
   );
 };
 
-export default inject('connectionStore')(observer(ValueInput));
+export default ValueInput;

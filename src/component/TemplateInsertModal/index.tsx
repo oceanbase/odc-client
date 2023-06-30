@@ -1,7 +1,10 @@
+import { getTableInfo } from '@/common/network/table';
+import { getView } from '@/common/network/view';
 import { DragInsertTypeText } from '@/constant/label';
 import { DbObjectType, DragInsertType } from '@/d.ts/index';
 import type { ModalStore } from '@/store/modal';
-import schema from '@/store/schema';
+import sessionManager from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { getQuoteTableName } from '@/util/utils';
@@ -23,12 +26,13 @@ interface IProps {
   name: string;
   type: DbObjectType;
   settingStore?: SettingStore;
+  session: SessionStore;
   onClose: () => void;
   onOk: (insertText: string) => void;
 }
 
 const TemplateInsertModal: React.FC<IProps> = function (props) {
-  const { visible, name, type, settingStore, onClose, onOk, modalStore } = props;
+  const { visible, name, type, settingStore, onClose, onOk, modalStore, session } = props;
   const [value, setValue] = useState(DragInsertType.NAME);
   const [closePrompt, setClosePrompt] = useState(false);
 
@@ -42,7 +46,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
   };
 
   const handleOk = async () => {
-    const text = await getCopyText(name, type, value, true);
+    const text = await getCopyText(name, type, value, true, session?.sessionId);
     localStorage.setItem(CLOSE_INSERT_PROMPT_KEY, String(closePrompt));
     onOk(text);
     if (closePrompt) {
@@ -150,22 +154,24 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
 
 export default inject('settingStore', 'modalStore')(observer(TemplateInsertModal));
 
-async function getColumns(type: DbObjectType, name: string) {
+async function getColumns(type: DbObjectType, name: string, sessionId: string) {
+  const dbSession = sessionManager.sessionMap.get(sessionId);
+  const dbName = dbSession?.database?.dbName;
   switch (type) {
     case DbObjectType.table: {
       return (
-        (await schema.getTableColumnList(name, true, ''))
+        (await getTableInfo(name, dbName, sessionId))?.columns
           ?.map((column) => {
-            return getQuoteTableName(column.columnName);
+            return getQuoteTableName(column.name, dbSession?.connection?.dialectType);
           })
           .join(', ') || ''
       );
     }
     case DbObjectType.view: {
       return (
-        (await schema.getView(name))?.columns
+        (await getView(name, sessionId, dbName))?.columns
           ?.map((column) => {
-            return getQuoteTableName(column.columnName);
+            return getQuoteTableName(column.columnName, dbSession?.connection?.dialectType);
           })
           .join(', ') || ''
       );
@@ -180,7 +186,9 @@ export async function getCopyText(
   objType: DbObjectType,
   copyType: DragInsertType,
   isEscape: boolean = false,
+  sessionId: string,
 ) {
+  const dbSession = sessionManager.sessionMap.get(sessionId);
   const _escape = isEscape
     ? escape
     : function (b) {
@@ -192,16 +200,20 @@ export async function getCopyText(
     }
     case DragInsertType.SELECT: {
       return _escape(
-        'SELECT ' + (await getColumns(objType, name)) + ' FROM ' + getQuoteTableName(name) + ';',
+        'SELECT ' +
+          (await getColumns(objType, name, sessionId)) +
+          ' FROM ' +
+          getQuoteTableName(name, dbSession?.connection?.dialectType) +
+          ';',
       );
     }
     case DragInsertType.INSERT: {
       return (
         '<com.oceanbase.odc.snippet>' +
         'INSERT INTO ' +
-        _escape(getQuoteTableName(name)) +
+        _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         '(' +
-        _escape(await getColumns(objType, name)) +
+        _escape(await getColumns(objType, name, sessionId)) +
         ') VALUES(${1:expr}, ${2:expr});' +
         '</com.oceanbase.odc.snippet>'
       );
@@ -210,7 +222,7 @@ export async function getCopyText(
       return (
         '<com.oceanbase.odc.snippet>' +
         'DELETE FROM ' +
-        _escape(getQuoteTableName(name)) +
+        _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         ' WHERE ${1:where_condition};' +
         '</com.oceanbase.odc.snippet>'
       );
@@ -219,7 +231,7 @@ export async function getCopyText(
       return (
         '<com.oceanbase.odc.snippet>' +
         'UPDATE ' +
-        _escape(getQuoteTableName(name)) +
+        _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         ' SET ${1:col_name1=expr1} WHERE ${2:where_condition};' +
         '</com.oceanbase.odc.snippet>'
       );
@@ -230,8 +242,13 @@ export async function getCopyText(
   }
 }
 
-export async function copyObj(name: string, objType: DbObjectType, copyType: DragInsertType) {
-  const text = await getCopyText(name, objType, copyType);
+export async function copyObj(
+  name: string,
+  objType: DbObjectType,
+  copyType: DragInsertType,
+  sessionId: string,
+) {
+  const text = await getCopyText(name, objType, copyType, false, sessionId);
   copy(text);
   message.success(
     formatMessage({

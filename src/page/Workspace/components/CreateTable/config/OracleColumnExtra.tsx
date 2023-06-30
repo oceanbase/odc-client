@@ -1,5 +1,4 @@
 import { dataTypesIns } from '@/util/dataType';
-import { inject, observer } from 'mobx-react';
 import { columnExtraComponent } from '.';
 import DefaultValue from '../Columns/ColumnExtraInfo/DefaultValue';
 import Precision from '../Columns/ColumnExtraInfo/Precision';
@@ -8,12 +7,12 @@ const OracleColumnExtra: columnExtraComponent = ({
   column,
   originColumns,
   onChange,
-  connectionStore,
+  dialectType,
 }) => {
   if (!column) {
     return null;
   }
-  const dataType = dataTypesIns.getDataType(connectionStore.connection.dialectType, column.type);
+  const dataType = dataTypesIns.getDataType(dialectType, column.type);
   if (!dataType) {
     return null;
   } else {
@@ -31,4 +30,4 @@ const OracleColumnExtra: columnExtraComponent = ({
     );
   }
 };
-export default inject('connectionStore')(observer(OracleColumnExtra));
+export default OracleColumnExtra;

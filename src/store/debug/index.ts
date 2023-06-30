@@ -1,4 +1,4 @@
-import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
+import { getFunctionByFuncName, getPackage, getProcedureByProName } from '@/common/network';
 import {
   addBreakpoints,
   createDebugSession,
@@ -15,7 +15,7 @@ import type { IFunction, IPLParam, IProcedure } from '@/d.ts';
 import { ILogType } from '@/d.ts';
 import { cloneDeep } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
-import schema from '../schema';
+import SessionStore from '../sessionManager/session';
 import DebugHistory from './debugHistory';
 import type {
   ICreateDebugConfig,
@@ -55,6 +55,8 @@ export class Debug {
   @observable
   public result: IDebugResult;
 
+  public session: SessionStore;
+
   public onContextChangeQueue?: ((
     newContext: IDebugStackItem[],
     oldContext: IDebugStackItem[],
@@ -65,6 +67,7 @@ export class Debug {
       config.plType,
       config.function?.funName || config?.procedure?.proName,
       config.packageName,
+      config.session,
     );
     if (!ddl && config.plType !== PLType.ANONYMOUSBLOCK) {
       return null;
@@ -81,6 +84,7 @@ export class Debug {
       Debug.getConfigSchema(config),
       config.plType,
       config.content,
+      config.session,
     );
     if (debugId) {
       return new Debug(
@@ -116,6 +120,7 @@ export class Debug {
     this.function = config.function;
     this.procedure = config.procedure;
     this.onContextChangeQueue = [config.onContextChange];
+    this.session = config.session;
     this.plInfo = [
       {
         content: config.content,
@@ -152,6 +157,7 @@ export class Debug {
         this.getPlSchema(),
         this.plType,
         mainPl.content,
+        this.session,
       );
       if (debugId) {
         this.debugId = debugId;
@@ -526,7 +532,7 @@ export class Debug {
         /**
          * 不在缓存里面，去拉取
          */
-        const content = await Debug.getContentFromPL(plType, plName, packageName);
+        const content = await Debug.getContentFromPL(plType, plName, packageName, this.session);
         if (content) {
           this.plInfo.push({
             content,
@@ -563,13 +569,23 @@ export class Debug {
       }
     });
   }
-  public static async getContentFromPL(plType: PLType, plName: string, packageName: string) {
+  public static async getContentFromPL(
+    plType: PLType,
+    plName: string,
+    packageName: string,
+    session: SessionStore,
+  ) {
     if (packageName) {
-      return (await schema.getPackage(packageName))?.packageBody?.basicInfo?.ddl;
+      return (await getPackage(packageName, session?.sessionId, session?.database?.dbName))
+        ?.packageBody?.basicInfo?.ddl;
     } else if (plType === PLType.FUNCTION) {
-      return (await getFunctionByFuncName(plName)).ddl;
+      return (
+        await getFunctionByFuncName(plName, false, session?.sessionId, session?.database?.dbName)
+      ).ddl;
     } else if (plType === PLType.PROCEDURE) {
-      return (await getProcedureByProName(plName)).ddl;
+      return (
+        await getProcedureByProName(plName, false, session?.sessionId, session?.database?.dbName)
+      ).ddl;
     } else {
       return null;
     }

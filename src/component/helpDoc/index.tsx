@@ -7,15 +7,16 @@ import Doc from './doc';
 import styles from './index.less';
 
 interface IDocProps {
-  doc: string;
+  doc?: string;
+  title?: string;
   isTip?: boolean;
   leftText?: boolean;
   overlayStyle?: { [key: string]: string };
 }
 
-const component: React.FC<IDocProps> = function (props) {
-  const { isTip = true, leftText, overlayStyle, doc: propDoc } = props;
-  const doc = Doc[propDoc];
+const HelpDoc: React.FC<IDocProps> = function (props) {
+  const { isTip = true, leftText, overlayStyle, doc: propDoc, title } = props;
+  const doc = title ? title : Doc[propDoc];
   const iconStyle = {
     margin: '0px 4px',
     color: 'var(--text-color-hint)',
@@ -39,4 +40,4 @@ const component: React.FC<IDocProps> = function (props) {
   );
 };
 
-export default component;
+export default HelpDoc;

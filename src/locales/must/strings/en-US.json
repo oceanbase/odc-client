@@ -2033,6 +2033,7 @@
   "odc.components.ResourceGroupPage.component.PublicConnection": "Public Connection",
   "odc.components.FormRoleModal.RoleSaved": "The role is saved.",
   "odc.components.UserPage.component.Note": "Comment",
+  "odc.components.UserPage.component.ExtraProperties": "Custom Properties",
   "odc.components.RolePage.component.Permissions": "Permission",
   "odc.components.PublicConnectionPage.AreYouSureYouWant": "Are you sure that you want to disable the resource group?",
   "odc.component.ProcedureParam.Mode": "Mode",

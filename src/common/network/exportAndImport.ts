@@ -11,7 +11,6 @@ import {
   IMPORT_TYPE,
   TaskType,
 } from '@/d.ts';
-import connection from '@/store/connection';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
 import { isNil } from 'lodash';
@@ -19,12 +18,13 @@ import { isNil } from 'lodash';
 export async function getExportObjects(
   databaseName: string,
   type?: DbObjectType,
+  cid?: number,
 ): Promise<{
   [key in DbObjectType]: string[];
 }> {
   const result = await request.get(`/api/v2/dataTransfer/getExportObjects`, {
     params: {
-      connectionId: connection.connection?.id,
+      connectionId: cid,
       schema: databaseName,
       objectType: type,
     },
@@ -85,7 +85,9 @@ export async function createBatchExportTask(formData: ExportFormData) {
   const ret = await request.post('/api/v2/flow/flowInstances/', {
     data: {
       connectionId: formData?.connectionId,
+      projectId: formData?.projectId,
       databaseName: formData?.databaseName,
+      databaseId: formData?.databaseId,
       taskType: TaskType.EXPORT,
       executionStrategy: formData?.executionStrategy,
       executionTime: formData?.executionTime,
@@ -174,7 +176,9 @@ export async function createBatchImportTask(
   const ret = await request.post('/api/v2/flow/flowInstances/', {
     data: {
       connectionId: formData?.connectionId,
+      projectId: formData?.projectId,
       databaseName: formData?.databaseName,
+      databaseId: formData?.databaseId,
       taskType: TaskType.IMPORT,
       executionStrategy: formData?.executionStrategy,
       executionTime: formData?.executionTime,

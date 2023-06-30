@@ -1,15 +1,12 @@
+import { getViewCreateSQL } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
 import ScriptPage from '@/component/ScriptPage';
-import {
-  ConnectionMode,
-  ICreateView,
-  ICreateViewColumn,
-  ICreateViewViewUnit,
-  PageType,
-} from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
+import { ConnectionMode, ICreateView, ICreateViewColumn, ICreateViewViewUnit } from '@/d.ts';
+import { openViewViewPage } from '@/store/helper/page';
+import { CreateViewPage as CreateViewPageModel } from '@/store/helper/page/pages/create';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { getRealTableName } from '@/util/sql';
@@ -19,6 +16,9 @@ import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'umi';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
+import { PropsTab, TopTab } from '../ViewPage';
 import BaseInfoForm from './component/BaseInfoForm';
 import ColumnSelector from './component/ColumnSelector';
 import TableSelector from './component/TableSelector';
@@ -44,21 +44,23 @@ enum EnumStepStatus {
   ERROR = 'ERROR',
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+interface IProps {
+  sqlStore: SQLStore;
+  pageStore: PageStore;
+  sessionManagerStore: SessionManagerStore;
+  pageKey: string;
+  viewName: string;
+  checkOption: string;
+  viewUnits: ICreateViewViewUnit[];
+  operations: string[];
+  resultHeight: number;
+  params: CreateViewPageModel['pageParams'];
+}
+
+@inject('sqlStore', 'sessionManagerStore', 'pageStore')
 @observer
-export default class CreateViewPage extends Component<
-  {
-    sqlStore: SQLStore;
-    schemaStore: SchemaStore;
-    pageStore: PageStore;
-    connectionStore: ConnectionStore;
-    pageKey: string;
-    viewName: string;
-    checkOption: string;
-    viewUnits: ICreateViewViewUnit[];
-    operations: string[];
-    resultHeight: number;
-  },
+class CreateViewPage extends Component<
+  IProps & { session?: SessionStore },
   {
     activeStepKey: EnumStep;
     sql?: string;
@@ -104,13 +106,19 @@ export default class CreateViewPage extends Component<
   };
 
   public handleCreateView = async () => {
-    const { sqlStore, pageKey, schemaStore, pageStore, connectionStore } = this.props;
+    const { sqlStore, pageKey, pageStore, params, sessionManagerStore, session } = this.props;
     const { sql } = this;
     if (!sql || !sql.replace(/\s/g, '')) {
       return;
     }
 
-    const results = await sqlStore.executeSQL(sql, pageKey, false);
+    const results = await sqlStore.executeSQL(
+      sql,
+      pageKey,
+      false,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
     if (!results || !results.length) {
       return;
     }
@@ -128,30 +136,35 @@ export default class CreateViewPage extends Component<
         2,
       );
 
-      schemaStore!.setLoadedViewKeys([]);
-      await schemaStore!.getViewList();
+      await session?.database.getViewList();
       pageStore.close(pageKey);
       /**
        * sql-execute 返回的还是不区分大小写，所以需要自己处理一下
        */
       let realViewName = getRealTableName(
         viewName,
-        connectionStore.connection.dbMode === ConnectionMode.OB_ORACLE,
+        session?.connection.dialectType === ConnectionMode.OB_ORACLE,
       );
       if (
-        schemaStore.views.find((view) => {
+        session?.database.views.find((view) => {
           return view.viewName === realViewName;
         })
       ) {
-        this.goToViewDetail(realViewName);
+        openViewViewPage(
+          realViewName,
+          TopTab.PROPS,
+          PropsTab.DDL,
+          session?.odcDatabase?.id,
+          session?.odcDatabase?.name,
+        );
       }
     }
   };
 
   private renderSQLPanel = () => {
-    const { connectionStore } = this.props;
     const { activeStepKey } = this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const session = this.props.session;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
     if (activeStepKey !== EnumStep.SQL_PAGE) {
       return null;
     }
@@ -159,14 +172,15 @@ export default class CreateViewPage extends Component<
     return (
       <ScriptPage
         ctx={this}
-        language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+        session={session}
+        language={isMySQL ? 'obmysql' : 'oboracle'}
         toolbar={{
           loading: false,
           actionGroupKey: 'VIEW_CREATE_ACTION_GROUP',
         }}
         editor={{
           readOnly: false,
-          initialValue: this.sql,
+          defaultValue: this.sql,
           onValueChange: this.handleSQLChanged,
           onEditorCreated: this.handleEditorCreated,
         }}
@@ -203,6 +217,7 @@ export default class CreateViewPage extends Component<
 
   private renderStepPanel = () => {
     const { activeStepKey, viewName, viewUnits } = this.state;
+    const { sessionManagerStore, params, session } = this.props;
     const steps = [
       {
         key: EnumStep.BASEINFO,
@@ -214,6 +229,7 @@ export default class CreateViewPage extends Component<
         render() {
           return (
             <BaseInfoForm
+              connectionMode={session?.connection.dialectType}
               onSubmit={(values) => {
                 this.setState(
                   {
@@ -241,6 +257,7 @@ export default class CreateViewPage extends Component<
         render() {
           return (
             <TableSelector
+              session={session}
               onSubmit={(res) => {
                 const { viewUnits, operations } = res;
                 // 如存在相同表｜视图，需要具备不同别名
@@ -283,6 +300,7 @@ export default class CreateViewPage extends Component<
         render() {
           return (
             <ColumnSelector
+              session={session}
               viewUnits={this.state.viewUnits}
               onSubmit={(colums) => {
                 this.setState({ colums }, () => {
@@ -476,7 +494,7 @@ export default class CreateViewPage extends Component<
   };
 
   private getCreateSql = async () => {
-    const { schemaStore, sqlStore } = this.props;
+    const { sqlStore, params, session } = this.props;
     const { viewName, checkOption, operations, viewUnits, colums } = this.state;
     const reqCreateView: ICreateView = {
       viewName,
@@ -501,7 +519,11 @@ export default class CreateViewPage extends Component<
       }),
     };
 
-    const sql = await schemaStore.getViewCreateSQL(reqCreateView);
+    const sql = await getViewCreateSQL(
+      reqCreateView,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
     if (sql) {
       sqlStore.clearExecuteRecords();
       this.sql = sql;
@@ -510,22 +532,14 @@ export default class CreateViewPage extends Component<
       });
     }
   };
-
-  private goToViewDetail = (viewName: string) => {
-    const { pageStore } = this.props;
-
-    const formatViewName = viewName;
-    pageStore!.openPage(
-      PageType.VIEW,
-      {
-        title: formatViewName,
-      },
-
-      {
-        viewName: formatViewName,
-        topTab: 'PROPS',
-        propsTab: 'DDL',
-      },
-    );
-  };
 }
+
+export default WrapSessionPage(function CreateViewPageWrap(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <CreateViewPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+});

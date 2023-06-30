@@ -84,6 +84,7 @@ export interface TableColumn {
   secondPrecision?: number | string;
   dayPrecision?: number | string;
   yearPrecision?: number | string;
+  tableName?: string;
 }
 
 export interface TableIndex {

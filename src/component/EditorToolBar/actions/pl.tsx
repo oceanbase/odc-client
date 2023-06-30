@@ -12,17 +12,15 @@ import {
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import plType from '@/constant/plType';
 import { ConnectionMode } from '@/d.ts';
-import PLPage from '@/page/Workspace/components/PLPage';
-import connection from '@/store/connection';
+import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
-import schemaStore from '@/store/schema';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
 
 const { confirm } = Modal;
 
-export const getStatus = (ctx: any) => {
-  const isMySQL = connection.connection.dbMode === ConnectionMode.OB_MYSQL;
+export const getStatus = (ctx: PLPage) => {
+  const isMySQL = ctx.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL;
   const plSchema = ctx.getFormatPLSchema && ctx.getFormatPLSchema();
   return [plType.PROCEDURE, plType.FUNCTION].includes(plSchema?.plType) && isMySQL
     ? IConStatus.DISABLE
@@ -77,9 +75,9 @@ const plActions: ToolBarActions = {
       return IConStatus.INIT;
     },
     // 非匿名块编译才展现
-    isVisible(ctx: any) {
+    isVisible(ctx: PLPage) {
       const plSchema = ctx.getFormatPLSchema();
-      const isMySQL = connection.connection.dbMode === ConnectionMode.OB_MYSQL;
+      const isMySQL = ctx.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL;
       if (isMySQL) {
         return false;
       }
@@ -100,7 +98,7 @@ const plActions: ToolBarActions = {
       }
       // 触发器 编译功能支持有版本差异
       if (plSchema.plType === plType.TRIGGER) {
-        return !!schemaStore?.enableTriggerCompile;
+        return !!ctx.getSession()?.supportFeature.enableTriggerCompile;
       }
 
       if (plSchema.plType === plType.TYPE) {
@@ -122,6 +120,9 @@ const plActions: ToolBarActions = {
         );
         return;
       }
+      if (!ctx.getSession()) {
+        return;
+      }
       sqlStore.runningPageKey.add(pageKey);
       sqlStore.isCompiling = true;
       ctx.setState({
@@ -141,26 +142,17 @@ const plActions: ToolBarActions = {
 
       const compilePlName = plSchema.packageName || plName;
       const compilePlType = plSchema.packageName ? 'PACKAGE' : plType;
-      const res = await sqlStore.compilePL(compilePlName, compilePlType);
+      const res = await sqlStore.compilePL(
+        compilePlName,
+        compilePlType,
+        ctx?.getSession()?.sessionId,
+        ctx?.getSession()?.database?.dbName,
+      );
       if (res) {
         (r.type = 'COMPILE'),
           (r.data = {
             COMPILE: res,
           });
-        switch (compilePlType) {
-          case 'PACKAGE': {
-            schemaStore.getPackageList();
-            break;
-          }
-          case 'FUNCTION': {
-            schemaStore.refreshFunctionList();
-            break;
-          }
-          case 'PROCEDURE': {
-            schemaStore.refreshProcedureList();
-            break;
-          }
-        }
       }
       sqlStore.runningPageKey.delete(pageKey);
       sqlStore.isCompiling = false;
@@ -190,7 +182,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       return plSchema.plType != plType.PKG_HEAD && plSchema.plType != plType.PKG_BODY;
     },
-    async action(ctx: any) {
+    async action(ctx: PLPage) {
       const { pageStore, sqlStore } = ctx.props;
       const plSchema = ctx.getFormatPLSchema();
       const { plName } = plSchema;
@@ -202,10 +194,16 @@ const plActions: ToolBarActions = {
         );
         return;
       }
-
+      if (!ctx.getSession()) {
+        return;
+      }
       // 匿名块运行前先执行格式校验
       if (!plName) {
-        const resParse = await sqlStore.parsePL(plSchema.ddl);
+        const resParse = await sqlStore.parsePL(
+          plSchema.ddl,
+          ctx.getSession()?.sessionId,
+          ctx.getSession()?.database?.dbName,
+        );
         const { obDbObjectType } = resParse || {};
         if (obDbObjectType !== 'ANONYMOUS_BLOCK') {
           message.warn(
@@ -231,15 +229,14 @@ const plActions: ToolBarActions = {
       }
       return IConStatus.INIT;
     },
-    isVisible(ctx: any) {
-      const { schemaStore } = ctx.props;
+    isVisible(ctx: PLPage) {
       const plSchema = ctx.getFormatPLSchema();
       return (
         ![plType.PKG_HEAD, plType.PKG_BODY, plType.TRIGGER].includes(plSchema?.plType) &&
-        schemaStore.enablePLDebug
+        ctx.getSession()?.supportFeature.enablePLDebug
       );
     },
-    async action(ctx: any) {
+    async action(ctx: PLPage) {
       const { pageStore, sqlStore } = ctx.props;
       const plSchema = ctx.getFormatPLSchema();
       const { plName } = plSchema;
@@ -251,10 +248,16 @@ const plActions: ToolBarActions = {
         );
         return;
       }
-
+      if (!ctx.getSession()) {
+        return;
+      }
       // 匿名块调试前先执行格式校验
       if (!plName) {
-        const resParse = await sqlStore.parsePL(plSchema.ddl);
+        const resParse = await sqlStore.parsePL(
+          plSchema.ddl,
+          ctx.getSession()?.sessionId,
+          ctx.getSession()?.database?.dbName,
+        );
         const { obDbObjectType } = resParse || {};
         if (obDbObjectType !== 'ANONYMOUS_BLOCK') {
           message.warn(

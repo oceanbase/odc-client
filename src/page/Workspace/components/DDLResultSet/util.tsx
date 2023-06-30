@@ -1,4 +1,4 @@
-import { ResultSetColumn } from '@/d.ts';
+import { ConnectionMode, ResultSetColumn } from '@/d.ts';
 import exportToSQL from '@/util/sqlExport';
 import { getBlobValueKey } from '@/util/utils';
 import { DataGridRef, getSelectedRangeData } from '@alipay/ob-react-data-grid';
@@ -29,10 +29,11 @@ export function copyToSQL(
   gridRef: DataGridRef,
   columns: ResultSetColumn[],
   tableName: string = 'tmp_table',
+  dbMode: ConnectionMode,
 ) {
   const selectData = getSelectedRangeData(gridRef);
   if (!selectData) {
     return;
   }
-  copy(exportToSQL(selectData, columns, tableName));
+  copy(exportToSQL(selectData, columns, tableName, dbMode));
 }

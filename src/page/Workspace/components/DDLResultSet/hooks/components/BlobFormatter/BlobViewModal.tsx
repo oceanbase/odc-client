@@ -2,7 +2,6 @@ import { generateSessionSid } from '@/common/network/pathUtil';
 import { fetchResultCache, IDataFormmater } from '@/common/network/sql';
 import ODCDragger from '@/component/OSSDragger2';
 import { LobExt, RSModifyDataType } from '@/d.ts';
-import { SchemaStore } from '@/store/schema';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { formatBytes, getBlobValueKey } from '@/util/utils';
@@ -28,7 +27,6 @@ interface IProps {
   onCancel: () => void;
   column: FormatterProps['column'];
   row: Record<string, any>;
-  schemaStore?: SchemaStore;
   settingStore?: SettingStore;
   onRowChange: (row: Readonly<any>) => void;
 }
@@ -94,8 +92,9 @@ const CreateFileLoader = (params: { request: Request; callback: Callback }) => {
 };
 
 const BlobViewModal: React.FC<IProps> = (props) => {
-  const { onCancel, onRowChange, column, row, schemaStore, settingStore } = props;
+  const { onCancel, onRowChange, column, row, settingStore } = props;
   const resultContext = useContext(ResultContext);
+  const session = resultContext.session;
   const [mode, setMode] = useState<DISPLAY_MODE>(DISPLAY_MODE.TEXT);
   const [text, setText] = useState<string>();
   const [textSize, setTextSize] = useState<number>(0);
@@ -142,6 +141,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
       resultContext.sessionId,
       len,
       offset,
+      session?.database?.dbName,
     );
   };
 
@@ -183,6 +183,8 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             IDataFormmater.HEX,
             resultContext.sessionId,
             maxTextSize / 1024,
+            0,
+            session?.database?.dbName,
           );
 
           setHexTextSize(data?.size);
@@ -301,7 +303,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             maxCount={1}
             action={
               window.ODCApiHost +
-              `/api/v2/connect/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
+              `/api/v2/datasource/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
             }
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
@@ -461,4 +463,4 @@ const BlobViewModal: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('schemaStore', 'settingStore')(observer(BlobViewModal));
+export default inject('settingStore')(observer(BlobViewModal));

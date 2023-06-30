@@ -1,88 +1,93 @@
-import type { IPackage, IView } from '@/d.ts';
+import { getPackageCreateSQL } from '@/common/network';
+import { openCreatePackagePage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, Modal } from 'antd';
-import type { FormInstance } from 'antd/lib/form';
-import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 
 interface IProps {
-  model: Partial<IPackage>;
-  onSave: (values: IView) => void;
-  visible: boolean;
-  onCancel: () => void;
+  modalStore?: ModalStore;
 }
 
 export enum CheckOption {
   NONE = 'NONE',
 }
 
-class CreatePackageModal extends Component<IProps> {
-  public formRef = React.createRef<FormInstance>();
+function CreatePackageModal(props: IProps) {
+  const { modalStore } = props;
+  const { databaseId, dbName } = modalStore.createPackageModalData;
+  const initialValues = {
+    packageName: null,
+  };
 
-  public save = () => {
-    const { onSave } = this.props;
-    this.formRef.current
+  const [formRef] = Form.useForm();
+
+  const { session } = useDBSession(databaseId);
+
+  const save = () => {
+    const { modalStore } = props;
+    formRef
       .validateFields()
-      .then((data) => {
-        onSave(data);
+      .then(async (data) => {
+        const packageName = data?.packageName;
+        const sql = await getPackageCreateSQL(packageName, session?.sessionId, dbName);
+        openCreatePackagePage(sql, databaseId, dbName);
+        modalStore.changeCreatePackageModalVisible(false);
       })
       .catch((error) => {
         console.error(JSON.stringify(error));
       });
   };
 
-  public render() {
-    const { visible, onCancel, model } = this.props;
-    const initialValues = {
-      packageName: model.packageName,
-    };
-
-    return (
-      <Modal
-        centered={true}
-        width={600}
-        destroyOnClose={true}
-        title={formatMessage({
-          id: 'workspace.window.createPackage.modal.title',
-        })}
-        visible={visible}
-        okText={formatMessage({
-          id: 'odc.component.CreatePackageModal.NextConfirmTheSqlStatement',
-        })} /* 下一步：确认 SQL */
-        onOk={this.save}
-        onCancel={onCancel}
+  return (
+    <Modal
+      centered={true}
+      width={600}
+      destroyOnClose={true}
+      title={formatMessage({
+        id: 'workspace.window.createPackage.modal.title',
+      })}
+      visible={modalStore.createPackageModalVisible}
+      okText={formatMessage({
+        id: 'odc.component.CreatePackageModal.NextConfirmTheSqlStatement',
+      })} /* 下一步：确认 SQL */
+      onOk={save}
+      onCancel={() => {
+        modalStore.changeCreatePackageModalVisible(false);
+      }}
+    >
+      <Form
+        layout="vertical"
+        requiredMark={'optional'}
+        initialValues={initialValues}
+        form={formRef}
       >
-        <Form
-          layout="vertical"
-          hideRequiredMark={true}
-          initialValues={initialValues}
-          ref={this.formRef}
+        <Form.Item
+          name="packageName"
+          label={formatMessage({
+            id: 'workspace.window.createPackage.packageName',
+          })}
+          rules={[
+            {
+              required: true,
+              message: formatMessage({
+                id: 'workspace.window.createPackage.packageName.required',
+              }),
+            },
+          ]}
         >
-          <Form.Item
-            name="packageName"
-            label={formatMessage({
-              id: 'workspace.window.createPackage.packageName',
+          <Input
+            // eslint-disable-next-line
+            autoComplete={'off'}
+            placeholder={formatMessage({
+              id: 'workspace.window.createPackage.packageName.placeholder',
             })}
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'workspace.window.createPackage.packageName.required',
-                }),
-              },
-            ]}
-          >
-            <Input
-              // eslint-disable-next-line
-              autoComplete={'off'}
-              placeholder={formatMessage({
-                id: 'workspace.window.createPackage.packageName.placeholder',
-              })}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-    );
-  }
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
 }
 
-export default CreatePackageModal;
+export default inject('modalStore')(observer(CreatePackageModal));

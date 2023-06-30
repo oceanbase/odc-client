@@ -64,7 +64,7 @@ export class TaskStore {
    * task page 的 tab
    */
   @observable
-  public taskPageType: TaskPageType = TaskPageType.CREATED_BY_CURRENT_USER;
+  public taskPageType: TaskPageType = TaskPageType.EXPORT;
 
   /**
    * 任务一级筛选范围
@@ -129,6 +129,7 @@ export class TaskStore {
   @action
   public getTaskList = async (params?: {
     taskType?: TaskPageType;
+    projectId?: number;
     connection?: number;
     fuzzySearchKeyword?: string;
     status?: string[];
@@ -157,6 +158,7 @@ export class TaskStore {
   @action
   public getCycleTaskList = async (params?: {
     connectionId?: number[];
+    projectId?: number;
     creator?: string;
     databaseName?: string[];
     id?: number;

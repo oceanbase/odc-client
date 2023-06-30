@@ -14,3 +14,25 @@
     }
   }
 }
+.wrap {
+  height: 100%;
+  :global {
+    .ant-spin-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  }
+  .table {
+    flex: 1;
+  }
+  .toolbar {
+    &.simpleHeader {
+      padding-bottom: 5px;
+    }
+    flex: 0;
+  }
+  .datasourceSelect {
+    flex: 0;
+  }
+}

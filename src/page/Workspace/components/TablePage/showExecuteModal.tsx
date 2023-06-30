@@ -1,9 +1,13 @@
 import executeSQL from '@/common/network/sql/executeSQL';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import SessionStore from '@/store/sessionManager/session';
 import notification from '@/util/notification';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
-export default forwardRef(function TableExecuteModal(_, ref) {
+export default forwardRef<any, { session: SessionStore }>(function TableExecuteModal(
+  { session },
+  ref,
+) {
   const [visible, setVisible] = useState(false);
   const [sql, setSQL] = useState('');
   const [tableName, setTableName] = useState('');
@@ -29,6 +33,7 @@ export default forwardRef(function TableExecuteModal(_, ref) {
   );
   return (
     <ExecuteSQLModal
+      sessionStore={session}
       visible={visible}
       readonly
       sql={sql}
@@ -38,7 +43,7 @@ export default forwardRef(function TableExecuteModal(_, ref) {
         setVisible(false);
       }}
       onSave={async () => {
-        const results = await executeSQL(sql);
+        const results = await executeSQL(sql, session?.sessionId, session?.database?.dbName);
         const result = results?.find((result) => result.track);
         if (!result?.track) {
           promiseResolveRef?.current?.(true);

@@ -1,28 +1,32 @@
+import type { ITaskFlow } from '@/d.ts';
 import {
   AuditEventActionType,
   AuditEventResult,
   AuditEventType,
   ConnectionMode,
+  EncryptionAlgorithm,
   IAudit,
   IAuditEvent,
   IAuditExport,
   IAutoAuthEvent,
   IAutoAuthRule,
   IConnectionType,
+  IManagerIntegration,
   IManagerPublicConnection,
   IManagerResourceGroup,
-  IManagerResourceType,
   IManagerRole,
   IManagerUser,
   IManagerUserPermission,
   IManageUserListParams,
   IMaskRule,
+  IntegrationType,
+  IPromptVo,
   IRequestListParamsV2,
+  IResourceRole,
   IResponseData,
+  ISSOConfig,
   IUserConfig,
-  TaskPageType,
 } from '@/d.ts';
-import type { ITaskFlowConfig } from '@/page/Manage/interface';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
 interface IRoleForUpdate extends IManagerRole {
@@ -469,8 +473,8 @@ export async function setSystemConfig(
 /**
  * 新建任务流程
  */
-export async function createTaskFlow(data: Partial<ITaskFlowConfig>): Promise<ITaskFlowConfig> {
-  const result = await request.post('/api/v2/flow/flowConfigs/', {
+export async function createTaskFlow(data: Partial<ITaskFlow>): Promise<ITaskFlow> {
+  const result = await request.post('/api/v2/regulation/approvalFlows', {
     data,
   });
   return result?.data;
@@ -479,32 +483,17 @@ export async function createTaskFlow(data: Partial<ITaskFlowConfig>): Promise<IT
 /**
  * 删除任务流程
  */
-export async function deleteTaskFlow(id: number): Promise<ITaskFlowConfig> {
-  const result = await request.delete(`/api/v2/flow/flowConfigs/${id}`);
+export async function deleteTaskFlow(id: number): Promise<ITaskFlow> {
+  const result = await request.delete(`/api/v2/regulation/approvalFlows/${id}`);
   return result?.data;
 }
 
 /**
  * 更新任务流程
  */
-export async function updateTaskFlow(data: Partial<ITaskFlowConfig>): Promise<ITaskFlowConfig> {
-  const result = await request.put(`/api/v2/flow/flowConfigs/${data.id}`, {
+export async function updateTaskFlow(data: Partial<ITaskFlow>): Promise<ITaskFlow> {
+  const result = await request.put(`/api/v2/regulation/approvalFlows/${data.id}`, {
     data,
-  });
-  return result?.data;
-}
-
-/**
- * 设置任务流程状态
- */
-export async function setTaskFlowEnable(data: {
-  id: number;
-  enabled: boolean;
-}): Promise<ITaskFlowConfig> {
-  const result = await request.post(`/api/v2/flow/flowConfigs/${data.id}/setEnabled`, {
-    data: {
-      enabled: data.enabled,
-    },
   });
   return result?.data;
 }
@@ -512,8 +501,8 @@ export async function setTaskFlowEnable(data: {
 /**
  * 获取任务流程详情
  */
-export async function getTaskFlowDetail(id: number): Promise<ITaskFlowConfig> {
-  const result = await request.get(`/api/v2/flow/flowConfigs/${id}`);
+export async function getTaskFlowDetail(id: number): Promise<ITaskFlow> {
+  const result = await request.get(`/api/v2/regulation/approvalFlows/${id}`);
   return result?.data;
 }
 
@@ -523,17 +512,12 @@ export async function getTaskFlowDetail(id: number): Promise<ITaskFlowConfig> {
 export async function getTaskFlowList(
   params?: Partial<{
     name: string;
-    taskType: TaskPageType;
-    creatorName: number;
-    enabled: boolean;
     sort: string;
-    resourceId: number;
-    resourceType: IManagerResourceType;
     page: number;
     size: number;
   }>,
-): Promise<IResponseData<ITaskFlowConfig>> {
-  const result = await request.get('/api/v2/flow/flowConfigs/', {
+): Promise<IResponseData<ITaskFlow>> {
+  const result = await request.get('/api/v2/regulation/approvalFlows', {
     params,
   });
   return result?.data;
@@ -552,24 +536,12 @@ export async function getTaskFlowExists(name: string): Promise<boolean> {
 }
 
 /**
- * 任务流程名称 批量删除
+ * 获取任务流程中的角色列表
  */
-export async function batchDeleteTaskFlow(ids: number[]): Promise<boolean> {
-  const result = await request.post('/api/v2/flow/flowConfigs/batchDelete', {
-    data: ids,
-  });
-  return result?.data;
-}
-
-/**
- * 任务流程 优先级设置
- */
-export async function updatePriority(
-  data: Record<TaskPageType, ITaskFlowConfig[]>,
-): Promise<IResponseData<ITaskFlowConfig>> {
-  const result = await request.put('/api/v2/flow/flowConfigs/setPriority', {
-    data,
-  });
+export async function getResourceRoles(
+  params?: IRequestListParamsV2,
+): Promise<IResponseData<IResourceRole>> {
+  const result = await request.get('/api/v2/iam/resourceRoles');
   return result?.data;
 }
 
@@ -779,6 +751,18 @@ export async function getAutoRuleEventList(): Promise<IAutoAuthEvent[]> {
 }
 
 /**
+ * 获取自动授权规则事件的推荐匹配表达式
+ */
+export async function getPromptExpression(eventName: string): Promise<IPromptVo> {
+  const result = await request.get('/api/v2/management/auto/rules/prompt', {
+    params: {
+      eventName,
+    },
+  });
+  return result?.data;
+}
+
+/**
  * 新建自动授权规则
  */
 export async function createAutoRule(data: Partial<IAutoAuthRule>): Promise<IAutoAuthRule> {
@@ -808,4 +792,126 @@ export async function geteAutoRuleExists(name: string): Promise<boolean> {
     },
   });
   return result?.data;
+}
+
+/**
+ * 创建外部集成
+ */
+export async function createIntegration(
+  data: Partial<IManagerIntegration>,
+): Promise<IManagerIntegration> {
+  const result = await request.post('/api/v2/integration/', {
+    data,
+  });
+  return result?.data;
+}
+
+/**
+ * 删除集成
+ */
+export async function deleteIntegration(id: number): Promise<IManagerIntegration> {
+  const result = await request.delete(`/api/v2/integration/${id}`);
+  return result?.data;
+}
+
+/**
+ * 更新集成
+ */
+export async function updateIntegration(
+  data: Partial<IManagerIntegration>,
+): Promise<IManagerIntegration> {
+  const result = await request.put(`/api/v2/integration/${data.id}`, {
+    data,
+  });
+  return result?.data;
+}
+
+/**
+ * 设置集成状态
+ */
+export async function setIntegration(data: {
+  id: number;
+  enabled: boolean;
+}): Promise<IManagerIntegration> {
+  const result = await request.post(`/api/v2/integration/${data.id}/setEnabled`, {
+    data,
+  });
+  return result?.data;
+}
+
+/**
+ * 获取集成详情
+ */
+export async function getIntegrationDetail(id: number): Promise<IManagerIntegration> {
+  const result = await request.get(`/api/v2/integration/${id}`);
+  return result?.data;
+}
+
+/**
+ * 获取集成列表
+ */
+export async function getIntegrationList(params?: {
+  name?: string;
+  type?: IntegrationType;
+  creatorName?: string;
+  enabled?: boolean[];
+  sort?: string;
+  page?: number;
+  size?: number;
+}): Promise<IResponseData<IManagerIntegration>> {
+  const result = await request.get('/api/v2/integration/', {
+    params,
+  });
+  return result?.data;
+}
+
+/**
+ * 获取集成名称是否重复
+ */
+export async function checkIntegrationExists(
+  type: IntegrationType,
+  name: string,
+): Promise<boolean> {
+  const result = await request.get(`/api/v2/integration/exists`, {
+    params: {
+      type,
+      name,
+    },
+  });
+  return result?.data;
+}
+
+export async function testClientRegistration(
+  config: ISSOConfig,
+  type: 'info' | 'test',
+): Promise<{
+  testLoginUrl: string;
+  testId: string;
+}> {
+  const res = await request.post('/api/v2/sso/test/start', {
+    data: {
+      name: config?.name,
+      type: IntegrationType.SSO,
+      configuration: JSON.stringify(config),
+      encryption: {
+        enabled: true,
+        algorithm: EncryptionAlgorithm.RAW,
+        secret: config.ssoParameter?.secret,
+      },
+      enabled: true,
+    },
+    params: {
+      type,
+    },
+  });
+  return res?.data;
+}
+
+export async function getTestUserInfo(testId: string): Promise<string> {
+  const res = await request.get('/api/v2/sso/test/info', {
+    params: {
+      testId,
+    },
+  });
+  return res?.data;
 }

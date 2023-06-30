@@ -1,7 +1,28 @@
 /**
  * 统一构建page params
  */
-import plType from '@/constant/plType';
+import plType, { PLType } from '@/constant/plType';
+import { IScriptMeta } from '@/d.ts';
+import { SQLPage } from './pages';
+
+export interface IPLPageParams extends Partial<IScriptMeta> {
+  packageName?: string;
+  scriptText: string;
+  scriptName?: string;
+  scriptId?: string;
+  plSchema: Record<string, any>;
+  isAnonymous?: boolean;
+  plType?: PLType;
+  plName?: string;
+  fromPackage?: boolean;
+  triggerName?: string;
+  typeName?: string;
+  cid: number;
+  dbName: string;
+  databaseFrom: 'datasource' | 'project';
+}
+
+export type ISQLPageParams = SQLPage['pageParams'];
 
 export function createPackageHeadPageParams(packageName: string, sql: string, scriptId?: string) {
   return {

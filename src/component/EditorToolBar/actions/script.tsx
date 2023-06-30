@@ -1,5 +1,6 @@
 import { IEditor } from '@/component/MonacoEditor';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
+import { PLPage } from '@/page/Workspace/components/PLPage';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
@@ -108,14 +109,14 @@ const scriptActions: ToolBarActions = {
   DOWNLOAD: {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.script.Download' }), //下载
     icon: CloudDownloadOutlined,
-    async action(ctx) {
+    async action(ctx: PLPage) {
       const text = ctx?.props?.params?.scriptText || '';
       const type = ctx?.props?.params?.plType || ctx?.props?.params?.plSchema?.plType;
       const plName =
         ctx?.props?.params?.plName ||
         ctx?.props?.params?.plSchema?.plName ||
         ctx?.props?.params?.triggerName;
-      downloadPLDDL(plName, type, text);
+      downloadPLDDL(plName, type, text, ctx.props?.params?.dbName);
     },
   },
 };

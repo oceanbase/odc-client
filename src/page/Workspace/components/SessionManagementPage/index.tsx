@@ -1,22 +1,22 @@
-import DisplayTable from '@/component/DisplayTable';
-import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import Toolbar from '@/component/Toolbar';
-import { actionTypes, IDatabaseSession, ISqlExecuteResultStatus } from '@/d.ts';
-import type { PageStore } from '@/store/page';
-import type { SQLStore } from '@/store/sql';
+import { IDatabaseSession } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { sortNumber, sortString } from '@/util/utils';
-import { BoxPlotOutlined, LogoutOutlined, SyncOutlined } from '@ant-design/icons';
-import { Input, Layout, message, Spin } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
+import { Input, Layout, message, Space, Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { Component } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FormattedMessage } from 'umi';
 // @ts-ignore
-import { getCloseDatabaseSessionSQL, getDatabaseSessionList } from '@/common/network/sessionParams';
-import { executeSQL } from '@/common/network/sql';
-import { WorkspaceAcess } from '@/component/Acess';
-import { SchemaStore } from '@/store/schema';
-import notification from '@/util/notification';
+import { getDatabaseSessionList, killSessions } from '@/common/network/sessionParams';
+import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
+import MiniTable from '@/component/Table/MiniTable';
+import { SessionManagerStore } from '@/store/sessionManager';
+import { ColumnsType } from 'antd/es/table';
+import classNames from 'classnames';
+import SessionContextWrap from '../SessionContextWrap';
+import SessionContext from '../SessionContextWrap/context';
+import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
 
 const ToolbarButton = Toolbar.Button;
@@ -24,335 +24,304 @@ const ToolbarButton = Toolbar.Button;
 const { Search } = Input;
 const { Content } = Layout;
 
-@inject('sqlStore', 'pageStore', 'schemaStore')
-@observer
-export default class SessionManagementPage extends Component<
-  {
-    sqlStore: SQLStore;
-    schemaStore?: SchemaStore;
-    pageStore: PageStore;
-    pageKey: string;
-  },
-  {
-    selectedRows: IDatabaseSession[];
-    showExecuteSQLModal: boolean;
-    searchKey: string;
-    listLoading: boolean;
-    updateDML: string;
-    /**
-     * 是否是查询会话
-     */
-    isQuery: boolean;
-    sessionList: IDatabaseSession[];
-  }
-> {
-  public readonly state = {
-    selectedRows: [],
-    showExecuteSQLModal: false,
-    searchKey: '',
-    listLoading: false,
-    updateDML: '',
-    isQuery: false,
-    sessionList: [],
-  };
+interface IProps {
+  sessionManagerStore?: SessionManagerStore;
+  defaultDatasouceId: number;
+  showDatasource?: boolean;
+  simpleHeader?: boolean;
+}
 
-  public componentDidMount() {
-    this.getDatabaseSessionList();
-  }
+function SessionManagementPage(props: IProps) {
+  const [searchKey, setSearchKey] = useState('');
+  const [selectedRows, setSelectedRows] = useState<IDatabaseSession[]>([]);
+  const [listLoading, setListLoading] = useState(false);
+  const [sessionList, setSessionList] = useState<IDatabaseSession[]>([]);
+  const context = useContext(SessionContext);
+  const session = context?.session;
 
-  public async getDatabaseSessionList() {
-    this.setState({
-      listLoading: true,
-      selectedRows: [],
-    });
+  async function fetchDatabaseSessionList() {
+    if (!session?.sessionId) {
+      return;
+    }
+    setListLoading(true);
+    setSelectedRows([]);
 
     // 获取连接参数列表
-    const data = await getDatabaseSessionList();
-    this.setState({ listLoading: false, sessionList: data });
+    const data = await getDatabaseSessionList(session?.sessionId);
+    setListLoading(false);
+    setSessionList(data);
   }
 
-  /**
-   * 开始关闭会话
-   */
-  public handleCloseDatabaseSessions = async () => {
-    const { selectedRows } = this.state;
-    this.setState({ showExecuteSQLModal: true });
+  useEffect(() => {
+    fetchDatabaseSessionList();
+  }, [session?.sessionId]);
 
-    const updateDML = (await getCloseDatabaseSessionSQL(selectedRows, 'SESSION')) || '';
-    this.setState({ updateDML });
-  };
+  const columns: ColumnsType<IDatabaseSession> = [
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.sessionId',
+      }),
+
+      dataIndex: 'sessionId',
+      width: 105,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortNumber(a.sessionId, b.sessionId),
+      sortDirections: ['descend', 'ascend'],
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.dbUser',
+      }),
+
+      dataIndex: 'dbUser',
+      width: 65,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.dbUser, b.dbUser),
+      sortDirections: ['descend', 'ascend'],
+      ellipsis: true,
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.srcIp',
+      }),
+
+      dataIndex: 'srcIp',
+      width: 165,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.srcIp, b.srcIp),
+      sortDirections: ['descend', 'ascend'],
+      ellipsis: true,
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.database',
+      }),
+
+      dataIndex: 'database',
+      width: 120,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.database, b.database),
+      sortDirections: ['descend', 'ascend'],
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.status',
+      }),
+
+      dataIndex: 'status',
+      width: 65,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.status, b.status),
+      sortDirections: ['descend', 'ascend'],
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.command',
+      }),
+
+      dataIndex: 'command',
+      width: 85,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.command, b.command),
+      sortDirections: ['descend', 'ascend'],
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.executeTime',
+      }),
+
+      dataIndex: 'executeTime',
+      width: 135,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) =>
+        sortNumber(a.executeTime, b.executeTime),
+      sortDirections: ['descend', 'ascend'],
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.sql',
+      }),
+
+      dataIndex: 'sql',
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.sql, b.sql),
+      sortDirections: ['descend', 'ascend'],
+      ellipsis: true,
+      render(val) {
+        return (
+          <div
+            title={val}
+            style={{
+              maxWidth: '165px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {val}
+          </div>
+        );
+      },
+    },
+
+    {
+      title: formatMessage({
+        id: 'workspace.window.session.management.column.obproxyIp',
+      }),
+
+      dataIndex: 'obproxyIp',
+      width: 160,
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.obproxyIp, b.obproxyIp),
+      sortDirections: ['descend', 'ascend'],
+    },
+  ];
+
+  // 过滤搜索关键词
+  const filteredRows = sessionList?.filter((session) =>
+    [
+      `${session.sessionId}`,
+      session.dbUser,
+      session.database,
+      session.command,
+      session.srcIp,
+      session.status,
+      session.obproxyIp,
+      session.sql,
+    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
+  );
 
   /**
    * 关闭会话查询
    */
-  public handleCloseDatabaseSessionQuery = async () => {
-    const { selectedRows } = this.state;
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = (await getCloseDatabaseSessionSQL(selectedRows, 'QUERY')) || '';
-    this.setState({ updateDML, isQuery: true });
-  };
-
-  public handleExecuteUpdateDML = async () => {
-    const { sqlStore } = this.props;
-    const { updateDML, isQuery } = this.state;
-
-    // 执行 DML
-    const result = await executeSQL(updateDML);
-
-    if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
-      // 刷新
-      await this.getDatabaseSessionList();
-      this.setState({
-        showExecuteSQLModal: false,
-        selectedRows: [],
-      });
-
-      message.success(
-        isQuery
-          ? formatMessage({
-              id: 'odc.components.SessionManagementPage.TheQueryIsClosed',
-            })
-          : // 关闭查询成功
-            formatMessage({
-              id: 'workspace.window.session.management.sql.execute.success',
-            }),
-      );
-    } else {
-      notification.error({
-        track: result?.[0]?.track || 'Empty Error Log!',
-        requestId: result?.[0]?.requestId,
-      });
-    }
-
-    this.setState({ isQuery: false });
-  };
-
-  public handleRefresh = () => {
-    this.getDatabaseSessionList();
-  };
-
-  public handleSearch = (searchKey: string) => {
-    this.setState({ searchKey });
-  };
-
-  public render() {
-    const { schemaStore } = this.props;
-    const { showExecuteSQLModal, searchKey, selectedRows, listLoading, updateDML, sessionList } =
-      this.state;
-
-    const columns = [
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.sessionId',
-        }),
-
-        dataIndex: 'sessionId',
-        width: 105,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortNumber(a.sessionId, b.sessionId),
-        sortDirections: ['descend', 'ascend'],
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.dbUser',
-        }),
-
-        dataIndex: 'dbUser',
-        width: 65,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.dbUser, b.dbUser),
-        sortDirections: ['descend', 'ascend'],
-        ellipsis: true,
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.srcIp',
-        }),
-
-        dataIndex: 'srcIp',
-        width: 165,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.srcIp, b.srcIp),
-        sortDirections: ['descend', 'ascend'],
-        ellipsis: true,
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.database',
-        }),
-
-        dataIndex: 'database',
-        width: 120,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.database, b.database),
-        sortDirections: ['descend', 'ascend'],
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.status',
-        }),
-
-        dataIndex: 'status',
-        width: 65,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.status, b.status),
-        sortDirections: ['descend', 'ascend'],
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.command',
-        }),
-
-        dataIndex: 'command',
-        width: 85,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.command, b.command),
-        sortDirections: ['descend', 'ascend'],
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.executeTime',
-        }),
-
-        dataIndex: 'executeTime',
-        width: 135,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) =>
-          sortNumber(a.executeTime, b.executeTime),
-        sortDirections: ['descend', 'ascend'],
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.sql',
-        }),
-
-        dataIndex: 'sql',
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.sql, b.sql),
-        sortDirections: ['descend', 'ascend'],
-        ellipsis: true,
-        render(val) {
-          return (
-            <div
-              title={val}
-              style={{
-                maxWidth: '165px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {val}
-            </div>
-          );
-        },
-      },
-
-      {
-        title: formatMessage({
-          id: 'workspace.window.session.management.column.obproxyIp',
-        }),
-
-        dataIndex: 'obproxyIp',
-        width: 160,
-        sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.obproxyIp, b.obproxyIp),
-        sortDirections: ['descend', 'ascend'],
-      },
-    ];
-
-    // 过滤搜索关键词
-    const filteredRows = sessionList?.filter((session) =>
-      [
-        `${session.sessionId}`,
-        session.dbUser,
-        session.database,
-        session.command,
-        session.srcIp,
-        session.status,
-        session.obproxyIp,
-        session.sql,
-      ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
+  const kill = async (type: 'session' | 'query') => {
+    const data = await killSessions(
+      selectedRows?.map((i) => i.sessionId?.toString()),
+      context.datasourceId,
+      type,
     );
+    if (data && !data?.find((item) => !item.killed)) {
+      await fetchDatabaseSessionList();
+      message.success('关闭成功');
+      setSelectedRows([]);
+    } else {
+      message.error(
+        data
+          ?.map((item) => item.errorMessage)
+          ?.filter(Boolean)
+          ?.join('\n'),
+      );
+    }
+  };
 
-    return (
-      <>
-        <Content style={{ position: 'relative' }}>
-          <Spin spinning={listLoading}>
-            <Toolbar>
-              <div className="tools-left">
-                <WorkspaceAcess action={actionTypes.update}>
-                  <>
-                    {schemaStore.enableKillSession && (
-                      <ToolbarButton
-                        isShowText
-                        disabled={!selectedRows.length}
-                        text={
-                          <FormattedMessage id="workspace.window.session.button.closeSession" />
-                        }
-                        icon={<LogoutOutlined style={{ fontSize: 14 }} />}
-                        onClick={this.handleCloseDatabaseSessions}
-                      />
-                    )}
+  const handleSearch = (searchKey: string) => {
+    setSearchKey(searchKey);
+  };
+  const handleRefresh = () => {
+    fetchDatabaseSessionList();
+  };
 
-                    {schemaStore.enableKillQuery && (
-                      <ToolbarButton
-                        isShowText
-                        disabled={!selectedRows.length}
-                        text={
-                          formatMessage({
-                            id: 'odc.components.SessionManagementPage.CloseQuery',
-                          }) //关闭查询
-                        }
-                        icon={<BoxPlotOutlined />}
-                        onClick={this.handleCloseDatabaseSessionQuery}
-                      />
-                    )}
-                  </>
-                </WorkspaceAcess>
-              </div>
-              <div className="tools-right">
-                <Search
-                  allowClear={true}
-                  placeholder={formatMessage({
-                    id: 'workspace.window.session.button.search',
-                  })}
-                  onSearch={this.handleSearch}
-                  onChange={(e) => this.handleSearch(e.target.value)}
-                  size="small"
-                  className={styles.search}
-                />
+  return (
+    <>
+      <Spin wrapperClassName={styles.wrap} spinning={listLoading}>
+        <div className={classNames(styles.toolbar, { [styles.simpleHeader]: props.simpleHeader })}>
+          <Toolbar style={{ borderBottom: 'none', height: props.simpleHeader ? 32 : 38 }}>
+            <div
+              style={{ paddingLeft: props.simpleHeader ? '0px' : '12px' }}
+              className="tools-left"
+            >
+              <Space size={16}>
+                {session?.supportFeature?.enableKillSession && (
+                  <ToolbarButton
+                    type="BUTTON"
+                    disabled={!selectedRows.length}
+                    text={<FormattedMessage id="workspace.window.session.button.closeSession" />}
+                    confirmConfig={{
+                      title: '确认关闭会话',
+                      onConfirm() {
+                        kill('session');
+                      },
+                    }}
+                  />
+                )}
 
-                <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
-                  icon={<SyncOutlined />}
-                  onClick={this.handleRefresh}
-                />
-              </div>
-            </Toolbar>
-            <div className={styles.table}>
-              <DisplayTable
-                rowKey="sessionId"
-                bordered={true}
-                tableLayout="auto"
-                columns={columns}
-                dataSource={filteredRows}
-                rowSelection={{
-                  selectedRowKeys: selectedRows.map((r: IDatabaseSession) => r.sessionId),
-                  onChange: (selectedRowKeys: string[], rows: IDatabaseSession[]) => {
-                    this.setState({ selectedRows: rows });
-                  },
-                }}
+                {session?.supportFeature?.enableKillQuery && (
+                  <ToolbarButton
+                    type="BUTTON"
+                    disabled={!selectedRows.length}
+                    text={
+                      formatMessage({
+                        id: 'odc.components.SessionManagementPage.CloseQuery',
+                      }) //关闭查询
+                    }
+                    confirmConfig={{
+                      title: '确认关闭查询',
+                      onConfirm() {
+                        kill('query');
+                      },
+                    }}
+                  />
+                )}
+              </Space>
+            </div>
+            <div className="tools-right">
+              <Search
+                allowClear={true}
+                placeholder={formatMessage({
+                  id: 'workspace.window.session.button.search',
+                })}
+                onSearch={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
+                size="small"
+                className={styles.search}
+              />
+
+              <ToolbarButton
+                text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                icon={<SyncOutlined />}
+                onClick={handleRefresh}
               />
             </div>
-          </Spin>
-        </Content>
-        <ExecuteSQLModal
-          sql={updateDML}
-          visible={showExecuteSQLModal}
-          onSave={this.handleExecuteUpdateDML}
-          onCancel={() => this.setState({ showExecuteSQLModal: false, isQuery: false })}
-          onChange={(sql) => this.setState({ updateDML: sql })}
-        />
-      </>
-    );
-  }
+          </Toolbar>
+        </div>
+        {props.showDatasource ? (
+          <div className={styles.datasourceSelect}>
+            <SessionSelect />
+          </div>
+        ) : null}
+        <div className={styles.table}>
+          <MiniTable
+            rowKey={'sessionId'}
+            bordered={true}
+            loading={listLoading}
+            columns={columns}
+            dataSource={filteredRows}
+            loadData={(page) => {}}
+            rowSelection={{
+              selectedRowKeys: selectedRows.map((r: IDatabaseSession) => r.sessionId),
+              onChange: (selectedRowKeys: string[], rows: IDatabaseSession[]) => {
+                setSelectedRows(rows);
+              },
+            }}
+          />
+        </div>
+      </Spin>
+    </>
+  );
 }
+export default inject('sessionManagerStore')(
+  observer(function SessionManage(props: IProps) {
+    return (
+      <SessionContextWrap
+        defaultDatabaseId={null}
+        datasourceMode
+        defaultDatasourceId={props.defaultDatasouceId}
+      >
+        {({ session }) => {
+          return session ? (
+            <SessionManagementPage {...props} key={session?.sessionId} />
+          ) : (
+            <WorkSpacePageLoading />
+          );
+        }}
+      </SessionContextWrap>
+    );
+  }),
+);

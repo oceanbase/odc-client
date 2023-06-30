@@ -3,25 +3,22 @@ import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { ConnectionMode } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-design/icons';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import React, { useContext, useRef, useState } from 'react';
 import TablePageContext from '../context';
 
 const ToolbarButton = Toolbar.Button;
 
-interface IProps {
-  connectionStore?: ConnectionStore;
-}
+interface IProps {}
 
-const TableDDL: React.FC<IProps> = function ({ connectionStore }) {
+const TableDDL: React.FC<IProps> = function ({}) {
   const [formated, setFormated] = useState(false);
   const editorRef = useRef<IEditor>();
-  const { table, onRefresh } = useContext(TablePageContext);
-  const isMySQL = connectionStore.connection?.dialectType === ConnectionMode.OB_MYSQL;
+  const { table, onRefresh, session } = useContext(TablePageContext);
+  const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
   const handleFormat = () => {
     if (!formated) {
       editorRef.current?.doFormat();
@@ -31,8 +28,8 @@ const TableDDL: React.FC<IProps> = function ({ connectionStore }) {
     setFormated(!formated);
   };
   return (
-    <>
-      <Toolbar>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Toolbar style={{ flex: 0 }}>
         <ToolbarButton
           text={
             formated
@@ -55,7 +52,12 @@ const TableDDL: React.FC<IProps> = function ({ connectionStore }) {
           }
           icon={<CloudDownloadOutlined />}
           onClick={() => {
-            downloadPLDDL(table?.info?.tableName, 'TABLE', table?.info?.DDL);
+            downloadPLDDL(
+              table?.info?.tableName,
+              'TABLE',
+              table?.info?.DDL,
+              session.database.dbName,
+            );
           }}
         />
         <Toolbar.Button
@@ -68,7 +70,8 @@ const TableDDL: React.FC<IProps> = function ({ connectionStore }) {
       </Toolbar>
       <div
         style={{
-          height: `calc(100vh - ${48 + 34 + 39 + 50}px)`,
+          flex: 1,
+          // height: `calc(100vh - ${48 + 34 + 39 + 50}px)`,
           overflow: 'hidden',
           position: 'relative',
         }}
@@ -82,8 +85,8 @@ const TableDDL: React.FC<IProps> = function ({ connectionStore }) {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 
-export default inject('connectionStore')(observer(TableDDL));
+export default observer(TableDDL);

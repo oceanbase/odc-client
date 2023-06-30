@@ -1,0 +1,27 @@
+.deleteBtn {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.labelContainer {
+  display: flex;
+  flex: 1 0 100%;
+  padding: 4px 0px;
+  column-gap: 4px;
+  .label {
+    // flex: 0 0;
+  }
+  .extra {
+    // flex: 0 0;/
+    color: var(--neutral-black45-color);
+  }
+}
+.condition {
+  margin-bottom: 8px;
+  .conditionItem {
+    :global(.ant-form-item) {
+      margin-bottom: 0;
+    }
+  }
+}

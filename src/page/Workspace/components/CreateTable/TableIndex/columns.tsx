@@ -1,4 +1,4 @@
-import connection from '@/store/connection';
+import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
 import { Column } from '@alipay/ob-react-data-grid';
 import { uniq } from 'lodash';
@@ -16,8 +16,11 @@ import {
 import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
 
-export function useColumns(columns: TableColumn[]): Column<TableIndex, TableIndex>[] {
-  const config = useTableConfig(connection);
+export function useColumns(
+  columns: TableColumn[],
+  connection: IDatasource,
+): Column<TableIndex, TableIndex>[] {
+  const config = useTableConfig(connection?.dialectType);
   const methodOptions = {
     [TableIndexMehod.NONE]: formatMessage({
       id: 'odc.CreateTable.TableIndex.columns.Empty',
