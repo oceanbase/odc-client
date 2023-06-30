@@ -1,0 +1,27 @@
+.table:global(.ant-table-wrapper) {
+  :global {
+    .ant-table.ant-table-small {
+      > .ant-table-container {
+        > .ant-table-content {
+          .ant-table-thead {
+            .ant-table-cell {
+              height: 24px;
+              padding-top: 2px;
+              padding-bottom: 2px;
+              background-color: var(--neutral-grey2-color);
+              border-bottom: none;
+            }
+          }
+          .ant-table-tbody {
+            .ant-table-cell {
+              height: 40px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+      }
+    }
+  }
+}

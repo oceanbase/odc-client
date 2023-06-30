@@ -3,8 +3,10 @@ import EditorToolBar from '@/component/EditorToolBar';
 import GrammerHelpSider from '@/component/GrammerHelpSider';
 import StatusBar from '@/component/StatusBar';
 import { EDITOR_TOOLBAR_HEIGHT, SQL_PAGE_RESULT_HEIGHT } from '@/constant';
-import { DbObjectType } from '@/d.ts/index';
+import { ConnectionMode, DbObjectType } from '@/d.ts/index';
+import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect';
 import { IDebugStackItem } from '@/store/debug/type';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import { default as snippet, default as snippetStore } from '@/store/snippet';
 import editorUtils from '@/util/editor';
@@ -34,6 +36,9 @@ interface IProps {
   statusBar?: any;
   Result?: React.ReactNode;
   Others: any;
+  session: SessionStore;
+  sessionSelectReadonly?: boolean;
+  dialectTypes?: ConnectionMode[];
   handleChangeSplitPane?: (size: number) => void;
 }
 
@@ -65,7 +70,18 @@ export default class ScriptPage extends PureComponent<IProps> {
   }
 
   renderPanels = () => {
-    const { ctx, language, toolbar, stackbar, editor, statusBar, settingStore } = this.props;
+    const {
+      ctx,
+      language,
+      toolbar,
+      stackbar,
+      editor,
+      statusBar,
+      settingStore,
+      session,
+      sessionSelectReadonly,
+      dialectTypes,
+    } = this.props;
     const isShowDebugStackBar = !!stackbar?.list?.length;
     return (
       <Layout
@@ -77,6 +93,7 @@ export default class ScriptPage extends PureComponent<IProps> {
       >
         <Content style={{ position: 'relative' }}>
           {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
+          <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {
@@ -97,7 +114,7 @@ export default class ScriptPage extends PureComponent<IProps> {
           <DropWrapper
             style={{
               position: 'absolute',
-              top: EDITOR_TOOLBAR_HEIGHT + (isShowDebugStackBar ? 28 : 0),
+              top: EDITOR_TOOLBAR_HEIGHT + (isShowDebugStackBar ? 28 : 0) + 32,
               bottom: statusBar && statusBar.status ? 32 : 0,
               left: 0,
               right: 0,
@@ -133,7 +150,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   const type = snippetStore.snippetDragging?.objType;
                   const value =
                     settingStore.configurations['sqlexecute.defaultObjectDraggingOption'];
-                  const insertText = await getCopyText(name, type, value, true);
+                  const insertText = await getCopyText(name, type, value, true, session.sessionId);
                   const editor = ctx.editor as IEditor;
                   editor.focus();
                   editorUtils.insertSnippetTemplate(ctx.editor, insertText);
@@ -152,7 +169,7 @@ export default class ScriptPage extends PureComponent<IProps> {
               }
             }}
           >
-            <MonacoEditor {...editor} language={language} />
+            <MonacoEditor {...editor} language={language} sessionStore={this.props.session} />
           </DropWrapper>
           {this.props.Others}
         </Content>
@@ -169,7 +186,7 @@ export default class ScriptPage extends PureComponent<IProps> {
   };
 
   render() {
-    const { statusBar, style, Result, ctx } = this.props;
+    const { statusBar, style, Result, ctx, session } = this.props;
     const { templateInsertModalVisible, templateName, offset } = this.state;
     return (
       <Layout
@@ -199,6 +216,7 @@ export default class ScriptPage extends PureComponent<IProps> {
         )}
         <StatusBar statusBar={statusBar} />
         <TemplateInsertModal
+          session={session}
           visible={templateInsertModalVisible}
           name={templateName}
           type={snippetStore.snippetDragging?.objType}

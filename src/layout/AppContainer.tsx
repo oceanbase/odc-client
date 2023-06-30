@@ -4,10 +4,8 @@ import ErrorBoundary from '@/component/ErrorBoundary';
 import PageLoading from '@/component/PageLoading';
 import authStore, { AuthStore, AuthStoreContext } from '@/store/auth';
 import { ClusterStore } from '@/store/cluster';
-import connectionStore, { ConnectionStore } from '@/store/connection';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { haveLockPwd, initClientService, isLock } from '@/util/client';
@@ -53,9 +51,7 @@ interface IBasicLayoutProps {
   settingStore: SettingStore;
   pageStore: PageStore;
   sqlStore: SQLStore;
-  connectionStore: ConnectionStore;
   userStore: UserStore;
-  schemaStore: SchemaStore;
   authStore: AuthStore;
   clusterStore: ClusterStore;
   dispatch: any;
@@ -110,13 +106,6 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
     };
   };
   const getPageTitle = (pathname: any) => {
-    const sessionName = connectionStore.connection?.sessionName;
-    const sessionId = connectionStore.sessionId;
-    const isWorkspace = location?.pathname.indexOf('/workspace/') > -1;
-
-    if (sessionName && isWorkspace) {
-      return sessionName + '-' + sessionId + '@' + props.schemaStore.database.name;
-    }
     return 'OceanBase Developer Center';
   };
   useEffect(() => {
@@ -178,11 +167,9 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
 };
 const App = inject(
   'settingStore',
-  'connectionStore',
   'authStore',
   'userStore',
   'clusterStore',
-  'schemaStore',
 )(observer(AppContainer));
 
 export default (props: any) => (

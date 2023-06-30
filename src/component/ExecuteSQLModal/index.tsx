@@ -4,17 +4,16 @@ import { FormattedMessage } from 'umi';
 // compatible
 import { runSQLLint } from '@/common/network/sql';
 import { ConnectionMode } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
+import SessionStore from '@/store/sessionManager/session';
 import { useUpdate } from 'ahooks';
 import { Alert, Button, message, Modal } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MonacoEditor from '../MonacoEditor';
 import LintDrawer from '../SQLLintResult/Drawer';
 
 interface IProps {
-  connectionStore?: ConnectionStore;
+  sessionStore: SessionStore;
   sql: string;
   tip?: string;
   onSave: (sql?: string) => Promise<boolean | void>;
@@ -25,7 +24,7 @@ interface IProps {
 }
 
 const ExecuteSQLModal: React.FC<IProps> = (props) => {
-  const { tip, sql, visible, readonly, connectionStore, onCancel, onSave } = props;
+  const { tip, sql, visible, readonly, sessionStore, onCancel, onSave } = props;
   const [loading, setLoading] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
   const [lintVisible, setLintVisible] = useState(false);
@@ -33,7 +32,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const update = useUpdate();
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
 
-  const connectionMode = connectionStore.connection?.dbMode;
+  const connectionMode = sessionStore?.connection?.dialectType;
   const isMySQL = connectionMode === ConnectionMode.MYSQL;
 
   useEffect(() => {
@@ -75,7 +74,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     if (!value) {
       return;
     }
-    const lint = await runSQLLint(connectionStore?.sessionId, ';', value);
+    const lint = await runSQLLint(sessionStore?.sessionId, ';', value);
     if (lint) {
       if (!lint.length) {
         message.success(
@@ -151,6 +150,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           }}
         >
           <MonacoEditor
+            sessionStore={sessionStore}
             readOnly={readonly && !isFormatting}
             defaultValue={sql}
             language={isMySQL ? 'obmysql' : 'oboracle'}
@@ -167,4 +167,4 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('connectionStore')(observer(ExecuteSQLModal));
+export default ExecuteSQLModal;

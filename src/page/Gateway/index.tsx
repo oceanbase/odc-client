@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { formatMessage, history } from 'umi';
 
 import { decrypt } from '@/common/network/other';
-import { ConnectionStore } from '@/store/connection';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
@@ -18,6 +17,7 @@ import { inject, observer } from 'mobx-react';
 import { action as customConnectAction, ICustomConnectAction } from './customConnect';
 import styles from './index.less';
 import { action as newCloudConnectionAction, INewCloudConnection } from './newCloudConnection';
+import { apply as ssoLoginAction, ISSOLogin } from './ssoLogin';
 import { action as taskAction, ITaskAction } from './task';
 import { action as tutorialAction, ITutorialAction } from './tutorial';
 const { Content } = Layout;
@@ -35,10 +35,10 @@ type IRemoteParams =
   | IStartAction
   | ITutorialAction
   | ITaskAction
-  | INewCloudConnection;
+  | INewCloudConnection
+  | ISSOLogin;
 
 interface GatewayProps {
-  connectionStore?: ConnectionStore;
   pageStore?: PageStore;
   userStore?: UserStore;
   settingStore?: SettingStore;
@@ -131,6 +131,10 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
         }
         break;
       }
+      case 'testLogin': {
+        ssoLoginAction();
+        break;
+      }
       default: {
         setStatus('errorAction');
       }
@@ -220,9 +224,4 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
   );
 };
 
-export default inject(
-  'connectionStore',
-  'pageStore',
-  'userStore',
-  'settingStore',
-)(observer(Gateway));
+export default inject('pageStore', 'userStore', 'settingStore')(observer(Gateway));

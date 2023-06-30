@@ -29,7 +29,10 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
   const tableContext = useContext(TableContext);
   const pageContext = useContext(TablePageContext);
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns(tableContext.columns);
+  const gridColumns: any[] = useColumns(
+    tableContext.columns,
+    tableContext?.session?.connection?.dialectType,
+  );
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.primaryConstraints.map((index, idx) => {

@@ -27,7 +27,7 @@ export const ACTION_GROUPS = {
       ['SQL_EXEC', 'SQL_EXEC_SECTION', 'SQL_STOP', 'SQL_LINT', 'SQL_PLAN'],
       ...TEXT_ACTION_GROUPS,
     ],
-    right: [['SQL_SAVE', 'SQL_CONFIG', 'SNIPPET']],
+    right: [['SQL_SAVE', 'SQL_CONFIG']],
   },
 
   // 创建视图
@@ -55,7 +55,6 @@ export const ACTION_GROUPS = {
       ['PL_EXEC', 'SQL_STOP', 'PL_COMPILE', 'PL_DEBUG'],
       ...TEXT_ACTION_GROUPS,
     ],
-    right: [['SNIPPET']],
   },
 
   PL_PACKAGE_ACTION_GROUP: {
@@ -75,7 +74,7 @@ export const ACTION_GROUPS = {
   // PL 匿名对象编辑器操作集
   PL_ANONEYMOUS_DEFAULT_ACTION_GROUP: {
     left: [['PL_COMPILE', 'PL_EXEC', 'SQL_STOP', 'PL_DEBUG'], ...TEXT_ACTION_GROUPS],
-    right: [['PL_SCRIPT_SAVE'], ['SNIPPET']],
+    right: [['PL_SCRIPT_SAVE']],
   },
 
   // PL 调试编辑器操作集

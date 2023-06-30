@@ -2,30 +2,33 @@ import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useRef } from 'react';
 // compatible
+import { getProcedureCreateSQL } from '@/common/network';
 import type { IProcedure } from '@/d.ts';
 import { DbObjectType } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openCreateProcedurePage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { Form, Input, message, Modal } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import ProcedureParam from '../ProcedureParam';
 
 interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
+  sessionManagerStore?: SessionManagerStore;
   model?: Partial<IProcedure>;
 }
 
 const CreateProcedureModal: React.FC<IProps> = inject(
-  'schemaStore',
-  'connectionStore',
   'modalStore',
+  'sessionManagerStore',
 )(
   observer((props) => {
-    const { connectionStore, modalStore, schemaStore } = props;
+    const { sessionManagerStore, modalStore } = props;
+    const databaseId = modalStore.createProcedureModalData.databaseId;
+    const dbName = modalStore.createProcedureModalData.dbName;
+    const { session } = useDBSession(databaseId);
+    const sessionId = session?.sessionId;
     const [form] = useForm();
     const visible = modalStore.createProcedureModalVisible;
     const paramsRef = useRef<{
@@ -48,14 +51,14 @@ const CreateProcedureModal: React.FC<IProps> = inject(
 
     const onSave = useCallback(
       async (prod: IProcedure) => {
-        const sql = await schemaStore!.getProcedureCreateSQL(prod.proName, prod);
+        const sql = await getProcedureCreateSQL(prod.proName, prod, sessionId, dbName);
         if (!sql) {
           return;
         }
-        await openCreateProcedurePage(sql);
+        await openCreateProcedurePage(sql, session?.odcDatabase?.id, dbName);
         modalStore.changeCreateProcedureModalVisible(false);
       },
-      [modalStore],
+      [modalStore, sessionId, dbName],
     );
 
     const save = useCallback(async () => {
@@ -133,8 +136,9 @@ const CreateProcedureModal: React.FC<IProps> = inject(
             })}
           >
             <ProcedureParam
+              session={session}
               mode={DbObjectType.procedure}
-              dbMode={connectionStore.connection?.dbMode}
+              dbMode={session?.connection?.dialectType}
               paramsRef={paramsRef}
             />
           </Form.Item>

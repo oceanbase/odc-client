@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as monaco from 'monaco-editor';
 
 import appConfig from '@/constant/appConfig';
-import { ConnectionStore } from '@/store/connection';
+import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
@@ -18,8 +18,8 @@ export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
 }
 
 export interface IProps {
+  sessionStore?: SessionStore;
   settingStore?: SettingStore;
-  connectionStore?: ConnectionStore;
   /**
    * 默认值
    */
@@ -42,17 +42,18 @@ export interface IProps {
   onEditorCreated?: (editor: IEditor) => void;
 }
 
-const MonacoEditor: React.FC<IProps> = function ({
-  defaultValue,
-  language,
-  value,
-  theme,
-  readOnly,
-  settingStore,
-  connectionStore,
-  onValueChange,
-  onEditorCreated,
-}) {
+const MonacoEditor: React.FC<IProps> = function (props) {
+  const {
+    defaultValue,
+    language,
+    value,
+    theme,
+    readOnly,
+    settingStore,
+    sessionStore,
+    onValueChange,
+    onEditorCreated,
+  } = props;
   const [innerValue, _setInnerValue] = useState<string>(defaultValue);
   const settingTheme = settingStore.theme.editorTheme;
   function setInnerValue(v: string) {
@@ -69,6 +70,8 @@ const MonacoEditor: React.FC<IProps> = function ({
 
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 
+  const sessionRef = useRef<SessionStore>(sessionStore);
+
   const themeValue = useMemo(() => {
     if (!theme) {
       return settingTheme;
@@ -77,13 +80,17 @@ const MonacoEditor: React.FC<IProps> = function ({
   }, [theme, settingTheme]);
 
   useEffect(() => {
+    sessionRef.current = sessionStore;
+  }, [sessionStore]);
+
+  useEffect(() => {
     if (typeof value === 'undefined' || value == innerValue) {
       return;
     }
     /**
      * value 与 innervalue 不匹配，需要更新到value，不过这个时候需要触发onchange，因为这是被动改动
      */
-    editorRef.current.setValue(value);
+    editorRef.current && editorRef.current.setValue(value);
     _setInnerValue(value);
   }, [value]);
 
@@ -98,13 +105,19 @@ const MonacoEditor: React.FC<IProps> = function ({
 
   async function initPlugin() {
     const module = await import('./plugins/ob-language/index');
+    if (!editorRef.current?.getModel?.()) {
+      return;
+    }
     const plugin = module.register();
     plugin.setModelOptions(
       editorRef.current.getModel().id,
-      getModelService({
-        modelId: editorRef.current.getModel().id,
-        delimiter: connectionStore.delimiter,
-      }),
+      getModelService(
+        {
+          modelId: editorRef.current.getModel().id,
+          delimiter: sessionRef.current?.params?.delimiter,
+        },
+        () => sessionRef.current,
+      ),
     );
     markerPluginApply(editorRef.current.getModel());
   }
@@ -115,6 +128,7 @@ const MonacoEditor: React.FC<IProps> = function ({
       language: language || 'sql',
       theme: themeValue,
       minimap: { enabled: false },
+      automaticLayout: true,
       unicodeHighlight: {
         invisibleCharacters: false,
         ambiguousCharacters: false,
@@ -122,6 +136,9 @@ const MonacoEditor: React.FC<IProps> = function ({
       readOnly: readOnly,
     });
     await initPlugin();
+    if (!editorRef.current?.getModel?.()) {
+      return;
+    }
     monaco.editor.setModelLanguage(editorRef.current.getModel(), language || 'sql');
     editorRef.current.onDidChangeModelContent((e) => {
       /**
@@ -193,4 +210,4 @@ const MonacoEditor: React.FC<IProps> = function ({
   );
 };
 
-export default inject('settingStore', 'connectionStore')(observer(MonacoEditor));
+export default inject('settingStore')(observer(MonacoEditor));

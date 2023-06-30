@@ -1,12 +1,9 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
 import { FormattedMessage } from 'umi';
 // @ts-ignore
 import styles from './index.less';
 
-@inject('schemaStore', 'connectionStore')
-@observer
 export class LockResultSetHint extends Component<{
   onClose(): void;
 }> {

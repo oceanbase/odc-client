@@ -1,20 +1,20 @@
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TableForeignConstraint } from '../../interface';
 import TableCardLayout from '../../TableCardLayout';
 import TableContext from '../../TableContext';
 
+import { listDatabases } from '@/common/network/database';
 import {
   TableConstraintDefer,
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
 } from '@/d.ts/table';
-import { SchemaStore } from '@/store/schema';
 import { DataGridRef } from '@alipay/ob-react-data-grid';
+import { useRequest } from 'ahooks';
 import { clone } from 'lodash';
-import { inject, observer } from 'mobx-react';
 import EditableTable from '../../../EditableTable';
 import EditToolbar from '../../EditToolbar';
 import { removeGridParams } from '../../helper';
@@ -33,14 +33,23 @@ const defaultForeignConstraint: TableForeignConstraint = {
 };
 
 interface IProps {
-  schemaStore?: SchemaStore;
   modified?: boolean;
 }
 
-const ForeignConstraint: React.FC<IProps> = function ({ schemaStore, modified }) {
+const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
   const tableContext = useContext(TableContext);
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns(tableContext.columns, schemaStore.databases);
+  const { data, run } = useRequest(listDatabases, {
+    manual: true,
+  });
+  useEffect(() => {
+    run(null, tableContext?.session?.connection?.id, 1, 999);
+  }, [tableContext?.session]);
+  const gridColumns: any[] = useColumns(
+    tableContext.columns,
+    data?.contents || [],
+    tableContext?.session?.connection?.dialectType,
+  );
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.foreignConstraints.map((index, idx) => {
@@ -107,4 +116,4 @@ const ForeignConstraint: React.FC<IProps> = function ({ schemaStore, modified })
   );
 };
 
-export default inject('schemaStore')(observer(ForeignConstraint));
+export default ForeignConstraint;

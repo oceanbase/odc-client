@@ -5,58 +5,27 @@ import tracert from '@/util/tracert';
 import { message } from 'antd';
 import { isNil } from 'lodash';
 import { action, computed, observable } from 'mobx';
-import { history } from 'umi';
-import commonStore from './common';
-import connectionStore from './connection';
-import {
-  getTabDataFromMetaStore,
-  openNewSQLPage,
-  savePageStoreToMetaStore,
-  saveSessionToMetaStore,
-} from './helper/page';
-import {
-  generatePageKey,
-  generatePageTitle,
-  initPageKeys,
-  resetPageKey,
-} from './helper/pageKeyGenerate';
+import { Page } from './helper/page/pages/base';
 import login from './login';
-import { default as schema, default as schemaStore } from './schema';
+import { autoSave } from './utils/metaSync';
 
 export interface IPageOptions {
   title?: string;
   key?: string;
-  updateKey?: boolean;
-  updatePath?: boolean;
+  updateKey?: string;
   path?: string;
   isSaved?: boolean;
   startSaving?: boolean;
 }
 
 export class PageStore {
-  @observable
-  public databaseId: number;
+  private _saveDisposers: (() => void)[] = [];
 
   @observable
   public pages: IPage[] = [];
 
   @observable
   public activePageKey: string | null = null;
-
-  public defaultInitPageFunc = () => {
-    if (
-      !this.pages.find((page) => {
-        return page.type == PageType.PL || page.type == PageType.SQL;
-      })
-    ) {
-      openNewSQLPage();
-    }
-  };
-
-  /**
-   * Page 初始化函数
-   */
-  public initPageFunc = this.defaultInitPageFunc;
 
   @computed public get activePage() {
     return this.pages.find((p) => p.key === this.activePageKey);
@@ -70,21 +39,12 @@ export class PageStore {
   /** 初始化store */
   @action
   public async initStore() {
-    await initPageKeys();
-    await saveSessionToMetaStore(
-      connectionStore.sessionId,
-      connectionStore.connection.sessionName,
-      schema.database.name,
-    );
-    const meta = await getTabDataFromMetaStore();
-    this.pages = (meta?.pages || []).map((page) => {
-      if (page?.params?.isDocked) {
-        page.params.isDocked = false;
-      }
-      return page;
+    this._saveDisposers.map((disposer) => {
+      disposer();
     });
-    this.activePageKey = meta?.activeKey;
-    this.initPageFunc();
+    this._saveDisposers = [];
+    this._saveDisposers.push(await autoSave(this, 'pages', 'pages', []));
+    this._saveDisposers.push(await autoSave(this, 'activePageKey', 'activePageKey', null));
   }
   /** 切换打开的page，更新一下URL */
   @action
@@ -99,20 +59,6 @@ export class PageStore {
     // } else {
     //   history.push(this.generatePagePath(PageType.DATABASE));
     // }
-  }
-
-  /**
-   * 生成页面路由路径
-   *
-   * @param type
-   * @param params
-   */
-  public generatePagePath(): string {
-    // 编码进 sessionId & dbName
-    let url = `/workspace/session/${commonStore.tabKey}/sid:${connectionStore.sessionId}:d:${
-      schemaStore?.database?.name || ''
-    }`;
-    return url;
   }
 
   /** Page是否需要唯一 */
@@ -163,31 +109,21 @@ export class PageStore {
     }
   }
 
-  /** New!!!打开一个新page */
   @action
-  public async openPage(
-    type: PageType = PageType.SQL,
-    options: IPageOptions = {},
-    pageData: any = {},
-    insertHead: boolean = false,
-    open: boolean = true,
-  ) {
-    let { title, key } = options;
-    key = key || (await generatePageKey(type, pageData));
-    title = title || generatePageTitle(type, key);
-    const path = this.generatePagePath();
-    const isUnique = this.isUnique(type, pageData);
-    const existed = !!this.pages.find((p) => p.key === key);
-    switch (type) {
+  public async openPage(page: Page, insertHead?: boolean) {
+    let { pageTitle, pageKey, pageParams, pageType } = page;
+    const isUnique = this.isUnique(pageType, pageParams);
+    const existed = !!this.pages.find((p) => p.key === pageKey);
+    switch (pageType) {
       case PageType.SQL:
       case PageType.PL: {
         if (!existed && !isUnique) {
           const count = this.pages.filter((page) => {
-            return page.type == type;
+            return page.type == pageType;
           }).length;
           if (count >= 32) {
             message.error(
-              (type == PageType.PL ? 'PL' : 'SQL') +
+              (pageType == PageType.PL ? 'PL' : 'SQL') +
                 formatMessage({
                   id: 'odc.src.store.page.TheNumberOfWindowsCannot',
                 }),
@@ -204,37 +140,29 @@ export class PageStore {
     /** 未打开的page或者未保存的page，则push进pages。 */
     if (!(isUnique && existed)) {
       const newPage = {
-        key,
-        title,
-        type,
+        key: pageKey,
+        title: pageTitle,
+        type: pageType,
         isSaved: true,
-        path,
-        params: pageData,
+        params: pageParams,
       };
 
       if (insertHead) {
         this.pages = [].concat(newPage).concat(this.pages);
       } else {
-        this.pages = this.pages.concat({
-          key,
-          title,
-          type,
-          isSaved: true,
-          path,
-          params: pageData,
-        });
+        this.pages = this.pages.concat(newPage);
       }
     }
     if (open) {
-      await this.setActivePageKeyAndPushUrl(key);
+      await this.setActivePageKeyAndPushUrl(pageKey);
     }
-    await this.updatePage(key, undefined, pageData);
+    await this.updatePage(pageKey, undefined, pageParams);
   }
 
   /** New!!!更新page */
   @action
   public async updatePage(targetPageKey: string, options: IPageOptions = {}, pageData: any = {}) {
-    const { title, isSaved, startSaving, updateKey, updatePath } = options;
+    const { title, isSaved, startSaving, updateKey } = options;
     await this.updatePages(async (pages) => {
       const newPages = [];
       for (let i = 0; i < pages.length; i++) {
@@ -262,13 +190,8 @@ export class PageStore {
 
           // 更新 pageKey
           if (updateKey) {
-            p.key = await generatePageKey(p.type, pageData);
+            p.key = updateKey;
             await this.setActivePageKeyAndPushUrl(p.key);
-          }
-
-          if (updatePath) {
-            p.path = this.generatePagePath();
-            history.push(p.path);
           }
         }
         newPages.push(p);
@@ -314,13 +237,10 @@ export class PageStore {
   public async clear() {
     await this.updatePages(async (pages) => {
       return [];
-    }, true);
+    });
     await this.updateActiveKey(() => {
       return null;
-    }, true);
-    // clearTabDataInMetaStore();
-    this.initPageFunc = this.defaultInitPageFunc;
-    resetPageKey();
+    });
   }
 
   /** 部分常驻页面不应该被清除，也保留SQL和匿名快 */
@@ -389,31 +309,18 @@ export class PageStore {
       }
       return p;
     });
-    await this.saveDataToMetaStore();
   }
 
   /** 更新多个page */
-  public async updatePages(
-    getNewPages: (oldPages: IPage[]) => Promise<IPage[]>,
-    keepMeta?: boolean,
-  ) {
+  public async updatePages(getNewPages: (oldPages: IPage[]) => Promise<IPage[]>) {
     this.pages = await getNewPages(this.pages);
-    !keepMeta && (await this.saveDataToMetaStore());
   }
 
   /** 更新activeKey */
-  private async updateActiveKey(
-    fn: (pages: IPage[], oldActiveKey: any) => any,
-    keepMeta?: boolean,
-  ) {
+  private async updateActiveKey(fn: (pages: IPage[], oldActiveKey: any) => any) {
     this.activePageKey = fn(this.pages, this.activePageKey);
     const pageType = this.getPageByKey(this.activePageKey)?.type;
     pageType && tracert.expoPage(pageType);
-    !keepMeta && (await savePageStoreToMetaStore(this.pages, this.activePageKey));
-  }
-
-  private async saveDataToMetaStore() {
-    await savePageStoreToMetaStore(this.pages, this.activePageKey);
   }
 
   public async patchMetaStoreUserId() {

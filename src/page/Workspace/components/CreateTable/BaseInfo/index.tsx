@@ -1,20 +1,13 @@
-import React, { useContext, useEffect, useImperativeHandle } from 'react';
-// compatible
-import { Col, Form, Input, Row, Select } from 'antd';
-// @ts-ignore
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
+import { Col, Form, Input, Row, Select } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
-import { inject, observer } from 'mobx-react';
+import React, { useContext, useEffect, useImperativeHandle } from 'react';
 import { useTableConfig } from '../config';
 import { getDefaultCollation } from '../helper';
 import TableContext from '../TableContext';
 import styles from './index.less';
 
 interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   isEdit?: boolean;
   formRef?: React.Ref<FormInstance<any>>;
 }
@@ -22,12 +15,14 @@ interface IProps {
 const { Option } = Select;
 
 const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
-  const { isEdit, schemaStore, connectionStore, formRef } = props;
-  const { collations, charsets } = schemaStore;
-  const config = useTableConfig(connectionStore);
+  const { isEdit, formRef } = props;
+
   const [form] = Form.useForm();
   const tableContext = useContext(TableContext);
   const model = tableContext.info;
+  const session = tableContext.session;
+  const { collations, charsets } = session;
+  const config = useTableConfig(session.connection.dialectType);
 
   useEffect(() => {
     form.setFieldsValue(model);
@@ -174,4 +169,4 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('schemaStore', 'connectionStore')(observer(CreateTableBaseInfoForm));
+export default CreateTableBaseInfoForm;

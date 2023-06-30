@@ -1,11 +1,17 @@
+import { listDatabases } from '@/common/network/database';
+import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
+import { getTriggerCreateSQL } from '@/common/network/trigger';
 import { ITriggerBaseInfoForm } from '@/d.ts';
 import { openCreateTriggerSQLPage } from '@/store/helper/page';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Collapse, Layout } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import AdvancedInfoForm from './component/AdvancedInfoFrom';
 import BaseInfoForm from './component/BaseInfoForm';
 import styles from './index.less';
@@ -37,9 +43,9 @@ const customPanelStyle = {
   borderRadius: 4,
   overflow: 'hidden',
 };
-@inject('sqlStore', 'connectionStore', 'schemaStore', 'pageStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class CreateTriggerPage extends Component<IProps, IState> {
+class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IState> {
   public readonly state = {
     baseInfo: null,
     adancedInfo: null,
@@ -48,13 +54,14 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
     baseInfoStatus: StepStatus.EDITING,
     advancedStatus: StepStatus.UNSAVED,
     activeKey: Step.BASEINFO,
+    databases: [],
   };
 
   private advancedInfoFormRef = null;
 
   componentDidMount() {
     const {
-      schemaStore: { database },
+      session,
       params: { preData = null },
     } = this.props;
     if (preData) {
@@ -74,10 +81,16 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
         },
       );
     } else {
-      this.loadSchemaMode(database?.name);
+      this.loadSchemaMode(session?.odcDatabase?.name);
     }
+    this.loadDatabases();
   } // 获取 step对应的状态
-
+  private async loadDatabases() {
+    const res = await listDatabases(null, this.props?.session?.connection?.id, 1, 9999);
+    this.setState({
+      databases: res?.contents || [],
+    });
+  }
   private getStepStatus = (step: Step): StepStatus => {
     const { baseInfoStatus, advancedStatus } = this.state;
     let status: StepStatus;
@@ -148,7 +161,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
     const { baseInfo, adancedInfo } = this.state; // todo 表单信息提交&页面跳转
     // todo 点击 上一步，在不修改表单的情况下，应该也是可以提交的
 
-    const { schemaStore, pageStore, pageKey } = this.props;
+    const { session, pageStore, pageKey, params } = this.props;
     const {
       triggerMode,
       triggerType,
@@ -158,7 +171,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
       triggerColumns,
       referencesNewValue,
       referencesOldValue,
-    } = adancedInfo;
+    } = adancedInfo || {};
     const serverData = {
       ...baseInfo,
       triggerMode,
@@ -179,11 +192,21 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
       this.setReferences(serverData, 'OLD', referencesOldValue);
     }
 
-    const sql = await schemaStore.getTriggerCreateSQL('TEST_TRIGGER', serverData);
-    await openCreateTriggerSQLPage(sql, {
-      baseInfo: { ...baseInfo },
-      adancedInfo: { ...adancedInfo },
-    });
+    const sql = await getTriggerCreateSQL(
+      'TEST_TRIGGER',
+      serverData,
+      session?.sessionId,
+      session?.database?.dbName,
+    );
+    await openCreateTriggerSQLPage(
+      sql,
+      {
+        baseInfo: { ...baseInfo },
+        adancedInfo: { ...adancedInfo },
+      },
+      session?.odcDatabase?.id,
+      session?.database?.dbName,
+    );
 
     await pageStore.close(pageKey);
   };
@@ -235,8 +258,8 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
   };
 
   loadSchemaMode = async (value: string) => {
-    const { schemaStore } = this.props;
-    const tables = await schemaStore.getTableListByDatabaseName(value);
+    const { session } = this.props;
+    const tables = await getTableListByDatabaseName(session?.sessionId, value);
     this.setState({
       tables,
       columns: [],
@@ -249,8 +272,8 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
   };
 
   loadColumns = async (value: string) => {
-    const { schemaStore } = this.props;
-    const columns = await schemaStore.getTableColumnList(value);
+    const { session } = this.props;
+    const columns = await getTableColumnList(value, session?.database?.dbName, session.sessionId);
     this.setState({
       columns,
     });
@@ -268,13 +291,15 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
 
   public render() {
     const {
-      schemaStore: { database, databases, enableTriggerReferences, enableTriggerAlterStatus },
+      session,
       params: { preData = null },
     } = this.props;
-    const { tables, columns, activeKey, baseInfoStatus, advancedStatus } = this.state;
+    const sessionId = session?.sessionId;
+    const dbName = session?.database?.dbName;
+    const { tables, columns, activeKey, baseInfoStatus, advancedStatus, databases } = this.state;
     const defaultBaseInfo = {
       schemaType: 'TABLE',
-      schemaMode: database?.name,
+      schemaMode: dbName,
     };
 
     return (
@@ -308,7 +333,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
                 databases={databases}
                 tables={tables}
                 initialValues={preData?.baseInfo || (defaultBaseInfo as ITriggerBaseInfoForm)}
-                enableTriggerAlterStatus={enableTriggerAlterStatus}
+                enableTriggerAlterStatus={session?.supportFeature?.enableTriggerAlterStatus}
               />
             </Panel>
             <Panel
@@ -331,7 +356,7 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
                 setStepStatus={this.setStepStatus}
                 setFormRef={this.setFormRef}
                 initialValues={preData?.adancedInfo}
-                enableTriggerReferences={enableTriggerReferences}
+                enableTriggerReferences={session?.supportFeature?.enableTriggerReferences}
               />
             </Panel>
           </Collapse>
@@ -352,3 +377,13 @@ export default class CreateTriggerPage extends Component<IProps, IState> {
     );
   }
 }
+
+export default WrapSessionPage(function (props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <CreateTriggerPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+});

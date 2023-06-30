@@ -1,5 +1,4 @@
 import PLTYPE from '@/constant/plType';
-import schema from '@/store/schema';
 import { getRealNameInDatabase } from './sql';
 
 export function getPLName(plType: any, entryName: string, packageName?: string) {
@@ -58,6 +57,7 @@ export function checkPLNameChanged(
   newPLName: string,
   plType: any,
   fromPackage: boolean = false,
+  dbName: string,
 ) {
   let entryName = removePkgBodyAndHead(plName, plType);
   const newEntryName = getEntryNameFromPLName(plType, newPLName, fromPackage);
@@ -71,10 +71,10 @@ export function checkPLNameChanged(
   } else {
     if (newEntryNameArr.length > 1) {
       const newPLName = newEntryNameArr.slice(1).join('.');
-      if (schema.database.name.toUpperCase() === newEntryNameArr[0] && entryName === newPLName) {
+      if (dbName?.toUpperCase() === newEntryNameArr[0] && entryName === newPLName) {
         return null;
       } else {
-        return [schema.database.name.toUpperCase() + '.' + entryName, newEntryNameArr.join('.')];
+        return [dbName?.toUpperCase() + '.' + entryName, newEntryNameArr.join('.')];
       }
     }
   }

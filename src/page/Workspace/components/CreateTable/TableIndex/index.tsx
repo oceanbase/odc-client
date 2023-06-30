@@ -36,8 +36,9 @@ interface IProps {
 const TableIndex: React.FC<IProps> = function ({ modified }) {
   const tableContext = useContext(TableContext);
   const pageContext = useContext(TablePageContext);
+  const session = tableContext.session;
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns(tableContext.columns);
+  const gridColumns: any[] = useColumns(tableContext.columns, session?.connection);
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.indexes.map((index, idx) => {
@@ -65,6 +66,9 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
               },
 
               pageContext.table,
+
+              session?.sessionId,
+              session?.database.dbName,
             );
 
             if (!updateTableDML) {

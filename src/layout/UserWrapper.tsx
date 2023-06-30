@@ -63,18 +63,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         return;
       }
       const searchParamsObj = new URLSearchParams();
-      if (!location.search.includes('redirect')) {
-        searchParamsObj.append(
-          'redirectTo',
-          isLoginPage ? null : encodeURIComponent(location.pathname),
-        );
-      } else {
-        // console.log(encodeURIComponent(searchParamsObj.get('redirectTo')), location.pathname, location.search);
-        console.log(
-          encodeURIComponent(
-            decodeURIComponent(new URLSearchParams(location.search).get('redirectTo')),
-          ),
-        );
+      if (location.search.includes('redirect')) {
         searchParamsObj.append(
           'redirectTo',
           encodeURIComponent(

@@ -2,7 +2,6 @@ import Toolbar from '@/component/Toolbar';
 import type { IPackage } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import {
@@ -21,15 +20,19 @@ import { FormattedMessage } from 'umi';
 
 // @ts-ignore
 
+import { getPackage } from '@/common/network';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
-import type { ConnectionStore } from '@/store/connection';
 import { openPackageBodyPage, openPackageHeadPage, updatePage } from '@/store/helper/page';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { throttle } from 'lodash';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
 const ToolbarButton = Toolbar.Button;
@@ -56,14 +59,15 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
+  session?: SessionStore;
+  sessionManagerStore: SessionManagerStore;
   propsTab;
-  connectionStore: ConnectionStore;
   pageKey: string;
   params: {
     packageName: string;
     propsTab: PropsTab;
     topTab: TopTab;
+    databaseId: number;
   };
 
   onUnsavedChange: (pageKey: string) => void;
@@ -81,9 +85,9 @@ interface IFunctionPageState {
   reloading: boolean;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class FunctionPage extends Component<IProps, IFunctionPageState> {
+class PackagePage extends Component<IProps, IFunctionPageState> {
   public editor_header: IEditor;
   public editor_body: IEditor;
 
@@ -141,10 +145,14 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
 
   public async componentDidMount() {
     const {
-      schemaStore,
+      sessionManagerStore,
       params: { packageName },
+      session,
     } = this.props;
-    const pkg = this.getPackage(packageName) || (await schemaStore.loadPackage(packageName));
+    const pkg = await getPackage(packageName, session?.sessionId, session?.odcDatabase?.name);
+    this.setState({
+      pkg,
+    });
     if (!pkg?.packageHead) {
       this.setState({
         topTab: TopTab.BODY,
@@ -156,15 +164,17 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
   public reloadPackage = throttle(
     async () => {
       const {
-        schemaStore,
+        sessionManagerStore,
         params: { packageName },
+        session,
       } = this.props;
       this.setState({
         reloading: true,
       });
 
-      await schemaStore.loadPackage(packageName);
+      const pkg = await getPackage(packageName, session?.sessionId, session?.odcDatabase?.name);
       this.setState({
+        pkg: pkg || this.state.pkg,
         reloading: false,
       });
     },
@@ -179,7 +189,7 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
       params: { packageName },
     } = this.props;
     const pkg = this.getPackage(packageName);
-    const { pageKey, pageStore } = this.props;
+    const { pageKey } = this.props;
     const topTab = v.target.value;
     const propsTab =
       topTab == TopTab.HEAD ? PropsTab.PACKAGE_HEAD_INFO : PropsTab.PACKAGE_BODY_INFO;
@@ -202,20 +212,21 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
   public async handleEditPackage(pkgName: string, type: PropsTab) {
     const {
       params: { packageName },
+      sessionManagerStore,
+      session,
     } = this.props;
     const pkg = this.getPackage(packageName);
     const { topTab } = this.state;
     if (topTab == TopTab.BODY) {
-      openPackageBodyPage(pkgName, pkg.packageBody.basicInfo.ddl);
+      openPackageBodyPage(pkgName, pkg.packageBody.basicInfo.ddl, session?.odcDatabase?.id);
     } else if (topTab == TopTab.HEAD) {
-      openPackageHeadPage(pkgName, pkg.packageHead.basicInfo.ddl);
+      openPackageHeadPage(pkgName, pkg.packageHead.basicInfo.ddl, session?.odcDatabase?.id);
     }
   }
 
   private getPackage = (packageName) => {
-    const { schemaStore } = this.props;
-    const { packagesDetails } = schemaStore;
-    return packagesDetails[packageName];
+    const { pkg } = this.state;
+    return pkg;
   };
 
   private handleFormat = (editor: IEditor, key: 'headerFormated' | 'bodyFormated', ddl: string) => {
@@ -238,14 +249,13 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
 
   public render() {
     const {
-      pageKey,
       params: { packageName },
-      connectionStore,
-      schemaStore,
+      session,
     } = this.props;
     const { propsTab, ddlReadOnly, topTab, headerFormated, bodyFormated, reloading } = this.state;
     const pkg = this.getPackage(packageName);
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+    const dbName = session?.odcDatabase?.name;
 
     if (!pkg) {
       return null;
@@ -343,6 +353,7 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
                             packageName + '.head',
                             PLType.PKG_HEAD,
                             pkg?.packageHead?.basicInfo?.ddl,
+                            dbName,
                           );
                         }}
                       />
@@ -480,6 +491,7 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
                             packageName + '.body',
                             PLType.PKG_BODY,
                             pkg.packageBody.basicInfo.ddl,
+                            dbName,
                           );
                         }}
                       />
@@ -567,3 +579,13 @@ export default class FunctionPage extends Component<IProps, IFunctionPageState> 
     );
   }
 }
+
+export default WrapSessionPage(function (props) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <PackagePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

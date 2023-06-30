@@ -1,13 +1,8 @@
-import {
-  ITable,
-  ITableColumn,
-  ITriggerAdancedInfoForm,
-  ITriggerBaseInfoForm,
-  ITriggerFormData,
-} from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
+import { ITable, ITableColumn, ITriggerAdancedInfoForm, ITriggerBaseInfoForm } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import { CreateTriggerPage } from '@/store/helper/page/pages/create';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
 import React from 'react';
 
@@ -30,18 +25,12 @@ export interface ICollapseHeader {
 
 export interface IProps {
   sqlStore: SQLStore;
-
-  schemaStore: SchemaStore;
-
+  sessionManagerStore: SessionManagerStore;
   pageStore: PageStore;
-
-  connectionStore: ConnectionStore;
 
   pageKey: string;
 
-  params: {
-    preData?: ITriggerFormData;
-  };
+  params: CreateTriggerPage['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
@@ -62,4 +51,6 @@ export interface IState {
   advancedStatus: StepStatus;
 
   activeKey: Step;
+
+  databases: IDatabase[];
 }

@@ -5,6 +5,7 @@ import * as monaco from 'monaco-editor';
 import RedoSvg from '@/svgr/Redo.svg'; // @ts-ignore
 
 import { IEditor } from '@/component/MonacoEditor';
+import SessionStore from '@/store/sessionManager/session';
 import UndoSvg from '@/svgr/Undo.svg';
 import { textExpaste } from '@/util/sql';
 import type { ToolBarActions } from '..';
@@ -297,7 +298,10 @@ const textActions: ToolBarActions = {
         },
 
         range,
-        text: textExpaste(selectText),
+        text: textExpaste(
+          selectText,
+          ((ctx.getSession?.() || ctx.session) as SessionStore)?.connection?.dialectType,
+        ),
         forceMoveMarkers: true,
       };
 

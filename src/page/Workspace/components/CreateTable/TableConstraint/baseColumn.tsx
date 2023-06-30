@@ -1,5 +1,5 @@
+import { ConnectionMode } from '@/d.ts';
 import { TableConstraintDefer } from '@/d.ts/table';
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';
@@ -8,7 +8,7 @@ import { useTableConfig } from '../config';
 import { ReadonlyCheckBoxFormatter } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
 
-export function useDeferColumn() {
+export function useDeferColumn(mode: ConnectionMode) {
   const deferOptions = {
     [TableConstraintDefer.NOT]: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.NonDelayed',
@@ -20,7 +20,7 @@ export function useDeferColumn() {
       id: 'odc.CreateTable.TableConstraint.baseColumn.VerifyNow',
     }), //立即验证
   };
-  const config = useTableConfig(connection);
+  const config = useTableConfig(mode);
   const methodSelect = useMemo(() => {
     return WrapSelectEditor(
       Object.entries(deferOptions).map(([key, text]) => {
@@ -54,8 +54,8 @@ export function useDeferColumn() {
   };
 }
 
-export function useEnableColumn() {
-  const config = useTableConfig(connection);
+export function useEnableColumn(mode: ConnectionMode) {
+  const config = useTableConfig(mode);
   if (!config.constraintEnableConfigurable) {
     return null;
   }

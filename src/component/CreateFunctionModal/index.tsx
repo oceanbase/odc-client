@@ -5,18 +5,16 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import FunctionOrProcedureParams from '@/component/ProcedureParam';
 import type { IFunction } from '@/d.ts';
 import { ConnectionMode, DbObjectType } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
-import connection from '@/store/connection';
 import { openCreateFunctionPageByRemote } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { AutoComplete, Col, Form, Input, message, Modal, Row } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
 interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
+  sessionManagerStore?: SessionManagerStore;
   model?: Partial<IFunction>;
 }
 
@@ -25,15 +23,15 @@ export enum CheckOption {
 }
 
 const CreateFunctionModal: React.FC<IProps> = inject(
-  'schemaStore',
-  'connectionStore',
   'modalStore',
+  'sessionManagerStore',
 )(
   observer((props: IProps) => {
-    const { schemaStore, connectionStore, modalStore, model } = props;
-    const dbMode =
-      (connectionStore!.connection && connectionStore!.connection.dbMode) ||
-      ConnectionMode.OB_MYSQL;
+    const { modalStore, model, sessionManagerStore } = props;
+    const dbId = modalStore?.createFunctionModalData?.databaseId;
+    const dbName = modalStore?.createFunctionModalData?.dbName;
+    const { session } = useDBSession(dbId);
+    const dbMode = session?.connection?.dialectType || ConnectionMode.OB_MYSQL;
     const [form] = useForm();
     const visible = modalStore.createFunctionModalVisible;
     const paramsRef = useRef<{
@@ -56,10 +54,15 @@ const CreateFunctionModal: React.FC<IProps> = inject(
 
     const onSave = useCallback(
       async (func: IFunction) => {
-        await openCreateFunctionPageByRemote(func);
+        await openCreateFunctionPageByRemote(
+          func,
+          session?.sessionId,
+          dbName,
+          session?.odcDatabase?.id,
+        );
         modalStore.changeCreateFunctionModalVisible(false);
       },
-      [modalStore],
+      [modalStore, session, dbName],
     );
 
     const save = useCallback(async () => {
@@ -160,16 +163,13 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   style={{
                     width: 160,
                   }}
-                  options={
-                    schemaStore!.dataTypes &&
-                    schemaStore!.dataTypes
-                      .map((d) =>
-                        dbMode === ConnectionMode.OB_ORACLE
-                          ? d.databaseType.replace('(', '').replace(')', '')
-                          : d.databaseType,
-                      )
-                      .map((a) => ({ value: a }))
-                  }
+                  options={session?.dataTypes
+                    ?.map((d) =>
+                      dbMode === ConnectionMode.OB_ORACLE
+                        ? d.databaseType.replace('(', '').replace(')', '')
+                        : d.databaseType,
+                    )
+                    .map((a) => ({ value: a }))}
                   filterOption={(inputValue, option) =>
                     // @ts-ignore
                     option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
@@ -185,7 +185,8 @@ const CreateFunctionModal: React.FC<IProps> = inject(
             /* 参数 */ required
           >
             <FunctionOrProcedureParams
-              dbMode={connection.connection.dbMode}
+              session={session}
+              dbMode={dbMode}
               mode={DbObjectType.function}
               paramsRef={paramsRef}
             />

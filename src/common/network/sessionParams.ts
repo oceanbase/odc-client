@@ -1,5 +1,5 @@
 import { IConnectionProperty, IDatabaseSession } from '@/d.ts';
-import { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import request from '@/util/request';
 import { generateVarSid } from './pathUtil';
 
@@ -61,21 +61,30 @@ export async function fetchVariableList(type: ConnectionPropertyType, sessionId:
   );
 }
 
-export async function getDatabaseSessionList(): Promise<IDatabaseSession[]> {
+export async function getDatabaseSessionList(sessionId: string): Promise<IDatabaseSession[]> {
   const res = await request.get(
-    `/api/v1/dbsession/list/${generateVarSid(ConnectionPropertyType.GLOBAL)}`,
+    `/api/v1/dbsession/list/${generateVarSid(ConnectionPropertyType.GLOBAL, sessionId)}`,
   );
   return res?.data || [];
 }
 
-export async function getCloseDatabaseSessionSQL(sessions: IDatabaseSession[], closeType: string) {
-  const res = await request.patch(
-    `/api/v1/dbsession/getDeleteSql/${generateVarSid(
-      ConnectionPropertyType.GLOBAL,
-    )}?closeType=${closeType}`,
-    {
-      data: sessions,
+export async function killSessions(
+  sessionIds: string[],
+  datasourceId: number,
+  killType: 'session' | 'query',
+): Promise<
+  {
+    sessionId: number;
+    killed: boolean;
+    errorMessage?: string;
+  }[]
+> {
+  const res = await request.post(`/api/v2/datasource/sessions/killSession`, {
+    data: {
+      sessionIds,
+      datasourceId,
+      killType,
     },
-  );
-  return res?.data?.sql;
+  });
+  return res?.data;
 }

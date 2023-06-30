@@ -1,4 +1,5 @@
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
+import { getView } from '@/common/network/view';
 import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
@@ -6,11 +7,11 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IResultSet, IView } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { generateResultSetColumns } from '@/store/helper';
+import { ViewPage as ViewPageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
-import schema from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -21,6 +22,8 @@ import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
 import { formatMessage, FormattedMessage } from 'umi';
 import DDLResultSet from '../DDLResultSet';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
@@ -47,14 +50,9 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
   pageKey: string;
-  params: {
-    viewName: string;
-    topTab: TopTab;
-    propsTab: PropsTab;
-  };
+  sessionManagerStore: SessionManagerStore;
+  params: ViewPageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
@@ -85,9 +83,9 @@ interface IViewPageState {
   formated: boolean;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class ViewPage extends Component<IProps, IViewPageState> {
+class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageState> {
   public editor: IEditor;
 
   public readonly state: IViewPageState = {
@@ -184,7 +182,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     // 更新 url
     pageStore.updatePage(
       pageKey,
-      { updatePath: true },
+      {},
       {
         viewName: view.viewName,
         topTab,
@@ -200,7 +198,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     // 更新 url
     pageStore.updatePage(
       pageKey,
-      { updatePath: true },
+      {},
       {
         viewName: view.viewName,
         topTab: TopTab.PROPS,
@@ -212,7 +210,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   public handleExecuteViewDML = async () => {
     const {
       sqlStore,
-      params: { viewName },
+      params: { viewName, databaseId },
       pageKey,
       pageStore,
     } = this.props;
@@ -231,9 +229,10 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
 
         // TODO: 可能修改表名，需要更新 URL，Page title，左侧资源树
         if (updatedViewName !== viewName) {
+          const viewPage = new ViewPageModel(databaseId, updatedViewName);
           pageStore.updatePage(
             pageKey,
-            { title: updatedViewName, updatePath: true, updateKey: true },
+            { title: updatedViewName, updateKey: viewPage.pageKey },
             {
               viewName: updatedViewName,
             },
@@ -249,8 +248,11 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   };
 
   public reloadView = async (viewName: string) => {
-    const { schemaStore } = this.props;
-    const view = await schemaStore.getView(viewName);
+    const view = await getView(
+      viewName,
+      this.props.session?.sessionId,
+      this.props.session?.odcDatabase?.name,
+    );
     if (view) {
       this.setState({ view });
     } else {
@@ -259,8 +261,11 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
   };
 
   public reloadViewColumns = async (viewName: string) => {
-    const { schemaStore } = this.props;
-    const { columns } = await schemaStore.getView(viewName);
+    const { columns } = await getView(
+      viewName,
+      this.props.session?.sessionId,
+      this.props.session?.odcDatabase?.name,
+    );
     this.setState({
       view: {
         ...this.state.view,
@@ -293,9 +298,14 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     limit: number = 1000,
   ) => {
     this.setState({ dataLoading: true });
-
     try {
-      const viewData = await queryTableOrViewData(schema.database?.name, viewName, limit, false);
+      const viewData = await queryTableOrViewData(
+        this.props.session?.odcDatabase?.name,
+        viewName,
+        limit,
+        false,
+        this.props.session?.sessionId,
+      );
       if (viewData?.track) {
         notification.error(viewData);
       } else {
@@ -330,12 +340,12 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     const {
       pageKey,
       params: { viewName },
-      connectionStore,
-      schemaStore: { database },
+      session,
+      sessionManagerStore,
     } = this.props;
     const { topTab, propsTab, view, dataLoading, resultSet, showExportResuleSetModal, formated } =
       this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return (
       view && (
@@ -402,7 +412,12 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
                         }
                         icon={<CloudDownloadOutlined />}
                         onClick={() => {
-                          downloadPLDDL(view?.viewName, 'VIEW', view?.ddl);
+                          downloadPLDDL(
+                            view?.viewName,
+                            'VIEW',
+                            view?.ddl,
+                            this.props.session?.odcDatabase?.name,
+                          );
                         }}
                       />
 
@@ -447,7 +462,8 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
                   {resultSet && (
                     <DDLResultSet
                       showExplain={false}
-                      autoCommit={connectionStore?.autoCommit}
+                      session={session}
+                      autoCommit={session?.params?.autoCommit}
                       showPagination={true}
                       isTableData={false}
                       isViewData={true}
@@ -477,6 +493,7 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
             </Tabs>
           </Content>
           <ExportResultSetModal
+            session={session}
             visible={showExportResuleSetModal}
             sql={resultSet?.originSql}
             tableName={resultSet?.resultSetMetaData?.table?.tableName}
@@ -487,3 +504,13 @@ export default class ViewPage extends Component<IProps, IViewPageState> {
     );
   }
 }
+
+export default WrapSessionPage(function ViewPageWrap(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <ViewPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

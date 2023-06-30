@@ -1,3 +1,4 @@
+import SessionStore from '@/store/sessionManager/session';
 import React from 'react';
 import {
   TableCheckConstraint,
@@ -27,6 +28,7 @@ interface ITableContextProps {
   setForeignConstraints?: (newPartition: TableForeignConstraint[]) => void;
   checkConstraints?: TableCheckConstraint[];
   setCheckConstraints?: (newPartition: TableCheckConstraint[]) => void;
+  session?: SessionStore;
 }
 
 function voidFunc(v: any) {}

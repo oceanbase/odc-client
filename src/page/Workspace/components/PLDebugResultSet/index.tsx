@@ -6,11 +6,10 @@ import React, { useEffect, useState } from 'react';
 import DisplayTable from '@/component/DisplayTable';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, IPLParam, ParamMode } from '@/d.ts';
-import connection from '@/store/connection';
 import type { Debug } from '@/store/debug';
 import { useDebugContext } from '@/store/debug/hooks';
 import { DebugStatus, IDebugFunctionResult } from '@/store/debug/type';
-import { getDialectTypeFromConnectType } from '@/util/connection';
+import SessionStore from '@/store/sessionManager/session';
 import { cloneDeep, isArray } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import SplitPane from 'react-split-pane';
@@ -22,6 +21,7 @@ import styles from './index.less';
 const { TabPane } = Tabs;
 
 interface IProps {
+  session: SessionStore;
   type: string;
   data: any;
   resultHeight: number;
@@ -40,7 +40,7 @@ interface IProps {
 }
 
 const PLDebugResultSet: React.FC<IProps> = (props) => {
-  const { type, debug } = props;
+  const { type, debug, session } = props;
   /**
    * 监听 debug 改变
    */
@@ -172,9 +172,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
                 id: 'odc.components.PLDebugResultSet.Value',
               }),
               render(v) {
-                const isOracle =
-                  getDialectTypeFromConnectType(connection.connection.type) ===
-                  ConnectionMode.OB_ORACLE;
+                const isOracle = session?.connection.dialectType === ConnectionMode.OB_ORACLE;
                 if (v === null || (isOracle && v === '')) {
                   return <span style={{ color: 'var(--text-color-hint)' }}>(null)</span>;
                 }

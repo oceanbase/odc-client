@@ -1,3 +1,4 @@
+import { getTriggerByName } from '@/common/network/trigger';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
@@ -5,11 +6,12 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ITrigger } from '@/d.ts';
-import { ConnectionMode, TriggerState } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
+import { ConnectionMode, TriggerPropsTab as PropsTab, TriggerState } from '@/d.ts';
 import { openTriggerEditPageByName } from '@/store/helper/page';
+import { TriggerPage as TriggerPageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
@@ -24,6 +26,8 @@ import { Button, Layout, message, Modal, Radio, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
@@ -64,31 +68,20 @@ const tableColumns = [
 
 // 属性 Tab key 枚举
 
-export enum PropsTab {
-  BASE_INFO = 'INFO',
-  BASE_OBJECT = 'BASE_OBJECT',
-  CORRELATION = 'CORRELATION',
-  DDL = 'DDL',
-}
-
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  session: SessionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    triggerName: string;
-    propsTab: PropsTab;
-    triggerData: ITrigger;
-  };
+  params: TriggerPageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class TriggerPage extends Component<
+class TriggerPage extends Component<
   IProps,
   {
     propsTab: PropsTab;
@@ -183,9 +176,7 @@ export default class TriggerPage extends Component<
 
     pageStore.updatePage(
       pageKey,
-      {
-        updatePath: true,
-      },
+      {},
 
       {
         triggerName: trigger.triggerName,
@@ -205,10 +196,14 @@ export default class TriggerPage extends Component<
   };
   private reloadTrigger = async () => {
     const {
-      schemaStore,
       params: { triggerName },
+      session,
     } = this.props;
-    const trigger = await schemaStore.getTrigger(triggerName);
+    const trigger = await getTriggerByName(
+      triggerName,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
     if (trigger) {
       this.setState({
         trigger,
@@ -226,8 +221,14 @@ export default class TriggerPage extends Component<
   private editTrigger = () => {
     const {
       params: { triggerName },
+      session,
     } = this.props;
-    openTriggerEditPageByName(triggerName);
+    openTriggerEditPageByName(
+      triggerName,
+      session?.sessionId,
+      session?.odcDatabase?.name,
+      session?.odcDatabase?.id,
+    );
   };
   private showSearchWidget = () => {
     const codeEditor = this.editor;
@@ -242,7 +243,8 @@ export default class TriggerPage extends Component<
     const {
       trigger: { triggerName, enableState },
     } = this.state;
-    this.props.schemaStore.setTriggerStatus(triggerName, enableState);
+    const { session, params } = this.props;
+    session?.database.getTriggerList();
     this.props.pageStore.updatePageColor(triggerName, enableState === TriggerState.disabled);
     this.handleCloseBaseInfo(callback);
   };
@@ -270,12 +272,9 @@ export default class TriggerPage extends Component<
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-      schemaStore: { enableTriggerAlterStatus },
-    } = this.props;
+    const { sessionManagerStore, session } = this.props;
     const { propsTab, trigger, isEditStatus, formated } = this.state;
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
 
     if (!trigger || !trigger.triggerName) {
@@ -294,7 +293,7 @@ export default class TriggerPage extends Component<
                 /* 基本信息 */
                 key={PropsTab.BASE_INFO}
               >
-                {enableTriggerAlterStatus && (
+                {session?.supportFeature?.enableTriggerAlterStatus && (
                   <Toolbar>
                     {isEditStatus ? (
                       <div className={styles.toolbarCustomize}>
@@ -555,7 +554,12 @@ export default class TriggerPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(trigger?.triggerName, PLType.TRIGGER, trigger?.ddl);
+                      downloadPLDDL(
+                        trigger?.triggerName,
+                        PLType.TRIGGER,
+                        trigger?.ddl,
+                        session?.odcDatabase?.name,
+                      );
                     }}
                   />
 
@@ -610,3 +614,13 @@ export default class TriggerPage extends Component<
     );
   }
 }
+
+export default WrapSessionPage(function (props) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <TriggerPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

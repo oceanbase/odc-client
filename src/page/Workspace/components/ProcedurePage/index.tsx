@@ -2,7 +2,6 @@ import Toolbar from '@/component/Toolbar';
 import type { IProcedure } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import {
   AlignLeftOutlined,
@@ -23,11 +22,15 @@ import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
-import type { ConnectionStore } from '@/store/connection';
 import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page';
+import { ProcedurePage as ProcedurePageModel } from '@/store/helper/page/pages';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
 
@@ -51,21 +54,17 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    proName: string;
-    propsTab: PropsTab;
-  };
+  params: ProcedurePageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class ProcedurePage extends Component<
-  IProps,
+class ProcedurePage extends Component<
+  IProps & { session: SessionStore },
   {
     propsTab: PropsTab;
     procedure: Partial<IProcedure>;
@@ -108,8 +107,13 @@ export default class ProcedurePage extends Component<
   };
 
   public reloadProcedure = async (proName: string) => {
-    const { schemaStore } = this.props;
-    const procedure = await getProcedureByProName(proName);
+    const { session, params } = this.props;
+    const procedure = await getProcedureByProName(
+      proName,
+      false,
+      session?.sessionId,
+      session?.odcDatabase.name,
+    );
     if (procedure) {
       procedure.params = procedure.params.map((param) => {
         const { dataType, dataLength } = parseDataType(param.dataType);
@@ -134,8 +138,13 @@ export default class ProcedurePage extends Component<
   }
 
   public async editProcedure(proName: string) {
-    const { schemaStore, pageStore } = this.props;
-    await openProcedureEditPageByProName(proName);
+    const { params, sessionManagerStore, session } = this.props;
+    await openProcedureEditPageByProName(
+      proName,
+      session?.sessionId,
+      session?.odcDatabase.name,
+      session?.odcDatabase?.id,
+    );
   }
 
   private showSearchWidget() {
@@ -159,10 +168,11 @@ export default class ProcedurePage extends Component<
     const {
       pageKey,
       params: { proName },
-      connectionStore,
+      session,
+      sessionManagerStore,
     } = this.props;
     const { propsTab, procedure, formated } = this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     const tableColumns = [
       {
@@ -269,7 +279,12 @@ export default class ProcedurePage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(proName, PLType.PROCEDURE, procedure?.ddl);
+                      downloadPLDDL(
+                        proName,
+                        PLType.PROCEDURE,
+                        procedure?.ddl,
+                        session?.odcDatabase.name,
+                      );
                     }}
                   />
 
@@ -321,3 +336,13 @@ export default class ProcedurePage extends Component<
     );
   }
 }
+
+export default WrapSessionPage(function Component(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <ProcedurePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);
