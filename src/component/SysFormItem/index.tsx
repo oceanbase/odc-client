@@ -34,8 +34,8 @@ const SysFormItem: React.FC<IProps> = function (props) {
   const [pwdEdit, setPwdEdit] = useState(null);
   const [status, setStatus] = useState<ValidateStatus>('');
   const _forceUpdate = useUpdate();
-  const sysUser = connection?.sysUser;
-  const sid = connection?.sid;
+  const sysUser = connection?.sysTenantUsername;
+  const sid = connection?.id;
   const useSys = form.getFieldValue('useSys');
   const forceUpdate = useCallback(() => {
     _forceUpdate();
@@ -94,10 +94,8 @@ const SysFormItem: React.FC<IProps> = function (props) {
         clusterName: connection.clusterName,
         tenantName: connection.tenantName,
         id: connection.id,
-        defaultSchema: values.sysUser,
         username: values.sysUser,
         password: values.sysUserPassword,
-        visibleScope: connection.visibleScope,
         sslConfig: connection.sslConfig,
       },
       true,
