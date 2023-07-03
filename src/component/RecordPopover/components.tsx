@@ -245,7 +245,6 @@ export const RecordTable: React.FC<{
         ref={tableRef}
         mode={CommonTableMode.SMALL}
         titleContent={{
-          enabledReload: false,
           description: isClient()
             ? formatMessage({
                 id: 'odc.component.RecordPopover.components.NoteTheOperationRecordContains',

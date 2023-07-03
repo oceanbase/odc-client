@@ -115,7 +115,6 @@ class AddConnectionForm extends React.Component<
         clusterName,
         tenantName,
         id: formData.id,
-        defaultSchema: formData.defaultSchema,
         username: data[nameKey],
         password: data[passwordKey],
         visibleScope: connectionType,

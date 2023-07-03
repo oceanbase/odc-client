@@ -1,6 +1,8 @@
 import { IEditor } from '@/component/MonacoEditor';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
+import { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
+import { PLPageType } from '@/store/helper/page/pages/pl';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
@@ -111,12 +113,15 @@ const scriptActions: ToolBarActions = {
     icon: CloudDownloadOutlined,
     async action(ctx: PLPage) {
       const text = ctx?.props?.params?.scriptText || '';
-      const type = ctx?.props?.params?.plType || ctx?.props?.params?.plSchema?.plType;
-      const plName =
-        ctx?.props?.params?.plName ||
-        ctx?.props?.params?.plSchema?.plName ||
-        ctx?.props?.params?.triggerName;
-      downloadPLDDL(plName, type, text, ctx.props?.params?.dbName);
+      const params = ctx?.props.params;
+      const dbName = ctx?.getSession()?.database?.dbName;
+      if (params?.plPageType === PLPageType.anonymous) {
+        downloadPLDDL(params?.objectName, PLType.ANONYMOUSBLOCK, text, dbName);
+      } else if (params?.plPageType === PLPageType.plEdit) {
+        downloadPLDDL(params?.plName, params?.plType, text, dbName);
+      } else {
+        downloadPLDDL(params?.plSchema?.plName, params?.plSchema?.plType, text, dbName);
+      }
     },
   },
 };

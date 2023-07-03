@@ -50,7 +50,6 @@ const NameItems: React.FC<INameItemsProps> = (props) => {
     async (ruler, value) => {
       const isRepeat = await getConnectionExists({
         name: value,
-        visibleScope: connectionType,
       });
 
       if (isRepeat) {
