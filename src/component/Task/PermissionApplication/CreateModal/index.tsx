@@ -1,6 +1,4 @@
-import { ConnectionStore } from '@/store/connection';
 import { ModalStore } from '@/store/modal';
-import type { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import {
@@ -33,23 +31,12 @@ export const enabledInspectTriggerStrategy = false;
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
   projectId?: number;
 }
 
-const CreateModal: React.FC<IProps> = inject(
-  'modalStore',
-  'connectionStore',
-  'schemaStore',
-)(
+const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const {
-      modalStore,
-      connectionStore: { connection },
-      schemaStore,
-      projectId,
-    } = props;
+    const { modalStore, projectId } = props;
     const { sensitiveColumnVisible } = modalStore;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [disabledSubmit, setDisabledSubmit] = useState(true);
