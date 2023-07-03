@@ -203,7 +203,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
   };
   const handleScanning = async (taskId: string) => {
     const rawData = await getScanningResults(context.projectId, taskId);
-    const { status, sensitiveColumns, allSubtasks, finishedSubtasks } = rawData;
+    const { status, sensitiveColumns, allTableCount, finishedTableCount } = rawData;
     if ([ScannResultType.FAILED, ScannResultType.SUCCESS].includes(status)) {
       const dataSourceMap = new Map();
 
@@ -241,12 +241,12 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
       setScanTableData(checkResult(resData));
       setScanStatus(ScannResultType.SUCCESS);
       setSuccessful(true);
-      setPercent(Math.floor((finishedSubtasks * 100) / allSubtasks));
+      setPercent(Math.floor((finishedTableCount * 100) / allTableCount));
       setScanLoading(false);
     } else {
       setScanStatus(ScannResultType.RUNNING);
       setHasScan(true);
-      setPercent(Math.floor((finishedSubtasks * 100) / allSubtasks));
+      setPercent(Math.floor((finishedTableCount * 100) / allTableCount));
       timer.current = setTimeout(() => {
         handleScanning(taskId);
         clearTimeout(timer.current);

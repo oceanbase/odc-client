@@ -7,11 +7,13 @@ import {
   CommonTableMode,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
-import { Descriptions, message, Space, Tabs, Tag } from 'antd';
+import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../../components/SecureTable';
-import EditEnvironmentModal from './EditEnvironmentModal';
+import EditRuleDrawer from './EditRuleDrawer';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+
 import styles from './index.less';
 
 const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
@@ -20,7 +22,12 @@ const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
     1: '建议改进',
     2: '必须改进',
   };
-  return <>{levelMap[level]}</>;
+  const colorMap = {
+    0: 'green',
+    1: 'yellow',
+    2: 'red',
+  };
+  return <Tag color={colorMap[level]}>{levelMap[level]}</Tag>;
 };
 interface InnerEnvProps {
   selectedRecord: {
@@ -66,15 +73,27 @@ const getColumns: (columnsFunction: {
       onCell: () => {
         return {
           style: {
-            maxWidth: '218px',
+            maxWidth: '180px',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
           },
         };
       },
-
-      render: (text, record, index) => <TooltipContent content={record?.metadata?.name} />,
+      render: (text, record, index) => (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <TooltipContent content={record?.metadata?.name} maxWdith={180} />
+          <Tooltip title={record?.metadata?.description}>
+            <QuestionCircleOutlined style={{ marginLeft: '8px' }} />
+          </Tooltip>
+        </div>
+      ),
     },
     {
       title: '规则类型',
@@ -138,7 +157,7 @@ const getColumns: (columnsFunction: {
         } else if (keys.length === 1) {
           const [pm] = propertyMetadatas;
           if (Array.isArray(properties[pm.name])) {
-            content = properties[pm.name].length > 0 ? properties[pm.name] : '-';
+            content = properties[pm.name].length > 0 ? properties[pm.name].join(',') : '-';
           } else {
             content = content = properties[pm.name] ? properties[pm.name] : '-';
           }
@@ -201,25 +220,27 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
 }) => {
   const tableRef = useRef<any>(null);
   const [selectedData, setSelectedData] = useState<IRule>(null);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
 
-  const handleCloseModal = () => {
-    setModalVisible(false);
+  const handleCloseModal = (fn?: () => void) => {
+    setEditRuleDrawerVisible(false);
+    fn?.();
   };
-  const handleUpdateEnvironment = async (rule: IRule) => {
-    setModalVisible(false);
+  const handleUpdateEnvironment = async (rule: IRule, fn?: () => void) => {
     const flag = await updateRule(selectedRecord.rulesetId, selectedData.id, rule);
     if (flag) {
       message.success('提交成功');
+      // 刷新列表
+      setEditRuleDrawerVisible(false);
+      fn?.();
+      onLoad();
     } else {
       message.error('提交失败');
     }
-    // 刷新列表
-    onLoad();
   };
   const handleOpenEditModal = async (record: IRule) => {
     setSelectedData(record);
-    setModalVisible(true);
+    setEditRuleDrawerVisible(true);
   };
 
   const handleTabClick = (
@@ -327,9 +348,9 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           )}
         </div>
       </div>
-      <EditEnvironmentModal
+      <EditRuleDrawer
         {...{
-          modalVisible,
+          editRuleDrawerVisible,
           ruleType,
           rule: selectedData,
           handleCloseModal,

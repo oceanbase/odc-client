@@ -81,52 +81,32 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     }
     case ComponentType.SELECT_SINGLE: {
       return (
-        <Form.Item
-          label={label}
-          name={name}
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: `请选择${label}`,
-          //   },
-          // ]}
-          tooltip={description}
-        >
+        <Form.Item label={label} name={name} tooltip={description}>
           <Select options={initData?.[option] || []} />
         </Form.Item>
       );
     }
     case ComponentType.SELECT_MULTIPLE: {
       return (
-        <Form.Item
-          label={label}
-          name={name}
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: `请选择${label}`,
-          //   },
-          // ]}
-          tooltip={description}
-        >
-          <Select mode="multiple" options={initData?.[option] || []} defaultValue={defaultValue} />
+        <Form.Item label={label} name={name} tooltip={description}>
+          <Select
+            mode="multiple"
+            maxTagCount="responsive"
+            options={initData?.[option] || []}
+            defaultValue={defaultValue}
+          />
         </Form.Item>
       );
     }
     case ComponentType.SELECT_TAGS: {
       return (
-        <Form.Item
-          label={label}
-          name={name}
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: `请选择${label}`,
-          //   },
-          // ]}
-          tooltip={description}
-        >
-          <Select mode="tags" options={initData?.[option] || []} defaultValue={defaultValue} />
+        <Form.Item label={label} name={name} tooltip={description}>
+          <Select
+            mode="tags"
+            maxTagCount="responsive"
+            options={initData?.[option] || []}
+            defaultValue={defaultValue}
+          />
         </Form.Item>
       );
     }

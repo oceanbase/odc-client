@@ -1,6 +1,5 @@
-import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
+import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
 import { IRiskLevel } from '@/d.ts/riskLevel';
-import { ICondition } from '@/page/Secure/components/Condition';
 import request from '@/util/request';
 
 export async function updateRiskDetectRule(
@@ -39,7 +38,7 @@ export async function createRiskDetectRules(
   params: Partial<{
     name: string;
     organizationId: number;
-    conditions: ICondition[];
+    conditions: RiskDetectRuleCondition[];
     riskLevelId: number;
     risklLevel: IRiskLevel;
     buitin: boolean;

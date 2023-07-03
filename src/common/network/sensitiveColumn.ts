@@ -74,8 +74,8 @@ export interface IScannResult {
   taskId: string;
   status: ScannResultType;
   sensitiveColumns: ISensitiveColumn[];
-  allSubtasks: number;
-  finishedSubtasks: number;
+  allTableCount: number;
+  finishedTableCount: number;
   createTime: number;
   completeTime: number;
   errorCode: {};
