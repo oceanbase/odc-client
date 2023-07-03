@@ -1629,6 +1629,12 @@ export enum TaskType {
   MIGRATION = 'DATA_ARCHIVE',
 }
 
+export enum SubTaskType {
+  DATA_ARCHIVE = 'DATA_ARCHIVE',
+  DATA_CLEAR = 'DATA_CLEAR',
+  DATA_ARCHIVE_ROLLBACK = 'DATA_ARCHIVE_ROLLBACK',
+}
+
 export enum TaskSubType {
   INSERT = 'INSERT',
   UPDATE = 'UPDATE',

@@ -2,7 +2,7 @@ import {
   createTask,
   rollbackDataArchiveSubTask,
   startDataArchiveSubTask,
-  stopTask,
+  stopDataArchiveSubTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import {
@@ -28,7 +28,8 @@ interface IProps {
   settingStore?: SettingStore;
   modalStore?: ModalStore;
   isDetailModal?: boolean;
-  task: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
+  taskId: number;
+  record: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
@@ -37,7 +38,7 @@ interface IProps {
     status: boolean,
     visible: boolean,
   ) => void;
-  onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
+  onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
 }
 
@@ -51,7 +52,8 @@ const ActionBar: React.FC<IProps> = inject(
     const {
       userStore: { user },
       isDetailModal,
-      task,
+      record,
+      taskId,
     } = props;
     // const isOwner = user?.id === task?.creator?.id;
     const isOwner = true;
@@ -63,7 +65,7 @@ const ActionBar: React.FC<IProps> = inject(
 
     const _stopTask = async () => {
       setActiveBtnKey('stop');
-      const res = await stopTask(task.id);
+      const res = await stopDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success('取消成功');
         props.onReloadList();
@@ -72,7 +74,7 @@ const ActionBar: React.FC<IProps> = inject(
 
     const confirmRollback = async () => {
       setActiveBtnKey('rollback');
-      const res = await rollbackDataArchiveSubTask(7, task.id);
+      const res = await rollbackDataArchiveSubTask(taskId, record.id);
       if (res) {
         props.onReloadList();
         message.success('回滚成功');
@@ -83,7 +85,7 @@ const ActionBar: React.FC<IProps> = inject(
       if (activeBtnKey) {
         resetActiveBtnKey();
       }
-    }, [task?.status]);
+    }, [record?.status]);
 
     const handleRollback = async () => {
       Modal.confirm({
@@ -97,14 +99,15 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleExecute = async () => {
-      const res = await startDataArchiveSubTask(1, task.id);
+      const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success('执行成功');
       }
     };
 
     const handleReTry = async () => {
-      const { type, connection, databaseName, executionStrategy, executionTime, parameters } = task;
+      const { type, connection, databaseName, executionStrategy, executionTime, parameters } =
+        record;
       const res = await createTask({
         taskType: type,
         connectionId: connection?.id,
@@ -193,7 +196,7 @@ const ActionBar: React.FC<IProps> = inject(
       return tools;
     };
 
-    const btnTools = getTaskTools(task).filter((item) => item?.type === 'button');
+    const btnTools = getTaskTools(record).filter((item) => item?.type === 'button');
 
     const renderTool = (tool) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
@@ -227,6 +230,10 @@ const ActionBar: React.FC<IProps> = inject(
         </ActionButton>
       );
     };
+
+    if (!btnTools?.length) {
+      return <span>-</span>;
+    }
 
     return (
       <Action.Group size={!isDetailModal ? 4 : 6}>

@@ -2,7 +2,7 @@ import DisplayTable from '@/component/DisplayTable';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import StatusLabel, { subTaskStatus } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
-import { IAsyncTaskParams, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
+import { IAsyncTaskParams, SubTaskType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
@@ -10,7 +10,9 @@ import styles from './index.less';
 import TaskTools from './TaskTools';
 
 const TaskLabelMap = {
-  [TaskType.DATA_ARCHIVE]: '数据归档',
+  [SubTaskType.DATA_ARCHIVE]: '数据归档',
+  [SubTaskType.DATA_CLEAR]: '数据清理',
+  [SubTaskType.DATA_ARCHIVE_ROLLBACK]: '回滚',
 };
 
 const statusFilters = Object.keys(subTaskStatus).map((key) => {
@@ -21,11 +23,12 @@ const statusFilters = Object.keys(subTaskStatus).map((key) => {
 });
 
 const getConnectionColumns = (params: {
+  taskId: number;
   onReloadList: () => void;
   onApprovalVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
 }) => {
-  const { onReloadList, onApprovalVisible, onDetailVisible } = params;
+  const { taskId, onReloadList, onApprovalVisible, onDetailVisible } = params;
   return [
     {
       dataIndex: 'id',
@@ -43,7 +46,15 @@ const getConnectionColumns = (params: {
       filters: [
         {
           text: '数据归档',
-          value: TaskType.DATA_ARCHIVE,
+          value: SubTaskType.DATA_ARCHIVE,
+        },
+        {
+          text: '数据清理',
+          value: SubTaskType.DATA_CLEAR,
+        },
+        {
+          text: '回滚',
+          value: SubTaskType.DATA_ARCHIVE_ROLLBACK,
         },
       ],
       onFilter: (value: string, record) => {
@@ -90,7 +101,8 @@ const getConnectionColumns = (params: {
       render: (_, record) => {
         return (
           <TaskTools
-            task={record}
+            taskId={taskId}
+            record={record}
             onReloadList={onReloadList}
             onApprovalVisible={onApprovalVisible}
             onDetailVisible={onDetailVisible}
@@ -108,11 +120,12 @@ interface IProps {
 }
 
 const TaskExecuteRecord: React.FC<IProps> = (props) => {
-  const { subTasks, onReload } = props;
+  const { task, subTasks, onReload } = props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
+  const taskId = task?.id;
 
   const handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters>,
@@ -138,6 +151,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         className={styles.subTaskTable}
         rowKey="id"
         columns={getConnectionColumns({
+          taskId,
           onReloadList: onReload,
           onApprovalVisible: handleApprovalVisible,
           onDetailVisible: handleDetailVisible,

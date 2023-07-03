@@ -28,10 +28,6 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item span={2} label="任务编号">
           {task?.id}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="任务名称">
-          {task?.id}
-        </Descriptions.Item>
-
         <Descriptions.Item span={2} label="任务类型">
           数据归档
         </Descriptions.Item>

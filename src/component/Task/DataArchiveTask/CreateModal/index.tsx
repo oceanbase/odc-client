@@ -60,11 +60,14 @@ const getVariables = (
   }[],
 ) => {
   return value?.map(({ name, format, pattern }) => {
-    const _pattern = pattern
-      ?.map(({ operator, step, unit }) => {
-        return `${operator}${step}${unit}`;
-      })
-      ?.join(' ');
+    let _pattern = null;
+    try {
+      _pattern = pattern
+        ?.map((item) => {
+          return `${item.operator}${item.step}${item.unit}`;
+        })
+        ?.join(' ');
+    } catch (error) {}
     return {
       name,
       pattern: `${format}|${_pattern}`,
@@ -188,7 +191,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const {
-          name,
           startAt,
           connectionId,
           databaseId,
@@ -204,7 +206,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
           taskId: SQLPlanEditId,
           scheduleTaskParameters: {
-            name,
             sourceDatabaseId: databaseId,
             targetDataBaseId: targetDatabase,
             variables: getVariables(variables),
@@ -308,19 +309,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={defaultValue}
         onFieldsChange={handleFieldsChange}
       >
-        <Form.Item
-          required
-          label="任务名称"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: '请输入',
-            },
-          ]}
-        >
-          <Input style={{ width: '320px' }} placeholder="请输入" />
-        </Form.Item>
         <Space align="start">
           <DatabaseSelect label="源端数据库" projectId={projectId} />
           <DatabaseSelect label="目标数据库" name="targetDatabase" projectId={projectId} />
