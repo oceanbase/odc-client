@@ -23,11 +23,11 @@
     "build:client": "cross-env NODE_OPTIONS=--max_old_space_size=4096 UMI_ENV=client npm run build:odc && npm run build-main-prod",
     "prettier": "prettier --write 'src/**/*.{js,jsx,tsx,ts,less,md,json}'",
     "type-check": "tsc --noEmit",
-    "precommit": "npm run type-check",
     "must": "node --max-old-space-size=8192 ./scripts/must.js",
     "build-main-prod": "cross-env NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=production webpack --config ./build/webpack.main.prod.config.js",
     "build-main-dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=development webpack -w --config ./build/webpack.main.config.js",
     "prepack": "node ./scripts/clientDependencies/index.js",
+    "precommit": "npm run type-check && npm run lint-staged",
     "pack-client:all": "node ./scripts/client/build.js all",
     "pack-client:mac": "node ./scripts/client/build.js mac",
     "pack-client:linux_x86": "node ./scripts/client/build.js linux_x86",
@@ -184,7 +184,7 @@
   },
   "copyright": "© 2021 ANT GROUP",
   "gitHooks": {
-    "pre-commit": "lint-staged"
+    "pre-commit": "npm run precommit"
   },
   "tnpm": {
     "mode": "yarn",

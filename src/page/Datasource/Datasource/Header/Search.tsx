@@ -106,7 +106,7 @@ const Search: React.FC<IProps> = function () {
       onSelect={(v, option) => {
         const arr = v?.split(splitKey);
         if (arr.length) {
-          context.setSearchvalue(arr[0], arr[1]);
+          context.setSearchvalue(arr[0], arr[1] as any);
           ref.current?.blur();
         }
       }}

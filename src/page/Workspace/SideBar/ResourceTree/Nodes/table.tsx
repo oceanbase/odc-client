@@ -125,6 +125,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: 'HASH',
               key: `${tableKey}-partition-hash`,
               isLeaf: true,
+              // @ts-ignore
               sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
@@ -145,6 +146,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: 'KEY',
               key: `${tableKey}-partition-key`,
               isLeaf: true,
+              // @ts-ignore
               sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
