@@ -62,6 +62,8 @@ interface IProps<RecordType> {
   exSearch?: (args: ITableLoadOptions) => Promise<any>;
   exReload?: (args: ITableLoadOptions) => Promise<any>;
   rowSelecter?: IRowSelecter<RecordType>;
+
+  rowSelectedCallback?: (v: boolean) => void;
   // 是否启用 列宽可拖拽
   enableResize?: boolean;
   // 表格 Change 回调（包含 toolbar区的操作，表格区的操作均会触发）
@@ -91,7 +93,10 @@ const CommonTable: <RecordType extends object = any>(
     operationContent,
     isSplit = false,
     rowSelecter,
-    rowHeight = mode === CommonTableMode.BIG ? DEFAULT_BIG_ROW_HEIGHT : DEFAULT_SMALL_ROW_HEIGHT,
+    rowSelectedCallback = (v: boolean) => {},
+    rowHeight = body === CommonTableBodyMode.BIG
+      ? DEFAULT_BIG_ROW_HEIGHT
+      : DEFAULT_SMALL_ROW_HEIGHT,
     tableProps,
     enableResize = false,
     showPagination = true,
@@ -148,6 +153,10 @@ const CommonTable: <RecordType extends object = any>(
       });
     }
   }, [pageSize]);
+
+  useEffect(() => {
+    rowSelectedCallback(selectedRowKeys.length > 0);
+  }, [selectedRowKeys]);
 
   useImperativeHandle(ref, () => ({
     reload: (args?: ITableLoadOptions) => {
@@ -401,6 +410,7 @@ const CommonTable: <RecordType extends object = any>(
               body === CommonTableBodyMode.BIG ? styles.bigTableBody : styles.smallTableBody,
               {
                 [styles.scrollAble]: !!scrollHeight,
+                [styles.tablePagination]: showPagination,
               },
             )}
             rowClassName={(record, i) =>

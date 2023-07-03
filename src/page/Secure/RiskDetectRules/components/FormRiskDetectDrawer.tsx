@@ -3,9 +3,9 @@ import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule'
 import { Button, Drawer, Form, Input, message, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
-import RiskLevelLabel from '../components/RiskLevelLabel';
-import ConditionGroup from './components/ConditionGroup';
-import { SelectItemProps } from './index';
+import RiskLevelLabel from '../../components/RiskLevelLabel';
+import { SelectItemProps } from '../interface';
+import ConditionGroup from './ConditionGroup';
 
 import styles from './index.less';
 interface FormRiskDetectDrawerProps {
@@ -116,7 +116,7 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
           </Space>
         </div>
       }
-      className={styles.sqlDrawer}
+      className={styles.drawer}
     >
       <Space align="center" className={styles.tag}>
         <div className={styles.tagLabel}>风险等级: </div>

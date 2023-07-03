@@ -45,6 +45,7 @@ export enum PropertyMetadataType {
   INTEGER = 'INTEGER',
   STRING = 'STRING',
   STRING_LIST = 'STRING_LIST',
+  INTEGER_LIST = 'INTEGER_LIST',
 }
 export enum ComponentType {
   INPUT_STRING = 'INPUT_STRING',
@@ -62,6 +63,7 @@ export type PropertyMetadata = {
   componentType: ComponentType;
   defaultValue: any;
   candidates: any[];
+  displayName: string;
 };
 
 export type Metadata = {

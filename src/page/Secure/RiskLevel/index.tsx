@@ -11,9 +11,9 @@ import {
   CommonTableMode,
   ITableLoadOptions,
 } from '../components/SecureTable/interface';
-import FormRiskLevelDrawer from './FormRiskLevelDrawer';
+import FormRiskLevelDrawer from './components/FormRiskLevelDrawer';
+import ViewRiskLevelDrawer from './components/ViewRiskLevelDrawer';
 import styles from './index.less';
-import ViewRiskLevelDrawer from './ViewRiskLevelDrawer';
 
 const ApprovalProcess = ({ nodes = [] }) => {
   return (

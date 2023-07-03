@@ -4,19 +4,21 @@ import { Form, Input, InputNumber, Radio, Select } from 'antd';
 interface EditPropertyComponentMapProps {
   propertyMetadata: PropertyMetadata;
   label: string;
-  options?: {
-    value: string;
-    label: string;
-  }[];
+  index: number;
+  initData: any;
+  description: string;
 }
 
 const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
   propertyMetadata,
+  index,
   label,
-  options,
+  initData,
+  description = '',
 }) => {
-  const name = 'activeKey';
-  const { componentType, candidates = [], defaultValue, type } = propertyMetadata;
+  const name = `activeKey${index}`;
+  const option = `options${index}`;
+  const { componentType = '', candidates = [], defaultValue, type } = propertyMetadata;
   switch (componentType) {
     case ComponentType.INPUT_STRING: {
       return (
@@ -29,6 +31,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: `请输入${label}`,
             },
           ]}
+          tooltip={description}
         >
           <Input />
         </Form.Item>
@@ -45,8 +48,9 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: `请输入${label}`,
             },
           ]}
+          tooltip={description}
         >
-          <InputNumber defaultValue={defaultValue} />
+          <InputNumber defaultValue={defaultValue} min={0} />
         </Form.Item>
       );
     }
@@ -61,6 +65,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: `请选择${label}`,
             },
           ]}
+          tooltip={description}
         >
           <Radio.Group defaultValue={defaultValue}>
             {candidates.map((candidate, index) => {
@@ -79,14 +84,15 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
         <Form.Item
           label={label}
           name={name}
-          rules={[
-            {
-              required: true,
-              message: `请选择${label}`,
-            },
-          ]}
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: `请选择${label}`,
+          //   },
+          // ]}
+          tooltip={description}
         >
-          <Select />
+          <Select options={initData?.[option] || []} />
         </Form.Item>
       );
     }
@@ -95,14 +101,15 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
         <Form.Item
           label={label}
           name={name}
-          rules={[
-            {
-              required: true,
-              message: `请选择${label}`,
-            },
-          ]}
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: `请选择${label}`,
+          //   },
+          // ]}
+          tooltip={description}
         >
-          <Select mode="multiple" options={options} defaultValue={defaultValue} />
+          <Select mode="multiple" options={initData?.[option] || []} defaultValue={defaultValue} />
         </Form.Item>
       );
     }
@@ -111,14 +118,15 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
         <Form.Item
           label={label}
           name={name}
-          rules={[
-            {
-              required: true,
-              message: `请选择${label}`,
-            },
-          ]}
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: `请选择${label}`,
+          //   },
+          // ]}
+          tooltip={description}
         >
-          <Select mode="tags" options={options} defaultValue={defaultValue} />
+          <Select mode="tags" options={initData?.[option] || []} defaultValue={defaultValue} />
         </Form.Item>
       );
     }

@@ -77,6 +77,9 @@ export class ModalStore {
   public userConfigModalVisible: boolean = false;
 
   @observable
+  public sensitiveColumnVisible: boolean = false;
+
+  @observable
   public applyPermissionData: ApplyPermissionData = null;
 
   @observable
@@ -284,6 +287,11 @@ export class ModalStore {
     this.addShadowSyncVisible = isShow;
   }
 
+  @action
+  public changeSensitiveColumnVisible(isShow: boolean = true) {
+    this.sensitiveColumnVisible = isShow;
+  }
+
   @action clear() {
     this.exportModalVisible = false;
     this.exportModalData = null;
@@ -300,6 +308,7 @@ export class ModalStore {
     this.dataMockerData = null;
     this.createSequenceModalVisible = false;
     this.versionModalVisible = false;
+    this.sensitiveColumnVisible = false;
   }
 }
 

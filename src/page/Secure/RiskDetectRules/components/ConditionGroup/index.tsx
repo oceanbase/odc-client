@@ -1,7 +1,7 @@
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, FormInstance } from 'antd';
-import { SelectItemProps } from '../../index';
+import { SelectItemProps } from '../../interface';
 import Condition from './condition';
 import styles from './index.less';
 
@@ -32,10 +32,10 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
   return (
     <div>
       <div className={styles.labelContainer}>
-        <div className={styles.label}>条件</div>
-        <div className={styles.extra}>
+        <span className={styles.label}>条件</span>
+        <span className={styles.extra}>
           条件是通过表达式配置的规则。例如：条件「环境 为 prod」将会匹配在「prod」环境中执行的工单。
-        </div>
+        </span>
       </div>
       <Form.List name="conditions" initialValue={selectedRecord?.conditions || []}>
         {(fields, { add, remove }, { errors }) => (

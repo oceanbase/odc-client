@@ -3,7 +3,7 @@ import { IRiskLevel } from '@/d.ts/riskLevel';
 import { transformSecond } from '@/util/utils';
 import { Descriptions, Drawer, Timeline } from 'antd';
 import { useEffect, useState } from 'react';
-import RiskLevelLabel from '../components/RiskLevelLabel';
+import RiskLevelLabel from '../../components/RiskLevelLabel';
 import styles from './index.less';
 
 const ViewRiskLevelDrawer: React.FC<{
@@ -21,10 +21,6 @@ const ViewRiskLevelDrawer: React.FC<{
       selectedRecord && getDetailRiskLevel(selectedRecord?.id);
     }
   }, [drawerVisible, selectedRecord]);
-
-  if (!drawerVisible) {
-    return null;
-  }
   return (
     <Drawer
       width={520}
@@ -39,8 +35,8 @@ const ViewRiskLevelDrawer: React.FC<{
           <RiskLevelLabel level={record?.level} color={record?.style} />
         </Descriptions.Item>
         <div>审批流程</div>
-        <div className={styles.approvalContainer} style={{ marginBottom: '8px' }}>
-          <Timeline className={styles.approvalDescriptios}>
+        <div className={styles.approvalContainer}>
+          <Timeline className={styles.approvalDescriptions}>
             {record?.approvalFlowConfig?.nodes?.map(
               (
                 { externalApprovalName = '', autoApproval = false, resourceRoleName = '' },

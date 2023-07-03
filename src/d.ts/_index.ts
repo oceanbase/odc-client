@@ -32,6 +32,8 @@ export enum IPageType {
   Secure_Record = 'record',
   RiskDetectRules = 'riskDetectRules',
   RiskLevel = 'riskLevel',
+  Sensitive = 'sensitive',
+  MaskingAlgorithm = 'maskingAlgorithm',
   ExternalIntegration = 'externalIntegration',
   ExternalIntegration_Approval = 'approval',
   ExternalIntegration_Sql = 'sql',

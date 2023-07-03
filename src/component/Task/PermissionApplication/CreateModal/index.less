@@ -1,0 +1,61 @@
+.deleteBtn {
+  // align-self: center;
+
+  // position: relative;
+  // top: 4px;
+  // margin: 0 8px;
+  // color: #999;
+  // font-size: 24px;
+  // cursor: pointer;
+  // transition: all 0.3s;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.formItem {
+  margin-bottom: 12px;
+  :global(.ant-space-item) {
+    margin-bottom: 0px;
+  }
+}
+.collapse {
+  :global {
+    .ant-collapse-item {
+      .ant-collapse-header {
+        padding: 4px 12px;
+      }
+    }
+  }
+  .descriptions {
+    :global {
+      .ant-descriptions-row > th,
+      .ant-descriptions-row > td {
+        padding-bottom: 0px;
+      }
+    }
+  }
+}
+
+.modal {
+  :global {
+    .ant-modal-body {
+      padding: 16px;
+    }
+  }
+}
+
+.formItemGroup {
+  display: flex;
+  margin-bottom: 8px;
+  :global {
+    .ant-form-item {
+      margin-bottom: 0px !important;
+    }
+    .ant-checkbox-wrapper {
+      span:nth-of-type(2) {
+        align-self: center;
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import { ITableLoadOptions } from '../components/SecureTable/interface';
-import InnerEnvironment from './InnerEnvironment';
+import InnerEnvironment from './components/InnerEnvironment';
 
 export function getEnvTypeList(env: IEnvironment): {
   value: number;
@@ -73,7 +73,7 @@ const Environment: React.FC<{}> = ({}) => {
     style: string;
     description: string;
   }) => {
-    setSelectedItem(item.envId);
+    setSelectedItem(item?.envId);
     setSelectedRecord(item);
   };
 

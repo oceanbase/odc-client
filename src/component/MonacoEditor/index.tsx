@@ -9,9 +9,9 @@ import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
+import * as groovy from './plugins/languageSupport/groovy';
 import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
-
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -109,6 +109,8 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       return;
     }
     const plugin = module.register();
+
+    groovy.registerGroovyLanguageForMonaco();
     plugin.setModelOptions(
       editorRef.current.getModel().id,
       getModelService(
