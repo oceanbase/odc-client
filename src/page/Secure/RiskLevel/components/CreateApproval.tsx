@@ -1,6 +1,6 @@
 import { getIntegrationList, getRoleList } from '@/common/network/manager';
 import { useEffect, useState } from 'react';
-import FormModal from '../Approval/component/FormModal';
+import FormModal from '../../Approval/component/FormModal';
 
 const CreateApproval = ({ createApprovalDrawerOpen, setCreateApprovalDrawerOpen, reloadData }) => {
   const [roles, setRoles] = useState([]);

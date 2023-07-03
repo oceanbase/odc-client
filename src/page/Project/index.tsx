@@ -15,6 +15,7 @@ import { Link } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
+import Sensitive from './Sensitive';
 
 const menu = (
   <Menu>
@@ -52,6 +53,9 @@ const Pages = {
   [IPageType.Project_User]: {
     component: User,
   },
+  [IPageType.Sensitive]: {
+    component: Sensitive,
+  },
 };
 
 const tabs = [
@@ -66,6 +70,10 @@ const tabs = [
   {
     tab: '成员',
     key: IPageType.Project_User,
+  },
+  {
+    tab: '敏感数据',
+    key: IPageType.Sensitive,
   },
   {
     tab: '设置',
@@ -87,7 +95,6 @@ const Index: React.FC<IProps> = function () {
   };
 
   const [project, setProject] = useState<IProject>(null);
-
   async function fetchProject(projectId: number) {
     const data = await getProject(projectId);
     if (data) {
@@ -135,6 +142,13 @@ const Index: React.FC<IProps> = function () {
         options: options,
         onChange: handleProjectChange,
       }}
+      containerWrapStyle={
+        [IPageType.Sensitive].includes(page)
+          ? {
+              padding: '0px 12px',
+            }
+          : {}
+      }
       tabList={tabs}
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent projectId={projectId} />}

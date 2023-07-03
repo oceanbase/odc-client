@@ -3,10 +3,10 @@ import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule'
 import { Descriptions, Drawer } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useEffect, useRef, useState } from 'react';
-import { RiskLevelMapProps } from '.';
-import RiskLevelLabel from '../components/RiskLevelLabel';
-import SecureTable from '../components/SecureTable';
-import { CommonTableBodyMode, CommonTableMode } from '../components/SecureTable/interface';
+import RiskLevelLabel from '../../components/RiskLevelLabel';
+import SecureTable from '../../components/SecureTable';
+import { CommonTableBodyMode, CommonTableMode } from '../../components/SecureTable/interface';
+import { RiskLevelMapProps } from '../interface';
 
 export const ExpressionTypeMap = {
   EnvironmentId: '环境名称',

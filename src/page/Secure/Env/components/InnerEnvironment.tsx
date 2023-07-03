@@ -1,16 +1,17 @@
 import { updateRule } from '@/common/network/ruleset';
 import StatusSwitch from '@/component/StatusSwitch';
+import TooltipContent from '@/component/TooltipContent';
 import { IRule, RuleType } from '@/d.ts/rule';
-import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
-import { ColumnsType } from 'antd/es/table';
-import React, { useEffect, useRef, useState } from 'react';
-import SecureTable from '../components/SecureTable';
 import {
   CommonTableBodyMode,
   CommonTableMode,
   ITableLoadOptions,
-} from '../components/SecureTable/interface';
-import EditModal from './EditModal';
+} from '@/page/Secure/components/SecureTable/interface';
+import { Descriptions, message, Space, Tabs, Tag } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import React, { useEffect, useRef, useState } from 'react';
+import SecureTable from '../../components/SecureTable';
+import EditEnvironmentModal from './EditEnvironmentModal';
 import styles from './index.less';
 
 const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
@@ -42,7 +43,6 @@ interface InnerEnvProps {
   supportedDialectTypeFilters: { text: string; value: string }[];
   handleInitRules: (id: number, ruleType: RuleType) => void;
 }
-
 const getColumns: (columnsFunction: {
   selectedRecord: any;
   subTypeFilters: { text: string; value: string }[];
@@ -63,7 +63,18 @@ const getColumns: (columnsFunction: {
       dataIndex: 'name',
       key: 'name',
       // fixed: 'left',
-      render: (text, record, index) => <>{record?.metadata?.name}</>,
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '218px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          },
+        };
+      },
+
+      render: (text, record, index) => <TooltipContent content={record?.metadata?.name} />,
     },
     {
       title: '规则类型',
@@ -71,7 +82,17 @@ const getColumns: (columnsFunction: {
       dataIndex: 'subTypes',
       key: 'subTypes',
       filters: subTypeFilters,
-      render: (text, record) => record?.metadata?.subTypes?.join(','),
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '94px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          },
+        };
+      },
+      render: (text, record) => <TooltipContent content={record?.metadata?.subTypes?.join(',')} />,
     },
     {
       title: '支持数据源',
@@ -89,11 +110,7 @@ const getColumns: (columnsFunction: {
           },
         };
       },
-      render: (text, record) => (
-        <Tooltip title={record?.appliedDialectTypes?.join(',')} placement="top" arrowPointAtCenter>
-          {record?.appliedDialectTypes?.join(',')}
-        </Tooltip>
-      ),
+      render: (text, record) => <TooltipContent content={record?.appliedDialectTypes?.join(',')} />,
       //record.metadata?.supportedDialectTypes?.join(','), // 这个的值是固定的，应该是appliedDialectTypes才对
     },
     {
@@ -111,15 +128,25 @@ const getColumns: (columnsFunction: {
           },
         };
       },
-      render: (_, record, index) => (
-        <Tooltip
-          title={'' + record.properties[record.metadata.propertyMetadatas?.[0]?.name]}
-          placement="top"
-          arrowPointAtCenter
-        >
-          {'' + record.properties[record.metadata.propertyMetadatas?.[0]?.name]}
-        </Tooltip>
-      ),
+      render: (_, record, index) => {
+        const { metadata, properties } = record;
+        const { propertyMetadatas } = metadata;
+        const keys = Object.keys(properties) || [];
+        let content;
+        if (keys.length === 0) {
+          content = '-';
+        } else if (keys.length === 1) {
+          const [pm] = propertyMetadatas;
+          if (Array.isArray(properties[pm.name])) {
+            content = properties[pm.name].length > 0 ? properties[pm.name] : '-';
+          } else {
+            content = content = properties[pm.name] ? properties[pm.name] : '-';
+          }
+        } else {
+          content = propertyMetadatas.map((pm) => `${pm.displayName}: ${properties[pm.name]}`);
+        }
+        return <TooltipContent content={content} />;
+      },
     },
     {
       title: '改进等级',
@@ -258,7 +285,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
               body={CommonTableBodyMode.BIG}
               titleContent={null}
               showToolbar={false}
-              showPagination={false}
+              showPagination={true}
               filterContent={{}}
               operationContent={{
                 options: [],
@@ -300,7 +327,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           )}
         </div>
       </div>
-      <EditModal
+      <EditEnvironmentModal
         {...{
           modalVisible,
           ruleType,

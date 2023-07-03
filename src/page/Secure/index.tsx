@@ -26,9 +26,11 @@ import { history, useParams } from 'umi';
 import Approval from './Approval';
 import { ManageContext } from './context';
 import Env from './Env';
+import MaskingAlgorithm from './MaskingAlgorithm';
 import Record from './Record';
 import RiskDetectRules from './RiskDetectRules';
 import RiskLevel from './RiskLevel';
+
 interface IProps {
   userStore?: UserStore;
 }
@@ -42,6 +44,9 @@ const Pages = {
   },
   [IPageType.RiskDetectRules]: {
     component: RiskDetectRules, // 风险识别规则
+  },
+  [IPageType.MaskingAlgorithm]: {
+    component: MaskingAlgorithm,
   },
   [IPageType.Secure_Approval]: {
     component: Approval, // 审批流程
@@ -63,6 +68,10 @@ const tabs = [
   {
     tab: '风险识别规则',
     key: IPageType.RiskDetectRules,
+  },
+  {
+    tab: '脱敏算法',
+    key: IPageType.MaskingAlgorithm,
   },
   {
     tab: '审批流程',

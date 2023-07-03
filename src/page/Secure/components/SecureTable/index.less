@@ -267,12 +267,6 @@
 }
 
 .tableSpin {
-  :global {
-    .ant-spin-nested-loading > .ant-spin-container {
-      // padding-bottom: 40px;
-    }
-  }
-
   &:not(.scrollAble) {
     :global {
       .ant-table-body {
@@ -280,6 +274,13 @@
           // display: none;
         }
       }
+    }
+  }
+}
+.tablePagination {
+  :global {
+    .ant-spin-nested-loading > .ant-spin-container {
+      padding-bottom: 40px;
     }
   }
 }

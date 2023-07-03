@@ -123,5 +123,15 @@ export function getTaskTypeList(
         },
       ],
     },
+    {
+      groupName: '权限申请',
+      group: [
+        {
+          value: TaskPageType.SENSITIVE_COLUMN,
+          label: '敏感列',
+          enabled: true,
+        },
+      ],
+    },
   ];
 }

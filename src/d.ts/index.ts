@@ -1610,6 +1610,7 @@ export enum TaskPageType {
   CREATED_BY_CURRENT_USER = 'createdByCurrentUser',
   APPROVE_BY_CURRENT_USER = 'approveByCurrentUser',
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  SENSITIVE_COLUMN = 'SENSITIVE_COLUMN',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
 }
 
@@ -1623,6 +1624,7 @@ export enum TaskType {
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
   SHADOW = 'SHADOWTABLE_SYNC',
   DATA_SAVE = 'DATA_SAVE',
+  PERMISSION_APPLY = 'PERMISSION_APPLY',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   MIGRATION = 'DATA_ARCHIVE',
 }
@@ -2665,6 +2667,21 @@ export enum MaskRuleType {
   ROUNDING = 'ROUNDING',
   // 置空
   NULL = 'NULL',
+}
+
+export enum MaskRyleTypeMap {
+  // 掩盖
+  MASK = '掩盖',
+  // 替换
+  SUBSTITUTION = '替换',
+  // 保留格式
+  PSEUDO = '保留格式',
+  // 哈希
+  HASH = '哈希',
+  // 取整
+  ROUNDING = '取整',
+  // 置空
+  NULL = '置空',
 }
 
 export enum MaskRuleCustomSegmentsType {

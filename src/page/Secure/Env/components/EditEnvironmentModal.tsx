@@ -19,28 +19,27 @@ const EditModal: React.FC<EditModalProps> = ({
   handleUpdateEnvironment,
 }) => {
   const [formRef] = useForm();
-  const [options, setOptions] = useState<
-    {
-      label: string;
-      value: string;
-    }[]
-  >([]);
+  const [initData, setInitData] = useState();
   const onCancel = () => {
     handleCloseModal();
   };
   const onOk = async () => {
-    const {
-      appliedDialectTypes = [],
-      level = 0,
-      activeKey = null,
-    } = await formRef.validateFields().catch();
+    const rawData = await formRef.validateFields().catch();
+    const { appliedDialectTypes = [], level = 0 } = rawData;
+    const activeKeys = Object.keys(rawData).filter((key) => key.includes('activeKey')) || [];
+    const activeProperties = {};
+    activeKeys.forEach((activeKey) => {
+      activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
+        rawData[activeKey];
+    });
+
     const editedRule: Partial<IRule> = {
       ...rule,
       appliedDialectTypes,
       level,
       properties: {
         ...rule.properties,
-        [`${rule.metadata.propertyMetadatas?.[0]?.name}`]: activeKey,
+        ...activeProperties,
       },
     };
     handleUpdateEnvironment(editedRule as IRule);
@@ -53,20 +52,22 @@ const EditModal: React.FC<EditModalProps> = ({
         metadata: { propertyMetadatas },
         properties,
       } = rule;
-
-      const { candidates = [], name: activeKey } = propertyMetadatas?.[0];
-      const options = candidates?.map((candidate) => {
-        return {
-          value: candidate,
-          label: candidate,
-        };
-      });
-      setOptions(options);
-      formRef.setFieldsValue({
+      const newInitData = {
         appliedDialectTypes,
-        activeKey: properties[activeKey],
         level,
+      };
+      propertyMetadatas.forEach((pm, index) => {
+        newInitData[`activeKey${index}`] = properties[pm.name];
+        if (pm?.candidates) {
+          newInitData[`options${index}`] = pm?.candidates?.map((candidate) => ({
+            value: candidate,
+            label: candidate,
+          }));
+        }
       });
+      setInitData(newInitData as any);
+
+      formRef.setFieldsValue(newInitData);
     }
   }, [modalVisible]);
   return (
@@ -108,11 +109,17 @@ const EditModal: React.FC<EditModalProps> = ({
               <Checkbox value={'OB_MYSQL'}>MYSQL</Checkbox>
             </Checkbox.Group>
           </Form.Item>
-          <EditPropertyComponentMap
-            label={rule?.metadata?.name}
-            propertyMetadata={rule?.metadata?.propertyMetadatas?.[0]}
-            options={options}
-          />
+          {rule?.metadata?.propertyMetadatas?.map((pm, index) => {
+            return (
+              <EditPropertyComponentMap
+                index={index}
+                description={pm.description}
+                label={pm?.displayName}
+                propertyMetadata={pm}
+                initData={initData}
+              />
+            );
+          })}
           {ruleType === RuleType.SQL_CHECK && (
             <Form.Item
               label={'改进等级'}

@@ -1,4 +1,4 @@
-import { ApprovalFlowConfig } from './approvalFlow';
+import { ITaskFlow } from '.';
 
 export interface IRiskLevel {
   id?: number;
@@ -7,7 +7,7 @@ export interface IRiskLevel {
   level: number;
   style: EnvironmentStyle;
   approvalFlowConfigId: number;
-  approvalFlowConfig: ApprovalFlowConfig;
+  approvalFlowConfig: ITaskFlow;
   organizationId: number;
 }
 export enum EnvironmentStyle {
