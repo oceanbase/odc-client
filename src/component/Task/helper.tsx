@@ -1,4 +1,4 @@
-import { TaskPageType, TaskType } from '@/d.ts';
+import { SubTaskType, TaskPageType, TaskType } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import { isClient } from '@/util/env';
@@ -6,6 +6,14 @@ import { formatMessage } from '@/util/intl';
 
 export const isCycleTask = (type: TaskType) => {
   return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(type);
+};
+
+export const isSubCycleTask = (type: SubTaskType) => {
+  return [
+    SubTaskType.DATA_ARCHIVE,
+    SubTaskType.DATA_ARCHIVE_ROLLBACK,
+    SubTaskType.DATA_CLEAR,
+  ].includes(type);
 };
 
 export const isCycleTaskPage = (type: TaskPageType) => {

@@ -18,7 +18,7 @@ import {
 import { Space } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
-import { isCycleTask } from '../../helper';
+import { isSubCycleTask } from '../../helper';
 
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
@@ -235,7 +235,7 @@ const StatusLabel: React.FC<IProps> = (props) => {
   // todo: 未来取消 TaskType.ASYNC, 因为task已统一，所有类型task的status均是一致的，不需要使用taskType进行区分；
   let statusInfo: Record<string, { icon: React.ReactNode; text: string }> =
     statusMap[StatusNodeType.FLOW_TASK];
-  if (isCycleTask(type)) {
+  if (isSubCycleTask(type)) {
     if (isSubTask) {
       statusInfo = statusMap[StatusNodeType.SUB_TASK];
     } else {
