@@ -1,5 +1,5 @@
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, IFunction, IProcedure } from '@/d.ts';
+import { IFunction, IProcedure } from '@/d.ts';
 import { IDebugContext } from '@/store/debug/type';
 import SessionStore from '@/store/sessionManager/session';
 import request from '@/util/request';
@@ -20,10 +20,12 @@ export async function createDebugSession(
   switch (plType) {
     case PLType.FUNCTION: {
       reqParams.function = plSchema;
+      reqParams.anonymousBlock = anonymousBlock;
       break;
     }
     case PLType.PROCEDURE: {
       reqParams.procedure = plSchema;
+      reqParams.anonymousBlock = anonymousBlock;
       break;
     }
     case PLType.ANONYMOUSBLOCK: {
