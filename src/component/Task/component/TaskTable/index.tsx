@@ -1,4 +1,3 @@
-import { getConnectionList } from '@/common/network/connection';
 import CommonTable from '@/component/CommonTable';
 import type {
   ITableFilter,
@@ -11,10 +10,9 @@ import { getCronExecuteCycleByObject, translator } from '@/component/Crontab';
 import SearchFilter from '@/component/SearchFilter';
 import StatusLabel, { status } from '@/component/Task/component/Status';
 import { TimeOptions } from '@/component/TimeSelect';
-import TreeFilter from '@/component/TreeFilter';
 import UserPopover from '@/component/UserPopover';
 import type { ICycleTaskTriggerConfig, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import { IConnectionType, SQLPlanTriggerStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { SQLPlanTriggerStrategy, TaskPageType, TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
@@ -22,7 +20,7 @@ import { isClient } from '@/util/env';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { DownOutlined, FilterFilled, SearchOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Divider, Menu } from 'antd';
 import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -137,7 +135,6 @@ const TaskTable: React.FC<IProps> = inject(
       return !start || !end ? null : [moment(start), moment(end)];
     });
     const [loading, setLoading] = useState(false);
-    const [connections, setConnection] = useState(null);
     const [listParams, setListParams] = useState(null);
     const loadParams = useRef(null);
     const fileExpireHours = settingStore?.serverSystemInfo?.fileExpireHours ?? null;
@@ -162,10 +159,6 @@ const TaskTable: React.FC<IProps> = inject(
     const taskLabelInfo = taskTypes.find((item) => item.value === taskPageType);
 
     const columns = initColumns(listParams);
-
-    useEffect(() => {
-      getConnections();
-    }, []);
 
     const loadData = useLoop((count) => {
       return async (args: ITableLoadOptions) => {
@@ -215,59 +208,7 @@ const TaskTable: React.FC<IProps> = inject(
       }
     }, [executeTime]);
 
-    async function getConnections() {
-      const privateConnections = await getConnectionList({
-        visibleScope: IConnectionType.PRIVATE,
-      });
-
-      const publicConnections = await getConnectionList({
-        visibleScope: IConnectionType.ORGANIZATION,
-      });
-
-      setConnection({
-        privateConnections: privateConnections?.contents,
-        publicConnections: publicConnections?.contents,
-      });
-    }
-
-    function getConnectionFilter() {
-      return [
-        {
-          title: formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTable.PersonalConnection',
-          }),
-
-          //个人连接
-          key: IConnectionType.PRIVATE,
-          children: getTreeChild(connections?.privateConnections),
-        },
-
-        {
-          title: formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTable.PublicConnection',
-          }),
-
-          //公共连接
-          key: IConnectionType.ORGANIZATION,
-          children: getTreeChild(connections?.publicConnections),
-          disabled: !connections?.publicConnections?.length,
-        },
-      ];
-    }
-
-    function getTreeChild(params: { name: string; id: number }[]) {
-      return (
-        params?.map(({ name, id }) => {
-          return {
-            title: name,
-            key: id,
-          };
-        }) ?? []
-      );
-    }
-
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
-      const treeData = getConnectionFilter();
       const { filters, sorter } = listParams ?? {};
       const columns = [
         {
@@ -309,21 +250,10 @@ const TaskTable: React.FC<IProps> = inject(
         },
 
         {
-          dataIndex: 'connection',
+          dataIndex: 'description',
           title: '工单描述',
           ellipsis: true,
-          filterDropdown: (props) => {
-            return <TreeFilter {...props} treeData={treeData} />;
-          },
-          filterIcon: (filtered) => (
-            <FilterFilled
-              style={{
-                color: filtered ? 'var(--icon-color-focus)' : undefined,
-              }}
-            />
-          ),
-          filteredValue: filters?.connection || null,
-          render: (connection) => connection?.name || '-',
+          render: (description) => description || '-',
         },
 
         {

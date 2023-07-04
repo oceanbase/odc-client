@@ -4,10 +4,11 @@ import Status from '@/component/Manage/Status';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
+import { ResourceContext } from '../../../index';
 import type { RadioChangeEvent } from 'antd';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ResourceSelector from '../ResourceSelector';
 
 import styles from './index.less';
@@ -109,11 +110,10 @@ export const RoleResource: React.FC<{
   isHide: boolean;
   handleUsersChange: (label: string, value: any) => void;
 }> = ({ editId, isInternal, isHide, handleUsersChange }) => {
-  // const { users } = useContext(ManageContext);
-  const { users } = {};
+  const { users } = useContext(ResourceContext);
   const [currentUser, setCurrentUser] = useState([]);
   const [deletedUser, setDeletedUser] = useState([]);
-  const [userOptions, setUserOptions] = useState(users?.contents);
+  const [userOptions, setUserOptions] = useState(users);
 
   useEffect(() => {
     (async () => {
@@ -126,7 +126,7 @@ export const RoleResource: React.FC<{
   }, [editId]);
 
   useEffect(() => {
-    const options = users?.contents?.filter((user) => {
+    const options = users?.filter((user) => {
       return !currentUser?.some((item) => item.id === user?.id);
     });
     setUserOptions(options);

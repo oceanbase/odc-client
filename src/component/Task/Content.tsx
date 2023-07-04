@@ -193,7 +193,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
   };
 
   private handleDetailVisible = (
-    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord,
+    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     visible: boolean = false,
   ) => {
     const { id } = task ?? {};
@@ -201,7 +201,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailId: id,
       detailType:
         (task as TaskRecord<TaskRecordParameters>)?.type ||
-        (task as ICycleTaskRecord)?.type ||
+        (task as ICycleTaskRecord<any>)?.type ||
         TaskType.ASYNC,
       detailVisible: visible,
     });

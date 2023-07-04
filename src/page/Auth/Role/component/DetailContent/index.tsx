@@ -8,9 +8,10 @@ import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
+import { ResourceContext } from '../../../index';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Space, Tooltip } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styles from '../../index.less';
 import { permissionMap, resourceManagementTypeOptions } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
@@ -293,8 +294,7 @@ const UserDetail: React.FC<{
   } = data;
 
   const [visible, setVisible] = useState(false);
-  // const { publicConnections, resourceGroups, roles, users } = useContext(ManageContext);
-  const { publicConnections, resourceGroups, roles, users } = {};
+  const { publicConnections, roles, users } = useContext(ResourceContext);
   const createAbleResourceLabels = resourceManagementTypeOptions
     ?.map((option) => {
       const hasCreate = resourceManagementPermissions?.some(
@@ -355,10 +355,9 @@ const UserDetail: React.FC<{
 
   const getResourceName = (type: IManagerResourceType, resourceId: number) => {
     const resourceMap = {
-      [IManagerResourceType.public_connection]: publicConnections?.contents,
-      [IManagerResourceType.resource_group]: resourceGroups?.contents,
+      [IManagerResourceType.public_connection]: publicConnections,
       [IManagerResourceType.role]: roles,
-      [IManagerResourceType.user]: users?.contents,
+      [IManagerResourceType.user]: users,
     };
 
     const info = resourceMap[type]?.find((item) => item.id === resourceId);
@@ -572,8 +571,9 @@ const UserDetail: React.FC<{
 
 const UserResource: React.FC<{
   data: IManagerRole;
-}> = ({ data: { id } }) => {
-  return <CommonUserResource getColumns={getColumns} id={id} roleIds={[id]} />;
+  roles: IManagerRole[];
+}> = ({ data: { id }, roles }) => {
+  return <CommonUserResource getColumns={getColumns} roles={roles} id={id} roleIds={[id]} />;
 };
 
 const DetailContents = {
@@ -584,6 +584,7 @@ const DetailContents = {
 const DetailContent: React.FC<{
   activeKey: IManagerDetailTabs;
   data: IManagerRole;
+  roles: IManagerRole[];
   handleCloseAndReload: () => void;
 }> = ({ activeKey, ...rest }) => {
   const DetailContent = DetailContents[activeKey];

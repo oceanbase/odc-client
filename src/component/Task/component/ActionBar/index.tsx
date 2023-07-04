@@ -40,12 +40,12 @@ interface IProps {
   settingStore?: SettingStore;
   modalStore?: ModalStore;
   isDetailModal?: boolean;
-  task: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
+  task: Partial<TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>>;
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
   onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord,
+    task: Partial<TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>>,
     status: boolean,
     visible: boolean,
   ) => void;
@@ -179,13 +179,12 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, connection, databaseName, executionStrategy, executionTime, parameters } = task;
+      const { type, connection, executionStrategy, executionTime, parameters } = task;
       const res = await createTask({
         taskType: type,
         connectionId: connection?.id,
         executionStrategy,
         executionTime,
-        databaseName,
         parameters,
       });
 
@@ -272,7 +271,6 @@ const ActionBar: React.FC<IProps> = inject(
         onOk: async () => {
           await createTask({
             connectionId: connection?.id,
-            databaseName,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
               taskId: id,
@@ -318,7 +316,6 @@ const ActionBar: React.FC<IProps> = inject(
         onOk: async () => {
           await createTask({
             connectionId: connection?.id,
-            databaseName,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
               taskId: id,
@@ -333,7 +330,6 @@ const ActionBar: React.FC<IProps> = inject(
       const { databaseName, connection, id } = task;
       await createTask({
         connectionId: connection?.id,
-        databaseName,
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
           taskId: id,

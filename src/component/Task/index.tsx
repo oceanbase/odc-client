@@ -16,16 +16,19 @@ export const TaskExecStrategyMap = {
   }), //定时执行
 };
 
-interface IProps {}
+interface IProps {
+  projectId?: number;
+}
 
-const TaskManaerPage = () => {
+const TaskManaerPage = (props) => {
+  const { projectId } = props;
   return (
     <>
       <div className={styles.task}>
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content />
+        <Content projectId={projectId} />
       </div>
     </>
   );

@@ -1,5 +1,5 @@
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
-import type { CycleTaskDetail, TaskOperationType } from '@/d.ts';
+import type { CycleTaskDetail, TaskOperationType, IDataArchiveJobParameters } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
@@ -13,7 +13,7 @@ import VariableConfig from './VariableConfig';
 const { Panel } = Collapse;
 
 interface IProps {
-  task: CycleTaskDetail;
+  task: CycleTaskDetail<IDataArchiveJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
 }

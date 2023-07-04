@@ -207,6 +207,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         sessionId={sessionId}
         data={data}
         connectionMode={connectionMode as ConnectionMode}
+        projectId={projectId}
         setData={setData}
         ref={contentRef}
       />
