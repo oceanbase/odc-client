@@ -14,18 +14,34 @@ export const TaskExecStrategyMap = {
   [TaskExecStrategy.TIMER]: formatMessage({
     id: 'odc.components.TaskManagePage.ScheduledExecution',
   }), //定时执行
+  [TaskExecStrategy.CRON]: formatMessage({
+    id: 'odc.components.TaskManagePage.ScheduledExecution',
+  }), //定时执行
+  [TaskExecStrategy.DAY]: formatMessage({
+    id: 'odc.components.TaskManagePage.ScheduledExecution',
+  }), //定时执行
+  [TaskExecStrategy.MONTH]: formatMessage({
+    id: 'odc.components.TaskManagePage.ScheduledExecution',
+  }), //定时执行
+  [TaskExecStrategy.WEEK]: formatMessage({
+    id: 'odc.components.TaskManagePage.ScheduledExecution',
+  }), //定时执行
+  [TaskExecStrategy.START_NOW]: '立即执行'
 };
 
-interface IProps {}
+interface IProps {
+  projectId?: number;
+}
 
-const TaskManaerPage = () => {
+const TaskManaerPage = (props) => {
+  const { projectId } = props;
   return (
     <>
       <div className={styles.task}>
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content />
+        <Content projectId={projectId} />
       </div>
     </>
   );

@@ -4,10 +4,11 @@ import { EnableRoleSystemPermission } from '@/constant';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import { ResourceContext } from '../../../index';
 import { Button, Drawer, message, Modal, Radio, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   connectionAccessActionMap,
   resourceManagementActionMap,
@@ -24,8 +25,6 @@ interface IProps {
   copyId?: number;
   onClose: () => void;
   handleStatusChange?: (status: boolean, role: IManagerRole, callback: () => void) => void;
-  loadUsers: () => void;
-  loadRoles: () => void;
 }
 
 interface IManagerRoleFormData {
@@ -111,6 +110,7 @@ const FormModal: React.FC<IProps> = (props) => {
   const [data, setData] = useState(isEdit || isCopy ? null : defaultData);
   const [users, setUsers] = useState(null);
   const [isInternal, setInternal] = useState(false);
+  const { loadUsers, loadRoles } = useContext(ResourceContext);
   const formRef = useRef<FormInstance>();
 
   const handleUnifyDataForDetail = (
@@ -208,7 +208,7 @@ const FormModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (editId) {
       loadDetailData(editId);
-      props.loadUsers();
+      loadUsers();
     } else {
       if (visible) {
         setPermissionActiveKey('connectionAccessPermissions');
@@ -224,7 +224,7 @@ const FormModal: React.FC<IProps> = (props) => {
       message.success(
         formatMessage({ id: 'odc.components.FormRoleModal.RoleCreated' }), // 角色创建成功
       );
-      props.loadRoles();
+      loadRoles();
       handleCloseModal();
     } else {
       message.error(
@@ -242,7 +242,7 @@ const FormModal: React.FC<IProps> = (props) => {
       message.success(
         formatMessage({ id: 'odc.components.FormRoleModal.RoleSaved' }), // 角色保存成功
       );
-      props.loadRoles();
+      loadRoles();
       handleCloseModal();
     } else {
       message.error(

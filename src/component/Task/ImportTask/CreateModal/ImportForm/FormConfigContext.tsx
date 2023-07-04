@@ -1,5 +1,5 @@
 import React from 'react';
-import type { IImportDrawerState } from '../index';
+import type { IState as IImportDrawerState } from '../index';
 
 interface IFormContext {
   dfaultConfig?: IImportDrawerState['formData'];

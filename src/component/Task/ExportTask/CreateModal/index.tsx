@@ -221,7 +221,6 @@ class CreateModal extends React.Component<IProps, IState> {
 
   private getDefaultFormData = () => {
     return {
-      connectionId: null,
       databaseId: null,
       executionStrategy: TaskExecStrategy.AUTO,
       taskName: null,

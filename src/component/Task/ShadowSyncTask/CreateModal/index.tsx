@@ -109,6 +109,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
     const isSuccess = await createTask({
       taskType: TaskType.SHADOW,
       projectId,
+      databaseId: data.databaseId,
       executionStrategy: data.executionStrategy,
       executionTime:
         data.executionStrategy === TaskExecStrategy.TIMER ? data.executionTime : undefined,
@@ -117,7 +118,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       description: data.description,
       parameters: {
         errorStrategy: data.errorStrategy,
-        connectionId,
+        databaseId: data.databaseId,
         schemaName: data.schemaName,
         comparingTaskId: data.shadowAnalysisData?.id,
       },
@@ -207,6 +208,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         sessionId={sessionId}
         data={data}
         connectionMode={connectionMode as ConnectionMode}
+        projectId={projectId}
         setData={setData}
         ref={contentRef}
       />

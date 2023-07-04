@@ -87,6 +87,7 @@ export interface IMockFormColumn {
 
 export interface IMockFormData {
   connectionId: number;
+  databaseId: number;
   databaseName: string;
   executionStrategy: TaskExecStrategy;
   executionTime?: number;

@@ -89,7 +89,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   }
                   setConfirmLoading(true);
                   const {
-                    connectionId,
                     databaseName,
                     databaseId,
                     executionStrategy,
@@ -99,7 +98,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   const serverData = converFormToServerData(rest as any, dbMode, databaseName);
 
                   const isSuccess = await createTask({
-                    connectionId,
                     projectId,
                     databaseId,
                     executionStrategy,

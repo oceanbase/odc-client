@@ -14,14 +14,17 @@ import type {
   IConnectionPartitionPlan,
   ICycleSubTaskRecord,
   IPartitionPlanParams,
+  CycleTaskDetail,
+  IAlterScheduleTaskParams,
+  IDataArchiveJobParameters,
   IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
   TaskRecord,
+  ICycleTaskRecord
 } from '@/d.ts';
 import {
   CommonTaskLogType,
-  IAlterScheduleTaskParams,
   TaskFlowNodeType,
   TaskRecordParameters,
   TaskStatus,
@@ -32,7 +35,7 @@ import TaskTools from './component/ActionBar';
 import { DataArchiveTaskContent } from './DataArchiveTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
 import { TaskDetailType } from './interface';
-import PartitionTaskContent from './PartitionTask';
+import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 
@@ -80,7 +83,7 @@ const taskContentMap = {
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
   const { type, visible, detailId, partitionPlan } = props;
-  const [task, setTask] = useState<TaskDetail<TaskRecordParameters>>(null);
+  const [task, setTask] = useState<TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>>(null);
   const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
@@ -121,11 +124,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   } else if (task?.type === TaskType.DATA_ARCHIVE) {
     taskContent = (
       <DataArchiveTaskContent
-        task={task as TaskDetail<IPartitionPlanParams>}
-        result={result}
+        task={task as CycleTaskDetail<IDataArchiveJobParameters>}
         hasFlow={hasFlow}
-        partitionPlans={partitionPlan?.tablePartitionPlans}
-        onPartitionPlansChange={handlePartitionPlansChange}
       />
     );
   } else if (task?.type === TaskType.SQL_PLAN) {
@@ -356,6 +356,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   return (
     <CommonDetailModal
       {...modalProps}
+      // @ts-ignore
       task={task}
       hasFlow={hasFlow}
       onClose={onClose}

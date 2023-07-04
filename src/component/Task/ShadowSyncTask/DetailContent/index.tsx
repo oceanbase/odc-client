@@ -5,7 +5,7 @@ import {
   ShadowTableSyncTaskResult,
 } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import StructAnalysisResult from '@/component/Task/ShadowSyncTask/CreateModal/StructConfigPanel/StructAnalysisResult';
-import { TaskDetail, TaskExecStrategy } from '@/d.ts';
+import { TaskDetail, TaskExecStrategy, ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { Spin } from 'antd';
@@ -32,9 +32,11 @@ const ErrorStrategyText = {
 function StructAnalysisWrap({
   data,
   comparingTaskId,
+  connectionMode
 }: {
   data: ShadowTableSyncTaskResult;
   comparingTaskId: string;
+  connectionMode: ConnectionMode;
 }) {
   const [result, setResult] = useState<IShadowSyncAnalysisResult>(null);
   async function getResult() {
@@ -60,7 +62,7 @@ function StructAnalysisWrap({
       </div>
     );
   }
-  return <StructAnalysisResult data={result} resultData={data} />;
+  return <StructAnalysisResult connectionMode={connectionMode} data={result} resultData={data} />;
 }
 
 export function getItems(
@@ -77,6 +79,7 @@ export function getItems(
     return [];
   }
   const maxRiskLevel = task?.maxRiskLevel;
+  const connectionMode = task?.connection?.dbMode;
   const riskItem: [string, string] = [
     formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
     formatMessage(
@@ -169,7 +172,7 @@ export function getItems(
         id: 'odc.component.DetailModal.shadowSync.StructuralAnalysis',
       }), //结构分析
       sectionRender: (task) => {
-        return <StructAnalysisWrap comparingTaskId={parameters.comparingTaskId} data={result} />;
+        return <StructAnalysisWrap connectionMode={connectionMode} comparingTaskId={parameters.comparingTaskId} data={result} />;
       },
       textItems: [],
     },
