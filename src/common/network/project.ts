@@ -1,4 +1,4 @@
-import { IResponseData } from '@/d.ts';
+import { IResponseData, IUserSummary } from '@/d.ts';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import request from '@/util/request';
 
@@ -106,4 +106,10 @@ export async function addProjectMember(params: {
   });
 
   return !!res?.data;
+}
+
+export async function getUserSummaryList(): Promise<IResponseData<IUserSummary>> {
+  const res = await request.get(`/api/v2/iam/users/basicInfo`);
+
+  return res?.data;
 }
