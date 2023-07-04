@@ -8,12 +8,13 @@ import {
   ConnectionMode,
   CreateTaskRecord,
   SQLContentType,
-  SQLPlanTriggerStrategy,
+  TaskExecStrategy,
   TaskOperationType,
   TaskPageScope,
   TaskPageType,
   TaskStatus,
   TaskType,
+  ISqlPlayJobParameters
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -80,7 +81,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const isEdit = !!SQLPlanEditId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {
-    const data = await getCycleTaskDetail(editId);
+    const data = await getCycleTaskDetail<ISqlPlayJobParameters>(editId);
     const {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
@@ -115,7 +116,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.setFieldsValue(formData);
     crontabRef.current.setValue({
       mode:
-        triggerStrategy === SQLPlanTriggerStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,
       hour: hours,
@@ -251,7 +252,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const {
-          connectionId,
           databaseId,
           sqlContentType,
           sqlContent,
@@ -320,7 +320,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         }
 
         const data = {
-          connectionId,
           projectId,
           databaseId,
           taskType: TaskType.ALTER_SCHEDULE,

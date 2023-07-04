@@ -5,12 +5,13 @@ import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/inte
 import {
   CreateTaskRecord,
   ITable,
-  SQLPlanTriggerStrategy,
   TaskExecStrategy,
   TaskOperationType,
   TaskPageScope,
   TaskPageType,
   TaskType,
+  IDataArchiveJobParameters,
+  ICycleTaskTriggerConfig
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -80,7 +81,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [formData, setFormData] = useState(null);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [crontab, setCrontab] = useState(null);
+  const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
@@ -100,7 +101,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { dataArchiveVisible, SQLPlanEditId } = modalStore;
   const isEdit = !!SQLPlanEditId;
   const loadEditData = async (editId: number) => {
-    const data = await getCycleTaskDetail(editId);
+    const data = await getCycleTaskDetail<IDataArchiveJobParameters>(editId);
     const {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
@@ -114,7 +115,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.setFieldsValue(formData);
     crontabRef.current.setValue({
       mode:
-        triggerStrategy === SQLPlanTriggerStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,
       hour: hours,
@@ -192,7 +193,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const {
           startAt,
-          connectionId,
           databaseId,
           targetDatabase,
           variables,
@@ -214,13 +214,13 @@ const CreateModal: React.FC<IProps> = (props) => {
           },
           triggerConfig: {
             triggerStrategy,
-          },
+          } as ICycleTaskTriggerConfig,
         };
 
         if (triggerStrategy === TaskExecStrategy.TIMER) {
           const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
           parameters.triggerConfig = {
-            triggerStrategy: mode === 'custom' ? 'CRON' : dateType,
+            triggerStrategy: (mode === 'custom' ? 'CRON' : dateType) as TaskExecStrategy,
             days: dateType === CrontabDateType.weekly ? dayOfWeek : dayOfMonth,
             hours: hour,
             cronExpression: cronString,
@@ -231,7 +231,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           };
         }
         const data = {
-          connectionId,
           databaseId,
           taskType: TaskType.ALTER_SCHEDULE,
           parameters,

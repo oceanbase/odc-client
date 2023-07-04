@@ -5,7 +5,7 @@ import {
   getTaskList,
   getTaskMetaInfo,
 } from '@/common/network/task';
-import type { IMaskPolicy, IResponseData } from '@/d.ts';
+import type { IMaskPolicy, IResponseData, ISqlPlayJobParameters, IDataArchiveJobParameters } from '@/d.ts';
 import {
   ICycleTaskRecord,
   TaskPageScope,
@@ -58,7 +58,7 @@ export class TaskStore {
    * sql 计划列表
    */
   @observable
-  public cycleTasks: IResponseData<ICycleTaskRecord>;
+  public cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 
   /**
    * task page 的 tab
@@ -173,7 +173,7 @@ export class TaskStore {
     size?: number;
   }) => {
     const { type, createdByCurrentUser, approveByCurrentUser } = params;
-    const tasks = await getCycleTaskList(params);
+    const tasks = await getCycleTaskList<ISqlPlayJobParameters | IDataArchiveJobParameters>(params);
     if ((!type && (createdByCurrentUser || approveByCurrentUser)) || type === this.taskPageType) {
       this.cycleTasks = tasks;
     }

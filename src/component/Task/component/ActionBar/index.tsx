@@ -40,12 +40,12 @@ interface IProps {
   settingStore?: SettingStore;
   modalStore?: ModalStore;
   isDetailModal?: boolean;
-  task: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
+  task: Partial<TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>>;
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
   onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord,
+    task: Partial<TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>>,
     status: boolean,
     visible: boolean,
   ) => void;
@@ -179,13 +179,12 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, connection, databaseName, executionStrategy, executionTime, parameters } = task;
+      const { type, databaseId, executionStrategy, executionTime, parameters } = task;
       const res = await createTask({
         taskType: type,
-        connectionId: connection?.id,
+        databaseId,
         executionStrategy,
         executionTime,
-        databaseName,
         parameters,
       });
 
@@ -238,7 +237,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const disableCycleTask = async () => {
-      const { databaseName, connection, id } = task;
+      const { databaseId, id } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.1',
@@ -271,8 +270,7 @@ const ActionBar: React.FC<IProps> = inject(
         centered: true,
         onOk: async () => {
           await createTask({
-            connectionId: connection?.id,
-            databaseName,
+            databaseId,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
               taskId: id,
@@ -284,7 +282,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const enableCycleTask = async () => {
-      const { databaseName, connection, id } = task;
+      const { databaseId, id } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
@@ -317,8 +315,7 @@ const ActionBar: React.FC<IProps> = inject(
         centered: true,
         onOk: async () => {
           await createTask({
-            connectionId: connection?.id,
-            databaseName,
+            databaseId,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
               taskId: id,
@@ -330,10 +327,9 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const stopCycleTask = async () => {
-      const { databaseName, connection, id } = task;
+      const { databaseId, id } = task;
       await createTask({
-        connectionId: connection?.id,
-        databaseName,
+        databaseId,
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
           taskId: id,

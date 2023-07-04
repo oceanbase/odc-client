@@ -270,7 +270,6 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
           title: formatMessage({
             id: 'odc.components.PartitionPolicyTable.PartitionPolicy',
           }), //分区策略
-          enabledReload: false,
         }}
         filterContent={{
           enabledSearch: false,

@@ -108,17 +108,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const handleSubmit = async () => {
       try {
         const values = await form.validateFields();
-        const { connectionId, description } = values;
+        const { description, databaseId } = values;
         // 4.0.0 禁止设置 巡检周期，保留一个默认值：无需巡检
         const inspectTriggerStrategy = IPartitionPlanInspectTriggerStrategy.NONE;
         const params = {
           taskType: TaskType.PARTITION_PLAN,
           description,
-          connectionId,
           projectId,
+          databaseId,
           parameters: {
             connectionPartitionPlan: {
-              connectionId,
+              databaseId,
               inspectEnable: inspectTriggerStrategy !== IPartitionPlanInspectTriggerStrategy.NONE,
               inspectTriggerStrategy,
               tablePartitionPlans: partitionPlans,

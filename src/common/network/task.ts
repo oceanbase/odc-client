@@ -74,7 +74,7 @@ export async function getTaskList<T>(params: {
 /**
  * 查询周期任务列表
  */
-export async function getCycleTaskList(params: {
+export async function getCycleTaskList<T>(params: {
   connectionId?: number[];
   creator?: string;
   databaseName?: string[];
@@ -88,7 +88,7 @@ export async function getCycleTaskList(params: {
   sort?: string;
   page?: number;
   size?: number;
-}): Promise<IResponseData<ICycleTaskRecord>> {
+}): Promise<IResponseData<ICycleTaskRecord<T>>> {
   const res = await request.get('/api/v2/schedule/scheduleConfigs', {
     params,
   });
@@ -110,7 +110,7 @@ export async function getTaskStatus(ids: number[]): Promise<Record<number, TaskS
 /**
  * 查询周期任务详情
  */
-export async function getCycleTaskDetail(id: number): Promise<CycleTaskDetail> {
+export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail<T>> {
   const res = await request.get(`/api/v2/schedule/scheduleConfigs/${id}`);
   return res?.data;
 }

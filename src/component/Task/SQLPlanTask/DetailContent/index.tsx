@@ -1,7 +1,7 @@
 import { SQLContent } from '@/component/SQLContent';
 import { operationTypeMap } from '@/component/Task/component/CommonDetailModal/TaskOperationRecord';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
-import type { CycleTaskDetail, TaskOperationType } from '@/d.ts';
+import type { CycleTaskDetail, TaskOperationType, ISqlPlayJobParameters } from '@/d.ts';
 import { ConnectionMode, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -32,7 +32,7 @@ const CycleTaskLabel = {
 };
 
 interface IProps {
-  task: CycleTaskDetail;
+  task: CycleTaskDetail<ISqlPlayJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
 }
