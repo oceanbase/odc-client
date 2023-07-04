@@ -1,4 +1,4 @@
-import { getDataSourceGroupByProject } from '@/common/network/connection';
+import { getConnectionList, getDataSourceGroupByProject } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
@@ -42,6 +42,14 @@ export default inject('userStore')(
     });
 
     const {
+      data: allDatasourceList,
+      loading: allDatasourceLoading,
+      run: fetchAllDatasource,
+    } = useRequest(getConnectionList, {
+      manual: true,
+    });
+
+    const {
       data: databases,
       loading: databaseLoading,
       run: fetchDatabase,
@@ -61,7 +69,11 @@ export default inject('userStore')(
           selectDatasource: context?.datasourceId,
         });
         if (context?.datasourceMode) {
-          fetchDatasource();
+          fetchAllDatasource({
+            size: 9999,
+            page: 1,
+            minPrivilege: 'update'
+          });
           return;
         }
         if (context?.from === 'datasource') {
@@ -90,7 +102,7 @@ export default inject('userStore')(
           <Form form={form} layout="vertical">
             <Form.Item label="数据源" name={'selectDatasource'}>
               <Select
-                loading={datasourceLoading}
+                loading={allDatasourceLoading}
                 showSearch
                 onChange={(value) => {
                   fetchDatabase(null, value, 1, 9999);
@@ -101,7 +113,7 @@ export default inject('userStore')(
                 optionFilterProp="name"
                 style={{ width: '320px' }}
               >
-                {datasourceList?.contents
+                {allDatasourceList?.contents
                   ?.map((item) => {
                     if (dialectTypes?.length && !dialectTypes.includes(item.dialectType)) {
                       return null;
