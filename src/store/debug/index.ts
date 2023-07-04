@@ -83,7 +83,7 @@ export class Debug {
       config.packageName,
       Debug.getConfigSchema(config),
       config.plType,
-      config.content,
+      config.anonymousBlock,
       config.session,
     );
     if (debugId) {
@@ -143,7 +143,7 @@ export class Debug {
   /**
    * 重新进行调试
    */
-  public async recoverDebug(newParams?: IPLParam[]) {
+  public async recoverDebug(newParams?: IPLParam[], ddl?: string) {
     const oldStatus = this.status;
     try {
       this.status = DebugStatus.RECOVER;
@@ -574,7 +574,7 @@ export class Debug {
     plName: string,
     packageName: string,
     session: SessionStore,
-  ) {
+  ): Promise<string> {
     if (packageName) {
       return (await getPackage(packageName, session?.sessionId, session?.database?.dbName))
         ?.packageBody?.basicInfo?.ddl;

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 // @ts-ignore
 import DisplayTable from '@/component/DisplayTable';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, IPLParam, ParamMode } from '@/d.ts';
+import { ConnectionMode, IFormatPLSchema, IPLParam, ParamMode } from '@/d.ts';
 import type { Debug } from '@/store/debug';
 import { useDebugContext } from '@/store/debug/hooks';
 import { DebugStatus, IDebugFunctionResult } from '@/store/debug/type';
@@ -17,16 +17,18 @@ import Breakpoints from './breakpoints';
 import DebugLog from './DebugLog';
 import DebugVariables from './DebugVariables';
 import styles from './index.less';
+import { IResultData, IResultType } from '../PLPage';
+import { SQLStore } from '@/store/sql';
+import CursorCell from './CursorCell';
 
 const { TabPane } = Tabs;
 
 interface IProps {
   session: SessionStore;
-  type: string;
-  data: any;
+  type: IResultType;
+  data: IResultData;
   resultHeight: number;
-  plSchema: any;
-  sqlStore?: any;
+  plSchema: IFormatPLSchema;
   debug?: Debug;
   removeBreakPoints: (
     points: {
@@ -56,7 +58,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
 
   // 渲染编译结果
   function renderCompileResultPanel() {
-    const { type, data = {}, sqlStore } = props;
+    const { type, data = {} } = props;
     let status = data.COMPILE.status ? 'SUCCESS' : 'FAIL';
     if (status === 'SUCCESS' && data.COMPILE?.statementWarnings) {
       status = 'WARNING';
@@ -122,8 +124,8 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
   // 渲染运行结果
   function renderExecResultPanel() {
     const { resultHeight, type, data = {}, plSchema } = props;
-    const { proName, funName } = plSchema || {};
-    const hasPLName = !!proName || !!funName;
+    const { plType } = plSchema || {};
+    const hasPLName = [PLType.FUNCTION, PLType.PROCEDURE].includes(plType);
     const tabs = [
       {
         name: formatMessage({ id: 'odc.components.PLDebugResultSet.Result' }),
@@ -171,12 +173,24 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
               title: formatMessage({
                 id: 'odc.components.PLDebugResultSet.Value',
               }),
-              render(v) {
+              render(v, record) {
                 const isOracle = session?.connection.dialectType === ConnectionMode.OB_ORACLE;
+                let text;
                 if (v === null || (isOracle && v === '')) {
-                  return <span style={{ color: 'var(--text-color-hint)' }}>(null)</span>;
+                  text = <span style={{ color: 'var(--text-color-hint)' }}>(null)</span>;
+                } else if (record.paramMode === 'OUT') {
+                  text = record.value;
+                } else {
+                  text = v;
                 }
-                return v;
+                return <div className={styles.textFormatter}>
+                  {text}
+                  {record?.dataType?.toLowerCase() === 'sys_refcursor' && (
+                    <div className={styles.more}>
+                      <CursorCell session={session} record={record} />
+                    </div>
+                  )}
+                </div>
               },
             },
           ];
@@ -192,25 +206,12 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
               }
             });
           }
-          if (proName) {
-            data.EXEC instanceof Array &&
-              data.EXEC.map((item) => {
-                paramsValues.push({
-                  ...item,
-                  paramMode: 'OUT',
-                });
-              });
-          } else {
-            data.EXEC?.params instanceof Array &&
-              data.EXEC?.params?.map((p) => {
-                if (p?.paramMode?.toUpperCase().indexOf('OUT') > -1) {
-                  paramsValues.push({
-                    ...p,
-                    paramMode: 'OUT',
-                  });
-                }
-              });
-          }
+          data?.EXEC?.plOutParamList?.forEach(param => {
+            paramsValues.push({
+              ...param,
+              paramMode: 'OUT',
+            });
+          })
 
           const returnValueColumns = [
             {
@@ -229,13 +230,13 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
           ];
 
           const returnValues =
-            data.EXEC && data.EXEC.returnType
+            data?.EXEC?.returnParam
               ? [
-                  {
-                    returnType: data.EXEC.returnType,
-                    returnValue: data.EXEC.returnValue,
-                  },
-                ]
+                {
+                  returnType: data.EXEC.returnParam.dataType,
+                  returnValue: data.EXEC.returnParam.value,
+                },
+              ]
               : [];
 
           return (
@@ -292,7 +293,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
 
   // 渲染调试结果
   function renderDebugResultPanel() {
-    const { data = {}, plSchema, sqlStore } = props;
+    const { data = {}, plSchema } = props;
     console.log('[renderDebugResultPanel]', data);
     const leftTabs = [
       {
@@ -493,4 +494,4 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
   return renderExecResultPanel();
 };
 
-export default inject('sqlStore', 'userStore', 'pageStore')(observer(PLDebugResultSet));
+export default inject('userStore', 'pageStore')(observer(PLDebugResultSet));

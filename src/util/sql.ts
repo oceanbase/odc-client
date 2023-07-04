@@ -1,14 +1,9 @@
-import { ConnectionMode } from '@/d.ts';
+import { PLType } from '@/constant/plType';
+import { ConnectionMode, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
 
 const CHAR_SIZE = 32767;
 
-interface IPLParam {
-  paramName: string;
-  dataType: string;
-  extendedType: boolean;
-  defaultValue: any;
-}
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。
  * @param text 预处理的内容
@@ -50,27 +45,24 @@ BEGIN
 END;`;
 }
 
-export function getPLDebugExecuteSql(values: {
-  params: IPLParam[];
-  proName: string;
-  funName: string;
-  packageName: string;
-  returnType: string;
-}) {
-  const { params = [], proName, funName, packageName } = values;
+export function getPLDebugExecuteSql(plSchema: IFormatPLSchema) {
+  const { plType, function: plfunction, procedure, packageName } = plSchema;
+  const isFunction = PLType.FUNCTION === plType;
+  const params = isFunction ? plfunction?.params : procedure?.params
   const paramString = getParamString(params);
   const namePrefix = packageName ? `"${packageName}".` : '';
-  const funcExpression = `${namePrefix}"${funName ? funName : proName}"(${paramString})`;
+  const callExpr = `${namePrefix}"${isFunction ? plfunction?.funName : procedure?.proName}"(${paramString})`;
   const paramDeclares = getParamDeclares(params);
+  const result = `  result ${getDataType(plfunction?.returnType)};`;
   return [
     'DECLARE',
     '  -- Non-scalar parameters require additional processing',
     `${paramDeclares?.join('\n')}`,
-    funName && `  result ${getDataType(values?.returnType)};`,
+    isFunction && result,
     'BEGIN',
-    funName
-      ? `  -- Call the function\n  result := ${funcExpression};`
-      : `  -- Call the procedure\n  ${funcExpression};`,
+    isFunction
+      ? `  -- Call the function\n  result := ${callExpr};`
+      : `  -- Call the procedure\n  ${callExpr};`,
     'END',
   ]
     .filter(Boolean)
@@ -78,7 +70,7 @@ export function getPLDebugExecuteSql(values: {
 }
 
 export function getParamString(params: IPLParam[]) {
-  return params?.map(({ paramName }) => `${paramName}`)?.join(', ');
+  return params?.map(({ paramName }) => `${paramName} => ${paramName}`)?.join(', ');
 }
 
 export function getDataType(type: string) {
@@ -88,8 +80,8 @@ export function getDataType(type: string) {
 
 export function getParamDeclares(params: IPLParam[]) {
   return params?.map(
-    ({ dataType, paramName, extendedType, defaultValue }) =>
-      `  ${paramName} ${getDataType(dataType)}${!extendedType ? ` := ${defaultValue}` : ''};`,
+    ({ dataType, paramName, defaultValue }) =>
+      `  ${paramName} ${getDataType(dataType)} := ${defaultValue};`,
   );
 }
 
