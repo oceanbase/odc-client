@@ -1,4 +1,4 @@
-import { getConnectionList } from '@/common/network/connection';
+import { getDataSourceGroupByProject } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
@@ -37,7 +37,7 @@ export default inject('userStore')(
       data: datasourceList,
       loading: datasourceLoading,
       run: fetchDatasource,
-    } = useRequest(getConnectionList, {
+    } = useRequest(getDataSourceGroupByProject, {
       manual: true,
     });
 
@@ -61,17 +61,11 @@ export default inject('userStore')(
           selectDatasource: context?.datasourceId,
         });
         if (context?.datasourceMode) {
-          fetchDatasource({
-            page: 1,
-            size: 9999,
-          });
+          fetchDatasource();
           return;
         }
         if (context?.from === 'datasource') {
-          fetchDatasource({
-            page: 1,
-            size: 9999,
-          });
+          fetchDatasource();
           fetchDatabase(null, sessionDatabase?.dataSource?.id, 1, 9999);
         } else {
           fetchProjects(null, 1, 9999);
@@ -134,10 +128,7 @@ export default inject('userStore')(
                   if (e.target.value === 'project') {
                     fetchProjects(null, 1, 9999, false);
                   } else {
-                    fetchDatasource({
-                      page: 1,
-                      size: 9999,
-                    });
+                    fetchDatasource();
                   }
                 }}
                 optionType="button"
