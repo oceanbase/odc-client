@@ -179,10 +179,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, connection, executionStrategy, executionTime, parameters } = task;
+      const { type, databaseId, executionStrategy, executionTime, parameters } = task;
       const res = await createTask({
         taskType: type,
-        connectionId: connection?.id,
+        databaseId,
         executionStrategy,
         executionTime,
         parameters,
@@ -237,7 +237,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const disableCycleTask = async () => {
-      const { databaseName, connection, id } = task;
+      const { databaseId, id } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.1',
@@ -270,7 +270,7 @@ const ActionBar: React.FC<IProps> = inject(
         centered: true,
         onOk: async () => {
           await createTask({
-            connectionId: connection?.id,
+            databaseId,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
               taskId: id,
@@ -282,7 +282,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const enableCycleTask = async () => {
-      const { databaseName, connection, id } = task;
+      const { databaseId, id } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
@@ -315,7 +315,7 @@ const ActionBar: React.FC<IProps> = inject(
         centered: true,
         onOk: async () => {
           await createTask({
-            connectionId: connection?.id,
+            databaseId,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
               taskId: id,
@@ -327,9 +327,9 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const stopCycleTask = async () => {
-      const { databaseName, connection, id } = task;
+      const { databaseId, id } = task;
       await createTask({
-        connectionId: connection?.id,
+        databaseId,
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
           taskId: id,

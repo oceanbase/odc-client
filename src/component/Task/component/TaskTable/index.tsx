@@ -12,7 +12,7 @@ import StatusLabel, { status } from '@/component/Task/component/Status';
 import { TimeOptions } from '@/component/TimeSelect';
 import UserPopover from '@/component/UserPopover';
 import type { ICycleTaskTriggerConfig, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import { SQLPlanTriggerStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
@@ -36,7 +36,7 @@ const { RangePicker } = DatePicker;
 
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
-  return triggerStrategy !== SQLPlanTriggerStrategy.CRON
+  return triggerStrategy !== TaskExecStrategy.CRON
     ? getCronExecuteCycleByObject(triggerStrategy as any, {
         hour: hours,
         dayOfWeek: days,

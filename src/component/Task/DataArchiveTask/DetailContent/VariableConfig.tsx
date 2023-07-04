@@ -7,17 +7,20 @@ const columns = [
     title: '变量名',
     ellipsis: true,
     width: 190,
+    render: (name) => name || '-'
   },
   {
     dataIndex: 'format',
     title: '时间格式',
     ellipsis: true,
     width: 150,
+    render: (name) => name || '-'
   },
   {
     dataIndex: 'opration',
     title: '时间运算',
     width: 160,
+    render: (name) => name || '-'
   },
 ];
 

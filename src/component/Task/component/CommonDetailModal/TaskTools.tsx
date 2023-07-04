@@ -106,11 +106,11 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, connection, databaseName, executionStrategy, executionTime, parameters } =
+      const { type, databaseId, executionStrategy, executionTime, parameters } =
         record;
       const res = await createTask({
         taskType: type,
-        connectionId: connection?.id,
+        databaseId,
         executionStrategy,
         executionTime,
         parameters,

@@ -84,7 +84,6 @@ export async function createBatchExportTask(formData: ExportFormData) {
   // 单表导入需要传递表名
   const ret = await request.post('/api/v2/flow/flowInstances/', {
     data: {
-      connectionId: formData?.connectionId,
       projectId: formData?.projectId,
       databaseName: formData?.databaseName,
       databaseId: formData?.databaseId,
@@ -175,7 +174,6 @@ export async function createBatchImportTask(
   }
   const ret = await request.post('/api/v2/flow/flowInstances/', {
     data: {
-      connectionId: formData?.connectionId,
       projectId: formData?.projectId,
       databaseName: formData?.databaseName,
       databaseId: formData?.databaseId,
