@@ -27,7 +27,7 @@
     "build-main-prod": "cross-env NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=production webpack --config ./build/webpack.main.prod.config.js",
     "build-main-dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=development webpack -w --config ./build/webpack.main.config.js",
     "prepack": "node ./scripts/clientDependencies/index.js",
-    "precommit": "npm run type-check && npm run lint-staged",
+    "precommit": "npm run type-check && lint-staged",
     "pack-client:all": "node ./scripts/client/build.js all",
     "pack-client:mac": "node ./scripts/client/build.js mac",
     "pack-client:linux_x86": "node ./scripts/client/build.js linux_x86",
