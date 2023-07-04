@@ -321,7 +321,7 @@ const List: React.FC<IProps> = forwardRef(function (
               </span>
             }
             icon={<img src={window.publicPath + 'img/graphic_empty.png'} style={{ height: 132 }} />}
-            extra={[<TitleButton key="titleButton" />]}
+            extra={[<TitleButton onReload={() => context.reloadTable()} key="titleButton" />]}
           />
         )}
       </div>
