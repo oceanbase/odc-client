@@ -15,6 +15,7 @@ import type { IAutoAuthRule, IResponseData } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
+import { ResourceContext } from '../index';
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Switch } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
@@ -42,6 +43,8 @@ interface IState {
 
 class AutoAuthPage extends React.PureComponent<IProps, IState> {
   private tableRef = React.createRef<ITableInstance>();
+
+  static contextType = ResourceContext;
 
   readonly state = {
     editId: null,
@@ -312,7 +315,9 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
     this.openFormModal();
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.context.loadConnections();
+  }
 
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, maskingRules } = this.state;

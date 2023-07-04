@@ -1,10 +1,23 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { getRoleList, getUserList } from '@/common/network/manager';
+import { getConnectionList } from '@/common/network/connection';
 import { IPageType } from '@/d.ts/_index';
-import React from 'react';
+import type { IManagerRole, IManagerUser } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import React, { createContext, useState } from 'react';
 import { history, useParams } from 'umi';
 import Autoauth from './Autoauth';
 import Role from './Role';
 import User from './User';
+
+export const ResourceContext = createContext<{
+  roles: IManagerRole[];
+  users: IManagerUser[];
+  publicConnections: IDatasource[]; 
+  loadRoles: () => void;
+  loadUsers: () => void;
+  loadConnections: () => void;
+}>(null);
 
 interface IProps {}
 
@@ -37,11 +50,29 @@ const tabs = [
 
 const Index: React.FC<IProps> = function () {
   const params = useParams<{ id: string; page: IPageType }>();
+  const [roles, setRoles] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [publicConnections, setPublicConnections] = useState([]);
   const { id, page } = params;
   const Component = Pages[page].component;
 
   const handleChange = (key: string) => {
     history.push(`/auth/${key}`);
+  };
+
+  const loadRoles = async () => {
+    const roles = await getRoleList();
+    setRoles(roles?.contents);
+  };
+
+  const loadUsers = async () => {
+    const users = await getUserList();
+    setUsers(users?.contents);
+  };
+
+  const loadConnections = async () => {
+    const res = await getConnectionList({});
+    setPublicConnections(res?.contents);
   };
 
   return (
@@ -54,7 +85,16 @@ const Index: React.FC<IProps> = function () {
       tabActiveKey={page}
       onTabChange={handleChange}
     >
-      <Component id={id} />
+      <ResourceContext.Provider value={{
+        roles,
+        users,
+        publicConnections,
+        loadRoles,
+        loadUsers,
+        loadConnections
+      }}>
+        <Component id={id} />
+      </ResourceContext.Provider>
     </PageContainer>
   );
 };

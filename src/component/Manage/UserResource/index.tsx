@@ -72,7 +72,8 @@ const getDefaultColumns = (roles: IManagerRole[]) => {
         return record?.roleIds?.includes(value) || (!value && !record.roleIds?.length);
       },
       render: (roleIds) => {
-        return <RoleList roleIds={roleIds} isShowIcon />;
+        const _roles = useRoleListByIds(roles, roleIds);
+        return <RoleList roles={_roles} isShowIcon />;
       },
     },
 
@@ -98,11 +99,12 @@ export const CommonUserResource: React.FC<{
   getColumns?: (roles: IManagerRole[]) => any[];
   authorizedResource?: string;
   roleIds?: number[];
+  roles: IManagerRole[];
 }> = (props) => {
-  const { id, authorizedResource, roleIds, getColumns } = props;
+  const { id, authorizedResource, roleIds, roles, getColumns } = props;
   const [userInfo, setUserInfo] = useState([]);
   const [allRoleIds, setAllRoleIds] = useState([]);
-  const allRoles = useRoleListByIds(allRoleIds);
+  const allRoles = useRoleListByIds(roles, allRoleIds);
   allRoles.unshift({ name: <EmptyLabel />, id: 0 } as any);
   const columns = getColumns ? getColumns(allRoles) : getDefaultColumns(allRoles);
 

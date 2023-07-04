@@ -1,4 +1,4 @@
-import { getRoleDetail, getRoleList, getUserList, setRoleEnable } from '@/common/network/manager';
+import { getRoleDetail, setRoleEnable } from '@/common/network/manager';
 import { Acess, actionTypes, canAcess, systemUpdatePermissions } from '@/component/Acess';
 import Action from '@/component/Action';
 import { EmptyLabel } from '@/component/CommonFilter';
@@ -10,7 +10,7 @@ import type {
 } from '@/component/CommonTable/interface';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
-import type { IManagerRole, IManagerUser } from '@/d.ts';
+import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -19,12 +19,11 @@ import type { FixedType } from 'rc-table/lib/interface';
 import React from 'react';
 import DetailContent, { PermissionTypes } from './component/DetailContent';
 import FormModal from './component/FormModal';
+import { ResourceContext } from '../index';
 import styles from './index.less';
 
 interface IProps {}
 interface IState {
-  roles: IManagerRole[];
-  users: IManagerUser[];
   searchValue: string;
   editId: number;
   currentRole: IManagerRole;
@@ -60,9 +59,9 @@ const authTypeFilter = [
 ];
 
 class RolePage extends React.PureComponent<IProps, IState> {
+  static contextType = ResourceContext;
+
   readonly state = {
-    roles: [],
-    users: [],
     searchValue: '',
     editId: null,
     detailId: null,
@@ -74,20 +73,6 @@ class RolePage extends React.PureComponent<IProps, IState> {
     filters: null,
     sorter: null,
     loading: true,
-  };
-
-  loadRoles = async () => {
-    const roles = await getRoleList();
-    this.setState({
-      roles: roles?.contents,
-    });
-  };
-
-  loadUsers = async () => {
-    const users = await getUserList();
-    this.setState({
-      users: users?.contents,
-    });
   };
 
   private getPageColumns = () => {
@@ -320,17 +305,18 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private loadDependentData() {
-    this.loadUsers();
+    this.context.loadUsers();
+    this.context.loadConnections();
   }
 
   async componentDidMount() {
     this.loadDependentData();
-    this.loadRoles();
+    this.context.loadRoles();
   }
 
   private handleCloseAndReload = () => {
     this.handleCloseDetailModal();
-    this.loadRoles();
+    this.context.loadRoles();
   };
 
   private handleFilterAndSort = (data: IManagerRole[]) => {
@@ -435,9 +421,9 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   render() {
-    const { formModalVisible, detailModalVisible, editId, detailId, copyId, loading, roles } =
+    const { formModalVisible, detailModalVisible, editId, detailId, copyId } =
       this.state;
-    // const { roles } = this.context;
+    const { roles } = this.context;
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.role,
       action: actionTypes.create,
@@ -475,7 +461,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                 }
               : null
           }
-          onLoad={this.loadRoles}
+          onLoad={this.context.loadRoles}
           onChange={this.handleChange}
           tableProps={{
             columns: this.getPageColumns(),
@@ -483,7 +469,6 @@ class RolePage extends React.PureComponent<IProps, IState> {
             rowKey: 'id',
           }}
         />
-
         <FormModal
           editId={editId}
           copyId={copyId}
@@ -495,12 +480,9 @@ class RolePage extends React.PureComponent<IProps, IState> {
               editId: null,
               copyId: null,
             });
-            this.loadRoles();
+            this.context.loadRoles();
           }}
-          loadUsers={this.loadUsers}
-          loadRoles={this.loadRoles}
         />
-
         <CommonDetailModal
           width={720}
           visible={detailModalVisible}
@@ -534,6 +516,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             <DetailContent
               activeKey={key}
               data={data}
+              roles={roles}
               handleCloseAndReload={this.handleCloseAndReload}
             />
           )}

@@ -64,7 +64,7 @@ interface ICommonIDEProps {
    * 是否添加边框
    */
   bordered?: boolean;
-  session: SessionStore;
+  session?: SessionStore;
 }
 interface ICommonIDEState {
   resultHeight: number;

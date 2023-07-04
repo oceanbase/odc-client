@@ -11,6 +11,8 @@ import {
   TaskPageScope,
   TaskPageType,
   TaskType,
+  IDataArchiveJobParameters,
+  ICycleTaskTriggerConfig
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -80,7 +82,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [formData, setFormData] = useState(null);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [crontab, setCrontab] = useState(null);
+  const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
@@ -100,7 +102,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { dataArchiveVisible, SQLPlanEditId } = modalStore;
   const isEdit = !!SQLPlanEditId;
   const loadEditData = async (editId: number) => {
-    const data = await getCycleTaskDetail(editId);
+    const data = await getCycleTaskDetail<IDataArchiveJobParameters>(editId);
     const {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
@@ -214,13 +216,13 @@ const CreateModal: React.FC<IProps> = (props) => {
           },
           triggerConfig: {
             triggerStrategy,
-          },
+          } as ICycleTaskTriggerConfig,
         };
 
         if (triggerStrategy === TaskExecStrategy.TIMER) {
           const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
           parameters.triggerConfig = {
-            triggerStrategy: mode === 'custom' ? 'CRON' : dateType,
+            triggerStrategy: (mode === 'custom' ? 'CRON' : dateType) as SQLPlanTriggerStrategy,
             days: dateType === CrontabDateType.weekly ? dayOfWeek : dayOfMonth,
             hours: hour,
             cronExpression: cronString,

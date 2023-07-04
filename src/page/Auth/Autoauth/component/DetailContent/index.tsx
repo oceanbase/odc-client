@@ -7,8 +7,9 @@ import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { isNull } from 'lodash';
-import React from 'react';
+import React, { useContext } from 'react';
 import { actionLabelMap } from '../..';
+import { ResourceContext } from '../../../index';
 import styles from '../../index.less';
 import { operationOptions } from '../FormModal/conditionSelect';
 import { connectionAccessActionOptions, connectionAccessTypeOptions } from '../FormModal/index';
@@ -80,14 +81,14 @@ const DetailContent: React.FC<{
     conditions,
     description,
   } = data;
-  // const { publicConnections } = useContext(ManageContext);
-  const { publicConnections } = {};
+  const { roles: _roles, publicConnections } = useContext(ResourceContext);
+
   const roleIds = actions
     ?.filter((item) => item.action === 'BindRole')
     ?.map((item) => item?.arguments?.roleId);
-  const roles = useRoleListByIds(roleIds);
+  const roles = useRoleListByIds(_roles, roleIds);
   const columns = getColumns({
-    [IManagerResourceType.public_connection]: publicConnections?.contents,
+    [IManagerResourceType.public_connection]: publicConnections,
   });
   const actionsLabel = [];
   const hasRole = actions?.some((item) => item.action === 'BindRole');

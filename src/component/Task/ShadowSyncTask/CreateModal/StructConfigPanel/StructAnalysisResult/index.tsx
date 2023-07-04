@@ -1,7 +1,7 @@
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
-import { ConnectionMode, SchemaComparingResult } from '@/d.ts';
+import { SchemaComparingResult, ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Tabs } from 'antd';
 import { useMemo, useRef, useState } from 'react';

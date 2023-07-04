@@ -34,7 +34,7 @@ interface IProps {
   result?: ITaskResult;
   onReloadList: () => void;
   onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord,
+    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     status: boolean,
     visible: boolean,
   ) => void;
@@ -113,7 +113,6 @@ const ActionBar: React.FC<IProps> = inject(
         connectionId: connection?.id,
         executionStrategy,
         executionTime,
-        databaseName,
         parameters,
       });
 

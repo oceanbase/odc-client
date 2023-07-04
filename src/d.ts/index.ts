@@ -1996,7 +1996,32 @@ export interface ITaskResult {
   exportZipFilePath?: string;
 }
 
-export interface ICycleTaskRecord {
+export interface IDataArchiveJobParameters {
+  deleteAfterMigration: boolean;
+  name: string;
+  sourceDatabaseId: number;
+  targetDataBaseId: number;
+  tables: {
+    conditionExpression: string;
+    tableName: string;
+  }[];
+  variables: {
+    name: string;
+    pattern: string;
+  }[]
+}
+
+export interface ISqlPlayJobParameters {
+  delimiter: string;
+  errorStrategy: string;
+  queryLimit: number;
+  timeoutMillis: number;
+  sqlContent?: string;
+  sqlObjectIds?: string[];
+  sqlObjectNames?: string[];
+}
+
+export interface ICycleTaskRecord <T>{
   id: number;
   type: TaskType;
   databaseName: string;
@@ -2012,15 +2037,8 @@ export interface ICycleTaskRecord {
   nextFireTimes: number[];
   status: TaskStatus;
   allowConcurrent: boolean;
-  jobParameters: {
-    delimiter: string;
-    errorStrategy: string;
-    queryLimit: number;
-    timeoutMillis: number;
-    sqlContent?: string;
-    sqlObjectIds?: string[];
-    sqlObjectNames?: string[];
-  };
+  jobParameters: T;
+  nodeList?: ITaskFlowNode[];
   triggerConfig?: ICycleTaskTriggerConfig;
   connection: {
     id: number;
@@ -2159,10 +2177,11 @@ export interface IPartitionPlanParams {
 }
 
 export interface ICycleTaskTriggerConfig {
-  cronExpression: string;
-  days: number[];
-  hours: number[];
-  triggerStrategy: SQLPlanTriggerStrategy;
+  cronExpression?: string;
+  days?: number[];
+  hours?: number[];
+  startAt?: number;
+  triggerStrategy?: SQLPlanTriggerStrategy;
 }
 
 export interface ISQLPlanTaskParams {
@@ -2294,7 +2313,7 @@ export interface ITaskFlowNode {
 
 export type TaskDetail<P> = TaskRecord<P>;
 
-export type CycleTaskDetail = ICycleTaskRecord;
+export type CycleTaskDetail<T> = ICycleTaskRecord<T>;
 
 export type DataArchiveTaskDetail = IDataArchiveTaskRecord;
 

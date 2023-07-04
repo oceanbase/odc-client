@@ -3,12 +3,13 @@ import { IResourceOption, ResourceSelector } from '@/component/Manage/ResourceSe
 import { EnableRoleSystemPermission } from '@/constant';
 import appConfig from '@/constant/appConfig';
 import { IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
+import { ResourceContext } from '../../../index';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Checkbox, Form, Space, Tabs, Tooltip, Typography } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isUndefined } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   connectionAccessActionOptions,
   connectionAccessTypeOptions,
@@ -61,19 +62,13 @@ const FormResourceSelector: React.FC<{
   } = props;
   const { permissionType: initPermissionType = [], systemPermissions = {} } = initialValue ?? {};
   const [permissionType, setPermissionType] = useState([]);
-  // const { publicConnections, resourceGroups, roles, users } = useContext(ManageContext);
-  const { publicConnections, resourceGroups, roles, users } = {};
+  const { publicConnections, roles, users } = useContext(ResourceContext);
   const [connectionAccessOptionsMap, setConnectionAccessOptionsMap] = useState<{
     [key: string]: IResourceOption[];
   }>({
     [IManagerResourceType.public_connection]: getOptions(
       IManagerResourceType.public_connection,
-      publicConnections?.contents,
-    ),
-
-    [IManagerResourceType.resource_group]: getOptions(
-      IManagerResourceType.resource_group,
-      resourceGroups?.contents,
+      publicConnections,
     ),
   });
 
@@ -82,15 +77,9 @@ const FormResourceSelector: React.FC<{
   }>({
     [IManagerResourceType.public_connection]: getOptions(
       IManagerResourceType.public_connection,
-      publicConnections?.contents,
+      publicConnections,
     ),
-
-    [IManagerResourceType.resource_group]: getOptions(
-      IManagerResourceType.resource_group,
-      resourceGroups?.contents,
-    ),
-
-    [IManagerResourceType.user]: getOptions(IManagerResourceType.user, users?.contents),
+    [IManagerResourceType.user]: getOptions(IManagerResourceType.user, users),
     [IManagerResourceType.role]: getOptions(IManagerResourceType.role, roles),
   });
 
