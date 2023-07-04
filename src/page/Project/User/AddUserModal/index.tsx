@@ -1,5 +1,4 @@
-import { getUserList } from '@/common/network/manager';
-import { addProjectMember } from '@/common/network/project';
+import { addProjectMember, getUserSummaryList } from '@/common/network/project';
 import HelpDoc from '@/component/helpDoc';
 import SelectTransfer from '@/component/SelectTransfer';
 import { IManagerUser } from '@/d.ts';
@@ -24,17 +23,14 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
     data: userList,
     run,
     loading,
-  } = useRequest(getUserList, {
+  } = useRequest(getUserSummaryList, {
     manual: true,
   });
   const addedUsers = new Set(project?.members?.map((m) => m.id) || []);
 
   useEffect(() => {
     if (visible) {
-      run({
-        page: 1,
-        size: 999999,
-      });
+      run();
       form.resetFields();
     }
   }, [visible]);

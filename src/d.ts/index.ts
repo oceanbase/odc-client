@@ -18,6 +18,13 @@ export interface IUser {
   organizationId: number;
 }
 
+export interface IUserSummary {
+  id: number;
+  name: string;
+  accountName: string;
+  organizationId: number;
+}
+
 export interface IOrganization {
   id: number;
   createTime: string;
@@ -2008,7 +2015,7 @@ export interface IDataArchiveJobParameters {
   variables: {
     name: string;
     pattern: string;
-  }[]
+  }[];
 }
 
 export interface ISqlPlayJobParameters {
@@ -2021,7 +2028,7 @@ export interface ISqlPlayJobParameters {
   sqlObjectNames?: string[];
 }
 
-export interface ICycleTaskRecord <T>{
+export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
   databaseName: string;

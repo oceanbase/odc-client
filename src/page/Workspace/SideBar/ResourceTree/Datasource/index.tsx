@@ -3,7 +3,7 @@ import { Empty, Input, Popover, Spin, Tree, TreeDataNode } from 'antd';
 import ResourceTree from '..';
 import ResourceLayout from '../Layout';
 
-import { getConnectionList } from '@/common/network/connection';
+import { getDataSourceGroupByProject } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
@@ -16,9 +16,7 @@ import OBSvg from '@/svgr/source_ob.svg';
 import { toNumber } from 'lodash';
 
 export default forwardRef(function DatasourceTree(props, ref) {
-  const { data, loading, run } = useRequest(getConnectionList, {
-    defaultParams: [{ size: 9999, page: 1 }],
-  });
+  const { data, loading, run } = useRequest(getDataSourceGroupByProject);
 
   const [searchKey, setSearchKey] = useState('');
 
@@ -36,7 +34,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
         reload() {
           setSelectKeys([]);
           context?.setSelectDatasourceId(null);
-          return run({ size: 9999, page: 1 });
+          return run();
         },
       };
     },

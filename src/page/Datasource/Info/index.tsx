@@ -1,5 +1,5 @@
-import { syncDatasource } from '@/common/network/connection';
-import { deleteDatabase, listDatabases } from '@/common/network/database';
+import { getDataSourceManageDatabase, syncDatasource } from '@/common/network/connection';
+import { deleteDatabase } from '@/common/network/database';
 import Action from '@/component/Action';
 import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
@@ -33,7 +33,7 @@ const Info: React.FC<IProps> = ({ id }) => {
   const loadData = async (pageSize, current) => {
     lastParams.current.pageSize = pageSize;
     lastParams.current.current = current;
-    const res = await listDatabases(null, parseInt(id), current, pageSize);
+    const res = await getDataSourceManageDatabase(parseInt(id));
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
