@@ -369,7 +369,6 @@ class CreateModal extends React.Component<IProps, IState> {
   private getDefaultFormData = () => {
     return {
       useSys: false,
-      connectionId: null,
       databaseId: null,
       executionStrategy: TaskExecStrategy.AUTO,
       fileType: IMPORT_TYPE.ZIP,

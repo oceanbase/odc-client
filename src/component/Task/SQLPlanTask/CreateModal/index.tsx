@@ -8,7 +8,7 @@ import {
   ConnectionMode,
   CreateTaskRecord,
   SQLContentType,
-  SQLPlanTriggerStrategy,
+  TaskExecStrategy,
   TaskOperationType,
   TaskPageScope,
   TaskPageType,
@@ -116,7 +116,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.setFieldsValue(formData);
     crontabRef.current.setValue({
       mode:
-        triggerStrategy === SQLPlanTriggerStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,
       hour: hours,
@@ -252,7 +252,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const {
-          connectionId,
           databaseId,
           sqlContentType,
           sqlContent,
@@ -321,7 +320,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         }
 
         const data = {
-          connectionId,
           projectId,
           databaseId,
           taskType: TaskType.ALTER_SCHEDULE,

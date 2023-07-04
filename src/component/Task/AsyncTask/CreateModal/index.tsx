@@ -185,7 +185,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const {
-          connectionId,
           databaseId,
           databaseName,
           executionStrategy,
@@ -256,7 +255,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           delete parameters.rollbackSqlObjectNames;
         }
         const data = {
-          connectionId,
           projectId,
           databaseName,
           databaseId,

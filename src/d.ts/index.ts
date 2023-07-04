@@ -1724,7 +1724,6 @@ export enum EXPORT_CONTENT {
 }
 
 export interface ExportFormData {
-  connectionId: number;
   projectId?: number;
   databaseName?: string;
   databaseId: number;
@@ -1807,7 +1806,6 @@ export enum IMPORT_CONTENT {
 export interface ImportFormData {
   tableName?: string;
   databaseId: number;
-  connectionId: number;
   projectId?: number;
   databaseName?: string;
   executionStrategy: TaskExecStrategy;
@@ -1938,7 +1936,7 @@ export interface TaskRecord<P> {
     name: string;
     dbMode: ConnectionMode;
   };
-
+  databaseId: number;
   databaseName: string;
   creator: {
     id: number;
@@ -2000,7 +1998,9 @@ export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
   name: string;
   sourceDatabaseId: number;
+  sourceDatabaseName?: string;
   targetDataBaseId: number;
+  targetDatabaseName?: string;
   tables: {
     conditionExpression: string;
     tableName: string;
@@ -2132,7 +2132,6 @@ export interface IAsyncTaskResultSet {
 export interface ITaskLog {}
 
 export interface CreateTaskRecord {
-  connectionId: number;
   projectId?: number;
   databaseId: number;
   taskType: TaskType;
@@ -2181,7 +2180,7 @@ export interface ICycleTaskTriggerConfig {
   days?: number[];
   hours?: number[];
   startAt?: number;
-  triggerStrategy?: SQLPlanTriggerStrategy;
+  triggerStrategy?: TaskExecStrategy;
 }
 
 export interface ISQLPlanTaskParams {
@@ -2242,7 +2241,7 @@ export interface IDataArchiveTaskParams {
 }
 
 export interface IConnectionPartitionPlan {
-  connectionId: number;
+  databaseId: number;
   flowInstanceId?: number;
   inspectEnable: boolean;
   inspectTriggerStrategy: string;
@@ -2255,6 +2254,10 @@ export enum TaskExecStrategy {
   TIMER = 'TIMER',
   START_NOW = 'START_NOW',
   START_AT = 'START_AT',
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  CRON = 'CRON',
 }
 
 export enum TaskFlowNodeType {
@@ -2270,13 +2273,6 @@ export enum TaskOperationType {
   PAUSE = 'PAUSE',
   TERMINATION = 'TERMINATION',
   RESUME = 'RESUME',
-}
-
-export enum SQLPlanTriggerStrategy {
-  DAY = 'DAY',
-  WEEK = 'WEEK',
-  MONTH = 'MONTH',
-  CRON = 'CRON',
 }
 
 export enum IFlowTaskType {

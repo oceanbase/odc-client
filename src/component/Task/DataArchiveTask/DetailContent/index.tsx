@@ -1,11 +1,11 @@
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import type { CycleTaskDetail, TaskOperationType, IDataArchiveJobParameters } from '@/d.ts';
-import { TaskType } from '@/d.ts';
+import { TaskExecStrategyMap } from '@/component/Task';
+import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import { getFormatDateTime } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
-import { getCronCycle } from '../../component/TaskTable';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
 import VariableConfig from './VariableConfig';
@@ -32,10 +32,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           数据归档
         </Descriptions.Item>
         <Descriptions.Item span={2} label="源数据库">
-          {task?.connection?.name || '-'}
+          {jobParameters?.sourceDatabaseName || '-'}
         </Descriptions.Item>
         <Descriptions.Item span={2} label="目标数据库">
-          {task?.connection?.name || '-'}
+          {jobParameters?.targetDatabaseName || '-'}
         </Descriptions.Item>
         {hasFlow && <Descriptions.Item label="风险等级">{task?.maxRiskLevel}</Descriptions.Item>}
       </Descriptions>
@@ -64,8 +64,11 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         </Descriptions.Item>
       </Descriptions>
       <Descriptions column={2}>
-        <Descriptions.Item label="定时周期">{getCronCycle(triggerConfig)}</Descriptions.Item>
-        {task?.type === TaskType.DATA_ARCHIVE && (
+
+        <Descriptions.Item label="执行方式">
+          {TaskExecStrategyMap[triggerConfig.triggerStrategy]}
+        </Descriptions.Item>
+        { isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
           <Descriptions.Item>
             <Collapse
               ghost
