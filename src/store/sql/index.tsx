@@ -2,7 +2,10 @@ import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
 import {
   ConnectionMode,
+  IFormatPLSchema,
   ILogItem,
+  IPLCompileResult,
+  IPLExecResult,
   IResultSet,
   ISqlExecuteResult,
   ISqlExecuteResultStatus,
@@ -16,6 +19,7 @@ import { clone, isNil } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
+import { PLType } from '@/constant/plType';
 export enum ExcecuteSQLMode {
   PL = 'PL',
   TABLE = 'TABLE',
@@ -258,7 +262,7 @@ export class SQLStore {
   } // 编译 PL
 
   @action
-  public async compilePL(plName: string, obDbObjectType: string, sessionId, dbName) {
+  public async compilePL(plName: string, obDbObjectType: string, sessionId, dbName): Promise<IPLCompileResult> {
     const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.post(`/api/v1/pl/compile/${sid}`, {
       data: { obDbObjectType, plName },
@@ -307,21 +311,27 @@ export class SQLStore {
 
   // 运行 PL
   @action
-  public async execPL(plSchema: any, ignoreError?: boolean, sessionId?: string, dbName?: string) {
+  public async execPL(plSchema: IFormatPLSchema, anonymousBlockDdl?: string, ignoreError?: boolean, sessionId?: string, dbName?: string): Promise<IPLExecResult> {
     const sid = generateDatabaseSid(dbName, sessionId);
     const { plName } = plSchema;
     let res;
     let dbms;
-    if (plSchema.proName) {
+    if (plSchema.plType === PLType.PROCEDURE) {
       res = await request.put(`/api/v1/pl/callProcedure/${sid}`, {
-        data: plSchema,
+        data: {
+          dbProcedure: plSchema?.procedure,
+          anonymousBlockDdl
+        },
         params: {
           ignoreError,
         },
       });
-    } else if (plSchema.funName) {
+    } else if (plSchema.plType === PLType.FUNCTION) {
       res = await request.put(`/api/v1/pl/callFunction/${sid}`, {
-        data: plSchema,
+        data: {
+          dbFunction: plSchema?.function,
+          anonymousBlockDdl
+        },
         params: {
           ignoreError,
         },

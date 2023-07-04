@@ -1,5 +1,5 @@
 import { PLType } from '@/constant/plType';
-import { IFunction, IProcedure } from '@/d.ts';
+import { ConnectionMode, IFunction, IProcedure } from '@/d.ts';
 import { IDebugContext } from '@/store/debug/type';
 import SessionStore from '@/store/sessionManager/session';
 import request from '@/util/request';
@@ -9,12 +9,13 @@ export async function createDebugSession(
   packageName: string,
   plSchema: IFunction | IProcedure | null,
   plType: PLType,
-  content: string,
+  anonymousBlock: string,
   session: SessionStore,
 ): Promise<string> {
   const reqParams: any = {
     sid: generateDatabaseSid(session?.database?.dbName, session?.sessionId),
-    debugType: plType,
+    // 存在anonymousBlock的情况下，实际上走的是匿名块跳入的方式，所以类型是ANONYMOUSBLOCK；
+    debugType: anonymousBlock ? PLType.ANONYMOUSBLOCK : plType,
   };
   switch (plType) {
     case PLType.FUNCTION: {
@@ -26,7 +27,7 @@ export async function createDebugSession(
       break;
     }
     case PLType.ANONYMOUSBLOCK: {
-      reqParams.anonymousBlock = content;
+      reqParams.anonymousBlock = anonymousBlock;
       break;
     }
     default: {

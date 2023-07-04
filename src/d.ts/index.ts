@@ -1,3 +1,4 @@
+import { PLType } from '@/constant/plType';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 
@@ -1066,6 +1067,10 @@ export enum ParamMode {
 export interface IPLParam {
   dataType: string;
   defaultValue: string;
+  /**
+   * odc 自定义属性，保存原value
+   */
+  originDefaultValue?: string;
   paramMode: ParamMode;
   paramName: string;
   seqNum: number;
@@ -3020,3 +3025,33 @@ export type ISSOConfig =
       ssoParameter: ISSO_OIDC_CONFIG;
       mappingRule: ISSO_MAPPINGRULE;
     };
+
+
+    export interface IFormatPLSchema {
+      plName?: string;
+      plType: PLType;
+      packageName?: string;
+      ddl?: string;
+      params?: IPLParam[];
+      function?: IFunction;
+      procedure?: IProcedure;
+    }
+
+    export interface IPLOutParam extends IPLParam {
+      value: string;
+    }
+    export interface IPLExecResult {
+      status: 'FAIL' | 'SUCCESS' | '';
+      errorMessage?: string;
+      dbms?: {
+        line: string;
+      };
+      returnParam?: IPLOutParam;
+      plOutParamList?: IPLOutParam[];
+    }
+    export interface IPLCompileResult {
+      messages: string;
+      statementWarnings: string;
+      status: boolean;
+      track: string;
+    }
