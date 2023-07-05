@@ -16,6 +16,15 @@ export interface IUser {
   roles?: IManagerRole[];
   belongedToOrganizations: IOrganization[];
   organizationId: number;
+  systemOperationPermissions?: IPermission[];
+  connectionAccessPermissions?: IPermission[];
+  resourceManagementPermissions?: IPermission[];
+}
+
+export interface IPermission {
+  resourceId: number;
+  resourceType: string;
+  actions: string[];
 }
 
 export interface IUserSummary {

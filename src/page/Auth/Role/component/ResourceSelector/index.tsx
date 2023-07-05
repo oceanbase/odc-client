@@ -9,7 +9,7 @@ import { Checkbox, Form, Space, Tabs, Tooltip, Typography } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isUndefined } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import {
   connectionAccessActionOptions,
   connectionAccessTypeOptions,

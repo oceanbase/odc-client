@@ -109,7 +109,11 @@ export async function addProjectMember(params: {
 }
 
 export async function getUserSummaryList(): Promise<IResponseData<IUserSummary>> {
-  const res = await request.get(`/api/v2/iam/users/basicInfo`);
+  const res = await request.get(`/api/v2/iam/users`, {
+    params: {
+      basic: true,
+    },
+  });
 
   return res?.data;
 }

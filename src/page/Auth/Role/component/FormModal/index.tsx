@@ -8,7 +8,7 @@ import { Button, Drawer, message, Modal, Radio, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import {
   connectionAccessActionMap,
   resourceManagementActionMap,
