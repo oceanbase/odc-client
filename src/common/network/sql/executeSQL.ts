@@ -1,7 +1,5 @@
 import type { ISqlExecuteResult } from '@/d.ts';
-import connection from '@/store/connection';
 import request from '@/util/request';
-import { message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 
 export interface IExecuteSQLParams {
@@ -27,7 +25,7 @@ class Task {
 
   private fetchData = async () => {
     const res = await request.get(
-      `/api/v2/connect/sessions/${generateSessionSid(this.sessionId)}/sqls/getResult`,
+      `/api/v2/datasource/sessions/${generateSessionSid(this.sessionId)}/sqls/getResult`,
       {
         params: {
           requestId: this.requestId,
@@ -107,13 +105,10 @@ export const executeTaskManager = new TaskManager();
 
 export default async function executeSQL(
   params: IExecuteSQLParams | string,
-  sessionId?: string,
+  sessionId: string,
+  dbName: string,
 ): Promise<ISqlExecuteResult[]> {
-  if (connection.isDestroy) {
-    message.error('Session is destroyed');
-    return [];
-  }
-  const sid = generateDatabaseSid(null, sessionId);
+  const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
     typeof params === 'string'
       ? {
@@ -125,7 +120,7 @@ export default async function executeSQL(
           ...params,
         };
 
-  const res = await request.post(`/api/v2/connect/sessions/${sid}/sqls/asyncExecute`, {
+  const res = await request.post(`/api/v2/datasource/sessions/${sid}/sqls/asyncExecute`, {
     data: serverParams,
   });
 

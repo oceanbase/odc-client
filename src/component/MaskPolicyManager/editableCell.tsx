@@ -1,5 +1,5 @@
 import { IMaskRule } from '@/d.ts';
-import { getMaskTypesMap } from '@/page/Manage/components/MaskDataPage';
+import { getMaskTypesMap } from '@/page/Project/Setting/Algorithm';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, Select, Space, Typography } from 'antd';
 import React from 'react';

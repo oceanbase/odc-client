@@ -1,16 +1,18 @@
 import { formatMessage } from '@/util/intl';
-import type { monaco } from '@alipay/ob-editor';
 import { FileSearchOutlined, OneToOneOutlined } from '@ant-design/icons';
+import * as monaco from 'monaco-editor';
 // @ts-ignore
 import RedoSvg from '@/svgr/Redo.svg'; // @ts-ignore
 
+import { IEditor } from '@/component/MonacoEditor';
+import SessionStore from '@/store/sessionManager/session';
 import UndoSvg from '@/svgr/Undo.svg';
 import { textExpaste } from '@/util/sql';
 import type { ToolBarActions } from '..';
 import { getStatus } from './pl';
 
 async function getMonaco() {
-  return import('@alipay/ob-editor').then((module) => module.monaco);
+  return monaco;
 }
 
 const textActions: ToolBarActions = {
@@ -25,7 +27,7 @@ const textActions: ToolBarActions = {
         /**
          * monaco 自动选取存在 bug，会漏选第一个字符，所以这边默认取消选择
          */
-        ctx.editor?.UNSAFE_getCodeEditor().setSelection(new monaco.Selection(0, 0, 0, 0));
+        ctx.editor?.setSelection(new monaco.Selection(0, 0, 0, 0));
       } catch (e) {
         console.trace(e);
       }
@@ -37,8 +39,8 @@ const textActions: ToolBarActions = {
     icon: FileSearchOutlined,
     statusFunc: getStatus,
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
-      codeEditor.trigger('FIND_OR_REPLACE', 'actions.find');
+      const codeEditor: IEditor = ctx.editor;
+      codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
     },
   },
 
@@ -50,7 +52,7 @@ const textActions: ToolBarActions = {
     icon: UndoSvg,
     statusFunc: getStatus,
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
+      const codeEditor = ctx.editor;
       codeEditor.trigger('xxx', 'undo');
       ctx.editor?.focus();
     },
@@ -64,8 +66,8 @@ const textActions: ToolBarActions = {
     icon: RedoSvg,
     statusFunc: getStatus,
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
-      codeEditor.trigger('xxx', 'redo');
+      const codeEditor: IEditor = ctx.editor;
+      codeEditor.trigger('xxx', 'redo', null);
       ctx.editor?.focus();
     },
   },
@@ -82,13 +84,9 @@ const textActions: ToolBarActions = {
     icon: 'TEXT_UPPERCASE',
 
     async action(ctx: any) {
-      const {
-        codeEditor,
-      }: {
-        codeEditor: monaco.editor.IStandaloneCodeEditor;
-      } = ctx.editor;
+      const codeEditor: IEditor = ctx.editor;
       const monaco = await getMonaco();
-      const selectText = ctx.editor.getSelection();
+      const selectText = codeEditor.getSelectionContent();
 
       if (!selectText) {
         return;
@@ -125,8 +123,8 @@ const textActions: ToolBarActions = {
 
     async action(ctx: any) {
       const monaco = await getMonaco();
-      const { codeEditor } = ctx.editor;
-      const selectText = ctx.editor.getSelection();
+      const codeEditor: IEditor = ctx.editor;
+      const selectText = codeEditor.getSelectionContent();
 
       if (!selectText) {
         return;
@@ -166,8 +164,8 @@ const textActions: ToolBarActions = {
 
     async action(ctx: any) {
       const monaco = await getMonaco();
-      const { codeEditor } = ctx.editor;
-      const selectText = ctx.editor.getSelection();
+      const codeEditor: IEditor = ctx.editor;
+      const selectText = codeEditor.getSelectionContent();
 
       if (!selectText) {
         return;
@@ -216,9 +214,9 @@ const textActions: ToolBarActions = {
     icon: 'TEXT_INDENT',
 
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
-      codeEditor.trigger('xxx', 'editor.action.indentLines');
-      ctx.editor?.focus();
+      const codeEditor: IEditor = ctx.editor;
+      codeEditor.trigger('xxx', 'editor.action.indentLines', null);
+      codeEditor?.focus();
     },
   },
 
@@ -230,8 +228,8 @@ const textActions: ToolBarActions = {
     icon: 'TEXT_UN_INDENT',
 
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
-      codeEditor.trigger('xxx', 'editor.action.outdentLines');
+      const codeEditor: IEditor = ctx.editor;
+      codeEditor.trigger('xxx', 'editor.action.outdentLines', null);
       ctx.editor?.focus();
     },
   },
@@ -251,8 +249,8 @@ const textActions: ToolBarActions = {
     icon: 'TEXT_COMMENT',
 
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
-      codeEditor.trigger('xxx', 'editor.action.addCommentLine');
+      const codeEditor: IEditor = ctx.editor;
+      codeEditor.trigger('xxx', 'editor.action.addCommentLine', null);
       ctx.editor?.focus();
     },
   },
@@ -265,8 +263,8 @@ const textActions: ToolBarActions = {
     icon: 'TEXT_UN_COMMENT',
 
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
-      codeEditor.trigger('xxx', 'editor.action.removeCommentLine');
+      const codeEditor: IEditor = ctx.editor;
+      codeEditor.trigger('xxx', 'editor.action.removeCommentLine', null);
       ctx.editor?.focus();
     },
   },
@@ -277,12 +275,8 @@ const textActions: ToolBarActions = {
     }), // IN 值转化
     icon: OneToOneOutlined,
     async action(ctx: any) {
-      const {
-        codeEditor,
-      }: {
-        codeEditor: monaco.editor.IStandaloneCodeEditor;
-      } = ctx.editor;
-      const selectText = ctx.editor.getSelection();
+      const codeEditor: IEditor = ctx.editor;
+      const selectText = codeEditor.getSelectionContent();
 
       const monaco = await getMonaco();
       if (!selectText) {
@@ -304,7 +298,10 @@ const textActions: ToolBarActions = {
         },
 
         range,
-        text: textExpaste(selectText),
+        text: textExpaste(
+          selectText,
+          ((ctx.getSession?.() || ctx.session) as SessionStore)?.connection?.dialectType,
+        ),
         forceMoveMarkers: true,
       };
 

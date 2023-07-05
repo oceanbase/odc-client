@@ -1,9 +1,8 @@
-import { SchemaStore } from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { Button, Empty, Spin, Transfer, Tree } from 'antd';
 import update from 'immutability-helper';
 import { uniqueId } from 'lodash';
-import { inject, observer } from 'mobx-react';
 import { parse } from 'query-string';
 import { PureComponent } from 'react';
 import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
@@ -12,8 +11,8 @@ import TableItem from './Item';
 
 const { TreeNode, DirectoryTree } = Tree;
 interface IProps {
-  schemaStore?: SchemaStore;
   onSubmit: (values: any) => void;
+  session: SessionStore;
 }
 
 interface IState {
@@ -26,8 +25,6 @@ interface IState {
   loading: boolean;
 }
 
-@inject('schemaStore')
-@observer
 export default class TreeSelector extends PureComponent<IProps, IState> {
   selectedKeys: any[];
   constructor(props) {
@@ -49,10 +46,10 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
   }
 
   loadTreeData = async (isInit) => {
-    const { schemaStore } = this.props;
+    const { session } = this.props;
     this.setState({ loading: true });
-    await schemaStore.queryTablesAndViews('', true);
-    const treeData = Object.entries(schemaStore.allTableAndView)?.map(([dbName, obj]) => {
+    await session.queryTablesAndViews('', true);
+    const treeData = Object.entries(session.allTableAndView)?.map(([dbName, obj]) => {
       const { tables, views } = obj;
       return {
         title: dbName,

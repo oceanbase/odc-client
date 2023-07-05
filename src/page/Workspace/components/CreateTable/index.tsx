@@ -1,6 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Card, message, Space, Tabs, Tooltip, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import BaseInfo from './BaseInfo';
 import {
   TableCheckConstraint,
@@ -18,11 +18,16 @@ import TableContext from './TableContext';
 import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
+import { CreateTablePage } from '@/store/helper/page/pages/create';
 import page from '@/store/page';
-import schema from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
+import { inject, observer } from 'mobx-react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import Columns, { defaultColumn } from './Columns';
 import styles from './index.less';
 import Partition from './Partition';
@@ -33,6 +38,8 @@ const TabPane = Tabs.TabPane;
 
 interface IProps {
   pageKey: string;
+  sessionManagerStore?: SessionManagerStore;
+  params: CreateTablePage['pageParams'];
 }
 
 const defaultInfo: TableInfo = {
@@ -44,7 +51,7 @@ const defaultInfo: TableInfo = {
 
 const defaultPartitions: TablePartition = null;
 
-const CreateTable: React.FC<IProps> = function ({ pageKey }) {
+const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManagerStore }) {
   const [info, setInfo] = useState<TableInfo>(defaultInfo);
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
   const [partitions, setPartitions] = useState<Partial<TablePartition>>(defaultPartitions);
@@ -58,6 +65,8 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
     manual: true,
   });
 
+  const { session } = useContext(SessionContext);
+
   const isComplete = useMemo(() => {
     return (
       info.tableName &&
@@ -68,6 +77,9 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
     );
   }, [info, columns]);
 
+  if (!session) {
+    return <WorkSpacePageLoading />;
+  }
   return (
     <Card
       className={styles.card}
@@ -101,16 +113,20 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
               disabled={!isComplete}
               loading={loading}
               onClick={async () => {
-                const sql = await runGenerateCreateTableDDL({
-                  info,
-                  columns,
-                  partitions,
-                  indexes,
-                  primaryConstraints,
-                  uniqueConstraints,
-                  foreignConstraints,
-                  checkConstraints,
-                });
+                const sql = await runGenerateCreateTableDDL(
+                  {
+                    info,
+                    columns,
+                    partitions,
+                    indexes,
+                    primaryConstraints,
+                    uniqueConstraints,
+                    foreignConstraints,
+                    checkConstraints,
+                  },
+                  session?.sessionId,
+                  session?.odcDatabase?.name,
+                );
 
                 if (sql) {
                   setDDL(sql);
@@ -146,6 +162,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
           setForeignConstraints,
           checkConstraints,
           setCheckConstraints,
+          session,
         }}
       >
         <Tabs className={'odc-left-tabs'} tabPosition="left">
@@ -185,18 +202,19 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
           </TabPane>
         </Tabs>
         <ExecuteSQLModal
+          sessionStore={session}
           sql={DDL}
           visible={!!DDL}
           readonly
           onCancel={() => setDDL('')}
           onSave={async () => {
-            const results = await executeSQL(DDL);
+            const results = await executeSQL(DDL, session?.sessionId, session?.odcDatabase?.name);
             const result = results?.find((result) => result.track);
             if (!result?.track) {
               // 关闭创建表页面
               page.close(pageKey);
               // 刷新左侧资源树
-              await schema.getTableList();
+              await session.database.getTableList();
               message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
             } else {
               notification.error(result);
@@ -207,4 +225,4 @@ const CreateTable: React.FC<IProps> = function ({ pageKey }) {
     </Card>
   );
 };
-export default CreateTable;
+export default inject('sessionManagerStore')(observer(WrapSessionPage(CreateTable)));

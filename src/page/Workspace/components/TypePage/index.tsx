@@ -1,3 +1,5 @@
+import { getType } from '@/common/network/type';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -5,15 +7,15 @@ import { enableTypeEdit } from '@/constant';
 import { PLType } from '@/constant/plType';
 import type { IType } from '@/d.ts';
 import { ConnectionMode, TypePropsTab } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import { openTypeEditPageByName } from '@/store/helper/page';
+import { TypePage as TypePageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { getLocalFormatDateTime } from '@/util/utils';
-import type { IEditor } from '@alipay/ob-editor';
 import {
   AlignLeftOutlined,
   CloudDownloadOutlined,
@@ -24,6 +26,8 @@ import {
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
@@ -70,21 +74,17 @@ const TypeCodeMap = {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    typeName: string;
-    propsTab: TypePropsTab;
-  };
+  params: TypePageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class TypePage extends Component<
-  IProps,
+class TypePage extends Component<
+  IProps & { session: SessionStore },
   {
     propsTab: TypePropsTab;
     type: Partial<IType>;
@@ -129,9 +129,7 @@ export default class TypePage extends Component<
 
     pageStore.updatePage(
       pageKey,
-      {
-        updatePath: true,
-      },
+      {},
 
       {
         typeName: type.typeName,
@@ -141,10 +139,10 @@ export default class TypePage extends Component<
   };
   private reloadType = async () => {
     const {
-      schemaStore,
+      session,
       params: { typeName },
     } = this.props;
-    const type = await schemaStore.loadType(typeName);
+    const type = await getType(typeName, false, session?.odcDatabase?.name, session?.sessionId);
 
     if (type) {
       this.setState({
@@ -158,12 +156,18 @@ export default class TypePage extends Component<
   };
   private handleEditType = () => {
     const {
+      session,
       params: { typeName },
     } = this.props;
-    openTypeEditPageByName(typeName);
+    openTypeEditPageByName(
+      typeName,
+      session?.sessionId,
+      session?.odcDatabase?.id,
+      session?.odcDatabase?.name,
+    );
   };
   private showSearchWidget = () => {
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
   };
 
@@ -180,11 +184,9 @@ export default class TypePage extends Component<
   };
 
   public render() {
-    const {
-      connectionStore: { connection },
-    } = this.props;
+    const { params, sessionManagerStore, session } = this.props;
     const { propsTab, type, formated } = this.state;
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
     return (
       type && (
@@ -288,7 +290,12 @@ export default class TypePage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(type?.typeName, PLType.TYPE, type?.ddl);
+                      downloadPLDDL(
+                        type?.typeName,
+                        PLType.TYPE,
+                        type?.ddl,
+                        session?.odcDatabase?.name,
+                      );
                     }}
                   />
 
@@ -328,8 +335,8 @@ export default class TypePage extends Component<
                 <ToolContentWrpper>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(type && type.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                    value={type?.ddl || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}
@@ -343,3 +350,12 @@ export default class TypePage extends Component<
     );
   }
 }
+export default WrapSessionPage(function (props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <TypePage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

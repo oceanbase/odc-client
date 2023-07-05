@@ -18,7 +18,7 @@ export const executeSQL = _executeSQL;
 
 export async function stopExec(sessionId: string) {
   const sid = generateSessionSid(sessionId);
-  const res = await request.put(`/api/v2/connect/sessions/${sid}/killQuery`);
+  const res = await request.put(`/api/v2/datasource/sessions/${sid}/killQuery`);
   return res?.data;
 }
 
@@ -26,7 +26,7 @@ export async function uploadTableObject(file: File, sessionId: string) {
   if (setting.isUploadCloudStore) {
     return await uploadCloudTableObject(file, sessionId);
   }
-  const url = `/api/v2/connect/sessions/${generateSessionSid(sessionId)}/upload`;
+  const url = `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/upload`;
   const form = new FormData();
   form.append('file', file);
   const res = await request.post(url, {
@@ -39,8 +39,13 @@ export async function uploadCloudTableObject(file: File, sessionId: string) {
   return await uploadFileToOSS(file, 'UploadObjectData', sessionId);
 }
 
-export async function getSQLExecuteDetail(sql: string, tag?: string): Promise<ISQLExecuteDetail> {
-  const sid = generateDatabaseSid();
+export async function getSQLExecuteDetail(
+  sql: string,
+  tag?: string,
+  sessionId?: string,
+  dbName?: string,
+): Promise<ISQLExecuteDetail> {
+  const sid = generateDatabaseSid(dbName, sessionId);
   const result = await request.post(`/api/v1/diagnose/getExecDetail/${sid}`, {
     data: {
       sql,
@@ -50,8 +55,8 @@ export async function getSQLExecuteDetail(sql: string, tag?: string): Promise<IS
   return result?.data;
 }
 
-export async function getSQLExplain(sql: string): Promise<ISQLExplain | null> {
-  const sid = generateDatabaseSid();
+export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQLExplain | null> {
+  const sid = generateDatabaseSid(dbName, sessionId);
   const result = await request.post(`/api/v1/diagnose/explain/${sid}`, {
     data: {
       sql,
@@ -95,8 +100,10 @@ function formatSQLExplainTree(data: any): ISQLExplainTreeNode {
 export async function getSQLExecuteExplain(
   sql: string,
   tag?: string,
+  sessionId?: string,
+  dbName?: string,
 ): Promise<ISQLExplain | string | null> {
-  const sid = generateDatabaseSid();
+  const sid = generateDatabaseSid(dbName, sessionId);
   const result = await request.post(`/api/v1/diagnose/getExecExplain/${sid}`, {
     data: {
       sql,
@@ -132,9 +139,10 @@ export async function fetchResultCache(
   sessionId: string,
   maxSizeKB: number = 2048,
   skip: number = 0,
+  dbName: string,
 ) {
   const res = await request.get(
-    `/api/v2/connect/sessions/${generateDatabaseSid(null, sessionId)}/sqls/${sqlId}/content`,
+    `/api/v2/datasource/sessions/${generateDatabaseSid(dbName, sessionId)}/sqls/${sqlId}/content`,
     {
       params: {
         row: rowNum,
@@ -241,7 +249,7 @@ export async function runSQLLint(
   scriptContent: string,
 ): Promise<ISQLLintReuslt[]> {
   const res = await request.post(
-    `/api/v2/connect/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
+    `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
     {
       data: {
         delimiter,

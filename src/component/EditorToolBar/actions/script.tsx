@@ -1,4 +1,8 @@
+import { IEditor } from '@/component/MonacoEditor';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
+import { PLType } from '@/constant/plType';
+import { PLPage } from '@/page/Workspace/components/PLPage';
+import { PLPageType } from '@/store/helper/page/pages/pl';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
@@ -34,7 +38,7 @@ const scriptActions: ToolBarActions = {
     // 添加占位符
     icon: 'ADD_SNIPPET_SECTION',
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
+      const codeEditor: IEditor = ctx.editor;
       const value = codeEditor.getValue();
       const snippetSections = value.match(/\$\{\d\:(.*?)\}/g) || [];
       const snipptSectionText = `\${${snippetSections.length + 1}:string}`;
@@ -51,8 +55,7 @@ const scriptActions: ToolBarActions = {
           text: snipptSectionText,
         },
       ]);
-      import('@alipay/ob-editor').then((module) => {
-        const monaco = module.monaco;
+      import('monaco-editor').then((monaco) => {
         const range = new monaco.Range(
           position.lineNumber,
           position.column + 4,
@@ -73,15 +76,14 @@ const scriptActions: ToolBarActions = {
     // 删除占位符
     icon: 'REMOVE_SNIPPET_SECTION',
     async action(ctx: any) {
-      const { codeEditor } = ctx.editor;
+      const codeEditor: IEditor = ctx.editor;
       const selectText = ctx.editor.getSelection();
       if (!selectText) {
         return;
       }
       const capitalizeText = selectText.replace(/\$\{\d\:(.*?)\}/g, '$1');
       const selection = codeEditor.getSelection();
-      import('@alipay/ob-editor').then((module) => {
-        const monaco = module.monaco;
+      import('monaco-editor').then((monaco) => {
         const range = new monaco.Range(
           selection.startLineNumber,
           selection.startColumn,
@@ -109,14 +111,17 @@ const scriptActions: ToolBarActions = {
   DOWNLOAD: {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.script.Download' }), //下载
     icon: CloudDownloadOutlined,
-    async action(ctx) {
+    async action(ctx: PLPage) {
       const text = ctx?.props?.params?.scriptText || '';
-      const type = ctx?.props?.params?.plType || ctx?.props?.params?.plSchema?.plType;
-      const plName =
-        ctx?.props?.params?.plName ||
-        ctx?.props?.params?.plSchema?.plName ||
-        ctx?.props?.params?.triggerName;
-      downloadPLDDL(plName, type, text);
+      const params = ctx?.props.params;
+      const dbName = ctx?.getSession()?.database?.dbName;
+      if (params?.plPageType === PLPageType.anonymous) {
+        downloadPLDDL(params?.objectName, PLType.ANONYMOUSBLOCK, text, dbName);
+      } else if (params?.plPageType === PLPageType.plEdit) {
+        downloadPLDDL(params?.plName, params?.plType, text, dbName);
+      } else {
+        downloadPLDDL(params?.plSchema?.plName, params?.plSchema?.plType, text, dbName);
+      }
     },
   },
 };

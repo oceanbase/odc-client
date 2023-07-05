@@ -68,10 +68,16 @@ export class ModalStore {
   public partitionVisible: boolean = false;
 
   @observable
+  public dataArchiveVisible: boolean = false;
+
+  @observable
   public createSQLPlanVisible: boolean = false;
 
   @observable
   public userConfigModalVisible: boolean = false;
+
+  @observable
+  public sensitiveColumnVisible: boolean = false;
 
   @observable
   public applyPermissionData: ApplyPermissionData = null;
@@ -86,27 +92,137 @@ export class ModalStore {
   public createSequenceModalVisible: boolean = false;
 
   @observable
+  public createSequenceModalData: {
+    isEdit?: boolean;
+    data?: any;
+    databaseId: number;
+    dbName: string;
+  };
+
+  @action
+  public changeCreateSequenceModalVisible(
+    isShow: boolean = true,
+    data?: typeof this.createSequenceModalData,
+  ) {
+    this.createSequenceModalVisible = isShow;
+    this.createSequenceModalData = isShow ? data : null;
+  }
+
+  /** create function */
+  @observable
   public createFunctionModalVisible: boolean = false;
 
+  @observable
+  public createFunctionModalData = {
+    databaseId: null,
+    dbName: '',
+  };
+
+  @action
+  public changeCreateFunctionModalVisible(
+    isShow: boolean = true,
+    databaseId?: number,
+    dbName?: string,
+  ) {
+    this.createFunctionModalVisible = isShow;
+    this.createFunctionModalData = {
+      databaseId,
+      dbName,
+    };
+  }
+
+  /** create procedure */
   @observable
   public createProcedureModalVisible: boolean = false;
 
   @observable
+  public createProcedureModalData = {
+    databaseId: null,
+    dbName: '',
+  };
+
+  @action
+  public changeCreateProcedureModalVisible(
+    isShow: boolean = true,
+    databaseId?: number,
+    dbName?: string,
+  ) {
+    this.createProcedureModalVisible = isShow;
+    this.createProcedureModalData = {
+      databaseId,
+      dbName,
+    };
+  }
+
+  @observable
   public versionModalVisible: boolean = false;
 
+  /** create package */
   @observable
-  public scriptManageModalVisible: boolean = false;
+  public createPackageModalVisible: boolean = false;
 
   @observable
-  public createSequenceModalData: {
-    isEdit: boolean;
-    data: any;
+  public createPackageModalData = {
+    databaseId: null,
+    dbName: '',
   };
+
+  @action
+  public changeCreatePackageModalVisible(v: boolean, databaseId?: number, dbName?: string) {
+    this.createPackageModalVisible = v;
+    this.createPackageModalData = {
+      databaseId,
+      dbName,
+    };
+  }
+
+  /** create synonym */
+  @observable
+  public createSynonymModalVisible: boolean = false;
+
+  @observable
+  public createSynonymModalData = {
+    databaseId: null,
+    dbName: '',
+  };
+
+  @action
+  public changeCreateSynonymModalVisible(v: boolean, databaseId?: number, dbName?: string) {
+    this.createSynonymModalVisible = v;
+    this.createSynonymModalData = {
+      databaseId,
+      dbName,
+    };
+  }
+
+  /** create type */
+  @observable
+  public createTypeModalVisible: boolean = false;
+
+  @observable
+  public createTypeModalData = {
+    databaseId: null,
+    dbName: '',
+  };
+
+  @action
+  public changeCreateTypeModalVisible(v: boolean, databaseId?: number, dbName?: string) {
+    this.createTypeModalVisible = v;
+    this.createTypeModalData = {
+      databaseId,
+      dbName,
+    };
+  }
 
   @action
   public changeExportModal(isShow: boolean = true, modalData?: IExportModalData) {
     this.exportModalVisible = isShow;
     this.exportModalData = isShow ? modalData : null;
+  }
+
+  @action
+  public changeAllModal(isShow: boolean = true) {
+    // this.allModalVisible = isShow;
   }
 
   @action
@@ -146,6 +262,11 @@ export class ModalStore {
   }
 
   @action
+  public changeDataArchiveModal(isShow: boolean = true) {
+    this.dataArchiveVisible = isShow;
+  }
+
+  @action
   public changeCreateSQLPlanTaskModal(isShow: boolean = true, id?: number) {
     this.createSQLPlanVisible = isShow;
     this.SQLPlanEditId = isShow ? id : null;
@@ -157,34 +278,18 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateSequenceModalVisible(isShow: boolean = true, data?: any) {
-    this.createSequenceModalVisible = isShow;
-    this.createSequenceModalData = isShow ? data : null;
-  }
-
-  @action
-  public changeCreateFunctionModalVisible(isShow: boolean = true) {
-    this.createFunctionModalVisible = isShow;
-  }
-
-  @action
-  public changeCreateProcedureModalVisible(isShow: boolean = true) {
-    this.createProcedureModalVisible = isShow;
-  }
-
-  @action
   public changeVersionModalVisible(isShow: boolean = true) {
     this.versionModalVisible = isShow;
   }
 
   @action
-  public changeScriptManageModalVisible(isShow: boolean = true) {
-    this.scriptManageModalVisible = isShow;
+  public changeShadowSyncVisible(isShow: boolean = true) {
+    this.addShadowSyncVisible = isShow;
   }
 
   @action
-  public changeShadowSyncVisible(isShow: boolean = true) {
-    this.addShadowSyncVisible = isShow;
+  public changeSensitiveColumnVisible(isShow: boolean = true) {
+    this.sensitiveColumnVisible = isShow;
   }
 
   @action clear() {
@@ -199,9 +304,11 @@ export class ModalStore {
     this.userConfigModalVisible = false;
     this.applyPermissionVisible = false;
     this.partitionVisible = false;
+    this.dataArchiveVisible = false;
     this.dataMockerData = null;
     this.createSequenceModalVisible = false;
     this.versionModalVisible = false;
+    this.sensitiveColumnVisible = false;
   }
 }
 

@@ -20,6 +20,7 @@ const Component: React.FC<IProps> = ({
   onBegin,
   onEnd,
   useCustomerDragLayer,
+  ...rest
 }) => {
   const [{ opacity, isDragging }, drag, preview] = useDrag({
     item: { name, type: 'box' },
@@ -46,7 +47,7 @@ const Component: React.FC<IProps> = ({
   }, []);
 
   return (
-    <div key={key} ref={drag} className={className} style={{ ...style, opacity }}>
+    <div key={key} ref={drag} className={className} style={{ ...style, opacity }} {...rest}>
       {children}
     </div>
   );

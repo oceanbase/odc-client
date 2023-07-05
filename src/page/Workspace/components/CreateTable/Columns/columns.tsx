@@ -1,6 +1,5 @@
 import { ConnectionMode, IDataType } from '@/d.ts';
-import { ConnectionStore } from '@/store/connection';
-import { SchemaStore } from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import { dataTypesIns } from '@/util/dataType';
 import { formatMessage } from '@/util/intl';
 import { Column } from '@alipay/ob-react-data-grid';
@@ -16,20 +15,14 @@ import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
 
 interface IColumnParams {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
+  session?: SessionStore;
 }
 
-export function useColumns(
-  { schemaStore, connectionStore }: IColumnParams,
-  originColumns: TableColumn[],
-): Column[] {
-  const { dataTypes } = schemaStore;
-  const { dialectType } = connectionStore.connection || {};
+export function useColumns({ session }: IColumnParams, originColumns: TableColumn[]): Column[] {
+  const { dataTypes } = session;
+  const { dialectType } = session.connection || {};
   const pageContext = useContext(TablePageContext);
-  const haveAutoIncrement = [ConnectionMode.OB_MYSQL].includes(
-    connectionStore.connection.dialectType,
-  );
+  const haveAutoIncrement = [ConnectionMode.OB_MYSQL].includes(session.connection.dialectType);
 
   const DataTypeSelect = useMemo(() => {
     return function (props) {
@@ -44,7 +37,7 @@ export function useColumns(
           {...props}
           onRowChange={(row: TableColumn) => {
             const type = row.type;
-            const dataType = dataTypesIns.getDataType(connectionStore.connection.dialectType, type);
+            const dataType = dataTypesIns.getDataType(session.connection.dialectType, type);
             onRowChange(
               {
                 ...row,
@@ -75,7 +68,7 @@ export function useColumns(
               /**
                * 类型为空的时候，自动推断
                */
-              const type = getTypeByColumnName(value);
+              const type = getTypeByColumnName(value, dialectType);
               if (type) {
                 newRow = {
                   ...newRow,

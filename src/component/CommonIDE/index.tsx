@@ -2,15 +2,16 @@ import { TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
 import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import type { IEditor, monaco } from '@alipay/ob-editor';
 import { Tabs, Tooltip } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
+import * as monaco from 'monaco-editor';
 import React, { ReactNode } from 'react';
 import SplitPane from 'react-split-pane';
 import EditorToolBar from '../EditorToolBar';
-import { ISQLCodeEditorProps, SQLCodeEditor } from '../SQLCodeEditor';
+import MonacoEditor from '../MonacoEditor';
 import styles from './index.less';
 const RESULT_HEIGHT = 230;
 export enum ITabType {
@@ -44,7 +45,7 @@ interface ICommonIDEProps {
    * editor 的自定义 props
    */
 
-  editorProps?: Partial<ISQLCodeEditorProps>;
+  editorProps?: Partial<any>;
   /**
    * 运行结果
    */
@@ -63,6 +64,7 @@ interface ICommonIDEProps {
    * 是否添加边框
    */
   bordered?: boolean;
+  session?: SessionStore;
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -73,7 +75,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
     resultHeight: RESULT_HEIGHT,
   };
 
-  public editor: IEditor;
+  public editor: monaco.editor.IStandaloneCodeEditor;
   public model: monaco.editor.IModel;
 
   private handleChangeSplitPane = debounce((size: number) => {
@@ -83,6 +85,10 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
     this.emitResize();
   }, 200);
 
+  public getSession() {
+    return this.props.session;
+  }
+
   private emitResize = debounce(() => {
     window.dispatchEvent(new Event('resize'));
   }, 500);
@@ -90,12 +96,10 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
   private onEditorCreated = (editor) => {
     this.editor = editor;
     if (!this.model) {
-      import('@alipay/ob-editor').then((module) => {
-        this.model = module.monaco.editor.createModel(this.props.initialSQL, this.props.language);
-        this.editor.UNSAFE_getCodeEditor().setModel(this.model);
-      });
+      this.model = monaco.editor.createModel(this.props.initialSQL, this.props.language);
+      this.editor.setModel(this.model);
     } else {
-      this.editor.UNSAFE_getCodeEditor().setModel(this.model);
+      this.editor.setModel(this.model);
     }
   };
 
@@ -121,6 +125,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
       log,
       resultSets,
       toolbarActions,
+      session,
     } = this.props;
 
     const { resultHeight } = this.state;
@@ -149,10 +154,9 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
               onChange={this.handleChangeSplitPane}
             >
               <div className={styles.editorBox}>
-                <SQLCodeEditor
-                  disableAutoUpdateInitialValue={true}
+                <MonacoEditor
                   language={language}
-                  initialValue={initialSQL}
+                  defaultValue={initialSQL}
                   onValueChange={this.onSQLChange}
                   onEditorCreated={this.onEditorCreated}
                   {...editorProps}
@@ -187,6 +191,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                       >
                         {!!set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS ? (
                           <DDLResultSet
+                            session={session}
                             key={set.uniqKey || i}
                             showExplain={false}
                             showPagination={true}
@@ -214,10 +219,9 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
             </SplitPane>
           ) : (
             <div className={styles.editorBox}>
-              <SQLCodeEditor
-                disableAutoUpdateInitialValue={true}
+              <MonacoEditor
                 language={language}
-                initialValue={initialSQL}
+                defaultValue={initialSQL}
                 onValueChange={this.onSQLChange}
                 onEditorCreated={this.onEditorCreated}
                 {...editorProps}

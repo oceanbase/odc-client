@@ -3,17 +3,17 @@ import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { CommonTableMode } from '@/component/CommonTable/interface';
+import CommonDetailModal from '@/component/Manage/DetailModal';
 import SearchFilter from '@/component/SearchFilter';
 import { TimeOptions } from '@/component/TimeSelect';
 import TreeFilter from '@/component/TreeFilter';
 import { AuditEventResult, IAudit, IAuditEvent, IResponseData } from '@/d.ts';
-import CommonDetailModal from '@/page/Manage/components/CommonDetailModal';
 import {
   AuditEventActionMap,
   AuditEventMetaMap,
   getEventFilterAndOptions,
-} from '@/page/Manage/components/RecordPage';
-import { RecordContent, Status } from '@/page/Manage/components/RecordPage/component';
+} from '@/page/Secure/components/RecordPage';
+import { RecordContent, Status } from '@/page/Secure/components/RecordPage/component';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -245,7 +245,6 @@ export const RecordTable: React.FC<{
         ref={tableRef}
         mode={CommonTableMode.SMALL}
         titleContent={{
-          enabledReload: false,
           description: isClient()
             ? formatMessage({
                 id: 'odc.component.RecordPopover.components.NoteTheOperationRecordContains',

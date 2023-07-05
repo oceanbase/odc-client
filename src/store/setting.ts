@@ -27,7 +27,7 @@ interface IThemeConfig {
 const themeConfig: { [key: string]: IThemeConfig } = {
   'odc-white': {
     key: 'odc-white',
-    editorTheme: 'ob-grey',
+    editorTheme: 'obwhite',
     className: 'odc-white',
     sheetTheme: 'white',
     cmdTheme: 'white',
@@ -35,7 +35,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
   },
   'odc-dark': {
     key: 'odc-dark',
-    editorTheme: 'ob-dark',
+    editorTheme: 'vs-dark',
     className: 'odc-dark',
     sheetTheme: 'dark',
     cmdTheme: 'dark',
@@ -75,6 +75,9 @@ export class SettingStore {
 
   @observable
   public enableDBExport: boolean = false;
+
+  @observable
+  public enableAll: boolean = false;
 
   @observable
   public enableMockdata: boolean = false;

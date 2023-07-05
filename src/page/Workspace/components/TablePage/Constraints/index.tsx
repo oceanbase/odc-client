@@ -1,5 +1,4 @@
 import { generateUpdateTableDDL } from '@/common/network/table';
-import connection from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Space } from 'antd';
 import { cloneDeep } from 'lodash';
@@ -29,7 +28,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
     useState<ITableModel['foreignConstraints']>(null);
   const tableContext = useContext(TablePageContext);
   const table = tableContext.table;
-  const config = useTableConfig(connection);
+  const config = useTableConfig(tableContext?.session?.connection.dialectType);
   const modified =
     !!editPrimaryConstraints ||
     !!editUniqueConstraints ||
@@ -52,6 +51,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
         foreignConstraints,
         setForeignConstraints: setEditForeignConstraints,
         columns: table.columns,
+        session: tableContext?.session,
       }}
     >
       <TableCardLayout
@@ -75,6 +75,8 @@ const TableConstraints: React.FC<IProps> = function ({}) {
                 },
 
                 tableContext.table,
+                tableContext?.session?.sessionId,
+                tableContext?.session?.database?.dbName,
               );
 
               if (!updateTableDML) {

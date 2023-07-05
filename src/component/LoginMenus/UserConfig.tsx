@@ -90,7 +90,7 @@ class UserConfig extends React.PureComponent<IProps, IState> {
     } = this.props;
     return (
       <Drawer
-        visible={visible}
+        open={visible}
         width={520}
         title={formatMessage({
           id: 'odc.component.LoginMenus.UserConfig.EditPersonalSettings',

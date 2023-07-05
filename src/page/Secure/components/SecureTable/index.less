@@ -1,0 +1,286 @@
+.tableWrapper {
+  height: 100%;
+
+  .alertInfo {
+    margin-bottom: 16px;
+  }
+
+  &.showAlertInfo {
+    :global {
+      .ant-spin-nested-loading {
+        height: calc(100% - 52px);
+      }
+    }
+  }
+
+  &.showToolbar {
+    &.showAlertInfo {
+      :global {
+        .ant-spin-nested-loading {
+          height: calc(100% - 45px - 52px);
+        }
+      }
+    }
+
+    &.infoVisible {
+      :global {
+        .ant-spin-nested-loading {
+          height: calc(100% - 45px - 36px);
+        }
+      }
+    }
+
+    :global {
+      .ant-spin-nested-loading {
+        height: calc(100% - 45px);
+      }
+    }
+  }
+
+  &.infoVisible {
+    :global {
+      .ant-spin-nested-loading {
+        height: calc(100% - 36px);
+      }
+    }
+  }
+
+  &.infoVisible.showToolbar,
+  &.showToolbar,
+  &.infoVisible {
+    .bigTable,
+    .smallTable {
+      height: 100%;
+
+      :global {
+        .ant-spin-nested-loading {
+          height: 100%;
+        }
+      }
+    }
+  }
+
+  :global {
+    .ant-space-item-split {
+      color: #d9d9d9;
+    }
+
+    .ant-spin-container {
+      height: 100%;
+    }
+
+    .ant-table-pagination {
+      &.ant-pagination {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        margin: 0;
+        padding-top: 16px;
+      }
+
+      .ant-pagination-total-text {
+        position: absolute;
+        left: 0;
+      }
+    }
+  }
+}
+
+.toolBar:global(.ant-space) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 8px;
+  padding-bottom: 16px;
+  .titleContent {
+    font-size: 16px;
+
+    .desc {
+      color: var(--text-color-hint);
+      font-size: 12px;
+    }
+
+    .cursor {
+      font-size: 12px;
+      cursor: pointer;
+    }
+  }
+}
+
+.rowReserve {
+  flex-direction: row-reverse;
+}
+
+.columnRerve {
+  flex-direction: column-reverse;
+}
+
+.bigTable {
+  :global {
+    .ant-table-thead {
+      .ant-table-cell {
+        padding: 8px 16px;
+        line-height: 20px;
+
+        &.ant-table-cell-fix-left {
+          &,
+          .ant-table-filter-trigger {
+            padding-right: 10px;
+          }
+        }
+
+        .ant-table-column-sorters {
+          padding: 0;
+        }
+      }
+    }
+
+    .ant-table-tbody {
+      .ant-table-cell {
+        padding: 10px 16px;
+        line-height: 20px;
+      }
+    }
+  }
+}
+
+.smallCommonTable {
+  .toolBar {
+    .titleContent {
+      font-size: 12px;
+    }
+  }
+}
+
+.smallTable {
+  :global {
+    .ant-table {
+      font-size: 12px;
+    }
+
+    .ant-table-thead > tr > th {
+      white-space: nowrap;
+
+      .ant-table-column-sorters {
+        padding: 0;
+      }
+    }
+
+    .ant-table-thead > tr > th {
+      height: 24px;
+      padding: 2px 12px;
+    }
+
+    .ant-table-tbody > tr > td {
+      height: 40px;
+      padding: 10px 12px;
+    }
+
+    .ant-table-tbody > tr.ant-table-expanded-row > td {
+      height: 100%;
+      padding: 0 8px;
+    }
+
+    .ant-table-column-title {
+      color: var(--text-color-primary);
+    }
+
+    .ant-table-column-has-sorters {
+      position: relative;
+    }
+
+    .ant-table-column-sorter {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+    }
+  }
+
+  .odd {
+    background: var(--background-tertraiy-color);
+  }
+}
+.smallTableBody {
+  :global {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      height: 24px;
+      padding: 0 8px;
+    }
+  }
+}
+.bigTableBody {
+  :global {
+    .ant-table-thead > tr > th {
+      height: 24px;
+      padding: 2px 12px;
+    }
+
+    .ant-table-tbody > tr > td {
+      height: 40px;
+      padding: 10px 12px;
+    }
+  }
+}
+
+.bigTd {
+  :global {
+    .ant-table-body > table > tbody > tr > td {
+    }
+  }
+}
+
+.filterContent {
+  color: var(--text-color-primary);
+
+  :global {
+    .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+      padding-left: 0;
+    }
+  }
+}
+
+.infoWrap {
+  .btn {
+    color: #1890ff;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+
+.operationContent {
+  .op {
+    color: #909090;
+    font-size: 14px;
+    vertical-align: text-top;
+  }
+}
+
+.handle {
+  position: absolute;
+  top: 10px;
+  right: 1px;
+  bottom: 10px;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  cursor: col-resize;
+}
+
+.tableSpin {
+  &:not(.scrollAble) {
+    :global {
+      .ant-table-body {
+        &::-webkit-scrollbar {
+          // display: none;
+        }
+      }
+    }
+  }
+}
+.tablePagination {
+  :global {
+    .ant-spin-nested-loading > .ant-spin-container {
+      padding-bottom: 40px;
+    }
+  }
+}

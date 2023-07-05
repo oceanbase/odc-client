@@ -1,8 +1,9 @@
 import hljs from 'highlight.js/lib/core';
+import groovy from 'highlight.js/lib/languages/groovy';
 import java from 'highlight.js/lib/languages/java';
 
 // 目前支持的语言列表
-export const languageMap = { java };
+export const languageMap = { java, groovy };
 
 /**
  * 日期, 时间, 日志状态的匹配规则

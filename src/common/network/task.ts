@@ -1,8 +1,10 @@
+import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import {
   CommonTaskLogType,
   CreateTaskRecord,
   CycleTaskDetail,
   IAsyncTaskResultSet,
+  ICycleSubTaskRecord,
   ICycleTaskRecord,
   IFunction,
   IPartitionPlan,
@@ -15,8 +17,6 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import { IShadowSyncAnalysisResult } from '@/page/Workspace/components/CreateShadowSyncModal/interface';
-import connection from '@/store/connection';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
@@ -74,7 +74,7 @@ export async function getTaskList<T>(params: {
 /**
  * 查询周期任务列表
  */
-export async function getCycleTaskList(params: {
+export async function getCycleTaskList<T>(params: {
   connectionId?: number[];
   creator?: string;
   databaseName?: string[];
@@ -88,7 +88,7 @@ export async function getCycleTaskList(params: {
   sort?: string;
   page?: number;
   size?: number;
-}): Promise<IResponseData<ICycleTaskRecord>> {
+}): Promise<IResponseData<ICycleTaskRecord<T>>> {
   const res = await request.get('/api/v2/schedule/scheduleConfigs', {
     params,
   });
@@ -110,7 +110,7 @@ export async function getTaskStatus(ids: number[]): Promise<Record<number, TaskS
 /**
  * 查询周期任务详情
  */
-export async function getCycleTaskDetail(id: number): Promise<CycleTaskDetail> {
+export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail<T>> {
   const res = await request.get(`/api/v2/schedule/scheduleConfigs/${id}`);
   return res?.data;
 }
@@ -326,12 +326,13 @@ export async function checkConnectionPartitionPlan(id: number): Promise<boolean>
  */
 export async function startShadowSyncAnalysis(
   schemaName: string,
+  connectionId: number,
   originTableNames: string[],
   destTableNames: string[],
 ) {
   const result = await request.post('/api/v2/schema-sync/shadowTableSyncs', {
     data: {
-      connectionId: connection?.connection?.id,
+      connectionId,
       schemaName,
       originTableNames,
       destTableNames,
@@ -382,4 +383,34 @@ export async function setShadowSyncRecordStatus(
 export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
   const res = await request.get(`/api/v2/flow/flowInstances/${flowId}/tasks/${nodeId}/result`);
   return res?.data?.contents?.[0]?.results;
+}
+
+/**
+ * 获取子任务
+ */
+export async function getDataArchiveSubTask(
+  taskId: number,
+): Promise<IResponseData<ICycleSubTaskRecord>> {
+  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`);
+  return res?.data;
+}
+
+/**
+ * 更新分区计划
+ */
+export async function rollbackDataArchiveSubTask(taskId: number, subTaskId): Promise<boolean> {
+  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/rollback`);
+  return !!res?.data;
+}
+
+export async function startDataArchiveSubTask(taskId: number, subTaskId): Promise<boolean> {
+  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/start`);
+  return !!res?.data;
+}
+
+export async function stopDataArchiveSubTask(taskId: number, subTaskId): Promise<boolean> {
+  const res = await request.put(
+    `/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/interrupt`,
+  );
+  return !!res?.data;
 }

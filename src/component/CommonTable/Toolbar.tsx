@@ -1,3 +1,4 @@
+import { SyncOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
@@ -17,10 +18,11 @@ interface IProps {
   operationContent: IOperationContent;
   isSplit: boolean;
   params: ITableLoadOptions;
+  enabledReload?: boolean;
   onFilterChange: (name: string, value: any) => void;
   onSearchChange: (value: string) => void;
   onTabChange: (value: string) => void;
-  onReload: (args: ITableLoadOptions) => void;
+  onReload: (args?: ITableLoadOptions) => void;
   onOperationClick: (fn: (args?: ITableLoadOptions) => void) => void;
 }
 
@@ -32,6 +34,7 @@ export const Toolbar: React.FC<IProps> = (props) => {
     isSplit,
     loading,
     params,
+    enabledReload = true,
     onReload,
     onFilterChange,
     onSearchChange,
@@ -40,14 +43,8 @@ export const Toolbar: React.FC<IProps> = (props) => {
   } = props;
   return (
     <Space className={classNames(styles.toolBar, 'odc-commontable-toolbar')}>
-      {titleContent && (
-        <TitleContent
-          {...titleContent}
-          loading={loading}
-          onReload={onReload}
-          onTabChange={onTabChange}
-        />
-      )}
+      {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
+      {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
       <Space split={isSplit ? '|' : null} size={16}>
         {filterContent && (
           <FilterContent
@@ -57,7 +54,15 @@ export const Toolbar: React.FC<IProps> = (props) => {
             onSearchChange={onSearchChange}
           />
         )}
-        {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
+        {enabledReload && (
+          <SyncOutlined
+            className={styles.cursor}
+            onClick={() => {
+              onReload();
+            }}
+            spin={loading}
+          />
+        )}
       </Space>
     </Space>
   );

@@ -1,16 +1,15 @@
-import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
-import { ReadOutlined } from '@ant-design/icons';
-import { Card, Typography } from 'antd';
+import { Button, Card, Typography } from 'antd';
 import React from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
 import { generateSessionSid } from '@/common/network/pathUtil';
-import { ConnectionStore } from '@/store/connection';
 import { ModalStore } from '@/store/modal';
-import { SettingStore } from '@/store/setting';
+import sessionManager from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { generateUniqKey } from '@/util/utils';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { AttachAddon } from './attach';
 import styles from './index.less';
@@ -18,16 +17,20 @@ import styles from './index.less';
 const { Text } = Typography;
 
 interface IOBClientProps {
-  connectionStore?: ConnectionStore;
   modalStore?: ModalStore;
-  settingStore?: SettingStore;
+  datasourceId: number;
+  theme?: string;
+  /**
+   * 适配工作台之外的样式
+   */
+  simpleHeader?: boolean;
 }
 
 interface IOBClientState {
   isClosed: boolean;
 }
 
-@inject('connectionStore', 'modalStore', 'settingStore')
+@inject('modalStore')
 @observer
 class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
   private xtermRef = React.createRef<HTMLDivElement>();
@@ -40,7 +43,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
 
   private _pingClock: any;
 
-  private theme: string;
+  private session: SessionStore;
 
   state: IOBClientState = {
     isClosed: false,
@@ -50,19 +53,21 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     setTimeout(() => {
       this.initTerminal();
     });
-    addEventListener('resize', () => {
-      this.xtermFitAddon.fit();
-    });
+    addEventListener('resize', this.resize);
   }
+
+  public resize = () => {
+    this.xtermFitAddon?.fit();
+  };
 
   componentDidUpdate(
     prevProps: Readonly<IOBClientProps>,
     prevState: Readonly<IOBClientState>,
     snapshot?: any,
   ): void {
-    if (this.props.settingStore.theme?.cmdTheme !== this.theme && this.xtermInstance) {
+    if (prevProps.theme !== this.props.theme && this.xtermInstance) {
       this.xtermInstance.options.theme =
-        this.props.settingStore.theme?.cmdTheme === 'white'
+        this.props.theme === 'white'
           ? {
               foreground: 'black', // 字体
               background: '#fff', // 背景色
@@ -70,24 +75,33 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
               selection: '#87bffd', // 选中区域的背景色
             }
           : {};
-      this.theme = this.props.settingStore.theme?.cmdTheme;
     }
   }
 
-  private initTerminal = () => {
-    const { settingStore } = this.props;
+  private disposeSession() {
+    if (this.session) {
+      sessionManager.destorySession(this.session?.sessionId);
+    }
+  }
+
+  private initTerminal = async () => {
+    const { datasourceId, theme } = this.props;
     const dom = this.xtermRef.current;
     if (!dom) {
       return;
     }
-    this.theme = settingStore.theme.cmdTheme;
+    const session = await sessionManager.createSession(datasourceId, null);
+    if (!session) {
+      return;
+    }
+    this.session = session;
     this.xtermInstance = new Terminal({
       convertEol: true,
       cursorBlink: true,
       cursorStyle: 'bar',
       rendererType: 'canvas',
       theme:
-        settingStore.theme.cmdTheme === 'white'
+        theme === 'white'
           ? {
               foreground: 'black', // 字体
               background: '#fff', // 背景色
@@ -106,7 +120,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     });
 
     let url = new URL(
-      `/api/v1/webSocket/obclient/${generateSessionSid()}`,
+      `/api/v1/webSocket/obclient/${generateSessionSid(session?.sessionId)}`,
       window.ODCApiHost || window.location.href,
     );
     url.protocol = url.protocol.replace('http', 'ws');
@@ -201,12 +215,14 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
 
   componentWillUnmount() {
     clearTimeout(this._pingClock);
+    this.disposeSession();
     if (this.xtermInstance) {
       this.xtermInstance.dispose();
     }
     if (this.ws) {
       this.ws.close();
     }
+    removeEventListener('resize', this.resize);
   }
 
   private reconnect = () => {
@@ -217,6 +233,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
       this.ws.close();
     }
     clearTimeout(this._pingClock);
+    this.disposeSession();
     this.initTerminal();
   };
 
@@ -235,6 +252,13 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
 
   public renderExtra() {
     const { isClosed } = this.state;
+    if (this.props.simpleHeader) {
+      return (
+        <Button onClick={this.reconnect} disabled={!isClosed}>
+          重新连接
+        </Button>
+      );
+    }
     return (
       <div
         style={{
@@ -252,35 +276,20 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
             }
           </a>
         ) : null}
-        <Toolbar.Divider />
-        <Toolbar.Button
-          isShowText
-          icon={<ReadOutlined />}
-          style={{ padding: '5px' }}
-          text={formatMessage({
-            id: 'odc.components.OBClientPage.ScriptManagement',
-          })}
-          /* 脚本管理 */
-          onClick={() => {
-            this.props.modalStore.changeScriptManageModalVisible(true);
-          }}
-        />
       </div>
     );
   }
 
-  readSettingDeps() {
-    this.props.settingStore.theme;
-  }
-
   render() {
-    this.readSettingDeps();
     return (
       <Card
+        bordered={false}
         size="small"
-        title={this.rendertitle()}
-        extra={this.renderExtra()}
-        className={styles.main}
+        title={!this.props.simpleHeader ? this.rendertitle() : this.renderExtra()}
+        extra={!this.props.simpleHeader ? this.renderExtra() : null}
+        className={classNames(styles.main, {
+          [styles.simpleHeader]: this.props.simpleHeader,
+        })}
         bodyStyle={{ paddingBottom: '0px' }}
       >
         <div style={{ height: '100%', width: '100%', position: 'relative' }} ref={this.xtermRef} />

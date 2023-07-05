@@ -1,12 +1,14 @@
 import { ConnectTypeText } from '@/constant/label';
-import { IConnection, IConnectionType } from '@/d.ts';
-import { hasSourceWriteAuth } from '@/page/Manage';
+import { IConnection } from '@/d.ts';
 import { ClusterStore } from '@/store/cluster';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
+
+import OBSvg from '@/svgr/source_ob.svg';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
@@ -60,47 +62,6 @@ const ConnectionPopover: React.FC<{
       );
     }
   }
-
-  function renderConnectType() {
-    const { visibleScope, permittedActions } = connection;
-    let typeText = null;
-    if (!showType) {
-      return null;
-    }
-    if (visibleScope === IConnectionType.PRIVATE) {
-      typeText = formatMessage({
-        id: 'odc.component.ConnectionPopover.PersonalConnection',
-      });
-      //个人连接
-    } else {
-      const isPermittedActionsHasSourceWriteAuth = hasSourceWriteAuth(permittedActions);
-      typeText =
-        formatMessage({
-          id: 'odc.component.ConnectionPopover.PublicConnection',
-        }) +
-        '(' +
-        //公共连接
-        (isPermittedActionsHasSourceWriteAuth
-          ? formatMessage({ id: 'odc.component.ConnectionPopover.ReadWrite' }) //读写
-          : formatMessage({ id: 'odc.component.ConnectionPopover.ReadOnly' })) + //只读
-        ')';
-    }
-    return (
-      <div>
-        {
-          formatMessage(
-            {
-              id: 'odc.component.ConnectionPopover.PropertyTypetext',
-            },
-
-            { typeText: typeText },
-          )
-
-          /*属性：{typeText}*/
-        }
-      </div>
-    );
-  }
   function renderConnectionMode() {
     const { type } = connection;
     return (
@@ -143,13 +104,12 @@ const ConnectionPopover: React.FC<{
               textOverflow: 'ellipsis',
             }}
           >
-            {connection.name}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Icon component={OBSvg} style={{ fontSize: 22, marginRight: 4 }} /> {connection.name}
+            </div>
           </div>
         </Tooltip>
-
-        {renderConnectType()}
         {renderConnectionMode()}
-        {clusterAndTenant}
         {haveOCP() ? null : (
           <div>
             {
@@ -162,7 +122,7 @@ const ConnectionPopover: React.FC<{
             {connection.host}:{connection.port}
           </div>
         )}
-
+        {clusterAndTenant}
         <div>
           {
             formatMessage(
@@ -176,13 +136,6 @@ const ConnectionPopover: React.FC<{
             /*数据库用户名：{connectionDbUser}*/
           }
         </div>
-        {showResourceGroups && (
-          <div>
-            {formatMessage({ id: 'odc.component.ConnectionPopover.ResourceGroup' }) /*资源组：*/}
-
-            {connection?.resourceGroups?.map((item) => item.name)?.join(' | ') || '-'}
-          </div>
-        )}
       </Space>
     </div>
   );

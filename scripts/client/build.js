@@ -31,6 +31,20 @@ async function buildClient(target) {
         targets: electronBuilder.Platform.MAC.createTarget(),
       },
     ],
+    'linux_x86': [
+      {
+        ENV: 'jre',
+        ARCH: '',
+        targets: electronBuilder.Platform.LINUX.createTarget('deb', electronBuilder.Arch.x64),
+      },
+    ],
+    'linux_aarch64': [
+      {
+        ENV: 'jre',
+        ARCH: '',
+        targets: electronBuilder.Platform.LINUX.createTarget('deb', electronBuilder.Arch.arm64),
+      },
+    ],
     win: [
       {
         ENV: '',
@@ -62,7 +76,7 @@ async function buildClient(target) {
       await electronBuilder.build({
         targets: c.targets,
       });
-    } catch(e) {
+    } catch (e) {
       console.error('构建失败！', e)
       process.exit(1)
     }
@@ -74,10 +88,7 @@ async function run() {
   console.log('sign: ', process.env.CSC_LINK)
   switch (process.argv[2]) {
     case 'mac': {
-      execSync('npm run prepack jar obclient', { stdio: 'inherit' });
-      await buildWeb();
-      await buildClient('mac');
-      execSync('npm run prepack jre', {
+      execSync('npm run prepack jre jar obclient', {
         stdio: 'inherit',
         env: {
           ...process.env,
@@ -85,6 +96,30 @@ async function run() {
         },
       });
       await buildClient('mac-jre');
+      return;
+    }
+    case 'linux_x86': {
+      execSync('npm run prepack jre jar obclient', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          platform: 'linux_x86',
+        },
+      });
+      await buildWeb();
+      await buildClient('linux_x86');
+      return;
+    }
+    case 'linux_aarch64': {
+      execSync('npm run prepack jre jar obclient', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          platform: 'linux_aarch64',
+        },
+      });
+      await buildWeb();
+      await buildClient('linux_aarch64');
       return;
     }
     case 'win': {
@@ -102,19 +137,23 @@ async function run() {
       return;
     }
     case 'all': {
-      execSync('npm run prepack jar obclient', { stdio: 'inherit' });
-      await buildWeb();
-      await buildClient('mac');
-      await buildClient('win');
-      execSync('npm run prepack jre', {
+      /**
+      * mac (jre)
+      */
+      execSync('npm run prepack jre jar', {
         stdio: 'inherit',
         env: {
           ...process.env,
           platform: 'mac',
         },
       });
+      await buildWeb();
       await buildClient('mac-jre');
-      execSync('npm run prepack jre', {
+
+      /**
+       * win 64 (jre)
+       */
+      execSync('npm run prepack jre obclient', {
         stdio: 'inherit',
         env: {
           ...process.env,
@@ -122,6 +161,30 @@ async function run() {
         },
       });
       await buildClient('win-jre');
+
+      /**
+       * linux x64
+       */
+      execSync('npm run prepack jre obclient', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          platform: 'linux_x86',
+        },
+      });
+      await buildClient('linux_x86');
+
+      /**
+       * linux arm64
+       */
+      execSync('npm run prepack jre obclient', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          platform: 'linux_aarch64',
+        },
+      });
+      await buildClient('linux_aarch64');
       return;
     }
     case 'test': {

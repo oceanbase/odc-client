@@ -93,16 +93,28 @@ request.interceptors.response.use(async (response, req) => {
     response.data = {};
   }
   let json;
+  let text = '';
   try {
     json = await r.json();
+    text = (await response.clone().text()) || '';
   } catch (e) {
-    console.error(e);
+    const requestId = json?.requestId || undefined;
     json = {
       errCode: 'FORMAT_ERROR',
       errMsg: formatMessage({
         id: 'odc.util.request.private.AnErrorOccurredWhileParsing',
       }), // 解析结果出错，请检查部署配置
       data: null,
+      requestId,
+      extraMessage: {
+        isComponent: true,
+        extraMessageParams: {
+          requestUrl: r.url,
+          responseStatusCode: r.status,
+          responseContentType: r.headers?.get('content-type'),
+          reponseBody: text.slice(0, 200),
+        },
+      },
     };
   }
   odc.responseJsonResolver?.(response, json);

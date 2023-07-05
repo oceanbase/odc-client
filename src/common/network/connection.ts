@@ -1,4 +1,4 @@
-import type { ConnectionFilterStatus } from '@/d.ts';
+import type { ConnectionFilterStatus, IDataType } from '@/d.ts';
 import {
   AccountType,
   ConnectionMode,
@@ -11,19 +11,16 @@ import {
   ISessionStatus,
   ISqlExecuteResultStatus,
 } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import { IDatasource } from '@/d.ts/datasource';
 import userStore from '@/store/login';
-import {
-  clearReviseV2Field,
-  getDialectTypeFromConnectType,
-  isConnectTypeBeCloudType,
-  reviseV2Field,
-} from '@/util/connection';
+import { isConnectTypeBeCloudType } from '@/util/connection';
 import request from '@/util/request';
 import { decrypt, encrypt } from '@/util/utils';
-import { generateDatabaseSid, generateSessionSid } from './pathUtil';
+import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
 
-function generateConnectionParams(formData: IConnectionFormData, isHiden?: boolean) {
+function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: boolean) {
   // 创建必须带上 userId
   const userId = userStore?.user?.id;
   const params: Partial<IConnection> = {
@@ -39,21 +36,10 @@ function generateConnectionParams(formData: IConnectionFormData, isHiden?: boole
      */
     sysTenantPassword: encrypt(formData.sysTenantPassword),
     queryTimeoutSeconds: formData.queryTimeoutSeconds,
-    defaultSchema: formData.defaultSchema,
     properties: formData.properties,
-    copyFromId: formData.copyFromSid,
-    temp: isHiden,
     passwordSaved: formData.passwordSaved,
-    visibleScope: formData.visibleScope,
+    environmentId: formData.environmentId,
   };
-  const dialectType = getDialectTypeFromConnectType(params.type);
-
-  if (dialectType == ConnectionMode.OB_ORACLE) {
-    /**
-     * oracle 用户名就是默认数据库
-     */
-    params.defaultSchema = params.username;
-  }
 
   if (isConnectTypeBeCloudType(formData.type)) {
     /**
@@ -75,20 +61,20 @@ function generateConnectionParams(formData: IConnectionFormData, isHiden?: boole
   }
 
   // 取消数据订正，详见clearReviseV2Field
-  return clearReviseV2Field(params);
+  return params;
 }
 
 /**
  * 创建连接
  */
-export async function createConnection(formData: IConnectionFormData, isHiden?: boolean) {
+export async function createConnection(formData: IDatasource, isHiden?: boolean) {
   const params: Partial<IConnection> = generateConnectionParams(formData, isHiden);
 
   const requestParams = {
     wantCatchError: false,
     holdErrorTip: true,
   };
-  const ret = await request.post('/api/v2/connect/connections', {
+  const ret = await request.post('/api/v2/datasource/datasources', {
     data: params,
     params: requestParams,
   });
@@ -101,7 +87,7 @@ export async function updateConnection(formData: IConnectionFormData) {
   const requestParams = {
     wantCatchError: true,
   };
-  const ret = await request.put(`/api/v2/connect/connections/${sid}`, {
+  const ret = await request.put(`/api/v2/datasource/datasources/${sid}`, {
     data: {
       id: sid,
       ...params,
@@ -112,14 +98,14 @@ export async function updateConnection(formData: IConnectionFormData) {
 }
 
 export async function updateConnectionFromConnection(c: IConnection) {
-  const res = await request.put(`/api/v2/connect/connections/${c.id}`, {
+  const res = await request.put(`/api/v2/datasource/datasources/${c.id}`, {
     data: { ...c, password: encrypt(c.password) },
   });
   return !!res && !res?.isError;
 }
 
 export async function parseConnectionStr(connectStr: string): Promise<Partial<IConnection>> {
-  let d = await request.post('/api/v2/connect/help/parseConnectionStr', {
+  let d = await request.post('/api/v2/datasource/help/parseConnectionStr', {
     data: {
       connStr: encrypt(connectStr),
     },
@@ -134,14 +120,14 @@ export async function parseConnectionStr(connectStr: string): Promise<Partial<IC
 }
 
 export async function generateConnectionStr(formData: IConnectionFormData): Promise<string> {
-  let d = await request.post(`/api/v2/connect/help/generateConnectionStr`, {
+  let d = await request.post(`/api/v2/datasource/help/generateConnectionStr`, {
     data: { ...generateConnectionParams(formData), password: null },
   });
   return decrypt(d?.data);
 }
 
 export async function testConnection(
-  formData: IConnectionFormData,
+  formData: Partial<IDatasource>,
   accountType: AccountType,
   ignoreError?: boolean,
 ): Promise<{
@@ -151,6 +137,7 @@ export async function testConnection(
     errorMessage: string;
     type: ConnectType;
   };
+  errMsg?: string;
 }> {
   const sid = formData?.id;
   const params = generateConnectionParams(formData);
@@ -191,7 +178,7 @@ export async function batchTest(cids: number[]): Promise<
     sidString?: string;
   }[]
 > {
-  const res = await request.get('/api/v2/connect/connections/status', {
+  const res = await request.get('/api/v2/datasource/datasources/status', {
     params: {
       id: cids,
     },
@@ -208,132 +195,84 @@ export async function getConnectionList(params: {
   dialectType?: ConnectionMode | ConnectionMode[];
   type?: ConnectType[] | ConnectType;
   status?: ConnectionFilterStatus;
-  permittedAction?: string | string[];
   fuzzySearchKeyword?: string;
   sort?: string;
   page?: number;
   size?: number;
-  visibleScope?: IConnectionType;
   minPrivilege?: string;
   sessionLabelId?: string[];
   hostPort?: string;
-}): Promise<IResponseData<IConnection>> {
-  const { visibleScope = IConnectionType.PRIVATE, minPrivilege = 'readonlyconnect' } = params;
-  const results = await request.get('/api/v2/connect/connections', {
+  name?: string;
+}): Promise<IResponseData<IDatasource>> {
+  const results = await request.get('/api/v2/datasource/datasources', {
     params: {
       ...params,
-      visibleScope,
-      minPrivilege,
     },
   });
 
   return results?.data;
 }
 
-export async function getConnectionDetail(sid: number): Promise<IConnection> {
-  const results = await request.get(`/api/v2/connect/connections/${sid}`);
+export async function getConnectionDetail(sid: number): Promise<IDatasource> {
+  const results = await request.get(`/api/v2/datasource/datasources/${sid}`);
 
-  return results?.data ? reviseV2Field(results.data) : results.data;
+  return results?.data;
 }
 
-export async function getSupportFeatures(): Promise<
-  {
-    support: boolean;
-    supportType: string;
-  }[]
-> {
-  const res = await request.get(
-    `/api/v1/version-config/getSupportFeatures/${generateDatabaseSid()}`,
-  );
-
-  return res?.data;
-}
-
-export async function changeDelimiter(v, sessionId?: string): Promise<boolean> {
-  const data = await executeSQL(`delimiter ${v}`, sessionId);
+export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
+  const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
   return data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
 }
 
-/**
- * 直接建立连接，不需要新建连接
- */
-export async function directConnect(sid: number, params: IConnectionFormData) {
-  const serverParams = {
-    ...generateConnectionParams(params),
-    sid: params.id,
-    sessionName: params.name,
-  };
-  const res = await request.put(`/api/v1/session/directConnect/sid:${sid}`, {
-    data: serverParams,
-  });
-  const sessionId = res?.data;
-  if (sessionId) {
-    return sessionId.substring(4);
-  }
-}
-
-export async function newSession(
-  sid: string,
-  password: string,
-  /**
-   * 存在的时候会忽略password和sid，用于创建子session
-   */
-  copiedFromSessionId: string,
-  cloudParams?: {
-    tenantId: any;
-    instanceId: any;
-  },
+export async function newSessionByDataBase(
+  databaseId: number,
   holdErrorTip?: boolean,
-) {
-  const { data } = await request.post(
-    `/api/v2/connect/sessions?connectType=${
-      ENV_environment === 'cloud' ? 'CONNECT_TYPE_CLOUD' : 'CONNECT_TYPE_OB'
-    }`,
-    {
-      data: {
-        connectionId: sid,
-        copiedFromSessionId,
-        password: encrypt(password),
-        cloudParams,
-      },
-      params: {
-        holdErrorTip,
-      },
+): Promise<{
+  sessionId: string;
+  dataTypeUnits: IDataType[];
+  supports: {
+    support: boolean;
+    supportType: string;
+  }[];
+}> {
+  const { data } = await request.post(`/api/v2/datasource/databases/${databaseId}/sessions`, {
+    params: {
+      holdErrorTip,
     },
-  );
-  if (data) {
-    // 不带 sid
-    const sessionId = data.substring(4);
-    return sessionId;
-  }
+  });
+  return data;
 }
 
-/**
- * 根据connectionID获取连接的详细信息
- */
-export async function getConnectionBySessionId(sessionId: string): Promise<IConnection> {
-  const connectionId = sessionId.split('-')[0];
-  const results = await request.get(`/api/v2/connect/connections/${connectionId}`);
-  return results?.data ? reviseV2Field(results.data) : results.data;
+export async function newSessionByDataSource(
+  dataSourceId: number,
+  holdErrorTip?: boolean,
+): Promise<{
+  sessionId: string;
+  dataTypeUnits: IDataType[];
+  supports: {
+    support: boolean;
+    supportType: string;
+  }[];
+}> {
+  const { data } = await request.post(`/api/v2/datasource/datasources/${dataSourceId}/sessions`, {
+    params: {
+      holdErrorTip,
+    },
+  });
+  return data;
 }
 
-export async function getTransactionInfo(sessionId?: string): Promise<{
-  autocommit: boolean;
-  delimiter: string;
-  queryLimit: number;
-  obVersion: string;
+export async function getSessionStatus(sessionId?: string): Promise<{
+  settings: {
+    autocommit: boolean;
+    delimiter: string;
+    queryLimit: number;
+    obVersion: string;
+  };
+  session: ISessionStatus;
 }> {
   const sid = generateSessionSid(sessionId);
-  const res = await request.get(`/api/v1/transaction/getTransactionInfo/${sid}`);
-  return res?.data;
-}
-
-/**
- * 查询事务相关的信息
- */
-export async function getSessionStatus(sessionId?: string): Promise<ISessionStatus> {
-  const sid = generateSessionSid(sessionId);
-  const res = await request.get(`/api/v2/connect/sessions/${sid}/status`);
+  const res = await request.get(`/api/v2/datasource/sessions/${sessionId}/status`);
   return res?.data;
 }
 
@@ -349,92 +288,9 @@ export async function setTransactionInfo(
   sessionId?: string,
 ): Promise<boolean> {
   const sid = generateSessionSid(sessionId);
-  const infos = await getTransactionInfo(sessionId);
+  const infos = await getSessionStatus(sessionId);
   const res = await request.post(`/api/v1/transaction/setTransactionInfo/${sid}`, {
-    data: { ...infos, ...params },
-  });
-  return res?.data;
-}
-
-/**
- * 新建标签
- */
-export async function createConnectionLabel(formData: { labelColor: string; labelName: string }) {
-  const url = `/api/v1/session-label`;
-  const params = {
-    ...formData,
-  };
-  const res = await request.post(url, {
-    data: params,
-  });
-  return res?.data;
-}
-
-/**
- * 获取标签列表
- */
-export async function getConnectionLabelList(): Promise<IConnection[]> {
-  const results = await request.get(`/api/v1/session-label/list`);
-  return results?.data;
-}
-
-/**
- * 修改标签
- */
-export async function updateConnectionLabel(formData: {
-  id: number;
-  labelColor: string;
-  labelName: string;
-}) {
-  const url = `/api/v1/session-label/${formData.id}`;
-  const res = await request.put(url, {
-    data: formData,
-  });
-  return res?.data;
-}
-
-export async function setConnectionLabel(cid: any, labelId) {
-  const res = await request.post(`/api/v2/connect/connections/${cid}/setLabel`, {
-    data: !labelId ? [] : [labelId],
-  });
-  return res?.data;
-}
-
-/**
- * 删除标签
- */
-export async function deleteConnectionLabel(id: number) {
-  const params = {
-    id,
-  };
-  const res = await request.delete(`/api/v1/session-label/${id}`, {
-    data: params,
-  });
-  return res?.data;
-}
-
-/**
- * 置顶连接
- */
-export async function setConnectionTop(sid: number) {
-  const url = `/api/v2/connect/connections/${sid}/setTop`;
-  const res = await request.post(url, {
-    data: {
-      id: sid,
-    },
-  });
-  return res?.data;
-}
-
-/**
- * 取消置顶连接
- */
-export async function cancelConnectionTop(sid: number) {
-  const url = `/api/v2/connect/connections/${sid}/cancelSetTop`;
-  const res = await request.post(url, {
-    data: {
-      id: sid,
-    },
+    data: { ...infos?.settings, ...params },
   });
   return res?.data;
 }
@@ -442,11 +298,8 @@ export async function cancelConnectionTop(sid: number) {
 /**
  * 获取连接名称是否重复
  */
-export async function getConnectionExists(params: {
-  name: string;
-  visibleScope: string;
-}): Promise<boolean> {
-  const results = await request.get(`/api/v2/connect/connections/exists`, {
+export async function getConnectionExists(params: { name: string }): Promise<boolean> {
+  const results = await request.get(`/api/v2/datasource/datasources/exists`, {
     params,
   });
   return results?.data;
@@ -459,7 +312,7 @@ export async function getClusterAndTenantList(visibleScope: IConnectionType): Pr
   tenantName: Record<string, string[]>;
   clusterName: Record<string, string[]>;
 }> {
-  const results = await request.get('/api/v2/connect/connections/stats', {
+  const results = await request.get('/api/v2/datasource/datasources/stats', {
     params: {
       visibleScope,
     },
@@ -468,33 +321,38 @@ export async function getClusterAndTenantList(visibleScope: IConnectionType): Pr
 }
 
 export async function deleteConnection(cid: string): Promise<boolean> {
-  const res = await request.delete(`/api/v2/connect/connections/${cid}`);
+  const res = await request.delete(`/api/v2/datasource/datasources/${cid}`);
   return res?.data;
-}
-
-export async function switchSchema(sessionIds: string[], schema: string) {
-  const res = await request.post(`/api/v2/connect/sessions/switchSchema`, {
-    data: {
-      sessionIds,
-      schemaName: schema,
-    },
-  });
-  return !res?.isError;
 }
 
 /**
  * 批量导入个人连接
  */
 export async function batchImportPrivateConnection(data: IConnection[]): Promise<IConnection[]> {
-  const result = await request.post('/api/v2/connect/connections/batchCreate', {
+  const result = await request.post('/api/v2/datasource/datasources/batchCreate', {
     data,
   });
   return result?.data;
 }
 
 export async function batchDeleteConnection(ids: (string | number)[]): Promise<boolean> {
-  const res = await request.delete(`/api/v2/connect/connections/batchDelete`, {
+  const res = await request.delete(`/api/v2/datasource/datasources/batchDelete`, {
     data: ids,
   });
+  return res?.data;
+}
+export async function syncDatasource(dsId: number): Promise<boolean> {
+  const res = await request.post(`/api/v2/datasource/datasources/${dsId}/sync`);
+  return !!res?.data;
+}
+export async function getDataSourceManageDatabase(
+  datasourceId: number,
+): Promise<IResponseData<IDatabase>> {
+  const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`);
+  return res?.data;
+}
+
+export async function getDataSourceGroupByProject(): Promise<IResponseData<IDatasource>> {
+  const res = await request.get(`/api/v2/collaboration/projects/databases/statsDataSource`);
   return res?.data;
 }

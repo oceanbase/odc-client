@@ -17,17 +17,19 @@ import SQLExplain from '../index';
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 import styles from './index.less';
 
 interface IProps {
   visible: boolean;
+  session: SessionStore;
   sql?: string;
   traceId?: string;
   onClose: () => void;
 }
 
 const ExecDetail: React.FC<IProps> = function (props) {
-  const { visible, sql, traceId, onClose } = props;
+  const { visible, sql, traceId, session, onClose } = props;
   const [loadingExplain, setLoadingExplain] = useState(false);
   const [sqlExecuteExplainToShow, setSqlExecuteExplainToShow] = useState<ISQLExplain | string>(
     null,
@@ -48,9 +50,19 @@ const ExecDetail: React.FC<IProps> = function (props) {
       setSqlExecuteExplainToShow(null);
       setLoadingExplain(true);
 
-      const detail = await getSQLExecuteDetail(sql, traceId);
+      const detail = await getSQLExecuteDetail(
+        sql,
+        traceId,
+        session?.sessionId,
+        session?.database?.dbName,
+      );
       const sqlId = detail?.sqlId;
-      const explain = await getSQLExecuteExplain(sql, sqlId);
+      const explain = await getSQLExecuteExplain(
+        sql,
+        sqlId,
+        session?.sessionId,
+        session?.database?.dbName,
+      );
       setLoadingExplain(false);
 
       if (explain && detail) {
@@ -109,65 +121,68 @@ const ExecDetail: React.FC<IProps> = function (props) {
             value: queueTime,
           },
         ];
-        const StackedBar = (await import('@antv/g2plot')).StackedBar;
-        stackBarPlot.current = new StackedBar(stackBarBox.current, {
-          forceFit: true,
-          height: 140,
-          data,
-          colorField: 'label',
-          color: (label: string) => {
-            if (label === queueTimeLabel) {
-              return '#EC7F66';
-            }
-            if (label === execTimeLabel) {
-              return '#76DCB3';
-            }
-            return '#F8C64A';
-          },
-          barSize: 24,
-          yField: 'name',
-          xField: 'value',
-          stackField: 'label',
-          xAxis: {
-            visible: false,
-            tickLine: {
+        if (!stackBarPlot.current) {
+          const StackedBar = (await import('@antv/g2plot')).StackedBar;
+          stackBarPlot.current = new StackedBar(stackBarBox.current, {
+            forceFit: true,
+            height: 140,
+            data,
+            colorField: 'label',
+            color: (label: string) => {
+              if (label === queueTimeLabel) {
+                return '#EC7F66';
+              }
+              if (label === execTimeLabel) {
+                return '#76DCB3';
+              }
+              return '#F8C64A';
+            },
+            barSize: 24,
+            yField: 'name',
+            xField: 'value',
+            stackField: 'label',
+            xAxis: {
               visible: false,
+              tickLine: {
+                visible: false,
+              },
+
+              title: {
+                visible: false,
+              },
+
+              grid: {
+                visible: false,
+              },
+            },
+
+            yAxis: {
+              tickLine: {
+                visible: false,
+              },
+
+              label: {
+                visible: false,
+              },
+
+              title: {
+                visible: false,
+              },
             },
 
             title: {
               visible: false,
+              text: '',
             },
 
-            grid: {
-              visible: false,
+            legend: {
+              position: 'bottom-center',
             },
-          },
-
-          yAxis: {
-            tickLine: {
-              visible: false,
-            },
-
-            label: {
-              visible: false,
-            },
-
-            title: {
-              visible: false,
-            },
-          },
-
-          title: {
-            visible: false,
-            text: '',
-          },
-
-          legend: {
-            position: 'bottom-center',
-          },
-        });
-
-        stackBarPlot.current.render();
+          });
+          stackBarPlot.current.render();
+        } else {
+          stackBarPlot.current.changeData(data);
+        }
       } else {
         message.error(
           formatMessage({
@@ -183,6 +198,12 @@ const ExecDetail: React.FC<IProps> = function (props) {
     if (visible) {
       fetchExecDetail();
     }
+    return () => {
+      if (stackBarPlot.current) {
+        stackBarPlot.current?.destroy();
+        stackBarPlot.current = null;
+      }
+    };
   }, [sql, traceId, visible]);
 
   return (
@@ -193,10 +214,6 @@ const ExecDetail: React.FC<IProps> = function (props) {
       placement="right"
       closable
       onClose={() => {
-        if (stackBarPlot.current) {
-          stackBarPlot.current.destroy();
-          stackBarPlot.current = null;
-        }
         onClose();
       }}
       width="96vw"
@@ -348,6 +365,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
                         id: 'workspace.window.sql.explain.tab.detail.card.io.rpcCount',
                       })}
                       value={sqlExecuteDetailToShow?.rpcCount}
+                      valueStyle={{ fontSize: '24px' }}
                     />
                   </Col>
                   <Col span={8}>
@@ -356,6 +374,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
                         id: 'workspace.window.sql.explain.tab.detail.card.io.physicalRead',
                       })}
                       value={sqlExecuteDetailToShow?.physicalRead}
+                      valueStyle={{ fontSize: '24px' }}
                     />
                   </Col>
                   <Col span={8}>
@@ -364,6 +383,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
                         id: 'workspace.window.sql.explain.tab.detail.card.io.ssstoreRead',
                       })}
                       value={sqlExecuteDetailToShow?.ssstoreRead}
+                      valueStyle={{ fontSize: '24px' }}
                     />
                   </Col>
                 </Row>

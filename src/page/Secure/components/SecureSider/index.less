@@ -1,0 +1,33 @@
+.secureSider {
+  width: 148px;
+  height: 100%;
+  padding: 0 12px 12px 0;
+  overflow: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--divider-color);
+}
+
+.siderItemList {
+  margin-top: 12px;
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0px;
+    padding: 0px 12px;
+    color: var(--text-color-primary);
+    line-height: 28px;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--hover-color);
+      .plus {
+        display: block;
+      }
+    }
+    &.selected {
+      color: var(--text-color-link);
+      background-color: var(--brand-blue1-color);
+      border-radius: 2px;
+    }
+  }
+}

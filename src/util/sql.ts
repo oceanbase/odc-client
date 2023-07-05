@@ -1,5 +1,4 @@
 import { ConnectionMode } from '@/d.ts';
-import connection from '@/store/connection';
 import moment from 'moment';
 
 const CHAR_SIZE = 32767;
@@ -208,11 +207,15 @@ export function encodeIdentifiers(str, isMySQL: boolean) {
   return isMySQL ? str.replace(/`/g, '``') : str.replace(/"/g, '""');
 }
 
-export async function splitSql(sql: string, isOracle: boolean = false): Promise<number[]> {
+export async function splitSql(
+  sql: string,
+  isOracle: boolean = false,
+  delimiter,
+): Promise<number[]> {
   const { SQLDocument } = await import('@alipay/ob-parser-js');
   const doc = new SQLDocument({
     text: sql,
-    delimiter: connection.delimiter,
+    delimiter: delimiter,
   });
   return doc?.statements?.map((stmt) => {
     return stmt.stop + (stmt.delimiter?.length || 0);
@@ -227,7 +230,7 @@ export function getRealTableName(tableName: string, isOracle: boolean = true) {
  * plsql
  * CnPlugin expaste
  */
-export function textExpaste(text: string) {
+export function textExpaste(text: string, dialectType?: ConnectionMode) {
   /**
    * `a b c
    * d e
@@ -242,11 +245,9 @@ export function textExpaste(text: string) {
    * "d","e",
    * "f")
    */
+  dialectType = dialectType || ConnectionMode.OB_ORACLE;
   return (text || '')
-    .replace(
-      /(\S+)[ \t]?/g,
-      connection.connection?.dialectType === ConnectionMode.OB_ORACLE ? "'$1'," : '"$1",',
-    )
+    .replace(/(\S+)[ \t]?/g, dialectType === ConnectionMode.OB_ORACLE ? "'$1'," : '"$1",')
     .replace(/,(\s*)$/, ')$1')
     .replace(/^(\s*)/, '$1(');
 }

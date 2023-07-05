@@ -2,6 +2,8 @@ import getVersion from './version';
 import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+
 const version = getVersion();
 console.log('git last commit: ', version);
 const umiEnv = process.env.UMI_ENV;
@@ -24,6 +26,10 @@ const config = {
   // },
   // dynamicImportSyntax: {},
   publicPath,
+  esbuildMinifyIIFE: true,
+  runtimePublicPath: {},
+  hash: true,
+  esbuildMinifyIIFE: true,
   // tracert: {
   //   spmAPos: 'a3112',
   //   bizType: 'lu',
@@ -36,12 +42,6 @@ const config = {
     firefox: 60,
     edge: 79,
   },
-  copy: [
-    {
-      from: 'src/workers',
-      to: './dist/renderer/workers/' + define.MONACO_VERSION,
-    },
-  ],
   // esbuild: {},
   metas: [
     {
@@ -61,7 +61,7 @@ const config = {
   proxy: {
     // 本地开发或者对内 Site 应用的开发环境的代理配置
     '/api/v1/webSocket/obclient': {
-      target: 'http://100.69.100.202:9509',
+      target: 'http://11.124.9.80:8990',
       ws: true,
     },
     '/api/': {
@@ -69,10 +69,14 @@ const config = {
       // target: 'http://100.81.152.104:8989',
       // target: 'http://100.81.152.113:9000',
       // target: 'http://100.81.152.113:8989',
-      target:  process.env.CURRENT_ENV === 'obcloud'
-      ? 'http://g-sit.obcloud.alipay.net'
-      : 'http://11.124.9.83:7001/proxy/96',
+      target: 'http://11.162.218.70:7001/proxy/96',
     },
+    '/oauth2/': {
+      target: 'http://11.162.218.70:7001/proxy/96',
+    },
+    '/login/': {
+      target: 'http://11.162.218.70:7001/proxy/96',
+    }
   },
 
   locale: {
@@ -92,7 +96,12 @@ const config = {
     config.performance.hints('warning');
     config.module.rules.delete('svg');
     config.module.rule('asset').oneOf('fallback').exclude.add(/.svg/);
-
+    config.plugin('monaco').use(MonacoWebpackPlugin, [
+      {
+        filename: '[name].worker.js',
+        languages: ['yaml', 'json']
+      }
+    ])
     config.module
       .rule('svg')
       .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)

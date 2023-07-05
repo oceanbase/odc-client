@@ -1,6 +1,4 @@
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
-import connection from '@/store/connection';
-import schema from '@/store/schema';
 import { generateAndDownloadFile, getQuoteTableName } from '../utils';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
@@ -9,12 +7,13 @@ export default function exportToSQL(
   selectData: any[][],
   columns: ResultSetColumn[],
   tableName: string = 'tmp_table',
+  dbMode: ConnectionMode,
 ) {
   const headerColumnNames = selectData[0];
   if (!headerColumnNames) {
     return;
   }
-  const isMySQL = connection.connection.dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
   const columnMap: {
     [key: string]: ResultSetColumn;
   } = {};
@@ -22,7 +21,7 @@ export default function exportToSQL(
     columnMap[column.name] = column;
   });
   const columnsText = headerColumnNames
-    .map((columnName) => getQuoteTableName(columnName))
+    .map((columnName) => getQuoteTableName(columnName, dbMode))
     .join(',');
   return selectData
     .slice(1)
@@ -36,12 +35,14 @@ export default function exportToSQL(
             : oracleConvertValueToSQLString(item, column.columnType);
         })
         .join(',');
-      return `insert into ${getQuoteTableName(tableName)}(${columnsText}) values(${rowsText})`;
+      return `insert into ${getQuoteTableName(
+        tableName,
+        dbMode,
+      )}(${columnsText}) values(${rowsText})`;
     })
     .join(';\n');
 }
 
-export function downloadPLDDL(plName: string, plType, ddl: string) {
-  const dbName = schema.database.name;
+export function downloadPLDDL(plName: string, plType, ddl: string, dbName: string) {
   generateAndDownloadFile(`${dbName}_${plType}_${plName}.sql`, ddl);
 }

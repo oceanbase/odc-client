@@ -72,8 +72,8 @@ const WorkspaceSideTip: React.FC<any> = function () {
       trigger={['click']}
       overlay={content}
       placement="topRight"
-      visible={visible}
-      onVisibleChange={(v) => {
+      open={visible}
+      onOpenChange={(v) => {
         setVisible(v);
       }}
     >

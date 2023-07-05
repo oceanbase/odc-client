@@ -1,6 +1,9 @@
 import { formatMessage } from '@/util/intl';
 import { FormattedMessage } from 'umi';
 
+const dataArchiveFilterDoc = `可通过 SQL where 语句配置过滤条件，如"create_time &gt '2023-01-01'";
+也可通过引用变量进行动态配置，如" create_time &lt '\${archive_date}'"`;
+
 export default {
   sysTransfer: () => (
     <p>
@@ -427,4 +430,11 @@ export default {
       }
     </p>
   ),
+
+  projectOwner: <p>可管理项目所有数据库和成员</p>,
+  projectDBA: <p>可管理项目所有数据库</p>,
+  projectDev: <p>可访问项目所有数据库</p>,
+
+  dataArchiveTimeDoc: <p>以系统默认变量“archive_date”时间点为基准设置偏移信息</p>,
+  dataArchiveFilterDoc: <p>{dataArchiveFilterDoc}</p>,
 };

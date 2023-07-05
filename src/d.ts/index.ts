@@ -14,6 +14,34 @@ export interface IUser {
   role: string;
   enabled: boolean;
   roles?: IManagerRole[];
+  belongedToOrganizations: IOrganization[];
+  organizationId: number;
+}
+
+export interface IUserSummary {
+  id: number;
+  name: string;
+  accountName: string;
+  organizationId: number;
+}
+
+export interface IOrganization {
+  id: number;
+  createTime: string;
+  updateTime: string;
+  uniqueIdentifier: string;
+  name: string;
+  displayName: string;
+  secret: string;
+  description: string;
+  builtin: boolean;
+  type: 'TEAM' | 'INDIVIDUAL';
+}
+
+export enum SQL_OBJECT_TYPE {
+  TABLE,
+  VIEW,
+  FUNCTION,
 }
 
 // 个人配置
@@ -104,6 +132,8 @@ export enum IManagePagesKeys {
   SECURITY_AUDIT = 'security_audit',
   SYSTEM_CONFIG = 'system_config',
   MASK_DATA = 'mask_data',
+  INTEGRATION_APPROVAL = 'integration_approval',
+  SQL_INTERCEPTOR = 'sql_interceptor',
 }
 
 export interface IManagerUser {
@@ -125,6 +155,7 @@ export interface IManagerUser {
     resourceIdentifier: number;
     action: string;
   }[];
+  extraProperties?: Record<string, string>;
   errorMessage?: string;
 }
 
@@ -176,6 +207,13 @@ export enum IManagerRolePermissionType {
   connectionAccessPermissions = 'connectionAccessPermissions',
   resourceManagementPermissions = 'resourceManagementPermissions',
   systemOperationPermissions = 'systemOperationPermissions',
+}
+
+export interface IResourceRole {
+  id: number;
+  resourceType: string;
+  roleName: string;
+  description: string;
 }
 
 export interface IResponseData<T> {
@@ -231,6 +269,65 @@ export interface IManagerResourceGroup {
     enabled: boolean;
   }[];
 }
+// 外部集成
+export interface IManagerIntegration {
+  id: number;
+  type: IntegrationType;
+  name: string;
+  configuration: string;
+  enabled: boolean;
+  encryption: Encryption;
+  creatorId: number;
+  creatorName: string;
+  organizationId: number;
+  description: string;
+  createTime: number;
+  updateTime: number;
+  builtin: boolean;
+}
+
+export interface ITaskFlow {
+  id: number;
+  name: string;
+  builtIn: boolean;
+  approvalExpirationIntervalSeconds: number;
+  executionExpirationIntervalSeconds: number;
+  waitExecutionExpirationIntervalSeconds: number;
+  referencedCount: number;
+  nodes: ITaskFlowNode[];
+  organizationId: number;
+  createTime: number;
+  description: string;
+}
+
+export interface ITaskFlowNode {
+  resourceRoleId: number;
+  resourceRoleName: string;
+  externalApprovalId: number;
+  externalApprovalName: string;
+  autoApproval: boolean;
+  sequenceNumber: number;
+}
+
+interface Encryption {
+  enabled: boolean;
+  secret: string;
+  algorithm: EncryptionAlgorithm;
+}
+
+export enum EncryptionAlgorithm {
+  AES256_BASE64 = 'AES256_BASE64',
+  AES192_BASE64_4A = 'AES192_BASE64_4A',
+  RAW = 'RAW',
+}
+
+export enum IntegrationType {
+  // 集成审批
+  APPROVAL = 'APPROVAL',
+  // SQL 审核集成
+  SQL_INTERCEPTOR = 'SQL_INTERCEPTOR',
+  SSO = 'SSO',
+}
 
 export enum AuditEventType {
   // 个人配置
@@ -254,7 +351,6 @@ export enum AuditEventType {
   IMPORT = 'IMPORT',
   EXPORT = 'EXPORT',
   MOCKDATA = 'MOCKDATA',
-  PERMISSION_APPLY = 'PERMISSION_APPLY',
   // 影子表
   SHADOWTABLE_SYNC = 'SHADOWTABLE_SYNC',
   // 分区计划
@@ -346,9 +442,6 @@ export enum AuditEventActionType {
   REJECT_MOCKDATA_TASK = 'REJECT_MOCKDATA_TASK',
   REJECT_IMPORT_TASK = 'REJECT_IMPORT_TASK',
   REJECT_EXPORT_TASK = 'REJECT_EXPORT_TASK',
-  CREATE_PERMISSION_APPLY_TASK = 'CREATE_PERMISSION_APPLY_TASK',
-  APPROVE_PERMISSION_APPLY_TASK = 'APPROVE_PERMISSION_APPLY_TASK',
-  REJECT_PERMISSION_APPLY_TASK = 'REJECT_PERMISSION_APPLY_TASK',
   // 影子表
   CREATE_SHADOWTABLE_SYNC_TASK = 'CREATE_SHADOWTABLE_SYNC_TASK',
   EXECUTE_SHADOWTABLE_SYNC_TASK = 'EXECUTE_SHADOWTABLE_SYNC_TASK',
@@ -486,6 +579,9 @@ export interface IRequestListParamsV2 {
 export interface IConnection {
   id: number; // sid
   ownerId: number;
+  environmentId: number;
+  environmentName: string;
+  environmentStyle: string;
   sslConfig: {
     enabled: boolean;
     clientCertObjectId?: string;
@@ -494,12 +590,10 @@ export interface IConnection {
   };
 
   organizationId: number;
-  labelIds?: string[];
   creatorId: number; // userId
   creator: string;
   name: string; // 连接名称，sessionName
   dialectType: ConnectionMode; // dbMode
-  visibleScope: IConnectionType; // 可见范围，即连接类型
   host: string; // 主机，公有云连接格式为 {domain}:{port}
   port: number; // 端口，公有云连接不需要设置 port
   clusterName: string; // OceanBase 集群称，cluster 公有云连接不需要设置
@@ -509,9 +603,6 @@ export interface IConnection {
   passwordEncrypted: string;
   sysTenantUsername: string; // 系统租户账号用户名称，sysUser
   sysTenantPassword: string; // 系统租户账号密码，sysUserPassword, sysTenantUsername 为 null 时无效，空字符串表示空密码
-  readonlyUsername: string; // 只读账号用户名称
-  readonlyPassword: string; // 只读账号密码, readonlyUsername 为 null 时无效，空字符串表示空密码
-  defaultSchema: string; // 默认 schema，defaultDBName 数据库名
   queryTimeoutSeconds: number; // 查询超时时间（单位：秒），sessionTimeoutS
   createTime: number; // 创建时间，gmtCreated
   updateTime: number; // 修改时间，gmtModified
@@ -520,7 +611,6 @@ export interface IConnection {
     errorMessage: string;
   };
 
-  setTop: boolean;
   properties: any;
   copyFromId: number; // 从 copyFromSid 的配置拷贝密码字段的值，对应 /api/v1 的 copyFromSid <br>\n- 值为 null：不拷贝 <br>\n- 值不为 null： 则当密码字段为 null 时，从 copyFromSid 连接信息里拷贝密码字段
   lastAccessTime: string; // 最近一次访问连接时间
@@ -532,48 +622,6 @@ export interface IConnection {
   temp?: boolean; // 是否是隐藏连接
   cloudDBAddress?: string; // v1版本保留 v2版本后端没有这个字段，可能是前段动态生成的值
   sessionTimeout?: number; // 公有云字段, v1 是 sessionTimeoutS, 对应 v2的queryTimeoutSeconds
-  resourceGroups: {
-    name?: string; // 资源组名称
-    id: number; // 资源组 ID
-  }[];
-  // passwordUnencrypted: string; 不详，暂时保留
-  // sysTenantPasswordUnencrypted: string; 不详，暂时保留
-  /**
-   * 说明: 以下字段v2版本已废弃，考虑改造的影响范围，暂先保留，仅供前端消费
-   * 具体v1与v2字段对应关系，见字段注释
-   */
-  /**
-   * @deprecated
-   */
-  sid: string;
-  /**
-   * @deprecated
-   */
-  sessionName: string;
-  /**
-   * @deprecated
-   */
-  dbMode: ConnectionMode;
-  /**
-   * @deprecated
-   */
-  defaultDBName: string;
-  /**
-   * @deprecated
-   */
-  copyFromSid: number;
-  /**
-   * @deprecated
-   */
-  dbUser: string;
-  /**
-   * @deprecated
-   */
-  sysUser: string;
-  /**
-   * @deprecated
-   */
-  sysUserPassword: string;
   permittedActions?: string[];
   supportedOperations?: string[];
   type: ConnectType;
@@ -730,8 +778,6 @@ export interface IPage {
   startSaving?: boolean;
   isSaved: boolean;
   isDocked?: boolean; // 是否常驻
-
-  path: string;
   params?: any; // 附加参数
 }
 export interface ISQLPage extends IPage {
@@ -875,18 +921,6 @@ export interface IDatabaseShardRule {
   shardNum: number;
 }
 
-export interface IDatabase {
-  sid: string;
-  name: string;
-  size: string;
-  charset: string;
-  cid: string;
-  collation: string;
-  gmtCreated: number;
-  gmtModified: number;
-  shardConfiguration: IDatabaseShardRule;
-}
-
 export interface IDataType {
   databaseType: string;
   showType: ColumnShowType;
@@ -1024,6 +1058,10 @@ export interface IFunction {
   createTime?: number;
   modifyTime?: number;
   errorMessage: string;
+  variables: {
+    varName: string;
+    varType: string;
+  }[];
 }
 
 export enum ParamMode {
@@ -1052,6 +1090,10 @@ export interface IProcedure {
   modifyTime: number;
   status: string;
   errorMessage: string;
+  variables: {
+    varName: string;
+    varType: string;
+  }[];
 }
 
 // 程序包
@@ -1064,7 +1106,10 @@ export interface IPackage {
       createTime: number;
       modifyTime: number;
     };
-
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
     functions: any[];
     procedures: any[];
   };
@@ -1076,7 +1121,10 @@ export interface IPackage {
       createTime: number;
       modifyTime: number;
     };
-
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
     functions: any[];
     procedures: any[];
   };
@@ -1219,6 +1267,14 @@ export interface IType {
   ddl?: string;
   status?: string;
   errorMessage: string;
+  typeDetail: {
+    functions: IFunction[];
+    procedures: IProcedure[];
+    variables: {
+      varName: string;
+      varType: string;
+    }[];
+  };
 }
 
 export enum TypeCode {
@@ -1554,13 +1610,15 @@ export enum TaskPageType {
   EXPORT = 'EXPORT',
   DATAMOCK = 'MOCKDATA',
   ASYNC = 'ASYNC',
-  PERMISSION_APPLY = 'PERMISSION_APPLY',
   PARTITION_PLAN = 'PARTITION_PLAN',
   SQL_PLAN = 'SQL_PLAN',
+  DATASAVE = 'DATASAVE',
   SHADOW = 'SHADOWTABLE_SYNC',
   CREATED_BY_CURRENT_USER = 'createdByCurrentUser',
   APPROVE_BY_CURRENT_USER = 'approveByCurrentUser',
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  SENSITIVE_COLUMN = 'SENSITIVE_COLUMN',
+  DATA_ARCHIVE = 'DATA_ARCHIVE',
 }
 
 export enum TaskType {
@@ -1568,11 +1626,20 @@ export enum TaskType {
   EXPORT = 'EXPORT',
   DATAMOCK = 'MOCKDATA',
   ASYNC = 'ASYNC',
-  PERMISSION_APPLY = 'PERMISSION_APPLY',
   PARTITION_PLAN = 'PARTITION_PLAN',
   SQL_PLAN = 'SQL_PLAN',
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
   SHADOW = 'SHADOWTABLE_SYNC',
+  DATA_SAVE = 'DATA_SAVE',
+  PERMISSION_APPLY = 'PERMISSION_APPLY',
+  DATA_ARCHIVE = 'DATA_ARCHIVE',
+  MIGRATION = 'DATA_ARCHIVE',
+}
+
+export enum SubTaskType {
+  DATA_ARCHIVE = 'DATA_ARCHIVE',
+  DATA_CLEAR = 'DATA_CLEAR',
+  DATA_ARCHIVE_ROLLBACK = 'DATA_ARCHIVE_ROLLBACK',
 }
 
 export enum TaskSubType {
@@ -1586,6 +1653,24 @@ export enum TaskSubType {
   OTHER = 'OTHER',
 }
 
+export enum EnvPageType {
+  DEV = 'DEV',
+  TEST = 'TEST',
+  PROD = 'PROD',
+}
+
+export enum RiskDetectRuleType {
+  DEFAULT = 'DEFAULT',
+  LOW = 'LOW',
+  MIDDLE = 'MIDDLE',
+  HIGH = 'HIGH',
+}
+
+export enum EnvType {
+  DEV = 'DEV',
+  TEST = 'TEST',
+  PROD = 'PROD',
+}
 export interface IExportDbObject {
   dbObjectType: DbObjectType;
   objectName: string;
@@ -1646,8 +1731,9 @@ export enum EXPORT_CONTENT {
 }
 
 export interface ExportFormData {
-  connectionId: number;
-  databaseName: string;
+  projectId?: number;
+  databaseName?: string;
+  databaseId: number;
   executionStrategy: TaskExecStrategy;
   executionTime?: number;
   taskName: string;
@@ -1726,8 +1812,9 @@ export enum IMPORT_CONTENT {
 
 export interface ImportFormData {
   tableName?: string;
-  connectionId: number;
-  databaseName: string;
+  databaseId: number;
+  projectId?: number;
+  databaseName?: string;
   executionStrategy: TaskExecStrategy;
   executionTime?: number;
   dataTransferFormat: FILE_DATA_TYPE; // 导入格式
@@ -1856,7 +1943,7 @@ export interface TaskRecord<P> {
     name: string;
     dbMode: ConnectionMode;
   };
-
+  databaseId: number;
   databaseName: string;
   creator: {
     id: number;
@@ -1878,6 +1965,16 @@ export interface TaskRecord<P> {
   description?: string;
   nodeList?: ITaskFlowNode[];
   progressPercentage: number;
+}
+
+export interface ICycleSubTaskRecord {
+  createTime: number;
+  id: number;
+  jobGroup: TaskPageType.DATA_ARCHIVE | TaskPageType.SQL_PLAN;
+  jobName: string;
+  resultJson: string;
+  status: TaskStatus;
+  updateTime: number;
 }
 
 export type TaskRecordParameters =
@@ -1904,7 +2001,34 @@ export interface ITaskResult {
   exportZipFilePath?: string;
 }
 
-export interface ICycleTaskRecord {
+export interface IDataArchiveJobParameters {
+  deleteAfterMigration: boolean;
+  name: string;
+  sourceDatabaseId: number;
+  sourceDatabaseName?: string;
+  targetDataBaseId: number;
+  targetDatabaseName?: string;
+  tables: {
+    conditionExpression: string;
+    tableName: string;
+  }[];
+  variables: {
+    name: string;
+    pattern: string;
+  }[];
+}
+
+export interface ISqlPlayJobParameters {
+  delimiter: string;
+  errorStrategy: string;
+  queryLimit: number;
+  timeoutMillis: number;
+  sqlContent?: string;
+  sqlObjectIds?: string[];
+  sqlObjectNames?: string[];
+}
+
+export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
   databaseName: string;
@@ -1920,26 +2044,64 @@ export interface ICycleTaskRecord {
   nextFireTimes: number[];
   status: TaskStatus;
   allowConcurrent: boolean;
-  jobParameters: {
-    delimiter: string;
-    errorStrategy: string;
-    queryLimit: number;
-    timeoutMillis: number;
-    sqlContent?: string;
-    sqlObjectIds?: string[];
-    sqlObjectNames?: string[];
-  };
-
-  triggerConfig: ICycleTaskTriggerConfig;
-  // 待后端补充
+  jobParameters: T;
+  nodeList?: ITaskFlowNode[];
+  triggerConfig?: ICycleTaskTriggerConfig;
   connection: {
     id: number;
     name: string;
     dbMode: ConnectionMode;
   };
-
   maxRiskLevel?: number;
   description?: string;
+}
+
+export interface IDataArchiveTaskRecord {
+  approvable: boolean;
+  candidateApprovers: any;
+  completeTime: number;
+  connection: {
+    id: number;
+    name: string;
+    dbMode: ConnectionMode;
+  };
+  createTime: number;
+  creator: {
+    id: number;
+    name: string;
+    accountName: string;
+    roleNames: string[];
+  };
+  databaseName: string;
+  description: string;
+  executionStrategy: TaskExecStrategy;
+  executionTime: number;
+  id: number;
+  maxRiskLevel: number;
+  nodeList: ITaskFlowNode[];
+  parameters: {
+    progressPercentage: number;
+    projectId: number;
+    rollbackable: boolean;
+    status: TaskStatus;
+    subTypes?: unknown;
+    type: TaskType;
+    triggerConfig: ICycleTaskTriggerConfig;
+    scheduleTaskParameters: {
+      deleteAfterMigration: boolean;
+      name: string;
+      sourceDatabaseId: number;
+      targetDataBaseId: number;
+      tables: {
+        conditionExpression: string;
+        tableName: string;
+      }[];
+      variables: {
+        name: string;
+        pattern: string;
+      }[];
+    };
+  };
 }
 
 export interface IAsyncTaskResultSet {
@@ -1977,8 +2139,8 @@ export interface IAsyncTaskResultSet {
 export interface ITaskLog {}
 
 export interface CreateTaskRecord {
-  connectionId: number;
-  databaseName: string;
+  projectId?: number;
+  databaseId: number;
   taskType: TaskType;
   parameters: Record<string, any>;
   executionStrategy: TaskExecStrategy;
@@ -2021,10 +2183,11 @@ export interface IPartitionPlanParams {
 }
 
 export interface ICycleTaskTriggerConfig {
-  cronExpression: string;
-  days: number[];
-  hours: number[];
-  triggerStrategy: SQLPlanTriggerStrategy;
+  cronExpression?: string;
+  days?: number[];
+  hours?: number[];
+  startAt?: number;
+  triggerStrategy?: TaskExecStrategy;
 }
 
 export interface ISQLPlanTaskParams {
@@ -2060,8 +2223,32 @@ export interface IAlterScheduleTaskParams {
   triggerConfig: ICycleTaskTriggerConfig;
 }
 
+export interface IDataArchiveTaskParams {
+  type: TaskType.DATA_ARCHIVE;
+  taskId: number;
+  operationType: TaskOperationType;
+  allowConcurrent: boolean;
+  description: string;
+  misfireStrategy: string;
+  triggerConfig: ICycleTaskTriggerConfig;
+  scheduleTaskParameters: {
+    deleteAfterMigration: boolean;
+    name: string;
+    sourceDatabaseId: number;
+    targetDataBaseId: number;
+    tables: {
+      conditionExpression: string;
+      tableName: string;
+    }[];
+    variables: {
+      name: string;
+      pattern: string;
+    }[];
+  };
+}
+
 export interface IConnectionPartitionPlan {
-  connectionId: number;
+  databaseId: number;
   flowInstanceId?: number;
   inspectEnable: boolean;
   inspectTriggerStrategy: string;
@@ -2072,6 +2259,12 @@ export enum TaskExecStrategy {
   AUTO = 'AUTO',
   MANUAL = 'MANUAL',
   TIMER = 'TIMER',
+  START_NOW = 'START_NOW',
+  START_AT = 'START_AT',
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  CRON = 'CRON',
 }
 
 export enum TaskFlowNodeType {
@@ -2087,13 +2280,6 @@ export enum TaskOperationType {
   PAUSE = 'PAUSE',
   TERMINATION = 'TERMINATION',
   RESUME = 'RESUME',
-}
-
-export enum SQLPlanTriggerStrategy {
-  DAY = 'DAY',
-  WEEK = 'WEEK',
-  MONTH = 'MONTH',
-  CRON = 'CRON',
 }
 
 export enum IFlowTaskType {
@@ -2130,7 +2316,9 @@ export interface ITaskFlowNode {
 
 export type TaskDetail<P> = TaskRecord<P>;
 
-export type CycleTaskDetail = ICycleTaskRecord;
+export type CycleTaskDetail<T> = ICycleTaskRecord<T>;
+
+export type DataArchiveTaskDetail = IDataArchiveTaskRecord;
 
 export interface IAsyncTaskParams {
   sqlContent: string;
@@ -2165,6 +2353,21 @@ export enum TaskStatus {
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',
   TERMINATION = 'TERMINATION',
+  TIMEOUT = 'TIMEOUT',
+}
+
+export enum SubTaskStatus {
+  PREPARING = 'PREPARING', // 已创建
+  RUNNING = 'RUNNING', // 运行中
+  DONE = 'DONE', // 执行完成
+  FAILED = 'FAILED', // 执行失败
+  CANCELED = 'CANCELED', // 执行取消
+}
+
+export enum StatusNodeType {
+  FLOW_TASK = 'FLOW_TASK',
+  CYCLE_TASK = 'CYCLE_TASK',
+  SUB_TASK = 'SUB_TASK',
 }
 
 export enum TaskNodeStatus {
@@ -2494,6 +2697,21 @@ export enum MaskRuleType {
   NULL = 'NULL',
 }
 
+export enum MaskRyleTypeMap {
+  // 掩盖
+  MASK = '掩盖',
+  // 替换
+  SUBSTITUTION = '替换',
+  // 保留格式
+  PSEUDO = '保留格式',
+  // 哈希
+  HASH = '哈希',
+  // 取整
+  ROUNDING = '取整',
+  // 置空
+  NULL = '置空',
+}
+
 export enum MaskRuleCustomSegmentsType {
   // 位数
   DIGIT = 'DIGIT',
@@ -2679,6 +2897,12 @@ export interface IAutoAuthEvent {
   variables: string[];
 }
 
+export interface IPromptVo {
+  variableExpression: VariableExpression;
+}
+
+export type VariableExpression = { [key: string]: string[] };
+
 export interface IAutoAuthRule {
   id?: number;
   name: string;
@@ -2741,3 +2965,80 @@ export interface IScript {
   content: string;
   scriptMeta: IScriptMeta;
 }
+
+export enum ISSOType {
+  OIDC = 'OIDC',
+  OAUTH2 = 'OAUTH2',
+}
+
+export enum IClientAuthenticationMethod {
+  basic = 'basic',
+  client_secret_basic = 'client_secret_basic',
+  post = 'post',
+  client_secret_post = 'client_secret_post',
+  client_secret_jwt = 'client_secret_jwt',
+  private_key_jwt = 'private_key_jwt',
+  none = 'none',
+}
+
+export enum IAuthorizationGrantType {
+  authorization_code = 'authorization_code',
+  refresh_token = 'refresh_token',
+  client_credentials = 'client_credentials',
+  password = 'password',
+}
+
+export enum IUserInfoAuthenticationMethod {
+  header = 'header',
+  form = 'form',
+  query = 'query',
+}
+
+export interface ISSO_OAUTH2_CONFIG {
+  registrationId: string;
+  clientId: string;
+  secret: string;
+  authUrl: string;
+  tokenUrl: string;
+  userInfoUrl: string;
+  scope: string[];
+  redirectUrl: string;
+  jwkSetUri?: string;
+  logoutUrl?: string;
+  clientAuthenticationMethod: IClientAuthenticationMethod;
+  authorizationGrantType: IAuthorizationGrantType;
+  userInfoAuthenticationMethod: IUserInfoAuthenticationMethod;
+  nestedAttributeField?: string;
+}
+
+export interface ISSO_OIDC_CONFIG {
+  registrationId: string;
+  clientId: string;
+  secret: string;
+  scope: string[];
+  issueUrl: string;
+  redirectUrl: string;
+}
+
+export interface ISSO_MAPPINGRULE {
+  userNickNameField: string;
+  userProfileViewType: 'FLAT' | 'NESTED';
+  userAccountNameField: string;
+  extraInfo?: {
+    attributeName: string;
+    expression: string;
+  }[];
+}
+export type ISSOConfig =
+  | {
+      name: string;
+      type: ISSOType.OAUTH2;
+      ssoParameter: ISSO_OAUTH2_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
+    }
+  | {
+      name: string;
+      type: ISSOType.OIDC;
+      ssoParameter: ISSO_OIDC_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
+    };

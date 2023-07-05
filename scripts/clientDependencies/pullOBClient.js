@@ -3,10 +3,21 @@ const tar = require('tar');
 const fs = require('fs');
 const path = require('path');
 
-const run = async function () {
+const urlMap = {
+  'linux_x86': `library/obclient/1_2_8/x86/obclient.tar.gz`,
+  'win64': `library/obclient/1_2_8/windows/obclient.tar.gz`,
+  'linux_aarch64': `library/obclient/1_2_8/aarch/obclient.tar.gz`,
+}
+
+exports.run = async function () {
+  const uri = urlMap[process.env.platform];
+  if (!uri) {
+    console.log('obclient not found, skip');
+    return;
+  }
   console.log('开始下载 OBClient');
   const isSuccess = await oss.download(
-    `library/obclient/1_2_8/windows/obclient.tar.gz`,
+    uri,
     'libraries',
     'obclient.tar.gz',
   );
@@ -31,4 +42,3 @@ const run = async function () {
   console.log(tarPath, '删除完成');
 };
 
-run()
