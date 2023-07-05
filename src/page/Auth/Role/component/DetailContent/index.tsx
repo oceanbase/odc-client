@@ -8,7 +8,7 @@ import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Space, Tooltip } from 'antd';
 import React, { useState, useContext } from 'react';

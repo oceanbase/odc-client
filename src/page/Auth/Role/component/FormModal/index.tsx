@@ -4,7 +4,7 @@ import { EnableRoleSystemPermission } from '@/constant';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import { Button, Drawer, message, Modal, Radio, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';

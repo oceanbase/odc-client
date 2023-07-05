@@ -3,7 +3,7 @@ import { IResourceOption, ResourceSelector } from '@/component/Manage/ResourceSe
 import { EnableRoleSystemPermission } from '@/constant';
 import appConfig from '@/constant/appConfig';
 import { IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Checkbox, Form, Space, Tabs, Tooltip, Typography } from 'antd';

@@ -2,23 +2,12 @@ import PageContainer, { TitleType } from '@/component/PageContainer';
 import { getRoleList, getUserList } from '@/common/network/manager';
 import { getConnectionList } from '@/common/network/connection';
 import { IPageType } from '@/d.ts/_index';
-import type { IManagerRole, IManagerUser } from '@/d.ts';
-import { IDatasource } from '@/d.ts/datasource';
-import React, { createContext, useState } from 'react';
+import React, { useState } from 'react';
 import { history, useParams } from 'umi';
 import Autoauth from './Autoauth';
 import Role from './Role';
 import User from './User';
-
-export const ResourceContext = createContext<{
-  roles: IManagerRole[];
-  users: IManagerUser[];
-  publicConnections: IDatasource[]; 
-  loadRoles: () => void;
-  loadUsers: () => void;
-  loadConnections: () => void;
-}>(null);
-
+import { ResourceContext } from './context';
 interface IProps {}
 
 const Pages = {

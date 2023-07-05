@@ -4,7 +4,7 @@ import Status from '@/component/Manage/Status';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import type { RadioChangeEvent } from 'antd';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';

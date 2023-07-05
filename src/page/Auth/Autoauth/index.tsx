@@ -15,7 +15,7 @@ import type { IAutoAuthRule, IResponseData } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { ResourceContext } from '../index';
+import { ResourceContext } from '../context';
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Switch } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
