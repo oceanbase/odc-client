@@ -112,6 +112,8 @@ export async function getUserSummaryList(): Promise<IResponseData<IUserSummary>>
   const res = await request.get(`/api/v2/iam/users`, {
     params: {
       basic: true,
+      size: 9999,
+      page: 1,
     },
   });
 
