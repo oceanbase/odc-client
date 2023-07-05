@@ -6,6 +6,7 @@ import {
 import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
+import { IResponseData } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import SecureTable from '@/page/Secure/components/SecureTable';
 import {
@@ -20,7 +21,6 @@ import { DetectRuleTypeMap, FilterItemProps } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
-import { IResponseData } from '@/d.ts';
 
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
@@ -91,7 +91,7 @@ const getColumns: (columnsFunction: {
           },
         };
       },
-      render: (text, record) => <TooltipContent content={DetectRuleTypeMap[record.type] || '-'} />,
+      render: (text, record) => <TooltipContent content={DetectRuleTypeMap[record?.type] || '-'} />,
     },
     {
       title: '脱敏算法',
@@ -172,7 +172,7 @@ const SensitiveRule = ({ projectId }) => {
 
   const initSensitiveRule = () => {
     setMaskingAlgorithmFilters(
-      maskingAlgorithms.map((d) => ({
+      maskingAlgorithms?.map((d) => ({
         text: d.name,
         value: d.id,
       })),
