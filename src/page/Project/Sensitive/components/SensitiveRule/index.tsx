@@ -20,6 +20,7 @@ import { DetectRuleTypeMap, FilterItemProps } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
+import { IResponseData } from '@/d.ts';
 
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
@@ -166,7 +167,7 @@ const SensitiveRule = ({ projectId }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [formDrawerVisible, setFormDrawerVisible] = useState<boolean>(false);
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
-  const [sensitiveRules, setSensitiveRules] = useState<ISensitiveRule[]>();
+  const [sensitiveRules, setSensitiveRules] = useState<IResponseData<ISensitiveRule>>(null);
   const [maskingAlgorithmFilters, setMaskingAlgorithmFilters] = useState<FilterItemProps[]>();
 
   const initSensitiveRule = () => {
@@ -288,7 +289,7 @@ const SensitiveRule = ({ projectId }) => {
         body={CommonTableBodyMode.BIG}
         titleContent={null}
         showToolbar={true}
-        showPagination={false}
+        showPagination={true}
         filterContent={{
           searchPlaceholder: '请输入规则名称',
         }}
@@ -299,9 +300,12 @@ const SensitiveRule = ({ projectId }) => {
         onChange={initData}
         tableProps={{
           columns: columns,
-          dataSource: sensitiveRules,
+          dataSource: sensitiveRules?.contents,
           rowKey: 'id',
-          pagination: false,
+          pagination: {
+            current: sensitiveRules?.page?.number,
+            total: sensitiveRules?.page?.totalElements,
+          },
         }}
       />
       <FormDrawer

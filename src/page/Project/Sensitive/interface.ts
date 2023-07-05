@@ -5,6 +5,7 @@ export enum AddSensitiveColumnType {
 export interface SelectItemProps {
   label: string;
   value: string | number;
+  disabled?: boolean;
 }
 
 export interface FilterItemProps {

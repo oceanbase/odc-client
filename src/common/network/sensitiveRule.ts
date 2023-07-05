@@ -1,3 +1,4 @@
+import { IResponseData } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import request from '@/util/request';
 
@@ -37,11 +38,11 @@ export async function listSensitiveRules(
     maskingAlgorith: number[];
     enabled: boolean[];
   }>,
-): Promise<ISensitiveRule[]> {
+): Promise<IResponseData<ISensitiveRule>> {
   const ret = await request.get(`/api/v2/collaboration/projects/${projectId}/sensitiveRules/`, {
     params,
   });
-  return ret?.data?.contents;
+  return ret?.data;
 }
 
 export async function exists(
