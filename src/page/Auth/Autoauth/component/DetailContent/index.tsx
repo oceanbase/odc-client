@@ -9,7 +9,7 @@ import { Descriptions, Divider, Space } from 'antd';
 import { isNull } from 'lodash';
 import React, { useContext } from 'react';
 import { actionLabelMap } from '../..';
-import { ResourceContext } from '../../../index';
+import { ResourceContext } from '../../../context';
 import styles from '../../index.less';
 import { operationOptions } from '../FormModal/conditionSelect';
 import { connectionAccessActionOptions, connectionAccessTypeOptions } from '../FormModal/index';

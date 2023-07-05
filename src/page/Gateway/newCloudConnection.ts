@@ -1,7 +1,19 @@
-import { getConnectionList } from '@/common/network/connection';
+import {
+  createConnection,
+  getConnectionList,
+  testExsitConnection,
+  updateConnectionFromConnection,
+} from '@/common/network/connection';
+import { listEnvironments } from '@/common/network/env';
+import { getCurrentUserPermissions } from '@/common/network/manager';
+import { switchCurrentOrganization } from '@/common/network/origanization';
 import { decrypt } from '@/common/network/other';
-import { ConnectType, IConnectionFormData } from '@/d.ts';
+import ShowConnectPassword from '@/component/ConnectPassowrd';
+import { ConnectType } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import { SpaceType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
+import { gotoSQLWorkspace } from '@/util/route';
 import { message } from 'antd';
 export interface INewCloudConnection {
   action: 'newCloudConnection';
@@ -19,11 +31,9 @@ interface IRemoteNewCloudConnectionData {
   mode: 'Oracle' | 'MySQL';
 }
 
-function resolveRemoteData(inputData: IRemoteNewCloudConnectionData): IConnectionFormData {
-  let data: IConnectionFormData = {
+function resolveRemoteData(inputData: IRemoteNewCloudConnectionData): Partial<IDatasource> {
+  let data: Partial<IDatasource> = {
     username: inputData.username,
-    passwordSaved: false,
-    queryTimeoutSeconds: 600,
     type: inputData.mode == 'Oracle' ? ConnectType.OB_ORACLE : ConnectType.OB_MYSQL,
   };
 
@@ -77,7 +87,20 @@ export const action = async (config: INewCloudConnection) => {
       return;
     }
   }
-
+  const user = await getCurrentUserPermissions();
+  if (!user) {
+    return 'Get User Failed';
+  }
+  const personalOrganization = user.belongedToOrganizations?.find(
+    (item) => item.type === SpaceType.PRIVATE,
+  );
+  if (!personalOrganization) {
+    return '个人空间不存在！';
+  }
+  const isSuccess = await switchCurrentOrganization(personalOrganization?.id);
+  if (!isSuccess) {
+    return 'Switch Organization Failed';
+  }
   const params = resolveRemoteData(data);
   const connectionList = await getConnectionList({
     fuzzySearchKeyword: params.name,
@@ -86,85 +109,63 @@ export const action = async (config: INewCloudConnection) => {
   if (!connectionList) {
     return 'Get Conneciton List Failed';
   }
-  return '';
-  // let targetConnection = connectionList?.contents?.find((c) => c.tenantName === params.tenantName);
-  // if (!targetConnection) {
-  //   /**
-  //    * 不存在的话，需要新建一个
-  //    */
-  //   targetConnection = await createConnection({
-  //     ...params,
-  //     /**
-  //      * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
-  //      * 新的名字一律加上id
-  //      */
-  //     name: params.name + '_' + params.tenantName,
-  //   });
-  // }
-  // if (!targetConnection) {
-  //   /**
-  //    * 新建失败，直接退出
-  //    */
-  //   return 'Create Connection Failed';
-  // }
-  // let password;
-  // let sessionId;
-  // let isPasswordError = false;
-  // let savePassword = false;
-  // async function createSession() {
-  //   if (!targetConnection.passwordSaved || isPasswordError) {
-  //     const v = (await ShowConnectPassword(targetConnection.id.toString(), true)) as {
-  //       password: string;
-  //       isSaved: boolean;
-  //     };
-  //     if (!v) {
-  //       window.close();
-  //     }
-  //     password = v.password;
-  //     savePassword = v.isSaved;
-  //   }
-  //   try {
-  //     sessionId = await connectionStore.connect(
-  //       targetConnection.id.toString(),
-  //       password,
-  //       null,
-  //       true,
-  //     );
-  //   } catch (e) {
-  //     message.error(e?.message || 'NetError');
-  //   }
-  //   if (!sessionId) {
-  //     /**
-  //      * 在第一次连接失败之后，当前已保存密码不正确需要手动输入修改
-  //      */
-  //     isPasswordError = true;
-  //     password = null;
-  //     await createSession();
-  //   }
-  // }
-  // await createSession();
-
-  // if (sessionId) {
-  //   const isSuccess = await connectionStore.get(sessionId);
-
-  //   if (isSuccess) {
-  //     if (savePassword) {
-  //       updateConnectionFromConnection({
-  //         ...targetConnection,
-  //         passwordSaved: true,
-  //         password: password,
-  //       });
-  //     }
-  //     if (connectionStore.connection.defaultDBName) {
-  //       schema.database = {
-  //         name: connectionStore.connection.defaultDBName,
-  //       };
-  //     }
-  //     commonStore.updateTabKey(true);
-  //     history.push(pageStore.generatePagePath());
-  //     return;
-  //   }
-  // } else {
-  //   return 'Create Session Failed';
-  // }
+  let targetConnection = connectionList?.contents?.find((c) => c.tenantName === params.tenantName);
+  if (!targetConnection) {
+    /**
+     * 不存在的话，需要新建一个
+     */
+    const envs = await listEnvironments();
+    targetConnection = await createConnection({
+      ...params,
+      /**
+       * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
+       * 新的名字一律加上id
+       */
+      name: params.name + '_' + params.tenantName,
+      environmentId: envs?.[0]?.id,
+    });
+  }
+  if (!targetConnection) {
+    /**
+     * 新建失败，直接退出
+     */
+    return 'Create Connection Failed';
+  }
+  let password;
+  let isPasswordError = false;
+  let pass = false;
+  async function testSource() {
+    if (isPasswordError) {
+      const v = (await ShowConnectPassword(targetConnection.id.toString())) as {
+        password: string;
+      };
+      if (!v) {
+        window.close();
+      }
+      password = v.password;
+    }
+    try {
+      const res = await testExsitConnection({ ...targetConnection, password });
+      const isSuccess = res?.data?.active;
+      if (!isSuccess) {
+        isPasswordError = true;
+        password = null;
+        await testSource();
+      } else {
+        pass = true;
+      }
+    } catch (e) {
+      message.error(e?.message || 'NetError');
+    }
+  }
+  await testSource();
+  if (!pass) {
+    return 'Connect Failed';
+  }
+  updateConnectionFromConnection({
+    ...targetConnection,
+    passwordSaved: true,
+    password: password,
+  });
+  gotoSQLWorkspace(null, targetConnection?.id, null);
 };
