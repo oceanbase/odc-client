@@ -8,8 +8,9 @@ import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
 import { actionTypes, IConnectionProperty } from '@/d.ts';
-import { ConnectionPropertyType, ConnectionStore } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import { PageStore } from '@/store/page';
+import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
@@ -20,6 +21,7 @@ import { inject, observer } from 'mobx-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'umi';
 import EditableTable, { RowType } from '../EditableTable';
+import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
 const ToolbarButton = Toolbar.Button;
 const Search = Input.Search;
@@ -29,15 +31,17 @@ interface IRowConnectionProperty extends RowType, IConnectionProperty {}
 
 function SessionParamsTable(props: {
   sqlStore?: SQLStore;
-  connectionStore?: ConnectionStore;
   settingStore?: SettingStore;
   pageStore?: PageStore;
   connectionPropertyType: ConnectionPropertyType;
   sessionId?: string;
   tip?: string;
   bordered?: boolean;
+  sessionManagerStore?: SessionManagerStore;
+  showDatasource?: boolean;
 }) {
-  const { connectionStore, connectionPropertyType, sessionId, tip, bordered } = props;
+  const { sessionManagerStore, connectionPropertyType, sessionId, tip, bordered, showDatasource } =
+    props;
   const [listLoading, setListLoading] = useState(false);
   const [showExecuteSQLModal, setShowExecuteSQLModal] = useState(false);
   const [updateDML, setupdateDML] = useState('');
@@ -46,6 +50,7 @@ function SessionParamsTable(props: {
   const [searchKey, setSearchKey] = useState('');
   const [connectionProperty, setConnectionProperty] = useState([]);
   const [rows, setRows] = useState<IRowConnectionProperty[]>([]);
+  const session = sessionManagerStore.sessionMap.get(sessionId);
 
   const loadData = async function () {
     setListLoading(true);
@@ -83,14 +88,15 @@ function SessionParamsTable(props: {
   );
 
   const handleExecuteUpdateDML = useCallback(async () => {
+    if (!session) {
+      return;
+    }
     const success = await executeVariableUpdateDML(updateDML, connectionPropertyType, sessionId);
 
     if (success) {
       // 刷新
       await loadData();
-      sessionId
-        ? await connectionStore.initSubSessionTransactionStatus(sessionId)
-        : await connectionStore.initTransactionStatus();
+      await session.initSessionStatus();
       setShowExecuteSQLModal(false);
       message.success(
         formatMessage({
@@ -98,7 +104,7 @@ function SessionParamsTable(props: {
         }),
       ); // 更新页面标题 & url
     }
-  }, [connectionStore, updateDML, rows, connectionPropertyType, loadData, sessionId]);
+  }, [session, updateDML, rows, connectionPropertyType, loadData, sessionId]);
 
   const columns = [
     {
@@ -163,7 +169,7 @@ function SessionParamsTable(props: {
                   text={<FormattedMessage id="workspace.window.session.button.edit" />}
                   icon={<EditOutlined />}
                   onClick={handleOpenEditModal}
-                  disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
+                  // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
                 />
               </WorkspaceAcess>
             </div>
@@ -185,6 +191,11 @@ function SessionParamsTable(props: {
               />
             </div>
           </Toolbar>
+          {showDatasource ? (
+            <div style={{ flex: 0 }}>
+              <SessionSelect />
+            </div>
+          ) : null}
           {tip ? <Alert showIcon message={tip} /> : null}
           <div className={styles.table}>
             <EditableTable
@@ -210,6 +221,7 @@ function SessionParamsTable(props: {
         model={filteredRows?.[selectedRowIndex] || {}}
       />
       <ExecuteSQLModal
+        sessionStore={session}
         key="key"
         tip={formatMessage({
           id: 'odc.components.SessionParamPage.ThisModificationWillTakeEffect',
@@ -228,7 +240,7 @@ function SessionParamsTable(props: {
 
 export default inject(
   'sqlStore',
-  'connectionStore',
+  'sessionManagerStore',
   'pageStore',
   'settingStore',
 )(observer(SessionParamsTable));

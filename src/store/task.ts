@@ -5,7 +5,12 @@ import {
   getTaskList,
   getTaskMetaInfo,
 } from '@/common/network/task';
-import type { IMaskPolicy, IResponseData } from '@/d.ts';
+import type {
+  IDataArchiveJobParameters,
+  IMaskPolicy,
+  IResponseData,
+  ISqlPlayJobParameters,
+} from '@/d.ts';
 import {
   ICycleTaskRecord,
   TaskPageScope,
@@ -58,13 +63,15 @@ export class TaskStore {
    * sql 计划列表
    */
   @observable
-  public cycleTasks: IResponseData<ICycleTaskRecord>;
+  public cycleTasks: IResponseData<
+    ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
+  >;
 
   /**
    * task page 的 tab
    */
   @observable
-  public taskPageType: TaskPageType = TaskPageType.CREATED_BY_CURRENT_USER;
+  public taskPageType: TaskPageType = TaskPageType.EXPORT;
 
   /**
    * 任务一级筛选范围
@@ -129,6 +136,7 @@ export class TaskStore {
   @action
   public getTaskList = async (params?: {
     taskType?: TaskPageType;
+    projectId?: number;
     connection?: number;
     fuzzySearchKeyword?: string;
     status?: string[];
@@ -157,6 +165,7 @@ export class TaskStore {
   @action
   public getCycleTaskList = async (params?: {
     connectionId?: number[];
+    projectId?: number;
     creator?: string;
     databaseName?: string[];
     id?: number;
@@ -171,7 +180,7 @@ export class TaskStore {
     size?: number;
   }) => {
     const { type, createdByCurrentUser, approveByCurrentUser } = params;
-    const tasks = await getCycleTaskList(params);
+    const tasks = await getCycleTaskList<ISqlPlayJobParameters | IDataArchiveJobParameters>(params);
     if ((!type && (createdByCurrentUser || approveByCurrentUser)) || type === this.taskPageType) {
       this.cycleTasks = tasks;
     }

@@ -3,7 +3,6 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IFunction } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
 import type { SQLStore } from '@/store/sql';
 import {
   AlignLeftOutlined,
@@ -19,14 +18,18 @@ import { formatMessage, FormattedMessage } from 'umi';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { actionTypes, WorkspaceAcess } from '@/component/Acess';
+import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { PLType } from '@/constant/plType';
-import type { ConnectionStore } from '@/store/connection';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
+import { FunctionPage as FunctionPageModel } from '@/store/helper/page/pages';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
 import { parseDataType } from '@/util/dataType';
 import { downloadPLDDL } from '@/util/sqlExport';
-import type { IEditor } from '@alipay/ob-editor';
 import EditableTable from '../EditableTable';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
 
@@ -50,21 +53,17 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
-  schemaStore: SchemaStore;
-  connectionStore: ConnectionStore;
+  sessionManagerStore: SessionManagerStore;
   pageKey: string;
-  params: {
-    funName: string;
-    propsTab: PropsTab;
-  };
+  params: FunctionPageModel['pageParams'];
 
   onUnsavedChange: (pageKey: string) => void;
 }
 
-@inject('sqlStore', 'schemaStore', 'pageStore', 'connectionStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
-export default class FunctionPage extends Component<
-  IProps,
+class FunctionPage extends Component<
+  IProps & { session: SessionStore },
   {
     propsTab: PropsTab;
     func: Partial<IFunction>;
@@ -109,8 +108,13 @@ export default class FunctionPage extends Component<
   };
 
   public reloadFunction = async (funName: string) => {
-    const { schemaStore } = this.props;
-    const func: IFunction = await getFunctionByFuncName(funName);
+    const { session, params } = this.props;
+    const func: IFunction = await getFunctionByFuncName(
+      funName,
+      false,
+      session?.sessionId,
+      session?.database?.dbName,
+    );
     if (func) {
       func.params = func.params.map((param) => {
         const { dataType, dataLength } = parseDataType(param.dataType);
@@ -135,12 +139,17 @@ export default class FunctionPage extends Component<
   }
 
   public async editFunction(funName: string) {
-    const { schemaStore, pageStore } = this.props;
-    await openFunctionEditPageByFuncName(funName);
+    const { params, session } = this.props;
+    await openFunctionEditPageByFuncName(
+      funName,
+      session?.sessionId,
+      session?.database?.dbName,
+      session?.odcDatabase?.id,
+    );
   }
 
   private showSearchWidget() {
-    const codeEditor = this.editor.UNSAFE_getCodeEditor();
+    const codeEditor = this.editor;
     codeEditor.trigger('FIND_OR_REPLACE', 'actions.find', null);
   }
 
@@ -158,12 +167,11 @@ export default class FunctionPage extends Component<
 
   public render() {
     const {
-      pageKey,
+      session,
       params: { funName },
-      connectionStore,
     } = this.props;
     const { propsTab, func, formated } = this.state;
-    const isMySQL = connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
 
     const tableColumns = [
       {
@@ -274,7 +282,7 @@ export default class FunctionPage extends Component<
                     }
                     icon={<CloudDownloadOutlined />}
                     onClick={() => {
-                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl);
+                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl, session?.database?.dbName);
                     }}
                   />
 
@@ -308,11 +316,11 @@ export default class FunctionPage extends Component<
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)` }}>
+                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
-                    initialValue={(func && func.ddl) || ''}
-                    language={`sql-oceanbase-${isMySQL ? 'mysql-pl' : 'oracle-pl'}`}
+                    defaultValue={(func && func.ddl) || ''}
+                    language={isMySQL ? 'obmysql' : 'oboracle'}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}
@@ -326,3 +334,13 @@ export default class FunctionPage extends Component<
     );
   }
 }
+
+export default WrapSessionPage(function Component(props: IProps) {
+  return (
+    <SessionContext.Consumer>
+      {({ session }) => {
+        return <FunctionPage {...props} session={session} />;
+      }}
+    </SessionContext.Consumer>
+  );
+}, true);

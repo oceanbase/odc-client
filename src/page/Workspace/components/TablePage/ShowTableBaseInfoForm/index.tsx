@@ -9,29 +9,22 @@ import HelpDoc from '@/component/helpDoc';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import Toolbar from '@/component/Toolbar';
 import CreateTableBaseInfoForm from '@/page/Workspace/components/CreateTable/BaseInfo';
-import type { ConnectionStore } from '@/store/connection';
+import { TablePage } from '@/store/helper/page/pages';
 import page from '@/store/page';
-import type { SchemaStore } from '@/store/schema';
-import schema from '@/store/schema';
 import { getLocalFormatDateTime } from '@/util/utils';
 import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
-import { inject, observer } from 'mobx-react';
-import { ITableModel } from '../../CreateTable/interface';
 import TableContext from '../../CreateTable/TableContext';
 import TablePageContext from '../context';
 
 interface IProps {
-  schemaStore?: SchemaStore;
-  connectionStore?: ConnectionStore;
   pageKey?: string;
 }
 
 const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
-  const [editInfo, setEditInfo] = useState<ITableModel['info']>(null);
   const tableContext = useContext(TablePageContext);
+  const session = tableContext.session;
   const table = tableContext?.table;
-  const tableName = table?.info.tableName;
   const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<FormInstance<any>>();
 
@@ -74,7 +67,12 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   const { collation, character, ...rest } = data;
                   const newData = cloneDeep(table);
                   Object.assign(newData.info, rest);
-                  const updateTableDML = await generateUpdateTableDDL(newData, table);
+                  const updateTableDML = await generateUpdateTableDDL(
+                    newData,
+                    table,
+                    session.sessionId,
+                    session.database.dbName,
+                  );
                   if (!updateTableDML) {
                     return;
                   }
@@ -84,12 +82,15 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                     async () => {
                       if (newData.info.tableName !== table.info?.tableName) {
                         const newTableName = newData.info.tableName;
-                        await schema.getTableList();
+                        await session.database.getTableList();
+                        const params = page.pages.find((p) => p.key === pageKey)
+                          ?.params as TablePage['pageParams'];
+                        const tablePage = new TablePage(params?.databaseId, newTableName);
                         await page.updatePage(
                           pageKey,
                           {
                             title: newTableName,
-                            updateKey: true,
+                            updateKey: tablePage?.pageKey,
                           },
 
                           {
@@ -142,6 +143,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
           <TableContext.Provider
             value={{
               info: table?.info,
+              session,
             }}
           >
             <CreateTableBaseInfoForm formRef={formRef} isEdit={true} />
@@ -247,4 +249,4 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
   );
 };
 
-export default inject('schemaStore')(observer(ShowTableBaseInfoForm));
+export default ShowTableBaseInfoForm;

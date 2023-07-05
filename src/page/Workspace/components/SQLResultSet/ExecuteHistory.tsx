@@ -1,6 +1,5 @@
 import { TAB_HEADER_HEIGHT } from '@/constant';
 import { GeneralSQLType, ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
@@ -11,7 +10,7 @@ import moment from 'moment';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'umi';
 
-import { SchemaStore } from '@/store/schema';
+import SessionStore from '@/store/sessionManager/session';
 import BigNumber from 'bignumber.js';
 import styles from './index.less';
 
@@ -19,8 +18,7 @@ interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
-  connectionStore?: ConnectionStore;
-  schemaStore?: SchemaStore;
+  session: SessionStore;
 }
 
 const getTooltipDetail = (generalSqlType: GeneralSQLType) => {
@@ -45,7 +43,7 @@ function getResultText(rs: ISqlExecuteResult) {
 }
 
 const ExecuteHistory: React.FC<IProps> = function (props) {
-  const { onShowExecuteDetail, resultHeight, sqlStore, connectionStore, schemaStore } = props;
+  const { onShowExecuteDetail, resultHeight, sqlStore, session } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const tableRef = useRef<HTMLDivElement>();
   const [width, setWidth] = useState(0);
@@ -60,7 +58,6 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
       obr = new ResizeObserver((entries) => {
         if (dom) {
           const width = dom.clientWidth;
-          console.log(width);
           setWidth(width);
         }
       });
@@ -329,7 +326,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         },
       },
 
-      schemaStore.enableSQLTrace && {
+      session?.supportFeature?.enableSQLTrace && {
         title: formatMessage({
           id: 'workspace.window.sql.record.column.profile',
         }),
@@ -373,7 +370,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         },
       },
     ].filter(Boolean);
-  }, [onShowExecuteDetail, connectionStore, isSmallMode]);
+  }, [onShowExecuteDetail, session, isSmallMode]);
   const showTimeAlert = false;
   const showDeleteAlert = selectedRowKeys.length > 0;
   const tableHeight = resultHeight - TAB_HEADER_HEIGHT - 24 - (showTimeAlert ? 36 : 0) - 56;
@@ -477,10 +474,4 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject(
-  'sqlStore',
-  'userStore',
-  'pageStore',
-  'connectionStore',
-  'schemaStore',
-)(observer(ExecuteHistory));
+export default inject('sqlStore', 'userStore', 'pageStore')(observer(ExecuteHistory));

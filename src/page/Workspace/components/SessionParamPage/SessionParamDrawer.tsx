@@ -1,4 +1,4 @@
-import { ConnectionPropertyType } from '@/store/connection';
+import { ConnectionPropertyType } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
 import { Drawer } from 'antd';
 import React from 'react';
@@ -18,7 +18,7 @@ const SessionParamDrawer: React.FC<IProps> = function ({ visible, sessionId, onC
           id: 'odc.components.SessionParamPage.SessionParamDrawer.SessionVariables',
         }) //会话变量
       }
-      visible={visible}
+      open={visible}
       onClose={() => {
         onClose();
       }}

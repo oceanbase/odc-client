@@ -1,14 +1,11 @@
-import { SchemaStore } from '@/store/schema';
 import { formatMessage } from '@/util/intl';
 import { Modal } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { forwardRef, useContext, useImperativeHandle, useRef, useState } from 'react';
 import { TablePartition } from '../../../CreateTable/interface';
 import CreateTablePartitionRuleForm from '../../../CreateTable/Partition/CreateTablePartitionRuleForm';
 import TablePageContext from '../../context';
 
 interface IProps {
-  schemaStore?: SchemaStore;
   ref?: IRef;
 }
 
@@ -16,7 +13,7 @@ interface IRef {
   addNewPartitions: () => Promise<Partial<TablePartition>>;
 }
 
-const AddPartitionModal = forwardRef<IRef, IProps>(function ({ schemaStore }, ref) {
+const AddPartitionModal = forwardRef<IRef, IProps>(function ({}, ref) {
   const pageContext = useContext(TablePageContext);
   const [visible, setVisible] = useState(false);
   const [newPartitions, setNewPartitions] = useState<Partial<TablePartition>>();
@@ -66,7 +63,8 @@ const AddPartitionModal = forwardRef<IRef, IProps>(function ({ schemaStore }, re
         selectColumnName={partitions?.columnName}
         expression={partitions?.expression}
         columns={table?.columns}
-        dataTypes={schemaStore.dataTypes}
+        dataTypes={pageContext?.session?.dataTypes}
+        session={pageContext.session}
         onSave={(newPartitions) => {
           setNewPartitions(newPartitions);
         }}
@@ -75,4 +73,4 @@ const AddPartitionModal = forwardRef<IRef, IProps>(function ({ schemaStore }, re
   );
 });
 
-export default inject('schemaStore')(observer(AddPartitionModal));
+export default AddPartitionModal;

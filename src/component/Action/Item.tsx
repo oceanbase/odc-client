@@ -13,6 +13,8 @@ export interface BaseProps {
   enableLoading?: boolean;
   tooltip?: string;
   loading?: boolean;
+  /** loading的时候覆盖children，用于icon的场景 */
+  replaceLoading?: boolean;
   danger?: boolean;
   /** 不会被隐藏 */
   fixed?: boolean;
@@ -79,6 +81,7 @@ export class ActionLink extends React.PureComponent<BaseProps> {
       enableLoading = true,
       tooltip,
       loading,
+      replaceLoading,
     } = this.props;
     return (
       <Typography.Link
@@ -86,6 +89,8 @@ export class ActionLink extends React.PureComponent<BaseProps> {
         style={{ padding: 0 }}
         disabled={loading || disabled || this.state.disabled}
         onClick={(_) => {
+          _.stopPropagation();
+          _.preventDefault();
           const handle = onClick?.();
 
           if (enableLoading && (handle as Promise<void>)?.then) {
@@ -98,7 +103,8 @@ export class ActionLink extends React.PureComponent<BaseProps> {
         }}
       >
         <Tooltip placement="top" title={tooltip}>
-          {loading || this.state.disabled ? <LoadingOutlined /> : ''} {children}
+          {loading || this.state.disabled ? <LoadingOutlined /> : ''}{' '}
+          {replaceLoading && (loading || this.state.disabled) ? null : children}
         </Tooltip>
       </Typography.Link>
     );

@@ -1,10 +1,5 @@
-import { createConnection } from '@/common/network/connection';
 import { decrypt } from '@/common/network/other';
 import { IRemoteCustomConnectionData } from '@/d.ts';
-import commonStore from '@/store/common';
-import connectionStore from '@/store/connection';
-import pageStore from '@/store/page';
-import schema from '@/store/schema';
 import { resolveUnionDbUser } from '@/util/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -107,37 +102,38 @@ export const action = async (config: ICustomConnectAction) => {
       return;
     }
   }
+  return '';
 
-  const params = resolveRemoteData({
-    ...(data as IRemoteCustomConnectionData),
-  });
-  const createResult = await createConnection(params, true);
+  // const params = resolveRemoteData({
+  //   ...(data as IRemoteCustomConnectionData),
+  // });
+  // const createResult = await createConnection(params, true);
 
-  if (createResult) {
-    let sessionId;
-    try {
-      sessionId = await connectionStore.connect(createResult.id, null, null, true);
-    } catch (e) {
-      if (e) {
-        return e.message;
-      }
-    }
+  // if (createResult) {
+  //   let sessionId;
+  //   try {
+  //     sessionId = await connectionStore.connect(createResult.id, null, null, true);
+  //   } catch (e) {
+  //     if (e) {
+  //       return e.message;
+  //     }
+  //   }
 
-    if (sessionId) {
-      const isSuccess = await connectionStore.get(sessionId);
+  //   if (sessionId) {
+  //     const isSuccess = await connectionStore.get(sessionId);
 
-      if (isSuccess) {
-        if (connectionStore.connection.defaultDBName) {
-          schema.database = {
-            name: connectionStore.connection.defaultDBName,
-          };
-        }
-        commonStore.updateTabKey(true);
-        history.push(pageStore.generatePagePath());
-        return;
-      }
-    } else {
-      return 'create session failed';
-    }
-  }
+  //     if (isSuccess) {
+  //       if (connectionStore.connection.defaultDBName) {
+  //         schema.database = {
+  //           name: connectionStore.connection.defaultDBName,
+  //         };
+  //       }
+  //       commonStore.updateTabKey(true);
+  //       history.push(pageStore.generatePagePath());
+  //       return;
+  //     }
+  //   } else {
+  //     return 'create session failed';
+  //   }
+  // }
 };

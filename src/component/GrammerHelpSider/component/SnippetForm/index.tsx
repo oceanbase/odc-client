@@ -1,6 +1,4 @@
 import EditorToolBar from '@/component/EditorToolBar';
-import { SQLCodeEditor } from '@/component/SQLCodeEditor';
-import type { ConnectionStore } from '@/store/connection';
 import snippetStore, {
   EnumSnippetAction,
   EnumSnippetType,
@@ -8,26 +6,21 @@ import snippetStore, {
   SNIPPET_TYPES,
 } from '@/store/snippet';
 import { formatMessage } from '@/util/intl';
-import type { IEditor } from '@alipay/ob-editor';
 import { Button, Drawer, Form, Input, message, Modal, Select } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
-import { inject, observer } from 'mobx-react';
 import React, { PureComponent } from 'react';
 
-import { ConnectionMode } from '@/d.ts';
+import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
 
 const { Option } = Select;
 const { TextArea } = Input;
 interface IProps {
   visible: boolean;
   action: EnumSnippetAction;
-  connectionStore?: ConnectionStore;
   snippet: any;
   onClose: (isNeedReloadList?: boolean) => void;
 }
 
-@inject('schemaStore', 'connectionStore')
-@observer
 class SnippetFormDrawer extends PureComponent<IProps> {
   public formRef = React.createRef<FormInstance>();
 
@@ -35,6 +28,10 @@ class SnippetFormDrawer extends PureComponent<IProps> {
   public editor: IEditor;
 
   private modal: any;
+
+  public getSession() {
+    return null;
+  }
 
   onClose = async () => {
     const self = this;
@@ -134,14 +131,13 @@ class SnippetFormDrawer extends PureComponent<IProps> {
   };
 
   render() {
-    const { connectionStore, action, snippet, visible } = this.props;
-    const { connection } = connectionStore;
+    const { action, snippet, visible } = this.props;
 
     if (!action) {
       return null;
     }
 
-    const isMySQL = connection.dbMode === ConnectionMode.OB_MYSQL;
+    const isMySQL = false;
     const actionItem = SNIPPET_ACTIONS.find((actionItem) => actionItem.key === action);
     const initialValues = {
       prefix: snippet?.prefix,
@@ -259,17 +255,18 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                   border: '1px solid var(--odc-border-color)',
                 }}
               >
+                <EditorToolBar
+                  loading={false}
+                  ctx={this}
+                  actionGroupKey="SNIPPET_CREATE_ACTION_GROUP"
+                />
                 <div
                   style={{
                     height: 300,
                     width: '100%',
+                    position: 'relative',
                   }}
                 >
-                  <EditorToolBar
-                    loading={false}
-                    ctx={this}
-                    actionGroupKey="SNIPPET_CREATE_ACTION_GROUP"
-                  />
                   <Form.Item
                     noStyle
                     name="body"
@@ -292,10 +289,9 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                       },
                     ]}
                   >
-                    <SQLCodeEditor
-                      initialValue={snippet?.body}
-                      disableSnippetConvert={true}
-                      language={`sql-oceanbase-${isMySQL ? 'mysql' : 'oracle'}`}
+                    <MonacoEditor
+                      defaultValue={snippet?.body}
+                      language={isMySQL ? 'obmysql' : 'oboracle'}
                       onEditorCreated={(editor: IEditor) => {
                         this.editor = editor;
                       }}

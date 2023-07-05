@@ -1,19 +1,19 @@
-import type { IEditor, monaco } from '@alipay/ob-editor';
 import { isNil } from 'lodash';
+import * as monaco from 'monaco-editor';
+
+type IEditor = monaco.editor.IStandaloneCodeEditor;
 
 const getMonaco = async function () {
-  return await import('@alipay/ob-editor').then((module) => {
-    return module.monaco;
-  });
+  return monaco;
 };
 const utils = {
   // 断点管理 - 事件绑定
-  initBreakpointEventBind(codeEditor: any, lineNumber: number) {},
+  initBreakpointEventBind(codeEditor: IEditor, lineNumber: number) {},
 
   // 断点管理 - 添加断点
-  async addBreakPoint(editor: any, lineNumber: number) {
+  async addBreakPoint(editor: IEditor, lineNumber: number) {
     const monaco = await getMonaco();
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) {
       return;
@@ -33,9 +33,9 @@ const utils = {
     );
   },
 
-  async addBreakPoints(editor: any, lineNumbers: Array<any>) {
+  async addBreakPoints(editor: IEditor, lineNumbers: Array<any>) {
     const monaco = await getMonaco();
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) {
       return;
@@ -57,8 +57,8 @@ const utils = {
   },
 
   // 断点管理 - 删除断点
-  removeBreakPoint(editor: any, lineNumber: number) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  removeBreakPoint(editor: IEditor, lineNumber: number) {
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) return;
     const decorations = model.getLineDecorations(lineNumber);
@@ -74,8 +74,8 @@ const utils = {
   },
 
   // 断点管理 - 清除
-  clearBreakPoints(editor: any) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  clearBreakPoints(editor: IEditor) {
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) return;
     const decorations = model.getAllDecorations();
@@ -90,8 +90,8 @@ const utils = {
     }
   },
 
-  hasBreakPoint(editor: any, line: number) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  hasBreakPoint(editor: IEditor, line: number) {
+    const codeEditor = editor;
     let decorations = codeEditor.getLineDecorations(line);
     for (let decoration of decorations) {
       if (decoration.options.linesDecorationsClassName === 'editor-breakpoints') {
@@ -101,9 +101,9 @@ const utils = {
     return false;
   },
 
-  async addFakeBreakPoint(editor: any, line: number) {
+  async addFakeBreakPoint(editor: IEditor, line: number) {
     const monaco = await getMonaco();
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) return;
     const decorations = model.getAllDecorations();
@@ -120,8 +120,8 @@ const utils = {
     codeEditor.deltaDecorations(ids, [value]);
   },
 
-  removeFakeBreakPoint(editor: any) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  removeFakeBreakPoint(editor: IEditor) {
+    const codeEditor = editor;
     let model = codeEditor.getModel();
     if (!model) {
       return;
@@ -138,16 +138,13 @@ const utils = {
   async addHighlight(editor: IEditor, begin: number, end: number, type: 'error' | 'info') {
     const monaco = await getMonaco();
 
-    const beginPosition = editor.UNSAFE_getCodeEditor().getModel().getPositionAt(begin);
-    const endPosition = editor
-      .UNSAFE_getCodeEditor()
-      .getModel()
-      .getPositionAt(end + 1);
+    const beginPosition = editor.getModel().getPositionAt(begin);
+    const endPosition = editor.getModel().getPositionAt(end + 1);
 
     const className =
       type === 'error' ? 'editor-selection-stmt-error' : 'editor-selection-stmt-info';
 
-    editor.UNSAFE_getCodeEditor().deltaDecorations(
+    editor.deltaDecorations(
       [],
       [
         {
@@ -162,8 +159,8 @@ const utils = {
       ],
     );
   },
-  async removeHightlight(editor: any) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  async removeHightlight(editor: IEditor) {
+    const codeEditor = editor;
     const model = codeEditor.getModel();
     if (!model) {
       return;
@@ -178,13 +175,13 @@ const utils = {
     codeEditor.deltaDecorations(ids, []);
   },
   // 行管理 - 添加高亮行
-  async addHighLightLine(editor: any, line: number) {
+  async addHighLightLine(editor: IEditor, line: number) {
     const monaco = await getMonaco();
     if (isNil(line)) {
       return;
     }
     const lineNum = line - 0;
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const model = codeEditor.getModel();
     if (!model) {
       return;
@@ -216,10 +213,10 @@ const utils = {
     );
   },
 
-  async shineHighLightLine(editor: any, line: number) {
+  async shineHighLightLine(editor: IEditor, line: number) {
     const monaco = await getMonaco();
     const lineNum = line - 0;
-    const codeEditor: monaco.editor.IStandaloneCodeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor: monaco.editor.IStandaloneCodeEditor = editor;
     const model = codeEditor.getModel();
     if (!model) {
       return;
@@ -241,8 +238,8 @@ const utils = {
   },
 
   // 行管理 - 删除高亮行
-  clearHighLightLine(editor: any) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+  clearHighLightLine(editor: IEditor) {
+    const codeEditor = editor;
     const model = codeEditor.getModel();
     if (!model) {
       return;
@@ -258,12 +255,12 @@ const utils = {
   },
 
   // 光标位置 - 通过鼠标坐标更新编辑器光标位置
-  async updateEditorCursorPositionByClientPosition(editor, { clientX, clientY }) {
+  async updateEditorCursorPositionByClientPosition(editor: IEditor, { clientX, clientY }) {
     const monaco = await getMonaco();
     if (!editor) {
       return;
     }
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const editorPos = codeEditor.getTargetAtClientPoint(clientX, clientY);
     if (!editorPos || !editorPos.position) {
       return;
@@ -280,27 +277,28 @@ const utils = {
   },
 
   async setPositionAndScroll(editor: IEditor, offset: number) {
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     codeEditor.focus();
     codeEditor.setPosition(codeEditor.getModel().getPositionAt(offset));
     codeEditor.revealPosition(codeEditor.getModel().getPositionAt(offset));
   },
   // snippt - 在编辑器光标处插入 snippt
-  insertSnippetTemplate(editor, snippetText) {
+  insertSnippetTemplate(editor: IEditor, snippetText) {
     if (!editor) {
       return;
     }
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const snippetController = codeEditor.getContribution('snippetController2');
+    //@ts-ignore
     snippetController.insert(snippetText);
   },
   // text - 在编辑器光标处插入 text
-  async insertTextToCurrectPosition(editor, text, targetPosition?: monaco.IPosition) {
+  async insertTextToCurrectPosition(editor: IEditor, text, targetPosition?: monaco.IPosition) {
     const monaco = await getMonaco();
     if (!editor) {
       return;
     }
-    const codeEditor = editor.UNSAFE_getCodeEditor();
+    const codeEditor = editor;
     const position = targetPosition || codeEditor.getPosition();
     const { lineNumber, column } = position;
     const range = new monaco.Range(lineNumber, column, lineNumber, column);
@@ -311,7 +309,7 @@ const utils = {
     if (!editor) {
       return;
     }
-    const codeEditor = (editor as IEditor).UNSAFE_getCodeEditor();
+    const codeEditor = editor as IEditor;
     const position = codeEditor.getModel().getPositionAt(codeEditor.getValue().length);
     this.insertTextToCurrectPosition(
       editor,
@@ -324,20 +322,20 @@ const utils = {
     if (!editor) {
       return;
     }
-    const codeEditor = (editor as IEditor).UNSAFE_getCodeEditor();
+    const codeEditor = editor as IEditor;
     const position = codeEditor.getModel().getPositionAt(codeEditor.getValue().length);
     const range = new monaco.Range(0, 0, position.lineNumber, position.column);
 
     const op = { identifier: { major: 1, minor: 1 }, range, text, forceMoveMarkers: true };
     codeEditor.executeEdits('replace-text', [op]);
   },
-  async getCurrentSelectRange(editor) {
+  async getCurrentSelectRange(editor: IEditor) {
     const monaco = await getMonaco();
     if (!editor) {
       return;
     }
-    const selecttion = (editor as IEditor).getSelectionRange();
-    const codeEditor = (editor as IEditor).UNSAFE_getCodeEditor();
+    const selecttion = (editor as IEditor).getSelection();
+    const codeEditor = editor as IEditor;
     return {
       begin: codeEditor.getModel().getOffsetAt(selecttion.getPosition()),
       end: codeEditor.getModel().getOffsetAt(selecttion.getEndPosition()),

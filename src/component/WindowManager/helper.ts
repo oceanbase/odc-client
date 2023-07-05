@@ -1,5 +1,7 @@
 import { IPage, PageType } from '@/d.ts';
-import { generatePageTitle } from '@/store/helper/pageKeyGenerate';
+import { BatchCompilePage, OBClientPage, SQLPage } from '@/store/helper/page/pages';
+import { SQLConfirmPage } from '@/store/helper/page/pages/create';
+import { AnonymousPage } from '@/store/helper/page/pages/pl';
 import { formatMessage } from '@/util/intl';
 
 const titleText = {
@@ -45,27 +47,17 @@ export function getPageTitleText(page: IPage) {
   }
   switch (type) {
     case PageType.CREATE_PACKAGE: {
-      if (params?.isPackageBody) {
-        return formatMessage({
-          id: 'workspace.window.createPackageBody.modal.title',
-        });
-      }
-      return formatMessage({
-        id: 'workspace.window.createPackage.modal.title',
-      });
+      return SQLConfirmPage.getTitleByParams(params);
     }
     case PageType.OB_CLIENT: {
-      return formatMessage({ id: 'odc.helper.page.openPage.CommandLineWindow' }) + params.index;
+      return OBClientPage.getTitleByParams(params);
     }
     case PageType.SQL: {
-      if (params?.scriptId) {
-        return title;
-      }
-      return generatePageTitle(PageType.SQL, key);
+      return SQLPage.getTitleByParams(params);
     }
     case PageType.PL: {
-      if ((params.isAnonymous && !params?.scriptId) || params.isDebug) {
-        return generatePageTitle(PageType.PL, key);
+      if (params.isAnonymous && !params?.scriptId) {
+        return AnonymousPage.getTitleByParams(params);
       }
       return title;
     }
@@ -74,7 +66,7 @@ export function getPageTitleText(page: IPage) {
     case PageType.BATCH_COMPILE_PROCEDURE:
     case PageType.BATCH_COMPILE_TRIGGER:
     case PageType.BATCH_COMPILE_TYPE: {
-      return generatePageTitle(type, key);
+      return BatchCompilePage.getTitleByParams(params);
     }
     default: {
       return title;

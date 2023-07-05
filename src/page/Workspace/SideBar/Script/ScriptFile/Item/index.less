@@ -1,0 +1,50 @@
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0px 4px;
+  cursor: pointer;
+  .action {
+    position: absolute;
+    right: 8px;
+    display: none;
+    align-items: center;
+    line-height: 28px;
+    :global {
+      .anticon {
+        cursor: pointer;
+      }
+    }
+  }
+  &:hover {
+    background-color: var(--hover-color);
+    .action {
+      display: flex;
+    }
+  }
+  &.error {
+    border-bottom: 1px solid var(--text-color-error);
+    cursor: not-allowed;
+    .label {
+      color: var(--text-color-placeholder);
+    }
+  }
+  &.uploading {
+    border-bottom: 1px solid var(--text-color-link);
+    cursor: progress;
+    .label {
+      color: var(--text-color-placeholder);
+    }
+  }
+}
+.icon {
+  flex: 0;
+  margin-right: 4px;
+}
+.label {
+  overflow: hidden;
+  color: var(--text-color-secondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

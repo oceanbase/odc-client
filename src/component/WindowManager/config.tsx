@@ -3,11 +3,9 @@ import Icon from '@ant-design/icons';
 import { PageType } from '@/d.ts';
 import CreateTablePage from '@/page/Workspace/components/CreateTable';
 import CreateViewPage from '@/page/Workspace/components/CreateViewPage';
-import EditPackagePage from '@/page/Workspace/components/EditPackagePage';
-import EditPLPage from '@/page/Workspace/components/EditPLPage';
-import OBClientPage from '@/page/Workspace/components/OBClientPage';
+import OBClientPage from '@/page/Workspace/components/OBClientPage/Page';
 import PLPage from '@/page/Workspace/components/PLPage';
-import RecycleBinPage from '@/page/Workspace/components/RecycleBinPage';
+import RecycleBinPage from '@/page/Workspace/components/RecycleBinPage/Page';
 import SessionParamPage from '@/page/Workspace/components/SessionParamPage';
 import SQLPage from '@/page/Workspace/components/SQLPage';
 import TablePage from '@/page/Workspace/components/TablePage';
@@ -36,6 +34,7 @@ import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
 import DeleteOutlined from '@/svgr/tabRecycle.svg';
 import SettingOutlined from '@/svgr/tabSession.svg';
+import VariableSvg from '@/svgr/variable.svg';
 
 // @ts-ignore
 import TypeSvg from '@/svgr/menuType.svg';
@@ -48,15 +47,14 @@ import PackagePage from '@/page/Workspace/components/PackagePage';
 import PLBatchCompilePage from '@/page/Workspace/components/PLBatchCompilePage';
 import ProcedurePage from '@/page/Workspace/components/ProcedurePage';
 import SequencePage from '@/page/Workspace/components/SequencePage';
-import SessionManagementPage from '@/page/Workspace/components/SessionManagementPage';
+import SessionManagementPage from '@/page/Workspace/components/SessionManagementPage/Page';
 import SQLConfirmPage from '@/page/Workspace/components/SQLConfirmPage';
 import SQLResultSetViewPage from '@/page/Workspace/components/SQLResultSetViewPage';
 import SynonymPage from '@/page/Workspace/components/SynonymPage';
-import TaskManaerPage from '@/page/Workspace/components/TaskManagePage';
+import TaskManaerPage from '@/page/Workspace/components/TaskPage';
 import TriggerPage from '@/page/Workspace/components/TriggerPage';
 import TutorialPage from '@/page/Workspace/components/TutorialPage';
 import TypePage from '@/page/Workspace/components/TypePage';
-import '@alipay/ob-editor-react/lib/style';
 
 /** 页面类型 */
 export const pageMap = {
@@ -97,15 +95,15 @@ export const pageMap = {
   // 会话参数页
   [PageType.SESSION_PARAM]: {
     component: withConfirmModal(SessionParamPage),
-    icon: <SettingOutlined />,
-    color: 'var(--icon-color-7)',
+    icon: <VariableSvg />,
+    color: 'var(--icon-orange-color)',
   },
 
   // 会话管理页
   [PageType.SESSION_MANAGEMENT]: {
     component: withConfirmModal(SessionManagementPage),
     icon: <SettingOutlined />,
-    color: 'var(--icon-color-7)',
+    color: 'var(--icon-green-color)',
   },
 
   // 回收站页
@@ -185,25 +183,11 @@ export const pageMap = {
     color: 'var(--icon-color-3)',
   },
 
-  // 包编辑页
-  [PageType.EDIT_PACKAGE]: {
-    component: withConfirmModal(EditPackagePage),
-    icon: <Icon component={PackageSvg} />,
-    color: 'var(--icon-color-3)',
-  },
-
   // 包详情页
   [PageType.PACKAGE]: {
     component: withConfirmModal(PackagePage),
     icon: <Icon component={PackageSvg} />,
     color: 'var(--icon-color-3)',
-  },
-
-  // PL 编辑页
-  [PageType.EDIT_PL]: {
-    component: withConfirmModal(EditPLPage),
-    icon: <Icon component={ConsolePLSvg} />,
-    color: 'var(--icon-color-1)',
   },
 
   [PageType.OB_CLIENT]: {

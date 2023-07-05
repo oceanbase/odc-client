@@ -2228,6 +2228,7 @@
   "odc.component.VersionModal.config.OpenMultipleConnectionsConcurrently": "并发打开多个连接：",
   "odc.components.FormUserModal.CreateUser": "新建用户",
   "odc.components.UserPage.component.Note": "备注",
+  "odc.components.UserPage.component.ExtraProperties": "自定义属性",
   "odc.component.ProcedureParam.Mode": "模式",
   "odc.components.PublicConnectionPage.AreYouSureYouWant": "是否确定停用资源组？",
   "odc.component.SQLExecuteModal.SqlConfirmation": "SQL 确认",

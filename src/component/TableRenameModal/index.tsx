@@ -1,26 +1,27 @@
+import { ConnectionMode } from '@/d.ts';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
-import React, { Component } from 'react';
-// compatible
-import type { ITable } from '@/d.ts';
 import { getQuoteTableName } from '@/util/utils';
 import { Form, FormInstance, Input, message, Modal } from 'antd';
+import React, { Component } from 'react';
 
 interface IProps {
-  model: Partial<ITable>;
-  onSave: (values: ITable) => void;
+  model: Partial<ITableModel>;
+  onSave: (values: Partial<ITableModel>) => void;
   visible: boolean;
   onCancel: () => void;
+  dbMode: ConnectionMode;
 }
 
 class TableRenameModal extends Component<IProps> {
   form = React.createRef<FormInstance>();
   public save = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    const { onSave, model } = this.props;
+    const { onSave, model, dbMode } = this.props;
     const data = await this.form.current.validateFields();
     if (!data) {
       return;
     }
-    if (getQuoteTableName(model.tableName) === data.tableName) {
+    if (getQuoteTableName(model.info.tableName, dbMode) === data.tableName) {
       message.error(
         formatMessage({
           id: 'odc.component.TableRenameModal.TheTableNameHasNot',
@@ -29,11 +30,17 @@ class TableRenameModal extends Component<IProps> {
       );
       return;
     }
-    onSave(data);
+    const newData = Object.assign({}, this.props.model, {
+      info: {
+        ...model.info,
+        tableName: data.tableName,
+      },
+    });
+    onSave(newData);
   };
 
   public render() {
-    const { visible, onCancel, model } = this.props;
+    const { visible, onCancel, model, dbMode } = this.props;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
@@ -50,7 +57,7 @@ class TableRenameModal extends Component<IProps> {
       >
         <Form
           ref={this.form}
-          initialValues={{ tableName: getQuoteTableName(model.tableName) }}
+          initialValues={{ tableName: getQuoteTableName(model?.info?.tableName, dbMode) }}
           {...formItemLayout}
         >
           <Form.Item

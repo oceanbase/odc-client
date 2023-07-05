@@ -84,7 +84,7 @@ export default function withConfirmModal(WrappedComponent: any) {
         <div
           style={{
             // 减去 topbar 和 tabbar 高度
-            height: 'calc(100vh - 40px - 28px)',
+            height: 'calc(100vh - 28px)',
             background: 'var(--background-secondry-color)',
             position: 'relative',
             overflow: 'auto',

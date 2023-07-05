@@ -1,12 +1,14 @@
+import { getTableColumnList } from '@/common/network/table';
+import { getView } from '@/common/network/view';
 import { fieldIconMap } from '@/constant';
 import { ColumnShowType } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import Icon, { PlusOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Empty, Spin, Transfer, Tree } from 'antd';
 import update from 'immutability-helper';
 import { isEqual, uniqueId } from 'lodash';
-import { inject, observer } from 'mobx-react';
 import { parse } from 'query-string';
 import { PureComponent } from 'react';
 import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
@@ -15,7 +17,7 @@ import ColumnItem from './Item';
 
 const { TreeNode, DirectoryTree } = Tree;
 interface IProps {
-  schemaStore?: any;
+  session: SessionStore;
   onSubmit: (values: any) => void;
   viewUnits: any[];
 }
@@ -42,8 +44,6 @@ const ColumnIcon = ({ dataShowType }: { dataShowType: ColumnShowType }) => (
   />
 );
 
-@inject('schemaStore')
-@observer
 export default class TreeSelector extends PureComponent<IProps, IState> {
   selectedKeys: any[];
   constructor(props) {
@@ -220,7 +220,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
 
   renderTree = (treeNodes = [], selectedKeys = []) => {
     const { keywords, targetKeys } = this.state;
-    const { schemaStore } = this.props;
+    const { session } = this.props;
     return treeNodes.map((item) => {
       const { children, title, type, key, ...props } = item;
       const params = parse(key);
@@ -236,7 +236,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           ICON_VIEW
         ) : (
           <ColumnIcon
-            dataShowType={convertDataTypeToDataShowType(`${dataType}`, schemaStore.dataTypes)}
+            dataShowType={convertDataTypeToDataShowType(`${dataType}`, session.dataTypes)}
           />
         );
 
@@ -266,7 +266,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
   };
 
   loadTreeData = async (viewUnits) => {
-    const { schemaStore } = this.props;
+    const { session } = this.props;
     this.setState({ loading: true });
     const treeData = [];
     const requests = [];
@@ -293,10 +293,10 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
       };
 
       if (tableName) {
-        requests.push(schemaStore.getTableColumnList(tableName, true, dbName));
+        requests.push(getTableColumnList(tableName, dbName, session?.sessionId));
         nodes.push(node);
       } else if (viewName) {
-        requests.push(schemaStore.getView(viewName));
+        requests.push(getView(viewName, session?.sessionId, dbName));
         nodes.push(node);
       }
       root.children.push(node);

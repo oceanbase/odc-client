@@ -1,14 +1,13 @@
 import { getTableInfo } from '@/common/network/table';
-import { ConstraintType, DbObjectType } from '@/d.ts';
+import { DbObjectType } from '@/d.ts';
 import { PageStore } from '@/store/page';
-import { SchemaStore } from '@/store/schema';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ExportOutlined } from '@ant-design/icons';
 import { Layout, Radio, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'umi';
 import { ITableModel } from '../CreateTable/interface';
 import TableColumns from './Columns';
@@ -21,8 +20,13 @@ import ShowExecuteModal from './showExecuteModal';
 import ShowTableBaseInfoForm from './ShowTableBaseInfoForm';
 import TableData from './TableData';
 
+import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import Toolbar from '@/component/Toolbar';
+import { TablePage as TablePageModel } from '@/store/helper/page/pages';
 import modal from '@/store/modal';
+import { SessionManagerStore } from '@/store/sessionManager';
+import SessionContext from '../SessionContextWrap/context';
+import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
 const Content = Layout.Content;
@@ -32,13 +36,8 @@ interface IProps {
   pageKey: string;
   pageStore?: PageStore;
   settingStore?: SettingStore;
-  schemaStore?: SchemaStore;
-  params: {
-    tableName: string;
-    topTab: TopTab;
-    propsTab: PropsTab;
-    constraintsTab: ConstraintType;
-  };
+  sessionManagerStore?: SessionManagerStore;
+  params: TablePageModel['pageParams'];
 }
 
 // 顶层 Tab key 枚举
@@ -57,13 +56,7 @@ export enum PropsTab {
   PARTITION = 'PARTITION',
 }
 
-const TablePage: React.FC<IProps> = function ({
-  params,
-  settingStore,
-  pageStore,
-  schemaStore,
-  pageKey,
-}) {
+const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
   const [table, setTable] = useState<Partial<ITableModel>>(null);
   const [version, setVersion] = useState(0);
   const [topTab, setTopTab] = useState(TopTab.PROPS);
@@ -71,14 +64,16 @@ const TablePage: React.FC<IProps> = function ({
   const executeRef = useRef<{
     showExecuteModal: (sql: any, tableName: any) => Promise<boolean>;
   }>();
+  const { session } = useContext(SessionContext);
+  const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
-  const enableConstraint = schemaStore.enableConstraint;
+  const enableConstraint = session?.supportFeature?.enableConstraint;
 
   async function fetchTable() {
     if (table?.info?.tableName === params.tableName) {
       return;
     }
-    const newTable = await getTableInfo(params.tableName);
+    const newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
     if (newTable) {
       setTable(newTable);
       setVersion(version + 1);
@@ -91,11 +86,12 @@ const TablePage: React.FC<IProps> = function ({
           ...newTable,
           info: Object.assign({}, newTable?.info, { tableName: newTableName }),
         });
+        const tablePage = new TablePageModel(params?.databaseId, newTableName);
         await pageStore.updatePage(
           pageKey,
           {
             title: newTableName,
-            updateKey: true,
+            updateKey: tablePage.pageKey,
           },
 
           {
@@ -108,11 +104,13 @@ const TablePage: React.FC<IProps> = function ({
 
   const refresh = useCallback(async () => {
     await fetchTable();
-  }, [params.tableName]);
+  }, [params.tableName, session]);
 
   useEffect(() => {
-    fetchTable();
-  }, []);
+    if (session) {
+      fetchTable();
+    }
+  }, [session]);
 
   useEffect(() => {
     if (params.topTab) {
@@ -155,7 +153,7 @@ const TablePage: React.FC<IProps> = function ({
 
   return table ? (
     <>
-      <Content>
+      <div style={{ height: '100%', overflow: 'auto' }}>
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
@@ -185,6 +183,7 @@ const TablePage: React.FC<IProps> = function ({
             onRefresh: refresh,
             showExecuteModal: executeRef.current?.showExecuteModal,
             editMode: true,
+            session,
           }}
         >
           <Tabs
@@ -267,6 +266,7 @@ const TablePage: React.FC<IProps> = function ({
               {version > 0 ? (
                 <TableData
                   table={oldTable}
+                  session={session}
                   tableName={table?.info.tableName}
                   pageKey={pageKey}
                   key={version}
@@ -275,12 +275,15 @@ const TablePage: React.FC<IProps> = function ({
             </TabPane>
           </Tabs>
         </TablePageContext.Provider>
-      </Content>
-      <ShowExecuteModal ref={executeRef} />
+      </div>
+      <ShowExecuteModal session={session} ref={executeRef} />
     </>
   ) : (
-    <Spin style={{ marginLeft: '50%', marginTop: 40 }} />
+    <WorkSpacePageLoading />
   );
 };
 
-export default inject('pageStore', 'schemaStore', 'settingStore')(observer(TablePage));
+export default WrapSessionPage(
+  inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage)),
+  true,
+);

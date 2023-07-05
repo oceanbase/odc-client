@@ -1,5 +1,4 @@
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
-import connection from '@/store/connection';
 import { isObjectColumn } from '@/util/column';
 import { isNil, isString, isUndefined } from 'lodash';
 import React, { useMemo } from 'react';
@@ -20,6 +19,7 @@ export default function useColumns(
   enableEdit: boolean,
   supportBlob: boolean,
   originRows: any[],
+  dbMode: ConnectionMode,
 ) {
   const rows = originRows?.slice(0, 30) || [];
   const maxRowsLength = {};
@@ -45,7 +45,7 @@ export default function useColumns(
         resizable: true,
         sortable: true,
         editable: !column.readonly && isColumnEditable(column.columnType),
-        editor: getEditor(column.columnType),
+        editor: getEditor(column.columnType, dbMode),
         formatter: getCellFormatter(column.columnType, enableEdit, supportBlob),
       };
     });
@@ -117,8 +117,8 @@ export function getCellFormatter(columnType: string, enableEdit: boolean, suppor
   return defaultFormatter;
 }
 
-function getEditor(columnType: string) {
-  const isOracle = connection.connection.dbMode === ConnectionMode.OB_ORACLE;
+function getEditor(columnType: string, dbMode: ConnectionMode) {
+  const isOracle = dbMode === ConnectionMode.OB_ORACLE;
   switch (columnType) {
     case 'TIME':
     case 'TIME': {

@@ -1,10 +1,9 @@
-import { odcServerLoginUrl } from '@/common/network/other';
 import { clearModalConfirm } from '@/component/ErrorConfirmModal';
 import OBLogin from '@/component/Login';
 import { SPACE_REGEX } from '@/constant';
 import { ODCErrorsCode } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
 import type { UserStore } from '@/store/login';
+import loginStore from '@/store/login';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import { useLocation } from '@umijs/max';
@@ -15,7 +14,6 @@ import { history } from 'umi';
 
 const Login: React.FC<{
   userStore: UserStore;
-  connectionStore: ConnectionStore;
   settingStore?: SettingStore;
 }> = (props) => {
   const { settingStore, userStore } = props;
@@ -79,7 +77,7 @@ const Login: React.FC<{
         if (query.has('redirectTo')) {
           history.push(decodeURIComponent(query.get('redirectTo')));
         } else {
-          history.push('/connections');
+          history.push('/spaceIndex');
         }
       } else if (errCode === 'UserNotActive') {
         const { username, password } = params;
@@ -151,10 +149,6 @@ const Login: React.FC<{
     }
   };
 
-  const onThirdLoginClick = () => {
-    window.location.href =
-      odcServerLoginUrl + '?odc_back_url=' + encodeURIComponent(location.pathname);
-  };
   return !settingStore.serverSystemInfo?.passwordLoginEnabled ? /**
    * 第三方自动登录配置开启的时候，不能出现登录页面
    */ null : (
@@ -163,7 +157,7 @@ const Login: React.FC<{
       showAuthCode={settingStore.serverSystemInfo?.captchaEnabled}
       showOtherLoginButton={settingStore.serverSystemInfo.ssoLoginEnabled}
       otherLoginProps={{
-        onFinish: onThirdLoginClick,
+        onFinish: loginStore.gotoLoginPageSSO,
       }}
       authCodeImg={authCode}
       onAuthCodeImgChange={loadAuthCode}
@@ -193,4 +187,4 @@ const Login: React.FC<{
   );
 };
 
-export default inject('userStore', 'connectionStore', 'settingStore')(observer(Login));
+export default inject('userStore', 'settingStore')(observer(Login));

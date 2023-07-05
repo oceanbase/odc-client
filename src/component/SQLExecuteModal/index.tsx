@@ -1,24 +1,21 @@
 import { executeSQL } from '@/common/network/sql';
 import { ConnectionMode, ISqlExecuteResultStatus } from '@/d.ts';
-import type { ConnectionStore } from '@/store/connection';
-import type { SQLStore } from '@/store/sql';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { message, Modal } from 'antd';
-import { inject, observer } from 'mobx-react';
 import { useCallback, useEffect, useState } from 'react';
 import CommonIDE from '../CommonIDE';
 
 function SQLExecuteModal(props: {
-  connectionStore?: ConnectionStore;
-  sqlStore?: SQLStore;
   isPL?: boolean;
   sql?: string;
   visible?: boolean;
+  session: SessionStore;
   onClose: () => void;
   onSuccess: (innerSQL: string) => void;
 }) {
-  const { sqlStore, connectionStore, isPL, sql, visible, onClose, onSuccess } = props;
+  const { session, sql, visible, onClose, onSuccess } = props;
   const [innerSQL, setInnerSQL] = useState(sql);
 
   useEffect(() => {
@@ -27,7 +24,7 @@ function SQLExecuteModal(props: {
 
   const doExecuteSQL = useCallback(async () => {
     try {
-      const result = await executeSQL(innerSQL);
+      const result = await executeSQL(innerSQL, session.sessionId, session.database?.dbName);
       if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
         onSuccess(innerSQL);
         message.success(
@@ -51,7 +48,6 @@ function SQLExecuteModal(props: {
       width={600}
       bodyStyle={{
         height: 400,
-        border: '1px solid #e9e9e9',
       }}
       visible={visible}
       destroyOnClose
@@ -62,10 +58,11 @@ function SQLExecuteModal(props: {
       onOk={doExecuteSQL}
     >
       <CommonIDE
+        session={session}
         bordered={true}
-        language={`sql-oceanbase-${
-          connectionStore.connection.dbMode === ConnectionMode.OB_MYSQL ? 'mysql' : 'oracle'
-        }${isPL ? '-pl' : ''}`}
+        language={
+          session?.connection.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
+        }
         initialSQL={sql}
         onSQLChange={(sql) => {
           setInnerSQL(sql);
@@ -74,4 +71,4 @@ function SQLExecuteModal(props: {
     </Modal>
   );
 }
-export default inject('connectionStore', 'sqlStore')(observer(SQLExecuteModal));
+export default SQLExecuteModal;

@@ -1,5 +1,4 @@
 import Toolbar from '@/component/Toolbar';
-import { ConnectionStore } from '@/store/connection';
 import { formatMessage } from '@/util/intl';
 import { Menu, Space, Spin } from 'antd';
 import { Observer, observer } from 'mobx-react';
@@ -11,7 +10,6 @@ interface IProps {
   ctx: any;
   actionGroupKey: string;
   loading?: boolean;
-  connectionStore?: ConnectionStore;
   /**
    * 右侧的自定义按钮
    */
@@ -69,7 +67,6 @@ export interface ToolBarActions<T = any> {
 @observer
 export default class EditorToolBar extends Component<IProps, IState> {
   // 单独触发 action
-
   public static async triggler(ctx: any, actionName: string) {
     const toolbarAction = ACTIONS[actionName] as ToolBarCommonAction<any>;
 
@@ -202,7 +199,11 @@ export default class EditorToolBar extends Component<IProps, IState> {
       if (isShrink) {
         if (i === actionGroups.length - 1) {
           buttonsArr.push(
-            <Toolbar.ButtonPopover content={<Space>{_tmpArr}</Space>} icon={'ELLIPSIS_MENU'} />,
+            <Toolbar.ButtonPopover
+              key={`${i}-tool-buttom`}
+              content={<Space>{_tmpArr}</Space>}
+              icon={'ELLIPSIS_MENU'}
+            />,
           );
         }
       } else {

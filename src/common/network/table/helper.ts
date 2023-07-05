@@ -1,4 +1,4 @@
-import { IPartitionType } from '@/d.ts';
+import { ConnectionMode, IPartitionType } from '@/d.ts';
 import { IServerTable } from '@/d.ts/table';
 import {
   ITableModel,
@@ -7,7 +7,10 @@ import {
 } from '@/page/Workspace/components/CreateTable/interface';
 import { getQuoteTableName } from '@/util/utils';
 
-export function convertTableToServerTable(data: Partial<ITableModel>): Partial<IServerTable> {
+export function convertTableToServerTable(
+  data: Partial<ITableModel>,
+  dbMode: ConnectionMode,
+): Partial<IServerTable> {
   if (!data) {
     return null;
   }
@@ -123,7 +126,7 @@ export function convertTableToServerTable(data: Partial<ITableModel>): Partial<I
         serverTable.partition = {
           partitionOption: {
             type: partType,
-            expression: partitions.expression || getQuoteTableName(partitions.columnName),
+            expression: partitions.expression || getQuoteTableName(partitions.columnName, dbMode),
             partitionsNum: partitions.partNumber,
           },
         };
@@ -143,7 +146,7 @@ export function convertTableToServerTable(data: Partial<ITableModel>): Partial<I
         serverTable.partition = {
           partitionOption: {
             type: partType,
-            expression: partitions.expression || getQuoteTableName(partitions.columnName),
+            expression: partitions.expression || getQuoteTableName(partitions.columnName, dbMode),
           },
           partitionDefinitions: partitions.partitions?.map((p) => {
             return {
@@ -174,7 +177,7 @@ export function convertTableToServerTable(data: Partial<ITableModel>): Partial<I
         serverTable.partition = {};
         serverTable.partition.partitionOption = {
           type: partType,
-          expression: partitions.expression || getQuoteTableName(partitions.columnName),
+          expression: partitions.expression || getQuoteTableName(partitions.columnName, dbMode),
         };
         serverTable.partition.partitionDefinitions = partitions.partitions?.map((p) => {
           return {
@@ -251,6 +254,7 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
       secondPrecision: column.secondPrecision,
       dayPrecision: column.dayPrecision,
       yearPrecision: column.yearPrecision,
+      tableName: column.tableName,
     };
   });
   // index

@@ -1,5 +1,4 @@
 import { dataTypesIns } from '@/util/dataType';
-import { inject, observer } from 'mobx-react';
 import { columnExtraComponent } from '.';
 import Character from '../Columns/ColumnExtraInfo/Character';
 import DataSync from '../Columns/ColumnExtraInfo/DateSync';
@@ -12,13 +11,13 @@ const MySQLColumnExtra: columnExtraComponent = ({
   column,
   originColumns,
   onChange,
-  connectionStore,
+  dialectType,
 }) => {
   if (!column) {
     return null;
   }
   const isGeneratedColumn = !!column.generated;
-  const dataType = dataTypesIns.getDataType(connectionStore.connection.dialectType, column.type);
+  const dataType = dataTypesIns.getDataType(dialectType, column.type);
   if (!dataType) {
     return null;
   } else if (dataType.isChar || dataType.isText) {
@@ -61,4 +60,4 @@ const MySQLColumnExtra: columnExtraComponent = ({
     return <DefaultValue originColumns={originColumns} column={column} onChange={onChange} />;
   }
 };
-export default inject('connectionStore')(observer(MySQLColumnExtra));
+export default MySQLColumnExtra;

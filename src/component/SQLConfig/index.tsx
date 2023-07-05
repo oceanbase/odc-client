@@ -1,4 +1,3 @@
-import { ConnectionStore } from '@/store/connection';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { SettingOutlined } from '@ant-design/icons';
@@ -9,11 +8,12 @@ import DelimiterSelect from '../DelimiterSelect';
 import InputBigNumber from '../InputBigNumber';
 
 import SessionParamDrawer from '@/page/Workspace/components/SessionParamPage/SessionParamDrawer';
+import { SessionManagerStore } from '@/store/sessionManager';
 import styles from './index.less';
 import SQLConfigContext from './SQLConfigContext';
 
 interface IProps {
-  connectionStore?: ConnectionStore;
+  sessionManagerStore?: SessionManagerStore;
   isShowText?: boolean;
   settingStore?: SettingStore;
 }
@@ -24,11 +24,11 @@ const SQLConfig: React.FC<IProps> = function (props) {
   const [showSessionParam, setShowSessionParam] = useState(false);
   const [tableColumnInfoVisibleValue, setTableColumnInfoVisibleValue] = useState(true);
   const [visible, setVisible] = useState(false);
-  const queryLimit = session?.queryLimit;
-  const tableColumnInfoVisible = session?.tableColumnInfoVisible;
+  const queryLimit = session?.params?.queryLimit;
+  const tableColumnInfoVisible = session?.params.tableColumnInfoVisible;
 
   useEffect(() => {
-    setQueryLimitValue(session?.queryLimit);
+    setQueryLimitValue(session?.params.queryLimit);
   }, [queryLimit]);
 
   useEffect(() => {
@@ -36,14 +36,14 @@ const SQLConfig: React.FC<IProps> = function (props) {
   }, [tableColumnInfoVisible]);
 
   const handleSetQueryLimit = async () => {
-    const success = await props.connectionStore.setQueryLimit(queryLimitValue, pageKey);
+    const success = await session.setQueryLimit(queryLimitValue);
     if (!success) {
       setQueryLimitValue(queryLimit);
     }
   };
 
   const handleColumnInfoVisibleChange = (value: boolean) => {
-    props.connectionStore.changeColumnInfoVisible(value, pageKey);
+    session.changeColumnInfoVisible(value);
   };
 
   function renderContent() {
@@ -172,9 +172,9 @@ const SQLConfig: React.FC<IProps> = function (props) {
         }}
         placement="bottom"
         title=""
-        content={renderContent()}
-        visible={visible}
-        onVisibleChange={(v) => {
+        content={session ? renderContent() : null}
+        open={visible}
+        onOpenChange={(v) => {
           setVisible(v);
         }}
       >
@@ -206,4 +206,4 @@ const SQLConfig: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject('connectionStore', 'settingStore')(observer(SQLConfig));
+export default inject('sessionManagerStore', 'settingStore')(observer(SQLConfig));

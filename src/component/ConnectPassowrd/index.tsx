@@ -20,10 +20,8 @@ const PasswordModal = function ({ formRef, haveSave, cid }) {
         type: connection.type,
         clusterName: connection.clusterName,
         tenantName: connection.tenantName,
-        defaultSchema: connection.defaultSchema,
         username: connection.username,
         password: values.password,
-        visibleScope: connection.visibleScope,
         host: connection.host,
         port: connection.port,
         sslConfig: {

@@ -5,10 +5,7 @@ import {
   IDataType,
   IndexRange,
   IPartitionType,
-  TaskType,
 } from '@/d.ts';
-import { default as connection, default as connectionStore } from '@/store/connection';
-import schemaStore from '@/store/schema';
 import setting from '@/store/setting';
 import intl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
@@ -29,6 +26,9 @@ export function extractResourceId(id: string): {
   [key: string]: string;
 } {
   const r = {};
+  if (!id) {
+    return r;
+  }
   const s = id.split(':');
 
   for (let i = 0; i <= s.length; i += 2) {
@@ -54,12 +54,13 @@ export async function getCurrentSQL(
   rawSQL: string,
   offset: number,
   isMysql: boolean = true,
+  delimiter: string,
 ): Promise<{
   sql: string;
   begin: number;
   end: number;
 }> {
-  const splitSqls = await splitSql(rawSQL, !isMysql);
+  const splitSqls = await splitSql(rawSQL, !isMysql, delimiter);
 
   if (!splitSqls?.length) {
     return null;
@@ -179,13 +180,13 @@ export function convertDataTypeToDataShowType(dt: string = '', map: IDataType[])
   // Oracle 模式会返回全大写数据格式，而后端规定的 map 为全小写，需要转换
   dt = (dt && dt.toLowerCase()) || ''; // 尝试去除括号里的精度匹配，例如 varchar(100)
 
-  let r = map.find(({ databaseType }) => {
+  let r = map?.find(({ databaseType }) => {
     dt = dt.replace(/\([^)]*\)/, '()');
     return dt === databaseType?.toLowerCase();
   }); // 如果未匹配上，连括号一起去除继续尝试匹配，例如 timestamp(6)
 
   if (!r) {
-    r = map.find(({ databaseType }) => {
+    r = map?.find(({ databaseType }) => {
       dt = dt.replace(/\(\)/, '');
       return dt === databaseType?.toLowerCase();
     });
@@ -409,10 +410,8 @@ export function isWin64() {
   return navigator.userAgent.toLowerCase().indexOf('win64') > -1;
 }
 
-export function createAsyncTaskName(type: TaskType) {
-  return `${type.toLowerCase()}_${connectionStore.connection.sessionName || ''}_${
-    schemaStore.database.name || ''
-  }_${moment().format('YYYYMMDDHHmmss')}`;
+export function isLinux() {
+  return navigator.userAgent.toLowerCase().indexOf('linux') > -1;
 }
 
 export function downloadFile(downloadUrl: string) {
@@ -493,8 +492,8 @@ export function fixedEncodeURIComponent(str) {
 /**
  * 将后端回显的tableName添加正确的双引号
  */
-export function getQuoteTableName(tableName: string) {
-  const isMySQL = connection.connection.dbMode === ConnectionMode.OB_MYSQL;
+export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
+  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
   tableName = encodeIdentifiers(tableName, isMySQL);
   return isMySQL ? '`' + tableName + '`' : `"${tableName}"`;
 }

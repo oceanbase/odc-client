@@ -1,6 +1,7 @@
 import { PLType } from '@/constant/plType';
 import { IFunction, IProcedure } from '@/d.ts';
 import { IDebugContext } from '@/store/debug/type';
+import SessionStore from '@/store/sessionManager/session';
 import request from '@/util/request';
 import { generateDatabaseSid } from './pathUtil';
 
@@ -9,9 +10,10 @@ export async function createDebugSession(
   plSchema: IFunction | IProcedure | null,
   plType: PLType,
   content: string,
+  session: SessionStore,
 ): Promise<string> {
   const reqParams: any = {
-    sid: generateDatabaseSid(),
+    sid: generateDatabaseSid(session?.database?.dbName, session?.sessionId),
     debugType: plType,
   };
   switch (plType) {
