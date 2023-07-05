@@ -9,7 +9,7 @@ export default {
   //@see https://code.alipay.com/bigfish/bigfish/pull_requests/1556
   mountElementId: 'root-slave',
 
-  runtimePublicPath: true,
+  runtimePublicPath: {},
   // publicPath: 'https://gw.alipayobjects.com/as/g/oceanbase/sqlConsole/renderer/',
   // 路由配置，客户端不需要 Login
   routes: routes
