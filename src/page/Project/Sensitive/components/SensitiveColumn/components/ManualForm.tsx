@@ -12,7 +12,7 @@ const ManualForm = ({ formRef, databases, setDatabases }) => {
         <span style={{ width: '184px' }}>脱敏算法</span>
       </div>
       <Form form={formRef} layout="vertical">
-        <Form.List name="test">
+        <Form.List name="manual">
           {(fields, { add, remove }, { errors }) => (
             <>
               <div style={{ display: 'flex', flexDirection: 'column' }}>

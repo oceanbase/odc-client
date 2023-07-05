@@ -147,7 +147,7 @@ const ScanForm = ({
                             dataIndex: 'sensitiveRuleId',
                             key: 'sensitiveRuleId',
                             render: (text) =>
-                              sensitiveContext?.sensitiveRuleIdMap?.[text] + '' + text,
+                              sensitiveContext?.sensitiveRuleIdMap?.[text],
                           },
                           {
                             title: '脱敏算法',

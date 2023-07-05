@@ -1,19 +1,19 @@
 import { listMaskingAlgorithm } from '@/common/network/maskingAlgorithm';
 import TooltipContent from '@/component/TooltipContent';
-import { MaskRyleTypeMap } from '@/d.ts';
+import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { IRule } from '@/d.ts/rule';
 import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../components/SecureTable';
-import { CommonTableBodyMode, CommonTableMode } from '../components/SecureTable/interface';
+import { CommonTableBodyMode, CommonTableMode, ITableLoadOptions } from '../components/SecureTable/interface';
 import ViewMaskingAlgorithmDrawer from './components/ViewMaskingAlgorithmDrawer';
 
 interface MaskingAlgorithmProps {}
 const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
   const tableRef = useRef<any>(null);
-  const [maskingAlgorithm, setMaskingAlgorithm] = useState<IMaskingAlgorithm[]>([]);
+  const [maskingAlgorithm, setMaskingAlgorithm] = useState<IResponseData<IMaskingAlgorithm>>(null);
   const [selectedData, setSelectedData] = useState<IMaskingAlgorithm>(null);
   const [visible, setVisible] = useState<boolean>(false);
 
@@ -83,9 +83,18 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
     ];
   };
 
-  const initData = async () => {
-    const data = await listMaskingAlgorithm();
-    setMaskingAlgorithm(data);
+  const initData = async (args?: ITableLoadOptions) => {
+    const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
+    const { column, order } = sorter ?? {};
+    const { current = 1 } = pagination ?? {};
+    const data = {
+      sort: column?.dataIndex,
+      page: current,
+      size: pageSize,
+    };
+    data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
+    const rawData = await listMaskingAlgorithm(data);
+    setMaskingAlgorithm(rawData);
   };
 
   const handleViewDrawerOpen = (record: IMaskingAlgorithm) => {
@@ -101,10 +110,6 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
     handleViewDrawerOpen,
   });
 
-  useEffect(() => {
-    initData();
-  }, []);
-
   return (
     <>
       <SecureTable
@@ -118,13 +123,15 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
         operationContent={{
           options: [],
         }}
-        onLoad={null}
+        onLoad={initData}
+        onChange={initData}
         tableProps={{
           columns,
-          dataSource: maskingAlgorithm,
+          dataSource: maskingAlgorithm?.contents,
           rowKey: 'id',
           pagination: {
-            // pageSize: 10,
+            current: maskingAlgorithm?.page?.number,
+            total: maskingAlgorithm?.page?.totalElements,
           },
           scroll: {
             x: 1000,

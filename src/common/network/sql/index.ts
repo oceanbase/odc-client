@@ -169,7 +169,6 @@ export async function exportResultSet(
   sessionId: string,
   saveSql: boolean,
   maxRows: number,
-  maskingPolicyId: number,
   schemaName: string,
 ): Promise<{
   stopTask: () => void;
@@ -186,7 +185,6 @@ export async function exportResultSet(
       fileName,
       maxRows,
       saveSql,
-      maskingPolicyId,
     },
   });
   const taskId = res?.data?.taskId;

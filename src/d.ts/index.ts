@@ -1578,7 +1578,6 @@ export interface IDataTransferTaskParams {
   taskName: string;
   expanded: boolean; // 是否展开
   maskingPolicy: IMaskPolicy;
-  maskingPolicyId: number;
   logs: {
     [logType: string]: string;
   };
@@ -1773,7 +1772,6 @@ export interface ExportFormData {
   sysUserPassword?: string;
   overwriteSysConfig?: boolean;
   exportAllObjects?: boolean; // 导出整库
-  maskingPolicyId?: number; // 脱敏策略
   exportFilePath?: string; // 桌面端导出路径
 }
 

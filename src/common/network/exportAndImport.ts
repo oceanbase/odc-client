@@ -79,7 +79,6 @@ export async function createBatchExportTask(formData: ExportFormData) {
     sysUser: formData.useSys ? formData.sysUser : null,
     sysPassword: formData.useSys ? encrypt(formData.sysUserPassword) : null,
     overwriteSysConfig: formData.overwriteSysConfig,
-    maskingPolicyId: formData.maskingPolicyId,
   };
   // 单表导入需要传递表名
   const ret = await request.post('/api/v2/flow/flowInstances/', {

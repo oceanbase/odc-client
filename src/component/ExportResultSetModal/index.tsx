@@ -62,7 +62,6 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
           csvFormat,
           saveSql,
           maxRows,
-          maskingPolicyId,
         } = data;
         setLoading(true);
         const taskIns = await exportResultSet(
@@ -75,7 +74,6 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
           session.sessionId,
           saveSql,
           maxRows,
-          maskingPolicyId,
           session.database.dbName,
         );
 
@@ -263,11 +261,6 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
               </Select>
             </Form.Item>
           </Col>
-          {!isClient() && (
-            <Col span={11}>
-              <MaskPolicySelecter width={200} />
-            </Col>
-          )}
         </Row>
         <Form.Item noStyle shouldUpdate>
           {({ getFieldValue }) => {
