@@ -353,6 +353,6 @@ export async function getDataSourceManageDatabase(
 }
 
 export async function getDataSourceGroupByProject(): Promise<IResponseData<IDatasource>> {
-  const res = await request.get(`/api/v2/collaboration/projects/databases/statsDataSource`);
+  const res = await request.get(`/api/v2/collaboration/projects/databases/stats`);
   return res?.data;
 }
