@@ -13,6 +13,7 @@ export enum CommonTableBodyMode {
 export interface ITableInstance {
   reload: (args?: ITableLoadOptions) => void;
   resetSelectedRows: () => void;
+  resetPaganition: () => void;
 }
 export interface ITitleContent {
   tabs?: {

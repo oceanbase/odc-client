@@ -44,9 +44,9 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
   };
 
   const initDetectRules = async (projectId: number = context.projectId) => {
-    const rawData = await listSensitiveRules(projectId);
+    const rawData = await listSensitiveRules(projectId, { enabled: [true]});
     const resData = rawData
-      ?.filter((data) => data.enabled)
+      ?.contents
       ?.map((content) => ({
         label: content.name,
         value: content.id,

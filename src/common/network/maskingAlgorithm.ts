@@ -1,3 +1,4 @@
+import { IResponseData } from '@/d.ts';
 import { IMaskingAlgorithm, MaskingAlgorithmType } from '@/d.ts/maskingAlgorithm';
 import request from '@/util/request';
 
@@ -16,10 +17,13 @@ export async function listMaskingAlgorithm(
   params?: Partial<{
     name: string;
     type: MaskingAlgorithmType;
+    sort: string;
+    page: number;
+    size: number;
   }>,
-): Promise<IMaskingAlgorithm[]> {
-  const ret = await request.get(`/api/v2/datasecurity/maskingAlgorithms/`, {}, params);
-  return ret?.data?.contents;
+): Promise<IResponseData<IMaskingAlgorithm>> {
+  const ret = await request.get(`/api/v2/datasecurity/maskingAlgorithms/`, {params});
+  return ret?.data;
 }
 
 export async function detailMaskingAlgorithm(id: number): Promise<IMaskingAlgorithm> {

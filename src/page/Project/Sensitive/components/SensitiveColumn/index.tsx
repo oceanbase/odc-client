@@ -23,8 +23,21 @@ import { AddSensitiveColumnType } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import EditModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
+import TooltipContent from '@/component/TooltipContent';
+import { ColumnsType } from 'antd/es/table';
+import { IResponseData } from '@/d.ts';
 
-const getColumns = ({
+const getColumns: ({
+  handleStatusSwitch,
+  handleEdit,
+  handleDelete,
+  dataSourceFilters,
+  databaseFilters,
+  maskingAlgorithmFilters,
+  dataSourceIdMap,
+  hasRowSelected,
+  maskingAlgorithmIdMap,
+}) => ColumnsType<ISensitiveColumn>  = ({
   handleStatusSwitch,
   handleEdit,
   handleDelete,
@@ -42,13 +55,17 @@ const getColumns = ({
       dataIndex: 'datasource',
       key: 'datasource',
       filters: dataSourceFilters,
-      render: (text, record, index) => {
-        return (
-          record?.database?.dataSource?.name || (
-            <>{dataSourceIdMap[record?.database?.dataSource?.id]}</>
-          )
-        );
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '170px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          },
+        };
       },
+      render: (text, record, index) => <TooltipContent content={record?.database?.dataSource?.name || dataSourceIdMap[record?.database?.dataSource?.id]} maxWdith={170} />,
     },
     {
       title: '数据库/schema',
@@ -56,21 +73,51 @@ const getColumns = ({
       dataIndex: 'database',
       key: 'database',
       filters: databaseFilters,
-      render: (text, record, index) => <>{record?.database?.name}</>,
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '170px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          },
+        };
+      },
+      render: (text, record, index) => <TooltipContent content={record?.database?.name} maxWdith={170} />,
     },
     {
       title: '表',
       width: 170,
       dataIndex: 'tableName',
       key: 'tableName',
-      // filters: [],
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '170px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          },
+        };
+      },
+      render: (text, record, index) => <TooltipContent content={text} maxWdith={170} />,
     },
     {
       title: '列',
       width: 170,
       dataIndex: 'columnName',
       key: 'columnName',
-      // filters: [],
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: '170px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          },
+        };
+      },
+      render: (text, record, index) => <TooltipContent content={text} maxWdith={170} />,
     },
     {
       title: '脱敏算法',
@@ -78,7 +125,7 @@ const getColumns = ({
       dataIndex: 'maskingAlgorithmId',
       key: 'maskingAlgorithmId',
       filters: maskingAlgorithmFilters,
-      render: (text, record, index) => <>{maskingAlgorithmIdMap[record?.maskingAlgorithmId]}</>,
+      render: (text, record, index) => <TooltipContent content={maskingAlgorithmIdMap[record?.maskingAlgorithmId]} maxWdith={170} />,
     },
     {
       title: '启用状态',
@@ -150,7 +197,8 @@ const SensitiveColumn = ({
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
   );
-  const [dataSource, setDataSource] = useState([]);
+  const [sensitiveColumn, setSensitiveColumn] = useState<IResponseData<ISensitiveColumn>>(null);
+  // const [dataSource, setDataSource] = useState([]);
   const [visible, setVisible] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -197,7 +245,7 @@ const SensitiveColumn = ({
     data.enabled = enabled?.length ? enabled : undefined;
     data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const result = await listSensitiveColumns(projectId, data);
-    setDataSource(result);
+    setSensitiveColumn(result);
   };
 
   const rowSelectedCallback = (v: boolean) => {
@@ -272,7 +320,7 @@ const SensitiveColumn = ({
       cancelText: '取消',
     });
   };
-  const columns = getColumns({
+  const columns: ColumnsType<ISensitiveColumn>  = getColumns({
     hasRowSelected,
     handleStatusSwitch,
     handleEdit,
@@ -330,7 +378,7 @@ const SensitiveColumn = ({
         body={CommonTableBodyMode.BIG}
         titleContent={null}
         showToolbar={true}
-        showPagination={false}
+        showPagination={true}
         filterContent={{
           searchPlaceholder: '请输入表名/列名',
         }}
@@ -341,9 +389,12 @@ const SensitiveColumn = ({
         onChange={loadData}
         tableProps={{
           columns,
-          dataSource,
+          dataSource: sensitiveColumn?.contents,
           rowKey: 'id',
-          pagination: false,
+          pagination: {
+            current: sensitiveColumn?.page?.number,
+            total: sensitiveColumn?.page?.totalElements,
+          },
         }}
         rowSelecter={rowSelector}
         rowSelectedCallback={rowSelectedCallback}

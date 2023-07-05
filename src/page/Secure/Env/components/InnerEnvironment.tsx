@@ -5,6 +5,7 @@ import { IRule, RuleType } from '@/d.ts/rule';
 import {
   CommonTableBodyMode,
   CommonTableMode,
+  ITableInstance,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
 import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
@@ -38,10 +39,9 @@ interface InnerEnvProps {
     style: string;
     description: string;
   };
-  onLoad: () => void;
   tableLoading: boolean;
-  exSearch: (args: ITableLoadOptions) => Promise<any>;
-  exReload: (args: ITableLoadOptions) => Promise<any>;
+  exSearch: (args?: ITableLoadOptions) => Promise<any>;
+  exReload: (args?: ITableLoadOptions) => Promise<any>;
   rules: IRule[];
   ruleType: RuleType;
   setRuleType: (value: any) => void;
@@ -157,12 +157,12 @@ const getColumns: (columnsFunction: {
         } else if (keys.length === 1) {
           const [pm] = propertyMetadatas;
           if (Array.isArray(properties[pm.name])) {
-            content = properties[pm.name].length > 0 ? properties[pm.name].join(',') : '-';
+            content = properties[pm.name].length > 0 ? properties[pm.name].join(',').toString() : '-';
           } else {
-            content = content = properties[pm.name] ? properties[pm.name] : '-';
+            content = content = properties[pm.name] ? properties[pm.name].toString() : '-';
           }
         } else {
-          content = propertyMetadatas.map((pm) => `${pm.displayName}: ${properties[pm.name]}`);
+          content = propertyMetadatas.map((pm) => `${pm.displayName}: ${properties[pm.name]}`).join(',');
         }
         return <TooltipContent content={content} />;
       },
@@ -206,7 +206,6 @@ const getColumns: (columnsFunction: {
   ];
 };
 const InnerEnvironment: React.FC<InnerEnvProps> = ({
-  onLoad,
   tableLoading,
   selectedRecord,
   subTypeFilters,
@@ -218,7 +217,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   exReload,
   exSearch,
 }) => {
-  const tableRef = useRef<any>(null);
+  const tableRef = useRef<ITableInstance>();
   const [selectedData, setSelectedData] = useState<IRule>(null);
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
 
@@ -233,7 +232,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
       // 刷新列表
       setEditRuleDrawerVisible(false);
       fn?.();
-      onLoad();
+      tableRef?.current?.reload();
     } else {
       message.error('提交失败');
     }
@@ -274,7 +273,12 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     supportedDialectTypeFilters,
   });
   useEffect(() => {
-    selectedRecord && ruleType && handleInitRules(selectedRecord?.value, ruleType);
+    if(selectedRecord && ruleType) {
+      handleInitRules(selectedRecord?.value, ruleType);
+      if(tableRef.current) {
+        tableRef?.current?.resetPaganition();
+      }
+    }
   }, [selectedRecord, ruleType]);
   return (
     <>
@@ -329,7 +333,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
               body={CommonTableBodyMode.BIG}
               titleContent={null}
               showToolbar={false}
-              showPagination={false}
+              showPagination={true}
               filterContent={{}}
               operationContent={{
                 options: [],
