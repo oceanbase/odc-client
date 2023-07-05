@@ -30,6 +30,6 @@ export const action = async (actionData: ITaskAction) => {
     return 'Get Task Failed';
   }
   taskStore.changeTaskManageVisible(true, TaskPageType.ALL, undefined, taskId, task?.type);
-  history.push('/connections');
+  history.push('/project');
   return;
 };

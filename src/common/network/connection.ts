@@ -67,7 +67,7 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
 /**
  * 创建连接
  */
-export async function createConnection(formData: IDatasource, isHiden?: boolean) {
+export async function createConnection(formData: Partial<IDatasource>, isHiden?: boolean) {
   const params: Partial<IConnection> = generateConnectionParams(formData, isHiden);
 
   const requestParams = {
