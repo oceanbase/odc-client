@@ -25,12 +25,6 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
         <Form.Item
           label={label}
           name={name}
-          rules={[
-            {
-              required: true,
-              message: `请输入${label}`,
-            },
-          ]}
           tooltip={description}
         >
           <Input />

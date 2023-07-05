@@ -1,4 +1,4 @@
-import { IRule, RuleType } from '@/d.ts/rule';
+import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
 import { Button, Checkbox, Descriptions, Drawer, Form, Radio } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
@@ -29,8 +29,12 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
     const activeKeys = Object.keys(rawData).filter((key) => key.includes('activeKey')) || [];
     const activeProperties = {};
     activeKeys.forEach((activeKey) => {
-      activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
-        rawData[activeKey];
+      if(rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.componentType === ComponentType.INPUT_STRING) {
+        activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] = rawData[activeKey] ? rawData[activeKey] : null;
+      } else {
+        activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
+          rawData[activeKey];
+      }
     });
     const editedRule: Partial<IRule> = {
       ...rule,

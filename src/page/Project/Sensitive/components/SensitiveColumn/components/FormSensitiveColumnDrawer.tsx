@@ -169,14 +169,17 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
       message.error('新建失败');
     }
   };
-  const handleSubmit = async () => {
+  const handleManualSubmit = async () => {
     const data = await formRef.validateFields().catch();
-    data?.test?.map((d) => {
+    if (data?.manual?.length === 0) {
+      return message.error('不能提交空表单');
+    }
+    data?.manual?.map((d) => {
       d.database = databases?.find((database) => database?.id === d.database);
       d.enabled = true;
       return d;
     });
-    const res = await batchCreateSensitiveColumns(context.projectId, data?.test);
+    const res = await batchCreateSensitiveColumns(context.projectId, data?.manual);
     if (res) {
       message.success('新建成功');
       onOk();
@@ -250,7 +253,6 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
       timer.current = setTimeout(() => {
         handleScanning(taskId);
         clearTimeout(timer.current);
-        // timer.current = null;
       }, 1000);
     }
   };
@@ -263,24 +265,10 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
     setHasScan(false);
   };
 
-  // useEffect(() => {
-  //   if (visible && addSensitiveColumnType === AddSensitiveColumnType.Scan) {
-  //     setScanTableData([
-  //       {
-  //         header: {
-  //           database: '',
-  //           tableName: '',
-  //         },
-  //         dataSource: [],
-  //       },
-  //     ]);
-  //   }
-  // }, [visible, addSensitiveColumnType]);
-
   useEffect(() => {
     if (!isEdit) {
       formRef.setFieldsValue({
-        test: [
+        manual: [
           {
             dataSource: undefined,
             database: undefined,
@@ -316,7 +304,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
           ? '手动添加敏感列'
           : '扫描添加敏感列'
       }
-      width={724}
+      width={addSensitiveColumnType === AddSensitiveColumnType.Manual ? 800 : 724}
       open={visible}
       onClose={hanldeClose}
       destroyOnClose={true}
@@ -333,7 +321,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
               type="primary"
               onClick={
                 addSensitiveColumnType === AddSensitiveColumnType.Manual
-                  ? handleSubmit
+                  ? handleManualSubmit
                   : handleScanSubmit
               }
             >

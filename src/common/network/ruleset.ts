@@ -164,10 +164,17 @@ export async function listRules(rulesetId: number, params: any): Promise<IRule[]
 export async function getRuleset(
   id: number,
   ruleType: RuleType = RuleType.SQL_CHECK,
+  params?: Partial<{
+    sort: string;
+    page: number;
+    size: number;
+    enabled: boolean[];
+  }>,
 ): Promise<IRuleSet> {
   const ret = await request.get(`/api/v2/regulation/rulesets/${id}`, {
     params: {
       types: [ruleType],
+      ...params,
     },
   });
   return ret?.data || {};
