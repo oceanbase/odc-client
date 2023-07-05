@@ -23,13 +23,13 @@ const ERROR_MESSAGE_MAP = {
  * 懒加载，防止非公有云环境报配置错误
  */
 let _createService = null;
-let axiosRequest = null;
+// let axiosRequest = null;
 async function getCreateService() {
   if (_createService) {
     return _createService;
   }
   _createService = window._odc_params.createService;
-  axiosRequest = window._odc_params.axiosRequest;
+  // axiosRequest = window._odc_params.axiosRequest;
   return _createService;
 }
 
@@ -201,20 +201,20 @@ async function openAPIRequest(
   }
   let result;
   try {
-    let responseHeaders;
+    // let responseHeaders;
     const requestCloud = createService('OceanBasePro', action, {
       // ignoreError: true,
       rawResponseData: true,
       headers: {
         'Accept-Language': getLocale(),
       },
-      transformResponse: axiosRequest.defaults.transformResponse.concat(function (
-        data,
-        _responseHeaders,
-      ) {
-        responseHeaders = _responseHeaders;
-        return data;
-      }),
+      // transformResponse: axiosRequest.defaults.transformResponse.concat(function (
+      //   data,
+      //   _responseHeaders,
+      // ) {
+      //   responseHeaders = _responseHeaders;
+      //   return data;
+      // }),
     });
     result = await requestCloud(cloudServiceParams);
     if (result?.data?.ErrorCode === 'OssObject' && result?.data?.Data) {
