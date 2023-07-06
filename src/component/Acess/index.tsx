@@ -12,7 +12,7 @@ import { observer } from 'mobx-react';
 import React, { ReactElement, useContext } from 'react';
 
 interface AcessParameter {
-  // 'key value expression like resource_group:10',
+  // 'key value expression like project:10',
   resourceIdentifier?: string;
   // 'query / create / update / delete / read / readandwrite'
   action: string;
@@ -103,8 +103,8 @@ function createSystemPermission(
 
 const systemReadPermissions = {
   // 资源管理权限
-  [resourceTypes.public_connection]: createSystemPermission(resourceTypes.public_connection),
-  [resourceTypes.resource_group]: createSystemPermission(resourceTypes.resource_group),
+  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource),
+  [resourceTypes.project]: createSystemPermission(resourceTypes.project),
   [resourceTypes.user]: createSystemPermission(resourceTypes.user),
   [resourceTypes.role]: createSystemPermission(resourceTypes.role),
   // 系统操作权限
@@ -119,14 +119,8 @@ const systemReadPermissions = {
 
 const systemUpdatePermissions = {
   // 资源管理权限
-  [resourceTypes.public_connection]: createSystemPermission(
-    resourceTypes.public_connection,
-    actionTypes.update,
-  ),
-  [resourceTypes.resource_group]: createSystemPermission(
-    resourceTypes.resource_group,
-    actionTypes.update,
-  ),
+  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.update),
+  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.update),
   [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.update),
   [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.update),
   // 系统操作权限
@@ -151,28 +145,16 @@ const systemUpdatePermissions = {
 
 const systemCreatePermissions = {
   // 资源管理权限
-  [resourceTypes.public_connection]: createSystemPermission(
-    resourceTypes.public_connection,
-    actionTypes.create,
-  ),
-  [resourceTypes.resource_group]: createSystemPermission(
-    resourceTypes.resource_group,
-    actionTypes.create,
-  ),
+  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.create),
+  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.create),
   [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.create),
   [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.create),
 };
 
 const systemDeletePermissions = {
   // 资源管理权限
-  [resourceTypes.public_connection]: createSystemPermission(
-    resourceTypes.public_connection,
-    actionTypes.delete,
-  ),
-  [resourceTypes.resource_group]: createSystemPermission(
-    resourceTypes.resource_group,
-    actionTypes.delete,
-  ),
+  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.delete),
+  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.delete),
   [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.delete),
   [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.delete),
   // 系统操作权限
@@ -203,12 +185,8 @@ function withSystemAcess<P>(
     // 资源管理权限
     const { accessible: hasUser } = useAcess(systemReadPermissions[resourceTypes.user]);
     const { accessible: hasRole } = useAcess(systemReadPermissions[resourceTypes.role]);
-    const { accessible: hasResourceGroup } = useAcess(
-      systemReadPermissions[resourceTypes.resource_group],
-    );
-    const { accessible: hasPublicConnection } = useAcess(
-      systemReadPermissions[resourceTypes.public_connection],
-    );
+    const { accessible: hasProject } = useAcess(systemReadPermissions[resourceTypes.project]);
+    const { accessible: hasConnection } = useAcess(systemReadPermissions[resourceTypes.resource]);
     // 系统操作权限
     const { accessible: hasFlowConfig } = useAcess(
       systemReadPermissions[resourceTypes.flow_config],
@@ -224,7 +202,7 @@ function withSystemAcess<P>(
       systemReadPermissions[resourceTypes.system_config],
     );
 
-    const accessibleResourceManagement = [hasUser, hasRole, hasResourceGroup, hasPublicConnection];
+    const accessibleResourceManagement = [hasUser, hasRole, hasProject, hasConnection];
     const accessibleSystemOperation = [
       hasFlowConfig,
       hasDataMaskingRule,
@@ -240,8 +218,8 @@ function withSystemAcess<P>(
       [IManagePagesKeys.INDEX]: hasUser,
       [IManagePagesKeys.USER]: hasUser,
       [IManagePagesKeys.ROLE]: hasRole,
-      [IManagePagesKeys.CONNECTION]: hasPublicConnection,
-      [IManagePagesKeys.RESOURCE]: hasResourceGroup,
+      [IManagePagesKeys.CONNECTION]: hasConnection,
+      [IManagePagesKeys.RESOURCE]: hasProject,
       // 系统操作
       [IManagePagesKeys.TASK_FLOW]: hasFlowConfig,
       [IManagePagesKeys.MASK_DATA]: hasDataMaskingRule,

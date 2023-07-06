@@ -17,9 +17,9 @@ import { getFormatDateTime } from '@/util/utils';
 import { Button, message, Modal, Space, Switch } from 'antd';
 import type { FixedType } from 'rc-table/lib/interface';
 import React from 'react';
+import { ResourceContext } from '../context';
 import DetailContent, { PermissionTypes } from './component/DetailContent';
 import FormModal from './component/FormModal';
-import { ResourceContext } from '../context';
 import styles from './index.less';
 
 interface IProps {}
@@ -305,7 +305,6 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private loadDependentData() {
-    console.log('this.context :', this.context);
     this.context?.loadUsers();
     this.context?.loadConnections();
   }
@@ -422,8 +421,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   render() {
-    const { formModalVisible, detailModalVisible, editId, detailId, copyId } =
-      this.state;
+    const { formModalVisible, detailModalVisible, editId, detailId, copyId } = this.state;
     const { roles } = this.context;
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.role,

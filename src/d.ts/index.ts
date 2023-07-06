@@ -102,8 +102,8 @@ export enum IManagerDetailTabs {
 export enum IManagerResourceType {
   user = 'ODC_USER',
   role = 'ODC_ROLE',
-  resource_group = 'ODC_RESOURCE_GROUP',
-  public_connection = 'ODC_CONNECTION',
+  project = 'ODC_PROJECT',
+  resource = 'ODC_CONNECTION',
   workspace = 'ODC_WORKSPACE',
   system_config = 'ODC_SYSTEM_CONFIG',
   private_connection = 'ODC_PRIVATE_CONNECTION',
@@ -113,6 +113,11 @@ export enum IManagerResourceType {
   data_masking = 'ODC_DATA_MASKING_RULE',
   flow_config = 'ODC_FLOW_CONFIG',
   auto_auth = 'ODC_AUTOMATION_RULE',
+  approval_flow = 'ODC_APPROVAL_FLOW_CONFIG',
+  risk_level = 'ODC_RISK_LEVEL',
+  risk_detect = 'ODC_RISK_DETECT_RULE',
+  ruleset = 'ODC_RULESET',
+  integration = 'ODC_INTEGRATION',
 }
 
 export enum actionTypes {

@@ -81,14 +81,14 @@ const DetailContent: React.FC<{
     conditions,
     description,
   } = data;
-  const { roles: _roles, publicConnections } = useContext(ResourceContext);
+  const { roles: _roles, resource: _resource } = useContext(ResourceContext);
 
   const roleIds = actions
     ?.filter((item) => item.action === 'BindRole')
     ?.map((item) => item?.arguments?.roleId);
   const roles = useRoleListByIds(_roles, roleIds);
   const columns = getColumns({
-    [IManagerResourceType.public_connection]: publicConnections,
+    [IManagerResourceType.resource]: _resource,
   });
   const actionsLabel = [];
   const hasRole = actions?.some((item) => item.action === 'BindRole');
