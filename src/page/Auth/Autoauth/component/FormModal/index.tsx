@@ -42,7 +42,7 @@ import styles from './index.less';
 export const connectionAccessTypeOptions = [
   {
     label: '数据源',
-    value: IManagerResourceType.public_connection,
+    value: IManagerResourceType.resource,
   },
 ];
 
@@ -101,7 +101,7 @@ const FormModal: React.FC<IProps> = (props) => {
   const [connectionAccessOptionsMap, setConnectionAccessOptionsMap] = useState<{
     [key: string]: IResourceOption[];
   }>({
-    [IManagerResourceType.public_connection]: getResourceOptions(dataSource),
+    [IManagerResourceType.auto_auth]: getResourceOptions(dataSource),
   });
 
   const loadRoles = async () => {
@@ -211,7 +211,7 @@ const FormModal: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     setConnectionAccessOptionsMap({
-      [IManagerResourceType.public_connection]: getResourceOptions(dataSource),
+      [IManagerResourceType.resource]: getResourceOptions(dataSource),
     });
   }, [dataSource]);
 

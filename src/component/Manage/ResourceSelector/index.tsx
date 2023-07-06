@@ -92,13 +92,12 @@ const ResourceItem: React.FC<{
   });
   const [open, setOpen] = useState(false);
   const enableSelectAll = !(
-    parentName === 'connectionAccessPermissions' && type === IManagerResourceType.resource_group
+    parentName === 'connectionAccessPermissions' && type === IManagerResourceType.resource
   );
 
   const fieldOptions = optionsMap?.[type] ?? [];
   const disableSelectAll = allSelecteField?.type === type && allSelecteField?.index !== fieldName;
-  const allFieldOptions =
-    enableSelectAll && fieldOptions?.length ? fieldOptions.concat([AllOption]) : fieldOptions;
+  const allFieldOptions = fieldOptions?.length ? fieldOptions.concat([AllOption]) : fieldOptions;
   const hasEnableKeys = actionOptions.some((item) => item?.enableKeys?.length);
   const enabledActionOptions = !hasEnableKeys
     ? actionOptions
@@ -220,7 +219,7 @@ const ResourceItem: React.FC<{
                   key={`${resourceType}${resourceId}`}
                   disabled={isSelectAll || selected}
                 >
-                  {resourceType === IManagerResourceType.public_connection ? (
+                  {resourceType === IManagerResourceType.resource ? (
                     <Popover
                       overlayClassName={styles.connectionPopover}
                       placement="left"
@@ -376,8 +375,7 @@ export const ResourceSelector: React.FC<{
 
   useEffect(() => {
     if (showField && (isEdit || isCopy) && initialValue) {
-      handleFilteredOption(initialValue?.[name], IManagerResourceType.public_connection);
-      handleFilteredOption(initialValue?.[name], IManagerResourceType.resource_group);
+      handleFilteredOption(initialValue?.[name], IManagerResourceType.resource);
     }
   }, [isEdit, isCopy, initialValue, showField]);
 
