@@ -2013,7 +2013,7 @@ export interface IDataArchiveJobParameters {
   variables: {
     name: string;
     pattern: string;
-  }[]
+  }[];
 }
 
 export interface ISqlPlayJobParameters {
@@ -2026,7 +2026,7 @@ export interface ISqlPlayJobParameters {
   sqlObjectNames?: string[];
 }
 
-export interface ICycleTaskRecord <T>{
+export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
   databaseName: string;
@@ -3041,32 +3041,31 @@ export type ISSOConfig =
       mappingRule: ISSO_MAPPINGRULE;
     };
 
+export interface IFormatPLSchema {
+  plName?: string;
+  plType: PLType;
+  packageName?: string;
+  ddl?: string;
+  params?: IPLParam[];
+  function?: IFunction;
+  procedure?: IProcedure;
+}
 
-    export interface IFormatPLSchema {
-      plName?: string;
-      plType: PLType;
-      packageName?: string;
-      ddl?: string;
-      params?: IPLParam[];
-      function?: IFunction;
-      procedure?: IProcedure;
-    }
-
-    export interface IPLOutParam extends IPLParam {
-      value: string;
-    }
-    export interface IPLExecResult {
-      status: 'FAIL' | 'SUCCESS' | '';
-      errorMessage?: string;
-      dbms?: {
-        line: string;
-      };
-      returnParam?: IPLOutParam;
-      plOutParamList?: IPLOutParam[];
-    }
-    export interface IPLCompileResult {
-      messages: string;
-      statementWarnings: string;
-      status: boolean;
-      track: string;
-    }
+export interface IPLOutParam extends IPLParam {
+  value: string;
+}
+export interface IPLExecResult {
+  status: 'FAIL' | 'SUCCESS' | '';
+  errorMessage?: string;
+  dbms?: {
+    line: string;
+  };
+  returnValue?: IPLOutParam;
+  outParams?: IPLOutParam[];
+}
+export interface IPLCompileResult {
+  messages: string;
+  statementWarnings: string;
+  status: boolean;
+  track: string;
+}

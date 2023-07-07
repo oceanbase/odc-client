@@ -48,22 +48,21 @@ END;`;
 export function getPLDebugExecuteSql(plSchema: IFormatPLSchema) {
   const { plType, function: plfunction, procedure, packageName } = plSchema;
   const isFunction = PLType.FUNCTION === plType;
-  const params = isFunction ? plfunction?.params : procedure?.params
+  const params = isFunction ? plfunction?.params : procedure?.params;
   const paramString = getParamString(params);
   const namePrefix = packageName ? `"${packageName}".` : '';
-  const callExpr = `${namePrefix}"${isFunction ? plfunction?.funName : procedure?.proName}"(${paramString})`;
+  const callExpr = `${namePrefix}"${
+    isFunction ? plfunction?.funName : procedure?.proName
+  }"(${paramString})`;
   const paramDeclares = getParamDeclares(params);
   const result = `  result ${getDataType(plfunction?.returnType)};`;
   return [
     'DECLARE',
-    '  -- Non-scalar parameters require additional processing',
     `${paramDeclares?.join('\n')}`,
     isFunction && result,
     'BEGIN',
-    isFunction
-      ? `  -- Call the function\n  result := ${callExpr};`
-      : `  -- Call the procedure\n  ${callExpr};`,
-    'END',
+    isFunction ? `  result := ${callExpr};` : `  ${callExpr};`,
+    'END;',
   ]
     .filter(Boolean)
     .join('\n');
@@ -79,10 +78,12 @@ export function getDataType(type: string) {
 }
 
 export function getParamDeclares(params: IPLParam[]) {
-  return params?.map(
-    ({ dataType, paramName, defaultValue }) =>
-      `  ${paramName} ${getDataType(dataType)} := ${defaultValue};`,
-  );
+  return params?.map(({ dataType, paramName, defaultValue, paramMode }) => {
+    if (!paramMode?.includes('IN')) {
+      return `  ${paramName} ${getDataType(dataType)};`;
+    }
+    return `  ${paramName} ${getDataType(dataType)} := ${defaultValue};`;
+  });
 }
 
 export function removeComment(text = '') {

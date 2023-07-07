@@ -13,13 +13,12 @@ import SessionStore from '@/store/sessionManager/session';
 import { cloneDeep, isArray } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import SplitPane from 'react-split-pane';
+import { IResultData, IResultType } from '../PLPage';
 import Breakpoints from './breakpoints';
+import CursorCell from './CursorCell';
 import DebugLog from './DebugLog';
 import DebugVariables from './DebugVariables';
 import styles from './index.less';
-import { IResultData, IResultType } from '../PLPage';
-import { SQLStore } from '@/store/sql';
-import CursorCell from './CursorCell';
 
 const { TabPane } = Tabs;
 
@@ -169,7 +168,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
             },
 
             {
-              dataIndex: 'defaultValue',
+              dataIndex: 'value',
               title: formatMessage({
                 id: 'odc.components.PLDebugResultSet.Value',
               }),
@@ -178,40 +177,40 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
                 let text;
                 if (v === null || (isOracle && v === '')) {
                   text = <span style={{ color: 'var(--text-color-hint)' }}>(null)</span>;
-                } else if (record.paramMode === 'OUT') {
-                  text = record.value;
                 } else {
                   text = v;
                 }
-                return <div className={styles.textFormatter}>
-                  {text}
-                  {record?.dataType?.toLowerCase() === 'sys_refcursor' && (
-                    <div className={styles.more}>
-                      <CursorCell session={session} record={record} />
-                    </div>
-                  )}
-                </div>
+                return (
+                  <div className={styles.textFormatter}>
+                    {text}
+                    {record?.dataType?.toLowerCase() === 'sys_refcursor' && (
+                      <div className={styles.more}>
+                        <CursorCell session={session} record={record} />
+                      </div>
+                    )}
+                  </div>
+                );
               },
             },
           ];
 
           const paramsValues = [];
-          if (plSchema?.params?.length) {
-            plSchema.params.map((param) => {
-              if (param.paramMode?.toUpperCase().indexOf('IN') > -1) {
-                paramsValues.push({
-                  ...param,
-                  paramMode: 'IN',
-                });
-              }
-            });
-          }
-          data?.EXEC?.plOutParamList?.forEach(param => {
+          // if (plSchema?.params?.length) {
+          //   plSchema.params.map((param) => {
+          //     if (param.paramMode?.toUpperCase().indexOf('IN') > -1) {
+          //       paramsValues.push({
+          //         ...param,
+          //         paramMode: 'IN',
+          //       });
+          //     }
+          //   });
+          // }
+          data?.EXEC?.outParams?.forEach((param) => {
             paramsValues.push({
               ...param,
               paramMode: 'OUT',
             });
-          })
+          });
 
           const returnValueColumns = [
             {
@@ -229,15 +228,14 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
             },
           ];
 
-          const returnValues =
-            data?.EXEC?.returnParam
-              ? [
+          const returnValues = data?.EXEC?.returnValue
+            ? [
                 {
-                  returnType: data.EXEC.returnParam.dataType,
-                  returnValue: data.EXEC.returnParam.value,
+                  returnType: data.EXEC.returnValue.dataType,
+                  returnValue: data.EXEC.returnValue.value,
                 },
               ]
-              : [];
+            : [];
 
           return (
             <div className={styles.execWrap}>
@@ -335,7 +333,11 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
 
           const resultParams = props.debug?.result;
           const initParams = props.debug?.getPlSchema()?.params;
-          let dataSource = cloneDeep(isArray(resultParams) ? resultParams : initParams);
+          let dataSource = cloneDeep(
+            isArray(resultParams)
+              ? resultParams
+              : initParams?.filter((item) => item?.paramMode?.includes('OUT')),
+          );
           if (props.debug?.isDebugEnd() && props.debug?.plType === PLType.FUNCTION) {
             dataSource = []
               .concat(dataSource)
