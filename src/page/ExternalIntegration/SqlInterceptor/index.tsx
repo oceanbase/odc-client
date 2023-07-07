@@ -4,6 +4,7 @@ import {
   getIntegrationList,
   setIntegration,
 } from '@/common/network/manager';
+import { Acess, systemUpdatePermissions } from '@/component/Acess';
 import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
@@ -11,7 +12,7 @@ import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import StatusSwitch from '@/component/StatusSwitch';
 import type { IManagerIntegration, IResponseData } from '@/d.ts';
-import { IManagePagesKeys, IntegrationType } from '@/d.ts';
+import { IManagePagesKeys, IManagerResourceType, IntegrationType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import type { SettingStore } from '@/store/setting';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -208,6 +209,25 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
             >
               查看
             </Action.Link>
+            <Acess {...systemUpdatePermissions[IManagerResourceType.integration]}>
+              <Action.Group>
+                <Action.Link
+                  onClick={async () => {
+                    openFormModal(record.id);
+                  }}
+                >
+                  编辑
+                </Action.Link>
+                <Action.Link
+                  disabled={record.builtIn}
+                  onClick={async () => {
+                    handleDelete(record.id);
+                  }}
+                >
+                  删除
+                </Action.Link>
+              </Action.Group>
+            </Acess>
           </Action.Group>
         ),
       },

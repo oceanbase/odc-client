@@ -115,6 +115,7 @@ const systemReadPermissions = {
   [resourceTypes.odc_audit_event]: createSystemPermission(resourceTypes.odc_audit_event),
   [resourceTypes.auto_auth]: createSystemPermission(resourceTypes.auto_auth),
   [resourceTypes.system_config]: createSystemPermission(resourceTypes.system_config),
+  [resourceTypes.integration]: createSystemPermission(resourceTypes.integration),
 };
 
 const systemUpdatePermissions = {
@@ -141,6 +142,10 @@ const systemUpdatePermissions = {
     resourceTypes.system_config,
     actionTypes.update,
   ),
+  [resourceTypes.integration]: createSystemPermission(
+    resourceTypes.integration,
+    actionTypes.update,
+  ),
 };
 
 const systemCreatePermissions = {
@@ -149,6 +154,10 @@ const systemCreatePermissions = {
   [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.create),
   [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.create),
   [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.create),
+  [resourceTypes.integration]: createSystemPermission(
+    resourceTypes.integration,
+    actionTypes.create,
+  ),
 };
 
 const systemDeletePermissions = {
@@ -173,6 +182,10 @@ const systemDeletePermissions = {
   [resourceTypes.auto_auth]: createSystemPermission(resourceTypes.auto_auth, actionTypes.delete),
   [resourceTypes.system_config]: createSystemPermission(
     resourceTypes.system_config,
+    actionTypes.delete,
+  ),
+  [resourceTypes.integration]: createSystemPermission(
+    resourceTypes.integration,
     actionTypes.delete,
   ),
 };
@@ -201,6 +214,9 @@ function withSystemAcess<P>(
     const { accessible: hasSystemConfig } = useAcess(
       systemReadPermissions[resourceTypes.system_config],
     );
+    const { accessible: hasIntegration } = useAcess(
+      systemReadPermissions[resourceTypes.integration],
+    );
 
     const accessibleResourceManagement = [hasUser, hasRole, hasProject, hasConnection];
     const accessibleSystemOperation = [
@@ -225,6 +241,7 @@ function withSystemAcess<P>(
       [IManagePagesKeys.MASK_DATA]: hasDataMaskingRule,
       [IManagePagesKeys.SECURITY_AUDIT]: hasAuditEvent,
       [IManagePagesKeys.SYSTEM_CONFIG]: hasSystemConfig,
+      [IManagePagesKeys.INTEGRATION_APPROVAL]: hasIntegration,
     };
     return <RenderComponent {...props} accessible={accessible} systemPages={systemPages} />;
   });
