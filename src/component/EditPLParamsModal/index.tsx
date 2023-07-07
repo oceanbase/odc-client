@@ -1,24 +1,32 @@
 import { formatMessage } from '@/util/intl';
-import React, { Component, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 // compatible
 import { ConnectionMode, IFormatPLSchema, IPLParam } from '@/d.ts';
-import { Form, FormInstance, FormProps, Modal, Table, message } from 'antd';
+import { Form, FormInstance, FormProps, message, Modal, Table } from 'antd';
 
+import { getPLDebugExecuteSql } from '@/util/sql';
+import CommonIDE from '../CommonIDE';
 import styles from './index.less';
 import ValueInput, { ValueList } from './ValueInput';
-import CommonIDE from '../CommonIDE';
-import { getPLDebugExecuteSql } from '@/util/sql';
 
 interface IProps extends FormProps {
   connectionMode?: ConnectionMode;
   plSchema?: IFormatPLSchema;
   executeLoading?: boolean;
+  defaultAnonymousBlockDdl?: string;
   onSave: (params?: IPLParam[], ddl?: string) => void;
   visible: boolean;
   onCancel: () => void;
 }
 
-function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMode }: IProps) {
+function EditPLParamasModal({
+  visible,
+  onCancel,
+  onSave,
+  plSchema,
+  defaultAnonymousBlockDdl,
+  connectionMode,
+}: IProps) {
   const [loading, setLoading] = useState(false);
   const [anonymousBlockDdl, setAnonymousBlockDdl] = useState('');
   const [form] = Form.useForm<FormInstance<any>>();
@@ -31,10 +39,10 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
        * 计算anonymousBlockDdl
        */
       if (connectionMode === ConnectionMode.OB_ORACLE) {
-        setAnonymousBlockDdl(getPLDebugExecuteSql(plSchema))
+        setAnonymousBlockDdl(defaultAnonymousBlockDdl || getPLDebugExecuteSql(plSchema));
       }
     }
-  }, [visible])
+  }, [visible]);
   if (!plSchema) {
     return null;
   }
@@ -77,14 +85,14 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
             <Form.Item
               name={record.paramName}
               initialValue={value}
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: formatMessage({
-            //       id: 'odc.component.EditPLParamsModal.ItCannotBeEmpty',
-            //     }),
-            //   },
-            // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: formatMessage({
+              //       id: 'odc.component.EditPLParamsModal.ItCannotBeEmpty',
+              //     }),
+              //   },
+              // ]}
             >
               <ValueInput connectionMode={connectionMode} />
             </Form.Item>
@@ -101,12 +109,12 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
   const isOracle = connectionMode === ConnectionMode.OB_ORACLE;
 
   const handleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     const values = await form?.validateFields?.();
     if (!values) {
       return;
     }
-    let params = []
+    let params = [];
     try {
       if (isOracle) {
         if (!anonymousBlockDdl) {
@@ -140,7 +148,7 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
         await onSave(params);
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -157,7 +165,7 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
       onCancel={onCancel}
       confirmLoading={loading}
     >
-      {isOracle ?
+      {isOracle ? (
         <div style={{ height: 400 }}>
           <CommonIDE
             bordered
@@ -165,11 +173,12 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
             session={null}
             initialSQL={anonymousBlockDdl}
             onSQLChange={(sql) => {
-              setAnonymousBlockDdl(sql)
+              setAnonymousBlockDdl(sql);
             }}
           />
         </div>
-        : <div className={styles.table}>
+      ) : (
+        <div className={styles.table}>
           <Form form={form} layout="inline">
             <Table
               size="small"
@@ -180,8 +189,8 @@ function EditPLParamasModal({ visible, onCancel, onSave, plSchema, connectionMod
               pagination={false}
             />
           </Form>
-        </div>}
-
+        </div>
+      )}
     </Modal>
   );
 }

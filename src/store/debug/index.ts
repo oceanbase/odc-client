@@ -55,6 +55,8 @@ export class Debug {
   @observable
   public result: IDebugResult;
 
+  public anonymousBlock: string;
+
   public session: SessionStore;
 
   public onContextChangeQueue?: ((
@@ -121,6 +123,7 @@ export class Debug {
     this.procedure = config.procedure;
     this.onContextChangeQueue = [config.onContextChange];
     this.session = config.session;
+    this.anonymousBlock = config.anonymousBlock;
     this.plInfo = [
       {
         content: config.content,
@@ -156,7 +159,7 @@ export class Debug {
         this.packageName,
         this.getPlSchema(),
         this.plType,
-        mainPl.content,
+        ddl,
         this.session,
       );
       if (debugId) {
