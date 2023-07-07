@@ -16,7 +16,7 @@ const ManualForm = ({ formRef, databases, setDatabases }) => {
           {(fields, { add, remove }, { errors }) => (
             <>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {fields.map((field, index) => (
+                {fields?.map((field, index) => (
                   <ManualRule
                     key={`${index}_${field.key}_${field.name}`}
                     {...{

@@ -31,7 +31,7 @@ const FormSensitiveRuleDrawer = ({
     };
     const wrapPath = (origin: string) => {
       if (origin?.includes(',')) {
-        return origin.split(',').map((o) => o.trim());
+        return origin?.split(',')?.map((o) => o.trim());
       }
       return origin === '' ? [] : [origin];
     };
@@ -54,7 +54,7 @@ const FormSensitiveRuleDrawer = ({
       }
       case SensitiveRuleType.REGEX: {
         const resRegExp = {};
-        Object.keys(regExp).forEach((key) => {
+        Object.keys(regExp)?.forEach((key) => {
           resRegExp[`${key}`] = regExp[key].regExp;
         });
         data = {
