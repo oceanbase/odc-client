@@ -70,11 +70,11 @@ function getRealODCRequestBody(method: IHttpMethod, params?: Record<string, any>
 }
 
 const httpMethodToActionMap = {
-  get: 'GetOdcHttp',
-  post: 'PostOdcHttp',
-  put: 'PutOdcHttp',
-  patch: 'PatchOdcHttp',
-  delete: 'DeleteOdcHttp',
+  get: 'DescribeGetOdcHttp',
+  post: 'DescribePostOdcHttp',
+  put: 'DescribePutOdcHttp',
+  patch: 'DescribePatchOdcHttp',
+  delete: 'DescribeDeleteOdcHttp',
 };
 
 function resolveCloudError(result) {
@@ -196,9 +196,6 @@ async function openAPIRequest(
 
   const createService = await getCreateService();
   let action = httpMethodToActionMap[method];
-  if (ODCUrl.indexOf('/api/v2/connect/sessions?') > -1 && method === 'post') {
-    action = 'AuthorizedPostOdcHttp';
-  }
   let result;
   try {
     // let responseHeaders;
