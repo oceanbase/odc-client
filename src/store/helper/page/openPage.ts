@@ -44,10 +44,8 @@ import { formatMessage } from '@/util/intl';
 import { getTriggerByName } from '@/common/network/trigger';
 import SelectDatabase from '@/component/SelectDatabase';
 import { PLType } from '@/constant/plType';
-import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
 import { message } from 'antd';
-import { generateResultSetColumns } from '..';
 import page from '../../page';
 import {
   BatchCompilePage,
@@ -109,12 +107,6 @@ export function openPackageViewPage(
 }
 export async function openNewSQLPage(cid: number, databaseFrom?: 'datasource' | 'project') {
   const sqlPage = new SQLPage(cid, null, false, databaseFrom);
-  page.openPage(sqlPage);
-}
-export async function openNewSQLPageWithResult(result, cid: number) {
-  const sqlPage = new SQLPage(cid);
-  sqlStore.resultSets.set(sqlPage.pageKey, generateResultSetColumns(result));
-
   page.openPage(sqlPage);
 }
 /** 根据scriptID打开sql或者pl的page */
