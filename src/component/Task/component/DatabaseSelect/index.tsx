@@ -17,12 +17,12 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
 
   const databaseOptions = database
     ?.filter((item) => !item?.project.builtin)
-    ?.map(({ name, id, environment, project }) => ({
+    ?.map(({ name, id, environment, dataSource }) => ({
       label: (
         <Space size={2} data-label={name}>
           <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
           <span>{name}</span>
-          <Text type="secondary">{project.name}</Text>
+          <Text type="secondary">{dataSource.name}</Text>
         </Space>
       ),
       value: id,
