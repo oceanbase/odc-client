@@ -124,7 +124,7 @@ export const status = {
     text: formatMessage({ id: 'odc.component.TaskStatus.ExecutionSucceeded' }), //执行成功
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.EXECUTION_EXPIRED]: {

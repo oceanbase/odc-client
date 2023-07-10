@@ -195,9 +195,10 @@ const CreateModal: React.FC<IProps> = (props) => {
           databaseId,
           targetDatabase,
           variables,
-          tables,
+          tables: _tables,
           deleteAfterMigration,
           triggerStrategy,
+          archiveRange,
           description,
         } = values;
         const parameters = {
@@ -208,7 +209,15 @@ const CreateModal: React.FC<IProps> = (props) => {
             sourceDatabaseId: databaseId,
             targetDataBaseId: targetDatabase,
             variables: getVariables(variables),
-            tables,
+            tables:
+              archiveRange === IArchiveRange.ALL
+                ? tables?.map((item) => {
+                    return {
+                      tableName: item?.tableName,
+                      conditionExpression: '',
+                    };
+                  })
+                : _tables,
             deleteAfterMigration,
           },
           triggerConfig: {
