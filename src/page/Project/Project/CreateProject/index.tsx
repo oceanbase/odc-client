@@ -1,4 +1,4 @@
-import { getUserList } from '@/common/network/manager';
+import { getUserSummaryList } from '@/common/network/project';
 import HelpDoc from '@/component/helpDoc';
 import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select } from 'antd';
@@ -17,7 +17,7 @@ export interface ICreateProjectFormData {
 export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
   function CreateProject({}: IProps, ref) {
     const [form] = Form.useForm<ICreateProjectFormData>();
-    const { data, run, loading } = useRequest(getUserList, {
+    const { data, run, loading } = useRequest(getUserSummaryList, {
       manual: true,
     });
     const userOptions = data?.contents?.map((user) => {
@@ -27,10 +27,7 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
       };
     });
     useEffect(() => {
-      run({
-        page: 1,
-        size: 999999,
-      });
+      run();
     }, []);
     useImperativeHandle(
       ref,

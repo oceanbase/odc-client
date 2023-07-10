@@ -108,7 +108,7 @@ class TableData extends React.Component<
         session.supportFeature.enableRowId,
         session?.sessionId,
       );
-      let resultSet = generateResultSetColumns([data])?.[0];
+      let resultSet = generateResultSetColumns([data], session?.connection?.dialectType)?.[0];
       if (resultSet) {
         this.setState({
           resultSet,

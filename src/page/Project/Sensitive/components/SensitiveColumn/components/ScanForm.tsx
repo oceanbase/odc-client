@@ -45,7 +45,6 @@ const ScanForm = ({
         ) : hasScan && successful ? (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         ) : (
-          // <Spin />
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}
       </div>
@@ -92,7 +91,7 @@ const ScanForm = ({
       </div>
       <Form form={_formRef} layout="vertical">
         <Collapse defaultActiveKey={[0]} className={styles.collapse}>
-          {scanTableData.length === 0 ? (
+          {scanTableData?.length === 0 ? (
             <Collapse.Panel
               key={0}
               header={
@@ -113,7 +112,7 @@ const ScanForm = ({
             </Collapse.Panel>
           ) : (
             <>
-              {scanTableData.map(({ header: { database, tableName }, dataSource }, index) => {
+              {scanTableData?.map(({ header: { database, tableName }, dataSource }, index) => {
                 return (
                   <Collapse.Panel
                     header={
@@ -146,8 +145,7 @@ const ScanForm = ({
                             width: 126,
                             dataIndex: 'sensitiveRuleId',
                             key: 'sensitiveRuleId',
-                            render: (text) =>
-                              sensitiveContext?.sensitiveRuleIdMap?.[text],
+                            render: (text) => sensitiveContext?.sensitiveRuleIdMap?.[text],
                           },
                           {
                             title: '脱敏算法',

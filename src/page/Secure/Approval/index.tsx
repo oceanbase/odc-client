@@ -229,7 +229,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, editId, flowList, roles, integrations } = this.state;
     const canAcessCreate = canAcess({
-      resourceIdentifier: IManagerResourceType.resource_group,
+      resourceIdentifier: IManagerResourceType.resource,
       action: actionTypes.create,
     }).accessible;
     return (

@@ -80,6 +80,9 @@ export class ModalStore {
   public sensitiveColumnVisible: boolean = false;
 
   @observable
+  public createDDLAlterVisible: boolean = false;
+
+  @observable
   public applyPermissionData: ApplyPermissionData = null;
 
   @observable
@@ -278,6 +281,11 @@ export class ModalStore {
   }
 
   @action
+  public changeCreateDDLAlterTaskModal(isShow: boolean = true) {
+    this.createDDLAlterVisible = isShow;
+  }
+
+  @action
   public changeVersionModalVisible(isShow: boolean = true) {
     this.versionModalVisible = isShow;
   }
@@ -309,6 +317,7 @@ export class ModalStore {
     this.createSequenceModalVisible = false;
     this.versionModalVisible = false;
     this.sensitiveColumnVisible = false;
+    this.createDDLAlterVisible = false;
   }
 }
 

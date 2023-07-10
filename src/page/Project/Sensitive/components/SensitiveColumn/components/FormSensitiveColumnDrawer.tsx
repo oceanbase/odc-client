@@ -19,7 +19,7 @@ import ScanForm from './ScanForm';
 const defaultScanTableData: Array<ScanTableData> = [];
 
 const checkResult = (resData: Array<ScanTableData> = []) =>
-  resData.length > 0 ? resData : defaultScanTableData;
+  resData?.length > 0 ? resData : defaultScanTableData;
 
 const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiveColumnType }) => {
   const [formRef] = useForm();
@@ -77,7 +77,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
     });
 
     const resData = [];
-    dataSourceMap.forEach((ds) => {
+    dataSourceMap?.forEach((ds) => {
       resData.push(ds);
     });
     setScanTableData(checkResult(resData));
@@ -98,7 +98,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
     sensitiveColumnMap.get(key).dataSource[_index].maskingAlgorithmId = maskingAlgorithmId;
 
     const resData = [];
-    sensitiveColumnMap.forEach((ds) => {
+    sensitiveColumnMap?.forEach((ds) => {
       resData.push(ds);
     });
     setScanTableData(checkResult(resData));
@@ -112,12 +112,12 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
     const filterDataSource =
       sensitiveColumnMap.get(key).dataSource.filter((d, i) => i !== _index) || [];
     sensitiveColumnMap.get(key).dataSource = filterDataSource;
-    if (filterDataSource.length === 0) {
+    if (filterDataSource?.length === 0) {
       sensitiveColumnMap.delete(key);
     }
 
     const resData = [];
-    sensitiveColumnMap.forEach((ds) => {
+    sensitiveColumnMap?.forEach((ds) => {
       resData.push(ds);
     });
     setScanTableData(checkResult(resData));
@@ -125,7 +125,6 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
   const handleStartScan = async () => {
     reset();
     setScanTableData(defaultScanTableData);
-
     const rawData = await formRef.validateFields().catch();
     if (rawData.databaseIds?.includes(-1)) {
       rawData.allDatabases = true;
@@ -144,12 +143,15 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
     if (taskId) {
       setTaskId(taskId);
       setScanStatus(ScannResultType.CREATED);
+    } else {
+      setScanLoading(false);
+      reset();
     }
   };
   const handleScanSubmit = async () => {
     await formRef.validateFields().catch();
     const rawData = [];
-    sensitiveColumns.forEach((sc) => {
+    sensitiveColumns?.forEach((sc) => {
       const key = `${sc.database.name}_${sc.tableName}`;
       if (sensitiveColumnMap.has(key)) {
         const maskingAlgorithmId = sensitiveColumnMap
@@ -211,7 +213,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
       const dataSourceMap = new Map();
 
       setSensitiveColumns(sensitiveColumns);
-      sensitiveColumns.forEach((d) => {
+      sensitiveColumns?.forEach((d) => {
         const key = `${d.database.name}_${d.tableName}`;
         if (dataSourceMap.has(key)) {
           dataSourceMap.get(key)?.dataSource?.push({
@@ -238,7 +240,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
 
       setSensitiveColumnMap(dataSourceMap);
       const resData = [];
-      dataSourceMap.forEach((ds) => {
+      dataSourceMap?.forEach((ds) => {
         resData.push(ds);
       });
       setScanTableData(checkResult(resData));
@@ -283,7 +285,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
   useEffect(() => {
     if (successful && searchText === '') {
       const resData = [];
-      sensitiveColumnMap.forEach((ds) => {
+      sensitiveColumnMap?.forEach((ds) => {
         resData.push(ds);
       });
       setScanTableData(checkResult(resData));

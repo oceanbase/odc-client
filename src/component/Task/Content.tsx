@@ -8,6 +8,7 @@ import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import React from 'react';
+import AlterDDLTaskCreateModal from './AlterDdlTask';
 import AsyncTaskCreateModal from './AsyncTask';
 import ApprovalModal from './component/ApprovalModal';
 import TaskTable from './component/TaskTable';
@@ -234,6 +235,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.DATA_ARCHIVE:
         modalStore.changeDataArchiveModal(true);
         break;
+      case TaskPageType.ONLINE_SCHEMA_CHANGE:
+        modalStore.changeCreateDDLAlterTaskModal(true);
+        break;
       default:
     }
   };
@@ -298,6 +302,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         <SQLPlanTaskCreateModal projectId={projectId} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
         <DataArchiveTaskCreateModal projectId={projectId} />
+        <AlterDDLTaskCreateModal projectId={projectId} />
       </>
     );
   }

@@ -305,7 +305,6 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private loadDependentData() {
-    console.log('this.context :', this.context);
     this.context?.loadUsers();
     this.context?.loadConnections();
   }

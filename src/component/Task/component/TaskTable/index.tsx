@@ -83,6 +83,8 @@ export const TaskTypeMap = {
   [TaskType.SQL_PLAN]: 'SQL 计划',
 
   [TaskType.DATA_ARCHIVE]: '数据归档',
+
+  [TaskType.ONLINE_SCHEMA_CHANGE]: '无锁结构变更',
 };
 
 export const getStatusFilters = (status: {

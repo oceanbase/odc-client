@@ -49,23 +49,27 @@ const RiskDetectRules: React.FC<{
 
   const exSearch = async (args: ITableLoadOptions) => {
     const { searchValue } = args ?? {};
-    setLoading(true);
-    const rawData = await listRiskDetectRules({
-      riskLevelId: riskLevel.value,
-      name: searchValue,
-    });
-    setRiskDetectRules(rawData);
-    setLoading(false);
+    if (riskLevel?.value) {
+      setLoading(true);
+      const rawData = await listRiskDetectRules({
+        riskLevelId: riskLevel?.value,
+        name: searchValue,
+      });
+      setRiskDetectRules(rawData);
+      setLoading(false);
+    }
   };
   const exReload = async (args: ITableLoadOptions) => {
     const { searchValue } = args ?? {};
-    setLoading(true);
-    const rawData = await listRiskDetectRules({
-      riskLevelId: riskLevel?.value,
-      name: searchValue,
-    });
-    setRiskDetectRules(rawData);
-    setLoading(false);
+    if (riskLevel?.value) {
+      setLoading(true);
+      const rawData = await listRiskDetectRules({
+        riskLevelId: riskLevel?.value,
+        name: searchValue,
+      });
+      setRiskDetectRules(rawData);
+      setLoading(false);
+    }
   };
   const handleItemClick = (item: RiskLevelMapProps) => {
     getListRiskDetectRules(item);
@@ -75,8 +79,8 @@ const RiskDetectRules: React.FC<{
 
   const initSiderData = async (riskLevels?: IRiskLevel[]) => {
     const nameMap = new Map();
-    const rawData = riskLevels.map(getRuleDecetedList).filter((riskDetectRule) => {
-      if (!nameMap.has(riskDetectRule.value)) {
+    const rawData = riskLevels?.map(getRuleDecetedList)?.filter((riskDetectRule) => {
+      if (!nameMap.has(riskDetectRule?.value)) {
         nameMap.set(riskDetectRule.value, riskDetectRule.label);
         return riskDetectRule;
       }
