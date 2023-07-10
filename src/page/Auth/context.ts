@@ -5,7 +5,7 @@ import { createContext } from 'react';
 export const ResourceContext = createContext<{
   roles: IManagerRole[];
   users: IManagerUser[];
-  publicConnections: IDatasource[];
+  resource: IDatasource[];
   loadRoles: () => void;
   loadUsers: () => void;
   loadConnections: () => void;

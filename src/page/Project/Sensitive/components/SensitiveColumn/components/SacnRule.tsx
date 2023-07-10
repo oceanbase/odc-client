@@ -44,13 +44,11 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
   };
 
   const initDetectRules = async (projectId: number = context.projectId) => {
-    const rawData = await listSensitiveRules(projectId, { enabled: [true]});
-    const resData = rawData
-      ?.contents
-      ?.map((content) => ({
-        label: content.name,
-        value: content.id,
-      }));
+    const rawData = await listSensitiveRules(projectId, { enabled: [true] });
+    const resData = rawData?.contents?.map((content) => ({
+      label: content.name,
+      value: content.id,
+    }));
     setSensitiveOptions([
       {
         label: '全部',
@@ -142,7 +140,9 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
           placeholder={'请选择'}
           maxTagCount="responsive"
           disabled={
-            databaseIdsOptions.length === 1 || dataSourceOptions.length === 0 || dataSourceId === -1
+            databaseIdsOptions?.length === 1 ||
+            dataSourceOptions?.length === 0 ||
+            dataSourceId === -1
           }
           style={{ width: '262px' }}
         />
@@ -162,7 +162,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
           options={sensitiveOptions}
           onSelect={handleSensitiveRuleIdsSelect}
           disabled={
-            databaseIdsOptions.length === 1 || sensitiveOptions.length === 1 || databaseId === 0
+            databaseIdsOptions?.length === 1 || sensitiveOptions?.length === 1 || databaseId === 0
           }
           maxTagCount="responsive"
           placeholder={'请选择'}

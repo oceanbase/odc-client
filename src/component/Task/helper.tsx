@@ -113,6 +113,11 @@ export function getTaskTypeList(
           //影子表同步
           enabled: task?.showAllSchemaTaskType,
         },
+        {
+          value: TaskPageType.ONLINE_SCHEMA_CHANGE,
+          label: '无锁结构变更',
+          enabled: true,
+        },
       ],
     },
 

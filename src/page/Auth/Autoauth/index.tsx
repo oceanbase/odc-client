@@ -322,7 +322,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, maskingRules } = this.state;
     const canAcessCreate = canAcess({
-      resourceIdentifier: IManagerResourceType.resource_group,
+      resourceIdentifier: IManagerResourceType.auto_auth,
       action: actionTypes.create,
     }).accessible;
     return (

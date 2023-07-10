@@ -33,7 +33,13 @@ interface DataInColumnMode extends RowType {
 
 function Formatter(props: FormatterProps<DataInColumnMode, any>) {
   const { row } = props;
-  const FormatterComponent = getCellFormatter(row.columnType, false, true);
+  const context = useContext(ResultContext);
+  const FormatterComponent = getCellFormatter(
+    row.columnType,
+    false,
+    true,
+    context?.session?.connection?.dialectType,
+  );
   if (FormatterComponent) {
     return <FormatterComponent {...props} />;
   }

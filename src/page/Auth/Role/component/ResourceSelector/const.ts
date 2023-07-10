@@ -5,14 +5,12 @@ import { formatMessage } from '@/util/intl';
 export const connectionAccessTypeOptions = [
   {
     label: '数据源',
-    value: IManagerResourceType.public_connection,
+    value: IManagerResourceType.project,
   },
 
   {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.ResourceGroup',
-    }), //资源组
-    value: IManagerResourceType.resource_group,
+    label: '项目',
+    value: IManagerResourceType.project,
   },
 ];
 
@@ -54,17 +52,8 @@ export const connectionAccessActionOptions = [
 // 资源管理权限
 export const resourceManagementTypeOptions = [
   {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.PublicConnection',
-    }), //公共连接
-    value: IManagerResourceType.public_connection,
-  },
-
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.ResourceGroup',
-    }), //资源组
-    value: IManagerResourceType.resource_group,
+    label: '数据源',
+    value: IManagerResourceType.resource,
   },
 
   {
@@ -100,6 +89,11 @@ export const resourceManagementActionOptions = [
       id: 'odc.components.FormResourceSelector.const.Manageable',
     }), //可管理
     value: ResourceManagementAction.can_manage,
+    enableKeys: [
+      IManagerResourceType.resource,
+      IManagerResourceType.role,
+      IManagerResourceType.user,
+    ],
   },
 
   {
@@ -107,6 +101,11 @@ export const resourceManagementActionOptions = [
       id: 'odc.components.FormResourceSelector.const.Editable',
     }), //可编辑
     value: ResourceManagementAction.can_update,
+    enableKeys: [
+      IManagerResourceType.resource,
+      IManagerResourceType.role,
+      IManagerResourceType.user,
+    ],
   },
 
   {
@@ -114,46 +113,32 @@ export const resourceManagementActionOptions = [
       id: 'odc.components.FormResourceSelector.const.ViewOnly',
     }), //仅查看
     value: ResourceManagementAction.can_read,
+    enableKeys: [
+      IManagerResourceType.resource,
+      IManagerResourceType.role,
+      IManagerResourceType.user,
+    ],
   },
 ];
 
 // 系统操作权限
-export const systemTypeOptions = [
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.PersonalConnection',
-    }), //个人连接
-    value: IManagerResourceType.private_connection,
-  },
-
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.TaskFlow',
-    }), //任务流程
-    value: IManagerResourceType.flow_config,
-  },
-
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.DesensitizationRules',
-    }), //脱敏规则
-    value: IManagerResourceType.odc_data_masking_rule,
-  },
-
+export const systemTypeOptions: {
+  label: string;
+  value: IManagerResourceType;
+  visible?: boolean;
+}[] = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.OperationRecord',
     }), //操作记录
     value: IManagerResourceType.odc_audit_event,
   },
-
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.SystemConfiguration',
     }), //系统配置
     value: IManagerResourceType.system_config,
   },
-
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.AutomaticAuthorization',
@@ -161,20 +146,42 @@ export const systemTypeOptions = [
     value: IManagerResourceType.auto_auth,
     visible: false,
   },
+  {
+    label: '审批流程',
+    value: IManagerResourceType.approval_flow,
+  },
+  {
+    label: '风险等级',
+    value: IManagerResourceType.risk_level,
+  },
+  {
+    label: '风险识别规则',
+    value: IManagerResourceType.risk_detect,
+  },
+  {
+    label: '开发规范',
+    value: IManagerResourceType.ruleset,
+  },
+  {
+    label: '系统集成',
+    value: IManagerResourceType.integration,
+  },
 ];
 
 export enum SystemAction {
-  private_connection_operation = 'private_connection_operation',
-  system_config_operation = 'system_config_operation',
-  common_operation = 'common_operation',
-  common_read = 'common_read',
+  action_all = 'action_all',
+  action_read = 'action_read',
+  action_update = 'action_update',
+  action_read_update = 'action_read_update',
+  action_create_delete_update = 'action_create_delete_update',
 }
 
 export const systemActionMap = {
-  [SystemAction.private_connection_operation]: ['create', 'delete', 'read', 'update', 'use'],
-  [SystemAction.system_config_operation]: ['read', 'update'],
-  [SystemAction.common_operation]: ['create', 'delete', 'read', 'update'],
-  [SystemAction.common_read]: ['read'],
+  [SystemAction.action_read]: ['read'],
+  [SystemAction.action_update]: ['update'],
+  [SystemAction.action_read_update]: ['read', 'update'],
+  [SystemAction.action_all]: ['create', 'delete', 'read', 'update'],
+  [SystemAction.action_create_delete_update]: ['create', 'delete', 'update'],
 };
 
 export const systemActionOptions = [
@@ -182,48 +189,69 @@ export const systemActionOptions = [
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
     }), //可操作
-    value: SystemAction.private_connection_operation,
-    enableKeys: [IManagerResourceType.private_connection],
-  },
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.Operational',
-    }), //可操作
-    value: SystemAction.system_config_operation,
+    value: SystemAction.action_read_update,
     enableKeys: [IManagerResourceType.system_config],
   },
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
     }), //可操作
-    value: SystemAction.common_operation,
-    enableKeys: [
-      IManagerResourceType.flow_config,
-      IManagerResourceType.odc_data_masking_rule,
-      IManagerResourceType.auto_auth,
-    ],
+    value: SystemAction.action_create_delete_update,
+    enableKeys: [IManagerResourceType.approval_flow, IManagerResourceType.risk_detect],
+  },
+  {
+    label: formatMessage({
+      id: 'odc.components.FormResourceSelector.const.Operational',
+    }), //可操作
+    value: SystemAction.action_update,
+    enableKeys: [IManagerResourceType.ruleset, IManagerResourceType.risk_level],
+  },
+  {
+    label: formatMessage({
+      id: 'odc.components.FormResourceSelector.const.Operational',
+    }), //可操作
+    value: SystemAction.action_all,
+    enableKeys: [IManagerResourceType.integration, IManagerResourceType.auto_auth],
   },
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.ViewOnly',
     }), //仅查看
-    value: SystemAction.common_read,
+    value: SystemAction.action_read,
     enableKeys: [
-      IManagerResourceType.flow_config,
-      IManagerResourceType.odc_data_masking_rule,
       IManagerResourceType.odc_audit_event,
       IManagerResourceType.system_config,
       IManagerResourceType.auto_auth,
+      IManagerResourceType.integration,
     ],
   },
 ];
 
-export const permissionMap = {
-  [IManagerRolePermissionType.connectionAccessPermissions]: {
-    typeOptions: connectionAccessTypeOptions,
-    actionOptions: connectionAccessActionOptions,
-  },
+/**
+ * 
+    {
+      resourceType: IManagerResourceType.approval_flow,
+      actions: SystemAction.action_create_delete_update,
+    },
+    {
+      resourceType: IManagerResourceType.risk_level,
+      actions: SystemAction.action_update,
+    },
+    {
+      resourceType: IManagerResourceType.risk_detect,
+      actions: SystemAction.action_create_delete_update,
+    },
+    {
+      resourceType: IManagerResourceType.ruleset,
+      actions: SystemAction.action_read_update,
+    },
+    {
+      resourceType: IManagerResourceType.integration,
+      actions: SystemAction.action_all,
+    },
+ */
 
+export const permissionMap = {
   [IManagerRolePermissionType.resourceManagementPermissions]: {
     typeOptions: resourceManagementTypeOptions,
     actionOptions: resourceManagementActionOptions,
@@ -234,3 +262,30 @@ export const permissionMap = {
     actionOptions: systemActionOptions,
   },
 };
+
+// 可新建的资源管理权限
+export const createAbleResourceOptions = [
+  {
+    label: '数据源',
+    value: IManagerResourceType.resource,
+  },
+
+  {
+    label: '项目',
+    value: IManagerResourceType.project,
+  },
+
+  {
+    label: formatMessage({
+      id: 'odc.components.FormResourceSelector.const.Role',
+    }), //角色
+    value: IManagerResourceType.role,
+  },
+
+  {
+    label: formatMessage({
+      id: 'odc.components.FormResourceSelector.const.User',
+    }), //用户
+    value: IManagerResourceType.user,
+  },
+];

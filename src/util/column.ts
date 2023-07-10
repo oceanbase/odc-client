@@ -1,4 +1,4 @@
-import { IColumn, IColumnSizeMap } from '@/d.ts';
+import { ConnectionMode, IColumn, IColumnSizeMap } from '@/d.ts';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { convertColumnType } from './utils';
@@ -200,4 +200,21 @@ export function convertColumnShowDataType(column: IColumn, isOracle: boolean = t
 export function isObjectColumn(columnType: string) {
   columnType = convertColumnType(columnType);
   return ['TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB', 'CLOB', 'RAW'].includes(columnType);
+}
+
+export function isNlsColumn(columnType: string, dbMode: ConnectionMode) {
+  if (dbMode !== ConnectionMode.OB_ORACLE) {
+    return false;
+  }
+  columnType = convertColumnType(columnType);
+  return [
+    'TIMESTAMP_WITH_TIME_ZONE',
+    'TIMESTAMP_WITH_LOCAL_TIME_ZONE',
+    'TIMESTAMP',
+    'DATE',
+  ].includes(columnType);
+}
+
+export function getNlsValueKey(columnKey: string) {
+  return columnKey + '%' + 'odc_nls_value_key$$$';
 }

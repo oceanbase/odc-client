@@ -41,7 +41,7 @@ const Index: React.FC<IProps> = function () {
   const params = useParams<{ id: string; page: IPageType }>();
   const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
-  const [publicConnections, setPublicConnections] = useState([]);
+  const [resource, setPublicConnections] = useState([]);
   const { id, page } = params;
   const Component = Pages[page].component;
 
@@ -78,7 +78,7 @@ const Index: React.FC<IProps> = function () {
         value={{
           roles,
           users,
-          publicConnections,
+          resource,
           loadRoles,
           loadUsers,
           loadConnections,

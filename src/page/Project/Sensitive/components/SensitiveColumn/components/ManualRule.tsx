@@ -40,7 +40,7 @@ const ManualRule = ({
   };
 
   const initDataSources = async () => {
-    const resData = dataSources.map((content) => ({
+    const resData = dataSources?.map((content) => ({
       label: content.name,
       value: content.id,
     }));
@@ -83,7 +83,7 @@ const ManualRule = ({
           data.database === databaseId &&
           data.tableName === tableName,
       )
-      .map((data) => data.columnName);
+      ?.map((data) => data.columnName);
     return result;
   };
 
@@ -105,10 +105,10 @@ const ManualRule = ({
 
     setColumnName('');
     setColumnOptions(
-      res.map((r) => ({
+      res?.map((r) => ({
         label: r.columnName,
         value: r.columnName,
-        disabled: existHomologyColumnNames.some((cm) => cm === r.columnName),
+        disabled: existHomologyColumnNames?.some((cm) => cm === r.columnName),
       })),
     );
   };
@@ -174,15 +174,19 @@ const ManualRule = ({
   };
 
   const checkExist = async (ruler, value) => {
-    const result = await exist(projectId, {
-      database: {
-        id: databaseId,
-      },
-      tableName,
-      columnName: value,
-    });
-    if (result) {
-      throw new Error();
+    if (value) {
+      const result = await exist(projectId, {
+        database: {
+          id: databaseId,
+        },
+        tableName,
+        columnName: value,
+      });
+      if (result) {
+        throw new Error();
+      }
+    } else {
+      return;
     }
   };
 
@@ -302,9 +306,9 @@ const ManualRule = ({
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
-          disabled={tableOptions.length === 0}
+          disabled={tableOptions?.length === 0}
         >
-          {columnOptions.map(
+          {columnOptions?.map(
             ({ label = undefined, value = undefined, disabled = false }, index) => (
               <Select.Option value={value} key={index} disabled={disabled}>
                 {label}
@@ -319,7 +323,7 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择算法名称',
+            message: '请选择脱敏算法',
           },
         ]}
       >
@@ -328,10 +332,10 @@ const ManualRule = ({
           placeholder={'请选择'}
           style={{ width: '184px' }}
           options={maskingAlgorithmOptions}
-          disabled={columnOptions.length === 0}
+          disabled={columnOptions?.length === 0 || columnName === ''}
         />
       </Form.Item>
-      {fields.length > 0 ? <DeleteOutlined key={index} onClick={() => remove(index)} /> : null}
+      {fields?.length > 0 ? <DeleteOutlined key={index} onClick={() => remove(index)} /> : null}
     </Space>
   );
 };

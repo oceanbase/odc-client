@@ -209,7 +209,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
             >
               查看
             </Action.Link>
-            <Acess {...systemUpdatePermissions[IManagerResourceType.resource_group]}>
+            <Acess {...systemUpdatePermissions[IManagerResourceType.integration]}>
               <Action.Group>
                 <Action.Link
                   onClick={async () => {

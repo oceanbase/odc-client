@@ -437,4 +437,8 @@ export default {
 
   dataArchiveTimeDoc: <p>以系统默认变量“archive_date”时间点为基准设置偏移信息</p>,
   dataArchiveFilterDoc: <p>{dataArchiveFilterDoc}</p>,
+
+  schemaChangeSwapTable: <p>数据一致后将原表切换为目标表</p>,
+  schemaChangeSwapTableTimeout: <p>切换表过程会锁表，超时未切换完成可能导致执行失败</p>,
+  schemaChangeSwapTableRetryTimes: <p>超过锁表时间后，未切换完成可自动重试</p>,
 };

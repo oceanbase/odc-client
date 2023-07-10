@@ -30,6 +30,7 @@ import {
   TaskType,
 } from '@/d.ts';
 import React, { useEffect, useRef, useState } from 'react';
+import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import TaskTools from './component/ActionBar';
 import { DataArchiveTaskContent } from './DataArchiveTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
@@ -78,6 +79,10 @@ const taskContentMap = {
   [TaskType.SHADOW]: {
     getItems: getShadowSyncItems,
   },
+
+  [TaskType.ONLINE_SCHEMA_CHANGE]: {
+    getItems: getDDLAlterItems,
+  },
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
@@ -97,7 +102,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     (node) => node.nodeType === TaskFlowNodeType.APPROVAL_TASK,
   );
   const hasLog = true;
-  const hasResult = ![TaskType.ALTER_SCHEDULE].includes(type) && detailType !== TaskDetailType.FLOW;
+  const hasResult =
+    ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE].includes(type) &&
+    detailType !== TaskDetailType.FLOW;
   const isLoop = task?.status === TaskStatus.EXECUTING;
   const clockRef = useRef(null);
   let taskContent = null;

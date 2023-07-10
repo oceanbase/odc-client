@@ -10,7 +10,6 @@ import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ResourceContext } from '../../../context';
 import {
-  connectionAccessActionMap,
   resourceManagementActionMap,
   SystemAction,
   systemActionMap,
@@ -38,11 +37,6 @@ interface IManagerRoleFormData {
     resourceId: string;
     actions: string;
   }[];
-  connectionAccessPermissions: {
-    resourceType: string;
-    resourceId: string;
-    actions: string;
-  }[];
   resourceManagementPermissions: {
     resourceType: string;
     resourceId: string;
@@ -52,44 +46,44 @@ interface IManagerRoleFormData {
 
 const defaultData = {
   enabled: true,
-  connectionAccessPermissions: [
-    {
-      actions: 'connect',
-      resourceId: undefined,
-      resourceType: 'ODC_CONNECTION',
-    },
-  ],
   resourceManagementPermissions: [null],
   systemOperationPermissions: [
     {
-      resourceType: IManagerResourceType.private_connection,
-      actions: SystemAction.private_connection_operation,
-    },
-    {
-      resourceType: IManagerResourceType.flow_config,
-      actions: SystemAction.common_read,
-    },
-    {
-      resourceType: IManagerResourceType.odc_data_masking_rule,
-      actions: SystemAction.common_operation,
-    },
-    {
       resourceType: IManagerResourceType.odc_audit_event,
-      actions: SystemAction.common_read,
+      actions: SystemAction.action_read,
     },
     {
       resourceType: IManagerResourceType.system_config,
-      actions: SystemAction.common_read,
+      actions: SystemAction.action_read,
+    },
+    {
+      resourceType: IManagerResourceType.approval_flow,
+      actions: SystemAction.action_create_delete_update,
+    },
+    {
+      resourceType: IManagerResourceType.risk_level,
+      actions: SystemAction.action_update,
+    },
+    {
+      resourceType: IManagerResourceType.risk_detect,
+      actions: SystemAction.action_create_delete_update,
+    },
+    {
+      resourceType: IManagerResourceType.ruleset,
+      actions: SystemAction.action_update,
+    },
+    {
+      resourceType: IManagerResourceType.integration,
+      actions: SystemAction.action_all,
     },
   ],
   createAbleResource: [
-    IManagerResourceType.public_connection,
-    IManagerResourceType.resource_group,
+    IManagerResourceType.resource,
+    IManagerResourceType.project,
     IManagerResourceType.role,
     IManagerResourceType.user,
   ],
   permissionType: [
-    IManagerRolePermissionType.connectionAccessPermissions,
     IManagerRolePermissionType.resourceManagementPermissions,
     IManagerRolePermissionType.systemOperationPermissions,
   ],
@@ -106,7 +100,7 @@ const FormModal: React.FC<IProps> = (props) => {
   const isEdit = !!editId && !isCopy;
   const [hasChange, setHasChange] = useState(false);
   const [activeKey, setActiveKey] = useState(IManagerDetailTabs.DETAIL);
-  const [permissionActiveKey, setPermissionActiveKey] = useState('connectionAccessPermissions');
+  const [permissionActiveKey, setPermissionActiveKey] = useState('resourceManagementPermissions');
   const [data, setData] = useState(isEdit || isCopy ? null : defaultData);
   const [users, setUsers] = useState(null);
   const [isInternal, setInternal] = useState(false);
@@ -135,7 +129,6 @@ const FormModal: React.FC<IProps> = (props) => {
       enabled,
       name,
       systemOperationPermissions,
-      connectionAccessPermissions,
       resourceManagementPermissions,
     } = detail ?? {};
     const formData: IManagerRoleFormData = {
@@ -151,18 +144,10 @@ const FormModal: React.FC<IProps> = (props) => {
         : name?.trim(),
       createAbleResource: [],
       permissionType: [],
-      connectionAccessPermissions: [],
       systemOperationPermissions: [],
       resourceManagementPermissions: [],
     };
 
-    if (connectionAccessPermissions?.length) {
-      formData.permissionType.push('connectionAccessPermissions');
-      formData.connectionAccessPermissions = handleUnifyDataForDetail(
-        connectionAccessPermissions,
-        IManagerRolePermissionType.connectionAccessPermissions,
-      );
-    }
     if (systemOperationPermissions?.length) {
       formData.permissionType.push('systemOperationPermissions');
       formData.systemOperationPermissions = handleUnifyDataForDetail(
@@ -211,7 +196,7 @@ const FormModal: React.FC<IProps> = (props) => {
       loadUsers();
     } else {
       if (visible) {
-        setPermissionActiveKey('connectionAccessPermissions');
+        setPermissionActiveKey('resourceManagementPermissions');
         setData(defaultData);
         formRef.current?.setFieldsValue(defaultData);
       }
@@ -292,14 +277,12 @@ const FormModal: React.FC<IProps> = (props) => {
           permissionType,
           createAbleResource,
           systemOperationPermissions,
-          connectionAccessPermissions,
           resourceManagementPermissions,
         } = values;
         const formData = {
           name,
           enabled,
           description,
-          connectionAccessPermissions: [],
           systemOperationPermissions: [],
           resourceManagementPermissions: [],
         };
@@ -324,10 +307,6 @@ const FormModal: React.FC<IProps> = (props) => {
 
           throw new Error(null);
         }
-        formData.connectionAccessPermissions = handleUnifyData(
-          connectionAccessPermissions,
-          connectionAccessActionMap,
-        );
         formData.resourceManagementPermissions = handleUnifyData(
           resourceManagementPermissions,
           resourceManagementActionMap,
@@ -376,9 +355,7 @@ const FormModal: React.FC<IProps> = (props) => {
         }
       })
       .catch((error) => {
-        if (error?.errorFields?.some(({ name }) => name.includes('connectionAccessPermissions'))) {
-          setPermissionActiveKey('connectionAccessPermissions');
-        } else if (
+        if (
           error?.errorFields?.some(({ name }) => name.includes('resourceManagementPermissions'))
         ) {
           setPermissionActiveKey('resourceManagementPermissions');
@@ -437,12 +414,6 @@ const FormModal: React.FC<IProps> = (props) => {
   const handleFieldChange = (label: string, value: any) => {
     const newData = set({ ...data }, label, value);
     if (label === 'permissionType') {
-      if (!value.includes('connectionAccessPermissions')) {
-        set(newData, 'connectionAccessPermissions', null);
-        formRef.current.setFieldsValue({
-          connectionAccessPermissions: [],
-        });
-      }
       if (!value.includes('systemOperationPermissions')) {
         set(newData, 'systemOperationPermissions', null);
         formRef.current.setFieldsValue({
