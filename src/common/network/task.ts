@@ -16,6 +16,7 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
+  ISubTaskRecords
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';
@@ -413,4 +414,12 @@ export async function stopDataArchiveSubTask(taskId: number, subTaskId): Promise
     `/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/interrupt`,
   );
   return !!res?.data;
+}
+
+/**
+ * 查询无锁结构变更的子任务
+ */
+export async function getSubTask(id: number): Promise<IResponseData<ISubTaskRecords>> {
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/result`);
+  return res?.data;
 }

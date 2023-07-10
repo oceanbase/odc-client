@@ -1632,6 +1632,7 @@ export enum TaskPageType {
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
   SENSITIVE_COLUMN = 'SENSITIVE_COLUMN',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
+  ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
 }
 
 export enum TaskType {
@@ -1647,6 +1648,7 @@ export enum TaskType {
   PERMISSION_APPLY = 'PERMISSION_APPLY',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   MIGRATION = 'DATA_ARCHIVE',
+  ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
 }
 
 export enum SubTaskType {
@@ -1987,6 +1989,23 @@ export interface ICycleSubTaskRecord {
   resultJson: string;
   status: TaskStatus;
   updateTime: number;
+}
+
+export interface ISubTaskRecord {
+  createTime: number;
+  fireTime: number;
+  id: number;
+  jobGroup: 'ONLINE_SCHEMA_CHANGE_START';
+  jobName: string;
+  resultJson: string;
+  status: TaskStatus;
+  updateTime: number;
+  parametersJson: Record<string, any>;
+  progressPercentage: number;
+}
+
+export interface ISubTaskRecords {
+  tasks: ISubTaskRecord[];
 }
 
 export type TaskRecordParameters =
