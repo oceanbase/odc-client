@@ -33,4 +33,5 @@ export enum TaskDetailType {
   RECORD = 'record',
   EXECUTE_RECORD = 'execute_record',
   OPERATION_RECORD = 'operation_record',
+  PROGRESS = 'progress',
 }

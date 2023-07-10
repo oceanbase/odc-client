@@ -37,6 +37,7 @@ import { getItems as getDataMockerItems } from './DataMockerTask';
 import { TaskDetailType } from './interface';
 import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
+import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 
 interface IProps {
@@ -79,6 +80,10 @@ const taskContentMap = {
   [TaskType.SHADOW]: {
     getItems: getShadowSyncItems,
   },
+
+  [TaskType.ONLINE_SCHEMA_CHANGE]: {
+    getItems: getDDLAlterItems,
+  },
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
@@ -96,7 +101,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     (node) => node.nodeType === TaskFlowNodeType.APPROVAL_TASK,
   );
   const hasLog = true;
-  const hasResult = ![TaskType.ALTER_SCHEDULE].includes(type) && detailType !== TaskDetailType.FLOW;
+  const hasResult = ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE,].includes(type) && detailType !== TaskDetailType.FLOW;
   const isLoop = task?.status === TaskStatus.EXECUTING;
   const clockRef = useRef(null);
   let taskContent = null;

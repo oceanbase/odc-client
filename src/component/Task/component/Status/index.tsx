@@ -144,11 +144,11 @@ export const status = {
     //等待执行过期
   },
   [TaskStatus.EXECUTION_FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Failed.2' }), //执行失败
   },
   [TaskStatus.ROLLBACK_FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.RollbackFailed' }), //回滚失败
   },
   [TaskStatus.ROLLBACK_SUCCEEDED]: {
@@ -172,7 +172,7 @@ export const cycleStatus = {
     text: formatMessage({ id: 'odc.component.TaskStatus.Approving' }), //审批中
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.APPROVAL_EXPIRED]: {
@@ -193,7 +193,7 @@ export const cycleStatus = {
   },
 };
 
-// 子任务状态（仅周期任务有）
+// 子任务状态（仅周期任务 + 无锁结构变更）
 export const subTaskStatus = {
   [SubTaskStatus.DONE]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
@@ -204,7 +204,7 @@ export const subTaskStatus = {
     text: '已取消',
   },
   [SubTaskStatus.FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: '失败',
   },
   [SubTaskStatus.PREPARING]: {

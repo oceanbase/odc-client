@@ -7,7 +7,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Divider } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 
-const ErrorStrategy = {
+export const ErrorStrategy = {
   ABORT: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.StopATask' }), // 停止任务
   CONTINUE: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.IgnoreErrorsContinueTasks',
