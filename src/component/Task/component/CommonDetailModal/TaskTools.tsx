@@ -1,5 +1,4 @@
 import {
-  createTask,
   rollbackDataArchiveSubTask,
   startDataArchiveSubTask,
   stopDataArchiveSubTask,
@@ -106,16 +105,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, databaseId, executionStrategy, executionTime, parameters } =
-        record;
-      const res = await createTask({
-        taskType: type,
-        databaseId,
-        executionStrategy,
-        executionTime,
-        parameters,
-      });
-
+      const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success('重试成功');
       }
@@ -156,7 +146,7 @@ const ActionBar: React.FC<IProps> = inject(
 
       const reTryBtn = {
         key: 'reTry',
-        text: '再次发起',
+        text: '重试',
         type: 'button',
         action: handleReTry,
       };

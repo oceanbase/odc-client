@@ -124,7 +124,7 @@ export const status = {
     text: formatMessage({ id: 'odc.component.TaskStatus.ExecutionSucceeded' }), //执行成功
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.EXECUTION_EXPIRED]: {
@@ -235,11 +235,11 @@ const StatusLabel: React.FC<IProps> = (props) => {
   // todo: 未来取消 TaskType.ASYNC, 因为task已统一，所有类型task的status均是一致的，不需要使用taskType进行区分；
   let statusInfo: Record<string, { icon: React.ReactNode; text: string }> =
     statusMap[StatusNodeType.FLOW_TASK];
-    if (isSubTask) {
-      statusInfo = statusMap[StatusNodeType.SUB_TASK];
-    } else if(isCycleTask(type)){
-      statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
-    }
+  if (isSubTask) {
+    statusInfo = statusMap[StatusNodeType.SUB_TASK];
+  } else if (isCycleTask(type)) {
+    statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
+  }
   const statusObj = statusInfo[_status];
   return (
     <Space style={{ overflow: 'hidden', maxWidth: '100%' }} size={5}>

@@ -1965,7 +1965,11 @@ export interface TaskRecord<P> {
     accountName: string;
     roleNames: string[];
   };
-
+  candidateApprovers: {
+    id: number;
+    name: string;
+    accountName: string;
+  }[];
   approvable: boolean;
   approveInstanceId?: number;
   rollbackable: boolean;
