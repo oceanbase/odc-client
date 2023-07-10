@@ -259,7 +259,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
 
         {
-          dataIndex: 'databaseName',
+          dataIndex: 'candidateApprovers',
           title: '当前处理人',
           ellipsis: true,
           width: 115,
@@ -267,12 +267,8 @@ const TaskTable: React.FC<IProps> = inject(
             return (
               <SearchFilter
                 {...props}
-                selectedKeys={filters?.databaseName}
-                placeholder={formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTable.EnterADatabase',
-                })}
-
-                /*请输入所属数据库*/
+                selectedKeys={filters?.candidateApprovers}
+                placeholder="当前处理人"
               />
             );
           },
@@ -283,9 +279,10 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
-          filteredValue: filters?.databaseName || null,
+          filteredValue: filters?.candidateApprovers || null,
           filters: [],
-          render: (databaseName) => databaseName || '-',
+          render: (candidateApprovers) =>
+            candidateApprovers?.map((item) => item.accountName)?.join(', ') || '-',
         },
 
         {
@@ -366,9 +363,7 @@ const TaskTable: React.FC<IProps> = inject(
           title: formatMessage({
             id: 'odc.components.TaskManagePage.Operation',
           }),
-
           width: 145,
-          fixed: 'right' as FixedType,
           render: (_, record) => (
             <TaskTools
               task={record}

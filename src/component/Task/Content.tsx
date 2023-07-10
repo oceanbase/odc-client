@@ -73,7 +73,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const { projectId, taskStore } = this.props;
     const { taskPageType } = taskStore;
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { status, executeTime, databaseName: schema, creator, connection, id } = filters ?? {};
+    const { status, executeTime, candidateApprovers, creator, connection, id } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const connectionId = connection?.filter(
@@ -95,7 +95,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
       connectionId,
-      schema,
+      candidateApprovers,
       creator,
       sort: column?.dataIndex,
       page: current,
@@ -124,7 +124,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const {
       cycleTaskStatus: status,
       executeTime,
-      databaseName,
+      candidateApprovers,
       creator,
       cycleTaskConnection: connection,
       id,
@@ -147,7 +147,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       type: isAllScope ? taskPageType : undefined,
       projectId,
       status,
-      databaseNames: databaseName,
+      candidateApprovers: candidateApprovers,
       connectionId: connectionIds,
       creator,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
