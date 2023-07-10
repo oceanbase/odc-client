@@ -1,11 +1,15 @@
 import { EditorProps } from '@alipay/ob-react-data-grid';
 import { DatePicker, TimePicker } from 'antd';
 import moment from 'moment';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 
+import { getFormatNlsDateString } from '@/common/network/table';
 import InputBigNumber from '@/component/InputBigNumber';
+import { INlsObject } from '@/d.ts';
+import { getNlsValueKey } from '@/util/column';
 import { isNil } from 'lodash';
 import { PickerMode } from 'rc-picker/es/interface';
+import ResultContext from '../../DDLResultSet/ResultContext';
 import AntdEditorWrap from './AntdEditorWrap';
 
 interface IProps<T> extends EditorProps<T> {
@@ -156,4 +160,132 @@ export function DateTimeEditor<T>(props) {
 
 export function TimeEditor<T>(props) {
   return <CommonDateEditor<T> {...props} picker="time" />;
+}
+
+export function NlsEditor<T>({ row, onRowChange, column, width }: IProps<T>) {
+  const context = useContext(ResultContext);
+  const { sessionId } = context;
+  const { key } = column;
+  const originValue: INlsObject = row[getNlsValueKey(key)] || {};
+  const { formattedContent, nano, timeZoneId, timestamp } = originValue;
+  const momentValue = moment(timestamp || 0);
+
+  const editorRef = useRef<any>(null);
+  const pointRef = useRef<any>(null);
+  useEffect(() => {
+    if (editorRef.current) {
+      setTimeout(() => {
+        editorRef.current?.focus?.();
+      }, 100);
+    }
+  }, [editorRef]);
+
+  const innerOnChange = useCallback(
+    (value: moment.Moment) => {
+      const havePoint = !isNil(nano);
+      let targetValue = value?.format('YYYY-MM-DD HH:mm:ss');
+      if (havePoint) {
+        targetValue = targetValue + '.' + (pointRef.current?.input?.value || 0);
+      }
+      async function updateValue() {
+        const newNlsObject: INlsObject = {
+          timestamp: value.valueOf(),
+          timeZoneId,
+          nano: pointRef.current?.input?.value || 0,
+          formattedContent: null,
+        };
+        const str = await getFormatNlsDateString(
+          {
+            timestamp: newNlsObject.timestamp,
+            timeZoneId: newNlsObject.timeZoneId,
+            nano: newNlsObject.nano,
+            dataType: context?.originColumns
+              ?.find((column) => column.key === key)
+              ?.columnType?.replace(/_/g, ' '),
+          },
+          sessionId,
+        );
+        if (!str) {
+          return;
+        }
+        onRowChange(
+          { ...row, [key]: str, [getNlsValueKey(key)]: { ...newNlsObject, formattedContent: str } },
+          !havePoint,
+        );
+        if (havePoint) {
+          pointRef.current?.focus?.();
+        }
+      }
+      updateValue();
+    },
+    [onRowChange, sessionId],
+  );
+  const innerOnPointChange = useCallback(
+    (value: moment.Moment) => {
+      let stringValue = value?.format('YYYY-MM-DD HH:mm:ss');
+      const targetValue = stringValue + '.' + (pointRef.current?.input?.value || 0);
+      async function updateValue() {
+        const newNlsObject: INlsObject = {
+          timestamp: value.valueOf(),
+          timeZoneId,
+          nano: pointRef.current?.input?.value || 0,
+          formattedContent: null,
+        };
+        const str = await getFormatNlsDateString(
+          {
+            timestamp: newNlsObject.timestamp,
+            timeZoneId: newNlsObject.timeZoneId,
+            nano: newNlsObject.nano,
+            dataType: context?.originColumns
+              ?.find((column) => column.key === key)
+              ?.columnType?.replace(/_/g, ' '),
+          },
+          sessionId,
+        );
+        if (!str) {
+          return;
+        }
+        onRowChange(
+          { ...row, [key]: str, [getNlsValueKey(key)]: { ...newNlsObject, formattedContent: str } },
+          false,
+        );
+      }
+      updateValue();
+    },
+    [onRowChange, sessionId],
+  );
+  return (
+    <AntdEditorWrap>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <DatePicker
+          ref={editorRef}
+          /**
+           * 不要开启这个配置，交互行为会不顺畅
+           */
+          allowClear={false}
+          style={{ width: Math.max(width, 200) }}
+          value={momentValue}
+          showTime={true}
+          onChange={innerOnChange}
+        />
+        {/* {!isNil(nano) && (
+            <InputBigNumber
+              addonBefore="."
+              style={{ width: 100 }}
+              onKeyDown={(e) => {
+                if (e.key === 'Tab' || e.key === 'Enter') {
+                  onRowChange(row, true);
+                  e.preventDefault();
+                }
+              }}
+              inputRef={pointRef}
+              value={nano}
+              onChange={(v) => {
+                innerOnPointChange(momentValue);
+              }}
+            />
+          )} */}
+      </div>
+    </AntdEditorWrap>
+  );
 }

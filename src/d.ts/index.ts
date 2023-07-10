@@ -3073,3 +3073,22 @@ export type ISSOConfig =
       ssoParameter: ISSO_OIDC_CONFIG;
       mappingRule: ISSO_MAPPINGRULE;
     };
+
+export interface INlsObject {
+  /**
+   * 格式化后的数据
+   */
+  formattedContent: string;
+  /**
+   * 时区信息
+   */
+  timeZoneId: string;
+  /**
+   * 纳秒值
+   */
+  nano: number;
+  /**
+   * 时间戳
+   */
+  timestamp: number;
+}

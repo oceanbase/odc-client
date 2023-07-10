@@ -1,12 +1,15 @@
-import { ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { INlsObject, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
 import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
+import { getNlsValueKey } from '@/util/column';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import request from '@/util/request';
 import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
 import { message } from 'antd';
+import { toInteger } from 'lodash';
+import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
 
@@ -233,12 +236,35 @@ function wrapDataDML(
   return columns.map((column, i) => {
     const uniqueColumnName = column?.columnName;
     const blobExt: LobExt = row[getBlobValueKey(uniqueColumnName)];
+    const nlsObject: INlsObject = row[getNlsValueKey(uniqueColumnName)];
+    const initNlsObject: INlsObject = initialRow?.[getNlsValueKey(uniqueColumnName)];
+    let oldData = initialRow ? initialRow[uniqueColumnName] : null;
+    let newData = blobExt ? blobExt.info : row[uniqueColumnName];
+    if (initNlsObject) {
+      let nano = toInteger(initNlsObject?.nano) ? '.' + initNlsObject.nano : '';
+      oldData = initNlsObject.timestamp
+        ? [
+            moment(initNlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano,
+            initNlsObject.timeZoneId,
+          ]
+            .filter(Boolean)
+            .join(' ')
+        : null;
+    }
+    if (nlsObject) {
+      let nano = toInteger(nlsObject?.nano) ? '.' + nlsObject.nano : '';
+      newData = nlsObject.timestamp
+        ? [moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano, nlsObject.timeZoneId]
+            .filter(Boolean)
+            .join(' ')
+        : null;
+    }
     return {
       tableName,
       columnName: column.columnName,
       columnType: column.dataType,
-      newData: blobExt ? blobExt.info : row[uniqueColumnName],
-      oldData: initialRow && initialRow[uniqueColumnName],
+      newData,
+      oldData,
       newDataType: blobExt?.type || RSModifyDataType.RAW,
       useDefault: typeof row[uniqueColumnName] === 'undefined' && column.columnName !== 'ROWID',
       primaryKey: column.primaryKey,
@@ -292,4 +318,14 @@ export async function getDataObjectDownloadUrl(
       )}/sqls/${sqlId}/download?row=${rowIndex}&col=${columnIndex}`
     );
   }
+}
+
+export async function getFormatNlsDateString(
+  params: Pick<INlsObject, 'nano' | 'timeZoneId' | 'timestamp'> & { dataType: string },
+  sessionId: string,
+): Promise<string> {
+  const res = await request.post(`/api/v2/connects/sessions/${sessionId}/format`, {
+    data: params,
+  });
+  return res?.data;
 }
