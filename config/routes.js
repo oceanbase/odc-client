@@ -8,6 +8,7 @@ module.exports = [
       path: '/',
       component: '../layout/AppContainer',
       routes: [
+        { path: '/odc/gateway/*', redirect: '/gateway/*'},
         { path: '/gateway/*', component: '@/page/Gateway', spmBPos: 'b41899' },
         {
           path: '/',
