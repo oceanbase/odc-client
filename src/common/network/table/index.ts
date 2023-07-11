@@ -233,6 +233,41 @@ function wrapDataDML(
     });
   }
 
+  function getServerDateformat(nlsObject: INlsObject, columnType: string) {
+    let data = null;
+    let nano = toInteger(nlsObject?.nano) ? '.' + nlsObject.nano : '';
+    switch (columnType) {
+      case 'TIMESTAMP WITH TIME ZONE': {
+        /**
+         * 需要加上 timezone， 因为需要moment默认情况下无法处理其他时区，所以不能将moment format后的时间传给后端。
+         * 和后端约定用 “timestamp timezone”的形式传递
+         */
+        data = [nlsObject.timestamp?.toString() + nano, nlsObject.timeZoneId]
+          ?.filter(Boolean)
+          ?.join(' ');
+        break;
+      }
+      case 'TIMESTAMP WITH LOCAL TIME ZONE': {
+        /**
+         * local time zone 不能加zone，以服务器为准
+         */
+        data = nlsObject.timestamp
+          ? moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano
+          : null;
+        break;
+      }
+      default: {
+        data = nlsObject.timestamp
+          ? [moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano, nlsObject.timeZoneId]
+              .filter(Boolean)
+              .join(' ')
+          : null;
+        break;
+      }
+    }
+    return data;
+  }
+
   return columns.map((column, i) => {
     const uniqueColumnName = column?.columnName;
     const blobExt: LobExt = row[getBlobValueKey(uniqueColumnName)];
@@ -241,32 +276,10 @@ function wrapDataDML(
     let oldData = initialRow ? initialRow[uniqueColumnName] : null;
     let newData = blobExt ? blobExt.info : row[uniqueColumnName];
     if (initNlsObject) {
-      let nano = toInteger(initNlsObject?.nano) ? '.' + initNlsObject.nano : '';
-      oldData = initNlsObject.timestamp
-        ? [
-            moment(initNlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano,
-            initNlsObject.timeZoneId,
-          ]
-            .filter(Boolean)
-            .join(' ')
-        : null;
+      oldData = getServerDateformat(initNlsObject, column?.dataType);
     }
     if (nlsObject) {
-      let nano = toInteger(nlsObject?.nano) ? '.' + nlsObject.nano : '';
-      if (column?.dataType?.includes('LOCAL')) {
-        /**
-         * time with local zone 不能带时区
-         */
-        newData = nlsObject.timestamp
-          ? moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano
-          : null;
-      } else {
-        newData = nlsObject.timestamp
-          ? [moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano, nlsObject.timeZoneId]
-              .filter(Boolean)
-              .join(' ')
-          : null;
-      }
+      newData = getServerDateformat(nlsObject, column?.dataType);
     }
     return {
       tableName,
