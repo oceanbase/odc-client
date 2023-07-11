@@ -14,8 +14,8 @@
   "scripts": {
     "start": "max dev",
     "dev:client": "concurrently \"UMI_ENV=client npm run dev\" \"npm run build-main-dev\"",
-    "dev:cloudweb": "cross-env NODE_OPTIONS=--max_old_space_size=4096 HAVEOCP=1 UMI_ENV=cloudweb max dev",
-    "dev:obcloud": "cross-env NODE_OPTIONS=--max_old_space_size=4096 HAVEOCP=1 CURRENT_ENV=obcloud max dev",
+    "dev:cloudweb": "cross-env SOCKET_SERVER=http://localhost:8000/ NODE_OPTIONS=--max_old_space_size=6096 HAVEOCP=1 UMI_ENV=cloudweb max dev",
+    "dev:obcloud": "cross-env NODE_OPTIONS=--max_old_space_size=6096 HAVEOCP=1 CURRENT_ENV=obcloud max dev",
     "start-electron": "electron --inspect=5858 -w ./dist/main/main.js",
     "analyze": "ANALYZE=1 max build",
     "dev": "cross-env NODE_OPTIONS=--max_old_space_size=5120 max dev",
@@ -114,7 +114,6 @@
     "blueimp-md5": "^2.19.0",
     "cherio": "^1.0.0-rc.2",
     "classnames": "^2.2.6",
-
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3",
     "cpx": "^1.5.0",
