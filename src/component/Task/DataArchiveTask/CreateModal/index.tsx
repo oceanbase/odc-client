@@ -235,6 +235,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           };
         } else if (triggerStrategy === TaskExecStrategy.START_AT) {
           parameters.triggerConfig = {
+            triggerStrategy: TaskExecStrategy.START_AT,
             startAt: startAt?.valueOf(),
           };
         }
