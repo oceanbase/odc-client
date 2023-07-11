@@ -13,6 +13,7 @@ export default {
   },
   runtimePublicPath: {},
   hash: false,
+  mfsu: false,
   // publicPath: 'https://gw.alipayobjects.com/as/g/oceanbase/sqlConsole/renderer/',
   // 路由配置，客户端不需要 Login
   routes: routes
