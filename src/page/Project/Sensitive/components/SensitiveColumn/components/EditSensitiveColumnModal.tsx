@@ -12,6 +12,7 @@ const EditModal = ({
   maskingAlgorithmOptions = [],
   modalVisible,
   setModalVisible,
+  initSensitiveColumn,
 }) => {
   const [formRef] = useForm();
   const onCancel = () => {
@@ -31,6 +32,7 @@ const EditModal = ({
       setModalVisible(false);
       tableRef.current?.reload();
       tableRef.current?.resetSelectedRows();
+      initSensitiveColumn();
     } else {
       message.success('更新失败');
     }

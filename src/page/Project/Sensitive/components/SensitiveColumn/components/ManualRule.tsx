@@ -19,6 +19,7 @@ const ManualRule = ({
   remove,
   databases,
   setDatabases,
+  setDisabledAdd,
 }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
@@ -95,15 +96,18 @@ const ManualRule = ({
       tableName: string;
       columnName: string;
     }[],
+    init: boolean = true,
   ) => {
     const res = await getTableColumnList(
       value,
       databases?.find((d) => d.id === databaseId)?.name,
       session.sessionId,
     );
-    const existHomologyColumnNames = getExistHomologyColumnNames(value, manual);
-
-    setColumnName('');
+    let existHomologyColumnNames = getExistHomologyColumnNames(value, manual);
+    if (!init) {
+      existHomologyColumnNames = existHomologyColumnNames?.filter((cm) => cm !== columnName);
+    }
+    init && setColumnName('');
     setColumnOptions(
       res?.map((r) => ({
         label: r.columnName,
@@ -190,6 +194,11 @@ const ManualRule = ({
     }
   };
 
+  const handleMaskingAlgorithmSelect = (value) => {
+    if (dataSourceId && databaseId && tableName !== '' && columnName !== '' && value) {
+      setDisabledAdd(false);
+    }
+  };
   useEffect(() => {
     initDataSources();
   }, []);
@@ -216,6 +225,9 @@ const ManualRule = ({
       clearTimeout(timer);
     };
   }, [session?.database]);
+  const handleDelete = async (index: number) => {
+    remove(index);
+  };
   return (
     <Space key={fieldKey} className={styles.formItem} align="baseline">
       <Form.Item
@@ -306,6 +318,10 @@ const ManualRule = ({
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
+          onDropdownVisibleChange={async () => {
+            const { manual = [] } = await formRef.getFieldsValue();
+            await initColumn(tableName, manual, false);
+          }}
           disabled={tableOptions?.length === 0}
         >
           {columnOptions?.map(
@@ -331,11 +347,14 @@ const ManualRule = ({
           key={[fieldName, 'maskingAlgorithmId', index].join('_')}
           placeholder={'请选择'}
           style={{ width: '184px' }}
+          onSelect={handleMaskingAlgorithmSelect}
           options={maskingAlgorithmOptions}
           disabled={columnOptions?.length === 0 || columnName === ''}
         />
       </Form.Item>
-      {fields?.length > 0 ? <DeleteOutlined key={index} onClick={() => remove(index)} /> : null}
+      {fields?.length > 1 ? (
+        <DeleteOutlined key={index} onClick={() => handleDelete(index)} />
+      ) : null}
     </Space>
   );
 };

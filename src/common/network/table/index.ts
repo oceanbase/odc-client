@@ -253,11 +253,20 @@ function wrapDataDML(
     }
     if (nlsObject) {
       let nano = toInteger(nlsObject?.nano) ? '.' + nlsObject.nano : '';
-      newData = nlsObject.timestamp
-        ? [moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano, nlsObject.timeZoneId]
-            .filter(Boolean)
-            .join(' ')
-        : null;
+      if (column?.dataType?.includes('LOCAL')) {
+        /**
+         * time with local zone 不能带时区
+         */
+        newData = nlsObject.timestamp
+          ? moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano
+          : null;
+      } else {
+        newData = nlsObject.timestamp
+          ? [moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano, nlsObject.timeZoneId]
+              .filter(Boolean)
+              .join(' ')
+          : null;
+      }
     }
     return {
       tableName,

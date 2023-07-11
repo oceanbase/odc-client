@@ -36,6 +36,7 @@ export interface CheckboxInputProps {
   name?: string[];
   checkValue?: string;
   hasLabel?: boolean;
+  formRef: any;
   value?: CheckboxInputValue;
   onChange?: (value: CheckboxInputValue) => void;
 }
