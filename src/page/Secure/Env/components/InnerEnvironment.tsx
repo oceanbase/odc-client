@@ -8,12 +8,12 @@ import {
   ITableInstance,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../../components/SecureTable';
 import EditRuleDrawer from './EditRuleDrawer';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import styles from './index.less';
 
@@ -130,7 +130,6 @@ const getColumns: (columnsFunction: {
         };
       },
       render: (text, record) => <TooltipContent content={record?.appliedDialectTypes?.join(',')} />,
-      //record.metadata?.supportedDialectTypes?.join(','), // 这个的值是固定的，应该是appliedDialectTypes才对
     },
     {
       title: '配置值',
@@ -157,12 +156,15 @@ const getColumns: (columnsFunction: {
         } else if (keys.length === 1) {
           const [pm] = propertyMetadatas;
           if (Array.isArray(properties[pm.name])) {
-            content = properties[pm.name].length > 0 ? properties[pm.name].join(',').toString() : '-';
+            content =
+              properties[pm.name].length > 0 ? properties[pm.name].join(',').toString() : '-';
           } else {
-            content = content = properties[pm.name] ? properties[pm.name].toString() : '-';
+            content = content = properties?.[pm.name]?.toString() || '-';
           }
         } else {
-          content = propertyMetadatas.map((pm) => `${pm.displayName}: ${properties[pm.name]}`).join(',');
+          content = propertyMetadatas
+            .map((pm) => `${pm.displayName}: ${properties[pm.name]}`)
+            .join(',');
         }
         return <TooltipContent content={content} />;
       },
@@ -273,9 +275,9 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     supportedDialectTypeFilters,
   });
   useEffect(() => {
-    if(selectedRecord && ruleType) {
+    if (selectedRecord && ruleType) {
       handleInitRules(selectedRecord?.value, ruleType);
-      if(tableRef.current) {
+      if (tableRef.current) {
         tableRef?.current?.resetPaganition();
       }
     }
