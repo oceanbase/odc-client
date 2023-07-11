@@ -98,6 +98,7 @@ class WindowManager extends PureComponent<
       this.setState({
         closePageKey: pageKey,
       });
+      this.props.onActivatePage(pageKey);
     }
   };
 
