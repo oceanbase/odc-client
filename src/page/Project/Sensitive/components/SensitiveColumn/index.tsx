@@ -9,6 +9,8 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
+import TooltipContent from '@/component/TooltipContent';
+import { IResponseData } from '@/d.ts';
 import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import SecureTable from '@/page/Secure/components/SecureTable';
 import {
@@ -18,14 +20,13 @@ import {
 } from '@/page/Secure/components/SecureTable/interface';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Menu, message, Modal, Space } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import { debounce } from 'lodash';
 import { useContext, useRef, useState } from 'react';
 import { AddSensitiveColumnType } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import EditModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
-import TooltipContent from '@/component/TooltipContent';
-import { ColumnsType } from 'antd/es/table';
-import { IResponseData } from '@/d.ts';
 
 const getColumns: ({
   handleStatusSwitch,
@@ -37,7 +38,7 @@ const getColumns: ({
   dataSourceIdMap,
   hasRowSelected,
   maskingAlgorithmIdMap,
-}) => ColumnsType<ISensitiveColumn>  = ({
+}) => ColumnsType<ISensitiveColumn> = ({
   handleStatusSwitch,
   handleEdit,
   handleDelete,
@@ -65,7 +66,12 @@ const getColumns: ({
           },
         };
       },
-      render: (text, record, index) => <TooltipContent content={record?.database?.dataSource?.name || dataSourceIdMap[record?.database?.dataSource?.id]} maxWdith={170} />,
+      render: (text, record, index) => (
+        <TooltipContent
+          content={dataSourceIdMap[record?.database?.dataSource?.id]}
+          maxWdith={170}
+        />
+      ),
     },
     {
       title: '数据库/schema',
@@ -83,7 +89,9 @@ const getColumns: ({
           },
         };
       },
-      render: (text, record, index) => <TooltipContent content={record?.database?.name} maxWdith={170} />,
+      render: (text, record, index) => (
+        <TooltipContent content={record?.database?.name} maxWdith={170} />
+      ),
     },
     {
       title: '表',
@@ -125,7 +133,12 @@ const getColumns: ({
       dataIndex: 'maskingAlgorithmId',
       key: 'maskingAlgorithmId',
       filters: maskingAlgorithmFilters,
-      render: (text, record, index) => <TooltipContent content={maskingAlgorithmIdMap[record?.maskingAlgorithmId]} maxWdith={170} />,
+      render: (text, record, index) => (
+        <TooltipContent
+          content={maskingAlgorithmIdMap[record?.maskingAlgorithmId]}
+          maxWdith={170}
+        />
+      ),
     },
     {
       title: '启用状态',
@@ -188,6 +201,7 @@ const SensitiveColumn = ({
   dataSourceFilters,
   databaseFilters,
   maskingAlgorithmFilters,
+  initSensitiveColumn,
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
@@ -198,7 +212,7 @@ const SensitiveColumn = ({
     AddSensitiveColumnType.Scan,
   );
   const [sensitiveColumn, setSensitiveColumn] = useState<IResponseData<ISensitiveColumn>>(null);
-  // const [dataSource, setDataSource] = useState([]);
+  const [submiting, setSubmiting] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -223,7 +237,7 @@ const SensitiveColumn = ({
   };
   const loadData = async (args: ITableLoadOptions) => {
     const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
-    const { enabled, dataSource, database, maskingAlgorithmId } = filters ?? {};
+    const { enabled, datasource, database, maskingAlgorithmId } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const wrapArgs = (args) => {
@@ -235,7 +249,7 @@ const SensitiveColumn = ({
     const data = {
       fuzzyTableColumn: searchValue,
       enabled: wrapArgs(enabled),
-      dataSource: wrapArgs(dataSource),
+      datasource: wrapArgs(datasource),
       database: wrapArgs(database),
       maskingAlgorithm: wrapArgs(maskingAlgorithmId),
       sort: column?.dataIndex,
@@ -246,6 +260,7 @@ const SensitiveColumn = ({
     data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const result = await listSensitiveColumns(projectId, data);
     setSensitiveColumn(result);
+    initSensitiveColumn();
   };
 
   const rowSelectedCallback = (v: boolean) => {
@@ -264,9 +279,10 @@ const SensitiveColumn = ({
       cancelText: '取消',
     });
   };
-  const onOk = () => {
+  const onOk = (fn?: () => void) => {
     setVisible(false);
     tableRef.current?.reload?.();
+    fn?.();
   };
   const handleOpenEditSensitiveColumnDrawer = () => {
     setVisible(true);
@@ -305,22 +321,26 @@ const SensitiveColumn = ({
     }
     return Modal.confirm({
       title: '确认要删除敏感列吗？',
-      onOk: async () => {
-        const result = await batchDeleteSensitiveColumns(projectId, ids);
-        if (result) {
-          message.success('删除成功');
-        } else {
-          message.error('删除失败');
+      onOk: debounce(async () => {
+        if (!submiting) {
+          setSubmiting(true);
+          const result = await batchDeleteSensitiveColumns(projectId, ids);
+          if (result) {
+            message.success('删除成功');
+          } else {
+            message.error('删除失败');
+          }
+          tableRef.current?.reload?.();
+          tableRef.current?.resetSelectedRows();
+          setSubmiting(false);
         }
-        tableRef.current?.reload?.();
-        tableRef.current?.resetSelectedRows();
-      },
+      }),
       onCancel: () => {},
       okText: '确定',
       cancelText: '取消',
     });
   };
-  const columns: ColumnsType<ISensitiveColumn>  = getColumns({
+  const columns: ColumnsType<ISensitiveColumn> = getColumns({
     hasRowSelected,
     handleStatusSwitch,
     handleEdit,
@@ -406,6 +426,7 @@ const SensitiveColumn = ({
           onClose,
           onOk,
           addSensitiveColumnType,
+          initSensitiveColumn,
         }}
       />
       <EditModal
@@ -417,6 +438,7 @@ const SensitiveColumn = ({
           modalVisible,
           setModalVisible,
           maskingAlgorithmOptions,
+          initSensitiveColumn,
         }}
       />
     </>

@@ -1,6 +1,6 @@
 import { createSensitiveRule, updateSensitiveRule } from '@/common/network/sensitiveRule';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
-import { Button, Drawer, Form, Input, message, Radio, Select, Space } from 'antd';
+import { Button, Drawer, Form, Input, message, Modal, Radio, Select, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../../../ProjectContext';
@@ -18,9 +18,15 @@ const FormSensitiveRuleDrawer = ({
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [script, setScript] = useState<string>('');
+  const [hasValidated, setHasValidated] = useState<boolean>(false);
   const handleSubmit = async () => {
     const rawData = await formRef.validateFields().catch();
     const { enabled, maskingAlgorithmId, name, type, regExp = {}, description } = rawData;
+    console.log(type === SensitiveRuleType.GROOVY, script?.length);
+    if (type === SensitiveRuleType.GROOVY && script?.length === 0) {
+      setHasValidated(true);
+      return;
+    }
     let data: Partial<ISensitiveRule> = {
       enabled,
       maskingAlgorithmId,
@@ -92,10 +98,20 @@ const FormSensitiveRuleDrawer = ({
         message.error('新建失败');
       }
     }
+    setHasValidated(false);
   };
   const onCancel = () => {
-    handleFormDrawerClose();
-    formRef.resetFields();
+    return Modal.confirm({
+      title: '确认要取消新建吗？',
+      onOk: () => {
+        handleFormDrawerClose();
+        formRef.resetFields();
+        setHasValidated(false);
+      },
+      onCancel: () => {},
+      okText: '确定',
+      cancelText: '取消',
+    });
   };
   useEffect(() => {
     if (isEdit) {
@@ -186,7 +202,6 @@ const FormSensitiveRuleDrawer = ({
       });
     }
   }, [formDrawerVisible, isEdit, selectedRecord]);
-
   return (
     <Drawer
       open={formDrawerVisible}
@@ -194,6 +209,7 @@ const FormSensitiveRuleDrawer = ({
       width={596}
       onClose={onCancel}
       destroyOnClose={true}
+      maskClosable={false}
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
@@ -240,6 +256,8 @@ const FormSensitiveRuleDrawer = ({
           key="detectWay"
           {...{
             script,
+            formRef,
+            hasValidated,
             setScript,
             originType: isEdit ? SensitiveRuleType[selectedRecord.type] : undefined,
           }}
