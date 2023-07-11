@@ -131,8 +131,8 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
     setSensitiveRuleIdMap(map);
   };
 
-  const getListDataSources = async () => {
-    const rawData = await getConnectionList({});
+  const getListDataSources = async (projectId?: number) => {
+    const rawData = await getConnectionList({ projectId: id });
     setDataSources(rawData?.contents);
 
     const map = {};
@@ -158,6 +158,7 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
               dataSourceFilters,
               databaseFilters,
               maskingAlgorithmFilters,
+              initSensitiveColumn,
             }}
           />
         );

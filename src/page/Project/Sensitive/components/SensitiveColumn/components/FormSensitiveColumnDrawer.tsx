@@ -21,14 +21,21 @@ const defaultScanTableData: Array<ScanTableData> = [];
 const checkResult = (resData: Array<ScanTableData> = []) =>
   resData?.length > 0 ? resData : defaultScanTableData;
 
-const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiveColumnType }) => {
+const FormSensitiveColumnDrawer = ({
+  isEdit,
+  visible,
+  onClose,
+  onOk,
+  addSensitiveColumnType,
+  initSensitiveColumn,
+}) => {
   const [formRef] = useForm();
   const [_formRef] = useForm();
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [scanTableData, setScanTableData] = useState<ScanTableData[]>([]);
   const [databases, setDatabases] = useState<IDatabase[]>([]);
-
+  const [submiting, setSubmiting] = useState<boolean>(false);
   const [sensitiveColumns, setSensitiveColumns] = useState<ISensitiveColumn[]>([]);
   const [sensitiveColumnMap, setSensitiveColumnMap] = useState(new Map());
   const [taskId, setTaskId] = useState<string>();
@@ -50,7 +57,9 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
 
     const dataSourceMap = new Map();
     const filterSensitiveColumns =
-      sensitiveColumns?.filter((d) => d?.columnName?.includes(searchText)) || [];
+      sensitiveColumns?.filter((d) =>
+        d?.columnName?.toLowerCase()?.includes(searchText?.toLowerCase()),
+      ) || [];
     filterSensitiveColumns?.forEach((d) => {
       const key = `${d.database.name}_${d.tableName}`;
       if (dataSourceMap.has(key)) {
@@ -82,11 +91,34 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
     });
     setScanTableData(checkResult(resData));
   };
-  const resetScanTableData = () => {
-    setScanTableData(defaultScanTableData);
-    setTaskId('');
+
+  const reset = () => {
+    setTaskId(null);
+    setScanStatus(null);
     setScanLoading(false);
+    setPercent(0);
     setSuccessful(false);
+    setHasScan(false);
+  };
+
+  const resetScanTableData = () => {
+    formRef.resetFields();
+    _formRef.resetFields();
+
+    setScanTableData(defaultScanTableData);
+    setDatabases([]);
+    setSubmiting(false);
+    setSensitiveColumns([]);
+    setSensitiveColumnMap(new Map());
+    setTaskId('');
+    setScanStatus(null);
+    setScanLoading(false);
+    setHasScan(false);
+    setPercent(0);
+    setSuccessful(false);
+    setSearchText('');
+
+    clearTimeout(timer.current);
   };
 
   const handleScanTableDataChange = (index: number, _index: number, maskingAlgorithmId: number) => {
@@ -162,11 +194,16 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
         rawData.push(sc);
       }
     });
+    if (rawData?.length === 0) {
+      return;
+    }
+    setSubmiting(true);
     const res = await batchCreateSensitiveColumns(context.projectId, rawData);
     if (res) {
       message.success('新建成功');
       onOk();
-      _formRef.resetFields();
+      reset();
+      resetScanTableData();
     } else {
       message.error('新建失败');
     }
@@ -193,7 +230,8 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
 
   const hanldeClose = () => {
     onClose(() => {
-      formRef.resetFields();
+      formRef?.resetFields();
+      _formRef?.resetFields();
       setSuccessful(false);
       setScanTableData([]);
       setSensitiveColumnMap(new Map());
@@ -258,15 +296,6 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
       }, 1000);
     }
   };
-  const reset = () => {
-    setTaskId(null);
-    setScanStatus(null);
-    setScanLoading(false);
-    setPercent(0);
-    setSuccessful(false);
-    setHasScan(false);
-  };
-
   useEffect(() => {
     if (!isEdit) {
       formRef.setFieldsValue({
@@ -321,6 +350,7 @@ const FormSensitiveColumnDrawer = ({ isEdit, visible, onClose, onOk, addSensitiv
             <Button onClick={hanldeClose}>取消</Button>
             <Button
               type="primary"
+              disabled={submiting}
               onClick={
                 addSensitiveColumnType === AddSensitiveColumnType.Manual
                   ? handleManualSubmit

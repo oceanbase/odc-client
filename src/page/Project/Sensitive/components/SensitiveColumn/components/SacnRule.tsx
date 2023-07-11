@@ -59,7 +59,6 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
   };
   const handleDataSourceIdChange = async (v: number) => {
     setDataSourceId(v);
-    resetScanTableData();
     reset();
     setDatabaseId(0);
   };
@@ -153,7 +152,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
         rules={[
           {
             required: true,
-            message: '请选择数据源',
+            message: '请选择识别规则',
           },
         ]}
       >

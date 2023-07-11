@@ -192,6 +192,7 @@ export async function batchTest(cids: number[]): Promise<
 export async function getConnectionList(params: {
   clusterName?: string[];
   tenantName?: string[];
+  projectId?: number;
   dialectType?: ConnectionMode | ConnectionMode[];
   type?: ConnectType[] | ConnectType;
   status?: ConnectionFilterStatus;
