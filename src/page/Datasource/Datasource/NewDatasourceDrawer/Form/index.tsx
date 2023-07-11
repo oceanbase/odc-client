@@ -3,6 +3,7 @@ import { listEnvironments } from '@/common/network/env';
 import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { isConnectTypeBeShardingType } from '@/util/connection';
+import { haveOCP } from '@/util/env';
 import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select, Space } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
@@ -150,14 +151,23 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           </Form.Item>
         ) : null}
         <DBTypeItem />
-        <ParseURLItem autoType={!isEdit} />
-        <Form.Item rules={[{ required: true }]} label="类型" name={'type'}>
-          <Select disabled={isEdit} style={{ width: 208 }}>
+        {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
+        <Form.Item
+          rules={[{ required: true }]}
+          label="类型"
+          name={'type'}
+          noStyle={haveOCP() ? true : false}
+        >
+          <Select disabled={isEdit} style={{ width: 208, display: haveOCP() ? 'none' : 'unset' }}>
             <Option value={ConnectType.OB_MYSQL}>OceanBase MySQL</Option>
             <Option value={ConnectType.OB_ORACLE}>OceanBase Oracle</Option>
-            <Option value={ConnectType.CLOUD_OB_MYSQL}>OceanBase MySQL Cloud</Option>
-            <Option value={ConnectType.CLOUD_OB_ORACLE}>OceanBase Oracle Cloud</Option>
-            <Option value={ConnectType.ODP_SHARDING_OB_MYSQL}>OceanBase MySQL Sharding</Option>
+            {!haveOCP() && (
+              <>
+                <Option value={ConnectType.CLOUD_OB_MYSQL}>OceanBase MySQL Cloud</Option>
+                <Option value={ConnectType.CLOUD_OB_ORACLE}>OceanBase Oracle Cloud</Option>
+                <Option value={ConnectType.ODP_SHARDING_OB_MYSQL}>OceanBase MySQL Sharding</Option>
+              </>
+            )}
           </Select>
         </Form.Item>
         <AddressItems />
@@ -169,16 +179,18 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             })}
           </Select>
         </Form.Item>
-        <Space style={{ width: '100%' }} direction="vertical">
-          <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
-                <SysForm formRef={form} isEdit={isEdit} sysAccountExist={sysAccountExist} />
-              );
-            }}
-          </Form.Item>
-          <SSLItem />
-        </Space>
+        {!haveOCP() && (
+          <Space style={{ width: '100%' }} direction="vertical">
+            <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
+                  <SysForm formRef={form} isEdit={isEdit} sysAccountExist={sysAccountExist} />
+                );
+              }}
+            </Form.Item>
+            <SSLItem />
+          </Space>
+        )}
       </Form>
     </DatasourceFormContext.Provider>
   );
