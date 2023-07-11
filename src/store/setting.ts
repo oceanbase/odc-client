@@ -11,7 +11,7 @@ import { action, observable } from 'mobx';
 
 import appConfig from '@/constant/appConfig';
 import request from '@/util/request';
-import pkg from '../../package.json';
+import { initTracert } from '@/util/tracert';
 
 export const themeKey = 'odc-theme';
 
@@ -245,14 +245,7 @@ export class SettingStore {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
       if (this.serverSystemInfo?.spmEnabled && appConfig.spm.enable) {
-        const Tracert = (await import('@alipay/tracert/lib/starter'))?.default;
-        window.Tracert.start({
-          mdata: {
-            version: pkg.version,
-          },
-          roleId: null,
-          debug: process?.env?.NODE_ENV === 'development',
-        });
+        initTracert();
       }
       this.settingLoadStatus = 'done';
     } catch (e) {

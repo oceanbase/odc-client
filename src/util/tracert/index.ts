@@ -1,6 +1,29 @@
 import { PageType } from '@/d.ts';
 import { hasEventTrackingPermission, isClient } from '@/util/env';
 
+import pkg from '../../../package.json';
+
+export function initTracert() {
+  //@ts-ignore
+  window._to = {
+    spmAPos: 'a3112',
+    bizType: 'lu',
+    type: 'manual',
+    ifInjectManualScript: false,
+    ifRouterNeedPv: true,
+    autoLogPv: false,
+    eventType: null,
+    mdata: {
+      version: pkg.version,
+    },
+    roleId: null,
+    debug: process?.env?.NODE_ENV === 'development',
+  };
+  const dom = document.createElement('script');
+  dom.setAttribute('src', 'https://ur.alipay.com/tracert_a3112.js');
+  document.head.appendChild(dom);
+}
+
 function getTracert() {
   // 如果不是桌面端，正常开启埋点。
   if (!isClient()) {
