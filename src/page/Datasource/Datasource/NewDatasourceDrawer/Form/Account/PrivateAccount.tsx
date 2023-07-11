@@ -66,6 +66,8 @@ const PrivateAccount: React.FC<IProps> = function (props) {
           <Col span={12}>
             <Form.Item noStyle shouldUpdate>
               {({ getFieldValue }) => {
+                const clusterId = getFieldValue('clusterName');
+                const tenantId = getFieldValue('tenantName');
                 return (
                   <Form.Item
                     validateStatus={passwordValidStatus}
@@ -96,6 +98,8 @@ const PrivateAccount: React.FC<IProps> = function (props) {
                     ]}
                   >
                     <UserInput
+                      clusterId={clusterId}
+                      tenantId={tenantId}
                       placeholder={
                         formatMessage({
                           id: 'odc.AddConnectionForm.Account.PrivateAccount.EnterADatabaseUsername',
