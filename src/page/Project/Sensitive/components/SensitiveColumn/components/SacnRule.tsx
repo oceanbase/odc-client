@@ -33,13 +33,17 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
         label: content.name,
         value: content.id,
       })) || [];
-    setDatabaseIdsOptions([
-      {
-        label: '全部',
-        value: -1,
-      },
-      ...resData,
-    ]);
+    setDatabaseIdsOptions(
+      resData?.length > 0
+        ? [
+            {
+              label: '全部',
+              value: -1,
+            },
+            ...resData,
+          ]
+        : [],
+    );
     formRef.setFieldsValue({ databaseIds: [], sensitiveRuleIds: [] });
   };
 
@@ -49,13 +53,17 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
       label: content.name,
       value: content.id,
     }));
-    setSensitiveOptions([
-      {
-        label: '全部',
-        value: -1,
-      },
-      ...resData,
-    ]);
+    setSensitiveOptions(
+      resData?.length > 0
+        ? [
+            {
+              label: '全部',
+              value: -1,
+            },
+            ...resData,
+          ]
+        : [],
+    );
   };
   const handleDataSourceIdChange = async (v: number) => {
     setDataSourceId(v);
