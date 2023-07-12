@@ -8,7 +8,7 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
 import { message } from 'antd';
-import { toInteger } from 'lodash';
+import { isNil, toInteger } from 'lodash';
 import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
@@ -236,6 +236,9 @@ function wrapDataDML(
   function getServerDateformat(nlsObject: INlsObject, columnType: string) {
     let data = null;
     let nano = toInteger(nlsObject?.nano) ? '.' + nlsObject.nano : '';
+    if (isNil(nlsObject?.timestamp)) {
+      return null;
+    }
     switch (columnType) {
       case 'TIMESTAMP WITH TIME ZONE': {
         /**
@@ -247,21 +250,21 @@ function wrapDataDML(
           ?.join(' ');
         break;
       }
-      case 'TIMESTAMP WITH LOCAL TIME ZONE': {
+      case 'TIMESTAMP WITH LOCAL TIME ZONE':
+      case 'TIMESTAMP': {
         /**
          * local time zone 不能加zone，以服务器为准
          */
-        data = nlsObject.timestamp
-          ? moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano
-          : null;
+        data = nlsObject.timestamp?.toString() + nano;
         break;
       }
       default: {
-        data = nlsObject.timestamp
-          ? [moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano, nlsObject.timeZoneId]
-              .filter(Boolean)
-              .join(' ')
-          : null;
+        data = [
+          moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano,
+          nlsObject.timeZoneId,
+        ]
+          .filter(Boolean)
+          .join(' ');
         break;
       }
     }
