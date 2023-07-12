@@ -1,42 +1,64 @@
-import { formatMessage } from '@/util/intl';
-import { CodeOutlined, ProfileOutlined } from '@ant-design/icons';
-import { Alert, Button, Modal, Radio, Tooltip } from 'antd';
-import { Component } from 'react';
-import { FormattedMessage } from 'umi';
-// @ts-ignore
+import { getFullLinkTrace } from '@/common/network/sql';
 import DisplayTable from '@/component/DisplayTable';
 import { ISQLExplain } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
+import { CodeOutlined, ProfileOutlined } from '@ant-design/icons';
+import { Checkbox, Empty, Modal, Radio, Tooltip } from 'antd';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { inject, observer } from 'mobx-react';
+import { Component } from 'react';
+import { FormattedMessage } from 'umi';
+import { getSqlExplainColumns } from './column';
 import styles from './index.less';
-enum TAB_NAME {
-  SUMMARY = 'SUMMARY',
-  OUTLINE = 'OUTLINE',
-}
+import { SQLExplainProps, SQLExplainState, TAB_NAME } from './interface';
+import Trace, { parseTraceTree } from './Trace';
+
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
-export default class SQLExplain extends Component<
-  {
-    explain: ISQLExplain | string;
-    sql: string;
-    tableHeight?: number;
-    haveText?: boolean;
-  },
-  {
-    tabName: TAB_NAME;
-    tableHeight: number;
-    showExplainText: boolean;
-  }
-> {
+export default class SQLExplain extends Component<SQLExplainProps, SQLExplainState> {
   constructor(props) {
     super(props);
     this.state = {
       tabName: TAB_NAME.SUMMARY,
+      onlyText: false,
       tableHeight: this.props.tableHeight || 0,
       showExplainText: !!props.haveText,
+      treeData: [],
+      startTimestamp: 0,
+      endTimestamp: 0,
     };
   }
+  public getTraceData = async () => {
+    const { session } = this.props;
+    const rawData = await getFullLinkTrace(session?.sessionId, session?.database?.dbName, {
+      sql: this.props?.sql,
+      tag: this.props?.traceId,
+    });
+    const resData = parseTraceTree(rawData?.data);
+    // @ts-ignore
+    resData.isRoot = true;
+    this.setState({
+      treeData: [resData],
+      startTimestamp: resData.startTimestamp,
+      endTimestamp: resData.endTimestamp,
+    });
+  };
 
   public componentDidMount() {
+    const {
+      session: {
+        params: { obVersion },
+      },
+    } = this.props;
+    if (obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1) {
+      this.getTraceData();
+    } else {
+      this.setState({
+        treeData: [],
+        startTimestamp: 0,
+        endTimestamp: 0,
+      });
+    }
     if (!this.state.tableHeight) {
       const tableHeight = window.innerHeight - 170;
       this.setState({
@@ -69,117 +91,19 @@ export default class SQLExplain extends Component<
   };
 
   public render() {
-    const { explain, sql, haveText } = this.props;
-    const { tabName, tableHeight, showExplainText } = this.state;
-    const columns = [
-      {
-        dataIndex: 'operator',
-        title: formatMessage({
-          id: 'workspace.window.sql.explain.tab.summary.columns.operator',
-        }), // width: 530,
-      },
-      {
-        dataIndex: 'name',
-        title: formatMessage({
-          id: 'workspace.window.sql.explain.tab.summary.columns.name',
-        }),
-        width: 126,
-        fixed: 'right',
-        render: (v) => {
-          return (
-            <div
-              style={{
-                maxWidth: 110,
-                display: 'flex',
-                alignItems: 'center',
-              }}
-              title={v}
-            >
-              <span
-                style={{
-                  flex: 1,
-                  display: 'inline-block',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {v}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        dataIndex: 'rowCount',
-        title: formatMessage({
-          id: 'workspace.window.sql.explain.tab.summary.columns.rows',
-        }),
-        width: 86,
-        fixed: 'right',
-      },
-      {
-        dataIndex: 'cost',
-        title: formatMessage({
-          id: 'workspace.window.sql.explain.tab.summary.columns.cost',
-        }),
-        width: 86,
-        fixed: 'right',
-      },
-      {
-        dataIndex: 'outputFilter',
-        title: formatMessage({
-          id: 'workspace.window.sql.explain.tab.summary.columns.output',
-        }),
-        width: 366,
-        fixed: 'right',
-        render: (v: string) => (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                maxWidth: 350,
-              }}
-            >
-              <span
-                style={{
-                  flex: 1,
-                  display: 'inline-block',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {v}
-              </span>
-              <Button
-                style={{
-                  fontSize: 12,
-                }}
-                type="link"
-                size="small"
-                onClick={() => this.handleShowOutputFilter(v)}
-              >
-                <FormattedMessage id="workspace.window.sql.explain.button.showOutputFilter" />
-              </Button>
-            </div>
-          </>
-        ),
-      },
-    ];
-    if (typeof explain === 'string') {
-      return (
-        <>
-          <div className={styles.header}>
-            <div className={styles.sql}>
-              <Tooltip title={sql}>SQL: {sql}</Tooltip>
-            </div>
-          </div>
-          <Alert message={explain} type="error" />
-        </>
-      );
-    }
+    const { explain, sql, haveText, session } = this.props;
+    const {
+      tabName,
+      onlyText,
+      tableHeight,
+      showExplainText,
+      treeData,
+      startTimestamp,
+      endTimestamp,
+    } = this.state;
+    const columns = getSqlExplainColumns({
+      handleShowOutputFilter: this.handleShowOutputFilter,
+    });
     return (
       <>
         <div className={styles.header}>
@@ -239,9 +163,7 @@ export default class SQLExplain extends Component<
             <Radio.Button value={TAB_NAME.SUMMARY}>
               <FormattedMessage id="workspace.window.sql.explain.tab.summary" />
             </Radio.Button>
-            <Radio.Button value={TAB_NAME.OUTLINE}>
-              <FormattedMessage id="workspace.window.sql.explain.tab.outline" />
-            </Radio.Button>
+            <Radio.Button value={TAB_NAME.TRACE}>全链路 TRACE</Radio.Button>
           </Radio.Group>
         )}
         {showExplainText ? (
@@ -255,36 +177,67 @@ export default class SQLExplain extends Component<
               marginBottom: 0,
             }}
           >
-            {explain?.originalText}
+            {(explain as ISQLExplain).originalText}
           </pre>
         ) : (
           <>
             <div
               style={{
-                display: tabName === TAB_NAME.SUMMARY && explain && explain.tree ? 'block' : 'none',
+                display: tabName === TAB_NAME.SUMMARY ? 'block' : 'none',
               }}
             >
-              <DisplayTable
-                key={sql}
-                rowKey="operator"
-                bordered={true}
-                defaultExpandAllRows={true}
-                scroll={{
-                  x: 1400,
-                  y: tableHeight,
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  marginBottom: '8px',
                 }}
-                columns={columns}
-                dataSource={explain && explain.tree}
-                disablePagination={true}
-              />
+              >
+                <div>
+                  <Checkbox
+                    checked={onlyText}
+                    onChange={(e: CheckboxChangeEvent) => {
+                      this.setState({
+                        onlyText: e.target.checked,
+                      });
+                    }}
+                  >
+                    仅查看文本格式
+                  </Checkbox>
+                </div>
+              </div>
+              {onlyText ? (
+                <div className={styles.outline}>{explain && (explain as ISQLExplain).outline}</div>
+              ) : (
+                <>
+                  {typeof explain === 'string' ? (
+                    <>
+                      <Empty />
+                    </>
+                  ) : (
+                    <DisplayTable
+                      key={sql}
+                      rowKey="operator"
+                      bordered={true}
+                      defaultExpandAllRows={true}
+                      scroll={{
+                        x: 1400,
+                        y: tableHeight,
+                      }}
+                      columns={columns}
+                      dataSource={explain && explain.tree ? explain.tree : []}
+                      disablePagination={true}
+                    />
+                  )}
+                </>
+              )}
             </div>
             <div
               style={{
-                display: tabName === TAB_NAME.OUTLINE ? 'block' : 'none',
+                display: tabName === TAB_NAME.TRACE ? 'block' : 'none',
               }}
-              className={styles.outline}
             >
-              {explain && explain.outline}
+              <Trace {...{ endTimestamp, startTimestamp, treeData }} />
             </div>
           </>
         )}
