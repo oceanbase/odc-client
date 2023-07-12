@@ -1,8 +1,7 @@
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
-
-const CHAR_SIZE = 32767;
+import { Oracle } from './dataType';
 
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。
@@ -73,14 +72,36 @@ export function getParamString(params: IPLParam[]) {
 }
 
 export function getDataType(type: string) {
-  const hasSize = ['NCHAR', 'NVARCHAR2', 'VARCHAR2'].includes(type?.toUpperCase());
-  return hasSize ? `${type}(${CHAR_SIZE})` : type;
+  switch (type?.toUpperCase()) {
+    case 'NCHAR':
+    case 'NVARCHAR2':
+    case 'VARCHAR2': {
+      return `${type}(32767)`;
+    }
+    case 'VARCHAR': {
+      return `${type}(4000)`;
+    }
+    default: {
+      return type;
+    }
+  }
 }
 
 export function getParamDeclares(params: IPLParam[]) {
   return params?.map(({ dataType, paramName, defaultValue, paramMode }) => {
     if (!paramMode?.includes('IN')) {
       return `  ${paramName} ${getDataType(dataType)};`;
+    }
+    if (
+      Oracle.string?.find((item) => {
+        const typeName = typeof item === 'string' ? item : item[0];
+        return typeName === dataType?.toUpperCase();
+      })
+    ) {
+      /**
+       * defaultValue 字符串形式需要包裹一层
+       */
+      defaultValue = defaultValue ? `'${defaultValue}'` : defaultValue;
     }
     return `  ${paramName} ${getDataType(dataType)} := ${defaultValue};`;
   });
