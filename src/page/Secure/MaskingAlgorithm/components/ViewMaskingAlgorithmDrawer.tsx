@@ -52,6 +52,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
       title={'脱敏规则详情'}
       onClose={handleViewDrawerClose}
       destroyOnClose={true}
+      maskClosable={false}
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button onClick={handleViewDrawerClose}>关闭</Button>
@@ -82,6 +83,12 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
           <div style={{ display: 'flex', columnGap: '8px' }}>
             <Input
               value={searchText}
+              {...(selectedData?.id === 19
+                ? {
+                    // 数值取整 这里要用InputNumbe
+                    type: 'number',
+                  }
+                : {})}
               onChange={handleSearchTextChange}
               placeholder="请输入"
               style={{ width: '240px' }}
