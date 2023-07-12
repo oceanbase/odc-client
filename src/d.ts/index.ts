@@ -2400,7 +2400,6 @@ export enum TaskStatus {
   // 其他： 前端不感知
   CREATED = 'CREATED', // 前端一般不感知，接口调用快的时候，可能会遇到（山露: 建议加上, 和 EXECUTING 一样的处理）
   APPROVED = 'APPROVED',
-  ROLLBACKING = 'ROLLBACKING',
   // 周期任务独有的状态
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',

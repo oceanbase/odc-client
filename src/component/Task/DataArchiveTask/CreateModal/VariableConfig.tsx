@@ -40,12 +40,18 @@ const timeUnitOptions = [
 interface IProps {}
 
 const VariableConfig: React.FC<IProps> = (props) => {
+  //
   return (
     <FormItemPanel
       keepExpand
       label={
         <Space>
-          变量配置<span className={styles.desc}>变量可在归档配置的过滤条件中引用</span>
+          变量配置
+          <span className={styles.desc}>
+            <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
+              变量可在归档配置的过滤条件中引用
+            </HelpDoc>
+          </span>
         </Space>
       }
     >

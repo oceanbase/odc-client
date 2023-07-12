@@ -10,6 +10,7 @@ import { validTrimEmptyWithWarn } from '@/util/valid';
 import { Button, Drawer, Form, Input, InputNumber, message, Modal, Space } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useState } from 'react';
+import { hourToSeconds, secondsToHour } from '../../index';
 import { AuthNode } from '../AuthNode';
 import styles from './index.less';
 
@@ -41,8 +42,16 @@ const FormModal: React.FC<IProps> = (props) => {
 
   async function loadEditData(_editId: number) {
     const data = await getTaskFlowDetail(_editId);
+    const {
+      approvalExpirationIntervalSeconds,
+      waitExecutionExpirationIntervalSeconds,
+      executionExpirationIntervalSeconds,
+    } = data;
     const formData = {
       ...data,
+      approvalExpirationIntervalSeconds: secondsToHour(approvalExpirationIntervalSeconds),
+      waitExecutionExpirationIntervalSeconds: secondsToHour(waitExecutionExpirationIntervalSeconds),
+      executionExpirationIntervalSeconds: secondsToHour(executionExpirationIntervalSeconds),
     };
     form.setFieldsValue(formData);
     setBuiltIn(formData.builtIn);
@@ -50,8 +59,16 @@ const FormModal: React.FC<IProps> = (props) => {
 
   async function handleSubmit() {
     const configValues = await form.validateFields().catch();
+    const {
+      approvalExpirationIntervalSeconds,
+      waitExecutionExpirationIntervalSeconds,
+      executionExpirationIntervalSeconds,
+    } = configValues;
     const formData = {
       ...configValues,
+      approvalExpirationIntervalSeconds: hourToSeconds(approvalExpirationIntervalSeconds),
+      waitExecutionExpirationIntervalSeconds: hourToSeconds(waitExecutionExpirationIntervalSeconds),
+      executionExpirationIntervalSeconds: hourToSeconds(executionExpirationIntervalSeconds),
     };
 
     if (editId) {
