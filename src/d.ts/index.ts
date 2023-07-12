@@ -1490,6 +1490,28 @@ export interface ISQLExecuteDetail {
   waitTime: number;
 }
 
+export enum TraceSpanNode {
+  JDBC = 'JDBC',
+  OBProxy = 'OBProxy',
+  OBServer = 'OBServer',
+}
+export interface TraceSpan {
+  logs: string;
+  tags: any[];
+  elapseMicroSeconds: number;
+  parent: string;
+  traceId: string;
+  startTimestamp: string;
+  endTimestamp: string;
+  spanName: string;
+  tenantId: number;
+  host: string;
+  port: number;
+  logTraceId: string;
+  node: TraceSpanNode;
+  subSpans: TraceSpan[];
+}
+
 export enum ConstraintType {
   PRIMARY = 'PRIMARY',
   UNIQUE = 'UNIQUE',

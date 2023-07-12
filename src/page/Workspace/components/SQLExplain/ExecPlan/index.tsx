@@ -60,7 +60,7 @@ const ExecPlan: React.FC<IProps> = function (props) {
       }}
     >
       <Spin spinning={loadingExplain}>
-        <SQLExplain sql={selectedSQL} explain={sqlExplainToShow} haveText />
+        <SQLExplain session={session} sql={selectedSQL} explain={sqlExplainToShow} haveText />
       </Spin>
       <div
         style={{
