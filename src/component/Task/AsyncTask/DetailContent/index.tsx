@@ -4,7 +4,8 @@ import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { Divider } from 'antd';
+import { Divider, Space } from 'antd';
+import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 
 export const ErrorStrategy = {
@@ -25,6 +26,7 @@ export const getItems = (
     return [];
   }
   const isMySQL = _task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
+
   const res: {
     sectionName?: string;
     textItems: [string, string | number, number?][];
@@ -108,10 +110,15 @@ export const getItems = (
             />
 
             <SimpleTextItem
-              label={formatMessage({
-                id: 'odc.component.AsyncTaskModal.RollbackContent',
-              })}
-              /*回滚内容*/
+              label={
+                <Space>
+                  <span>回滚内容</span>
+                  <DownloadFileAction
+                    taskId={_task?.id}
+                    objectId={result?.rollbackPlanResult?.objectId}
+                  />
+                </Space>
+              }
               content={
                 <div style={{ marginTop: '8px' }}>
                   <SQLContent

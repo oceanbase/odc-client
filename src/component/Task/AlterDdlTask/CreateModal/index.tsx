@@ -175,7 +175,6 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           style={{ height: '280px' }}
         >
           <CommonIDE
-            initialSQL={modalStore.asyncTaskData?.sql}
             language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
             onSQLChange={handleSqlChange}
           />

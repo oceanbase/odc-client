@@ -252,6 +252,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     } else if (hasResult) {
       getResult();
     }
+
+    if (detailType === TaskDetailType.EXECUTE_RECORD) {
+      getExecuteRecord();
+    }
     if (isLoop) {
       clockRef.current = setTimeout(() => {
         loadTaskData();

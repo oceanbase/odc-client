@@ -1949,6 +1949,7 @@ export enum ResourceTreeNodeMenuKeys {
 }
 
 export interface TaskRecord<P> {
+  projectId: number;
   id: number;
   type: TaskType;
   subTypes: string[];
@@ -2034,6 +2035,12 @@ export interface ITaskResult {
   ignoreCount: number;
   clearCount: number;
   exportZipFilePath?: string;
+  rollbackPlanResult?: {
+    error: string;
+    generated: boolean;
+    objectId: string;
+    success: boolean;
+  };
 }
 
 export interface IDataArchiveJobParameters {
@@ -2194,6 +2201,15 @@ export interface IAsyncTaskParams {
   rollbackSqlContent: string;
   rollbackSqlObjectIds: string[];
   rollbackSqlObjectNames: string[];
+  generateRollbackPlan: boolean;
+  parentFlowInstanceId?: number;
+}
+
+export enum RollbackType {
+  // 引用
+  REF = 'reference',
+  // 自定义
+  CUSTOM = 'CUSTOM',
 }
 
 export interface IPermissionTaskParams {
@@ -2319,6 +2335,7 @@ export enum TaskOperationType {
 
 export enum IFlowTaskType {
   SQL_CHECK = 'SQL_CHECK',
+  GENERATE_ROLLBACK = 'GENERATE_ROLLBACK',
 }
 
 export interface ITaskFlowNode {
