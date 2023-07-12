@@ -239,7 +239,9 @@ function wrapDataDML(
       return null;
     }
     let time = moment(nlsObject.timestamp);
-    let nano = time.millisecond() * 1000000 + (toInteger(nlsObject?.nano) || 0);
+    let nano = (time.millisecond() * 1000000 + (toInteger(nlsObject?.nano) || 0))
+      .toString()
+      ?.padStart(9, '0');
     /**
      * https://datatracker.ietf.org/doc/html/rfc3339#section-5.8
      * https://momentjs.com/docs/#/manipulating/utc-offset/
@@ -247,7 +249,11 @@ function wrapDataDML(
     switch (columnType) {
       case 'TIMESTAMP WITH TIME ZONE': {
         let timeZone = nlsObject.timeZoneId;
-        data = time.utcOffset(timeZone).format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        if (timeZone) {
+          data = time.utcOffset(timeZone).format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        } else {
+          data = time.utc().format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        }
         break;
       }
       default: {
