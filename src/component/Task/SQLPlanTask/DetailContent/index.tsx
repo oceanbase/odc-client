@@ -1,7 +1,7 @@
 import { SQLContent } from '@/component/SQLContent';
 import { operationTypeMap } from '@/component/Task/component/CommonDetailModal/TaskOperationRecord';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
-import type { CycleTaskDetail, TaskOperationType, ISqlPlayJobParameters } from '@/d.ts';
+import type { CycleTaskDetail, ISqlPlayJobParameters, TaskOperationType } from '@/d.ts';
 import { ConnectionMode, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -61,14 +61,6 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
           /*任务类型*/
         >
           {CycleTaskLabel[task?.type]}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'odc.component.DetailModal.sqlPlan.Connection',
-          })}
-          /*所属连接*/ span={hasFlow || operationType ? 1 : 2}
-        >
-          {task?.connection?.name || '-'}
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item

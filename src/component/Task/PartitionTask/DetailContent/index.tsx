@@ -74,14 +74,6 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12}>
-          <SimpleTextItem
-            label={formatMessage({
-              id: 'odc.component.DetailModal.partition.Connection',
-            })}
-            /*所属连接*/ content={task?.connection?.name || '-'}
-          />
-        </Col>
         {enabledInspectTriggerStrategy && (
           <Col span={12}>
             <SimpleTextItem

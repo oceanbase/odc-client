@@ -123,7 +123,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
         render: (enabled, record) => (
           <Switch
             size="small"
-            defaultChecked={enabled}
+            checked={enabled}
             onChange={() => {
               this.handleStatusChange(!enabled, record);
             }}
