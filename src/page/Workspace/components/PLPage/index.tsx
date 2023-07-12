@@ -185,27 +185,51 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   debugMode: monaco.editor.IContextKey<boolean>;
 
   public async componentDidMount() {
-    const {
-      params,
-      pageKey,
-      sessionManagerStore,
-      onSetUnsavedModalTitle,
-      onSetUnsavedModalContent,
-    } = this.props;
-    if (params?.plPageType === PLPageType.anonymous) {
-      onSetUnsavedModalTitle(formatMessage({ id: 'workspace.window.sql.modal.close.title' }));
-      onSetUnsavedModalContent(
-        formatMessage(
-          { id: 'workspace.window.sql.modal.close.content' },
-          {
-            name: params.scriptName || 'PL 窗口_' + pageKey.replace('pl-new-', ''),
-          },
-        ),
-      );
-    }
+    this.registerUnSavedModal();
     this.setState({
       isReady: true,
     });
+  }
+
+  public registerUnSavedModal() {
+    const { params, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent } = this.props;
+    onSetUnsavedModalTitle(formatMessage({ id: 'workspace.window.sql.modal.close.title' }));
+    switch (params?.plPageType) {
+      case PLPageType.anonymous: {
+        onSetUnsavedModalContent(
+          formatMessage(
+            { id: 'workspace.window.sql.modal.close.content' },
+            {
+              name: params.scriptName || 'PL 窗口_' + pageKey.replace('pl-new-', ''),
+            },
+          ),
+        );
+        return;
+      }
+      case PLPageType.plEdit: {
+        onSetUnsavedModalContent(
+          formatMessage(
+            { id: 'workspace.window.sql.modal.close.content' },
+            {
+              name: params.plName,
+            },
+          ),
+        );
+        return;
+      }
+      case PLPageType.pkgBody:
+      case PLPageType.pkgHead: {
+        onSetUnsavedModalContent(
+          formatMessage(
+            { id: 'workspace.window.sql.modal.close.content' },
+            {
+              name: params.packageName,
+            },
+          ),
+        );
+        return;
+      }
+    }
   }
 
   public registerEventBus() {
@@ -389,6 +413,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           plType: params?.plSchema?.plType,
           packageName: params?.packageName,
           ddl: params?.scriptText,
+          plName: params?.packageName,
         };
       }
       default: {
@@ -797,8 +822,8 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   };
 
   public handleSQLChanged = (sql: string) => {
-    const { pageKey, onUnsavedChange, page } = this.props;
-    if (this.state.debug) {
+    const { pageKey, onUnsavedChange, page, params } = this.props;
+    if (this.state.debug || sql === params?.scriptText) {
       return;
     }
     debounceUpdatePageScriptText(pageKey, sql);
@@ -870,40 +895,49 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     }
 
     if (isSuccess) {
-      let newParams;
-      if (!this.isPackageProgram()) {
-        if (plType === PL_TYPE.FUNCTION) {
-          const newFunc = await getFunctionByFuncName(
-            plName,
-            false,
-            this.getSession().sessionId,
-            this.getSession().database.dbName,
+      switch (params?.plPageType) {
+        case PLPageType.plEdit: {
+          let newParams;
+          let ddl;
+          if (!this.isPackageProgram()) {
+            if (plType === PL_TYPE.FUNCTION) {
+              const newFunc = await getFunctionByFuncName(
+                plName,
+                false,
+                this.getSession().sessionId,
+                this.getSession().database.dbName,
+              );
+              newParams = newFunc?.params;
+              ddl = newFunc?.ddl;
+            }
+            if (plType === PL_TYPE.PROCEDURE) {
+              const newProcedure = await getProcedureByProName(
+                plName,
+                false,
+                this.getSession().sessionId,
+                this.getSession().database.dbName,
+              );
+              newParams = newProcedure?.params;
+              ddl = newProcedure?.ddl;
+            }
+          }
+
+          await pageStore.updatePage(
+            pageKey,
+            { title: page.title, isSaved: true, startSaving: false },
+            {
+              scriptText: ddl,
+              plSchema: {
+                ...params.plSchema,
+                ddl: ddl,
+                params: newParams || plSchema.params,
+              },
+            },
           );
-          newParams = newFunc?.params;
-        }
-        if (plType === PL_TYPE.PROCEDURE) {
-          const newProcedure = await getProcedureByProName(
-            plName,
-            false,
-            this.getSession().sessionId,
-            this.getSession().database.dbName,
-          );
-          newParams = newProcedure?.params;
+          this.editor?.setValue(ddl);
+          break;
         }
       }
-
-      pageStore.updatePage(
-        pageKey,
-        { title: page.title, isSaved: true, startSaving: false },
-        {
-          scriptText: params.scriptText,
-          plSchema: {
-            ...params.plSchema,
-            ddl: params.scriptText,
-            params: newParams || plSchema.params,
-          },
-        },
-      );
 
       // if (
       //   params?.plSchema?.plType === PL_TYPE.PKG_HEAD ||
