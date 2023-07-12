@@ -1,4 +1,4 @@
-import { DbObjectType, ITable } from '@/d.ts';
+import { DbObjectType, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -21,7 +21,9 @@ interface DataMockerData {
 }
 
 interface AsyncData {
-  sql?: string;
+  type: RollbackType;
+  task?: TaskDetail<IAsyncTaskParams>;
+  objectId: string;
 }
 
 interface ApplyPermissionData {}

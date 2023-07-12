@@ -7,6 +7,7 @@ import UserPopover from '@/component/UserPopover';
 import {
   IFlowTaskType,
   ITaskFlowNode,
+  ITaskResult,
   TaskDetail,
   TaskFlowNodeType,
   TaskNodeStatus,
@@ -20,11 +21,13 @@ import { Descriptions, Space, Steps } from 'antd';
 import React from 'react';
 import styles from './index.less';
 import { getStatusDisplayInfo } from './Nodes/helper';
+import RollbackNode from './Nodes/RollbackNode';
 import SQLCheckNode from './Nodes/SQLCheckNode';
 
 const { Step } = Steps;
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;
+  result?: ITaskResult;
 }
 
 interface ITaskRenderFlowNode extends ITaskFlowNode {
@@ -47,7 +50,7 @@ interface ITaskRenderFlowNode extends ITaskFlowNode {
 }
 
 const TaskFlow: React.FC<IProps> = (props) => {
-  const { task } = props;
+  const { task, result } = props;
   const { creator } = task ?? {};
   let approvalCount = 0;
   let currentNodeIndex = 0;
@@ -170,7 +173,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
       node.nodeType === TaskFlowNodeType.SERVICE_TASK &&
       node.taskType !== IFlowTaskType.SQL_CHECK
     ) {
-      const { deadlineTime, completeTime, operator, status } = node;
+      const { deadlineTime, completeTime, operator, status, taskType } = node;
       let title = formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskFlow.Run',
       });
@@ -226,6 +229,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
             status,
             statusContent,
             completeTime,
+            taskType,
             hasCompleteTimeLabel: true,
             hasOperatorLabel: true,
           };
@@ -391,6 +395,15 @@ const TaskFlow: React.FC<IProps> = (props) => {
                   }) //预检查
                 }
                 description={<SQLCheckNode flowId={task?.id} node={item} />}
+              />
+            );
+          }
+          case IFlowTaskType.GENERATE_ROLLBACK: {
+            return (
+              <Step
+                status={statusContent?.status as any}
+                title="生成备份回滚方案"
+                description={<RollbackNode taskId={task?.id} node={item} result={result} />}
               />
             );
           }

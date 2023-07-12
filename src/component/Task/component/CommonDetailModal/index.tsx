@@ -57,7 +57,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskResult result={result} />;
       break;
     case TaskDetailType.FLOW:
-      content = <TaskFlow task={task} />;
+      content = <TaskFlow task={task} result={result} />;
       break;
     case TaskDetailType.RECORD:
       content = <TaskRecord task={task} />;
@@ -170,7 +170,6 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
-
           {[TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(task?.type) && (
             <>
               <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>
@@ -209,7 +208,9 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
-
+          {task?.type === TaskType.ASYNC && (
+            <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>回滚工单</Radio.Button>
+          )}
           {hasLog && (
             <Radio.Button value={TaskDetailType.LOG}>
               {

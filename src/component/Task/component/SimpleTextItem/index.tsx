@@ -8,7 +8,7 @@ export interface ITaskStatus {
 }
 
 export const SimpleTextItem: React.FC<{
-  label: string;
+  label: React.ReactNode;
   content: React.ReactNode;
   direction?: 'row' | 'column';
 }> = (props) => {
