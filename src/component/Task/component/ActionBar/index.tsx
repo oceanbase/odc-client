@@ -4,7 +4,6 @@ import {
   executeTask,
   getAsyncResultSet,
   getTaskResult,
-  rollbackTask,
   stopTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
@@ -12,6 +11,7 @@ import {
   ICycleTaskRecord,
   ISqlExecuteResultStatus,
   ITaskResult,
+  RollbackType,
   TaskDetail,
   TaskExecStrategy,
   TaskRecord,
@@ -28,11 +28,11 @@ import ipcInvoke from '@/util/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { downloadFile, getLocalFormatDateTime } from '@/util/utils';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { isCycleTask } from '../../helper';
+import RollBackModal from '../RollbackModal';
 
 interface IProps {
   userStore?: UserStore;
@@ -73,6 +73,7 @@ const ActionBar: React.FC<IProps> = inject(
     const isApprovable = task?.approvable;
     const [viewLoading, setViewLoading] = useState(false);
     const [activeBtnKey, setActiveBtnKey] = useState(null);
+    const [openRollback, setOpenRollback] = useState(false);
     const wrapperRef = useRef(null);
     const disabledApproval =
       task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
@@ -113,19 +114,13 @@ const ActionBar: React.FC<IProps> = inject(
 
     const handleCopy = () => {};
 
-    const confirmRollback = async () => {
-      setActiveBtnKey('rollback');
-      const res = await rollbackTask(task.id);
-      if (res) {
-        props.onReloadList();
-        message.success(
-          formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTools.RollbackSucceeded',
-          }),
-
-          //回滚成功
-        );
-      }
+    const confirmRollback = async (type: RollbackType) => {
+      closeTaskDetail();
+      props.modalStore.changeCreateAsyncTaskModal(true, {
+        type,
+        task,
+        objectId: result?.rollbackPlanResult?.objectId,
+      });
     };
 
     useEffect(() => {
@@ -135,30 +130,11 @@ const ActionBar: React.FC<IProps> = inject(
     }, [task?.status]);
 
     const handleRollback = async () => {
-      Modal.confirm({
-        title: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant',
-        }),
+      setOpenRollback(true);
+    };
 
-        //确定回滚任务吗？
-        icon: <ExclamationCircleOutlined />,
-        content: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.AfterTheTaskIsRolled',
-        }),
-
-        //任务回滚后已执行的任务将重置
-        okText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Ok',
-        }),
-
-        //确认
-        cancelText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
-        }),
-
-        //取消
-        onOk: confirmRollback,
-      });
+    const handleCloseRollback = async () => {
+      setOpenRollback(false);
     };
 
     const handleExecute = async () => {
@@ -884,11 +860,14 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     return (
-      <Action.Group size={!isDetailModal ? 4 : 6}>
-        {btnTools?.map((tool) => {
-          return renderTool(tool);
-        })}
-      </Action.Group>
+      <>
+        <Action.Group size={!isDetailModal ? 4 : 6}>
+          {btnTools?.map((tool) => {
+            return renderTool(tool);
+          })}
+        </Action.Group>
+        <RollBackModal open={openRollback} onOk={confirmRollback} onCancel={handleCloseRollback} />
+      </>
     );
   }),
 );

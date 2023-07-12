@@ -11,17 +11,16 @@ import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
 import type {
-  IConnectionPartitionPlan,
-  ICycleSubTaskRecord,
-  IPartitionPlanParams,
   CycleTaskDetail,
   IAlterScheduleTaskParams,
+  IConnectionPartitionPlan,
+  ICycleSubTaskRecord,
   IDataArchiveJobParameters,
+  IPartitionPlanParams,
   IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
   TaskRecord,
-  ICycleTaskRecord
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -88,7 +87,9 @@ const taskContentMap = {
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
   const { type, visible, detailId, partitionPlan } = props;
-  const [task, setTask] = useState<TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>>(null);
+  const [task, setTask] = useState<
+    TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>
+  >(null);
   const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
@@ -248,6 +249,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       getLog();
     } else if (hasResult) {
       getResult();
+    }
+
+    if (detailType === TaskDetailType.EXECUTE_RECORD) {
+      getExecuteRecord();
     }
     if (isLoop) {
       clockRef.current = setTimeout(() => {
