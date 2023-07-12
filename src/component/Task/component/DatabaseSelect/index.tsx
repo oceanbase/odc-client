@@ -43,7 +43,18 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   }, []);
 
   return (
-    <Form.Item label={label} name={name} required extra={project && `当前项目: ${project.name}`}>
+    <Form.Item
+      label={label}
+      name={name}
+      required
+      extra={project && `当前项目: ${project.name}`}
+      rules={[
+        {
+          required: true,
+          message: '请选择数据库',
+        },
+      ]}
+    >
       <Select
         showSearch
         filterOption={(input, option) =>

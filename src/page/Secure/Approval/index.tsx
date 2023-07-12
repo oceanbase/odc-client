@@ -19,10 +19,20 @@ import FormModal from './component/FormModal';
 
 import styles from './index.less';
 
+export const hourToSeconds = (hour: number) => {
+  const seconds = hour * 60 * 60;
+  return seconds;
+};
+
+export const secondsToHour = (seconds: number) => {
+  const hour = seconds / 60 / 60;
+  return hour;
+};
+
 const renderTime = (time) => {
   return (
     <Space size={4}>
-      <span>{time}</span>
+      <span>{secondsToHour(time)}</span>
       <span>小时</span>
     </Space>
   );
