@@ -1,27 +1,16 @@
 import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, ConnectionMode } from '@/d.ts';
-import TaskTimer from '@/component/Task/component/TimerSelect';
 import HelpDoc from '@/component/helpDoc';
-import DatabaseSelect from '../../component/DatabaseSelect';
+import TaskTimer from '@/component/Task/component/TimerSelect';
+import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
-import React, { useState } from 'react';
-import {
-  Button,
-  Col,
-  Drawer,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Radio,
-  Row,
-  Space,
-} from 'antd';
+import { Button, Col, Drawer, Form, Input, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
+import React, { useState } from 'react';
+import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 interface IProps {
   modalStore?: ModalStore;
@@ -40,10 +29,7 @@ enum ClearStrategy {
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
-  const {
-    modalStore,
-    projectId
-  } = props;
+  const { modalStore, projectId } = props;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -126,7 +112,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   };
   return (
     <Drawer
-      destroyOnClose  
+      destroyOnClose
       className={styles['ddl-alter']}
       width={720}
       title="新建无锁结构变更"
@@ -189,7 +175,6 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           style={{ height: '280px' }}
         >
           <CommonIDE
-            initialSQL={modalStore.asyncTaskData?.sql}
             language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
             onSQLChange={handleSqlChange}
           />
