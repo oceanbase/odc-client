@@ -49,13 +49,6 @@ export const getItems = (
 
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.AsyncTaskModal.Connection',
-              })}
-              /*所属连接*/ content={task?.connection?.name || '-'}
-            />
-
-            <SimpleTextItem
-              label={formatMessage({
                 id: 'odc.component.AsyncTaskModal.Database',
               })}
               /*所属数据库*/ content={task?.databaseName || '-'}

@@ -5,7 +5,7 @@ import {
   ShadowTableSyncTaskResult,
 } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import StructAnalysisResult from '@/component/Task/ShadowSyncTask/CreateModal/StructConfigPanel/StructAnalysisResult';
-import { TaskDetail, TaskExecStrategy, ConnectionMode } from '@/d.ts';
+import { ConnectionMode, TaskDetail, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { Spin } from 'antd';
@@ -32,7 +32,7 @@ const ErrorStrategyText = {
 function StructAnalysisWrap({
   data,
   comparingTaskId,
-  connectionMode
+  connectionMode,
 }: {
   data: ShadowTableSyncTaskResult;
   comparingTaskId: string;
@@ -124,15 +124,6 @@ export function getItems(
 
         [
           formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.Connection',
-          }),
-
-          //所属连接
-          task?.connection?.name || '-',
-        ],
-
-        [
-          formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
 
@@ -172,7 +163,13 @@ export function getItems(
         id: 'odc.component.DetailModal.shadowSync.StructuralAnalysis',
       }), //结构分析
       sectionRender: (task) => {
-        return <StructAnalysisWrap connectionMode={connectionMode} comparingTaskId={parameters.comparingTaskId} data={result} />;
+        return (
+          <StructAnalysisWrap
+            connectionMode={connectionMode}
+            comparingTaskId={parameters.comparingTaskId}
+            data={result}
+          />
+        );
       },
       textItems: [],
     },

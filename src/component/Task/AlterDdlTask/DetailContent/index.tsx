@@ -1,9 +1,9 @@
-import React from 'react';
 import { SQLContent } from '@/component/SQLContent';
 import { TaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
+import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 
 interface IDDLAlterParamters {
@@ -60,7 +60,6 @@ export function getItems(
       textItems: [
         ['任务编号', task.id],
         ['任务类型', '无锁结构变更'],
-        ['所属连接', task?.connection?.name || '-'],
         ['所属库', task?.databaseName || '-'],
         hasFlow ? riskItem : null,
         ['变更定义', TaskExecStrategyMap[task?.executionStrategy], hasFlow ? 1 : 2],
@@ -82,4 +81,3 @@ export function getItems(
     },
   ];
 }
-
