@@ -585,98 +585,7 @@ const ActionBar: React.FC<IProps> = inject(
           tools.unshift(viewResultBtn);
         }
       } else {
-        switch (status) {
-          case TaskStatus.REJECTED:
-          case TaskStatus.APPROVAL_EXPIRED:
-          case TaskStatus.WAIT_FOR_EXECUTION_EXPIRED:
-          case TaskStatus.EXECUTION_EXPIRED:
-          case TaskStatus.EXECUTION_FAILED:
-          case TaskStatus.ROLLBACK_FAILED:
-          case TaskStatus.ROLLBACK_SUCCEEDED:
-          case TaskStatus.CANCELLED:
-          case TaskStatus.CREATED:
-          case TaskStatus.ROLLBACKING: {
-            tools = [viewBtn];
-            break;
-          }
-          case TaskStatus.EXECUTING: {
-            if (isOwner || (isOwner && isApprovable)) {
-              tools = [viewBtn, stopBtn];
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          case TaskStatus.EXECUTION_SUCCEEDED: {
-            if (isOwner || (isOwner && isApprovable)) {
-              tools = [viewBtn];
-              if (task.type === TaskType.EXPORT && settingStore.enableDataExport) {
-                if (isClient()) {
-                  tools.push(openLocalFolder);
-                } else {
-                  tools.push(downloadBtn);
-                }
-              } else if (task.type === TaskType.DATAMOCK && settingStore.enableDataExport) {
-                tools.push(downloadBtn);
-              } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
-                tools.push(rollbackBtn);
-              }
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          case TaskStatus.WAIT_FOR_CONFIRM:
-          case TaskStatus.APPROVING: {
-            if (isOwner && isApprovable) {
-              tools = [viewBtn, stopBtn, approvalBtn, rejectBtn];
-            } else {
-              if (isOwner) {
-                tools = [viewBtn, stopBtn];
-              } else if (isApprovable) {
-                tools = [viewBtn, approvalBtn, rejectBtn];
-              } else {
-                tools = [viewBtn];
-              }
-            }
-            break;
-          }
-          case TaskStatus.WAIT_FOR_EXECUTION: {
-            if (isOwner || (isOwner && isApprovable)) {
-              const _executeBtn = { ...executeBtn };
-              if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-                _executeBtn.disabled = true;
-                const executionTime = getLocalFormatDateTime(task?.executionTime);
-
-                _executeBtn.tooltip = formatMessage(
-                  {
-                    id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
-                  },
-
-                  { executionTime: executionTime },
-                );
-
-                //`定时执行时间：${executionTime}`
-              }
-              tools =
-                task?.executionStrategy === TaskExecStrategy.AUTO
-                  ? [viewBtn, stopBtn]
-                  : [viewBtn, _executeBtn, stopBtn];
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          case TaskStatus.COMPLETED: {
-            if (isOwner || (isOwner && isApprovable)) {
-              tools = [viewBtn];
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          default:
-        }
+        tools = [viewBtn];
       }
       if (task?.executionStrategy === TaskExecStrategy.TIMER) {
         // 定时任务无再次发起
@@ -811,6 +720,8 @@ const ActionBar: React.FC<IProps> = inject(
 
       if (isDetailModal) {
         tools = tools.filter((item) => item.key !== 'view');
+      } else {
+        tools = [viewBtn];
       }
       if (!taskStore.enabledCreate) {
         tools = tools.filter((item) => item.key !== 'edit');
