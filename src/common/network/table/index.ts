@@ -247,11 +247,11 @@ function wrapDataDML(
     switch (columnType) {
       case 'TIMESTAMP WITH TIME ZONE': {
         let timeZone = nlsObject.timeZoneId;
-        data = time.utcOffset(timeZone).format(`YYYY-MM-DDTHH:mm:SS.${nano}Z`);
+        data = time.utcOffset(timeZone).format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
         break;
       }
       default: {
-        data = time.utc().format(`YYYY-MM-DDTHH:mm:SS.${nano}Z`);
+        data = time.utc().format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
         break;
       }
     }
