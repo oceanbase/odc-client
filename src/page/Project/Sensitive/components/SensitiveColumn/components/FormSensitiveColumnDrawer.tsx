@@ -368,8 +368,6 @@ const FormSensitiveColumnDrawer = ({
         <ManualForm
           {...{
             formRef,
-            databases,
-            setDatabases,
           }}
         />
       ) : (
