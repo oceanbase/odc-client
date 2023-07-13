@@ -39,6 +39,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
     }
     if (selectedData?.maskedContent) {
       setSearchText(selectedData?.sampleContent);
+    } else {
+      setSearchText('default text content');
     }
     return () => {
       reset();
