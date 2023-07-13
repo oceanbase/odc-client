@@ -7,6 +7,7 @@ import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { hourToSeconds } from '@/util/utils';
 import { Button, Col, Drawer, Form, Input, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -24,7 +25,7 @@ enum SqlType {
   CREATE = 'CREATE',
   ALTER = 'ALTER',
 }
-enum ClearStrategy {
+export enum ClearStrategy {
   ORIGIN_TABLE_RENAME_AND_RESERVED = 'ORIGIN_TABLE_RENAME_AND_RESERVED',
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
@@ -60,7 +61,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlType,
           sqlContent,
           swapTableNameRetryTimes,
-          timeoutMillis,
+          lockTableTimeOutSeconds,
           originTableCleanStrategy,
           errorStrategy,
           description,
@@ -68,7 +69,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           executionStrategy,
         } = values;
         const parameters = {
-          lockTableTimeOutSeconds: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
+          lockTableTimeOutSeconds: hourToSeconds(lockTableTimeOutSeconds),
           errorStrategy,
           sqlContent,
           sqlType,
@@ -199,7 +200,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               >
                 <Form.Item
                   label="小时"
-                  name="timeoutMillis"
+                  name="lockTableTimeOutSeconds"
                   rules={[
                     {
                       required: true,
@@ -241,7 +242,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Col>
           </Row>
           <Form.Item
-            label="完成后原表清理策略"
+            label="完成后源表清理策略"
             name="originTableCleanStrategy"
             initialValue={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}
             rules={[

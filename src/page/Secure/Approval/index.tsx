@@ -11,6 +11,7 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
+import { secondsToHour } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { message, Modal, Space } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
@@ -18,16 +19,6 @@ import React from 'react';
 import FormModal from './component/FormModal';
 
 import styles from './index.less';
-
-export const hourToSeconds = (hour: number) => {
-  const seconds = hour * 60 * 60;
-  return seconds;
-};
-
-export const secondsToHour = (seconds: number) => {
-  const hour = seconds / 60 / 60;
-  return hour;
-};
 
 const renderTime = (time) => {
   return (
