@@ -1,3 +1,6 @@
+/**
+ * 初始化用户无关的应用配置
+ */
 import { checkQueueStatus } from '@/common/network/other';
 import AskeventTrackingPermissionModal from '@/component/AskEventTrackingModal';
 import ErrorBoundary from '@/component/ErrorBoundary';

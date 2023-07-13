@@ -40,9 +40,9 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
       });
       return;
     }
-    await userStore.getCurrentUser();
+    await userStore.getOrganizations();
     const isLoginPage = location.hash.indexOf('login') > -1;
-    if (!userStore.haveUserInfo()) {
+    if (!userStore.organizations?.length) {
       if (isClient()) {
         /**
          * 客户端，但是获取用户失败，这个时候其实是系统错误
@@ -76,16 +76,16 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pathname: '/login',
         search: searchParamsObj.toString(),
       });
-    } else if (userStore?.user?.enabled === false) {
-      /**
-       * 冻结用户
-       */
-      history.replace('/exception/403');
+      // } else if (userStore?.user?.enabled === false) {
+      //   /**
+      //    * 冻结用户
+      //    */
+      //   history.replace('/exception/403');
     } else if (isLoginPage) {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */
-      history.replace('/connections');
+      history.replace('/project');
     }
     setStatus(STATUS_TYPE.DONE);
   }

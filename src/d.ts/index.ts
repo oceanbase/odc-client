@@ -14,7 +14,6 @@ export interface IUser {
   role: string;
   enabled: boolean;
   roles?: IManagerRole[];
-  belongedToOrganizations: IOrganization[];
   organizationId: number;
   systemOperationPermissions?: IPermission[];
   connectionAccessPermissions?: IPermission[];

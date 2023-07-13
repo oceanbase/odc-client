@@ -3,6 +3,7 @@
  * 更详细的api文档: umi-request
  */
 import odc from '@/plugins/odc';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import Cookies from 'js-cookie';
 import { getLocale } from 'umi';
@@ -62,6 +63,7 @@ request.interceptors.request.use((url, options) => {
     options: {
       ...options,
       params: {
+        currentOrganizationId: login.organizationId,
         ...extraParams,
         ...options.params,
       },

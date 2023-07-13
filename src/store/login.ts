@@ -1,11 +1,11 @@
 import { getScriptList as getRemoteScriptList } from '@/common/network';
-import { switchCurrentOrganization } from '@/common/network/origanization';
+import { getOrganizationList } from '@/common/network/organization';
 import { odcServerLoginUrl, odcServerLogoutUrl } from '@/common/network/other';
-import type { ISQLScript, IUser } from '@/d.ts';
+import type { IOrganization, ISQLScript, IUser } from '@/d.ts';
 import request from '@/util/request';
 import tracert from '@/util/tracert';
 import { encrypt } from '@/util/utils';
-import { isNil } from 'lodash';
+import { isNil, toInteger } from 'lodash';
 import { action, observable } from 'mobx';
 import { history } from 'umi';
 import authStore from './auth';
@@ -22,6 +22,8 @@ class ScriptStore {
   }
 }
 
+export const sessionKey = '$odc_session_organizationKey';
+
 export class UserStore {
   @observable
   public user: Partial<IUser> | null = null;
@@ -30,7 +32,20 @@ export class UserStore {
   public isUserFetched: boolean = false;
 
   @observable
+  public organizations: IOrganization[] = [];
+
+  @observable
+  public organizationId: number = toInteger(sessionStorage.getItem(sessionKey));
+
+  @observable
   public scriptStore: ScriptStore = new ScriptStore();
+
+  @action
+  public async getOrganizations() {
+    const organizations = await getOrganizationList();
+    this.organizations = organizations;
+    return !!organizations;
+  }
 
   @action
   public async login(params: {
@@ -87,6 +102,9 @@ export class UserStore {
       },
     });
     this.user = null;
+    this.organizations = [];
+    this.organizationId = null;
+    sessionStorage.removeItem(sessionKey);
     tracert.setUser(null);
     this.scriptStore = new ScriptStore();
     return res?.data;
@@ -150,10 +168,8 @@ export class UserStore {
 
   @action
   public async switchCurrentOrganization(id: number) {
-    const isSuccess = await switchCurrentOrganization(id);
-    if (!isSuccess) {
-      return false;
-    }
+    this.organizationId = id;
+    sessionStorage.setItem(sessionKey, id?.toString());
     this.isUserFetched = false;
     await this.getCurrentUser();
     return true;

@@ -22,9 +22,8 @@ export default inject('userStore')(
     const context = useContext(SessionContext);
     const [form] = Form.useForm();
     const isPersonal =
-      userStore?.user?.belongedToOrganizations?.find(
-        (i) => i.id === userStore?.user?.organizationId,
-      )?.type === SpaceType.PRIVATE;
+      userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
+      SpaceType.PRIVATE;
     const {
       data: project,
       loading: projectLoading,
@@ -72,7 +71,7 @@ export default inject('userStore')(
           fetchAllDatasource({
             size: 9999,
             page: 1,
-            minPrivilege: 'update'
+            minPrivilege: 'update',
           });
           return;
         }
