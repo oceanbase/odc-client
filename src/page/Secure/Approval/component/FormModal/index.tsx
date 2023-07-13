@@ -6,11 +6,11 @@ import {
 } from '@/common/network/manager';
 import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration, IManagerRole } from '@/d.ts';
+import { hourToSeconds, secondsToHour } from '@/util/utils';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { Button, Drawer, Form, Input, InputNumber, message, Modal, Space } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useState } from 'react';
-import { hourToSeconds, secondsToHour } from '../../index';
 import { AuthNode } from '../AuthNode';
 import styles from './index.less';
 
