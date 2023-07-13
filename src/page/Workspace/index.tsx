@@ -279,13 +279,13 @@ const WorkspaceMobxWrap = inject(
 export default inject('userStore')(
   observer(function WorkSpaceWrap(props: WorkspaceProps) {
     useEffect(() => {
-      window.name = 'sqlworkspace';
+      window.name = 'sqlworkspace' + '%' + props.userStore?.organizationId;
       return () => {
         window.name = null;
       };
     }, []);
     return (
-      <WorkspaceStore key={props.userStore?.user?.organizationId}>
+      <WorkspaceStore key={props.userStore?.organizationId}>
         <WorkspaceMobxWrap {...props} />
       </WorkspaceStore>
     );

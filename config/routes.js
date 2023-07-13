@@ -18,6 +18,7 @@ module.exports = [
               path: '/',
               component: '../layout/SpaceContainer',
               wrappers: [
+                "@/layout/OrganizationWrap",
                 "@/layout/OrganizationListenWrap"
               ],
               routes: [
@@ -41,15 +42,16 @@ module.exports = [
               path: '/',
               component: '../layout/DefaultContainer',
               routes: [
-                {
-                  path: '/spaceIndex',
-                  name: 'SpaceIndex',
-                  component: '@/page/SpaceIndex',
-                  spmBPos: 'b64001'
-                },
+                // {
+                //   path: '/spaceIndex',
+                //   name: 'SpaceIndex',
+                //   component: '@/page/SpaceIndex',
+                //   spmBPos: 'b64001'
+                // },
                 {
                   path: '/sqlworkspace',
                   wrappers: [
+                    "@/layout/OrganizationWrap",
                     "@/layout/OrganizationListenWrap",
                     "@/layout/ThemeWrap"
                   ],

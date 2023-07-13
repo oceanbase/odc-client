@@ -11,13 +11,13 @@ interface IProps {
 const key = '$odc_event_organizationKey';
 
 const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore }) {
-  const organizationId = userStore.user?.organizationId;
+  const organizationId = userStore?.organizationId;
   const location = useLocation();
   const navigate = useNavigate();
   function addListener() {
     window.addEventListener('storage', () => {
       const organizationId = window.localStorage.getItem(key);
-      if (organizationId !== userStore.user?.organizationId?.toString()) {
+      if (organizationId !== userStore?.organizationId?.toString()) {
         window._forceRefresh = true;
         window.close();
       }
@@ -32,23 +32,22 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
 
   useEffect(() => {
     const isPersonal =
-      userStore.user?.belongedToOrganizations?.find(
-        (item) => item.id === userStore?.user?.organizationId,
-      )?.type === SpaceType.PRIVATE;
+      userStore.organizations?.find((item) => item.id === userStore?.organizationId)?.type ===
+      SpaceType.PRIVATE;
     if (isPersonal && location.hash?.indexOf('sqlworkspace') === -1) {
       /**
        * 私人空间禁止
        */
       navigate('/sqlworkspace');
     }
-  }, [location.hash, userStore.user]);
+  }, [location.hash, userStore.organizationId, userStore.organizations]);
+
+  // useEffect(() => {
+  //   sendEvent();
+  // }, [organizationId]);
 
   useEffect(() => {
-    sendEvent();
-  }, [organizationId]);
-
-  useEffect(() => {
-    addListener();
+    // addListener();
   }, []);
 
   return (
