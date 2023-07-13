@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Form, Input } from 'antd';
+import { Checkbox, Form, Input, Space } from 'antd';
 import { isNil } from 'lodash';
 import React, { useContext, useMemo } from 'react';
 import TablePageContext from '../../../TablePage/context';
@@ -31,6 +31,8 @@ const DefaultValue: React.FC<IProps> = function ({ column, originColumns, onChan
     return !originData?.generated && !originData?.autoIncrement;
   }, [pageContext.editMode, column, originColumns]);
 
+  const isNullValue = defaultValueOrExpr === null;
+
   return (
     <Form layout="vertical">
       <Form.Item
@@ -38,17 +40,31 @@ const DefaultValue: React.FC<IProps> = function ({ column, originColumns, onChan
           id: 'odc.CreateTable.Columns.columns.DefaultValueExpression',
         })}
       >
-        <Input
-          disabled={!enable}
-          style={{ width: 175 }}
-          value={defaultValueOrExpr}
-          onChange={(v) => {
-            onChange({
-              ...column,
-              defaultValueOrExpr: v.target.value,
-            });
-          }}
-        />
+        <Space>
+          <Input
+            disabled={!enable || isNullValue}
+            style={{ width: 175 }}
+            value={defaultValueOrExpr}
+            onChange={(v) => {
+              onChange({
+                ...column,
+                defaultValueOrExpr: v.target.value,
+              });
+            }}
+          />
+          <Checkbox
+            disabled={!enable}
+            onChange={(e) => {
+              onChange({
+                ...column,
+                defaultValueOrExpr: e.target.checked ? null : '',
+              });
+            }}
+            checked={isNullValue}
+          >
+            Null
+          </Checkbox>
+        </Space>
       </Form.Item>
     </Form>
   );
