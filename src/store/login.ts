@@ -2,10 +2,11 @@ import { getScriptList as getRemoteScriptList } from '@/common/network';
 import { getOrganizationList } from '@/common/network/organization';
 import { odcServerLoginUrl, odcServerLogoutUrl } from '@/common/network/other';
 import type { IOrganization, ISQLScript, IUser } from '@/d.ts';
+import logger from '@/util/logger';
 import request from '@/util/request';
 import tracert from '@/util/tracert';
 import { encrypt } from '@/util/utils';
-import { isNil, toInteger } from 'lodash';
+import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
 import { history } from 'umi';
 import authStore from './auth';
@@ -35,7 +36,7 @@ export class UserStore {
   public organizations: IOrganization[] = [];
 
   @observable
-  public organizationId: number = toInteger(sessionStorage.getItem(sessionKey));
+  public organizationId: number = parseInt(sessionStorage.getItem(sessionKey));
 
   @observable
   public scriptStore: ScriptStore = new ScriptStore();
@@ -44,6 +45,7 @@ export class UserStore {
   public async getOrganizations() {
     const organizations = await getOrganizationList();
     this.organizations = organizations;
+    logger.debug('set organizations', this.organizations?.length);
     return !!organizations;
   }
 
@@ -96,6 +98,7 @@ export class UserStore {
 
   @action
   public async logout() {
+    logger.debug('logout');
     const res = await request.post('/api/v2/iam/logout', {
       params: {
         wantCatchError: true,

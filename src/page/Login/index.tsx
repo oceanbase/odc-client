@@ -66,11 +66,11 @@ const Login: React.FC<{
       const { success, message: msg, errCode } = await userStore.login(params);
       if (success) {
         message.success(formatMessage({ id: 'login.login.success' }));
-        await userStore.getCurrentUser();
-        if (userStore?.user?.enabled === false) {
-          history.replace('/exception/403');
-          return;
-        }
+        // await userStore.getCurrentUser();
+        // if (userStore?.user?.enabled === false) {
+        //   history.replace('/exception/403');
+        //   return;
+        // }
 
         // 跳转主页
         const query: { [key: string]: any } = new URLSearchParams(location.search) || {};
