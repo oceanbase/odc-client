@@ -113,7 +113,7 @@ export function getParamEndExpr(params: IPLParam[]) {
       if (!paramMode?.includes('OUT')) {
         return null;
       }
-      return `  ${paramName} := ${paramName}`;
+      return `  ${paramName} := ${paramName};`;
     })
     .filter(Boolean)
     .join('\n');
