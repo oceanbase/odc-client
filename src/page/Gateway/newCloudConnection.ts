@@ -5,13 +5,12 @@ import {
   updateConnectionFromConnection,
 } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
-import { getCurrentUserPermissions } from '@/common/network/manager';
-import { switchCurrentOrganization } from '@/common/network/origanization';
 import { decrypt } from '@/common/network/other';
 import ShowConnectPassword from '@/component/ConnectPassowrd';
 import { ConnectType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { SpaceType } from '@/d.ts/_index';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { message } from 'antd';
@@ -87,17 +86,15 @@ export const action = async (config: INewCloudConnection) => {
       return;
     }
   }
-  const user = await getCurrentUserPermissions();
-  if (!user) {
+  await login.getOrganizations();
+  if (!login.organizations?.length) {
     return 'Get User Failed';
   }
-  const personalOrganization = user.belongedToOrganizations?.find(
-    (item) => item.type === SpaceType.PRIVATE,
-  );
+  const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
   if (!personalOrganization) {
     return '个人空间不存在！';
   }
-  const isSuccess = await switchCurrentOrganization(personalOrganization?.id);
+  const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
   if (!isSuccess) {
     return 'Switch Organization Failed';
   }

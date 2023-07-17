@@ -29,6 +29,7 @@ module.exports = [
                 { path: '/auth/:page', component: '@/page/Auth', spmBPos: 'b64007' },
                 { path: '/secure/:page', component: '@/page/Secure', spmBPos: 'b64008' },
                 { path: '/externalIntegration/:page', component: '@/page/ExternalIntegration', spmBPos: 'b64009' },
+                { path: '/', redirect: '/project'},
               ],
             },
             {
@@ -41,12 +42,12 @@ module.exports = [
               path: '/',
               component: '../layout/DefaultContainer',
               routes: [
-                {
-                  path: '/spaceIndex',
-                  name: 'SpaceIndex',
-                  component: '@/page/SpaceIndex',
-                  spmBPos: 'b64001'
-                },
+                // {
+                //   path: '/spaceIndex',
+                //   name: 'SpaceIndex',
+                //   component: '@/page/SpaceIndex',
+                //   spmBPos: 'b64001'
+                // },
                 {
                   path: '/sqlworkspace',
                   wrappers: [
