@@ -53,14 +53,14 @@ export function getPLDebugExecuteSql(plSchema: IFormatPLSchema) {
   const callExpr = `${namePrefix}"${
     isFunction ? plfunction?.funName : procedure?.proName
   }"(${paramString})`;
-  const paramDeclares = getParamDeclares(params);
   const result = `  result ${getDataType(plfunction?.returnType)};`;
   return [
     'DECLARE',
-    `${paramDeclares?.join('\n')}`,
+    `${getParamDeclares(params)?.join('\n')}`,
     isFunction && result,
     'BEGIN',
     isFunction ? `  result := ${callExpr};` : `  ${callExpr};`,
+    getParamEndExpr(params),
     'END;',
   ]
     .filter(Boolean)
@@ -105,6 +105,18 @@ export function getParamDeclares(params: IPLParam[]) {
     }
     return `  ${paramName} ${getDataType(dataType)} := ${defaultValue};`;
   });
+}
+
+export function getParamEndExpr(params: IPLParam[]) {
+  return params
+    ?.map(({ paramName, paramMode }) => {
+      if (!paramMode?.includes('OUT')) {
+        return null;
+      }
+      return `  ${paramName} := ${paramName}`;
+    })
+    .filter(Boolean)
+    .join('\n');
 }
 
 export function removeComment(text = '') {
