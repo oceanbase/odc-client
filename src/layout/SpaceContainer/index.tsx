@@ -10,7 +10,7 @@ interface ISpaceContainerProps {
 }
 const SpaceContainer: React.FC<ISpaceContainerProps> = (props) => {
   const navigate = useNavigate();
-  const organizationId = props?.userStore?.user?.organizationId;
+  const organizationId = props?.userStore?.organizationId;
   const [id, setId] = useState(organizationId);
   useEffect(() => {
     if (id && organizationId && id !== organizationId) {

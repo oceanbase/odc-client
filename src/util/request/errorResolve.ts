@@ -41,7 +41,7 @@ export function resolveODCError(
   requestId = res.requestId;
   switch (errCode) {
     case ODCErrorsCode.LoginExpired: {
-      if (url?.indexOf('/login') > -1 || url?.endsWith('/me')) {
+      if (url?.indexOf('/login') > -1 || url?.endsWith('/me/organizations')) {
         /**
          * 1. 登录接口出现这个异常的话，需要直接抛出去。
          * 2. 处理的场景：在未登录或登录超时的时候，访问/路由，会首先经过AppContainer（此时会调用/me接口，错误码LoginExpired，则会弹窗提示'登录超时'）,然后会进入/login登录页（详见：config配置）
@@ -67,7 +67,7 @@ export function resolveODCError(
     }
     case ODCErrorsCode.UnauthorizedSessionAccess: {
       window._forceRefresh = true;
-      history.replace('/connections');
+      history.replace('/project');
       window._forceRefresh = false;
       return true;
     }

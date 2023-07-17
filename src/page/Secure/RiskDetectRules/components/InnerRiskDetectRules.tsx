@@ -26,9 +26,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
   riskDetectRules = [],
   getListRiskDetectRules,
 }) => {
-  const {
-    user: { organizationId },
-  } = userStore;
+  const { organizationId } = userStore;
   const tableRef = useRef(null);
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);

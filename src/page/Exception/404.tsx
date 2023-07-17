@@ -13,7 +13,7 @@ export default () => {
       backText={formatMessage({
         id: 'odc.page.Exception.404.ReturnToHomePage',
       })}
-      redirect="/connections"
+      redirect="/project"
     />
   );
 };

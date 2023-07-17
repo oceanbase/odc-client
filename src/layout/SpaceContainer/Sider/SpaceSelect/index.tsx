@@ -17,7 +17,7 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
   const { collapsed, userStore } = props;
 
   const handleChange = async (oriId: number) => {
-    const ori = userStore?.user?.belongedToOrganizations?.find((item) => item.id == oriId);
+    const ori = userStore?.organizations?.find((item) => item.id == oriId);
     const isSuccess = await userStore?.switchCurrentOrganization(oriId);
     if (!isSuccess) {
       return;
@@ -33,14 +33,14 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       className={classNames(styles['space-switch'], {
         [styles.collapsed]: collapsed,
       })}
-      value={userStore?.user?.organizationId}
+      value={userStore?.organizationId}
       suffixIcon={<SwapOutlined />}
       dropdownMatchSelectWidth={144}
       style={{ width: collapsed ? 30 : 144 }}
       bordered={false}
       menuItemSelectedIcon={<CheckOutlined />}
       onChange={handleChange}
-      options={userStore.user?.belongedToOrganizations?.map((item) => {
+      options={userStore.organizations?.map((item) => {
         return {
           value: item.id,
           label:
