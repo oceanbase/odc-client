@@ -18,7 +18,6 @@ module.exports = [
               path: '/',
               component: '../layout/SpaceContainer',
               wrappers: [
-                "@/layout/OrganizationWrap",
                 "@/layout/OrganizationListenWrap"
               ],
               routes: [
@@ -30,6 +29,7 @@ module.exports = [
                 { path: '/auth/:page', component: '@/page/Auth', spmBPos: 'b64007' },
                 { path: '/secure/:page', component: '@/page/Secure', spmBPos: 'b64008' },
                 { path: '/externalIntegration/:page', component: '@/page/ExternalIntegration', spmBPos: 'b64009' },
+                { path: '/', redirect: '/project'},
               ],
             },
             {
@@ -51,7 +51,6 @@ module.exports = [
                 {
                   path: '/sqlworkspace',
                   wrappers: [
-                    "@/layout/OrganizationWrap",
                     "@/layout/OrganizationListenWrap",
                     "@/layout/ThemeWrap"
                   ],

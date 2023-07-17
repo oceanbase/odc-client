@@ -6,6 +6,7 @@ import type { UserStore } from '@/store/login';
 import loginStore from '@/store/login';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
+import logger from '@/util/logger';
 import { useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -66,11 +67,16 @@ const Login: React.FC<{
       const { success, message: msg, errCode } = await userStore.login(params);
       if (success) {
         message.success(formatMessage({ id: 'login.login.success' }));
-        // await userStore.getCurrentUser();
-        // if (userStore?.user?.enabled === false) {
-        //   history.replace('/exception/403');
-        //   return;
-        // }
+        await userStore.getOrganizations();
+        const isSuccess = await userStore.switchCurrentOrganization();
+        if (!isSuccess) {
+          logger.error('switch organization failed');
+          return;
+        }
+        if (!userStore.user?.enabled) {
+          history.replace('/exception/403');
+          return;
+        }
 
         // 跳转主页
         const query: { [key: string]: any } = new URLSearchParams(location.search) || {};
