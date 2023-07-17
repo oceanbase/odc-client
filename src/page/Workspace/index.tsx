@@ -283,7 +283,7 @@ export default inject('userStore')(
       return () => {
         window.name = null;
       };
-    }, []);
+    }, [props.userStore?.organizationId]);
     return (
       <WorkspaceStore key={props.userStore?.organizationId}>
         <WorkspaceMobxWrap {...props} />
