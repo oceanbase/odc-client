@@ -11,7 +11,7 @@ import { Form, Select, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import styles from './index.less';
 
-const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove, setDisabledAdd }) => {
+const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const { dataSources = [], maskingAlgorithmOptions, projectId } = sensitiveContext;
@@ -185,11 +185,6 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove, setDi
     }
   };
 
-  const handleMaskingAlgorithmSelect = (value) => {
-    if (dataSourceId && databaseId && tableName !== '' && columnName !== '' && value) {
-      setDisabledAdd(false);
-    }
-  };
   useEffect(() => {
     initDataSources();
   }, []);
@@ -340,7 +335,6 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove, setDi
           key={[fieldName, 'maskingAlgorithmId', index].join('_')}
           placeholder={'请选择'}
           style={{ width: '184px' }}
-          onSelect={handleMaskingAlgorithmSelect}
           options={maskingAlgorithmOptions}
           disabled={columnOptions?.length === 0 || columnName === ''}
         />
