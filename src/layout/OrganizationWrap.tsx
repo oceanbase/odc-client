@@ -5,6 +5,7 @@ import PageLoading from '@/component/PageLoading';
 import { IOrganization } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
+import logger from '@/util/logger';
 import { Outlet, useLocation, useNavigate } from '@umijs/max';
 import { message } from 'antd';
 import { inject } from 'mobx-react';
@@ -25,6 +26,7 @@ const OrganizationWrap: React.FC<IProps> = function ({ userStore }) {
   async function selectOrganization() {
     const organizations = userStore.organizations;
     if (!organizations?.length) {
+      logger.debug('organizations is empty', userStore.organizations?.length);
       return;
     }
     let personalOrganization: IOrganization = organizations.find(
@@ -49,6 +51,7 @@ const OrganizationWrap: React.FC<IProps> = function ({ userStore }) {
   }
 
   useEffect(() => {
+    logger.debug('organizationId changed', organizationId);
     if (organizationId) {
       setIsReady(true);
     } else {
