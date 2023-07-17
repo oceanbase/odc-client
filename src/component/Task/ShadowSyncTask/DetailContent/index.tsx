@@ -124,15 +124,6 @@ export function getItems(
 
         [
           formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.Connection',
-          }),
-
-          //所属连接
-          task?.connection?.name || '-',
-        ],
-
-        [
-          formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
 

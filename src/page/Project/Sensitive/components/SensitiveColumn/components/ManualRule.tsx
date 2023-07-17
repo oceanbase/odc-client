@@ -1,6 +1,7 @@
 import { listDatabases } from '@/common/network/database';
 import { exist } from '@/common/network/sensitiveColumn';
 import { getTableColumnList } from '@/common/network/table';
+import { IDatabase } from '@/d.ts/database';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import SensitiveContext from '@/page/Project/Sensitive/SensitiveContext';
@@ -10,20 +11,11 @@ import { Form, Select, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import styles from './index.less';
 
-const ManualRule = ({
-  fields,
-  index,
-  formRef,
-  fieldKey,
-  fieldName,
-  remove,
-  databases,
-  setDatabases,
-  setDisabledAdd,
-}) => {
+const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const { dataSources = [], maskingAlgorithmOptions, projectId } = sensitiveContext;
+  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const [dataSourceId, setDataSourceId] = useState<number>(0);
   const [databaseId, setDatabaseId] = useState<number>(0);
   const [tableName, setTableName] = useState<string>('');
@@ -160,7 +152,6 @@ const ManualRule = ({
     formRef.setFieldsValue({
       manual,
     });
-    await initColumn(value, manual);
   };
 
   const hanleColumnSelect = async (value: any) => {
@@ -194,11 +185,6 @@ const ManualRule = ({
     }
   };
 
-  const handleMaskingAlgorithmSelect = (value) => {
-    if (dataSourceId && databaseId && tableName !== '' && columnName !== '' && value) {
-      setDisabledAdd(false);
-    }
-  };
   useEffect(() => {
     initDataSources();
   }, []);
@@ -318,11 +304,13 @@ const ManualRule = ({
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
-          onDropdownVisibleChange={async () => {
-            const { manual = [] } = await formRef.getFieldsValue();
-            await initColumn(tableName, manual, false);
+          onDropdownVisibleChange={async (visible: boolean) => {
+            if (visible) {
+              const { manual = [] } = await formRef.getFieldsValue();
+              await initColumn(tableName, manual, false);
+            }
           }}
-          disabled={tableOptions?.length === 0}
+          disabled={tableOptions?.length === 0 || tableName === ''}
         >
           {columnOptions?.map(
             ({ label = undefined, value = undefined, disabled = false }, index) => (
@@ -347,7 +335,6 @@ const ManualRule = ({
           key={[fieldName, 'maskingAlgorithmId', index].join('_')}
           placeholder={'请选择'}
           style={{ width: '184px' }}
-          onSelect={handleMaskingAlgorithmSelect}
           options={maskingAlgorithmOptions}
           disabled={columnOptions?.length === 0 || columnName === ''}
         />

@@ -12,13 +12,17 @@ export interface FilterItemProps {
   text: string;
   value: any;
 }
-
+export interface ScanTableDataItem {
+  columnName: string;
+  maskingAlgorithmId: number;
+  sensitiveRuleId: number;
+}
 export interface ScanTableData {
   header: {
     database: string;
     tableName: string;
   };
-  dataSource: any;
+  dataSource: ScanTableDataItem[];
 }
 
 export enum DetectRuleType {

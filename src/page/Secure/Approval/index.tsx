@@ -11,6 +11,7 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
+import { secondsToHour } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { message, Modal, Space } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
@@ -22,7 +23,7 @@ import styles from './index.less';
 const renderTime = (time) => {
   return (
     <Space size={4}>
-      <span>{time}</span>
+      <span>{secondsToHour(time)}</span>
       <span>小时</span>
     </Space>
   );

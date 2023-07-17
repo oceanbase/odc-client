@@ -278,11 +278,11 @@ const CreateModal: React.FC<IProps> = (props) => {
   }, [dataArchiveVisible]);
 
   useEffect(() => {
-    if (databaseName) {
+    if (database?.id) {
       loadTables();
       form.setFieldValue('tables', [null]);
     }
-  }, [databaseName]);
+  }, [database?.id]);
 
   return (
     <Drawer

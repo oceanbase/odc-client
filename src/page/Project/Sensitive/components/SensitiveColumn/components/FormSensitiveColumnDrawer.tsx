@@ -31,8 +31,10 @@ const FormSensitiveColumnDrawer = ({
 }) => {
   const [formRef] = useForm();
   const [_formRef] = useForm();
+  const timer = useRef(null);
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
+
   const [scanTableData, setScanTableData] = useState<ScanTableData[]>([]);
   const [databases, setDatabases] = useState<IDatabase[]>([]);
   const [submiting, setSubmiting] = useState<boolean>(false);
@@ -44,7 +46,6 @@ const FormSensitiveColumnDrawer = ({
   const [hasScan, setHasScan] = useState<boolean>(false);
   const [percent, setPercent] = useState<number>(0);
   const [successful, setSuccessful] = useState<boolean>(false);
-  const timer = useRef(null);
   const [searchText, setSearchText] = useState<string>('');
 
   const handleSearchChange = (e) => {
@@ -54,41 +55,19 @@ const FormSensitiveColumnDrawer = ({
     if (searchText.trim() === '') {
       return;
     }
-
-    const dataSourceMap = new Map();
-    const filterSensitiveColumns =
-      sensitiveColumns?.filter((d) =>
-        d?.columnName?.toLowerCase()?.includes(searchText?.toLowerCase()),
-      ) || [];
-    filterSensitiveColumns?.forEach((d) => {
-      const key = `${d.database.name}_${d.tableName}`;
-      if (dataSourceMap.has(key)) {
-        dataSourceMap.get(key)?.dataSource?.push({
-          columnName: d.columnName,
-          sensitiveRuleId: d.sensitiveRuleId,
-          maskingAlgorithmId: d.maskingAlgorithmId,
-        });
-      } else {
-        dataSourceMap.set(key, {
-          header: {
-            database: d.database.name,
-            tableName: d.tableName,
-          },
-          dataSource: [
-            {
-              columnName: d.columnName,
-              sensitiveRuleId: d.sensitiveRuleId,
-              maskingAlgorithmId: d.maskingAlgorithmId,
-            },
-          ],
+    const resData = [];
+    sensitiveColumnMap.forEach((sc, key) => {
+      const filterColumn = sc?.dataSource?.filter((item) =>
+        item?.columnName?.toLowerCase()?.includes(searchText?.toLocaleLowerCase()),
+      );
+      if (filterColumn?.length > 0) {
+        resData.push({
+          header: sc?.header,
+          dataSource: filterColumn,
         });
       }
     });
 
-    const resData = [];
-    dataSourceMap?.forEach((ds) => {
-      resData.push(ds);
-    });
     setScanTableData(checkResult(resData));
   };
 
@@ -99,6 +78,7 @@ const FormSensitiveColumnDrawer = ({
     setPercent(0);
     setSuccessful(false);
     setHasScan(false);
+    setSearchText('');
   };
 
   const resetScanTableData = () => {
@@ -121,38 +101,105 @@ const FormSensitiveColumnDrawer = ({
     clearTimeout(timer.current);
   };
 
-  const handleScanTableDataChange = (index: number, _index: number, maskingAlgorithmId: number) => {
-    const {
-      header: { database, tableName },
-    } = scanTableData[index];
-    const key = `${database}_${tableName}`;
-
-    sensitiveColumnMap.get(key).dataSource[_index].maskingAlgorithmId = maskingAlgorithmId;
-
+  const handleScanTableDataChange = (
+    key: string,
+    columnName: string,
+    maskingAlgorithmId: number,
+  ) => {
     const resData = [];
-    sensitiveColumnMap?.forEach((ds) => {
-      resData.push(ds);
-    });
-    setScanTableData(checkResult(resData));
+    if (!!searchText) {
+      const newDataSource = sensitiveColumnMap.get(key).dataSource.map((item) => {
+        if (item.columnName === columnName) {
+          item.maskingAlgorithmId = maskingAlgorithmId;
+        }
+        return item;
+      });
+      sensitiveColumnMap.get(key).dataSource = newDataSource;
+      sensitiveColumnMap.forEach((sc, key) => {
+        const filterColumn = sc?.dataSource?.filter((item) =>
+          item?.columnName?.toLowerCase()?.includes(searchText?.toLocaleLowerCase()),
+        );
+        if (filterColumn?.length > 0) {
+          resData.push({
+            header: sc?.header,
+            dataSource: filterColumn,
+          });
+        }
+      });
+      setScanTableData(checkResult(resData));
+    } else {
+      const newDataSource = sensitiveColumnMap.get(key).dataSource.map((item) => {
+        if (item.columnName === columnName) {
+          item.maskingAlgorithmId = maskingAlgorithmId;
+        }
+        return item;
+      });
+      sensitiveColumnMap.get(key).dataSource = newDataSource;
+      sensitiveColumnMap?.forEach((ds) => {
+        resData.push(ds);
+      });
+      setScanTableData(checkResult(resData));
+    }
+    setSensitiveColumnMap(sensitiveColumnMap);
   };
 
-  const handleScanTableDataDelete = (index: number, _index: number) => {
-    const {
-      header: { database, tableName },
-    } = scanTableData[index];
+  const handleScanTableDataDelete = (database: string, tableName: string, columnName: string) => {
     const key = `${database}_${tableName}`;
     const filterDataSource =
-      sensitiveColumnMap.get(key).dataSource.filter((d, i) => i !== _index) || [];
+      sensitiveColumnMap.get(key).dataSource.filter((ds) => ds?.columnName !== columnName) || [];
     sensitiveColumnMap.get(key).dataSource = filterDataSource;
     if (filterDataSource?.length === 0) {
       sensitiveColumnMap.delete(key);
     }
-
     const resData = [];
-    sensitiveColumnMap?.forEach((ds) => {
-      resData.push(ds);
-    });
+    if (!!searchText) {
+      sensitiveColumnMap?.forEach((dsItem) => {
+        const newDataSource = dsItem?.dataSource?.filter((ds) =>
+          ds?.columnName?.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()),
+        );
+        if (newDataSource?.length > 0) {
+          resData.push({
+            header: dsItem?.header,
+            dataSource: newDataSource,
+          });
+        }
+      });
+    } else {
+      // 没有searchText 纯删除
+      sensitiveColumnMap?.forEach((dsItem) => {
+        resData.push(dsItem);
+      });
+    }
     setScanTableData(checkResult(resData));
+    setSensitiveColumnMap(sensitiveColumnMap);
+  };
+  const handleScanTableDataDeleteByTableName = (database: string, tableName: string) => {
+    const key = `${database}_${tableName}`;
+    const resData = [];
+    if (!!searchText) {
+      sensitiveColumnMap.get(key).dataSource = sensitiveColumnMap
+        .get(key)
+        .dataSource?.filter(
+          (item) => !item.columnName?.toLowerCase()?.includes(searchText?.toLowerCase()),
+        );
+      sensitiveColumnMap?.forEach((dsItem, dsKey) => {
+        if (key !== dsKey) {
+          resData.push({
+            header: dsItem?.header,
+            dataSource: dsItem?.dataSource?.filter((item) =>
+              item.columnName?.toLowerCase()?.includes(searchText?.toLowerCase()),
+            ),
+          });
+        }
+      });
+    } else {
+      sensitiveColumnMap.delete(key);
+      sensitiveColumnMap?.forEach((dsItem) => {
+        resData.push(dsItem);
+      });
+    }
+    setScanTableData(checkResult(resData));
+    setSensitiveColumnMap(sensitiveColumnMap);
   };
   const handleStartScan = async () => {
     reset();
@@ -183,22 +230,34 @@ const FormSensitiveColumnDrawer = ({
   const handleScanSubmit = async () => {
     await formRef.validateFields().catch();
     const rawData = [];
-    sensitiveColumns?.forEach((sc) => {
-      const key = `${sc.database.name}_${sc.tableName}`;
-      if (sensitiveColumnMap.has(key)) {
-        const maskingAlgorithmId = sensitiveColumnMap
+    sensitiveColumns.forEach((sensitiveColumn) => {
+      const key = `${sensitiveColumn.database.name}_${sensitiveColumn.tableName}`;
+      if (sensitiveColumnMap.get(key)) {
+        const column = sensitiveColumnMap
           .get(key)
-          .dataSource?.find((c) => c.columnName === sc.columnName)?.maskingAlgorithmId;
-        sc.enabled = true;
-        sc.maskingAlgorithmId = maskingAlgorithmId;
-        rawData.push(sc);
+          ?.dataSource.find((item) => item.columnName === sensitiveColumn.columnName);
+        if (column) {
+          rawData.push({
+            ...sensitiveColumn,
+            enabled: true,
+            maskingAlgorithmId: column.maskingAlgorithmId,
+          });
+        }
       }
     });
-    if (rawData?.length === 0) {
+    let data = [];
+    if (!!searchText) {
+      data = rawData.filter((d) =>
+        d.columnName.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()),
+      );
+    } else {
+      data = rawData;
+    }
+    if (data?.length === 0) {
       return;
     }
     setSubmiting(true);
-    const res = await batchCreateSensitiveColumns(context.projectId, rawData);
+    const res = await batchCreateSensitiveColumns(context.projectId, data);
     if (res) {
       message.success('新建成功');
       onOk();
@@ -368,8 +427,6 @@ const FormSensitiveColumnDrawer = ({
         <ManualForm
           {...{
             formRef,
-            databases,
-            setDatabases,
           }}
         />
       ) : (
@@ -393,6 +450,7 @@ const FormSensitiveColumnDrawer = ({
             sensitiveContext,
             handleScanTableDataChange,
             handleScanTableDataDelete,
+            handleScanTableDataDeleteByTableName,
           }}
         />
       )}

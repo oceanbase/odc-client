@@ -211,11 +211,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
           tab={formatMessage({ id: 'workspace.window.sql.record.title' })}
           key={recordsTabKey}
         >
-          <ExecuteHistory
-            session={session}
-            resultHeight={resultHeight}
-            onShowExecuteDetail={onShowExecuteDetail}
-          />
+          <ExecuteHistory resultHeight={resultHeight} onShowExecuteDetail={onShowExecuteDetail} />
         </TabPane>
         {lintResultSet ? (
           <TabPane

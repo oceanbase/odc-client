@@ -8,10 +8,10 @@ import Task from './Task';
 import User from './User';
 
 import { getProject, listProjects } from '@/common/network/project';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { gotoSQLWorkspace } from '@/util/route';
-import { Link } from '@umijs/max';
+import { Link, useNavigate } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
@@ -83,6 +83,7 @@ const tabs = [
 
 const Index: React.FC<IProps> = function () {
   const params = useParams<{ id: string; page: IPageType }>();
+  const navigate = useNavigate();
   const { id, page } = params;
   const Component = Pages[page].component;
   const projectId = parseInt(id);
@@ -110,7 +111,18 @@ const Index: React.FC<IProps> = function () {
       fetchProject(projectId);
     }
   }, [projectId]);
-
+  useEffect(() => {
+    if (page === IPageType.Sensitive) {
+      // 当前项目中只有Developer身份的用户通过url访问Sensitive页面时，跳转到Project，避免用户通过url直接进入Sensitvie页面导致发起错误请求。
+      if (
+        !project?.currentUserResourceRoles?.some((role) =>
+          [ProjectRole.DBA, ProjectRole.OWNER].includes(role),
+        )
+      ) {
+        navigate('/project');
+      }
+    }
+  }, [page]);
   const { data } = useRequest(listProjects, {
     defaultParams: [null, 1, 10],
   });
@@ -149,7 +161,14 @@ const Index: React.FC<IProps> = function () {
             }
           : {}
       }
-      tabList={tabs}
+      // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
+      tabList={
+        project?.currentUserResourceRoles?.some((role) =>
+          [ProjectRole.DBA, ProjectRole.OWNER].includes(role),
+        )
+          ? tabs
+          : tabs?.filter((tab) => tab.key !== IPageType.Sensitive)
+      }
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent projectId={projectId} />}
       onTabChange={handleChange}
