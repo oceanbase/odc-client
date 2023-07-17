@@ -7,7 +7,6 @@ import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
-import { hourToSeconds } from '@/util/utils';
 import { Button, Col, Drawer, Form, Input, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -69,7 +68,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           executionStrategy,
         } = values;
         const parameters = {
-          lockTableTimeOutSeconds: hourToSeconds(lockTableTimeOutSeconds),
+          lockTableTimeOutSeconds,
           errorStrategy,
           sqlContent,
           sqlType,
@@ -199,7 +198,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 required
               >
                 <Form.Item
-                  label="小时"
+                  label="秒"
                   name="lockTableTimeOutSeconds"
                   rules={[
                     {
@@ -208,16 +207,16 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     },
                     {
                       type: 'number',
-                      max: 480,
-                      message: '最大不超过480小时',
+                      max: 3600,
+                      message: '最大不超过 3600 秒',
                     },
                   ]}
                   initialValue={48}
                   noStyle
                 >
-                  <InputNumber min={0} />
+                  <InputNumber min={0} max={3600} />
                 </Form.Item>
-                <span className={styles.hour}>小时</span>
+                <span className={styles.hour}>秒</span>
               </Form.Item>
             </Col>
             <Col span={6}>

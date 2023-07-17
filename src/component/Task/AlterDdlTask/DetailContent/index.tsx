@@ -2,7 +2,7 @@ import { SQLContent } from '@/component/SQLContent';
 import { TaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
-import { getFormatDateTime, secondsToHour } from '@/util/utils';
+import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { ClearStrategy } from '../CreateModal';
@@ -76,7 +76,7 @@ export function getItems(
         hasFlow ? riskItem : null,
         ['变更定义', TaskExecStrategyMap[task?.executionStrategy], hasFlow ? 2 : 1],
         [null, <SQLContentSection task={task} key={task.id} />, 2],
-        ['锁表超时时间', `${secondsToHour(parameters?.lockTableTimeOutSeconds)} 小时`],
+        ['锁表超时时间', `${parameters?.lockTableTimeOutSeconds} 秒`],
         ['失败重试次数', parameters?.swapTableNameRetryTimes],
         ['完成后源表清理策略', ClearStrategyMap[parameters?.originTableCleanStrategy]],
         ['执行方式', TaskExecStrategyMap[task?.executionStrategy]],
