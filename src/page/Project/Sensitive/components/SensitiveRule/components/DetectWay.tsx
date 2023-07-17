@@ -5,7 +5,14 @@ import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
 import styles from './index.less';
 
-const DetectWay = ({ key, script, setScript, originType = SensitiveRuleType.PATH }) => {
+const DetectWay = ({
+  key,
+  script,
+  formRef,
+  hasValidated,
+  setScript,
+  originType = SensitiveRuleType.PATH,
+}) => {
   const [type, setType] = useState<SensitiveRuleType>(originType);
   const handleScriptChange = (v: string) => {
     setScript(v);
@@ -62,9 +69,16 @@ const DetectWay = ({ key, script, setScript, originType = SensitiveRuleType.PATH
                   name={['regExp', 'databaseRegexExpression']}
                   fieldKey={['regExp', 'databaseRegexExpression']}
                   className={styles.formItemGroup}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'required',
+                    },
+                  ]}
                   noStyle
                 >
                   <CheckboxInput
+                    formRef={formRef}
                     key={[key, 'databaseRegexExpression'].join('_')}
                     hasLabel
                     name={['regExp', 'databaseRegexExpression']}
@@ -78,6 +92,7 @@ const DetectWay = ({ key, script, setScript, originType = SensitiveRuleType.PATH
                   noStyle
                 >
                   <CheckboxInput
+                    formRef={formRef}
                     key={[key, 'tableRegexExpression'].join('_')}
                     name={['regExp', 'tableRegexExpression']}
                     checkValue={'tableRegexExpression'}
@@ -90,6 +105,7 @@ const DetectWay = ({ key, script, setScript, originType = SensitiveRuleType.PATH
                   noStyle
                 >
                   <CheckboxInput
+                    formRef={formRef}
                     key={[key, 'columnRegexExpression'].join('_')}
                     name={['regExp', 'columnRegexExpression']}
                     checkValue={'columnRegexExpression'}
@@ -102,6 +118,7 @@ const DetectWay = ({ key, script, setScript, originType = SensitiveRuleType.PATH
                   noStyle
                 >
                   <CheckboxInput
+                    formRef={formRef}
                     key={[key, 'columnCommentRegexExpression'].join('_')}
                     name={['regExp', 'columnCommentRegexExpression']}
                     checkValue={'columnCommentRegexExpression'}
@@ -112,26 +129,31 @@ const DetectWay = ({ key, script, setScript, originType = SensitiveRuleType.PATH
           </div>
         )}
         {type === SensitiveRuleType.GROOVY && (
-          <div
-            style={{
-              height: '250px',
-              overflowY: 'hidden',
-            }}
-          >
-            <Space size={4} style={{ marginBottom: '5px' }}>
-              <div>Groovy脚本</div>
-              {/* <a onClick={() => message.error('文档未就位')}>查看文档</a> */}
-            </Space>
-            <CommonIDE
-              session={null}
-              bordered={true}
-              language={'groovy'}
-              initialSQL={script}
-              onSQLChange={(script) => {
-                handleScriptChange(script);
+          <>
+            <div
+              style={{
+                height: '250px',
+                overflowY: 'hidden',
               }}
-            />
-          </div>
+            >
+              <Space size={4} style={{ marginBottom: '5px' }}>
+                <div>Groovy脚本</div>
+                {/* <a onClick={() => message.error('文档未就位')}>查看文档</a> */}
+              </Space>
+              <CommonIDE
+                session={null}
+                bordered={true}
+                language={'groovy'}
+                initialSQL={script}
+                onSQLChange={(script) => {
+                  handleScriptChange(script);
+                }}
+              />
+            </div>
+            <div className={hasValidated ? styles.errorTip : styles.errorTipHidden}>
+              请输入Groovy脚本
+            </div>
+          </>
         )}
       </div>
     </>

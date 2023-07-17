@@ -1,4 +1,4 @@
-import { SubTaskType, TaskPageType, TaskType, TaskExecStrategy } from '@/d.ts';
+import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import { isClient } from '@/util/env';
@@ -14,7 +14,7 @@ export const isCycleTriggerStrategy = (execStrategy: TaskExecStrategy) => {
     TaskExecStrategy.DAY,
     TaskExecStrategy.WEEK,
     TaskExecStrategy.MONTH,
-    TaskExecStrategy.TIMER
+    TaskExecStrategy.TIMER,
   ].includes(execStrategy);
 };
 
@@ -112,6 +112,11 @@ export function getTaskTypeList(
           }),
           //影子表同步
           enabled: task?.showAllSchemaTaskType,
+        },
+        {
+          value: TaskPageType.ONLINE_SCHEMA_CHANGE,
+          label: '无锁结构变更',
+          enabled: true,
         },
       ],
     },

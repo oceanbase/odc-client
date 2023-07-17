@@ -15,11 +15,11 @@ import type { IAutoAuthRule, IResponseData } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { ResourceContext } from '../index';
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Switch } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
 import React from 'react';
+import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 
@@ -123,7 +123,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
         render: (enabled, record) => (
           <Switch
             size="small"
-            defaultChecked={enabled}
+            checked={enabled}
             onChange={() => {
               this.handleStatusChange(!enabled, record);
             }}
@@ -322,7 +322,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, maskingRules } = this.state;
     const canAcessCreate = canAcess({
-      resourceIdentifier: IManagerResourceType.resource_group,
+      resourceIdentifier: IManagerResourceType.auto_auth,
       action: actionTypes.create,
     }).accessible;
     return (

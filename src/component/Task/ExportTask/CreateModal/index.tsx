@@ -173,7 +173,6 @@ class CreateModal extends React.Component<IProps, IState> {
             formData.executionTime = undefined;
           }
           const data = await createBatchExportTask(formData);
-
           if (data) {
             message.success(
               formatMessage({

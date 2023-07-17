@@ -18,7 +18,6 @@ import StatusSwitch from '@/component/StatusSwitch';
 import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser, IResponseData } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
-import { ManageContext } from '@/page/Secure/context';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { encrypt, getFormatDateTime } from '@/util/utils';
@@ -28,6 +27,7 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import { inject, observer } from 'mobx-react';
 import type { FixedType } from 'rc-table/lib/interface';
 import React from 'react';
+import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
@@ -64,7 +64,7 @@ const getResultByFiles = (files: UploadFile[]) => {
 @inject('userStore')
 @observer
 class UserPage extends React.PureComponent<IProps, IState> {
-  static contextType = ManageContext;
+  static contextType = ResourceContext;
 
   private tableRef = React.createRef<ITableInstance>();
 
@@ -307,7 +307,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
   private handleCloseAndReload = () => {
     this.handleCloseDetailModal();
     this.reloadData();
-    this.context.getUserList();
+    this.context.loadUsers();
   };
 
   private reloadData = () => {

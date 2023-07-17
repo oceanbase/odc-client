@@ -2,11 +2,6 @@ import defineConfig from './defineConfig';
 import routes from './routes';
 
 export default {
-  // windows 下无法安装 @ali/xconsole，导致构建客户端失败，因此客户端使用 stub
-  alias: {
-    '@ali/xconsole': '../util/xconsoleStub',
-  },
-
   define: defineConfig('client'),
   targets: {
     chrome: 83,

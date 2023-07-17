@@ -5,19 +5,24 @@ export enum AddSensitiveColumnType {
 export interface SelectItemProps {
   label: string;
   value: string | number;
+  disabled?: boolean;
 }
 
 export interface FilterItemProps {
   text: string;
   value: any;
 }
-
+export interface ScanTableDataItem {
+  columnName: string;
+  maskingAlgorithmId: number;
+  sensitiveRuleId: number;
+}
 export interface ScanTableData {
   header: {
     database: string;
     tableName: string;
   };
-  dataSource: any;
+  dataSource: ScanTableDataItem[];
 }
 
 export enum DetectRuleType {
@@ -35,6 +40,7 @@ export interface CheckboxInputProps {
   name?: string[];
   checkValue?: string;
   hasLabel?: boolean;
+  formRef: any;
   value?: CheckboxInputValue;
   onChange?: (value: CheckboxInputValue) => void;
 }

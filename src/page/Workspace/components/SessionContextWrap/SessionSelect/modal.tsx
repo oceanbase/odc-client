@@ -1,4 +1,4 @@
-import { getConnectionList } from '@/common/network/connection';
+import { getConnectionList, getDataSourceGroupByProject } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
@@ -22,9 +22,8 @@ export default inject('userStore')(
     const context = useContext(SessionContext);
     const [form] = Form.useForm();
     const isPersonal =
-      userStore?.user?.belongedToOrganizations?.find(
-        (i) => i.id === userStore?.user?.organizationId,
-      )?.type === SpaceType.PRIVATE;
+      userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
+      SpaceType.PRIVATE;
     const {
       data: project,
       loading: projectLoading,
@@ -37,6 +36,14 @@ export default inject('userStore')(
       data: datasourceList,
       loading: datasourceLoading,
       run: fetchDatasource,
+    } = useRequest(getDataSourceGroupByProject, {
+      manual: true,
+    });
+
+    const {
+      data: allDatasourceList,
+      loading: allDatasourceLoading,
+      run: fetchAllDatasource,
     } = useRequest(getConnectionList, {
       manual: true,
     });
@@ -61,17 +68,15 @@ export default inject('userStore')(
           selectDatasource: context?.datasourceId,
         });
         if (context?.datasourceMode) {
-          fetchDatasource({
-            page: 1,
+          fetchAllDatasource({
             size: 9999,
+            page: 1,
+            minPrivilege: 'update',
           });
           return;
         }
         if (context?.from === 'datasource') {
-          fetchDatasource({
-            page: 1,
-            size: 9999,
-          });
+          fetchDatasource();
           fetchDatabase(null, sessionDatabase?.dataSource?.id, 1, 9999);
         } else {
           fetchProjects(null, 1, 9999);
@@ -96,7 +101,7 @@ export default inject('userStore')(
           <Form form={form} layout="vertical">
             <Form.Item label="数据源" name={'selectDatasource'}>
               <Select
-                loading={datasourceLoading}
+                loading={allDatasourceLoading}
                 showSearch
                 onChange={(value) => {
                   fetchDatabase(null, value, 1, 9999);
@@ -107,7 +112,7 @@ export default inject('userStore')(
                 optionFilterProp="children"
                 style={{ width: '320px' }}
               >
-                {datasourceList?.contents
+                {allDatasourceList?.contents
                   ?.map((item) => {
                     if (dialectTypes?.length && !dialectTypes.includes(item.dialectType)) {
                       return null;
@@ -134,10 +139,7 @@ export default inject('userStore')(
                   if (e.target.value === 'project') {
                     fetchProjects(null, 1, 9999, false);
                   } else {
-                    fetchDatasource({
-                      page: 1,
-                      size: 9999,
-                    });
+                    fetchDatasource();
                   }
                 }}
                 optionType="button"

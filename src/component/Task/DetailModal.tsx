@@ -11,17 +11,16 @@ import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
 import type {
-  IConnectionPartitionPlan,
-  ICycleSubTaskRecord,
-  IPartitionPlanParams,
   CycleTaskDetail,
   IAlterScheduleTaskParams,
+  IConnectionPartitionPlan,
+  ICycleSubTaskRecord,
   IDataArchiveJobParameters,
+  IPartitionPlanParams,
   IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
   TaskRecord,
-  ICycleTaskRecord
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -31,6 +30,7 @@ import {
   TaskType,
 } from '@/d.ts';
 import React, { useEffect, useRef, useState } from 'react';
+import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import TaskTools from './component/ActionBar';
 import { DataArchiveTaskContent } from './DataArchiveTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
@@ -79,11 +79,17 @@ const taskContentMap = {
   [TaskType.SHADOW]: {
     getItems: getShadowSyncItems,
   },
+
+  [TaskType.ONLINE_SCHEMA_CHANGE]: {
+    getItems: getDDLAlterItems,
+  },
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
   const { type, visible, detailId, partitionPlan } = props;
-  const [task, setTask] = useState<TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>>(null);
+  const [task, setTask] = useState<
+    TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>
+  >(null);
   const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
@@ -96,7 +102,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     (node) => node.nodeType === TaskFlowNodeType.APPROVAL_TASK,
   );
   const hasLog = true;
-  const hasResult = ![TaskType.ALTER_SCHEDULE].includes(type) && detailType !== TaskDetailType.FLOW;
+  const hasResult =
+    ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE].includes(type) &&
+    detailType !== TaskDetailType.FLOW;
   const isLoop = task?.status === TaskStatus.EXECUTING;
   const clockRef = useRef(null);
   let taskContent = null;
@@ -243,6 +251,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       getLog();
     } else if (hasResult) {
       getResult();
+    }
+
+    if (detailType === TaskDetailType.EXECUTE_RECORD) {
+      getExecuteRecord();
     }
     if (isLoop) {
       clockRef.current = setTimeout(() => {

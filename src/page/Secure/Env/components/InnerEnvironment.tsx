@@ -1,18 +1,21 @@
+import { getIntegrationList } from '@/common/network/manager';
 import { updateRule } from '@/common/network/ruleset';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
+import { IntegrationType } from '@/d.ts';
 import { IRule, RuleType } from '@/d.ts/rule';
 import {
   CommonTableBodyMode,
   CommonTableMode,
+  ITableInstance,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../../components/SecureTable';
 import EditRuleDrawer from './EditRuleDrawer';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import styles from './index.less';
 
@@ -38,10 +41,9 @@ interface InnerEnvProps {
     style: string;
     description: string;
   };
-  onLoad: () => void;
   tableLoading: boolean;
-  exSearch: (args: ITableLoadOptions) => Promise<any>;
-  exReload: (args: ITableLoadOptions) => Promise<any>;
+  exSearch: (args?: ITableLoadOptions) => Promise<any>;
+  exReload: (args?: ITableLoadOptions) => Promise<any>;
   rules: IRule[];
   ruleType: RuleType;
   setRuleType: (value: any) => void;
@@ -130,7 +132,6 @@ const getColumns: (columnsFunction: {
         };
       },
       render: (text, record) => <TooltipContent content={record?.appliedDialectTypes?.join(',')} />,
-      //record.metadata?.supportedDialectTypes?.join(','), // 这个的值是固定的，应该是appliedDialectTypes才对
     },
     {
       title: '配置值',
@@ -157,22 +158,18 @@ const getColumns: (columnsFunction: {
         } else if (keys.length === 1) {
           const [pm] = propertyMetadatas;
           if (Array.isArray(properties[pm.name])) {
-            content = properties[pm.name].length > 0 ? properties[pm.name].join(',') : '-';
+            content =
+              properties[pm.name].length > 0 ? properties[pm.name].join(',').toString() : '-';
           } else {
-            content = content = properties[pm.name] ? properties[pm.name] : '-';
+            content = content = properties?.[pm.name]?.toString() || '-';
           }
         } else {
-          content = propertyMetadatas.map((pm) => `${pm.displayName}: ${properties[pm.name]}`);
+          content = propertyMetadatas
+            .map((pm) => `${pm.displayName}: ${properties[pm.name]}`)
+            .join(',');
         }
         return <TooltipContent content={content} />;
       },
-    },
-    {
-      title: '改进等级',
-      // width: 92,
-      dataIndex: 'level',
-      key: 'level',
-      render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
       title: '状态',
@@ -206,7 +203,6 @@ const getColumns: (columnsFunction: {
   ];
 };
 const InnerEnvironment: React.FC<InnerEnvProps> = ({
-  onLoad,
   tableLoading,
   selectedRecord,
   subTypeFilters,
@@ -218,8 +214,9 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   exReload,
   exSearch,
 }) => {
-  const tableRef = useRef<any>(null);
+  const tableRef = useRef<ITableInstance>();
   const [selectedData, setSelectedData] = useState<IRule>(null);
+  const [integrations, setIntegrations] = useState([]);
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
 
   const handleCloseModal = (fn?: () => void) => {
@@ -233,7 +230,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
       // 刷新列表
       setEditRuleDrawerVisible(false);
       fn?.();
-      onLoad();
+      tableRef?.current?.reload();
     } else {
       message.error('提交失败');
     }
@@ -266,6 +263,14 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   const handleRulesReload = () => {
     handleInitRules(selectedRecord.value, ruleType);
   };
+
+  const loadIntegrations = async () => {
+    const integrations = await getIntegrationList({
+      type: IntegrationType.SQL_INTERCEPTOR,
+    });
+    setIntegrations(integrations?.contents);
+  };
+
   const columns: ColumnsType<IRule> = getColumns({
     selectedRecord,
     handleOpenEditModal,
@@ -274,8 +279,18 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     supportedDialectTypeFilters,
   });
   useEffect(() => {
-    selectedRecord && ruleType && handleInitRules(selectedRecord?.value, ruleType);
+    if (selectedRecord && ruleType) {
+      handleInitRules(selectedRecord?.value, ruleType);
+      if (tableRef.current) {
+        tableRef?.current?.resetPaganition();
+      }
+    }
   }, [selectedRecord, ruleType]);
+
+  useEffect(() => {
+    loadIntegrations();
+  }, []);
+
   return (
     <>
       <div className={styles.innerEnv}>
@@ -329,7 +344,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
               body={CommonTableBodyMode.BIG}
               titleContent={null}
               showToolbar={false}
-              showPagination={false}
+              showPagination={true}
               filterContent={{}}
               operationContent={{
                 options: [],
@@ -355,6 +370,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           rule: selectedData,
           handleCloseModal,
           handleUpdateEnvironment,
+          integrations,
         }}
       />
     </>

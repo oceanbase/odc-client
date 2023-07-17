@@ -14,6 +14,7 @@ export default function SelectModal({ open, onOk, onClose }: IProps) {
       {
         page: 1,
         size: 9999,
+        minPrivilege: 'update',
       },
     ],
   });

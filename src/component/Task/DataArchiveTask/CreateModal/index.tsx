@@ -4,14 +4,14 @@ import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import {
   CreateTaskRecord,
+  ICycleTaskTriggerConfig,
+  IDataArchiveJobParameters,
   ITable,
   TaskExecStrategy,
   TaskOperationType,
   TaskPageScope,
   TaskPageType,
   TaskType,
-  IDataArchiveJobParameters,
-  ICycleTaskTriggerConfig
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -114,8 +114,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setFormData(formData);
     form.setFieldsValue(formData);
     crontabRef.current.setValue({
-      mode:
-        triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+      mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,
       hour: hours,
@@ -196,9 +195,10 @@ const CreateModal: React.FC<IProps> = (props) => {
           databaseId,
           targetDatabase,
           variables,
-          tables,
+          tables: _tables,
           deleteAfterMigration,
           triggerStrategy,
+          archiveRange,
           description,
         } = values;
         const parameters = {
@@ -209,7 +209,15 @@ const CreateModal: React.FC<IProps> = (props) => {
             sourceDatabaseId: databaseId,
             targetDataBaseId: targetDatabase,
             variables: getVariables(variables),
-            tables,
+            tables:
+              archiveRange === IArchiveRange.ALL
+                ? tables?.map((item) => {
+                    return {
+                      tableName: item?.tableName,
+                      conditionExpression: '',
+                    };
+                  })
+                : _tables,
             deleteAfterMigration,
           },
           triggerConfig: {
@@ -227,6 +235,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           };
         } else if (triggerStrategy === TaskExecStrategy.START_AT) {
           parameters.triggerConfig = {
+            triggerStrategy: TaskExecStrategy.START_AT,
             startAt: startAt?.valueOf(),
           };
         }
@@ -269,11 +278,11 @@ const CreateModal: React.FC<IProps> = (props) => {
   }, [dataArchiveVisible]);
 
   useEffect(() => {
-    if (databaseName) {
+    if (database?.id) {
       loadTables();
       form.setFieldValue('tables', [null]);
     }
-  }, [databaseName]);
+  }, [database?.id]);
 
   return (
     <Drawer

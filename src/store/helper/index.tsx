@@ -1,7 +1,8 @@
-import { ISqlExecuteResultStatus } from '@/d.ts';
+import { ConnectionMode, INlsObject, ISqlExecuteResultStatus } from '@/d.ts';
+import { getNlsValueKey, isNlsColumn } from '@/util/column';
 import { generateUniqKey } from '@/util/utils';
 
-export function generateResultSetColumns(record, oldKey?: string) {
+export function generateResultSetColumns(record, dbMode: ConnectionMode, oldKey?: string) {
   if (!record) {
     return null;
   }
@@ -46,7 +47,13 @@ export function generateResultSetColumns(record, oldKey?: string) {
           return row.reduce(
             (newRowMap, value, rowIdx) => {
               const columnKey = columns[rowIdx].key;
-              newRowMap[columnKey] = value;
+              const isNlsColumnType = isNlsColumn(columns[rowIdx]?.columnType, dbMode);
+              if (isNlsColumnType) {
+                newRowMap[getNlsValueKey(columnKey)] = value;
+                newRowMap[columnKey] = (value as INlsObject)?.formattedContent;
+              } else {
+                newRowMap[columnKey] = value;
+              }
               return newRowMap;
             },
             { _rowIndex: i },

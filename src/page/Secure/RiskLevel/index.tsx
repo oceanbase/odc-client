@@ -18,7 +18,19 @@ import styles from './index.less';
 const ApprovalProcess = ({ nodes = [] }) => {
   return (
     <>
-      {nodes?.map((node) => (node.autoApproval ? '自动审批' : node?.resourceRoleName)).join(' - ')}
+      {nodes
+        ?.map((node) => {
+          let label = '';
+          if (node.autoApproval) {
+            label = '自动审批';
+          } else if (node?.externalApprovalName) {
+            label = `外部审批(${node?.externalApprovalName})`;
+          } else {
+            label = node?.resourceRoleName || '-';
+          }
+          return label;
+        })
+        .join(' - ')}
     </>
   );
 };

@@ -1,6 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { Table } from 'antd';
 import type { ColumnProps } from 'antd/lib/table';
+import type { ExpandableConfig } from 'antd/lib/table/interface';
 import React, { useState } from 'react';
 // @ts-ignore
 import {
@@ -71,6 +72,7 @@ export default class DisplayTable extends React.Component<
     showTotal?: boolean;
     showSizeChanger?: boolean;
     showQuickJumper?: boolean;
+    expandable?: ExpandableConfig<any>;
     onChange?: (pagination: any) => void;
   },
   {

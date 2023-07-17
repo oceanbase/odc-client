@@ -8,10 +8,10 @@ import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { ResourceContext } from '../../../index';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Space, Tooltip } from 'antd';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { ResourceContext } from '../../../context';
 import styles from '../../index.less';
 import { permissionMap, resourceManagementTypeOptions } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
@@ -119,7 +119,7 @@ const getResourceColumns = (
   type: IManagerRolePermissionType,
   getResourceName: (type: IManagerResourceType, resourceId: number) => any,
 ) => {
-  const { typeOptions, actionOptions } = permissionMap[type];
+  const { typeOptions, actionOptions } = permissionMap[type] ?? {};
   return [
     {
       dataIndex: 'resourceType',
@@ -130,7 +130,7 @@ const getResourceColumns = (
       // 对象类型
       ellipsis: true,
       width: 160,
-      filters: typeOptions.map(({ label, value }) => ({
+      filters: typeOptions?.map(({ label, value }) => ({
         text: label,
         value,
       })),
@@ -164,7 +164,7 @@ const getResourceColumns = (
       // 权限
       ellipsis: true,
       width: 108,
-      filters: actionOptions.map(({ label, value }) => ({
+      filters: actionOptions?.map(({ label, value }) => ({
         text: label,
         value,
       })),
@@ -294,7 +294,7 @@ const UserDetail: React.FC<{
   } = data;
 
   const [visible, setVisible] = useState(false);
-  const { publicConnections, roles, users } = useContext(ResourceContext);
+  const { resource, roles, users } = useContext(ResourceContext);
   const createAbleResourceLabels = resourceManagementTypeOptions
     ?.map((option) => {
       const hasCreate = resourceManagementPermissions?.some(
@@ -355,7 +355,7 @@ const UserDetail: React.FC<{
 
   const getResourceName = (type: IManagerResourceType, resourceId: number) => {
     const resourceMap = {
-      [IManagerResourceType.public_connection]: publicConnections,
+      [IManagerResourceType.resource]: resource,
       [IManagerResourceType.role]: roles,
       [IManagerResourceType.user]: users,
     };

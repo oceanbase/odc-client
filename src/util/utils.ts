@@ -560,3 +560,13 @@ export function formatTimeTemplate(time: number) {
     return `${BigNumber(timeNumber.toFixed(2)).toString()} ${unit?.[0]}`;
   }
 }
+
+export const hourToSeconds = (hour: number) => {
+  const seconds = hour ? hour * 60 * 60 : undefined;
+  return seconds;
+};
+
+export const secondsToHour = (seconds: number) => {
+  const hour = seconds ? seconds / 60 / 60 : undefined;
+  return hour;
+};

@@ -15,7 +15,22 @@ export interface IUser {
   role: string;
   enabled: boolean;
   roles?: IManagerRole[];
-  belongedToOrganizations: IOrganization[];
+  organizationId: number;
+  systemOperationPermissions?: IPermission[];
+  connectionAccessPermissions?: IPermission[];
+  resourceManagementPermissions?: IPermission[];
+}
+
+export interface IPermission {
+  resourceId: number;
+  resourceType: string;
+  actions: string[];
+}
+
+export interface IUserSummary {
+  id: number;
+  name: string;
+  accountName: string;
   organizationId: number;
 }
 
@@ -87,8 +102,8 @@ export enum IManagerDetailTabs {
 export enum IManagerResourceType {
   user = 'ODC_USER',
   role = 'ODC_ROLE',
-  resource_group = 'ODC_RESOURCE_GROUP',
-  public_connection = 'ODC_CONNECTION',
+  project = 'ODC_PROJECT',
+  resource = 'ODC_CONNECTION',
   workspace = 'ODC_WORKSPACE',
   system_config = 'ODC_SYSTEM_CONFIG',
   private_connection = 'ODC_PRIVATE_CONNECTION',
@@ -98,6 +113,11 @@ export enum IManagerResourceType {
   data_masking = 'ODC_DATA_MASKING_RULE',
   flow_config = 'ODC_FLOW_CONFIG',
   auto_auth = 'ODC_AUTOMATION_RULE',
+  approval_flow = 'ODC_APPROVAL_FLOW_CONFIG',
+  risk_level = 'ODC_RISK_LEVEL',
+  risk_detect = 'ODC_RISK_DETECT_RULE',
+  ruleset = 'ODC_RULESET',
+  integration = 'ODC_INTEGRATION',
 }
 
 export enum actionTypes {
@@ -1474,6 +1494,28 @@ export interface ISQLExecuteDetail {
   waitTime: number;
 }
 
+export enum TraceSpanNode {
+  JDBC = 'JDBC',
+  OBProxy = 'OBProxy',
+  OBServer = 'OBServer',
+}
+export interface TraceSpan {
+  logs: string;
+  tags: any[];
+  elapseMicroSeconds: number;
+  parent: string;
+  traceId: string;
+  startTimestamp: string;
+  endTimestamp: string;
+  spanName: string;
+  tenantId: number;
+  host: string;
+  port: number;
+  logTraceId: string;
+  node: TraceSpanNode;
+  subSpans: TraceSpan[];
+}
+
 export enum ConstraintType {
   PRIMARY = 'PRIMARY',
   UNIQUE = 'UNIQUE',
@@ -1567,7 +1609,6 @@ export interface IDataTransferTaskParams {
   taskName: string;
   expanded: boolean; // 是否展开
   maskingPolicy: IMaskPolicy;
-  maskingPolicyId: number;
   logs: {
     [logType: string]: string;
   };
@@ -1617,6 +1658,7 @@ export enum TaskPageType {
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
   SENSITIVE_COLUMN = 'SENSITIVE_COLUMN',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
+  ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
 }
 
 export enum TaskType {
@@ -1632,6 +1674,7 @@ export enum TaskType {
   PERMISSION_APPLY = 'PERMISSION_APPLY',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   MIGRATION = 'DATA_ARCHIVE',
+  ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
 }
 
 export enum SubTaskType {
@@ -1762,7 +1805,6 @@ export interface ExportFormData {
   sysUserPassword?: string;
   overwriteSysConfig?: boolean;
   exportAllObjects?: boolean; // 导出整库
-  maskingPolicyId?: number; // 脱敏策略
   exportFilePath?: string; // 桌面端导出路径
 }
 
@@ -1933,6 +1975,7 @@ export enum ResourceTreeNodeMenuKeys {
 }
 
 export interface TaskRecord<P> {
+  projectId: number;
   id: number;
   type: TaskType;
   subTypes: string[];
@@ -1949,7 +1992,11 @@ export interface TaskRecord<P> {
     accountName: string;
     roleNames: string[];
   };
-
+  candidateApprovers: {
+    id: number;
+    name: string;
+    accountName: string;
+  }[];
   approvable: boolean;
   approveInstanceId?: number;
   rollbackable: boolean;
@@ -1975,6 +2022,23 @@ export interface ICycleSubTaskRecord {
   updateTime: number;
 }
 
+export interface ISubTaskRecord {
+  createTime: number;
+  fireTime: number;
+  id: number;
+  jobGroup: 'ONLINE_SCHEMA_CHANGE_START';
+  jobName: string;
+  resultJson: string;
+  status: TaskStatus;
+  updateTime: number;
+  parametersJson: Record<string, any>;
+  progressPercentage: number;
+}
+
+export interface ISubTaskRecords {
+  tasks: ISubTaskRecord[];
+}
+
 export type TaskRecordParameters =
   | IDataTransferTaskParams
   | IAsyncTaskParams
@@ -1997,6 +2061,12 @@ export interface ITaskResult {
   ignoreCount: number;
   clearCount: number;
   exportZipFilePath?: string;
+  rollbackPlanResult?: {
+    error: string;
+    generated: boolean;
+    objectId: string;
+    success: boolean;
+  };
 }
 
 export interface IDataArchiveJobParameters {
@@ -2157,6 +2227,15 @@ export interface IAsyncTaskParams {
   rollbackSqlContent: string;
   rollbackSqlObjectIds: string[];
   rollbackSqlObjectNames: string[];
+  generateRollbackPlan: boolean;
+  parentFlowInstanceId?: number;
+}
+
+export enum RollbackType {
+  // 引用
+  REF = 'reference',
+  // 自定义
+  CUSTOM = 'CUSTOM',
 }
 
 export interface IPermissionTaskParams {
@@ -2282,6 +2361,7 @@ export enum TaskOperationType {
 
 export enum IFlowTaskType {
   SQL_CHECK = 'SQL_CHECK',
+  GENERATE_ROLLBACK = 'GENERATE_ROLLBACK',
 }
 
 export interface ITaskFlowNode {
@@ -2346,7 +2426,6 @@ export enum TaskStatus {
   // 其他： 前端不感知
   CREATED = 'CREATED', // 前端一般不感知，接口调用快的时候，可能会遇到（山露: 建议加上, 和 EXECUTING 一样的处理）
   APPROVED = 'APPROVED',
-  ROLLBACKING = 'ROLLBACKING',
   // 周期任务独有的状态
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',
@@ -3068,4 +3147,22 @@ export interface IPLCompileResult {
   statementWarnings: string;
   status: boolean;
   track: string;
+}
+export interface INlsObject {
+  /**
+   * 格式化后的数据
+   */
+  formattedContent: string;
+  /**
+   * 时区信息
+   */
+  timeZoneId: string;
+  /**
+   * 纳秒值
+   */
+  nano: number;
+  /**
+   * 时间戳
+   */
+  timestamp: number;
 }

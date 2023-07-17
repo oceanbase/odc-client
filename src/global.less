@@ -14,7 +14,8 @@
 
 html,
 body,
-#root {
+#root,
+#root-slave {
   min-width: 960px;
   height: 100%;
   overflow: auto;
@@ -22,6 +23,9 @@ body,
   font-family: Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC,
     Hiragino Sans GB, Microsoft YaHei, RareWord, Helvetica Neue, Helvetica, Arial, sans-serif,
     monospace;
+}
+#root-slave {
+  height: 100vh;
 }
 
 #root {
@@ -459,41 +463,7 @@ ol {
 #odc-container {
   position: absolute;
   width: 100%;
-  height: calc(100vh - 50px);
-
-  /* 在云上，需要考虑顶部阿里云导航头 */
-  .ant-layout {
-    min-height: calc(100vh - 50px);
-  }
-
-  .ant-tabs-bar.ant-tabs-top-bar {
-    border-bottom: 1px solid #e8e8e8 !important;
-  }
-
-  .ant-tabs-tab {
-    font-size: @odc-base-font-size;
-  }
-
-  .ant-form-item-with-help {
-    margin-bottom: 12px;
-  }
-
-  .ant-form-item-explain {
-    margin-top: 3px;
-  }
-
-  .ant-tabs .ant-tabs-content {
-    display: block;
-    width: 100%;
-  }
-
-  .ant-tree {
-    background: initial;
-  }
-
-  .ant-checkbox-wrapper::after {
-    display: none;
-  }
+  height: 100vh;
 }
 
 .ant-input-search input {

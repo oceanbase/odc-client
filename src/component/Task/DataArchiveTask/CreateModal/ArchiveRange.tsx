@@ -57,7 +57,14 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               },
                             ]}
                           >
-                            <Select placeholder="请选择" options={tablesOptions} />
+                            <Select
+                              showSearch
+                              placeholder="请选择"
+                              options={tablesOptions}
+                              filterOption={(input, option) =>
+                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                              }
+                            />
                           </Form.Item>
                           <Form.Item
                             {...restField}

@@ -1,12 +1,15 @@
-import { ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { INlsObject, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
 import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
+import { getNlsValueKey } from '@/util/column';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import request from '@/util/request';
 import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
 import { message } from 'antd';
+import { isNil, toInteger } from 'lodash';
+import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
 
@@ -230,15 +233,56 @@ function wrapDataDML(
     });
   }
 
+  function getServerDateformat(nlsObject: INlsObject, columnType: string) {
+    let data = null;
+    if (isNil(nlsObject?.timestamp)) {
+      return null;
+    }
+    let time = moment(nlsObject.timestamp);
+    let nano = (time.millisecond() * 1000000 + (toInteger(nlsObject?.nano) || 0))
+      .toString()
+      ?.padStart(9, '0');
+    /**
+     * https://datatracker.ietf.org/doc/html/rfc3339#section-5.8
+     * https://momentjs.com/docs/#/manipulating/utc-offset/
+     */
+    switch (columnType) {
+      case 'TIMESTAMP WITH TIME ZONE': {
+        let timeZone = nlsObject.timeZoneId;
+        if (timeZone) {
+          data = time.utcOffset(timeZone).format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        } else {
+          data = time.utc().format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        }
+        break;
+      }
+      default: {
+        data = time.utc().format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        break;
+      }
+    }
+    return data;
+  }
+
   return columns.map((column, i) => {
     const uniqueColumnName = column?.columnName;
     const blobExt: LobExt = row[getBlobValueKey(uniqueColumnName)];
+    const nlsObject: INlsObject = row[getNlsValueKey(uniqueColumnName)];
+    const initNlsObject: INlsObject = initialRow?.[getNlsValueKey(uniqueColumnName)];
+    let oldData = initialRow ? initialRow[uniqueColumnName] : null;
+    let newData = blobExt ? blobExt.info : row[uniqueColumnName];
+    if (initNlsObject) {
+      oldData = getServerDateformat(initNlsObject, column?.dataType);
+    }
+    if (nlsObject) {
+      newData = getServerDateformat(nlsObject, column?.dataType);
+    }
     return {
       tableName,
       columnName: column.columnName,
       columnType: column.dataType,
-      newData: blobExt ? blobExt.info : row[uniqueColumnName],
-      oldData: initialRow && initialRow[uniqueColumnName],
+      newData,
+      oldData,
       newDataType: blobExt?.type || RSModifyDataType.RAW,
       useDefault: typeof row[uniqueColumnName] === 'undefined' && column.columnName !== 'ROWID',
       primaryKey: column.primaryKey,
@@ -292,4 +336,14 @@ export async function getDataObjectDownloadUrl(
       )}/sqls/${sqlId}/download?row=${rowIndex}&col=${columnIndex}`
     );
   }
+}
+
+export async function getFormatNlsDateString(
+  params: Pick<INlsObject, 'nano' | 'timeZoneId' | 'timestamp'> & { dataType: string },
+  sessionId: string,
+): Promise<string> {
+  const res = await request.post(`/api/v2/connects/sessions/${sessionId}/format`, {
+    data: params,
+  });
+  return res?.data;
 }

@@ -498,21 +498,13 @@ class TaskContent extends React.Component<any, any> {
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.Connection',
-              })}
-              /*所属连接*/ content={task?.connection?.name || '-'}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <SimpleTextItem
-              label={formatMessage({
                 id: 'odc.component.DataTransferModal.Database',
               })}
               /*所属数据库*/ content={task?.databaseName || '-'}
             />
           </Col>
+        </Row>
+        <Row>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
@@ -534,31 +526,27 @@ class TaskContent extends React.Component<any, any> {
               }
             />
           </Col>
+          <Col span={12}>
+            {hasFlow && (
+              <SimpleTextItem
+                label={formatMessage({
+                  id: 'odc.component.DataTransferModal.RiskLevel',
+                })}
+                /*风险等级*/ content={
+                  formatMessage(
+                    {
+                      id: 'odc.component.DataTransferModal.Maxrisklevel',
+                    },
+
+                    { maxRiskLevel: maxRiskLevel },
+                  )
+
+                  //`${maxRiskLevel}级`
+                }
+              />
+            )}
+          </Col>
         </Row>
-        {hasFlow && (
-          <>
-            <Row>
-              <Col span={12}>
-                <SimpleTextItem
-                  label={formatMessage({
-                    id: 'odc.component.DataTransferModal.RiskLevel',
-                  })}
-                  /*风险等级*/ content={
-                    formatMessage(
-                      {
-                        id: 'odc.component.DataTransferModal.Maxrisklevel',
-                      },
-
-                      { maxRiskLevel: maxRiskLevel },
-                    )
-
-                    //`${maxRiskLevel}级`
-                  }
-                />
-              </Col>
-            </Row>
-          </>
-        )}
 
         <Row>
           <Col span={12}>

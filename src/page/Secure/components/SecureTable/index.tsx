@@ -165,8 +165,8 @@ const CommonTable: <RecordType extends object = any>(
     resetSelectedRows: () => {
       setSelectedRowKeys([]);
     },
-    initHeight: () => {
-      setWrapperHeight(tableRef?.current?.offsetHeight);
+    resetPaganition: () => {
+      setPagination({ ...pagination, current: 1 });
     },
   }));
 
@@ -228,7 +228,6 @@ const CommonTable: <RecordType extends object = any>(
   function handleSearch(value: string) {
     setSearchValue(value);
     setPagination(null);
-    console.log(value);
     exSearch?.({
       searchValue: value,
       filters,
@@ -305,6 +304,7 @@ const CommonTable: <RecordType extends object = any>(
     },
   ) {
     setLoading(true);
+    await exReload?.(args);
     await onLoad?.(args);
     setLoading(false);
   }
@@ -458,6 +458,7 @@ const CommonTable: <RecordType extends object = any>(
               showPagination
                 ? ({
                     ...tableProps?.pagination,
+                    ...pagination,
                     /**
                      * 这里需要给pageSize一个默认值
                      * 在pageSize为0的时候，会导致table渲染所有数据，从而引发性能问题，最好的处理是computeSize之后再渲染

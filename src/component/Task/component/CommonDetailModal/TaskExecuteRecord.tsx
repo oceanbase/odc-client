@@ -103,6 +103,7 @@ const getConnectionColumns = (params: {
           <TaskTools
             taskId={taskId}
             record={record}
+            showRollback={record?.jobGroup === SubTaskType.DATA_ARCHIVE}
             onReloadList={onReloadList}
             onApprovalVisible={onApprovalVisible}
             onDetailVisible={onDetailVisible}

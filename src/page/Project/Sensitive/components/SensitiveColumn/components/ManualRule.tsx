@@ -1,5 +1,7 @@
 import { listDatabases } from '@/common/network/database';
+import { exist } from '@/common/network/sensitiveColumn';
 import { getTableColumnList } from '@/common/network/table';
+import { IDatabase } from '@/d.ts/database';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import SensitiveContext from '@/page/Project/Sensitive/SensitiveContext';
@@ -9,19 +11,11 @@ import { Form, Select, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import styles from './index.less';
 
-const ManualRule = ({
-  fields,
-  index,
-  formRef,
-  fieldKey,
-  fieldName,
-  remove,
-  databases,
-  setDatabases,
-}) => {
+const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
-  const { dataSources = [], maskingAlgorithmOptions } = sensitiveContext;
+  const { dataSources = [], maskingAlgorithmOptions, projectId } = sensitiveContext;
+  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const [dataSourceId, setDataSourceId] = useState<number>(0);
   const [databaseId, setDatabaseId] = useState<number>(0);
   const [tableName, setTableName] = useState<string>('');
@@ -39,7 +33,7 @@ const ManualRule = ({
   };
 
   const initDataSources = async () => {
-    const resData = dataSources.map((content) => ({
+    const resData = dataSources?.map((content) => ({
       label: content.name,
       value: content.id,
     }));
@@ -66,26 +60,59 @@ const ManualRule = ({
     setTableOptions([]);
     setColumnOptions([]);
   };
+  const getExistHomologyColumnNames = (
+    tableName: string,
+    manual?: {
+      dataSource: number;
+      database: number;
+      tableName: string;
+      columnName: string;
+    }[],
+  ) => {
+    const result = manual
+      ?.filter(
+        (data) =>
+          data.dataSource === dataSourceId &&
+          data.database === databaseId &&
+          data.tableName === tableName,
+      )
+      ?.map((data) => data.columnName);
+    return result;
+  };
 
-  const initColumn = async (value: any) => {
+  const initColumn = async (
+    value: string,
+    manual?: {
+      dataSource: number;
+      database: number;
+      tableName: string;
+      columnName: string;
+    }[],
+    init: boolean = true,
+  ) => {
     const res = await getTableColumnList(
       value,
       databases?.find((d) => d.id === databaseId)?.name,
       session.sessionId,
     );
-    setColumnName('');
+    let existHomologyColumnNames = getExistHomologyColumnNames(value, manual);
+    if (!init) {
+      existHomologyColumnNames = existHomologyColumnNames?.filter((cm) => cm !== columnName);
+    }
+    init && setColumnName('');
     setColumnOptions(
-      res.map((r) => ({
+      res?.map((r) => ({
         label: r.columnName,
         value: r.columnName,
+        disabled: existHomologyColumnNames?.some((cm) => cm === r.columnName),
       })),
     );
   };
 
-  const handleDataSourceSelect = async (value: any) => {
-    const { test = [] } = await formRef.getFieldsValue();
+  const handleDataSourceSelect = async (value: number) => {
+    const { manual = [] } = await formRef.getFieldsValue();
     setDataSourceId(value);
-    test[index] = {
+    manual[index] = {
       dataSource: value,
       columnName: undefined,
       database: undefined,
@@ -93,53 +120,69 @@ const ManualRule = ({
       tableName: undefined,
     };
     formRef.setFieldsValue({
-      test,
+      manual,
     });
   };
 
-  const handleDatabaseSelect = async (value: any) => {
-    const { test = [] } = await formRef.getFieldsValue();
+  const handleDatabaseSelect = async (value: number) => {
+    const { manual = [] } = await formRef.getFieldsValue();
     setDatabaseId(value);
-    test[index] = {
-      ...test[index],
+    manual[index] = {
+      ...manual[index],
       columnName: undefined,
       database: value,
       maskingAlgorithmId: undefined,
       tableName: undefined,
     };
     formRef.setFieldsValue({
-      test,
+      manual,
     });
   };
 
-  const handleTableSelect = async (value: any) => {
-    const { test = [] } = await formRef.getFieldsValue();
+  const handleTableSelect = async (value: string) => {
+    const { manual = [] } = await formRef.getFieldsValue();
     setTableName(value);
 
-    test[index] = {
-      ...test[index],
+    manual[index] = {
+      ...manual[index],
       columnName: undefined,
       maskingAlgorithmId: undefined,
       tableName: value,
     };
     formRef.setFieldsValue({
-      test,
+      manual,
     });
-    await initColumn(value);
   };
 
   const hanleColumnSelect = async (value: any) => {
-    const { test = [] } = await formRef.getFieldsValue();
+    const { manual = [] } = await formRef.getFieldsValue();
     setColumnName(value);
 
-    test[index] = {
-      ...test[index],
+    manual[index] = {
+      ...manual[index],
       columnName: value,
       maskingAlgorithmId: undefined,
     };
     formRef.setFieldsValue({
-      test,
+      manual,
     });
+  };
+
+  const checkExist = async (ruler, value) => {
+    if (value) {
+      const result = await exist(projectId, {
+        database: {
+          id: databaseId,
+        },
+        tableName,
+        columnName: value,
+      });
+      if (result) {
+        throw new Error();
+      }
+    } else {
+      return;
+    }
   };
 
   useEffect(() => {
@@ -165,10 +208,12 @@ const ManualRule = ({
       }, 300);
     }
     return () => {
-      // reset();
       clearTimeout(timer);
     };
   }, [session?.database]);
+  const handleDelete = async (index: number) => {
+    remove(index);
+  };
   return (
     <Space key={fieldKey} className={styles.formItem} align="baseline">
       <Form.Item
@@ -247,6 +292,10 @@ const ManualRule = ({
             required: true,
             message: '请选择列',
           },
+          {
+            message: '敏感列已存在',
+            validator: checkExist,
+          },
         ]}
       >
         <Select
@@ -255,9 +304,22 @@ const ManualRule = ({
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
-          options={columnOptions}
-          disabled={tableOptions.length === 0}
-        />
+          onDropdownVisibleChange={async (visible: boolean) => {
+            if (visible) {
+              const { manual = [] } = await formRef.getFieldsValue();
+              await initColumn(tableName, manual, false);
+            }
+          }}
+          disabled={tableOptions?.length === 0 || tableName === ''}
+        >
+          {columnOptions?.map(
+            ({ label = undefined, value = undefined, disabled = false }, index) => (
+              <Select.Option value={value} key={index} disabled={disabled}>
+                {label}
+              </Select.Option>
+            ),
+          )}
+        </Select>
       </Form.Item>
       <Form.Item
         key={[fieldName, 'maskingAlgorithmId'].join('_')}
@@ -265,7 +327,7 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择算法名称',
+            message: '请选择脱敏算法',
           },
         ]}
       >
@@ -274,10 +336,12 @@ const ManualRule = ({
           placeholder={'请选择'}
           style={{ width: '184px' }}
           options={maskingAlgorithmOptions}
-          disabled={columnOptions.length === 0}
+          disabled={columnOptions?.length === 0 || columnName === ''}
         />
       </Form.Item>
-      {fields.length > 1 ? <DeleteOutlined key={index} onClick={() => remove(index)} /> : null}
+      {fields?.length > 1 ? (
+        <DeleteOutlined key={index} onClick={() => handleDelete(index)} />
+      ) : null}
     </Space>
   );
 };

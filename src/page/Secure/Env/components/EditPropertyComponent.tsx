@@ -22,17 +22,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
   switch (componentType) {
     case ComponentType.INPUT_STRING: {
       return (
-        <Form.Item
-          label={label}
-          name={name}
-          rules={[
-            {
-              required: true,
-              message: `请输入${label}`,
-            },
-          ]}
-          tooltip={description}
-        >
+        <Form.Item label={label} name={name} tooltip={description}>
           <Input />
         </Form.Item>
       );

@@ -5,7 +5,7 @@ export default function AntdEditorWrap(props) {
     <Popover
       overlayClassName="rdg-antd-editor"
       placement={'bottomLeft'}
-      visible={true}
+      open={true}
       content={props.children}
       getPopupContainer={(triggerNode) => {
         return (

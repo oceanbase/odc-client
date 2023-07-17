@@ -1,7 +1,9 @@
 import { getScriptList as getRemoteScriptList } from '@/common/network';
-import { switchCurrentOrganization } from '@/common/network/origanization';
+import { getOrganizationList } from '@/common/network/organization';
 import { odcServerLoginUrl, odcServerLogoutUrl } from '@/common/network/other';
-import type { ISQLScript, IUser } from '@/d.ts';
+import type { IOrganization, ISQLScript, IUser } from '@/d.ts';
+import { SpaceType } from '@/d.ts/_index';
+import logger from '@/util/logger';
 import request from '@/util/request';
 import tracert from '@/util/tracert';
 import { encrypt } from '@/util/utils';
@@ -22,6 +24,8 @@ class ScriptStore {
   }
 }
 
+export const sessionKey = '$odc_session_organizationKey';
+
 export class UserStore {
   @observable
   public user: Partial<IUser> | null = null;
@@ -30,7 +34,24 @@ export class UserStore {
   public isUserFetched: boolean = false;
 
   @observable
+  public isSwitchingOrganization: boolean = false;
+
+  @observable
+  public organizations: IOrganization[] = [];
+
+  @observable
+  public organizationId: number = parseInt(sessionStorage.getItem(sessionKey));
+
+  @observable
   public scriptStore: ScriptStore = new ScriptStore();
+
+  @action
+  public async getOrganizations() {
+    const organizations = await getOrganizationList();
+    this.organizations = organizations;
+    logger.debug('set organizations', this.organizations?.length);
+    return !!organizations;
+  }
 
   @action
   public async login(params: {
@@ -81,12 +102,17 @@ export class UserStore {
 
   @action
   public async logout() {
+    logger.debug('logout');
     const res = await request.post('/api/v2/iam/logout', {
       params: {
         wantCatchError: true,
       },
     });
     this.user = null;
+    this.organizations = [];
+    this.organizationId = null;
+    this.isSwitchingOrganization = false;
+    sessionStorage.removeItem(sessionKey);
     tracert.setUser(null);
     this.scriptStore = new ScriptStore();
     return res?.data;
@@ -149,14 +175,31 @@ export class UserStore {
   }
 
   @action
-  public async switchCurrentOrganization(id: number) {
-    const isSuccess = await switchCurrentOrganization(id);
-    if (!isSuccess) {
+  public async switchCurrentOrganization(id?: number) {
+    id = id || this.getDefaultOrganization()?.id;
+    if (!id) {
       return false;
     }
+    this.isSwitchingOrganization = true;
+    this.organizationId = id;
+    sessionStorage.setItem(sessionKey, id?.toString());
     this.isUserFetched = false;
-    await this.getCurrentUser();
-    return true;
+    const isSuccess = await this.getCurrentUser();
+    this.isSwitchingOrganization = false;
+    return isSuccess;
+  }
+
+  public getDefaultOrganization() {
+    const sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+    if (sessionOrganizationId) {
+      return this.organizations?.find((item) => item.id === sessionOrganizationId);
+    }
+    let personalOrganization: IOrganization = this.organizations?.find(
+      (item) => item.type === SpaceType.PRIVATE,
+    );
+    const firstOrganization = this.organizations?.find((item) => item.type === SpaceType.SYNERGY);
+    let defaultOrganization = firstOrganization || personalOrganization;
+    return defaultOrganization;
   }
 
   @action

@@ -6,6 +6,8 @@ import { SelectItemProps } from './interface';
 import React from 'react';
 
 interface ISensitiveContext {
+  projectId: number;
+
   maskingAlgorithms: IMaskingAlgorithm[];
   maskingAlgorithmIdMap: {
     [key in any]: string;
@@ -28,6 +30,7 @@ interface ISensitiveContext {
 }
 
 const SensitiveContext = React.createContext<Partial<ISensitiveContext>>({
+  projectId: undefined,
   dataSources: [],
   dataSourceIdMap: {},
 

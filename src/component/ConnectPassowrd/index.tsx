@@ -2,10 +2,10 @@ import { getConnectionDetail, testConnection } from '@/common/network/connection
 import { AccountType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { KeyOutlined } from '@ant-design/icons';
-import { Checkbox, Form, Input, Modal } from 'antd';
+import { Form, Input, Modal } from 'antd';
 
-const PasswordModal = function ({ formRef, haveSave, cid }) {
-  const [form] = Form.useForm<{ isSavePassword: boolean; password: string }>();
+const PasswordModal = function ({ formRef, cid }) {
+  const [form] = Form.useForm<{ password: string }>();
   formRef.valid = async function () {
     const values = await form.validateFields();
     if (!values) {
@@ -49,7 +49,7 @@ const PasswordModal = function ({ formRef, haveSave, cid }) {
     return values;
   };
   return (
-    <Form initialValues={{ isSavePassword: true, password: '' }} form={form}>
+    <Form initialValues={{ password: '' }} form={form}>
       <Input
         style={{
           position: 'fixed',
@@ -67,25 +67,11 @@ const PasswordModal = function ({ formRef, haveSave, cid }) {
       >
         <Input.Password autoComplete="new-password" id="connectPasswordInput" />
       </Form.Item>
-      {haveSave && (
-        <Form.Item name="isSavePassword" noStyle shouldUpdate valuePropName="checked">
-          <Checkbox>
-            {
-              formatMessage({
-                id: 'odc.component.ConnectPassowrd.SavePassword',
-              }) /*保存密码*/
-            }
-          </Checkbox>
-        </Form.Item>
-      )}
     </Form>
   );
 };
 
-export default function ShowConnectPassword(
-  cid?: string,
-  haveSave?: boolean,
-): Promise<{ isSaved: boolean; password: string } | string> {
+export default function ShowConnectPassword(cid?: string): Promise<{ password: string } | string> {
   return new Promise((resolve, reject) => {
     const formRef = { valid: null };
     const callback = resolve;
@@ -99,7 +85,7 @@ export default function ShowConnectPassword(
       /**
        * 这里需要添加一个视觉上不可见的input，来欺骗 chorme 等浏览器填充密码的时候，把账号填充在这个input上，从而不影响其他正常的input组件
        */
-      content: <PasswordModal cid={cid} haveSave={haveSave} formRef={formRef} />,
+      content: <PasswordModal cid={cid} formRef={formRef} />,
       onOk: () => {
         return new Promise(async (resolve, reject) => {
           let v;
@@ -111,12 +97,9 @@ export default function ShowConnectPassword(
           if (!v) {
             reject();
           } else {
-            haveSave
-              ? callback({
-                  isSaved: v.isSavePassword,
-                  password: v.password,
-                })
-              : callback(v.password);
+            callback({
+              password: v.password,
+            });
             resolve(true);
           }
         });

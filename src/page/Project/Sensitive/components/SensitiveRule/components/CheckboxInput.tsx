@@ -7,6 +7,7 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
   hasLabel = false,
   checkValue = '',
   value,
+  formRef,
   onChange,
 }) => {
   const [checked, setChecked] = useState<string[]>([]);
@@ -31,9 +32,32 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
       regExp: e.target.value || '',
     });
   };
+  const handleLeastOneCheck = async (ruler, value) => {
+    const { regExp: regExps } = await formRef.getFieldsValue();
+    const map = [];
+    for (let r in regExps) {
+      map.push(regExps?.[r]?.checked?.length > 0);
+    }
+    if (!map.includes(true)) {
+      return Promise.reject('至少勾选一个识别对象');
+    }
+    return Promise.resolve();
+  };
+
   return (
     <div style={{ display: 'flex' }}>
-      <Form.Item required name={[...name, 'checked']} label={hasLabel && '识别对象'}>
+      <Form.Item
+        required
+        name={[...name, 'checked']}
+        label={hasLabel && '识别对象'}
+        validateTrigger="onBlur"
+        rules={[
+          {
+            message: '请先勾选识别对象',
+            validator: handleLeastOneCheck,
+          },
+        ]}
+      >
         <Checkbox.Group
           value={value?.checked || checked}
           onChange={onCheckboxChange}
@@ -44,7 +68,18 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
           <Checkbox value={checkValue}>{value?.label}</Checkbox>
         </Checkbox.Group>
       </Form.Item>
-      <Form.Item required name={[...name, 'regExp']} label={hasLabel && '正则表达式'}>
+      <Form.Item
+        required
+        name={[...name, 'regExp']}
+        label={hasLabel && '正则表达式'}
+        validateTrigger="onBlur"
+        rules={[
+          {
+            required: checked?.length > 0 || value?.checked?.length > 0,
+            message: '请填写正则表达式',
+          },
+        ]}
+      >
         <Input
           style={{
             width: '432px',

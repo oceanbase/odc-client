@@ -1,3 +1,4 @@
+import { IResponseData } from '@/d.ts';
 import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import request from '@/util/request';
 
@@ -48,7 +49,7 @@ export async function setEnabled(
 
 export async function listSensitiveColumns(
   projectId: number,
-  queryParams?: Partial<{
+  params?: Partial<{
     fuzzyTableColumn: string;
     datasource: number[];
     database: number[];
@@ -57,11 +58,11 @@ export async function listSensitiveColumns(
     maskingAlgorithm: number[];
     enabled: boolean[];
   }>,
-): Promise<ISensitiveColumn[]> {
+): Promise<IResponseData<ISensitiveColumn>> {
   const ret = await request.get(`/api/v2/collaboration/projects/${projectId}/sensitiveColumns/`, {
-    params: queryParams,
+    params,
   });
-  return ret?.data?.contents;
+  return ret?.data;
 }
 
 export enum ScannResultType {
@@ -150,4 +151,23 @@ export async function statsSensitiveColumns(projectId: number) {
       maskingAlgorithmId: { distinct: [] },
     }
   );
+}
+
+export async function exist(
+  projectId: number,
+  data: {
+    database: {
+      id: number;
+    };
+    tableName: string;
+    columnName: string;
+  },
+): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/exists`,
+    {
+      data,
+    },
+  );
+  return res?.data || false;
 }

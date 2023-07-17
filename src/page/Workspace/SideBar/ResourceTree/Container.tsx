@@ -16,9 +16,8 @@ export default inject('userStore')(
     const [addVisible, setAddVisible] = useState(false);
     const resourcetreeContext = useContext(ResourceTreeContext);
     const isPersonal =
-      userStore?.user?.belongedToOrganizations?.find(
-        (i) => i.id === userStore?.user?.organizationId,
-      )?.type === SpaceType.PRIVATE;
+      userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
+      SpaceType.PRIVATE;
     const datasource: ITab = {
       title: '数据源',
       key: ResourceTreeTab.datasource,
