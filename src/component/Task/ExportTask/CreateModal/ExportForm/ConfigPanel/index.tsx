@@ -1,11 +1,9 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
-import MaskPolicySelecter from '@/component/MaskPolicySelecter';
 import SysFormItem from '@/component/SysFormItem';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
 import { EXPORT_CONTENT, EXPORT_TYPE, IConnection, IMPORT_ENCODING } from '@/d.ts';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
@@ -94,8 +92,8 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                     </HelpDoc>
                   }
                 >
-                  <Row>
-                    <Col span={6}>
+                  <Row gutter={24}>
+                    <Col span={8}>
                       <FormItem
                         name="dataTransferFormat"
                         label={
@@ -114,7 +112,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                           },
                         ]}
                       >
-                        <Select style={{ width: 152 }}>
+                        <Select>
                           <Option key={EXPORT_TYPE.CSV} value={EXPORT_TYPE.CSV}>
                             {
                               formatMessage({
@@ -132,7 +130,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                         </Select>
                       </FormItem>
                     </Col>
-                    <Col span={6}>
+                    <Col span={8}>
                       <FormItem
                         name="encoding"
                         label={formatMessage({
@@ -147,7 +145,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                           },
                         ]}
                       >
-                        <Select style={{ width: 152 }}>
+                        <Select>
                           {Object.entries(IMPORT_ENCODING).map(([text, value]) => {
                             return (
                               <Option value={value} key={value}>
@@ -158,13 +156,13 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                         </Select>
                       </FormItem>
                     </Col>
-                    {!isClient() && (
+                    {/* {!isClient() && (
                       <Col span={6}>
                         <MaskPolicySelecter required />
                       </Col>
-                    )}
+                    )} */}
 
-                    <Col span={6}>
+                    <Col span={8}>
                       <FormItem
                         style={{ marginBottom: 8 }}
                         label={

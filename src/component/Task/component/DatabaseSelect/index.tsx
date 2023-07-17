@@ -15,16 +15,18 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const [database, setDatabase] = useState([]);
   const [project, setProject] = useState(null);
 
-  const databaseOptions = database?.map(({ name, id, environment, project }) => ({
-    label: (
-      <Space size={2} data-label={name}>
-        <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
-        <span>{name}</span>
-        <Text type="secondary">{project.name}</Text>
-      </Space>
-    ),
-    value: id,
-  }));
+  const databaseOptions = database
+    ?.filter((item) => !item?.project.builtin)
+    ?.map(({ name, id, environment, dataSource }) => ({
+      label: (
+        <Space size={2} data-label={name}>
+          <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+          <span>{name}</span>
+          <Text type="secondary">{dataSource.name}</Text>
+        </Space>
+      ),
+      value: id,
+    }));
 
   const loadDatabase = async (projectId: number) => {
     const res = await listDatabases(projectId);
@@ -41,7 +43,18 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   }, []);
 
   return (
-    <Form.Item label={label} name={name} required extra={project && `当前项目: ${project.name}`}>
+    <Form.Item
+      label={label}
+      name={name}
+      required
+      extra={project && `当前项目: ${project.name}`}
+      rules={[
+        {
+          required: true,
+          message: '请选择数据库',
+        },
+      ]}
+    >
       <Select
         showSearch
         filterOption={(input, option) =>

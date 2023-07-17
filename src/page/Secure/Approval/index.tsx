@@ -10,7 +10,8 @@ import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
-import { IManagerResourceType } from '@/d.ts';
+import { IManagerResourceType, IntegrationType } from '@/d.ts';
+import { secondsToHour } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { message, Modal, Space } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
@@ -22,7 +23,7 @@ import styles from './index.less';
 const renderTime = (time) => {
   return (
     <Space size={4}>
-      <span>{time}</span>
+      <span>{secondsToHour(time)}</span>
       <span>小时</span>
     </Space>
   );
@@ -207,7 +208,9 @@ class Approval extends React.PureComponent<IProps, IState> {
   };
 
   loadIntegrations = async () => {
-    const integrations = await getIntegrationList();
+    const integrations = await getIntegrationList({
+      type: IntegrationType.APPROVAL,
+    });
     this.setState({
       integrations: integrations?.contents,
     });
@@ -229,7 +232,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, editId, flowList, roles, integrations } = this.state;
     const canAcessCreate = canAcess({
-      resourceIdentifier: IManagerResourceType.resource_group,
+      resourceIdentifier: IManagerResourceType.resource,
       action: actionTypes.create,
     }).accessible;
     return (

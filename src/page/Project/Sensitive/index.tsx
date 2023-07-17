@@ -20,6 +20,9 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
   const [dataSourceIdMap, setDataSourceIdMap] = useState<{
     [key in string | number]: string;
   }>({});
+  const [sensitiveRuleIdMap, setSensitiveRuleIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
   const [maskingAlgorithmIdMap, setMaskingAlgorithmIdMap] = useState<{
     [key in string | number]: string;
   }>({});
@@ -97,21 +100,20 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
     handleItemClick(siderItems[0]);
     setSiderItemList(siderItems);
   };
-  const initData = async () => {};
 
   const getListMaskingAlgorithm = async (): Promise<{
     [key in string | number]: string;
   }> => {
-    const rawData = (await listMaskingAlgorithm()) || [];
-    setMaskingAlgorithms(rawData);
+    const rawData = await listMaskingAlgorithm();
+    setMaskingAlgorithms(rawData?.contents);
 
     const map = {};
-    rawData?.forEach((data) => {
+    rawData?.contents?.forEach((data) => {
       map[data.id] = data.name;
     });
     setMaskingAlgorithmIdMap(map);
 
-    const options = rawData.map((data) => ({
+    const options = rawData?.contents?.map((data) => ({
       label: data.name,
       value: data.id,
     }));
@@ -120,21 +122,22 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
   };
 
   const getListSensitiveRules = async () => {
-    const rawData = (await listSensitiveRules(id)) || [];
+    const rawData = await listSensitiveRules(id);
 
     const map = {};
-    rawData?.forEach((d) => {
+    rawData?.contents?.forEach((d) => {
       map[d.id] = d.name;
     });
+    setSensitiveRuleIdMap(map);
   };
 
-  const getListDataSources = async () => {
-    const rawData = await getConnectionList({});
+  const getListDataSources = async (projectId?: number) => {
+    const rawData = await getConnectionList({ projectId: id });
     setDataSources(rawData?.contents);
 
     const map = {};
-    rawData?.contents.forEach((d) => {
-      map[d.id] = d.name;
+    rawData?.contents?.forEach((d) => {
+      map[d?.id] = d?.name;
     });
     setDataSourceIdMap(map);
   };
@@ -155,6 +158,7 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
               dataSourceFilters,
               databaseFilters,
               maskingAlgorithmFilters,
+              initSensitiveColumn,
             }}
           />
         );
@@ -176,11 +180,13 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
       />
       <SensitiveContext.Provider
         value={{
+          projectId: id,
           dataSources,
           dataSourceIdMap,
           maskingAlgorithms,
           maskingAlgorithmIdMap,
           maskingAlgorithmOptions,
+          sensitiveRuleIdMap,
         }}
       >
         <div className={styles.sensitive}>{renderBySelectedItem(selectedItem)}</div>

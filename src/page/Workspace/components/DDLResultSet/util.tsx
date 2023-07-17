@@ -1,4 +1,5 @@
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
+import { getNlsValueKey } from '@/util/column';
 import exportToSQL from '@/util/sqlExport';
 import { getBlobValueKey } from '@/util/utils';
 import { DataGridRef, getSelectedRangeData } from '@alipay/ob-react-data-grid';
@@ -21,6 +22,7 @@ export function wrapRow(row, columns: ResultSetColumn[]) {
   columns.forEach((column) => {
     newRow[column.columnName] = newRow[column.key];
     newRow[getBlobValueKey(column.columnName)] = newRow[getBlobValueKey(column.key)];
+    newRow[getNlsValueKey(column.columnName)] = newRow[getNlsValueKey(column.key)];
   });
   return newRow;
 }

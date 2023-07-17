@@ -3,16 +3,15 @@ import { IResourceOption, ResourceSelector } from '@/component/Manage/ResourceSe
 import { EnableRoleSystemPermission } from '@/constant';
 import appConfig from '@/constant/appConfig';
 import { IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
-import { ResourceContext } from '../../../index';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Checkbox, Form, Space, Tabs, Tooltip, Typography } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isUndefined } from 'lodash';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { ResourceContext } from '../../../context';
 import {
-  connectionAccessActionOptions,
-  connectionAccessTypeOptions,
+  createAbleResourceOptions,
   resourceManagementActionOptions,
   resourceManagementTypeOptions,
   systemActionOptions,
@@ -62,23 +61,12 @@ const FormResourceSelector: React.FC<{
   } = props;
   const { permissionType: initPermissionType = [], systemPermissions = {} } = initialValue ?? {};
   const [permissionType, setPermissionType] = useState([]);
-  const { publicConnections, roles, users } = useContext(ResourceContext);
-  const [connectionAccessOptionsMap, setConnectionAccessOptionsMap] = useState<{
-    [key: string]: IResourceOption[];
-  }>({
-    [IManagerResourceType.public_connection]: getOptions(
-      IManagerResourceType.public_connection,
-      publicConnections,
-    ),
-  });
+  const { resource, roles, users } = useContext(ResourceContext);
 
   const [resourceManagementOptionsMap, setResourceManagementOptionsMap] = useState<{
     [key: string]: IResourceOption[];
   }>({
-    [IManagerResourceType.public_connection]: getOptions(
-      IManagerResourceType.public_connection,
-      publicConnections,
-    ),
+    [IManagerResourceType.resource]: getOptions(IManagerResourceType.resource, resource),
     [IManagerResourceType.user]: getOptions(IManagerResourceType.user, users),
     [IManagerResourceType.role]: getOptions(IManagerResourceType.role, roles),
   });
@@ -88,10 +76,6 @@ const FormResourceSelector: React.FC<{
       setPermissionType(initPermissionType);
     }
   }, [initialValue]);
-
-  const handleConnectionAccessOptionsChange = (value) => {
-    setConnectionAccessOptionsMap(value);
-  };
 
   const handleResourceManagementOptionsChange = (value) => {
     setResourceManagementOptionsMap(value);
@@ -127,27 +111,6 @@ const FormResourceSelector: React.FC<{
             handlePermissionTypeChange(value[0]);
           }}
         >
-          {EnableRoleSystemPermission && (
-            <Checkbox value={IManagerRolePermissionType.connectionAccessPermissions}>
-              <Space size={5}>
-                <span>
-                  {
-                    formatMessage({
-                      id: 'odc.components.FormResourceSelector.ConnectionAccess',
-                    }) /*连接访问权限*/
-                  }
-                </span>
-                <Tooltip
-                  title={formatMessage({
-                    id: 'odc.components.FormResourceSelector.IncludingAccessPermissionsForPublic',
-                  })} /*包括公共连接和资源组的访问权限（只读/读写/可申请）*/
-                >
-                  <QuestionCircleOutlined style={iconStyle} />
-                </Tooltip>
-              </Space>
-            </Checkbox>
-          )}
-
           <Checkbox value={IManagerRolePermissionType.resourceManagementPermissions}>
             <Space size={5}>
               <span>
@@ -157,11 +120,7 @@ const FormResourceSelector: React.FC<{
                   }) /*资源管理权限*/
                 }
               </span>
-              <Tooltip
-                title={formatMessage({
-                  id: 'odc.components.FormResourceSelector.IncludingPublicConnectionsResourceGroups',
-                })} /*包括公共连接、资源组、角色、用户的管理权限（新建/管理/编辑/查看）*/
-              >
+              <Tooltip title="包括数据源、项目、角色、用户的管理权限（新建/管理/编辑/查看）">
                 <QuestionCircleOutlined style={iconStyle} />
               </Tooltip>
             </Space>
@@ -175,11 +134,7 @@ const FormResourceSelector: React.FC<{
                   }) /*系统操作权限*/
                 }
               </span>
-              <Tooltip
-                title={formatMessage({
-                  id: 'odc.components.FormResourceSelector.IncludingTheOperationPermissionsOf',
-                })} /*包括个人连接及管控台的操作权限（查看/操作）*/
-              >
+              <Tooltip title="包括操作记录、系统配置、自动授权、审批流程、审批流程、风险识别规则、开发规范、系统集成的操作权限（查看/操作）">
                 <QuestionCircleOutlined style={iconStyle} />
               </Tooltip>
             </Space>
@@ -194,45 +149,6 @@ const FormResourceSelector: React.FC<{
       >
         {permissionType.length ? (
           <Tabs activeKey={permissionActiveKey} type="card" onChange={handlePermissionTypeChange}>
-            {permissionType.includes('connectionAccessPermissions') && (
-              <TabPane
-                tab={formatMessage({
-                  id: 'odc.components.FormResourceSelector.ConnectionAccess',
-                })}
-                /*连接访问权限*/ key="connectionAccessPermissions"
-                forceRender
-              >
-                <div className={styles['resource-header']}>
-                  <div style={{ width: '100px' }}>
-                    {
-                      formatMessage({
-                        id: 'odc.components.FormResourceSelector.AccessiblePublicConnections',
-                      }) /*可访问的公共连接*/
-                    }
-                  </div>
-                  <div style={{ width: '108px' }}>
-                    {
-                      formatMessage({
-                        id: 'odc.components.FormResourceSelector.AccessPermission',
-                      }) /*访问权限*/
-                    }
-                  </div>
-                </div>
-                <ResourceSelector
-                  name="connectionAccessPermissions"
-                  optionsMap={connectionAccessOptionsMap}
-                  onOptionsChange={handleConnectionAccessOptionsChange}
-                  typeOptions={connectionAccessTypeOptions}
-                  actionOptions={connectionAccessActionOptions}
-                  initialValue={initialValue}
-                  isEdit={isEdit}
-                  isCopy={isCopy}
-                  formRef={formRef}
-                  onFieldChange={handleFieldChange}
-                />
-              </TabPane>
-            )}
-
             {EnableRoleSystemPermission &&
               permissionType.includes('resourceManagementPermissions') && (
                 <TabPane
@@ -250,7 +166,7 @@ const FormResourceSelector: React.FC<{
                     style={{ padding: '0 12px' }}
                   >
                     <Checkbox.Group
-                      options={resourceManagementTypeOptions?.filter((item) =>
+                      options={createAbleResourceOptions?.filter((item) =>
                         appConfig.manage.user.create
                           ? true
                           : item.value !== IManagerResourceType.user,

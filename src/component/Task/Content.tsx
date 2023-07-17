@@ -8,6 +8,7 @@ import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import React from 'react';
+import AlterDDLTaskCreateModal from './AlterDdlTask';
 import AsyncTaskCreateModal from './AsyncTask';
 import ApprovalModal from './component/ApprovalModal';
 import TaskTable from './component/TaskTable';
@@ -72,7 +73,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const { projectId, taskStore } = this.props;
     const { taskPageType } = taskStore;
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { status, executeTime, databaseName: schema, creator, connection, id } = filters ?? {};
+    const { status, executeTime, candidateApprovers, creator, connection, id } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const connectionId = connection?.filter(
@@ -94,7 +95,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
       connectionId,
-      schema,
+      candidateApprovers,
       creator,
       sort: column?.dataIndex,
       page: current,
@@ -123,7 +124,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const {
       cycleTaskStatus: status,
       executeTime,
-      databaseName,
+      candidateApprovers,
       creator,
       cycleTaskConnection: connection,
       id,
@@ -146,7 +147,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       type: isAllScope ? taskPageType : undefined,
       projectId,
       status,
-      databaseNames: databaseName,
+      candidateApprovers: candidateApprovers,
       connectionId: connectionIds,
       creator,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
@@ -234,6 +235,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.DATA_ARCHIVE:
         modalStore.changeDataArchiveModal(true);
         break;
+      case TaskPageType.ONLINE_SCHEMA_CHANGE:
+        modalStore.changeCreateDDLAlterTaskModal(true);
+        break;
       default:
     }
   };
@@ -298,6 +302,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         <SQLPlanTaskCreateModal projectId={projectId} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
         <DataArchiveTaskCreateModal projectId={projectId} />
+        <AlterDDLTaskCreateModal projectId={projectId} />
       </>
     );
   }

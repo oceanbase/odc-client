@@ -4,11 +4,11 @@ import Status from '@/component/Manage/Status';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
-import { ResourceContext } from '../../../index';
 import type { RadioChangeEvent } from 'antd';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { ResourceContext } from '../../../context';
 import ResourceSelector from '../ResourceSelector';
 
 import styles from './index.less';

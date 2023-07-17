@@ -5,6 +5,7 @@ import DndHTML5Provider from './component/DndHTML5Provider';
 import registerPlugins from './plugins/register';
 import { isClient } from './util/env';
 import logger from './util/logger';
+import { getRoute } from './util/tracert/userRoutes';
 if (isClient()) {
   import('@sentry/electron').then((Sentry) => {
     Sentry.init({
@@ -47,4 +48,19 @@ export async function render(oldRender: () => void) {
 
 export function rootContainer(container) {
   return React.createElement(DndHTML5Provider, null, container);
+}
+
+export function onRouteChange(routes: any) {
+  const tracert = window['Tracert'];
+  if (!tracert) {
+    return;
+  }
+
+  const routeInfo = getRoute(routes, tracert);
+  if (routeInfo) {
+    // 设置信息
+    tracert.call('set', routeInfo);
+    // 触发 PV
+    tracert.call('logPv');
+  }
 }

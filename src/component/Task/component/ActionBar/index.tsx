@@ -4,7 +4,6 @@ import {
   executeTask,
   getAsyncResultSet,
   getTaskResult,
-  rollbackTask,
   stopTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
@@ -12,6 +11,7 @@ import {
   ICycleTaskRecord,
   ISqlExecuteResultStatus,
   ITaskResult,
+  RollbackType,
   TaskDetail,
   TaskExecStrategy,
   TaskRecord,
@@ -28,11 +28,11 @@ import ipcInvoke from '@/util/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { downloadFile, getLocalFormatDateTime } from '@/util/utils';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { isCycleTask } from '../../helper';
+import RollBackModal from '../RollbackModal';
 
 interface IProps {
   userStore?: UserStore;
@@ -73,6 +73,7 @@ const ActionBar: React.FC<IProps> = inject(
     const isApprovable = task?.approvable;
     const [viewLoading, setViewLoading] = useState(false);
     const [activeBtnKey, setActiveBtnKey] = useState(null);
+    const [openRollback, setOpenRollback] = useState(false);
     const wrapperRef = useRef(null);
     const disabledApproval =
       task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
@@ -113,19 +114,13 @@ const ActionBar: React.FC<IProps> = inject(
 
     const handleCopy = () => {};
 
-    const confirmRollback = async () => {
-      setActiveBtnKey('rollback');
-      const res = await rollbackTask(task.id);
-      if (res) {
-        props.onReloadList();
-        message.success(
-          formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTools.RollbackSucceeded',
-          }),
-
-          //回滚成功
-        );
-      }
+    const confirmRollback = async (type: RollbackType) => {
+      closeTaskDetail();
+      props.modalStore.changeCreateAsyncTaskModal(true, {
+        type,
+        task,
+        objectId: result?.rollbackPlanResult?.objectId,
+      });
     };
 
     useEffect(() => {
@@ -135,30 +130,11 @@ const ActionBar: React.FC<IProps> = inject(
     }, [task?.status]);
 
     const handleRollback = async () => {
-      Modal.confirm({
-        title: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant',
-        }),
+      setOpenRollback(true);
+    };
 
-        //确定回滚任务吗？
-        icon: <ExclamationCircleOutlined />,
-        content: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.AfterTheTaskIsRolled',
-        }),
-
-        //任务回滚后已执行的任务将重置
-        okText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Ok',
-        }),
-
-        //确认
-        cancelText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
-        }),
-
-        //取消
-        onOk: confirmRollback,
-      });
+    const handleCloseRollback = async () => {
+      setOpenRollback(false);
     };
 
     const handleExecute = async () => {
@@ -609,98 +585,7 @@ const ActionBar: React.FC<IProps> = inject(
           tools.unshift(viewResultBtn);
         }
       } else {
-        switch (status) {
-          case TaskStatus.REJECTED:
-          case TaskStatus.APPROVAL_EXPIRED:
-          case TaskStatus.WAIT_FOR_EXECUTION_EXPIRED:
-          case TaskStatus.EXECUTION_EXPIRED:
-          case TaskStatus.EXECUTION_FAILED:
-          case TaskStatus.ROLLBACK_FAILED:
-          case TaskStatus.ROLLBACK_SUCCEEDED:
-          case TaskStatus.CANCELLED:
-          case TaskStatus.CREATED:
-          case TaskStatus.ROLLBACKING: {
-            tools = [viewBtn];
-            break;
-          }
-          case TaskStatus.EXECUTING: {
-            if (isOwner || (isOwner && isApprovable)) {
-              tools = [viewBtn, stopBtn];
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          case TaskStatus.EXECUTION_SUCCEEDED: {
-            if (isOwner || (isOwner && isApprovable)) {
-              tools = [viewBtn];
-              if (task.type === TaskType.EXPORT && settingStore.enableDataExport) {
-                if (isClient()) {
-                  tools.push(openLocalFolder);
-                } else {
-                  tools.push(downloadBtn);
-                }
-              } else if (task.type === TaskType.DATAMOCK && settingStore.enableDataExport) {
-                tools.push(downloadBtn);
-              } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
-                tools.push(rollbackBtn);
-              }
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          case TaskStatus.WAIT_FOR_CONFIRM:
-          case TaskStatus.APPROVING: {
-            if (isOwner && isApprovable) {
-              tools = [viewBtn, stopBtn, approvalBtn, rejectBtn];
-            } else {
-              if (isOwner) {
-                tools = [viewBtn, stopBtn];
-              } else if (isApprovable) {
-                tools = [viewBtn, approvalBtn, rejectBtn];
-              } else {
-                tools = [viewBtn];
-              }
-            }
-            break;
-          }
-          case TaskStatus.WAIT_FOR_EXECUTION: {
-            if (isOwner || (isOwner && isApprovable)) {
-              const _executeBtn = { ...executeBtn };
-              if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-                _executeBtn.disabled = true;
-                const executionTime = getLocalFormatDateTime(task?.executionTime);
-
-                _executeBtn.tooltip = formatMessage(
-                  {
-                    id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
-                  },
-
-                  { executionTime: executionTime },
-                );
-
-                //`定时执行时间：${executionTime}`
-              }
-              tools =
-                task?.executionStrategy === TaskExecStrategy.AUTO
-                  ? [viewBtn, stopBtn]
-                  : [viewBtn, _executeBtn, stopBtn];
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          case TaskStatus.COMPLETED: {
-            if (isOwner || (isOwner && isApprovable)) {
-              tools = [viewBtn];
-            } else {
-              tools = [viewBtn];
-            }
-            break;
-          }
-          default:
-        }
+        tools = [viewBtn];
       }
       if (task?.executionStrategy === TaskExecStrategy.TIMER) {
         // 定时任务无再次发起
@@ -835,6 +720,8 @@ const ActionBar: React.FC<IProps> = inject(
 
       if (isDetailModal) {
         tools = tools.filter((item) => item.key !== 'view');
+      } else {
+        tools = [viewBtn];
       }
       if (!taskStore.enabledCreate) {
         tools = tools.filter((item) => item.key !== 'edit');
@@ -884,11 +771,14 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     return (
-      <Action.Group size={!isDetailModal ? 4 : 6}>
-        {btnTools?.map((tool) => {
-          return renderTool(tool);
-        })}
-      </Action.Group>
+      <>
+        <Action.Group size={!isDetailModal ? 4 : 6}>
+          {btnTools?.map((tool) => {
+            return renderTool(tool);
+          })}
+        </Action.Group>
+        <RollBackModal open={openRollback} onOk={confirmRollback} onCancel={handleCloseRollback} />
+      </>
     );
   }),
 );

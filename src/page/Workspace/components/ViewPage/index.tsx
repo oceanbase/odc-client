@@ -309,7 +309,10 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
       if (viewData?.track) {
         notification.error(viewData);
       } else {
-        const resultSet = generateResultSetColumns([viewData])?.[0];
+        const resultSet = generateResultSetColumns(
+          [viewData],
+          this.props.session?.connection?.dialectType,
+        )?.[0];
 
         if (resultSet) {
           this.setState({

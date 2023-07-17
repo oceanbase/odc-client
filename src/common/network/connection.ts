@@ -11,6 +11,7 @@ import {
   ISessionStatus,
   ISqlExecuteResultStatus,
 } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import userStore from '@/store/login';
 import { isConnectTypeBeCloudType } from '@/util/connection';
@@ -66,7 +67,7 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
 /**
  * 创建连接
  */
-export async function createConnection(formData: IDatasource, isHiden?: boolean) {
+export async function createConnection(formData: Partial<IDatasource>, isHiden?: boolean) {
   const params: Partial<IConnection> = generateConnectionParams(formData, isHiden);
 
   const requestParams = {
@@ -191,6 +192,7 @@ export async function batchTest(cids: number[]): Promise<
 export async function getConnectionList(params: {
   clusterName?: string[];
   tenantName?: string[];
+  projectId?: number;
   dialectType?: ConnectionMode | ConnectionMode[];
   type?: ConnectType[] | ConnectType;
   status?: ConnectionFilterStatus;
@@ -343,4 +345,15 @@ export async function batchDeleteConnection(ids: (string | number)[]): Promise<b
 export async function syncDatasource(dsId: number): Promise<boolean> {
   const res = await request.post(`/api/v2/datasource/datasources/${dsId}/sync`);
   return !!res?.data;
+}
+export async function getDataSourceManageDatabase(
+  datasourceId: number,
+): Promise<IResponseData<IDatabase>> {
+  const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`);
+  return res?.data;
+}
+
+export async function getDataSourceGroupByProject(): Promise<IResponseData<IDatasource>> {
+  const res = await request.get(`/api/v2/collaboration/projects/databases/stats`);
+  return res?.data;
 }

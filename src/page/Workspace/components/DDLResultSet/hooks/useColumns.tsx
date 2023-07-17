@@ -1,10 +1,11 @@
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
-import { isObjectColumn } from '@/util/column';
+import { isNlsColumn, isObjectColumn } from '@/util/column';
 import { isNil, isString, isUndefined } from 'lodash';
 import React, { useMemo } from 'react';
 import {
   DateEditor,
   DateTimeEditor,
+  NlsEditor,
   TimeEditor,
   YearEditor,
 } from '../../EditableTable/Editors/DateEditor';
@@ -43,10 +44,11 @@ export default function useColumns(
         dataType: getDataType(column.columnType),
         width: getColumnWidth(column.name, column.columnType, maxRowsLength[column.key]),
         resizable: true,
-        sortable: true,
+        sortable: isNlsColumn(column.columnType, dbMode) ? false : true,
+        filterable: isNlsColumn(column.columnType, dbMode) ? false : true,
         editable: !column.readonly && isColumnEditable(column.columnType),
         editor: getEditor(column.columnType, dbMode),
-        formatter: getCellFormatter(column.columnType, enableEdit, supportBlob),
+        formatter: getCellFormatter(column.columnType, enableEdit, supportBlob, dbMode),
       };
     });
   }, [columns, enableEdit]);
@@ -106,9 +108,30 @@ const defaultFormatter = React.memo(
   (prev, next) => prev.row === next.row && prev.column?.key === next.column?.key,
 ) as React.FC<any>;
 
-export function getCellFormatter(columnType: string, enableEdit: boolean, supportBlob: boolean) {
+const nlsFormatter = React.memo(
+  function (props) {
+    const { column, row } = props;
+    const columnKey = column.key;
+    const value = row[columnKey];
+    if (isNil(value)) {
+      return <span className={styles.textNull}>{'(null)'}</span>;
+    } else {
+      return <span>{value}</span>;
+    }
+  },
+  (prev, next) => prev.row === next.row && prev.column?.key === next.column?.key,
+) as React.FC<any>;
+
+export function getCellFormatter(
+  columnType: string,
+  enableEdit: boolean,
+  supportBlob: boolean,
+  dbMode: ConnectionMode,
+) {
   if (isObjectColumn(columnType) && supportBlob) {
     return BlobFormatter;
+  } else if (isNlsColumn(columnType, dbMode)) {
+    return nlsFormatter;
   } else if (enableEdit) {
     return defaultFormatter;
   } else if (columnType.toLocaleLowerCase().indexOf('char') !== -1) {
@@ -120,24 +143,26 @@ export function getCellFormatter(columnType: string, enableEdit: boolean, suppor
 function getEditor(columnType: string, dbMode: ConnectionMode) {
   const isOracle = dbMode === ConnectionMode.OB_ORACLE;
   switch (columnType) {
-    case 'TIME':
     case 'TIME': {
       return TimeEditor;
     }
     case 'TIMESTAMP':
     case 'DATETIME': {
       if (isOracle) {
-        return TextEditor;
+        return NlsEditor;
       }
       return DateTimeEditor;
     }
     case 'TIMESTAMP_WITH_TIME_ZONE':
     case 'TIMESTAMP_WITH_LOCAL_TIME_ZONE': {
+      if (isOracle) {
+        return NlsEditor;
+      }
       return TextEditor;
     }
     case 'DATE': {
       if (isOracle) {
-        return TextEditor;
+        return NlsEditor;
         // return DateTimeEditor;
       }
       return DateEditor;

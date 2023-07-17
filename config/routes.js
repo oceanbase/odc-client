@@ -8,7 +8,8 @@ module.exports = [
       path: '/',
       component: '../layout/AppContainer',
       routes: [
-        { path: '/gateway/*', component: '@/page/Gateway' },
+        { path: '/odc/gateway/*', redirect: '/gateway/*'},
+        { path: '/gateway/*', component: '@/page/Gateway', spmBPos: 'b41899' },
         {
           path: '/',
           component: '../layout/UserWrapper',
@@ -20,14 +21,15 @@ module.exports = [
                 "@/layout/OrganizationListenWrap"
               ],
               routes: [
-                { path: '/project', component: '@/page/Project/Project' },
-                { path: '/project/:id/:page', component: '@/page/Project' },
-                { path: '/datasource', component: '@/page/Datasource/Datasource' },
-                { path: '/datasource/:id/:page', component: '@/page/Datasource' },
-                { path: '/task', component: '@/page/Task' },
-                { path: '/auth/:page', component: '@/page/Auth' },
-                { path: '/secure/:page', component: '@/page/Secure' },
-                { path: '/externalIntegration/:page', component: '@/page/ExternalIntegration' },
+                { path: '/project', component: '@/page/Project/Project', spmBPos: 'b64002' },
+                { path: '/project/:id/:page', component: '@/page/Project', spmBPos: 'b64003' },
+                { path: '/datasource', component: '@/page/Datasource/Datasource', spmBPos: 'b64004' },
+                { path: '/datasource/:id/:page', component: '@/page/Datasource', spmBPos: 'b64005' },
+                { path: '/task', component: '@/page/Task', spmBPos: 'b64006' },
+                { path: '/auth/:page', component: '@/page/Auth', spmBPos: 'b64007' },
+                { path: '/secure/:page', component: '@/page/Secure', spmBPos: 'b64008' },
+                { path: '/externalIntegration/:page', component: '@/page/ExternalIntegration', spmBPos: 'b64009' },
+                { path: '/', redirect: '/project'},
               ],
             },
             {
@@ -40,11 +42,12 @@ module.exports = [
               path: '/',
               component: '../layout/DefaultContainer',
               routes: [
-                {
-                  path: '/spaceIndex',
-                  name: 'SpaceIndex',
-                  component: '@/page/SpaceIndex',
-                },
+                // {
+                //   path: '/spaceIndex',
+                //   name: 'SpaceIndex',
+                //   component: '@/page/SpaceIndex',
+                //   spmBPos: 'b64001'
+                // },
                 {
                   path: '/sqlworkspace',
                   wrappers: [
@@ -53,26 +56,24 @@ module.exports = [
                   ],
                   name: 'sqlworkspace',
                   component: '@/page/Workspace',
-                },
-                {
-                  path: '/exception/403',
-                  name: '403',
-                  component: '@/page/Exception/403',
-                  spmBPos: 'b41897',
-                },
-                {
-                  component: '@/page/Exception/404',
-                  spmBPos: 'b41898',
+                  spmBPos: 'b41896'
                 },
               ],
-            },
-            {
-              component: '@/page/Exception/404',
-              spmBPos: 'b41898',
-            },
+            }
           ],
         },
       ],
+    },
+    {
+      path: '/exception/403',
+      name: '403',
+      component: '@/page/Exception/403',
+      spmBPos: 'b41897',
+    },
+    {
+      path: '/*',
+      component: '@/page/Exception/404',
+      spmBPos: 'b41898',
     },
   ];
   

@@ -1,6 +1,7 @@
-import { formatMessage, getLocale, Link } from 'umi';
+import { getLocale, Link } from 'umi';
 
 import Exception from '@/component/Exception/index';
+import { formatMessage } from '@/util/intl';
 
 export default () => {
   console.log('[getLocale()]', getLocale());
@@ -13,7 +14,7 @@ export default () => {
       backText={formatMessage({
         id: 'odc.page.Exception.404.ReturnToHomePage',
       })}
-      redirect="/connections"
+      redirect="/"
     />
   );
 };

@@ -116,6 +116,7 @@ export default inject('userStore')(
           ['ssoParameter', 'redirectUrl'],
           ['ssoParameter', 'scope'],
           ['ssoParameter', 'jwkSetUri'],
+          ['ssoParameter', 'userNameAttribute'],
           ['ssoParameter', 'clientAuthenticationMethod'],
           ['ssoParameter', 'authorizationGrantType'],
           ['ssoParameter', 'userInfoAuthenticationMethod'],
@@ -160,7 +161,7 @@ export default inject('userStore')(
 
       function updateRegistrationId(name) {
         var md5Hex = md5(`${name || ''}`);
-        const id = `${userStore?.user?.organizationId}:${md5Hex}`;
+        const id = `${userStore?.organizationId}:${md5Hex}`;
         setRegistrationId(id);
         form.setFieldsValue({
           ssoParameter: {
@@ -328,6 +329,16 @@ export default inject('userStore')(
                         <Input style={{ width: '100%' }} placeholder="请输入" />
                       </Form.Item>
                       <Form.Item
+                        name={['ssoParameter', 'userNameAttribute']}
+                        label={
+                          <HelpDoc leftText title="用户名称字段">
+                            userNameAttribute
+                          </HelpDoc>
+                        }
+                      >
+                        <Input style={{ width: '100%' }} placeholder="请输入" />
+                      </Form.Item>
+                      <Form.Item
                         rules={[requiredRule]}
                         name={['ssoParameter', 'clientAuthenticationMethod']}
                         label={
@@ -429,13 +440,39 @@ export default inject('userStore')(
                     >
                       <Input style={{ width: '100%' }} placeholder="请输入" />
                     </Form.Item>
+                    <Form.Item
+                      rules={[requiredRule]}
+                      name={['ssoParameter', 'redirectUrl']}
+                      label={
+                        <HelpDoc
+                          leftText
+                          title="授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白"
+                        >
+                          Redirect URL
+                        </HelpDoc>
+                      }
+                    >
+                      <Input.TextArea
+                        autoSize={{ minRows: 2, maxRows: 3 }}
+                        disabled
+                        style={{ width: '100%' }}
+                        placeholder="自动生成"
+                      />
+                    </Form.Item>
                   </>
                 );
               }
             }}
           </Form.Item>
           <Form.Item>
-            <a onClick={test}>测试连接</a>
+            <HelpDoc
+              leftText
+              title={`测试连接需要单独的回调白名单，请手动添加 ${
+                window.ODCApiHost || location.origin
+              }/login/oauth2/code/${userStore?.organizationId}:test`}
+            >
+              <a onClick={test}>测试连接</a>
+            </HelpDoc>
           </Form.Item>
           {testInfo ? (
             <Alert

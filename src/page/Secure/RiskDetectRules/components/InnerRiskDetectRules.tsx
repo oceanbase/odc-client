@@ -11,7 +11,6 @@ import {
   CommonTableBodyMode,
   CommonTableMode,
   IOperationOptionType,
-  ITableLoadOptions,
 } from '../../components/SecureTable/interface';
 import { InnerRiskDetectRulesProps, SelectItemProps } from '../interface';
 import FormRiskDetectDrawer from './FormRiskDetectDrawer';
@@ -27,9 +26,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
   riskDetectRules = [],
   getListRiskDetectRules,
 }) => {
-  const {
-    user: { organizationId },
-  } = userStore;
+  const { organizationId } = userStore;
   const tableRef = useRef(null);
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
@@ -82,11 +79,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
 
   const handleDrawerCreate = () => {
     setIsEdit(false);
-    console.log(riskLevel);
     setFormModalVisible(true);
-  };
-  const loadData = async (args: ITableLoadOptions) => {
-    const { filters } = args ?? {};
   };
   const reload = () => {
     getListRiskDetectRules(riskLevel);

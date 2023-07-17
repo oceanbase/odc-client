@@ -6,6 +6,7 @@ import {
 import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
+import { IResponseData } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import SecureTable from '@/page/Secure/components/SecureTable';
 import {
@@ -90,7 +91,7 @@ const getColumns: (columnsFunction: {
           },
         };
       },
-      render: (text, record) => <TooltipContent content={DetectRuleTypeMap[record.type] || '-'} />,
+      render: (text, record) => <TooltipContent content={DetectRuleTypeMap[record?.type] || '-'} />,
     },
     {
       title: '脱敏算法',
@@ -166,12 +167,12 @@ const SensitiveRule = ({ projectId }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [formDrawerVisible, setFormDrawerVisible] = useState<boolean>(false);
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
-  const [sensitiveRules, setSensitiveRules] = useState<ISensitiveRule[]>();
+  const [sensitiveRules, setSensitiveRules] = useState<IResponseData<ISensitiveRule>>(null);
   const [maskingAlgorithmFilters, setMaskingAlgorithmFilters] = useState<FilterItemProps[]>();
 
   const initSensitiveRule = () => {
     setMaskingAlgorithmFilters(
-      maskingAlgorithms.map((d) => ({
+      maskingAlgorithms?.map((d) => ({
         text: d.name,
         value: d.id,
       })),
@@ -288,7 +289,7 @@ const SensitiveRule = ({ projectId }) => {
         body={CommonTableBodyMode.BIG}
         titleContent={null}
         showToolbar={true}
-        showPagination={false}
+        showPagination={true}
         filterContent={{
           searchPlaceholder: '请输入规则名称',
         }}
@@ -299,9 +300,12 @@ const SensitiveRule = ({ projectId }) => {
         onChange={initData}
         tableProps={{
           columns: columns,
-          dataSource: sensitiveRules,
+          dataSource: sensitiveRules?.contents,
           rowKey: 'id',
-          pagination: false,
+          pagination: {
+            current: sensitiveRules?.page?.number,
+            total: sensitiveRules?.page?.totalElements,
+          },
         }}
       />
       <FormDrawer

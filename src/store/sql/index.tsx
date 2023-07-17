@@ -216,7 +216,7 @@ export class SQLStore {
         this.resultSets.set(pageKey, [
           ...lockedResultSets,
           this.getLogTab(record),
-          ...generateResultSetColumns(record),
+          ...generateResultSetColumns(record, session?.connection?.dialectType),
         ]);
       }
     });
@@ -431,7 +431,7 @@ export class SQLStore {
       ]; // 在结果集中重新执行 SQL 肯定只有一条
 
       resultSet[resultSetIndex] = {
-        ...generateResultSetColumns(record, target.uniqKey)[0],
+        ...generateResultSetColumns(record, session?.connection?.dialectType, target.uniqKey)[0],
       };
       this.resultSets.set(pageKey, clone(resultSet));
     }

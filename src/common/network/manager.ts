@@ -1,4 +1,4 @@
-import type { ITaskFlow } from '@/d.ts';
+import type { ITaskFlow, IUser } from '@/d.ts';
 import {
   AuditEventActionType,
   AuditEventResult,
@@ -442,7 +442,7 @@ export async function getResourceGroupExists(name: string): Promise<boolean> {
 /**
  * 获取用户权限详情
  */
-export async function getCurrentUserPermissions(): Promise<any> {
+export async function getCurrentUserPermissions(): Promise<IUser> {
   const result = await request.get(`/api/v2/iam/users/me`);
   return result?.data;
 }

@@ -115,16 +115,12 @@ export const status = {
     icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Executing' }), //执行中
   },
-  [TaskStatus.ROLLBACKING]: {
-    icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
-    text: formatMessage({ id: 'odc.component.TaskStatus.RollingBack' }), //回滚中
-  },
   [TaskStatus.EXECUTION_SUCCEEDED]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ExecutionSucceeded' }), //执行成功
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.EXECUTION_EXPIRED]: {
@@ -144,11 +140,11 @@ export const status = {
     //等待执行过期
   },
   [TaskStatus.EXECUTION_FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Failed.2' }), //执行失败
   },
   [TaskStatus.ROLLBACK_FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.RollbackFailed' }), //回滚失败
   },
   [TaskStatus.ROLLBACK_SUCCEEDED]: {
@@ -172,7 +168,7 @@ export const cycleStatus = {
     text: formatMessage({ id: 'odc.component.TaskStatus.Approving' }), //审批中
   },
   [TaskStatus.REJECTED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ApprovalFailed' }), //审批不通过
   },
   [TaskStatus.APPROVAL_EXPIRED]: {
@@ -193,7 +189,7 @@ export const cycleStatus = {
   },
 };
 
-// 子任务状态（仅周期任务有）
+// 子任务状态（仅周期任务 + 无锁结构变更）
 export const subTaskStatus = {
   [SubTaskStatus.DONE]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
@@ -204,7 +200,7 @@ export const subTaskStatus = {
     text: '已取消',
   },
   [SubTaskStatus.FAILED]: {
-    icon: <CloseCircleFilled style={{ color: '#var(--function-red6-color)' }} />,
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: '失败',
   },
   [SubTaskStatus.PREPARING]: {
@@ -235,11 +231,11 @@ const StatusLabel: React.FC<IProps> = (props) => {
   // todo: 未来取消 TaskType.ASYNC, 因为task已统一，所有类型task的status均是一致的，不需要使用taskType进行区分；
   let statusInfo: Record<string, { icon: React.ReactNode; text: string }> =
     statusMap[StatusNodeType.FLOW_TASK];
-    if (isSubTask) {
-      statusInfo = statusMap[StatusNodeType.SUB_TASK];
-    } else if(isCycleTask(type)){
-      statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
-    }
+  if (isSubTask) {
+    statusInfo = statusMap[StatusNodeType.SUB_TASK];
+  } else if (isCycleTask(type)) {
+    statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
+  }
   const statusObj = statusInfo[_status];
   return (
     <Space style={{ overflow: 'hidden', maxWidth: '100%' }} size={5}>

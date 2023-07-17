@@ -1,5 +1,5 @@
+import { getTaskFlowList } from '@/common/network/manager';
 import { updateRiskLevel } from '@/common/network/riskLevel';
-import { getTaskFlowList } from '@/common/network/task';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { UserStore } from '@/store/login';
 import { PlusOutlined } from '@ant-design/icons';
@@ -43,9 +43,9 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
   };
   const initEditRiskLevelDrawer = async () => {
     setLoading(true);
-    const rawData = (await getTaskFlowList()) || [];
+    const rawData = await getTaskFlowList();
     setApprovalProcessOptions(
-      rawData.map((rd) => ({
+      rawData?.contents?.map((rd) => ({
         label: rd.name,
         value: rd.id,
       })),
@@ -55,7 +55,7 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
 
   const handleFormSubmit = async () => {
     const rawData = await formRef.validateFields().catch();
-    const result = await updateRiskLevel(selectedRecord.id, rawData);
+    const result = await updateRiskLevel(selectedRecord?.id, rawData);
     if (result) {
       message.success('更新成功');
       handleEditRiskLevelDrawerClose();

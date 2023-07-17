@@ -17,9 +17,9 @@ import { getFormatDateTime } from '@/util/utils';
 import { Button, message, Modal, Space, Switch } from 'antd';
 import type { FixedType } from 'rc-table/lib/interface';
 import React from 'react';
+import { ResourceContext } from '../context';
 import DetailContent, { PermissionTypes } from './component/DetailContent';
 import FormModal from './component/FormModal';
-import { ResourceContext } from '../index';
 import styles from './index.less';
 
 interface IProps {}
@@ -130,7 +130,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             <Switch
               size="small"
               disabled={isBuiltIn}
-              defaultChecked={enabled}
+              checked={enabled}
               onChange={() => {
                 this.handleStatusChange(!enabled, record);
               }}
@@ -305,8 +305,8 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private loadDependentData() {
-    this.context.loadUsers();
-    this.context.loadConnections();
+    this.context?.loadUsers();
+    this.context?.loadConnections();
   }
 
   async componentDidMount() {
@@ -324,10 +324,10 @@ class RolePage extends React.PureComponent<IProps, IState> {
     const { authTypes, enabled } = filters ?? {};
     const { order } = sorter ?? {};
     return data
-      .filter((item) => {
+      ?.filter((item) => {
         return searchValue ? item.name.indexOf(searchValue) > -1 : true;
       })
-      .filter((item) => {
+      ?.filter((item) => {
         return enabled ? enabled.includes(item.enabled) : true;
       })
       .filter((item) => {
@@ -421,8 +421,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   render() {
-    const { formModalVisible, detailModalVisible, editId, detailId, copyId } =
-      this.state;
+    const { formModalVisible, detailModalVisible, editId, detailId, copyId } = this.state;
     const { roles } = this.context;
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.role,

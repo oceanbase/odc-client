@@ -1,6 +1,5 @@
 import { detailSensitiveRule } from '@/common/network/sensitiveRule';
 import { CommonTableMode } from '@/component/CommonTable/interface';
-import { registerLanguage, renderHightlight } from '@/component/Log/languageHighlight';
 import MonacoEditor from '@/component/MonacoEditor';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { DetectRuleTypeMap } from '@/page/Project/Sensitive/interface';
@@ -11,11 +10,6 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { Button, Descriptions, Divider, Drawer } from 'antd';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import styles from './index.less';
-
-const renderContent = (param: string) => {
-  let v = renderHightlight('groovy', param).value;
-  return v;
-};
 
 const renderByType = (type: SensitiveRuleType, params?: any) => {
   switch (type) {
@@ -100,12 +94,14 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
                     width: 170,
                     dataIndex: 'name',
                     key: 'name',
+                    render: (text) => text || '-',
                   },
                   {
                     title: '正则表达式',
                     width: 170,
                     dataIndex: 'content',
                     key: 'content',
+                    render: (text) => text || '-',
                   },
                 ],
                 dataSource: dataSource,
@@ -143,12 +139,6 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
                 overflowY: 'hidden',
               }}
             >
-              {/* <div className={styles.groovyScript}>
-              <span
-                dangerouslySetInnerHTML={{ __html: renderContent(groovyScript as string) }}
-              ></span>
-            </div> */}
-
               <MonacoEditor
                 language={'groovy'}
                 defaultValue={groovyScript}
@@ -188,14 +178,15 @@ const ViewSensitiveRuleDrawer = ({
   }, [viewDrawerVisible]);
 
   useLayoutEffect(() => {
-    registerLanguage('groovy', true);
-  }, []);
+    setRecord(selectedRecord);
+  }, [selectedRecord]);
   return (
     <Drawer
       width={596}
       title={'查看识别规则'}
       open={viewDrawerVisible}
       onClose={handleViewDrawerClose}
+      destroyOnClose={true}
       footer={
         <div
           style={{
