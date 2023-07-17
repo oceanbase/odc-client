@@ -130,7 +130,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             <Switch
               size="small"
               disabled={isBuiltIn}
-              defaultChecked={enabled}
+              checked={enabled}
               onChange={() => {
                 this.handleStatusChange(!enabled, record);
               }}

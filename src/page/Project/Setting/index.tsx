@@ -32,7 +32,7 @@ const Setting: React.FC<IProps> = (props) => {
           mode="vertical"
         >
           <Menu.Item key={MenuKey.INFO}>项目信息</Menu.Item>
-          <Menu.Item key={MenuKey.NOTIFICATION}>通知设置</Menu.Item>
+          {/* <Menu.Item key={MenuKey.NOTIFICATION}>通知设置</Menu.Item> */}
         </Menu>
       </div>
       <div className={styles.content}>

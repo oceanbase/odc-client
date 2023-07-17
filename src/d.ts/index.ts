@@ -1490,6 +1490,28 @@ export interface ISQLExecuteDetail {
   waitTime: number;
 }
 
+export enum TraceSpanNode {
+  JDBC = 'JDBC',
+  OBProxy = 'OBProxy',
+  OBServer = 'OBServer',
+}
+export interface TraceSpan {
+  logs: string;
+  tags: any[];
+  elapseMicroSeconds: number;
+  parent: string;
+  traceId: string;
+  startTimestamp: string;
+  endTimestamp: string;
+  spanName: string;
+  tenantId: number;
+  host: string;
+  port: number;
+  logTraceId: string;
+  node: TraceSpanNode;
+  subSpans: TraceSpan[];
+}
+
 export enum ConstraintType {
   PRIMARY = 'PRIMARY',
   UNIQUE = 'UNIQUE',
@@ -2400,7 +2422,6 @@ export enum TaskStatus {
   // 其他： 前端不感知
   CREATED = 'CREATED', // 前端一般不感知，接口调用快的时候，可能会遇到（山露: 建议加上, 和 EXECUTING 一样的处理）
   APPROVED = 'APPROVED',
-  ROLLBACKING = 'ROLLBACKING',
   // 周期任务独有的状态
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',

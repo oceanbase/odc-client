@@ -27,6 +27,7 @@ interface IProps {
   settingStore?: SettingStore;
   modalStore?: ModalStore;
   isDetailModal?: boolean;
+  showRollback?: boolean;
   taskId: number;
   record: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
   disabledSubmit?: boolean;
@@ -53,6 +54,7 @@ const ActionBar: React.FC<IProps> = inject(
       isDetailModal,
       record,
       taskId,
+      showRollback,
     } = props;
     // const isOwner = user?.id === task?.creator?.id;
     const isOwner = true;
@@ -185,7 +187,9 @@ const ActionBar: React.FC<IProps> = inject(
       return tools;
     };
 
-    const btnTools = getTaskTools(record).filter((item) => item?.type === 'button');
+    const btnTools = getTaskTools(record)
+      ?.filter((item) => item?.type === 'button')
+      ?.filter((item) => (!showRollback ? item.key !== 'rollback' : true));
 
     const renderTool = (tool) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;

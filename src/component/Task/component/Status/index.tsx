@@ -115,10 +115,6 @@ export const status = {
     icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Executing' }), //执行中
   },
-  [TaskStatus.ROLLBACKING]: {
-    icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
-    text: formatMessage({ id: 'odc.component.TaskStatus.RollingBack' }), //回滚中
-  },
   [TaskStatus.EXECUTION_SUCCEEDED]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.ExecutionSucceeded' }), //执行成功

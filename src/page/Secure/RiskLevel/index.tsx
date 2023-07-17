@@ -18,7 +18,9 @@ import styles from './index.less';
 const ApprovalProcess = ({ nodes = [] }) => {
   return (
     <>
-      {nodes?.map((node) => (node.autoApproval ? '自动审批' : node?.resourceRoleName)).join(' - ')}
+      {nodes
+        ?.map((node) => (node.autoApproval ? '自动审批' : node?.resourceRoleName || '-'))
+        .join(' - ')}
     </>
   );
 };

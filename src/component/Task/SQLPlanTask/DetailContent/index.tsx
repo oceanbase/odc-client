@@ -62,14 +62,6 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
         >
           {CycleTaskLabel[task?.type]}
         </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'odc.component.DetailModal.sqlPlan.Connection',
-          })}
-          /*所属连接*/ span={hasFlow || operationType ? 1 : 2}
-        >
-          {task?.connection?.name || '-'}
-        </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item
             label={formatMessage({

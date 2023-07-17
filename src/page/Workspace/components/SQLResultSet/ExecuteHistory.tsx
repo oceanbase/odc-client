@@ -1,16 +1,14 @@
 import { TAB_HEADER_HEIGHT } from '@/constant';
-import { GeneralSQLType, ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
+import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
 import { CheckCircleFilled, CloseCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, message, Space, Table, Timeline, Tooltip, Typography } from 'antd';
+import { Alert, message, Space, Table, Timeline, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from 'umi';
 
-import SessionStore from '@/store/sessionManager/session';
 import BigNumber from 'bignumber.js';
 import styles from './index.less';
 
@@ -18,21 +16,7 @@ interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
-  session: SessionStore;
 }
-
-const getTooltipDetail = (generalSqlType: GeneralSQLType) => {
-  return [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(generalSqlType)
-    ? formatMessage({
-        id: 'odc.components.SQLResultSet.ExecuteHistory.TheCurrentStatementTypeDoes',
-      })
-    : // 当前语句类型不支持查看执行详情
-      formatMessage({
-        id: 'odc.components.SQLResultSet.ExecuteHistory.TheTraceIdIsEmpty',
-      });
-
-  // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
-};
 
 function getResultText(rs: ISqlExecuteResult) {
   if ([SqlType.show, SqlType.select].includes(rs.sqlType)) {
@@ -43,7 +27,7 @@ function getResultText(rs: ISqlExecuteResult) {
 }
 
 const ExecuteHistory: React.FC<IProps> = function (props) {
-  const { onShowExecuteDetail, resultHeight, sqlStore, session } = props;
+  const { onShowExecuteDetail, resultHeight, sqlStore } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const tableRef = useRef<HTMLDivElement>();
   const [width, setWidth] = useState(0);
@@ -325,52 +309,8 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           );
         },
       },
-
-      session?.supportFeature?.enableSQLTrace && {
-        title: formatMessage({
-          id: 'workspace.window.sql.record.column.profile',
-        }),
-
-        width: isSmallMode ? 80 : 100,
-        render: (value: string, row: any) => {
-          const isSuccess = row.status === ISqlExecuteResultStatus.SUCCESS;
-          const isValidSQL = [GeneralSQLType.DML, GeneralSQLType.DQL].includes(row.generalSqlType);
-          const haveTraceId = !!row.traceId;
-          if (isSuccess && isValidSQL && haveTraceId) {
-            return (
-              <Button
-                type="link"
-                size="small"
-                onClick={() => onShowExecuteDetail(row.executeSql, row.traceId)}
-              >
-                <FormattedMessage id="workspace.window.sql.record.button.profile" />
-              </Button>
-            );
-          } else {
-            let message = formatMessage({
-              id: 'odc.components.SQLResultSet.ExecuteHistory.SqlFailedToBeExecuted',
-            });
-
-            if (isSuccess) {
-              message = getTooltipDetail(row.generalSqlType);
-            }
-            return (
-              <Tooltip title={message}>
-                <Button
-                  type="link"
-                  size="small"
-                  disabled
-                  onClick={() => onShowExecuteDetail(row.executeSql, row.traceId)}
-                >
-                  <FormattedMessage id="workspace.window.sql.record.button.profile" />
-                </Button>
-              </Tooltip>
-            );
-          }
-        },
-      },
     ].filter(Boolean);
-  }, [onShowExecuteDetail, session, isSmallMode]);
+  }, [onShowExecuteDetail, isSmallMode]);
   const showTimeAlert = false;
   const showDeleteAlert = selectedRowKeys.length > 0;
   const tableHeight = resultHeight - TAB_HEADER_HEIGHT - 24 - (showTimeAlert ? 36 : 0) - 56;

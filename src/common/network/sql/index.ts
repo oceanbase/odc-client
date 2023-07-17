@@ -6,6 +6,7 @@ import {
   ISQLExecuteDetail,
   ISQLExplain,
   ISQLExplainTreeNode,
+  TraceSpan,
 } from '@/d.ts';
 import setting from '@/store/setting';
 import { uploadFileToOSS } from '@/util/aliyun';
@@ -125,6 +126,29 @@ export async function getSQLExecuteExplain(
   return result?.errMsg || 'fetch error';
 }
 
+export async function getFullLinkTrace(
+  sessionId: string,
+  dbName: string,
+  data?: Partial<{
+    sql: string;
+    tip: string;
+    affectMultiRows: boolean;
+    tag: string;
+    type: string;
+    desc: string;
+    queryList: number;
+  }>,
+): Promise<
+  Partial<{
+    data: TraceSpan;
+  }>
+> {
+  const sid = generateDatabaseSid(dbName, sessionId);
+  const res = request.post(`/api/v1/diagnose/getFullLinkTrace/${sid}`, {
+    data,
+  });
+  return res;
+}
 export enum IDataFormmater {
   TEXT = 'TXT',
   HEX = 'HEX',

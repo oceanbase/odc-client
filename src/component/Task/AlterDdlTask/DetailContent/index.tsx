@@ -5,6 +5,7 @@ import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { ClearStrategy } from '../CreateModal';
 
 interface IDDLAlterParamters {
   errorStrategy: TaskExecStrategy;
@@ -12,11 +13,22 @@ interface IDDLAlterParamters {
   schemaName: string;
   comparingTaskId: string;
   description: string;
+  // 单位：秒
+  lockTableTimeOutSeconds: number;
+  swapTableNameRetryTimes: number;
+  originTableCleanStrategy: ClearStrategy;
 }
+
 const ErrorStrategyText = {
   ABORT: '停止任务',
   CONTINUE: '忽略错误继续任务',
 };
+
+const ClearStrategyMap = {
+  [ClearStrategy.ORIGIN_TABLE_DROP]: '立即删除',
+  [ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED]: '重命名不处理',
+};
+
 const SQLContentSection = ({ task }) => {
   const isMySQL = task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
   return (
@@ -60,14 +72,13 @@ export function getItems(
       textItems: [
         ['任务编号', task.id],
         ['任务类型', '无锁结构变更'],
-        ['所属连接', task?.connection?.name || '-'],
         ['所属库', task?.databaseName || '-'],
         hasFlow ? riskItem : null,
-        ['变更定义', TaskExecStrategyMap[task?.executionStrategy], hasFlow ? 1 : 2],
+        ['变更定义', TaskExecStrategyMap[task?.executionStrategy], hasFlow ? 2 : 1],
         [null, <SQLContentSection task={task} key={task.id} />, 2],
-        ['锁表超时时间', task.id],
-        ['失败重试次数', task.id],
-        ['完成后源表清理策略', task.id],
+        ['锁表超时时间', `${parameters?.lockTableTimeOutSeconds} 秒`],
+        ['失败重试次数', parameters?.swapTableNameRetryTimes],
+        ['完成后源表清理策略', ClearStrategyMap[parameters?.originTableCleanStrategy]],
         ['执行方式', TaskExecStrategyMap[task?.executionStrategy]],
         isTimerExecution ? timerExecutionItem : null,
         ['任务错误处理', ErrorStrategyText[parameters.errorStrategy], 2],

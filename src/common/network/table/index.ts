@@ -235,36 +235,29 @@ function wrapDataDML(
 
   function getServerDateformat(nlsObject: INlsObject, columnType: string) {
     let data = null;
-    let nano = toInteger(nlsObject?.nano) ? '.' + nlsObject.nano : '';
     if (isNil(nlsObject?.timestamp)) {
       return null;
     }
+    let time = moment(nlsObject.timestamp);
+    let nano = (time.millisecond() * 1000000 + (toInteger(nlsObject?.nano) || 0))
+      .toString()
+      ?.padStart(9, '0');
+    /**
+     * https://datatracker.ietf.org/doc/html/rfc3339#section-5.8
+     * https://momentjs.com/docs/#/manipulating/utc-offset/
+     */
     switch (columnType) {
       case 'TIMESTAMP WITH TIME ZONE': {
-        /**
-         * 需要加上 timezone， 因为需要moment默认情况下无法处理其他时区，所以不能将moment format后的时间传给后端。
-         * 和后端约定用 “timestamp timezone”的形式传递
-         */
-        data = [nlsObject.timestamp?.toString() + nano, nlsObject.timeZoneId]
-          ?.filter(Boolean)
-          ?.join(' ');
-        break;
-      }
-      case 'TIMESTAMP WITH LOCAL TIME ZONE':
-      case 'TIMESTAMP': {
-        /**
-         * local time zone 不能加zone，以服务器为准
-         */
-        data = nlsObject.timestamp?.toString() + nano;
+        let timeZone = nlsObject.timeZoneId;
+        if (timeZone) {
+          data = time.utcOffset(timeZone).format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        } else {
+          data = time.utc().format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
+        }
         break;
       }
       default: {
-        data = [
-          moment(nlsObject.timestamp).format('YYYY-MM-DD HH:mm:ss') + nano,
-          nlsObject.timeZoneId,
-        ]
-          .filter(Boolean)
-          .join(' ');
+        data = time.utc().format(`YYYY-MM-DDTHH:mm:ss.${nano}Z`);
         break;
       }
     }

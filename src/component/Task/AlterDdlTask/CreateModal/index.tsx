@@ -24,7 +24,7 @@ enum SqlType {
   CREATE = 'CREATE',
   ALTER = 'ALTER',
 }
-enum ClearStrategy {
+export enum ClearStrategy {
   ORIGIN_TABLE_RENAME_AND_RESERVED = 'ORIGIN_TABLE_RENAME_AND_RESERVED',
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
@@ -60,7 +60,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlType,
           sqlContent,
           swapTableNameRetryTimes,
-          timeoutMillis,
+          lockTableTimeOutSeconds,
           originTableCleanStrategy,
           errorStrategy,
           description,
@@ -68,7 +68,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           executionStrategy,
         } = values;
         const parameters = {
-          lockTableTimeOutSeconds: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
+          lockTableTimeOutSeconds,
           errorStrategy,
           sqlContent,
           sqlType,
@@ -198,8 +198,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 required
               >
                 <Form.Item
-                  label="小时"
-                  name="timeoutMillis"
+                  label="秒"
+                  name="lockTableTimeOutSeconds"
                   rules={[
                     {
                       required: true,
@@ -207,16 +207,16 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     },
                     {
                       type: 'number',
-                      max: 480,
-                      message: '最大不超过480小时',
+                      max: 3600,
+                      message: '最大不超过 3600 秒',
                     },
                   ]}
                   initialValue={48}
                   noStyle
                 >
-                  <InputNumber min={0} />
+                  <InputNumber min={0} max={3600} />
                 </Form.Item>
-                <span className={styles.hour}>小时</span>
+                <span className={styles.hour}>秒</span>
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -241,7 +241,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Col>
           </Row>
           <Form.Item
-            label="完成后原表清理策略"
+            label="完成后源表清理策略"
             name="originTableCleanStrategy"
             initialValue={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}
             rules={[

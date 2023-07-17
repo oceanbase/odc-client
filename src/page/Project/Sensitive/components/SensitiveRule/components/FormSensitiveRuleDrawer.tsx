@@ -22,7 +22,6 @@ const FormSensitiveRuleDrawer = ({
   const handleSubmit = async () => {
     const rawData = await formRef.validateFields().catch();
     const { enabled, maskingAlgorithmId, name, type, regExp = {}, description } = rawData;
-    console.log(type === SensitiveRuleType.GROOVY, script?.length);
     if (type === SensitiveRuleType.GROOVY && script?.length === 0) {
       setHasValidated(true);
       return;
@@ -61,7 +60,9 @@ const FormSensitiveRuleDrawer = ({
       case SensitiveRuleType.REGEX: {
         const resRegExp = {};
         Object.keys(regExp)?.forEach((key) => {
-          resRegExp[`${key}`] = regExp[key].regExp;
+          if (regExp?.[key]?.checked?.length > 0) {
+            resRegExp[`${key}`] = regExp[key].regExp;
+          }
         });
         data = {
           ...data,
@@ -102,7 +103,7 @@ const FormSensitiveRuleDrawer = ({
   };
   const onCancel = () => {
     return Modal.confirm({
-      title: '确认要取消新建吗？',
+      title: isEdit ? '确认要取消编辑吗？' : '确认要取消新建吗？',
       onOk: () => {
         handleFormDrawerClose();
         formRef.resetFields();
@@ -129,10 +130,10 @@ const FormSensitiveRuleDrawer = ({
         columnCommentRegexExpression = '',
         description = '',
       } = selectedRecord;
-      const hasDatabaseRegexExpression = databaseRegexExpression !== '';
-      const hasTableRegexExpression = tableRegexExpression !== '';
-      const hasColumnRegexExpression = columnRegexExpression !== '';
-      const hasColumnCommentRegexExpression = columnCommentRegexExpression !== '';
+      const hasDatabaseRegexExpression = !!databaseRegexExpression;
+      const hasTableRegexExpression = !!tableRegexExpression;
+      const hasColumnRegexExpression = !!columnRegexExpression;
+      const hasColumnCommentRegexExpression = !!columnCommentRegexExpression;
       setScript(groovyScript);
       formRef.setFieldsValue({
         name,
@@ -215,7 +216,7 @@ const FormSensitiveRuleDrawer = ({
           <Space>
             <Button onClick={onCancel}>取消</Button>
             <Button type="primary" onClick={handleSubmit}>
-              提交
+              {isEdit ? '提交' : '新建'}
             </Button>
           </Space>
         </div>

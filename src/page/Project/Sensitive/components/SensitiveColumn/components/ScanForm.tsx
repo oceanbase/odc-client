@@ -1,9 +1,20 @@
-import { CheckCircleTwoTone, SyncOutlined } from '@ant-design/icons';
-import { Button, Collapse, Descriptions, Empty, Form, Input, Progress, Select, Space } from 'antd';
-
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import SecureTable from '@/page/Secure/components/SecureTable';
 import { CommonTableBodyMode } from '@/page/Secure/components/SecureTable/interface';
+import { CheckCircleTwoTone, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Collapse,
+  Descriptions,
+  Empty,
+  Form,
+  Input,
+  Progress,
+  Select,
+  Space,
+  Tooltip,
+} from 'antd';
+import { ScanTableDataItem } from '../../../interface';
 import styles from './index.less';
 import ScanRule from './SacnRule';
 
@@ -26,6 +37,7 @@ const ScanForm = ({
   sensitiveContext,
   handleScanTableDataChange,
   handleScanTableDataDelete,
+  handleScanTableDataDeleteByTableName,
 }) => {
   const EmptyOrSpin = ({ scanLoading, hasScan, percent, successful }) => {
     return (
@@ -70,15 +82,7 @@ const ScanForm = ({
           )}
         </Space>
       </Form>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '16px',
-          marginBottom: '8px',
-        }}
-      >
+      <div className={styles.scanResultPreview}>
         <div>扫描结果预览</div>
         <Input.Search
           value={searchText}
@@ -117,8 +121,32 @@ const ScanForm = ({
                   <Collapse.Panel
                     header={
                       <Descriptions column={2} layout="horizontal" className={styles.descriptions}>
-                        <Descriptions.Item label={'数据库'}>{database}</Descriptions.Item>
-                        <Descriptions.Item label={'表'}>{tableName}</Descriptions.Item>
+                        <Descriptions.Item label={'数据库'}>
+                          <span className={styles.tooltipContent}>{database}</span>
+                        </Descriptions.Item>
+                        <Descriptions.Item label={'表'}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              width: '100%',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Tooltip title={tableName}>
+                              <span className={styles.tooltipContent}>{tableName}</span>
+                            </Tooltip>
+                            <Tooltip title={'删除'}>
+                              <DeleteOutlined
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleScanTableDataDeleteByTableName(database, tableName);
+                                }}
+                              />
+                            </Tooltip>
+                          </div>
+                        </Descriptions.Item>
                       </Descriptions>
                     }
                     key={index}
@@ -152,12 +180,18 @@ const ScanForm = ({
                             width: 180,
                             dataIndex: 'maskingAlgorithmId',
                             key: 'maskingAlgorithmId',
-                            render: (text, recore, _index) => (
+                            render: (text, record, _index) => (
                               <Select
                                 key={index}
                                 style={{ width: '144px' }}
-                                value={dataSource[_index].maskingAlgorithmId}
-                                onChange={(v) => handleScanTableDataChange(index, _index, v)}
+                                defaultValue={dataSource[_index].maskingAlgorithmId}
+                                onChange={(v) =>
+                                  handleScanTableDataChange(
+                                    `${database}_${tableName}`,
+                                    (record as ScanTableDataItem)?.columnName,
+                                    v,
+                                  )
+                                }
                                 options={sensitiveContext.maskingAlgorithmOptions}
                               />
                             ),
@@ -166,9 +200,19 @@ const ScanForm = ({
                             title: '操作',
                             width: 88,
                             key: 'action',
-                            render: (_, record, _index) => (
+                            render: (_, record) => (
                               <Space>
-                                <a onClick={() => handleScanTableDataDelete(index, _index)}>删除</a>
+                                <a
+                                  onClick={() =>
+                                    handleScanTableDataDelete(
+                                      database,
+                                      tableName,
+                                      (record as ScanTableDataItem)?.columnName,
+                                    )
+                                  }
+                                >
+                                  删除
+                                </a>
                               </Space>
                             ),
                           },

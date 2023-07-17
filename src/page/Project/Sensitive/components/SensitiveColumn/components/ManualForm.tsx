@@ -4,33 +4,39 @@ import { useWatch } from 'antd/lib/form/Form';
 import { useEffect, useState } from 'react';
 import ManualRule from './ManualRule';
 
-const ManualForm = ({ formRef, databases, setDatabases }) => {
+const ManualForm = ({ formRef }) => {
   const [disabledAdd, setDisabledAdd] = useState<boolean>(true);
   const manual = useWatch('manual', formRef);
   const handleAdd = async (fn) => {
     const { manual } = await formRef.getFieldsValue();
-    const lastOne = manual?.at(-1);
     if (
-      lastOne?.dataSource &&
-      lastOne?.database &&
-      lastOne?.tableName !== '' &&
-      lastOne?.columnName !== '' &&
-      lastOne?.maskingAlgorithmId
+      manual?.every(
+        (rule) =>
+          rule?.dataSource &&
+          rule?.database &&
+          rule?.tableName !== '' &&
+          rule?.columnName !== '' &&
+          rule?.maskingAlgorithmId,
+      )
     ) {
       fn?.();
       setDisabledAdd(true);
     }
   };
   useEffect(() => {
-    const lastOne = manual?.at(-1) || manual?.[manual?.length - 1];
     if (
-      lastOne?.dataSource &&
-      lastOne?.database &&
-      lastOne?.tableName !== '' &&
-      lastOne?.columnName !== '' &&
-      lastOne?.maskingAlgorithmId
+      manual?.every(
+        (rule) =>
+          rule?.dataSource &&
+          rule?.database &&
+          rule?.tableName !== '' &&
+          rule?.columnName !== '' &&
+          rule?.maskingAlgorithmId,
+      )
     ) {
       setDisabledAdd(false);
+    } else {
+      setDisabledAdd(true);
     }
   }, [manual]);
   return (
@@ -54,12 +60,9 @@ const ManualForm = ({ formRef, databases, setDatabases }) => {
                       index,
                       fields,
                       formRef,
-                      databases,
-                      setDatabases,
                       fieldKey: field.key,
                       fieldName: field.name,
                       remove,
-                      setDisabledAdd,
                     }}
                   />
                 ))}

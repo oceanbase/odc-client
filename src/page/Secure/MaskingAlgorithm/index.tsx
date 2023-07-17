@@ -5,9 +5,13 @@ import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { IRule } from '@/d.ts/rule';
 import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import SecureTable from '../components/SecureTable';
-import { CommonTableBodyMode, CommonTableMode, ITableLoadOptions } from '../components/SecureTable/interface';
+import {
+  CommonTableBodyMode,
+  CommonTableMode,
+  ITableLoadOptions,
+} from '../components/SecureTable/interface';
 import ViewMaskingAlgorithmDrawer from './components/ViewMaskingAlgorithmDrawer';
 
 interface MaskingAlgorithmProps {}
@@ -66,7 +70,7 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
             },
           };
         },
-        render: (text) => <TooltipContent content={text} />,
+        render: (text) => <TooltipContent content={text || '-'} />,
       },
       {
         title: '操作',

@@ -216,6 +216,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
       onClose={() => {
         onClose();
       }}
+      destroyOnClose={true}
       width="96vw"
       visible={visible}
       className={styles.explainDrawer}
@@ -394,8 +395,10 @@ const ExecDetail: React.FC<IProps> = function (props) {
         <Spin spinning={loadingExplain}>
           <SQLExplain
             tableHeight={300}
-            sql={sqlExecuteDetailToShow?.sql ?? ''}
+            sql={sqlExecuteDetailToShow?.sql ?? sql}
             explain={sqlExecuteExplainToShow}
+            session={session}
+            traceId={traceId}
           />
         </Spin>
       </div>
