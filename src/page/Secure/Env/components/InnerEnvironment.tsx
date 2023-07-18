@@ -1,6 +1,8 @@
+import { getIntegrationList } from '@/common/network/manager';
 import { updateRule } from '@/common/network/ruleset';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
+import { IntegrationType } from '@/d.ts';
 import { IRule, RuleType } from '@/d.ts/rule';
 import {
   CommonTableBodyMode,
@@ -170,13 +172,6 @@ const getColumns: (columnsFunction: {
       },
     },
     {
-      title: '改进等级',
-      // width: 92,
-      dataIndex: 'level',
-      key: 'level',
-      render: (_, record) => <RenderLevel level={record.level} />,
-    },
-    {
       title: '状态',
       // width: 80,
       dataIndex: 'status',
@@ -221,6 +216,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const [selectedData, setSelectedData] = useState<IRule>(null);
+  const [integrations, setIntegrations] = useState([]);
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
 
   const handleCloseModal = (fn?: () => void) => {
@@ -267,6 +263,14 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   const handleRulesReload = () => {
     handleInitRules(selectedRecord.value, ruleType);
   };
+
+  const loadIntegrations = async () => {
+    const integrations = await getIntegrationList({
+      type: IntegrationType.SQL_INTERCEPTOR,
+    });
+    setIntegrations(integrations?.contents);
+  };
+
   const columns: ColumnsType<IRule> = getColumns({
     selectedRecord,
     handleOpenEditModal,
@@ -282,6 +286,11 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
       }
     }
   }, [selectedRecord, ruleType]);
+
+  useEffect(() => {
+    loadIntegrations();
+  }, []);
+
   return (
     <>
       <div className={styles.innerEnv}>
@@ -361,6 +370,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           rule: selectedData,
           handleCloseModal,
           handleUpdateEnvironment,
+          integrations,
         }}
       />
     </>

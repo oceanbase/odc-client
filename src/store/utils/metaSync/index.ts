@@ -5,7 +5,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 
 function getOrganizationKey() {
   const userId = login?.user?.id;
-  const organizationId = login?.user?.organizationId;
+  const organizationId = login?.organizationId;
   return organizationId ? `${userId}-organization-${organizationId}` : null;
 }
 

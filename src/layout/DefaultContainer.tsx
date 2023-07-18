@@ -1,3 +1,6 @@
+/**
+ * 老代码布局使用，有点冗余
+ */
 import { SettingStore } from '@/store/setting';
 import { Outlet } from '@umijs/max';
 import { Layout } from 'antd';
