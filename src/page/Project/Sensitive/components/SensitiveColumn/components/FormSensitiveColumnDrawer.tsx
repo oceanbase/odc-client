@@ -427,6 +427,7 @@ const FormSensitiveColumnDrawer = ({
         <ManualForm
           {...{
             formRef,
+            setFormDrawerDatabases: setDatabases,
           }}
         />
       ) : (
@@ -436,7 +437,7 @@ const FormSensitiveColumnDrawer = ({
             _formRef,
             hasScan,
             databases,
-            setDatabases,
+            setFormDrawerDatabases: setDatabases,
             resetScanTableData,
             reset,
             handleStartScan,

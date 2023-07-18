@@ -4,7 +4,7 @@ import { useWatch } from 'antd/lib/form/Form';
 import { useEffect, useState } from 'react';
 import ManualRule from './ManualRule';
 
-const ManualForm = ({ formRef }) => {
+const ManualForm = ({ formRef, setFormDrawerDatabases }) => {
   const [disabledAdd, setDisabledAdd] = useState<boolean>(true);
   const manual = useWatch('manual', formRef);
   const handleAdd = async (fn) => {
@@ -62,6 +62,7 @@ const ManualForm = ({ formRef }) => {
                       formRef,
                       fieldKey: field.key,
                       fieldName: field.name,
+                      setFormDrawerDatabases,
                       remove,
                     }}
                   />
