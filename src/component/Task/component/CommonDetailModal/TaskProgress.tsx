@@ -1,25 +1,23 @@
 import { getSubTask } from '@/common/network/task';
-import DisplayTable from '@/component/DisplayTable';
-import StatusLabel from '@/component/Task/component/Status';
-import { SQLContent } from '@/component/SQLContent';
-import { SimpleTextItem } from '../SimpleTextItem';
-import { Drawer, Space } from 'antd';
-import { TaskDetail, TaskRecordParameters, ConnectionMode } from '@/d.ts';
-import React, { useEffect, useState } from 'react';
 import Action from '@/component/Action';
+import DisplayTable from '@/component/DisplayTable';
+import { SQLContent } from '@/component/SQLContent';
+import StatusLabel from '@/component/Task/component/Status';
+import { ConnectionMode, TaskDetail, TaskRecordParameters } from '@/d.ts';
+import { Drawer, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
 
-const getColumns = (params: {
-  onOpenDetail: (id: number) => void;
-}) => {
+const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
   return [
     {
       dataIndex: 'resultJson',
       title: '源表',
       ellipsis: true,
-      render: (resultJson) =>{
-        return <span>{JSON.parse(resultJson?? '{}')?.originTableName}</span>
-      }
+      render: (resultJson) => {
+        return <span>{JSON.parse(resultJson ?? '{}')?.originTableName}</span>;
+      },
     },
     {
       dataIndex: 'status',
@@ -27,7 +25,9 @@ const getColumns = (params: {
       ellipsis: true,
       width: 140,
       render: (status, record) => {
-        return <StatusLabel isSubTask status={status} progress={Math.floor(record.progressPercentage)} />;
+        return (
+          <StatusLabel isSubTask status={status} progress={Math.floor(record.progressPercentage)} />
+        );
       },
     },
     {
@@ -57,10 +57,10 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const [subTasks, setSubTasks] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [open, setOpen] = useState(false);
-  const subTask = subTasks?.find(item => item.id === detailId);
-  const resultJson = JSON.parse(subTask?.resultJson?? '{}');
+  const subTask = subTasks?.find((item) => item.id === detailId);
+  const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
   const isMySQL = resultJson?.dialectType === ConnectionMode.OB_MYSQL;
-  
+
   const loadData = async () => {
     const res = await getSubTask(task.id);
     setSubTasks(res?.contents?.[0].tasks);
@@ -77,9 +77,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
     setDetailId(id);
   };
 
-  const handleClose = () =>{
+  const handleClose = () => {
     setOpen(false);
-  }
+  };
 
   return (
     <>
@@ -95,11 +95,11 @@ const TaskProgress: React.FC<IProps> = (props) => {
             const resultJson = JSON.parse(record?.resultJson);
             return (
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 8px' }}>
-                <span>预估数据行数：{resultJson?.fullTransferEstimatedCount}</span>
-                <span>实际拷贝行数：{resultJson?.fullTransferFinishedCount}</span>
-                <span>数据一致性校验：-</span>
+                <span>预估数据行数：{resultJson?.fullTransferEstimatedCount ?? '-'}</span>
+                <span>实际拷贝行数：{resultJson?.fullTransferFinishedCount ?? '-'}</span>
+                <span>数据一致性校验：{resultJson?.fullVerificationResultDescription ?? '-'} </span>
               </div>
-            )
+            );
           },
         }}
         disablePagination
@@ -112,9 +112,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
         onClose={handleClose}
         open={open}
       >
-        <Space direction='vertical' style={{ display: 'flex' }}>
+        <Space direction="vertical" style={{ display: 'flex' }}>
           <SimpleTextItem
-            label='新表 DDL'
+            label="新表 DDL"
             content={
               <div style={{ marginTop: '8px' }}>
                 <SQLContent
@@ -129,11 +129,11 @@ const TaskProgress: React.FC<IProps> = (props) => {
             direction="column"
           />
           <SimpleTextItem
-            label='源表 DDL'
+            label="源表 DDL"
             content={
               <div style={{ marginTop: '8px' }}>
                 <SQLContent
-                  sqlContent={resultJson?.originTableDdl} 
+                  sqlContent={resultJson?.originTableDdl}
                   sqlObjectIds={null}
                   sqlObjectNames={null}
                   taskId={task?.id}
