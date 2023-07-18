@@ -28,10 +28,17 @@ interface AsyncData {
 
 interface ApplyPermissionData {}
 interface IExportModalData {
-  type: DbObjectType;
-  name: string;
+  type?: DbObjectType;
+  name?: string;
+  databaseId?: number;
   exportPkgBody?: boolean;
 }
+
+interface IImportModalData {
+  table?: Partial<ITable>;
+  databaseId?: number;
+}
+
 export class ModalStore {
   @observable
   public exportModalVisible: boolean;
@@ -43,7 +50,7 @@ export class ModalStore {
   public importModalVisible: boolean;
 
   @observable
-  public importModalData: Partial<ITable> = null;
+  public importModalData: IImportModalData = null;
 
   @observable
   public addConnectionVisible: boolean;
@@ -80,7 +87,7 @@ export class ModalStore {
 
   @observable
   public sensitiveColumnVisible: boolean = false;
-  
+
   @observable
   public createDDLAlterVisible: boolean = false;
 
@@ -231,7 +238,7 @@ export class ModalStore {
   }
 
   @action
-  public changeImportModal(isShow: boolean = true, modalData?: Partial<ITable>) {
+  public changeImportModal(isShow: boolean = true, modalData?: IImportModalData) {
     this.importModalVisible = isShow;
     this.importModalData = isShow ? modalData : null;
   }

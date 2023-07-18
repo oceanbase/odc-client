@@ -430,6 +430,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         name="basic"
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
+          databaseId: asyncTaskData?.task?.databaseId,
         }}
         layout="vertical"
         requiredMark="optional"

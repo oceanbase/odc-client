@@ -111,7 +111,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
           })}
           /*定时周期*/
         >
-          {getCronCycle(triggerConfig)}
+          {triggerConfig ? getCronCycle(triggerConfig) : '-'}
         </Descriptions.Item>
         {task?.type === TaskType.SQL_PLAN && (
           <Descriptions.Item>
