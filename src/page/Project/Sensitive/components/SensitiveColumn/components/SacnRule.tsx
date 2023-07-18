@@ -6,7 +6,7 @@ import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 
-const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
+const ScanRule = ({ formRef, resetScanTableData, reset, setFormDrawerDatabases }) => {
   const context = useContext(ProjectContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
   const [databaseId, setDatabaseId] = useState<number>(0);
@@ -27,7 +27,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
     id: number = dataSourceId,
   ) => {
     const rawData = await listDatabases(projectId, id);
-    setDatabases(rawData?.contents);
+    setFormDrawerDatabases(rawData?.contents);
     const resData =
       rawData?.contents?.map((content) => ({
         label: content.name,

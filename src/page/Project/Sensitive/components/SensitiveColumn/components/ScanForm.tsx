@@ -22,7 +22,7 @@ const ScanForm = ({
   formRef,
   _formRef,
   databases,
-  setDatabases,
+  setFormDrawerDatabases,
   resetScanTableData,
   reset,
   hasScan,
@@ -65,7 +65,7 @@ const ScanForm = ({
   return (
     <>
       <Form form={formRef} layout="vertical" requiredMark="optional">
-        <ScanRule {...{ formRef, databases, setDatabases, resetScanTableData, reset }} />
+        <ScanRule {...{ formRef, databases, setFormDrawerDatabases, resetScanTableData, reset }} />
         <Space>
           <Button
             onClick={handleStartScan}
