@@ -16,6 +16,7 @@ interface IProps extends FormProps {
   defaultAnonymousBlockDdl?: string;
   onSave: (params?: IPLParam[], ddl?: string) => void;
   visible: boolean;
+  plAction: '' | 'DEBUG' | 'COMPILE' | 'EXEC';
   onCancel: () => void;
 }
 
@@ -26,6 +27,7 @@ function EditPLParamasModal({
   plSchema,
   defaultAnonymousBlockDdl,
   connectionMode,
+  plAction,
 }: IProps) {
   const [loading, setLoading] = useState(false);
   const [anonymousBlockDdl, setAnonymousBlockDdl] = useState('');
@@ -39,7 +41,9 @@ function EditPLParamasModal({
        * 计算anonymousBlockDdl
        */
       if (connectionMode === ConnectionMode.OB_ORACLE) {
-        setAnonymousBlockDdl(defaultAnonymousBlockDdl || getPLDebugExecuteSql(plSchema));
+        setAnonymousBlockDdl(
+          defaultAnonymousBlockDdl || getPLDebugExecuteSql(plSchema, plAction === 'DEBUG'),
+        );
       }
     }
   }, [visible]);
