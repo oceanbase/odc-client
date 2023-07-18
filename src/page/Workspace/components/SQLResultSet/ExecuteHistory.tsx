@@ -225,13 +225,10 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             <Space size={5}>
               <span>{DBCostTime}</span>
               <Tooltip
-                overlayInnerStyle={{
-                  padding: '40px 10px 0px 20px',
-                  width: 310,
-                }}
+                overlayStyle={{ maxWidth: 350 }}
                 color="var(--background-primary-color)"
-                placement="topLeft"
-                arrowPointAtCenter={true}
+                placement="leftTop"
+                showArrow={false}
                 title={
                   <Timeline className={styles.executeTimerLine}>
                     {renderList.map((item) => {

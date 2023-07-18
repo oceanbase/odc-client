@@ -132,7 +132,8 @@ export default inject('settingStore')(
             onSelectChange?.([]);
           } else {
             onSelectChange?.(
-              rows
+              //@ts-ignore
+              gridRef?.current?.rows
                 ?.slice(Math.min(rowIdx, endRowIdx), Math.max(rowIdx, endRowIdx) + 1)
                 .map((row) => rowKeyGetter(row)),
               innerColumns

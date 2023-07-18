@@ -36,7 +36,7 @@ const Script: React.FC<{}> = function () {
   }
   return (
     <>
-      <div style={{ display: 'none' }}>
+      <div style={{ display: 'none', pointerEvents: 'none' }}>
         <Upload
           showUploadList={false}
           name="file"
@@ -71,6 +71,7 @@ const Script: React.FC<{}> = function () {
                 title: '上传脚本',
                 key: 'upload',
                 onClick() {
+                  console.log('click');
                   uploadRef.current?.click();
                 },
                 icon: UploadOutlined,

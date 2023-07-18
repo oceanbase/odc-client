@@ -7,7 +7,7 @@ const pkg = require('../package.json');
 const run = async function () {
   console.log('开始下载文档包');
   const isSuccess = await download(
-    `https://ob-front.oss-cn-hangzhou.aliyuncs.com/docs/${pkg.version}/doc.zip`,
+    `http://antsys-obodc-build.cn-hangzhou-alipay-b-internal.oss-internal.aliyun-inc.com/docs/${pkg.version}/doc.zip`,
     'public/help-doc',
     'doc.zip',
   );

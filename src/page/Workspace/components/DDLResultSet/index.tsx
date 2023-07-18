@@ -251,6 +251,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const rows: any[] = useMemo(() => {
     return editRows || originRows;
   }, [originRows, editRows]);
+
+  /**
+   * 表格实际展示的rows，比如过滤后的rows。
+   */
+  const filterRows = gridRef.current?.rows;
   /**
    * 外部columns更新，自身的columns需要更新。
    */
@@ -660,8 +665,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
    * 选中并且为单行的时候才会存在，用来标识当前单选情况下的行
    */
   let selectedRowIdx;
+  let filterRowIdx;
   if (selectedCellRowsKey.length === 1) {
     selectedRowIdx = rows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
+    filterRowIdx = filterRows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
   }
   const rgdColumns = useColumns(
     columnsToDisplay,
@@ -1152,9 +1159,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             }}
             setSelectedRowIndex={setSelectedRowIndex}
             columns={columnsToDisplay}
-            selectedRow={rows[selectedRowIdx]}
-            currentIdx={selectedRowIdx}
-            total={rows.length}
+            selectedRow={filterRows?.[filterRowIdx]}
+            currentIdx={filterRowIdx}
+            total={filterRows?.length}
             useUniqueColumnName={useUniqueColumnName}
           />
         </ResultContext.Provider>
