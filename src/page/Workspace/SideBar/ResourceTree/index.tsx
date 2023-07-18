@@ -59,7 +59,20 @@ const ResourceTree: React.FC<IProps> = function ({
     }
     return treeData.filter((dbNode) => {
       let haveObj = false;
+      const isDBNameMatch = dbNode.title
+        ?.toString()
+        ?.toLowerCase()
+        ?.includes(searchValue?.toLowerCase());
+      if (isDBNameMatch) {
+        /**
+         * db 名字匹配的情况下，不做内部的过滤
+         */
+        return true;
+      }
       dbNode.children?.forEach((objRootNode: TreeDataNode) => {
+        /**
+         * 过滤数据库对象
+         */
         let filterChildren: any = objRootNode.children?.filter((objNode) => {
           return objNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase());
         });
@@ -68,12 +81,7 @@ const ResourceTree: React.FC<IProps> = function ({
           haveObj = true;
         }
       });
-      if (
-        haveObj ||
-        dbNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase())
-      ) {
-        return true;
-      }
+      return haveObj;
     });
   }, [treeData, searchValue]);
 
