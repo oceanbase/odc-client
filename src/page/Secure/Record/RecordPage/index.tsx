@@ -773,7 +773,7 @@ export const getPageColumns = (params: {
   ];
 };
 const RecordPage: React.FC<any> = () => {
-  const { users, getPublicConnectionList, getUserList } = useContext(ManageContext);
+  const { users, getUserList } = useContext(ManageContext);
   const tableRef = useRef<ITableInstance>();
   const [event, setEvent] = useState(null);
   const [eventMeta, setEventMeta] = useState([]);
@@ -873,7 +873,6 @@ const RecordPage: React.FC<any> = () => {
 
   useEffect(() => {
     loadEventMeta();
-    getPublicConnectionList();
     getUserList();
   }, []);
 
