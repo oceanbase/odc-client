@@ -193,6 +193,7 @@ export async function getConnectionList(params: {
   clusterName?: string[];
   tenantName?: string[];
   projectId?: number;
+  userId?: number;
   dialectType?: ConnectionMode | ConnectionMode[];
   type?: ConnectType[] | ConnectType;
   status?: ConnectionFilterStatus;

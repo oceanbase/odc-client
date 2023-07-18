@@ -1,4 +1,5 @@
-import { deleteUser, getPublicConnectionList, resetPassword } from '@/common/network/manager';
+import { getConnectionList } from '@/common/network/connection';
+import { deleteUser, resetPassword } from '@/common/network/manager';
 import { canAcess } from '@/component/Acess';
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import DisplayTable from '@/component/DisplayTable';
@@ -271,7 +272,7 @@ const UserResource: React.FC<{
   const { id } = data;
   const [resource, setResource] = useState([]);
   const loadResource = async () => {
-    const res = await getPublicConnectionList({
+    const res = await getConnectionList({
       userId: id,
     });
 

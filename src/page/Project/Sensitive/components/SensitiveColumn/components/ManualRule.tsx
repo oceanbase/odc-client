@@ -11,7 +11,15 @@ import { Form, Select, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import styles from './index.less';
 
-const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => {
+const ManualRule = ({
+  fields,
+  index,
+  formRef,
+  setFormDrawerDatabases,
+  fieldKey,
+  fieldName,
+  remove,
+}) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const { dataSources = [], maskingAlgorithmOptions, projectId } = sensitiveContext;
@@ -54,6 +62,7 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
       value: content.id,
     }));
     setDatabases(rawData?.contents);
+    setFormDrawerDatabases(rawData?.contents);
     setTableName('');
     setColumnName('');
     setDatabaseOptions(resData);
@@ -129,10 +138,10 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
     setDatabaseId(value);
     manual[index] = {
       ...manual[index],
-      columnName: undefined,
       database: value,
-      maskingAlgorithmId: undefined,
       tableName: undefined,
+      columnName: undefined,
+      maskingAlgorithmId: undefined,
     };
     formRef.setFieldsValue({
       manual,
@@ -145,9 +154,9 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
 
     manual[index] = {
       ...manual[index],
+      tableName: value,
       columnName: undefined,
       maskingAlgorithmId: undefined,
-      tableName: value,
     };
     formRef.setFieldsValue({
       manual,
