@@ -3,14 +3,12 @@ import {
   AuditEventActionType,
   AuditEventResult,
   AuditEventType,
-  ConnectionMode,
   EncryptionAlgorithm,
   IAudit,
   IAuditEvent,
   IAuditExport,
   IAutoAuthEvent,
   IAutoAuthRule,
-  IConnectionType,
   IManagerIntegration,
   IManagerPublicConnection,
   IManagerResourceGroup,
@@ -226,120 +224,6 @@ export async function getRoleList(
       ...params,
       minPrivilege: params?.minPrivilege ?? 'update',
     },
-  });
-  return result?.data;
-}
-
-/**
- * 新建公共连接
- */
-export async function createPublicConnection(
-  data: Partial<IManagerPublicConnection>,
-): Promise<IManagerPublicConnection> {
-  const result = await request.post('/api/v2/connect/connections', {
-    data: {
-      ...data,
-      visibleScope: IConnectionType.ORGANIZATION,
-    },
-  });
-  return result?.data;
-}
-
-/**
- * 公共连接有效性检测
- */
-export async function checkPublicConnection(data: Partial<IManagerPublicConnection>): Promise<{
-  allCheckPass: boolean;
-  messages: {
-    accountName: string;
-    accountType: string;
-    message: string;
-  }[];
-}> {
-  const result = await request.post('/api/v2/connect/verify', {
-    data: {
-      ...data,
-      visibleScope: IConnectionType.ORGANIZATION,
-    },
-  });
-  return result?.data;
-}
-
-/**
- * 删除公共连接
- */
-export async function deletePublicConnection(id: number): Promise<IManagerPublicConnection> {
-  const result = await request.delete(`/api/v2/connect/connections/${id}`);
-  return result?.data;
-}
-
-/**
- * 更新公共连接
- */
-export async function updatePublicConnection(
-  data: Partial<IManagerPublicConnection>,
-): Promise<IManagerPublicConnection> {
-  const result = await request.put(`/api/v2/connect/connections/${data.id}`, {
-    data,
-  });
-  return result?.data;
-}
-
-/**
- * 设置公共连接状态
- */
-export async function setPublicConnectionEnable(data: {
-  id: number;
-  enabled: boolean;
-}): Promise<IManagerPublicConnection> {
-  const result = await request.post(`/api/v2/connect/connections/${data.id}/setEnabled`, {
-    data,
-  });
-  return result?.data;
-}
-
-/**
- * 获取公共连接详情
- */
-export async function getPublicConnectionDetail(
-  connectionId: number,
-): Promise<IManagerPublicConnection> {
-  const result = await request.get(`/api/v2/connect/connections/${connectionId}`);
-  return result?.data;
-}
-
-/**
- * 获取公共连接列表
- */
-export async function getPublicConnectionList(params?: {
-  name?: string;
-  enabled?: boolean[];
-  resourceGroupId?: number[];
-  dialectType?: ConnectionMode[];
-  sort?: string;
-  page?: number;
-  size?: number;
-  userId?: number;
-  minPrivilege?: string;
-}): Promise<IResponseData<IManagerPublicConnection>> {
-  const result = await request.get('/api/v2/connect/connections', {
-    params: {
-      ...params,
-      visibleScope: IConnectionType.ORGANIZATION,
-      minPrivilege: params?.minPrivilege ?? 'update',
-    },
-  });
-  return result?.data;
-}
-
-/**
- * 批量导入公共连接
- */
-export async function batchImportPublicConnection(
-  data: IManagerPublicConnection[],
-): Promise<IManagerPublicConnection[]> {
-  const result = await request.post('/api/v2/connect/connections/batchCreate', {
-    data,
   });
   return result?.data;
 }
