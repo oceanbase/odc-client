@@ -16,7 +16,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   const types = dbSession?.database?.types;
   const treeData: TreeDataNode = {
     title: '类型',
-    key: `${dbName}-type`,
+    key: `${database.id}-${dbName}-type`,
     type: ResourceNodeType.TypeRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -24,7 +24,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   };
   if (types) {
     treeData.children = types.map((type) => {
-      const pkgKey = `${dbSession?.database?.typeVersion}-${dbName}-type-${type.typeName}`;
+      const pkgKey = `${database.id}-${dbSession?.database?.typeVersion}-${dbName}-type-${type.typeName}`;
 
       const { typeDetail } = type;
       const functions = typeDetail?.functions;

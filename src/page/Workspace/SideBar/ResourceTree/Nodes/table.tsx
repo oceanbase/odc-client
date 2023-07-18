@@ -23,7 +23,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   const tables = dbSession?.database?.tables;
   const treeData: TreeDataNode = {
     title: '表',
-    key: `${dbName}-table`,
+    key: `${database?.id}-${dbName}-table`,
     type: ResourceNodeType.TableRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -32,7 +32,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   if (tables) {
     const dataTypes = dbSession?.dataTypes;
     treeData.children = tables.map((table) => {
-      const tableKey = `${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
+      const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
       let columnRoot: TreeDataNode;
       if (table.columns) {
         columnRoot = {

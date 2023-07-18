@@ -11,7 +11,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
   const sequences = dbSession?.database?.sequences;
   const treeData: TreeDataNode = {
     title: '序列',
-    key: `${dbName}-sequence`,
+    key: `${database.id}-${dbName}-sequence`,
     type: ResourceNodeType.SequenceRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -19,7 +19,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
   };
   if (sequences) {
     treeData.children = sequences.map((sequence) => {
-      const key = `${dbSession?.database?.sequenceVersion}-${dbName}-sequence-${sequence.name}`;
+      const key = `${database.id}-${dbSession?.database?.sequenceVersion}-${dbName}-sequence-${sequence.name}`;
       return {
         title: sequence.name,
         key,

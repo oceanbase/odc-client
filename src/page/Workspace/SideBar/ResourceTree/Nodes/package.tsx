@@ -19,7 +19,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   const packages = dbSession?.database?.packages;
   const treeData: TreeDataNode = {
     title: '程序包',
-    key: `${dbName}-package`,
+    key: `${database.id}-${dbName}-package`,
     type: ResourceNodeType.PackageRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -27,7 +27,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   };
   if (packages) {
     treeData.children = packages.map((pkg) => {
-      const pkgKey = `${dbSession?.database?.packageVersion}-${dbName}-package-${pkg.packageName}`;
+      const pkgKey = `${database.id}-${dbSession?.database?.packageVersion}-${dbName}-package-${pkg.packageName}`;
 
       const { packageHead, packageBody } = pkg;
 

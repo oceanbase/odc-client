@@ -8,6 +8,7 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
 import { message } from 'antd';
+import { Base64 } from 'js-base64';
 import { isNil, toInteger } from 'lodash';
 import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
@@ -51,7 +52,7 @@ export async function getTableInfo(
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
-    )}/tables/${encodeObjName(tableName)}`,
+    )}/tables/${Base64.encode(tableName)}`,
   );
 
   return convertServerTableToTable(res?.data);
