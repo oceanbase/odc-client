@@ -1,3 +1,4 @@
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { isArray, isEmpty, isNil, isObject } from 'lodash';
 import { stringify } from 'qs';
@@ -38,6 +39,7 @@ export function resolveUrlAndParams(url: string, method: IHttpMethod, params: Re
   params = Object.assign(
     {
       lang: getLocale(),
+      currentOrganizationId: login.organizationId,
     },
     params,
   );
