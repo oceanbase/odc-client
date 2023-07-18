@@ -8,11 +8,12 @@ import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import React from 'react';
-import AsyncTaskCreateModal from './AsyncTask';
 import AlterDDLTaskCreateModal from './AlterDdlTask';
+import AsyncTaskCreateModal from './AsyncTask';
 import ApprovalModal from './component/ApprovalModal';
 import TaskTable from './component/TaskTable';
 import DataArchiveTaskCreateModal from './DataArchiveTask';
+import DataClearTaskCreateModal from './DataClearTask';
 import DataMockerTaskCreateModal from './DataMockerTask';
 import DetailModal from './DetailModal';
 import ExportTaskCreateModal from './ExportTask';
@@ -235,6 +236,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.DATA_ARCHIVE:
         modalStore.changeDataArchiveModal(true);
         break;
+      case TaskPageType.DATA_DELETE:
+        modalStore.changeDataClearModal(true);
+        break;
       case TaskPageType.ONLINE_SCHEMA_CHANGE:
         modalStore.changeCreateDDLAlterTaskModal(true);
         break;
@@ -302,6 +306,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         <SQLPlanTaskCreateModal projectId={projectId} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
         <DataArchiveTaskCreateModal projectId={projectId} />
+        <DataClearTaskCreateModal projectId={projectId} />
         <AlterDDLTaskCreateModal projectId={projectId} />
       </>
     );

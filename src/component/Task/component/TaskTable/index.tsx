@@ -85,6 +85,8 @@ export const TaskTypeMap = {
   [TaskType.DATA_ARCHIVE]: '数据归档',
 
   [TaskType.ONLINE_SCHEMA_CHANGE]: '无锁结构变更',
+
+  [TaskType.DATA_DELETE]: '数据清理',
 };
 
 export const getStatusFilters = (status: {
