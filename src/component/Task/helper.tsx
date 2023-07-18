@@ -111,7 +111,7 @@ export function getTaskTypeList(
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
           }),
           //影子表同步
-          enabled: task?.showAllSchemaTaskType,
+          enabled: true,
         },
         {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
@@ -137,7 +137,8 @@ export function getTaskTypeList(
             id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
           }),
           //分区计划
-          enabled: task?.showAllSchemaTaskType,
+          // 说明：和后端沟通后，适配方案待定，暂不放开
+          enabled: false,
         },
         {
           value: TaskPageType.DATA_ARCHIVE,

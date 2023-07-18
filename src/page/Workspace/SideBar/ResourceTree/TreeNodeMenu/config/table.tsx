@@ -97,7 +97,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         return !setting.enableDBImport;
       },
       run(session, node) {
-        modalStore.changeImportModal(true, node.data);
+        modalStore.changeImportModal(true, {
+          table: node.data,
+        });
       },
     },
 

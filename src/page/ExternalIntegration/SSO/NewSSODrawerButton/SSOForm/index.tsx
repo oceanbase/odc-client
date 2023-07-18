@@ -161,7 +161,7 @@ export default inject('userStore')(
 
       function updateRegistrationId(name) {
         var md5Hex = md5(`${name || ''}`);
-        const id = `${userStore?.user?.organizationId}:${md5Hex}`;
+        const id = `${userStore?.organizationId}:${md5Hex}`;
         setRegistrationId(id);
         form.setFieldsValue({
           ssoParameter: {
@@ -469,7 +469,7 @@ export default inject('userStore')(
               leftText
               title={`测试连接需要单独的回调白名单，请手动添加 ${
                 window.ODCApiHost || location.origin
-              }/login/oauth2/code/${userStore?.user?.organizationId}:test`}
+              }/login/oauth2/code/${userStore?.organizationId}:test`}
             >
               <a onClick={test}>测试连接</a>
             </HelpDoc>

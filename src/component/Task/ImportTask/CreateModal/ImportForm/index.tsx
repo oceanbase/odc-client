@@ -132,7 +132,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
                 newValues.importContent = IMPORT_CONTENT.DATA;
                 props.onChangeCsvColumnMappings([]);
               } else {
-                newValues.importContent = modalStore.importModalData
+                newValues.importContent = modalStore.importModalData?.table
                   ? IMPORT_CONTENT.DATA
                   : IMPORT_CONTENT.DATA_AND_STRUCT;
               }

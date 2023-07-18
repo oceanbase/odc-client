@@ -220,7 +220,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
   private getDefaultFormData = () => {
     return {
-      databaseId: null,
+      databaseId: this.props.modalStore.exportModalData?.databaseId,
       executionStrategy: TaskExecStrategy.AUTO,
       taskName: null,
       dataTransferFormat: this.defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
@@ -253,6 +253,19 @@ class CreateModal extends React.Component<IProps, IState> {
       formData: this.getDefaultFormData(),
     });
   };
+
+  static getDerivedStateFromProps(props, state) {
+    const nextDatabaseId = props.modalStore.exportModalData?.databaseId;
+    const preDatabaseId = state.formData.databaseId;
+    if (nextDatabaseId && nextDatabaseId !== preDatabaseId) {
+      return {
+        formData: {
+          ...state.formData,
+          databaseId: nextDatabaseId,
+        },
+      };
+    }
+  }
 
   render() {
     const { modalStore, projectId } = this.props;

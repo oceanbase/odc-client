@@ -1,3 +1,4 @@
+import PageLoading from '@/component/PageLoading';
 import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
 import { Outlet, useLocation, useNavigate } from '@umijs/max';
@@ -11,47 +12,26 @@ interface IProps {
 const key = '$odc_event_organizationKey';
 
 const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore }) {
-  const organizationId = userStore.user?.organizationId;
+  const organizationId = userStore?.organizationId;
+  const isSwitching = userStore?.isSwitchingOrganization;
   const location = useLocation();
   const navigate = useNavigate();
-  function addListener() {
-    window.addEventListener('storage', () => {
-      const organizationId = window.localStorage.getItem(key);
-      if (organizationId !== userStore.user?.organizationId?.toString()) {
-        window._forceRefresh = true;
-        window.close();
-      }
-    });
-  }
-
-  function sendEvent() {
-    if (organizationId) {
-      window.localStorage.setItem(key, organizationId.toString());
-    }
-  }
 
   useEffect(() => {
     const isPersonal =
-      userStore.user?.belongedToOrganizations?.find(
-        (item) => item.id === userStore?.user?.organizationId,
-      )?.type === SpaceType.PRIVATE;
+      userStore.organizations?.find((item) => item.id === organizationId)?.type ===
+      SpaceType.PRIVATE;
     if (isPersonal && location.hash?.indexOf('sqlworkspace') === -1) {
       /**
        * 私人空间禁止
        */
       navigate('/sqlworkspace');
     }
-  }, [location.hash, userStore.user]);
+  }, [location.hash, organizationId, userStore.organizations]);
 
-  useEffect(() => {
-    sendEvent();
-  }, [organizationId]);
-
-  useEffect(() => {
-    addListener();
-  }, []);
-
-  return (
+  return isSwitching ? (
+    <PageLoading showError={false} />
+  ) : (
     <>
       <Outlet />
     </>

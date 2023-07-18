@@ -75,6 +75,9 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const { database } = useDBSession(databaseId);
     const connectionId = database?.dataSource?.id;
     const loadData = async () => {
+      if (!connectionId) {
+        return;
+      }
       const res = await getPartitionPlan({
         connectionId,
       });
@@ -152,7 +155,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     };
 
     useEffect(() => {
-      if (partitionVisible) {
+      if (partitionVisible && connectionId) {
         checkPartitionPlanExist();
       }
     }, [partitionVisible]);

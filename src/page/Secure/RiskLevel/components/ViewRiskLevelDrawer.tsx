@@ -44,14 +44,20 @@ const ViewRiskLevelDrawer: React.FC<{
               ) => {
                 return (
                   <Timeline.Item key={index}>
-                    <Descriptions title={externalApprovalName} column={1}>
-                      <div className={styles.nodeBold}>审批角色 {index + 1}</div>
-                      <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'审批角色'}>
-                        <div className={styles.nodeContent}>
-                          {autoApproval ? '自动审批' : resourceRoleName}
-                        </div>
-                      </Descriptions.Item>
-                    </Descriptions>
+                    {externalApprovalName ? (
+                      <Descriptions title="外部审批" column={1}>
+                        <div className={styles.nodeBold}>{externalApprovalName}</div>
+                      </Descriptions>
+                    ) : (
+                      <Descriptions column={1}>
+                        <div className={styles.nodeBold}>审批角色 {index + 1}</div>
+                        <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'审批角色'}>
+                          <div className={styles.nodeContent}>
+                            {autoApproval ? '自动审批' : resourceRoleName}
+                          </div>
+                        </Descriptions.Item>
+                      </Descriptions>
+                    )}
                   </Timeline.Item>
                 );
               },

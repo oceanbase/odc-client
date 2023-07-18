@@ -1,3 +1,4 @@
+import login from '@/store/login';
 import type { IProgressEvent, IRequestError, IRequestOption } from './interface';
 
 function getError(option: IRequestOption, xhr: XMLHttpRequest) {
@@ -27,6 +28,7 @@ export function request(option: IRequestOption) {
     const xhr = new XMLHttpRequest();
     const formData = new FormData();
     const headers = option.headers || {};
+    headers['currentOrganizationId'] = login.organizationId?.toString();
 
     if (option.data) {
       Object.keys(option.data).forEach((key) => {

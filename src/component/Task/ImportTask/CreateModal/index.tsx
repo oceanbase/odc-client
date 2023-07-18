@@ -339,7 +339,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
   private isSingleImport = () => {
     const { modalStore } = this.props;
-    return !!modalStore.importModalData;
+    return !!modalStore.importModalData?.table;
   };
   /**
    * 改变csv的映射关系
@@ -369,7 +369,7 @@ class CreateModal extends React.Component<IProps, IState> {
   private getDefaultFormData = () => {
     return {
       useSys: false,
-      databaseId: null,
+      databaseId: this.props.modalStore.importModalData?.databaseId,
       executionStrategy: TaskExecStrategy.AUTO,
       fileType: IMPORT_TYPE.ZIP,
       encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
@@ -386,7 +386,7 @@ class CreateModal extends React.Component<IProps, IState> {
       lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
       dataTransferFormat: FILE_DATA_TYPE.CSV,
       stopWhenError: this.defaultConfig?.stopWhenError ?? true,
-      tableName: this.props.modalStore.importModalData?.tableName,
+      tableName: this.props.modalStore.importModalData?.table?.tableName,
     };
   };
 
@@ -396,6 +396,19 @@ class CreateModal extends React.Component<IProps, IState> {
       formData: this.getDefaultFormData(),
     });
   };
+
+  static getDerivedStateFromProps(props, state) {
+    const nextDatabaseId = props.modalStore.importModalData?.databaseId;
+    const preDatabaseId = state.formData.databaseId;
+    if (nextDatabaseId && nextDatabaseId !== preDatabaseId) {
+      return {
+        formData: {
+          ...state.formData,
+          databaseId: nextDatabaseId,
+        },
+      };
+    }
+  }
 
   render() {
     const { modalStore, projectId } = this.props;
