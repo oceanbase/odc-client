@@ -5,8 +5,13 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
+import ExportTaskCreateModal from '@/component/Task/ExportTask';
+import ImportTaskCreateModal from '@/component/Task/ImportTask';
+import { TaskPageType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
+import modalStore from '@/store/modal';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
@@ -47,6 +52,29 @@ const Database: React.FC<IProps> = ({ id }) => {
   function reload() {
     loadData(params.current.pageSize, params.current.current, params.current.environmentId);
   }
+
+  const handleMenuClick = (type: TaskPageType, databaseId: number) => {
+    switch (type) {
+      case TaskPageType.IMPORT:
+        modalStore.changeImportModal(true, {
+          databaseId,
+        });
+        break;
+      case TaskPageType.EXPORT:
+        modalStore.changeExportModal(true, {
+          databaseId,
+        });
+        break;
+      case TaskPageType.ASYNC:
+        modalStore.changeCreateAsyncTaskModal(true, {
+          task: {
+            databaseId,
+          },
+        });
+        break;
+      default:
+    }
+  };
 
   return (
     <TableCard
@@ -122,9 +150,30 @@ const Database: React.FC<IProps> = ({ id }) => {
               }
               return (
                 <Action.Group size={3}>
-                  <Action.Link key={'export'}>导出</Action.Link>
-                  <Action.Link key={'import'}>导入</Action.Link>
-                  <Action.Link key={'ddl'}>数据库变更</Action.Link>
+                  <Action.Link
+                    key={'export'}
+                    onClick={() => {
+                      handleMenuClick(TaskPageType.EXPORT, record.id);
+                    }}
+                  >
+                    导出
+                  </Action.Link>
+                  <Action.Link
+                    key={'import'}
+                    onClick={() => {
+                      handleMenuClick(TaskPageType.IMPORT, record.id);
+                    }}
+                  >
+                    导入
+                  </Action.Link>
+                  <Action.Link
+                    key={'ddl'}
+                    onClick={() => {
+                      handleMenuClick(TaskPageType.ASYNC, record.id);
+                    }}
+                  >
+                    数据库变更
+                  </Action.Link>
                   <Action.Link
                     key={'login'}
                     onClick={() => {
@@ -163,6 +212,9 @@ const Database: React.FC<IProps> = ({ id }) => {
         close={() => setVisible(false)}
         onSuccess={() => reload()}
       />
+      <ExportTaskCreateModal />
+      <ImportTaskCreateModal />
+      <AsyncTaskCreateModal />
     </TableCard>
   );
 };
