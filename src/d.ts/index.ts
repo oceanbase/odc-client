@@ -1654,6 +1654,7 @@ export enum TaskPageType {
   SENSITIVE_COLUMN = 'SENSITIVE_COLUMN',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  DATA_DELETE = 'DATA_DELETE',
 }
 
 export enum TaskType {
@@ -1670,11 +1671,16 @@ export enum TaskType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   MIGRATION = 'DATA_ARCHIVE',
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  DATA_DELETE = 'DATA_DELETE',
+}
+
+export enum TaskJobType {
+  DATA_DELETE = 'DATA_DELETE',
 }
 
 export enum SubTaskType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
-  DATA_CLEAR = 'DATA_CLEAR',
+  DATA_DELETE = 'DATA_DELETE',
   DATA_ARCHIVE_ROLLBACK = 'DATA_ARCHIVE_ROLLBACK',
 }
 
@@ -2065,6 +2071,23 @@ export interface ITaskResult {
 }
 
 export interface IDataArchiveJobParameters {
+  deleteAfterMigration: boolean;
+  name: string;
+  sourceDatabaseId: number;
+  sourceDatabaseName?: string;
+  targetDataBaseId: number;
+  targetDatabaseName?: string;
+  tables: {
+    conditionExpression: string;
+    tableName: string;
+  }[];
+  variables: {
+    name: string;
+    pattern: string;
+  }[];
+}
+
+export interface IDataClearJobParameters {
   deleteAfterMigration: boolean;
   name: string;
   sourceDatabaseId: number;

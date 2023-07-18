@@ -16,6 +16,7 @@ import type {
   IConnectionPartitionPlan,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
+  IDataClearJobParameters,
   IPartitionPlanParams,
   IPartitionPlanRecord,
   ITaskResult,
@@ -30,13 +31,15 @@ import {
   TaskType,
 } from '@/d.ts';
 import React, { useEffect, useRef, useState } from 'react';
+import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import TaskTools from './component/ActionBar';
 import { DataArchiveTaskContent } from './DataArchiveTask';
+import { DataClearTaskContent } from './DataClearTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
+import { isCycleTask } from './helper';
 import { TaskDetailType } from './interface';
 import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
-import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 
 interface IProps {
@@ -102,7 +105,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     (node) => node.nodeType === TaskFlowNodeType.APPROVAL_TASK,
   );
   const hasLog = true;
-  const hasResult = ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE,].includes(type) && detailType !== TaskDetailType.FLOW;
+  const hasResult =
+    ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE].includes(type) &&
+    detailType !== TaskDetailType.FLOW;
   const isLoop = task?.status === TaskStatus.EXECUTING;
   const clockRef = useRef(null);
   let taskContent = null;
@@ -131,6 +136,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     taskContent = (
       <DataArchiveTaskContent
         task={task as CycleTaskDetail<IDataArchiveJobParameters>}
+        hasFlow={hasFlow}
+      />
+    );
+  } else if (task?.type === TaskType.DATA_DELETE) {
+    taskContent = (
+      <DataClearTaskContent
+        task={task as CycleTaskDetail<IDataClearJobParameters>}
         hasFlow={hasFlow}
       />
     );
@@ -287,7 +299,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const loadData = () => {
-    if ([TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(type)) {
+    if (isCycleTask(type)) {
       loadCycleTaskData();
     } else {
       loadTaskData();

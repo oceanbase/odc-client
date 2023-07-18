@@ -5,7 +5,7 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 
 export const isCycleTask = (type: TaskType) => {
-  return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(type);
+  return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
 };
 
 export const isCycleTriggerStrategy = (execStrategy: TaskExecStrategy) => {
@@ -22,12 +22,14 @@ export const isSubCycleTask = (type: SubTaskType) => {
   return [
     SubTaskType.DATA_ARCHIVE,
     SubTaskType.DATA_ARCHIVE_ROLLBACK,
-    SubTaskType.DATA_CLEAR,
+    SubTaskType.DATA_DELETE,
   ].includes(type);
 };
 
 export const isCycleTaskPage = (type: TaskPageType) => {
-  return [TaskPageType.SQL_PLAN, TaskPageType.DATA_ARCHIVE].includes(type);
+  return [TaskPageType.SQL_PLAN, TaskPageType.DATA_ARCHIVE, TaskPageType.DATA_DELETE].includes(
+    type,
+  );
 };
 
 export function getTaskTypeList(
@@ -143,6 +145,11 @@ export function getTaskTypeList(
         {
           value: TaskPageType.DATA_ARCHIVE,
           label: '数据归档',
+          enabled: true,
+        },
+        {
+          value: TaskPageType.DATA_DELETE,
+          label: '数据清理',
           enabled: true,
         },
       ],

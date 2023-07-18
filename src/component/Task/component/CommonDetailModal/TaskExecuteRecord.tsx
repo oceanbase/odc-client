@@ -10,9 +10,13 @@ import styles from './index.less';
 import TaskTools from './TaskTools';
 
 const TaskLabelMap = {
-  [SubTaskType.DATA_ARCHIVE]: '数据归档',
-  [SubTaskType.DATA_CLEAR]: '数据清理',
-  [SubTaskType.DATA_ARCHIVE_ROLLBACK]: '回滚',
+  [TaskType.DATA_ARCHIVE]: {
+    [SubTaskType.DATA_ARCHIVE]: '数据归档',
+    [SubTaskType.DATA_ARCHIVE_ROLLBACK]: '回滚',
+  },
+  [TaskType.DATA_DELETE]: {
+    [SubTaskType.DATA_DELETE]: '数据清理',
+  },
 };
 
 const statusFilters = Object.keys(subTaskStatus).map((key) => {
@@ -22,13 +26,22 @@ const statusFilters = Object.keys(subTaskStatus).map((key) => {
   };
 });
 
+const getJobFilter = (taskType: TaskType) => {
+  return Object.keys(TaskLabelMap[taskType])?.map((key) => ({
+    text: TaskLabelMap[taskType][key],
+    value: key,
+  }));
+};
+
 const getConnectionColumns = (params: {
+  taskType: TaskType;
   taskId: number;
   onReloadList: () => void;
   onApprovalVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
 }) => {
-  const { taskId, onReloadList, onApprovalVisible, onDetailVisible } = params;
+  const { taskType, taskId, onReloadList, onApprovalVisible, onDetailVisible } = params;
+  const jobFilter = getJobFilter(taskType);
   return [
     {
       dataIndex: 'id',
@@ -43,24 +56,11 @@ const getConnectionColumns = (params: {
       ellipsis: true,
       width: 200,
       filterIcon: <FilterOutlined />,
-      filters: [
-        {
-          text: '数据归档',
-          value: SubTaskType.DATA_ARCHIVE,
-        },
-        {
-          text: '数据清理',
-          value: SubTaskType.DATA_CLEAR,
-        },
-        {
-          text: '回滚',
-          value: SubTaskType.DATA_ARCHIVE_ROLLBACK,
-        },
-      ],
+      filters: jobFilter,
       onFilter: (value: string, record) => {
         return value === record.jobGroup;
       },
-      render: (jobGroup) => TaskLabelMap[jobGroup],
+      render: (jobGroup) => TaskLabelMap[taskType][jobGroup],
     },
 
     {
@@ -152,6 +152,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         className={styles.subTaskTable}
         rowKey="id"
         columns={getConnectionColumns({
+          taskType: task?.type,
           taskId,
           onReloadList: onReload,
           onApprovalVisible: handleApprovalVisible,
