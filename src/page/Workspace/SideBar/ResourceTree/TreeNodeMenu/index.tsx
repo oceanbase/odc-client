@@ -134,7 +134,8 @@ const TreeNodeMenu = (props: IProps) => {
       <div className={treeStyles.menuActions}>
         {menuItems
           .map((item) => {
-            if (item.ellipsis) {
+            const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
+            if (item.ellipsis || isHideItem) {
               return null;
             }
             return (

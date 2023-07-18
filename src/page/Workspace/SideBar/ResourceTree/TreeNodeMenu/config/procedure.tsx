@@ -26,6 +26,10 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: ['批量编译'],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
+      isHide(session, node) {
+        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+        return isMySQL;
+      },
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PROCEDURE,
