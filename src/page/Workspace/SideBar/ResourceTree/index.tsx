@@ -45,8 +45,8 @@ const ResourceTree: React.FC<IProps> = function ({
 
   const treeData: TreeDataNode[] = (() => {
     const root = databases?.map((database) => {
-      const dbName = database.name;
-      const dbSessionId = databaseSessions[dbName];
+      const dbId = database.id;
+      const dbSessionId = databaseSessions[dbId];
       const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
       return DataBaseTreeData(dbSession, database, database?.id);
     });
@@ -91,11 +91,11 @@ const ResourceTree: React.FC<IProps> = function ({
       const { type, data } = treeNode;
       switch (type) {
         case ResourceNodeType.Database: {
-          const dbName = (data as IDatabase).name;
+          const dbId = (data as IDatabase).id;
           const dbSession = await sessionManagerStore.createSession(null, data?.id);
           setDatabaseSessions({
             ...databaseSessions,
-            [dbName]: dbSession.sessionId,
+            [dbId]: dbSession.sessionId,
           });
           break;
         }

@@ -14,7 +14,7 @@ export function SynonymTreeData(
   const synonyms = isPublic ? dbSession?.database?.publicSynonyms : dbSession?.database?.synonyms;
   const treeData: TreeDataNode = {
     title: isPublic ? '公共同义词' : '同义词',
-    key: `${dbName}-synonym-${isPublic}`,
+    key: `${database.id}-${dbName}-synonym-${isPublic}`,
     type: isPublic ? ResourceNodeType.PublicSynonymRoot : ResourceNodeType.SynonymRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -22,7 +22,7 @@ export function SynonymTreeData(
   };
   if (synonyms) {
     treeData.children = synonyms.map((synonym) => {
-      const key = `${
+      const key = `${database.id}-${
         isPublic ? dbSession?.database?.publicSynonymVersion : dbSession?.database?.synonymVersion
       }-${dbName}-sequence-${synonym.synonymName}`;
       return {

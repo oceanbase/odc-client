@@ -19,7 +19,7 @@ export function FunctionTreeNodeData(
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
 ): TreeDataNode {
-  const funcKey = `${
+  const funcKey = `${dbSession?.database?.databaseId}-${
     packageName ? '' : dbSession?.database?.functionVersion
   }-${packageName}-${dbName}-function-${func.funName}`;
   let paramRoot: TreeDataNode;
@@ -129,7 +129,7 @@ export function FunctionTreeData(
   const functions = dbSession?.database?.functions;
   const treeData: TreeDataNode = {
     title: '函数',
-    key: `${packageName}-pkg-${dbName}-function`,
+    key: `${database.id}-${packageName}-pkg-${dbName}-function`,
     type: ResourceNodeType.FunctionRoot,
     data: database,
     sessionId: dbSession?.sessionId,

@@ -19,7 +19,7 @@ export function ProcedureTreeNodeData(
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
 ): TreeDataNode {
-  const funcKey = `${
+  const funcKey = `${dbSession?.database?.databaseId}-${
     packageName ? '' : dbSession?.database?.procedureVersion
   }-${packageName}-${dbName}-procedure-${proc.proName}`;
   let paramRoot: TreeDataNode;
@@ -105,7 +105,7 @@ export function ProcedureTreeData(
   const procedures = dbSession?.database?.procedures;
   const treeData: TreeDataNode = {
     title: '存储过程',
-    key: `${packageName}-${dbName}-procedure`,
+    key: `${database.id}-${packageName}-${dbName}-procedure`,
     type: ResourceNodeType.ProcedureRoot,
     data: database,
     sessionId: dbSession?.sessionId,
