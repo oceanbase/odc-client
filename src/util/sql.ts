@@ -44,7 +44,7 @@ BEGIN
 END;`;
 }
 
-export function getPLDebugExecuteSql(plSchema: IFormatPLSchema) {
+export function getPLDebugExecuteSql(plSchema: IFormatPLSchema, isDebug: boolean = false) {
   const { plType, function: plfunction, procedure, packageName } = plSchema;
   const isFunction = PLType.FUNCTION === plType;
   const params = isFunction ? plfunction?.params : procedure?.params;
@@ -60,7 +60,7 @@ export function getPLDebugExecuteSql(plSchema: IFormatPLSchema) {
     isFunction && result,
     'BEGIN',
     isFunction ? `  result := ${callExpr};` : `  ${callExpr};`,
-    getParamEndExpr(params),
+    isDebug ? null : getParamEndExpr(params),
     'END;',
   ]
     .filter(Boolean)

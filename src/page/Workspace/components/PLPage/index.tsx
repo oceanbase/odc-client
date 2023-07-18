@@ -1151,6 +1151,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       resultHeight,
       isReady,
       defaultAnonymousBlockDdl,
+      plAction,
     } = this.state;
     const {} = this.state;
     this.setMobxListener();
@@ -1204,6 +1205,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           />,
           <EditPLParamsModal
             key="plpageEditPLParamsModal"
+            plAction={plAction}
             visible={showEditPLParamsModal}
             defaultAnonymousBlockDdl={defaultAnonymousBlockDdl}
             onCancel={() =>
