@@ -319,37 +319,40 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const self = this;
     this.editor = editor;
     // 快捷键绑定
-    this.editor.addCommand(monaco.KeyCode.F8, this.handleExecuteSQL);
+    this.editor.addAction({
+      id: 'pl_executeSql',
+      label: 'execute',
+      keybindings: [monaco.KeyCode.F8],
+      run: this.handleExecuteSQL,
+    });
     const codeEditor = editor;
     this.debugMode = codeEditor.createContextKey('debugMode', false);
     import('monaco-editor').then((module) => {
       const monaco = module;
-      codeEditor.addCommand(
-        monaco.KeyCode.KeyI | monaco.KeyMod.CtrlCmd,
-        async function () {
-          // @ts-ignore
-          await PL_ACTIONS.PL_DEBUG_STEP_IN.action(self);
-        },
-        'debugMode',
-      );
 
-      codeEditor.addCommand(
-        monaco.KeyCode.KeyO | monaco.KeyMod.CtrlCmd,
-        async function () {
-          // @ts-ignore
-          await PL_ACTIONS.PL_DEBUG_STEP_OUT.action(self);
-        },
-        'debugMode',
-      );
+      this.editor.addAction({
+        id: 'debug_step_in',
+        label: 'stepIn',
+        keybindings: [monaco.KeyCode.KeyI | monaco.KeyMod.CtrlCmd],
+        // @ts-ignore
+        run: () => (this.debugMode.get() ? PL_ACTIONS.PL_DEBUG_STEP_IN.action(self) : null),
+      });
 
-      codeEditor.addCommand(
-        monaco.KeyCode.KeyP | monaco.KeyMod.CtrlCmd,
-        async function () {
-          // @ts-ignore
-          await PL_ACTIONS.PL_DEBUG_STEP_SKIP.action(self);
-        },
-        'debugMode',
-      );
+      this.editor.addAction({
+        id: 'debug_step_out',
+        label: 'stepOut',
+        keybindings: [monaco.KeyCode.KeyO | monaco.KeyMod.CtrlCmd],
+        // @ts-ignore
+        run: () => (this.debugMode.get() ? PL_ACTIONS.PL_DEBUG_STEP_OUT.action(self) : null),
+      });
+
+      this.editor.addAction({
+        id: 'debug_step_skip',
+        label: 'stepSkip',
+        keybindings: [monaco.KeyCode.KeyP | monaco.KeyMod.CtrlCmd],
+        // @ts-ignore
+        run: () => (this.debugMode.get() ? PL_ACTIONS.PL_DEBUG_STEP_SKIP.action(self) : null),
+      });
     });
     // 调试断点事件绑定
     this.initBreakpointEventBind(editor);

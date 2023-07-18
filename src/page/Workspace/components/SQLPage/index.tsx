@@ -227,14 +227,31 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleEditorCreated = (editor: IEditor) => {
     this.editor = editor; // 快捷键绑定
-    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD, () => {
-      this.handleDownload();
+
+    this.editor.addAction({
+      id: 'sql_download',
+      label: 'download',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD],
+      run: () => this.handleDownload(),
     });
-    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      this.saveScript();
+    this.editor.addAction({
+      id: 'sql_save',
+      label: 'save',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+      run: () => this.saveScript(),
     });
-    this.editor.addCommand(monaco.KeyCode.F8, this.handleExecuteSQL);
-    this.editor.addCommand(monaco.KeyCode.F9, this.handleExecuteSelectedSQL);
+    this.editor.addAction({
+      id: 'sql_executeSql',
+      label: 'execute',
+      keybindings: [monaco.KeyCode.F8],
+      run: () => this.handleExecuteSQL(),
+    });
+    this.editor.addAction({
+      id: 'sql_executeSelectedSql',
+      label: 'executeSelected',
+      keybindings: [monaco.KeyCode.F9],
+      run: () => this.handleExecuteSelectedSQL(),
+    });
     this.debounceHighlightSelectionLine();
     this.editor.onDidChangeCursorPosition(() => {
       this.debounceHighlightSelectionLine();

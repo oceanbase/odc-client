@@ -109,7 +109,7 @@ export default inject('userStore')(
                     database: null,
                   });
                 }}
-                optionFilterProp="name"
+                optionFilterProp="children"
                 style={{ width: '320px' }}
               >
                 {allDatasourceList?.contents
@@ -173,7 +173,7 @@ export default inject('userStore')(
                               database: null,
                             });
                           }}
-                          optionFilterProp="name"
+                          optionFilterProp="children"
                           style={{ width: '320px' }}
                         >
                           {project?.contents?.map((item) => {
@@ -189,7 +189,7 @@ export default inject('userStore')(
                         <Select
                           showSearch
                           loading={databaseLoading}
-                          optionFilterProp="name"
+                          optionFilterProp="children"
                           style={{ width: '320px' }}
                         >
                           {databases?.contents?.map((item) => {
@@ -222,7 +222,7 @@ export default inject('userStore')(
                                   database: null,
                                 });
                               }}
-                              optionFilterProp="name"
+                              optionFilterProp="children"
                               style={{ width: '320px' }}
                             >
                               {datasourceList?.contents
@@ -263,7 +263,7 @@ export default inject('userStore')(
                       <Form.Item rules={[{ required: true }]} label="数据库" name="database">
                         <Select
                           loading={databaseLoading}
-                          optionFilterProp="name"
+                          optionFilterProp="children"
                           style={{ width: '320px' }}
                           showSearch
                         >
