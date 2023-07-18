@@ -1,7 +1,6 @@
 import { listEnvironments } from '@/common/network/env';
 import { deleteRiskDetectRule } from '@/common/network/riskDetectRule';
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
-import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { message, Popconfirm, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -174,10 +173,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
         titleContent={null}
         showPagination={false}
         filterContent={{
-          searchPlaceholder: formatMessage({
-            id: 'odc.components.UserPage.EnterAUserOrAccount',
-          }),
-          /* 请输入用户/账号搜索 */
+          searchPlaceholder: '请输入规则名称搜索',
         }}
         operationContent={{
           options: operationOptions,
