@@ -178,7 +178,7 @@ const plActions: ToolBarActions = {
       }
       return IConStatus.INIT;
     },
-    isVisible(ctx: any) {
+    isVisible(ctx: PLPage) {
       const plSchema = ctx.getFormatPLSchema();
       return plSchema.plType != plType.PKG_HEAD && plSchema.plType != plType.PKG_BODY;
     },

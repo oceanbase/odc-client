@@ -1,8 +1,8 @@
 import { listEnvironments } from '@/common/network/env';
-import { getRuleset, listRules, statsRules } from '@/common/network/ruleset';
+import { listRules, statsRules } from '@/common/network/ruleset';
 import { IEnvironment } from '@/d.ts/environment';
 import { IRule, RuleType } from '@/d.ts/rule';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import { ITableLoadOptions } from '../components/SecureTable/interface';
@@ -26,7 +26,7 @@ export function getEnvTypeList(env: IEnvironment): {
   };
 }
 
-const Environment: React.FC<{}> = ({ }) => {
+const Environment: React.FC<{}> = ({}) => {
   const [selectedItem, setSelectedItem] = useState<number>();
   const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
   const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
@@ -107,7 +107,7 @@ const Environment: React.FC<{}> = ({ }) => {
       types: ruleType,
       subTypes,
       supportedDialectTypes,
-      ...params
+      ...params,
     });
     const rawData = await statsRules(selectedRecord.rulesetId, ruleType);
     setSubTypeFilters(
@@ -136,14 +136,16 @@ const Environment: React.FC<{}> = ({ }) => {
         page: current,
         size: pageSize,
       };
-      params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
+      params.sort = column
+        ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}`
+        : undefined;
 
       setTableLoading(true);
       const rulesets = await listRules(selectedRecord?.value, {
         types: ruleType,
         subTypes,
         supportedDialectTypes,
-        ...params
+        ...params,
       });
       const rawData = await statsRules(selectedRecord?.value, RuleType.SQL_CHECK);
       setSubTypeFilters(

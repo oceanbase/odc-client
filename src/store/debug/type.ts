@@ -55,6 +55,7 @@ export interface ICreateDebugConfig {
    * 内容
    */
   content?: string;
+  anonymousBlock?: string;
   onContextChange?: (newContext: IDebugStackItem[], oldContext: IDebugStackItem[]) => void;
 }
 

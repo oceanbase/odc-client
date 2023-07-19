@@ -2,12 +2,14 @@ import { IEnvironment } from '@/d.ts/environment';
 import request from '@/util/request';
 import * as mockjs from 'mockjs';
 
-export async function listEnvironments(params?: Partial<{
-  sort: string;
-  page: number;
-  size: number;
-}>): Promise<IEnvironment[]> {
-  const ret = await request.get(`/api/v2/collaboration/environments`, {params});
+export async function listEnvironments(
+  params?: Partial<{
+    sort: string;
+    page: number;
+    size: number;
+  }>,
+): Promise<IEnvironment[]> {
+  const ret = await request.get(`/api/v2/collaboration/environments`, { params });
   return ret?.data?.contents || [];
 }
 
