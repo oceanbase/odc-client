@@ -169,19 +169,19 @@ export const systemTypeOptions: {
 ];
 
 export enum SystemAction {
-  action_all = 'action_all',
   action_read = 'action_read',
   action_update = 'action_update',
-  action_read_update = 'action_read_update',
+  action_update_read = 'action_update_read',
   action_create_delete_update = 'action_create_delete_update',
+  action_create_delete_update_read = 'action_create_delete_update_read',
 }
 
 export const systemActionMap = {
   [SystemAction.action_read]: ['read'],
   [SystemAction.action_update]: ['update'],
-  [SystemAction.action_read_update]: ['read', 'update'],
-  [SystemAction.action_all]: ['create', 'delete', 'read', 'update'],
+  [SystemAction.action_update_read]: ['read', 'update'],
   [SystemAction.action_create_delete_update]: ['create', 'delete', 'update'],
+  [SystemAction.action_create_delete_update_read]: ['create', 'delete', 'update', 'read'],
 };
 
 export const systemActionOptions = [
@@ -189,7 +189,7 @@ export const systemActionOptions = [
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
     }), //可操作
-    value: SystemAction.action_read_update,
+    value: SystemAction.action_update_read,
     enableKeys: [IManagerResourceType.system_config],
   },
   {
@@ -210,7 +210,7 @@ export const systemActionOptions = [
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
     }), //可操作
-    value: SystemAction.action_all,
+    value: SystemAction.action_create_delete_update_read,
     enableKeys: [IManagerResourceType.integration, IManagerResourceType.auto_auth],
   },
   {
@@ -226,30 +226,6 @@ export const systemActionOptions = [
     ],
   },
 ];
-
-/**
- * 
-    {
-      resourceType: IManagerResourceType.approval_flow,
-      actions: SystemAction.action_create_delete_update,
-    },
-    {
-      resourceType: IManagerResourceType.risk_level,
-      actions: SystemAction.action_update,
-    },
-    {
-      resourceType: IManagerResourceType.risk_detect,
-      actions: SystemAction.action_create_delete_update,
-    },
-    {
-      resourceType: IManagerResourceType.ruleset,
-      actions: SystemAction.action_read_update,
-    },
-    {
-      resourceType: IManagerResourceType.integration,
-      actions: SystemAction.action_all,
-    },
- */
 
 export const permissionMap = {
   [IManagerRolePermissionType.resourceManagementPermissions]: {
