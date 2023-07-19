@@ -40,6 +40,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           type: ResourceNodeType.TableColumnRoot,
           key: `${tableKey}-column`,
           sessionId: dbSession?.sessionId,
+          data: table,
           icon: (
             <FolderOpenFilled
               style={{
@@ -52,7 +53,6 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: c.name,
               key: `${tableKey}-column-${c.name}`,
               type: ResourceNodeType.TableColumn,
-              data: c,
               sessionId: dbSession?.sessionId,
               icon: convertDataTypeToDataShowType(c.type, dataTypes) && (
                 <Icon
@@ -73,6 +73,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           title: '索引',
           type: ResourceNodeType.TableIndexRoot,
           key: `${tableKey}-index`,
+          data: table,
           icon: (
             <FolderOpenFilled
               style={{
@@ -106,6 +107,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         title: '分区',
         type: ResourceNodeType.TablePartitionRoot,
         key: `${tableKey}-partition`,
+        data: table,
         sessionId: dbSession?.sessionId,
         icon: (
           <FolderOpenFilled
@@ -265,6 +267,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           title: '约束',
           type: ResourceNodeType.TableConstraintRoot,
           key: `${tableKey}-constraint`,
+          data: table,
           sessionId: dbSession?.sessionId,
           icon: (
             <FolderOpenFilled
@@ -278,6 +281,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               title: c.name,
               type: ResourceNodeType.TableConstraint,
               isLeaf: true,
+              data: table,
               sessionId: dbSession?.sessionId,
               icon: (
                 <Icon
