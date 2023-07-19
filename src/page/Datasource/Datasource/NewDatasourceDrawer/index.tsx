@@ -1,5 +1,6 @@
 import {
   createConnection,
+  generateConnectionStr,
   getConnectionDetail,
   getConnectionExists,
   updateConnection,
@@ -7,6 +8,7 @@ import {
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
+import copy from 'copy-to-clipboard';
 import { useEffect, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
 
@@ -114,6 +116,24 @@ export default function NewDatasourceDrawer({
     });
   }
 
+  async function copyUri() {
+    const data: any = await formRef.current?.form?.validateFields();
+    if (data) {
+      const res = await generateConnectionStr({
+        ...data,
+      });
+
+      if (res) {
+        copy(res);
+        message.success(
+          formatMessage({
+            id: 'odc.components.AddConnectionDrawer.TheConnectionInformationIsCopied',
+          }),
+        );
+      }
+    }
+  }
+
   return (
     <Drawer
       width={520}
@@ -122,6 +142,7 @@ export default function NewDatasourceDrawer({
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
+          {isEdit ? <Button onClick={copyUri}>复制连接串</Button> : null}
           <Button onClick={close}>取消</Button>
           <Button onClick={submit} type="primary">
             确定

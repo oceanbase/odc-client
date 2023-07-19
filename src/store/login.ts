@@ -115,6 +115,10 @@ export class UserStore {
     sessionStorage.removeItem(sessionKey);
     tracert.setUser(null);
     this.scriptStore = new ScriptStore();
+    /**
+     * 退出登录更新一下配置，刷新一下sso配置
+     */
+    setting.fetchSystemInfo();
     return res?.data;
   }
 

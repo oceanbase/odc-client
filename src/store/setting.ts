@@ -5,7 +5,6 @@ import { formatMessage } from '@/util/intl';
 
 import { getServerSystemInfo, getSystemConfig } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
-import { SQLSessionMode } from '@/d.ts';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
 
@@ -54,9 +53,6 @@ export class SettingStore {
   @observable
   public theme: IThemeConfig =
     themeConfig[localStorage.getItem(themeKey)] || themeConfig[defaultTheme];
-
-  @observable
-  public enableMultiSession: boolean = false;
 
   /**
    * 是否支持数据的导出，包括下载与结果集导出
@@ -185,8 +181,6 @@ export class SettingStore {
         data[item.key] = item.value;
         return data;
       }, {});
-      this.enableMultiSession =
-        this.configurations['connect.sessionMode'] === SQLSessionMode.MultiSession;
     }
   }
 

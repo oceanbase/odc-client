@@ -52,7 +52,7 @@ export function FunctionTreeNodeData(
 
   if (func.returnType) {
     returnroot = {
-      title: '返回值',
+      title: '返回类型',
       key: `${funcKey}-returnType`,
       type: ResourceNodeType.FunctionReturnTypeRoot,
       icon: (

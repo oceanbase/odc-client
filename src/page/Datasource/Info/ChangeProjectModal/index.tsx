@@ -28,10 +28,12 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
     }
   }, [visible]);
 
+  const isProjectNotFound = !data?.contents?.find((item) => item.id === database?.project?.id);
+
   return (
     <Modal
       title="转移项目"
-      visible={visible}
+      open={visible}
       onCancel={close}
       onOk={async () => {
         const value = await form.validateFields();
@@ -55,6 +57,11 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
                 </Select.Option>
               );
             })}
+            {isProjectNotFound ? (
+              <Select.Option value={database?.project?.id} key={database?.project?.id}>
+                {database?.project?.name}
+              </Select.Option>
+            ) : null}
           </Select>
         </Form.Item>
       </Form>
