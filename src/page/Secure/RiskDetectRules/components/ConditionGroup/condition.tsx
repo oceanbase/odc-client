@@ -80,7 +80,7 @@ const Condition = ({
           rules={[
             {
               required: true,
-              message: '请选择Expression',
+              message: '请选择表达式',
             },
           ]}
         >
@@ -121,7 +121,7 @@ const Condition = ({
           rules={[
             {
               required: true,
-              message: '请选择Operation',
+              message: '请选择操作符',
             },
           ]}
         >
@@ -148,7 +148,7 @@ const Condition = ({
           rules={[
             {
               required: true,
-              message: '请选择Value',
+              message: '请选择值',
             },
           ]}
           shouldUpdate={(prevValues, curValues) => prevValues.value !== curValues.value}

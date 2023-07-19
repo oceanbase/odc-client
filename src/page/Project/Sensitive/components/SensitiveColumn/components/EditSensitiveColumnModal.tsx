@@ -1,7 +1,6 @@
 import { batchUpdateSensitiveColumn } from '@/common/network/sensitiveColumn';
 import { Form, message, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
-import { useEffect } from 'react';
 import styles from './index.less';
 
 const EditModal = ({
@@ -37,13 +36,6 @@ const EditModal = ({
       message.success('更新失败');
     }
   };
-  useEffect(() => {
-    if (modalVisible) {
-      formRef.setFieldsValue({
-        maskingAlgorithmId,
-      });
-    }
-  }, [modalVisible]);
   return (
     <Modal
       width={400}

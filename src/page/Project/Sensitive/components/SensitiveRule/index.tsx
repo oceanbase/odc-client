@@ -272,6 +272,7 @@ const SensitiveRule = ({ projectId }) => {
   operationOptions.push({
     type: IOperationOptionType.button,
     content: '新建识别规则',
+    otherContent: '识别规则可用于扫描添加敏感列',
     //新建流程
     isPrimary: true,
     onClick: handleCreateClick,

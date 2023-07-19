@@ -11,12 +11,13 @@ import {
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
+import { Descriptions, message, Space, Tabs, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../../components/SecureTable';
 import EditRuleDrawer from './EditRuleDrawer';
 
+import RiskLevelLabel from '../../components/RiskLevelLabel';
 import styles from './index.less';
 
 const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
@@ -30,7 +31,7 @@ const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
     1: 'yellow',
     2: 'red',
   };
-  return <Tag color={colorMap[level]}>{levelMap[level]}</Tag>;
+  return <RiskLevelLabel content={levelMap[level]} color={colorMap[level]} />;
 };
 interface InnerEnvProps {
   selectedRecord: {
@@ -296,7 +297,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
       <div className={styles.innerEnv}>
         <Space className={styles.tag}>
           <div className={styles.tagLabel}>标签样式: </div>
-          <Tag color={selectedRecord?.style?.toLowerCase()}>{selectedRecord?.label}</Tag>
+          <RiskLevelLabel content={selectedRecord?.label} color={selectedRecord?.style} />
         </Space>
         <Descriptions column={1}>
           <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
