@@ -52,7 +52,7 @@ export async function getTableInfo(
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
-    )}/tables/${Base64.encode(tableName)}`,
+    )}/tables/${encodeObjName(Base64.encode(tableName))}`,
   );
 
   return convertServerTableToTable(res?.data);
