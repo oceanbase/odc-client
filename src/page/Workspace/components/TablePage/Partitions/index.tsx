@@ -72,7 +72,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       resizable: true,
       sortable: false,
       editor: TextEditor,
-      editable: (row) => row.isNew,
+      editable: (row) => row?.isNew,
     },
 
     {
@@ -91,7 +91,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       name: getTitleByPartType(partType),
       resizable: true,
       sortable: false,
-      editable: (row) => row.isNew,
+      editable: (row) => row?.isNew,
       editor: TextEditor,
     },
   ];
@@ -156,6 +156,9 @@ const TablePartitions: React.FC<IProps> = function ({}) {
   }
 
   const handleSelectCell = (keys) => {
+    if (!keys) {
+      return;
+    }
     setSelectedRowIdx(
       keys.map((key) => {
         return (partitions as ITableListPartition).partitions?.findIndex(
