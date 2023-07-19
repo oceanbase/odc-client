@@ -179,7 +179,7 @@ const Index: React.FC<IProps> = function () {
                   zIndex: key === page ? 'unset' : -999,
                 }}
               >
-                <Page.component key={id} id={id} />
+                <Page.component datasource={connection} key={id} id={id} />
               </div>
             );
           }

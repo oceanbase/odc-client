@@ -1,5 +1,6 @@
 import { getUserSummaryList } from '@/common/network/project';
 import HelpDoc from '@/component/helpDoc';
+import login from '@/store/login';
 import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select } from 'antd';
 import React, { useEffect, useImperativeHandle } from 'react';
@@ -27,7 +28,14 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
       };
     });
     useEffect(() => {
-      run();
+      async function func() {
+        await run();
+        form?.setFieldsValue({
+          owner: [login.user?.id],
+          dba: [login.user?.id],
+        });
+      }
+      func();
     }, []);
     useImperativeHandle(
       ref,
@@ -103,7 +111,7 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
             placeholder="请选择"
           />
         </Form.Item>
-        <Form.Item name={'description'} label="描述">
+        <Form.Item rules={[{ max: 256 }]} name={'description'} label="描述">
           <Input.TextArea
             placeholder="请输入"
             style={{ width: 400 }}

@@ -1,17 +1,19 @@
 import { createDataBase } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
+import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input, message, Modal, Select, Space } from 'antd';
 import { toInteger } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface IProps {
   dataSourceId: string;
   onSuccess: () => void;
+  mode: ConnectionMode;
 }
 
-export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
+export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [form] = Form.useForm<
     Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & { projectId: number }
@@ -28,6 +30,30 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
     setOpen(false);
     form.resetFields();
   }
+
+  useEffect(() => {
+    if (open) {
+      form.resetFields();
+    }
+    switch (mode) {
+      case ConnectionMode.OB_MYSQL:
+      case ConnectionMode.MYSQL: {
+        form.setFieldsValue({
+          collationName: 'utf8_general_ci',
+          charsetName: 'utf8',
+        });
+        return;
+      }
+      case ConnectionMode.OB_ORACLE:
+      case ConnectionMode.ORACLE: {
+        form.setFieldsValue({
+          collationName: 'BINARY',
+          charsetName: 'AL32UTF8',
+        });
+        return;
+      }
+    }
+  }, [mode, open]);
 
   async function submit() {
     const formData = await form.validateFields();
@@ -57,15 +83,8 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
       <Button onClick={() => setOpen(true)} type="primary">
         新建数据库
       </Button>
-      <Modal visible={open} title="新建数据库" onOk={submit} onCancel={close}>
-        <Form
-          form={form}
-          initialValues={{
-            collationName: 'UTF-8',
-            charsetName: 'UTF-8',
-          }}
-          layout="vertical"
-        >
+      <Modal open={open} title="新建数据库" onOk={submit} onCancel={close}>
+        <Form form={form} initialValues={{}} layout="vertical">
           <Form.Item name={'name'} label="数据库名称">
             <Input style={{ width: 320 }} placeholder="请输入" />
           </Form.Item>
