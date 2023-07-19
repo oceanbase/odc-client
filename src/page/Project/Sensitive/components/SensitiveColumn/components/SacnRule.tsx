@@ -5,9 +5,11 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
+import SensitiveContext from '../../../SensitiveContext';
 
 const ScanRule = ({ formRef, resetScanTableData, reset, setFormDrawerDatabases }) => {
   const context = useContext(ProjectContext);
+  const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
   const [databaseId, setDatabaseId] = useState<number>(0);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
@@ -15,7 +17,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setFormDrawerDatabases }
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
 
   const initDataSources = async () => {
-    const rawData = await getConnectionList({});
+    const rawData = await getConnectionList({ projectId: sensitiveContext.projectId });
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
