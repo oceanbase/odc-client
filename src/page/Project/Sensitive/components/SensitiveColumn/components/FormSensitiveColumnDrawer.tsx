@@ -36,7 +36,7 @@ const FormSensitiveColumnDrawer = ({
   const sensitiveContext = useContext(SensitiveContext);
 
   const [scanTableData, setScanTableData] = useState<ScanTableData[]>([]);
-  const [databases, setDatabases] = useState<IDatabase[]>([]);
+  const [databasesMap, setDatabasesMap] = useState<Map<number, IDatabase[]>>(new Map());
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [sensitiveColumns, setSensitiveColumns] = useState<ISensitiveColumn[]>([]);
   const [sensitiveColumnMap, setSensitiveColumnMap] = useState(new Map());
@@ -86,7 +86,6 @@ const FormSensitiveColumnDrawer = ({
     _formRef.resetFields();
 
     setScanTableData(defaultScanTableData);
-    setDatabases([]);
     setSubmiting(false);
     setSensitiveColumns([]);
     setSensitiveColumnMap(new Map());
@@ -273,7 +272,7 @@ const FormSensitiveColumnDrawer = ({
       return message.error('不能提交空表单');
     }
     data?.manual?.map((d) => {
-      d.database = databases?.find((database) => database?.id === d.database);
+      d.database = databasesMap.get(d.dataSource)?.find((database) => database?.id === d.database);
       d.enabled = true;
       return d;
     });
@@ -308,7 +307,6 @@ const FormSensitiveColumnDrawer = ({
     const { status, sensitiveColumns, allTableCount, finishedTableCount } = rawData;
     if ([ScannResultType.FAILED, ScannResultType.SUCCESS].includes(status)) {
       const dataSourceMap = new Map();
-
       setSensitiveColumns(sensitiveColumns);
       sensitiveColumns?.forEach((d) => {
         const key = `${d.database.name}_${d.tableName}`;
@@ -427,7 +425,8 @@ const FormSensitiveColumnDrawer = ({
         <ManualForm
           {...{
             formRef,
-            setFormDrawerDatabases: setDatabases,
+            databasesMap,
+            setDatabasesMap,
           }}
         />
       ) : (
@@ -436,8 +435,6 @@ const FormSensitiveColumnDrawer = ({
             formRef,
             _formRef,
             hasScan,
-            databases,
-            setFormDrawerDatabases: setDatabases,
             resetScanTableData,
             reset,
             handleStartScan,
