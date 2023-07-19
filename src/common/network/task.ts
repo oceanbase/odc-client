@@ -9,6 +9,7 @@ import {
   IFunction,
   IPartitionPlan,
   IResponseData,
+  ISubTaskRecords,
   ITaskResult,
   TaskDetail,
   TaskPageType,
@@ -16,7 +17,6 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
-  ISubTaskRecords
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';

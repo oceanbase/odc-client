@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 // @ts-ignore
 import DisplayTable from '@/component/DisplayTable';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, IPLParam, ParamMode } from '@/d.ts';
+import { ConnectionMode, IFormatPLSchema, IPLParam, ParamMode } from '@/d.ts';
 import type { Debug } from '@/store/debug';
 import { useDebugContext } from '@/store/debug/hooks';
 import { DebugStatus, IDebugFunctionResult } from '@/store/debug/type';
@@ -13,7 +13,9 @@ import SessionStore from '@/store/sessionManager/session';
 import { cloneDeep, isArray } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import SplitPane from 'react-split-pane';
+import { IResultData, IResultType } from '../PLPage';
 import Breakpoints from './breakpoints';
+import CursorCell from './CursorCell';
 import DebugLog from './DebugLog';
 import DebugVariables from './DebugVariables';
 import styles from './index.less';
@@ -22,11 +24,10 @@ const { TabPane } = Tabs;
 
 interface IProps {
   session: SessionStore;
-  type: string;
-  data: any;
+  type: IResultType;
+  data: IResultData;
   resultHeight: number;
-  plSchema: any;
-  sqlStore?: any;
+  plSchema: IFormatPLSchema;
   debug?: Debug;
   removeBreakPoints: (
     points: {
@@ -56,7 +57,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
 
   // 渲染编译结果
   function renderCompileResultPanel() {
-    const { type, data = {}, sqlStore } = props;
+    const { type, data = {} } = props;
     let status = data.COMPILE.status ? 'SUCCESS' : 'FAIL';
     if (status === 'SUCCESS' && data.COMPILE?.statementWarnings) {
       status = 'WARNING';
@@ -122,8 +123,8 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
   // 渲染运行结果
   function renderExecResultPanel() {
     const { resultHeight, type, data = {}, plSchema } = props;
-    const { proName, funName } = plSchema || {};
-    const hasPLName = !!proName || !!funName;
+    const { plType } = plSchema || {};
+    const hasPLName = [PLType.FUNCTION, PLType.PROCEDURE].includes(plType);
     const tabs = [
       {
         name: formatMessage({ id: 'odc.components.PLDebugResultSet.Result' }),
@@ -167,50 +168,49 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
             },
 
             {
-              dataIndex: 'defaultValue',
+              dataIndex: 'value',
               title: formatMessage({
                 id: 'odc.components.PLDebugResultSet.Value',
               }),
-              render(v) {
+              render(v, record) {
                 const isOracle = session?.connection.dialectType === ConnectionMode.OB_ORACLE;
+                let text;
                 if (v === null || (isOracle && v === '')) {
-                  return <span style={{ color: 'var(--text-color-hint)' }}>(null)</span>;
+                  text = <span style={{ color: 'var(--text-color-hint)' }}>(null)</span>;
+                } else {
+                  text = v;
                 }
-                return v;
+                return (
+                  <div className={styles.textFormatter}>
+                    {text}
+                    {record?.dataType?.toLowerCase() === 'sys_refcursor' && (
+                      <div className={styles.more}>
+                        <CursorCell session={session} record={record} />
+                      </div>
+                    )}
+                  </div>
+                );
               },
             },
           ];
 
           const paramsValues = [];
-          if (plSchema?.params?.length) {
-            plSchema.params.map((param) => {
-              if (param.paramMode?.toUpperCase().indexOf('IN') > -1) {
-                paramsValues.push({
-                  ...param,
-                  paramMode: 'IN',
-                });
-              }
+          // if (plSchema?.params?.length) {
+          //   plSchema.params.map((param) => {
+          //     if (param.paramMode?.toUpperCase().indexOf('IN') > -1) {
+          //       paramsValues.push({
+          //         ...param,
+          //         paramMode: 'IN',
+          //       });
+          //     }
+          //   });
+          // }
+          data?.EXEC?.outParams?.forEach((param) => {
+            paramsValues.push({
+              ...param,
+              paramMode: 'OUT',
             });
-          }
-          if (proName) {
-            data.EXEC instanceof Array &&
-              data.EXEC.map((item) => {
-                paramsValues.push({
-                  ...item,
-                  paramMode: 'OUT',
-                });
-              });
-          } else {
-            data.EXEC?.params instanceof Array &&
-              data.EXEC?.params?.map((p) => {
-                if (p?.paramMode?.toUpperCase().indexOf('OUT') > -1) {
-                  paramsValues.push({
-                    ...p,
-                    paramMode: 'OUT',
-                  });
-                }
-              });
-          }
+          });
 
           const returnValueColumns = [
             {
@@ -228,15 +228,14 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
             },
           ];
 
-          const returnValues =
-            data.EXEC && data.EXEC.returnType
-              ? [
-                  {
-                    returnType: data.EXEC.returnType,
-                    returnValue: data.EXEC.returnValue,
-                  },
-                ]
-              : [];
+          const returnValues = data?.EXEC?.returnValue
+            ? [
+                {
+                  returnType: data.EXEC.returnValue.dataType,
+                  returnValue: data.EXEC.returnValue.value,
+                },
+              ]
+            : [];
 
           return (
             <div className={styles.execWrap}>
@@ -292,7 +291,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
 
   // 渲染调试结果
   function renderDebugResultPanel() {
-    const { data = {}, plSchema, sqlStore } = props;
+    const { data = {}, plSchema } = props;
     console.log('[renderDebugResultPanel]', data);
     const leftTabs = [
       {
@@ -334,7 +333,11 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
 
           const resultParams = props.debug?.result;
           const initParams = props.debug?.getPlSchema()?.params;
-          let dataSource = cloneDeep(isArray(resultParams) ? resultParams : initParams);
+          let dataSource = cloneDeep(
+            isArray(resultParams)
+              ? resultParams
+              : initParams?.filter((item) => item?.paramMode?.includes('OUT')),
+          );
           if (props.debug?.isDebugEnd() && props.debug?.plType === PLType.FUNCTION) {
             dataSource = []
               .concat(dataSource)
@@ -493,4 +496,4 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
   return renderExecResultPanel();
 };
 
-export default inject('sqlStore', 'userStore', 'pageStore')(observer(PLDebugResultSet));
+export default inject('userStore', 'pageStore')(observer(PLDebugResultSet));

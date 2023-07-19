@@ -166,7 +166,7 @@ const CommonTable: <RecordType extends object = any>(
       setSelectedRowKeys([]);
     },
     resetPaganition: () => {
-      setPagination({...pagination, current: 1});
+      setPagination({ ...pagination, current: 1 });
     },
   }));
 

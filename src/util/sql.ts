@@ -1,14 +1,8 @@
-import { ConnectionMode } from '@/d.ts';
+import { PLType } from '@/constant/plType';
+import { ConnectionMode, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
+import { Oracle } from './dataType';
 
-const CHAR_SIZE = 32767;
-
-interface IPLParam {
-  paramName: string;
-  dataType: string;
-  extendedType: boolean;
-  defaultValue: any;
-}
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。
  * @param text 预处理的内容
@@ -50,47 +44,79 @@ BEGIN
 END;`;
 }
 
-export function getPLDebugExecuteSql(values: {
-  params: IPLParam[];
-  proName: string;
-  funName: string;
-  packageName: string;
-  returnType: string;
-}) {
-  const { params = [], proName, funName, packageName } = values;
+export function getPLDebugExecuteSql(plSchema: IFormatPLSchema, isDebug: boolean = false) {
+  const { plType, function: plfunction, procedure, packageName } = plSchema;
+  const isFunction = PLType.FUNCTION === plType;
+  const params = isFunction ? plfunction?.params : procedure?.params;
   const paramString = getParamString(params);
   const namePrefix = packageName ? `"${packageName}".` : '';
-  const funcExpression = `${namePrefix}"${funName ? funName : proName}"(${paramString})`;
-  const paramDeclares = getParamDeclares(params);
+  const callExpr = `${namePrefix}"${
+    isFunction ? plfunction?.funName : procedure?.proName
+  }"(${paramString})`;
+  const result = `  result ${getDataType(plfunction?.returnType)};`;
   return [
     'DECLARE',
-    '  -- Non-scalar parameters require additional processing',
-    `${paramDeclares?.join('\n')}`,
-    funName && `  result ${getDataType(values?.returnType)};`,
+    `${getParamDeclares(params)?.join('\n')}`,
+    isFunction && result,
     'BEGIN',
-    funName
-      ? `  -- Call the function\n  result := ${funcExpression};`
-      : `  -- Call the procedure\n  ${funcExpression};`,
-    'END',
+    isFunction ? `  result := ${callExpr};` : `  ${callExpr};`,
+    isDebug ? null : getParamEndExpr(params),
+    'END;',
   ]
     .filter(Boolean)
     .join('\n');
 }
 
 export function getParamString(params: IPLParam[]) {
-  return params?.map(({ paramName }) => `${paramName}`)?.join(', ');
+  return params?.map(({ paramName }) => `${paramName} => ${paramName}`)?.join(', ');
 }
 
 export function getDataType(type: string) {
-  const hasSize = ['NCHAR', 'NVARCHAR2', 'VARCHAR2'].includes(type?.toUpperCase());
-  return hasSize ? `${type}(${CHAR_SIZE})` : type;
+  switch (type?.toUpperCase()) {
+    case 'NCHAR':
+    case 'NVARCHAR2':
+    case 'VARCHAR2': {
+      return `${type}(32767)`;
+    }
+    case 'VARCHAR': {
+      return `${type}(4000)`;
+    }
+    default: {
+      return type;
+    }
+  }
 }
 
 export function getParamDeclares(params: IPLParam[]) {
-  return params?.map(
-    ({ dataType, paramName, extendedType, defaultValue }) =>
-      `  ${paramName} ${getDataType(dataType)}${!extendedType ? ` := ${defaultValue}` : ''};`,
-  );
+  return params?.map(({ dataType, paramName, defaultValue, paramMode }) => {
+    if (!paramMode?.includes('IN')) {
+      return `  ${paramName} ${getDataType(dataType)};`;
+    }
+    if (
+      Oracle.string?.find((item) => {
+        const typeName = typeof item === 'string' ? item : item[0];
+        return typeName === dataType?.toUpperCase();
+      })
+    ) {
+      /**
+       * defaultValue 字符串形式需要包裹一层
+       */
+      defaultValue = defaultValue ? `'${defaultValue}'` : defaultValue;
+    }
+    return `  ${paramName} ${getDataType(dataType)} := ${defaultValue};`;
+  });
+}
+
+export function getParamEndExpr(params: IPLParam[]) {
+  return params
+    ?.map(({ paramName, paramMode }) => {
+      if (!paramMode?.includes('OUT')) {
+        return null;
+      }
+      return `  ${paramName} := ${paramName};`;
+    })
+    .filter(Boolean)
+    .join('\n');
 }
 
 export function removeComment(text = '') {
