@@ -6,6 +6,7 @@ import HelpDoc from '@/component/helpDoc';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
+import { IDatasource } from '@/d.ts/datasource';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
@@ -16,8 +17,9 @@ import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
 interface IProps {
   id: string;
+  datasource: IDatasource;
 }
-const Info: React.FC<IProps> = ({ id }) => {
+const Info: React.FC<IProps> = ({ id, datasource }) => {
   const [total, setTotal] = useState(0);
 
   const [visible, setVisible] = useState(false);
@@ -72,7 +74,11 @@ const Info: React.FC<IProps> = ({ id }) => {
     <TableCard
       title={
         <Space>
-          <NewDataBaseButton onSuccess={() => reload} dataSourceId={id} />
+          <NewDataBaseButton
+            mode={datasource?.dialectType}
+            onSuccess={() => reload}
+            dataSourceId={id}
+          />
           <Button loading={syncLoading} onClick={sync}>
             同步数据库
           </Button>

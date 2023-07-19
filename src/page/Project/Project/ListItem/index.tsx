@@ -1,4 +1,4 @@
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import { FileZipFilled, UserOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
@@ -24,7 +24,7 @@ export default forwardRef(function ListItem(
       <div className={classNames(styles.block, styles.users)}>
         <Space>
           <UserOutlined />
-          {data.creator?.name}
+          {data.members?.find((item) => item.role === ProjectRole.OWNER)?.name || '-'}
         </Space>
       </div>
     </div>

@@ -52,13 +52,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     [form],
   );
 
-  const {
-    data: environments,
-    loading,
-    run: doListEnvironments,
-  } = useRequest(listEnvironments, {
-    manual: true,
-  });
+  const { data: environments, loading } = useRequest(listEnvironments);
 
   async function test() {
     setTestResult(null);
@@ -173,7 +167,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         <AddressItems />
         <Account isEdit={isEdit} />
         <Form.Item rules={[{ required: true }]} label="环境" name={'environmentId'}>
-          <Select onFocus={() => doListEnvironments()} style={{ width: 208 }}>
+          <Select loading={loading} style={{ width: 208 }}>
             {environments?.map((env) => {
               return <Option value={env.id}>{env.name}</Option>;
             })}

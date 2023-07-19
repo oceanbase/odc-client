@@ -65,9 +65,7 @@ export default function NewDatasourceDrawer({
       return;
     }
     Modal.confirm({
-      title: formatMessage({
-        id: 'odc.components.AddConnectionDrawer.EnterAConnectionName',
-      }), //请输入连接名
+      title: '请输入数据源名称',
       content: <Input id="newCloudConnectionName" />,
       onOk: async (_close) => {
         const name = (document.querySelector('#newCloudConnectionName') as HTMLInputElement)?.value;
@@ -82,9 +80,7 @@ export default function NewDatasourceDrawer({
           throw new Error('');
         }
         if (name?.length > 128) {
-          message.warn(
-            formatMessage({ id: 'odc.component.AddConnectionDrawer.TheMaximumLengthOfThe' }), //连接名称最大长度为 128
-          );
+          message.warn('名称最大长度为 128');
           throw new Error('');
         }
         if (!/^[^\s]*$/.test(name)) {
@@ -100,11 +96,7 @@ export default function NewDatasourceDrawer({
           name,
         });
         if (isRepeat) {
-          message.warn(
-            formatMessage({
-              id: 'odc.component.AddConnectionDrawer.TheConnectionNameAlreadyExists',
-            }), //连接名称已存在
-          );
+          message.warn('名称已存在');
           throw new Error();
         }
         return new Promise(async (resolve, reject) => {

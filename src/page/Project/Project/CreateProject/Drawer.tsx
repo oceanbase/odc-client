@@ -54,6 +54,7 @@ export default function CreateProjectDrawer(props: IProps) {
     setOpen(false);
     cancel?.();
   }
+
   return (
     <>
       <Button
@@ -66,7 +67,7 @@ export default function CreateProjectDrawer(props: IProps) {
       <Drawer
         width={520}
         onClose={onClose}
-        visible={open}
+        open={open}
         title="创建项目"
         footer={
           <Space style={{ float: 'right' }}>
