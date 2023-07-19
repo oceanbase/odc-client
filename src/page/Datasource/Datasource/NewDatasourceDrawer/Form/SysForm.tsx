@@ -1,11 +1,14 @@
+import { testConnection } from '@/common/network/connection';
 import FormItemPanel from '@/component/FormItemPanel';
+import { AccountType } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { Checkbox, Col, Form, Input, InputRef, Row, Typography } from 'antd';
+import { Checkbox, Col, Form, Input, InputRef, message, Row, Typography } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { useContext, useEffect, useRef, useState } from 'react';
 import DatasourceFormContext from './context';
 import styles from './index.less';
+import Password from './Password';
 
 interface IProps {
   isEdit: boolean;
@@ -19,13 +22,36 @@ export default (props: IProps) => {
   const sysInput = useRef<InputRef>();
   const formContext = useContext(DatasourceFormContext);
   const isSysPwdCopyMode = isEdit;
-  const sysPasswordEditable = isSysPwdCopyMode && sysAccountExist ? sysPasswordIsEditing : true;
 
   useEffect(() => {
     formRef.setFieldsValue({
       useSys: sysAccountExist,
     });
   }, [sysAccountExist]);
+
+  async function testSys() {
+    let values;
+    try {
+      values = await formRef.validateFields([
+        'type',
+        'host',
+        'port',
+        'clusterName',
+        'tenantName',
+        'sysTenantUsername',
+        'sysTenantPassword',
+      ]);
+    } catch (e) {}
+    if (!values) {
+      return;
+    }
+    const params = isEdit ? { ...formContext.originDatasource, ...values } : values;
+    params.username = params?.sysTenantUsername;
+    params.password = params?.sysTenantPassword;
+    const res = await testConnection(params, AccountType.SYS_READ, true);
+    const error = res?.errMsg || res?.data?.errorMessage;
+    !error ? message.success('连接成功') : message.error(error);
+  }
 
   if (haveOCP()) {
     return null;
@@ -64,7 +90,6 @@ export default (props: IProps) => {
                 <Row gutter={12}>
                   <Col span={12}>
                     <Form.Item
-                      hasFeedback
                       label={formatMessage({
                         id: 'odc.AddConnectionDrawer.AddConnectionForm.Account',
                       })}
@@ -81,26 +106,14 @@ export default (props: IProps) => {
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      hasFeedback
                       label={formatMessage({
                         id: 'odc.AddConnectionDrawer.AddConnectionForm.Password',
                       })}
                       name="sysTenantPassword"
                     >
-                      {!isSysPwdCopyMode || !sysAccountExist || sysPasswordIsEditing ? (
-                        <Input.Password
-                          disabled={!sysPasswordEditable}
-                          autoComplete="new-password"
-                          visibilityToggle={false}
-                          placeholder={formatMessage({
-                            id: 'odc.AddConnectionDrawer.AddConnectionForm.Enter',
-                          })}
-                        />
-                      ) : (
-                        <>
-                          <Input value="******" disabled />
-                        </>
-                      )}
+                      <Password
+                        isEditing={!isSysPwdCopyMode || !sysAccountExist || sysPasswordIsEditing}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -108,7 +121,7 @@ export default (props: IProps) => {
                   style={{
                     marginRight: 8,
                   }}
-                  onClick={async () => {}}
+                  onClick={async () => testSys()}
                 >
                   {formatMessage({
                     id: 'portal.connection.form.test',

@@ -7,7 +7,6 @@ import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
-import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import { Button, message, Popconfirm, Space } from 'antd';
@@ -100,15 +99,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                   </HelpDoc>
                 );
               }
-              return (
-                <a
-                  onClick={() => {
-                    gotoSQLWorkspace(null, record.dataSource?.id, record.id);
-                  }}
-                >
-                  {name}
-                </a>
-              );
+              return name;
             },
           },
           {

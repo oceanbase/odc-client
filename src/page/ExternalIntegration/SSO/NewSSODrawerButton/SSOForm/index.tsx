@@ -52,7 +52,7 @@ export default inject('userStore')(
     ) {
       const loginWindow = useRef<Window>();
       const testListener = useRef<(e) => void>();
-      const [showExtraConfig, setShowExtraConfig] = useState(false);
+      const [showExtraConfig, setShowExtraConfig] = useState(!!isEdit);
       const [registrationId, setRegistrationId] = useState('');
       const [testInfo, _setTestInfo] = useState<string>();
 

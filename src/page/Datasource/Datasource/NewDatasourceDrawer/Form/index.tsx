@@ -129,6 +129,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         testResult,
         isEdit,
         isPersonal,
+        originDatasource,
       }}
     >
       <Form

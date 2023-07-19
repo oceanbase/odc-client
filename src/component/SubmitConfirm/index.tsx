@@ -1,6 +1,5 @@
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { Popconfirm } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 export function getConfirmTitle(isRollback?: boolean) {
@@ -57,30 +56,15 @@ const SubmitConfirm: React.FC<{
   const text = props.isRollback
     ? formatMessage({ id: 'odc.component.SubmitConfirm.Rollback' }) //回滚
     : formatMessage({ id: 'odc.component.SubmitConfirm.Submitted' }); //提交
-  if (props.settingStore.enableMultiSession) {
-    /**
-     * 独立session不需要提示
-     */
-    return (
-      <>
-        {React.Children.map(props.children, (child) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement<any>(child, { onClick: props.onConfirm });
-          }
-          return child;
-        })}
-      </>
-    );
-  }
   return (
-    <Popconfirm
-      placement="topRight"
-      title={getConfirmTitle(props.isRollback)}
-      onConfirm={props.onConfirm}
-      disabled={props.disabled}
-    >
-      {props.children}
-    </Popconfirm>
+    <>
+      {React.Children.map(props.children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement<any>(child, { onClick: props.onConfirm });
+        }
+        return child;
+      })}
+    </>
   );
 };
 

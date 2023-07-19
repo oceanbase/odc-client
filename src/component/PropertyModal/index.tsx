@@ -61,7 +61,7 @@ class PropertyModal extends Component<IProps> {
 
     const { valueType, valueEnums, value } = model;
     const isAutocommit = model.key?.toLowerCase?.() == 'autocommit';
-    const isShowAutocommitTip = isAutocommit && !settingStore.enableMultiSession;
+    const isShowAutocommitTip = false;
     const initialValues = {
       value,
     };

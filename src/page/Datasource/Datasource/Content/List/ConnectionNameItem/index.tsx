@@ -4,11 +4,7 @@ import { Popover, Space, Tooltip } from 'antd';
 import React from 'react';
 
 import OBSvg from '@/svgr/source_ob.svg';
-import Icon, {
-  ExclamationCircleFilled,
-  Loading3QuartersOutlined,
-  MinusCircleFilled,
-} from '@ant-design/icons';
+import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import classNames from 'classnames';
@@ -89,10 +85,10 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
       default: {
         return (
           <Tooltip title={status?.errorMessage} placement="top">
-            <ExclamationCircleFilled
-              style={{
-                color: '#F5222D',
-              }}
+            <Icon
+              component={OBSvg}
+              style={{ filter: 'grayscale(1)' }}
+              className={styles.activeStatus}
             />
           </Tooltip>
         );
