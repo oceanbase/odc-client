@@ -211,7 +211,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
             </Radio.Button>
           )}
           {task?.type === TaskType.ASYNC && (
-            <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>回滚工单</Radio.Button>
+            <Radio.Button value={TaskDetailType.RECORD}>回滚工单</Radio.Button>
           )}
           {hasLog && (
             <Radio.Button value={TaskDetailType.LOG}>

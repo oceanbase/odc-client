@@ -186,12 +186,12 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
       text: formatMessage({
         id: 'odc.components.RolePage.component.Operational',
       }), //可操作
-      value: 'operation',
+      value: 'update',
     },
 
     {
       text: formatMessage({ id: 'odc.components.RolePage.component.ViewOnly' }), //仅查看
-      value: 'read',
+      value: 'action_read',
     },
   ];
 
@@ -288,7 +288,6 @@ const UserDetail: React.FC<{
     createTime,
     updateTime,
     resourceManagementPermissions,
-    connectionAccessPermissions,
     systemOperationPermissions,
     builtIn,
   } = data;
@@ -304,14 +303,6 @@ const UserDetail: React.FC<{
       return hasCreate ? option?.label : null;
     })
     ?.filter(Boolean);
-
-  const _connectionAccessPermissions = connectionAccessPermissions?.map(({ actions, ...rest }) => ({
-    ...rest,
-    actions: resourceActions.getActionStringValue(
-      actions,
-      IManagerRolePermissionType.connectionAccessPermissions,
-    ),
-  }));
 
   const _resourceManagementPermissions = resourceManagementPermissions
     ?.filter((item) => {
@@ -404,32 +395,6 @@ const UserDetail: React.FC<{
         </Descriptions.Item>
       </Descriptions>
       <Divider />
-      {!!_connectionAccessPermissions?.length && (
-        <Descriptions column={2}>
-          <Descriptions.Item span={2}>
-            {
-              formatMessage({
-                id: 'odc.components.RolePage.component.ConnectionAccess',
-              }) /*连接访问权限*/
-            }
-          </Descriptions.Item>
-          <Descriptions.Item span={2}>
-            <DisplayTable
-              rowKey="id"
-              columns={getResourceColumns(
-                IManagerRolePermissionType.connectionAccessPermissions,
-                getResourceName,
-              )}
-              dataSource={_connectionAccessPermissions || []}
-              showSizeChanger={false}
-              showQuickJumper={false}
-              pageSize={10}
-              scroll={null}
-            />
-          </Descriptions.Item>
-        </Descriptions>
-      )}
-
       {!!resourceManagementPermissions?.length && (
         <Descriptions column={2}>
           <Descriptions.Item span={2}>
@@ -489,7 +454,7 @@ const UserDetail: React.FC<{
 
       <Divider
         style={{
-          margin: `${_connectionAccessPermissions?.length % 2 === 1 ? '0 0 12px' : '12px 0'}`,
+          margin: '12px 0',
         }}
       />
 

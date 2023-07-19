@@ -28,9 +28,11 @@ const StatusSwitch: React.FC<{
     setVisible(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setLoading(true);
-    onConfirm();
+    await onConfirm();
+    setLoading(false);
+    setVisible(false);
   };
 
   useEffect(() => {
