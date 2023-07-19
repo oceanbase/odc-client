@@ -74,7 +74,7 @@ const defaultData = {
     },
     {
       resourceType: IManagerResourceType.integration,
-      actions: SystemAction.action_all,
+      actions: SystemAction.action_create_delete_update_read,
     },
   ],
   createAbleResource: [
