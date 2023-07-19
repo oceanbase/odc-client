@@ -7,6 +7,7 @@ import {
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
+import Icon, { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Alert,
   Button,
@@ -479,12 +480,14 @@ export default inject('userStore')(
               type="success"
               showIcon
               message="测试连接成功"
+              style={{ marginBottom: 12 }}
               description={<pre style={{ maxHeight: 250, overflow: 'auto' }}>{testInfo}</pre>}
             />
           ) : (
             <Alert
               type="info"
               showIcon
+              style={{ marginBottom: 12 }}
               message="请先进行测试连接，跳转完成登录后，成功获取测试信息即可保存该配置"
             />
           )}
@@ -559,12 +562,16 @@ export default inject('userStore')(
                         <Form.Item {...field} key={'expression'} name={[field.name, 'expression']}>
                           <Input style={{ width: 200 }} placeholder="请输入自定义字段映射规则" />
                         </Form.Item>
-                        <a onClick={() => operation.remove(index)}>删除</a>
+                        <Icon
+                          style={{ cursor: 'pointer', paddingBottom: 10 }}
+                          component={DeleteOutlined}
+                          onClick={() => operation.remove(index)}
+                        />
                       </Space>
                     );
                   })}
                   <Button style={{ width: '100%' }} onClick={() => operation.add()} type="dashed">
-                    添加
+                    <Icon style={{ verticalAlign: 'text-bottom' }} component={PlusOutlined} /> 添加
                   </Button>
                 </Form.Item>
               );

@@ -4,7 +4,10 @@
   height: 40px;
   border-bottom: 1px solid var(--odc-border-color);
   cursor: pointer;
-  &:hover {
+  &.itemDisable {
+    cursor: unset;
+  }
+  &:not(.itemDisable):hover {
     background-color: var(--hover-color);
   }
   .block {

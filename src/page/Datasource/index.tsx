@@ -15,10 +15,10 @@ import {
 } from '@/common/network/connection';
 import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
+import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
-
 const ExtraContent = ({ cid }: { cid: number }) => {
   const nav = useNavigate();
   return (
@@ -156,6 +156,7 @@ const Index: React.FC<IProps> = function () {
         options: options,
         onChange: handleSelectChange,
       }}
+      icon={OBSvg}
       tabList={tabs}
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent cid={cid} />}

@@ -44,7 +44,7 @@ const StatusSwitch: React.FC<{
   return (
     <Popconfirm
       placement="topRight"
-      visible={visible}
+      open={visible}
       overlayStyle={{
         width: '180px',
         ...overlayStyle,

@@ -27,6 +27,7 @@ interface IPageContainerProps {
   tabActiveKey?: string;
   tabBarExtraContent?: ReactNode;
   onTabChange?: (key) => void;
+  icon?: any;
   bigSelectBottom?: React.ReactNode;
 }
 
@@ -37,6 +38,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
     tabActiveKey,
     tabBarExtraContent,
     bigSelectBottom,
+    icon,
     onTabChange,
     containerWrapStyle,
   } = props;
@@ -67,6 +69,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
             bottom={bigSelectBottom}
             defaultValue={defaultValue}
             options={options}
+            icon={icon}
             onChange={onChange}
           />
         )}

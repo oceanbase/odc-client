@@ -7,6 +7,7 @@ import ProjectSvg from '@/svgr/project_space.svg';
 interface IBigSelectProps {
   defaultValue?: string | number;
   value?: string | number;
+  icon: any;
   options: {
     value: string | number;
     label: string;
@@ -15,11 +16,11 @@ interface IBigSelectProps {
   bottom?: React.ReactNode;
 }
 const BigSelect: React.FC<IBigSelectProps> = (props) => {
-  const { defaultValue, options, bottom, onChange } = props;
+  const { defaultValue, options, bottom, icon, onChange } = props;
   return (
     <Space size={12} className={styles['select-wrapper']}>
       <div className={styles.logo}>
-        <Icon component={ProjectSvg} />
+        <Icon component={icon || ProjectSvg} />
       </div>
       <Select
         className={styles.select}
