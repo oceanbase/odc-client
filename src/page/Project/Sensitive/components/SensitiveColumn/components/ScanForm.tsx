@@ -21,8 +21,6 @@ import ScanRule from './SacnRule';
 const ScanForm = ({
   formRef,
   _formRef,
-  databases,
-  setFormDrawerDatabases,
   resetScanTableData,
   reset,
   hasScan,
@@ -65,7 +63,7 @@ const ScanForm = ({
   return (
     <>
       <Form form={formRef} layout="vertical" requiredMark="optional">
-        <ScanRule {...{ formRef, databases, setFormDrawerDatabases, resetScanTableData, reset }} />
+        <ScanRule {...{ formRef, resetScanTableData, reset }} />
         <Space>
           <Button
             onClick={handleStartScan}
@@ -84,14 +82,16 @@ const ScanForm = ({
       </Form>
       <div className={styles.scanResultPreview}>
         <div>扫描结果预览</div>
-        <Input.Search
-          value={searchText}
-          placeholder="请输入列名"
-          width={240}
-          style={{ width: '240px' }}
-          onChange={handleSearchChange}
-          onSearch={onSearch}
-        />
+        {scanTableData?.length > 0 && (
+          <Input.Search
+            value={searchText}
+            placeholder="请输入列名"
+            width={240}
+            style={{ width: '240px' }}
+            onChange={handleSearchChange}
+            onSearch={onSearch}
+          />
+        )}
       </div>
       <Form form={_formRef} layout="vertical">
         <Collapse defaultActiveKey={[0]} className={styles.collapse}>

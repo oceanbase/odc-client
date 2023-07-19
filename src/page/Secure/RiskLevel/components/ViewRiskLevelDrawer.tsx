@@ -79,7 +79,7 @@ const ViewRiskLevelDrawer: React.FC<{
             {transformSecond(record?.approvalFlowConfig?.executionExpirationIntervalSeconds)}
           </div>
         </Descriptions.Item>
-        <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'备注'}>
+        <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
           <div className={styles.nodeContent}>{record?.description}</div>
         </Descriptions.Item>
       </Descriptions>

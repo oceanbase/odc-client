@@ -15,7 +15,8 @@ const ManualRule = ({
   fields,
   index,
   formRef,
-  setFormDrawerDatabases,
+  databasesMap,
+  setDatabasesMap,
   fieldKey,
   fieldName,
   remove,
@@ -62,7 +63,8 @@ const ManualRule = ({
       value: content.id,
     }));
     setDatabases(rawData?.contents);
-    setFormDrawerDatabases(rawData?.contents);
+    databasesMap.set(dataSourceId, rawData.contents);
+    setDatabasesMap(databasesMap);
     setTableName('');
     setColumnName('');
     setDatabaseOptions(resData);

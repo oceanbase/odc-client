@@ -3,9 +3,21 @@ import { updateRiskLevel } from '@/common/network/riskLevel';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { UserStore } from '@/store/login';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Drawer, Form, Input, message, Select, Space, Spin } from 'antd';
+import {
+  Button,
+  Descriptions,
+  Divider,
+  Drawer,
+  Form,
+  Input,
+  message,
+  Select,
+  Space,
+  Spin,
+} from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect, useState } from 'react';
+import RiskLevelLabel from '../../components/RiskLevelLabel';
 import CreateApproval from './CreateApproval';
 import styles from './index.less';
 
@@ -67,6 +79,7 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
   };
   useEffect(() => {
     if (visible) {
+      console.log(selectedRecord);
       initEditRiskLevelDrawer();
       formRef.setFieldsValue(selectedRecord);
     }
@@ -94,6 +107,11 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
       className={styles.riskLevelDrawer}
     >
       <Spin spinning={loading}>
+        <Descriptions column={1}>
+          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'风险等级'}>
+            <RiskLevelLabel level={selectedRecord?.level} color={selectedRecord?.style} />
+          </Descriptions.Item>
+        </Descriptions>
         <Form form={formRef} layout={'vertical'} requiredMark={'optional'}>
           <Form.Item
             label={'选择审批流程'}
