@@ -2,12 +2,13 @@ import { deleteIntegration, getIntegrationList, setIntegration } from '@/common/
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
+import StatusSwitch from '@/component/StatusSwitch';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IManagerIntegration, IntegrationType, IResponseData } from '@/d.ts';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { message, Popconfirm, Switch } from 'antd';
+import { message, Popconfirm } from 'antd';
 import { ColumnType } from 'antd/es/table';
 import { useRef, useState } from 'react';
 import NewSSODrawerButton from './NewSSODrawerButton';
@@ -52,6 +53,16 @@ export default function SSO() {
     setList(null);
     loadData(paramsRef?.current?.current, paramsRef?.current?.pageSize);
   }
+  async function changeStatus(v: boolean, id: number) {
+    const isSuccess = await runSetIntegration({
+      id: id,
+      enabled: v,
+    });
+    if (isSuccess) {
+      message.success('操作成功');
+      reload();
+    }
+  }
 
   const columns: ColumnType<IManagerIntegration>[] = [
     {
@@ -82,19 +93,14 @@ export default function SSO() {
       width: 100,
       render(v, record) {
         return (
-          <Switch
-            loading={setEnabledLoading}
-            onChange={async (checked) => {
-              const isSuccess = await runSetIntegration({
-                id: record.id,
-                enabled: checked,
-              });
-              if (isSuccess) {
-                message.success('操作成功');
-                reload();
-              }
-            }}
+          <StatusSwitch
             checked={v}
+            onConfirm={async () => {
+              changeStatus(!v, record.id);
+            }}
+            onCancel={() => {
+              changeStatus(false, record.id);
+            }}
           />
         );
       },

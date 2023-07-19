@@ -1,9 +1,12 @@
 import { IProject, ProjectRole } from '@/d.ts/project';
-import { FileZipFilled, UserOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
 import React, { forwardRef } from 'react';
 import styles from './index.less';
+
+import ProjectSvg from '@/svgr/project_space.svg';
+import UserSvg from '@/svgr/user.svg';
 
 interface IProps {
   data: IProject;
@@ -15,15 +18,19 @@ export default forwardRef(function ListItem(
   ref: React.Ref<HTMLDivElement>,
 ) {
   return (
-    <div ref={ref} className={styles.item} onClick={onClick.bind(this, data)}>
+    <div
+      ref={ref}
+      className={classNames(styles.item, { [styles.itemDisable]: data?.archived })}
+      onClick={onClick.bind(this, data)}
+    >
       <div className={classNames(styles.block, styles.status)}>
-        <FileZipFilled style={{ color: 'var(--icon-blue-color)' }} />
+        <Icon component={ProjectSvg} style={{ color: 'var(--icon-blue-color)', fontSize: 16 }} />
       </div>
       <div className={classNames(styles.block, styles.name)}>{data.name}</div>
       <div className={classNames(styles.block, styles.desc)}>{data.description || '-'}</div>
       <div className={classNames(styles.block, styles.users)}>
         <Space>
-          <UserOutlined />
+          <Icon style={{ color: 'var(--icon-color-disable)' }} component={UserSvg} />
           {data.members?.find((item) => item.role === ProjectRole.OWNER)?.name || '-'}
         </Space>
       </div>

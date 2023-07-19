@@ -46,7 +46,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
         }
       }}
     >
-      <Form form={form} layout="vertical">
+      <Form requiredMark="optional" form={form} layout="vertical">
         <Form.Item>数据库名称：{database?.name}</Form.Item>
         <Form.Item required rules={[{ required: true }]} label="所属项目" name={'project'}>
           <Select loading={loading} style={{ width: 240 }} showSearch optionFilterProp="children">

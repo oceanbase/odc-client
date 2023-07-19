@@ -61,6 +61,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
       </Button>
       <Modal visible={open} title="添加数据库" onOk={submit} onCancel={close}>
         <Form
+          requiredMark={'optional'}
           form={form}
           layout="vertical"
           onValuesChange={(changedValues) => {
