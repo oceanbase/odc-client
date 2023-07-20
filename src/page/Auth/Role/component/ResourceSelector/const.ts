@@ -55,7 +55,10 @@ export const resourceManagementTypeOptions = [
     label: '数据源',
     value: IManagerResourceType.resource,
   },
-
+  {
+    label: '项目',
+    value: IManagerResourceType.project,
+  },
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Role',

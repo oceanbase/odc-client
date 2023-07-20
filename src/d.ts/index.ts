@@ -884,6 +884,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
       localizedMessage: string;
       row: number;
       text: string;
+      level?: number;
       type: string;
     }[];
   }[];

@@ -1,4 +1,5 @@
-import { CaretRightOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
+import { CaretRightOutlined } from '@ant-design/icons';
 import { Collapse, Space, Tooltip, Typography } from 'antd';
 import React from 'react';
 import styles from './index.less';
@@ -40,9 +41,7 @@ const SQLLintResult: React.FC<IProps> = function ({ data }) {
               {item.violations.map((item) => {
                 return (
                   <div className={styles.item}>
-                    <div className={styles.icon}>
-                      <ExclamationCircleFilled twoToneColor={'var(--icon-orange-color)'} />
-                    </div>
+                    <RenderLevel level={item?.level} />
                     <div className={styles.desc}>{item.localizedMessage}</div>
                   </div>
                 );

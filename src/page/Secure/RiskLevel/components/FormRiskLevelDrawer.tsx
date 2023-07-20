@@ -79,7 +79,6 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
   };
   useEffect(() => {
     if (visible) {
-      console.log(selectedRecord);
       initEditRiskLevelDrawer();
       formRef.setFieldsValue(selectedRecord);
     }
