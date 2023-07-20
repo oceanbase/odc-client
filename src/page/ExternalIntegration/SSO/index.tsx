@@ -99,7 +99,7 @@ export default function SSO() {
               changeStatus(!v, record.id);
             }}
             onCancel={() => {
-              changeStatus(false, record.id);
+              changeStatus(!v, record.id);
             }}
           />
         );

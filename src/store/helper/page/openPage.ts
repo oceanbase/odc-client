@@ -383,7 +383,7 @@ export async function openFunctionEditPageByFuncName(
   return { plPage, isNew };
 }
 
-export async function openOBClientPage(cid: number, dbName: string) {
+export async function openOBClientPage(cid: number, dbId: number) {
   const MAX_CLIENT_PAGE = 3;
   const currentNum =
     Math.max(
@@ -412,7 +412,7 @@ export async function openOBClientPage(cid: number, dbName: string) {
     );
     return;
   }
-  const cPage = new OBClientPage(cid, currentNum);
+  const cPage = new OBClientPage(cid, currentNum, dbId);
   page.openPage(cPage);
 }
 /**

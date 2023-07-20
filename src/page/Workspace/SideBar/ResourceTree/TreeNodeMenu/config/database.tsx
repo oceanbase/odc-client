@@ -29,7 +29,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       run(session, node) {
         const database: IDatabase = node.data;
-        openOBClientPage(database?.dataSource?.id, database?.name);
+        openOBClientPage(database?.dataSource?.id, database?.id);
       },
     },
   ],
