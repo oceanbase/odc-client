@@ -1,6 +1,6 @@
 import { IManagerIntegration } from '@/d.ts';
 import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
-import { Button, Checkbox, Descriptions, Drawer, Form, Select } from 'antd';
+import { Button, Checkbox, Descriptions, Drawer, Form, Radio, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
 import EditPropertyComponentMap from './EditPropertyComponent';
@@ -162,6 +162,24 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             />
           );
         })}
+        {ruleType === RuleType.SQL_CHECK && (
+          <Form.Item
+            label={'改进等级'}
+            name={'level'}
+            rules={[
+              {
+                required: true,
+                message: '请选择改进等级',
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value={0}>无需改进</Radio>
+              <Radio value={1}>建议改进</Radio>
+              <Radio value={2}>必须改进</Radio>
+            </Radio.Group>
+          </Form.Item>
+        )}
       </Form>
     </Drawer>
   );

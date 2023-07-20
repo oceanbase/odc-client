@@ -12,6 +12,7 @@ import React from 'react';
 import { FormattedMessage } from 'umi';
 
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
+import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import styles from './index.less';
 
 interface IProps {
@@ -63,7 +64,12 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
           }
         </div>
         {checkViolations?.map((item) => {
-          return <div>{item.localizedMessage}</div>;
+          return (
+            <Space size={0}>
+              <RenderLevel level={item?.level} />
+              <div>{item.localizedMessage}</div>
+            </Space>
+          );
         })}
       </Space>
     </div>
