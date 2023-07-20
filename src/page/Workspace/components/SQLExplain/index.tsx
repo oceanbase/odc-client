@@ -50,14 +50,16 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
         params: { obVersion },
       },
     } = this.props;
-    if (obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1) {
-      this.getTraceData();
-    } else {
-      this.setState({
-        treeData: [],
-        startTimestamp: 0,
-        endTimestamp: 0,
-      });
+    if (this.state.tabName === TAB_NAME.TRACE) {
+      if (obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1) {
+        this.getTraceData();
+      } else {
+        this.setState({
+          treeData: [],
+          startTimestamp: 0,
+          endTimestamp: 0,
+        });
+      }
     }
     if (!this.state.tableHeight) {
       const tableHeight = window.innerHeight - 170;
@@ -177,7 +179,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
               marginBottom: 0,
             }}
           >
-            {(explain as ISQLExplain).originalText}
+            {(explain as ISQLExplain)?.originalText}
           </pre>
         ) : (
           <>
