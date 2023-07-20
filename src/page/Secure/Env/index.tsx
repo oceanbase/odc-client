@@ -92,7 +92,7 @@ const Environment: React.FC<{}> = ({}) => {
   };
   const exSearch = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { subTypes, supportedDialectTypes } = filters ?? {};
+    const { subTypes, supportedDialectTypes, level } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const params = {
@@ -107,6 +107,7 @@ const Environment: React.FC<{}> = ({}) => {
       types: ruleType,
       subTypes,
       supportedDialectTypes,
+      level,
       ...params,
     });
     const rawData = await statsRules(selectedRecord.rulesetId, ruleType);
@@ -128,7 +129,7 @@ const Environment: React.FC<{}> = ({}) => {
   const exReload = async (args: ITableLoadOptions) => {
     if (selectedRecord && selectedRecord.value) {
       const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
-      const { subTypes, supportedDialectTypes } = filters ?? {};
+      const { subTypes, supportedDialectTypes, level } = filters ?? {};
       const { column, order } = sorter ?? {};
       const { current = 1 } = pagination ?? {};
       const params = {
@@ -145,6 +146,7 @@ const Environment: React.FC<{}> = ({}) => {
         types: ruleType,
         subTypes,
         supportedDialectTypes,
+        level,
         ...params,
       });
       const rawData = await statsRules(selectedRecord?.value, RuleType.SQL_CHECK);

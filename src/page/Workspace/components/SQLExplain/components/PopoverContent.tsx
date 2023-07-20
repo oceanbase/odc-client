@@ -1,4 +1,6 @@
+import { formatTimeTemplate } from '@/util/utils';
 import { Descriptions } from 'antd';
+import BigNumber from 'bignumber.js';
 import styles from './index.less';
 
 const PopoverContent = ({ node }) => {
@@ -10,7 +12,11 @@ const PopoverContent = ({ node }) => {
         <Descriptions.Item label={'开始时间'}>{node?.originStartTimestamp}</Descriptions.Item>
         <Descriptions.Item label={'结束时间'}>{node?.originEndTimestamp}</Descriptions.Item>
         <Descriptions.Item label={'耗时'}>
-          {node?.endTimestamp - node?.startTimestamp}us
+          {formatTimeTemplate(
+            BigNumber(node?.endTimestamp - node?.startTimestamp)
+              .div(1000000)
+              .toNumber(),
+          )}
         </Descriptions.Item>
       </Descriptions>
       <div>
