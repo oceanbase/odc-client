@@ -31,11 +31,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item span={2} label="任务类型">
           数据清理
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="源数据库">
-          {jobParameters?.sourceDatabaseName || '-'}
-        </Descriptions.Item>
-        <Descriptions.Item span={2} label="目标数据库">
-          {jobParameters?.targetDatabaseName || '-'}
+        <Descriptions.Item span={2} label="数据库">
+          {task?.databaseName || '-'}
         </Descriptions.Item>
         {hasFlow && <Descriptions.Item label="风险等级">{task?.maxRiskLevel}</Descriptions.Item>}
       </Descriptions>
