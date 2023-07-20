@@ -13,6 +13,9 @@ interface EditRuleDrawerProps {
   handleCloseModal: (fn?: () => void) => void;
   handleUpdateEnvironment: (rule: IRule, fn?: () => void) => void;
 }
+// 外部审批集成的标识 key
+const ExternalApprovalKey =
+  '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.name}';
 
 const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
   editRuleDrawerVisible,
@@ -24,6 +27,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
 }) => {
   const [formRef] = useForm();
   const [initData, setInitData] = useState();
+  const [isExternalApproval, setIsExternalApproval] = useState(false);
   const options = integrations?.map(({ id, name }) => {
     return {
       id,
@@ -75,6 +79,9 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         appliedDialectTypes,
         level,
       };
+      const isExternalApproval = propertyMetadatas?.some(
+        (item) => item.name === ExternalApprovalKey,
+      );
       propertyMetadatas.forEach((pm, index) => {
         newInitData[`activeKey${index}`] = properties[pm.name];
         if (pm?.candidates) {
@@ -84,8 +91,8 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           }));
         }
       });
+      setIsExternalApproval(isExternalApproval);
       setInitData(newInitData as any);
-
       formRef.setFieldsValue(newInitData);
     }
   }, [editRuleDrawerVisible]);
@@ -130,18 +137,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             ))}
           </Checkbox.Group>
         </Form.Item>
-        <Form.Item
-          name="externalApproval"
-          label="配置外部 SQL 检查集成"
-          rules={[
-            {
-              required: true,
-              message: '请选择',
-            },
-          ]}
-        >
-          <Select options={options} />
-        </Form.Item>
+        {isExternalApproval && (
+          <Form.Item
+            name="externalApproval"
+            label="配置外部 SQL 检查集成"
+            rules={[
+              {
+                required: true,
+                message: '请选择',
+              },
+            ]}
+          >
+            <Select options={options} />
+          </Form.Item>
+        )}
         {rule?.metadata?.propertyMetadatas?.map((pm, index) => {
           return (
             <EditPropertyComponentMap

@@ -410,7 +410,7 @@ const UserDetail: React.FC<{
             })}
             /*可新建的对象*/ span={2}
           >
-            {createAbleResourceLabels?.join(', ')}
+            {createAbleResourceLabels?.join(', ') || '-'}
           </Descriptions.Item>
           <Descriptions.Item span={2}>
             <DisplayTable
