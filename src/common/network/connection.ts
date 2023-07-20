@@ -232,6 +232,8 @@ export async function newSessionByDataBase(
 ): Promise<{
   sessionId: string;
   dataTypeUnits: IDataType[];
+  charsets: string[];
+  collations: string[];
   supports: {
     support: boolean;
     supportType: string;
