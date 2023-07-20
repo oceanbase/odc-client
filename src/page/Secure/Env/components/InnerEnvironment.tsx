@@ -20,7 +20,7 @@ import EditRuleDrawer from './EditRuleDrawer';
 import RiskLevelLabel from '../../components/RiskLevelLabel';
 import styles from './index.less';
 
-const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
+export const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
   const levelMap = {
     0: '无需改进',
     1: '建议改进',
@@ -171,6 +171,27 @@ const getColumns: (columnsFunction: {
         }
         return <TooltipContent content={content} />;
       },
+    },
+    {
+      title: '改进等级',
+      // width: 92,
+      dataIndex: 'level',
+      key: 'level',
+      filters: [
+        {
+          text: '无需改进',
+          value: 0,
+        },
+        {
+          text: '建议改进',
+          value: 1,
+        },
+        {
+          text: '必须改进',
+          value: 2,
+        },
+      ],
+      render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
       title: '状态',
