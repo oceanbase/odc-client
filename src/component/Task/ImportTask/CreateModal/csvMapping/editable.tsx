@@ -2,6 +2,7 @@ import { Popover, Table } from 'antd';
 import React from 'react';
 
 import { ColumnType, TableProps } from 'antd/es/table';
+import classNames from 'classnames';
 import styles from './editable.less';
 
 interface IEditableColumn extends ColumnType<any> {
@@ -33,9 +34,19 @@ class Editable extends React.Component<IEditableProps, any> {
               <Popover
                 overlayClassName={styles.popOver}
                 trigger="click"
+                getPopupContainer={(trigger) => {
+                  return document.querySelector('.odc_csvmapping_archor');
+                }}
                 content={column.editor(text, record, i)}
               >
-                <div style={{ height: '100%', cursor: 'pointer', lineHeight: '24px' }}>
+                <div
+                  style={{
+                    height: '100%',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    lineHeight: '24px',
+                  }}
+                >
                   {originContent}
                 </div>
               </Popover>
@@ -56,7 +67,7 @@ class Editable extends React.Component<IEditableProps, any> {
     return (
       <Table
         bordered={true}
-        className={styles.table}
+        className={classNames(styles.table, 'odc_csvmapping_archor')}
         rowClassName={(record, i) => (i % 2 === 0 ? styles.even : styles.odd)}
         columns={this.initColumns()}
         {...rest}

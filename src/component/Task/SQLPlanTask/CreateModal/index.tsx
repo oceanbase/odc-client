@@ -7,6 +7,7 @@ import ODCDragger from '@/component/OSSDragger2';
 import {
   ConnectionMode,
   CreateTaskRecord,
+  ISqlPlayJobParameters,
   SQLContentType,
   TaskExecStrategy,
   TaskOperationType,
@@ -14,9 +15,9 @@ import {
   TaskPageType,
   TaskStatus,
   TaskType,
-  ISqlPlayJobParameters
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
+import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
@@ -115,8 +116,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setFormData(formData);
     form.setFieldsValue(formData);
     crontabRef.current.setValue({
-      mode:
-        triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+      mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,
       hour: hours,
@@ -406,6 +406,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     headers: {
       'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
       'Accept-Language': getLocale(),
+      currentOrganizationId: login.organizationId?.toString(),
     },
 
     defaultFileList: formData?.sqlFiles,
