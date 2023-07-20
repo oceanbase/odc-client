@@ -861,6 +861,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   editable?: boolean;
   // 是否正在编辑
   isEditing?: boolean;
+  allowExport?: boolean;
   columnList?: ITableColumn[]; // 是否已经查询过支持编辑，该接口响应很慢，尽可能少调用
   resultSetMetaData?: {
     columnList?: ITableColumn[];
