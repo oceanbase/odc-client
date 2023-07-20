@@ -300,7 +300,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     resultHeight={resultHeight - TAB_HEADER_HEIGHT}
                     generalSqlType={set.generalSqlType}
                     traceId={set.traceId}
-                    onExport={(limit) => onExportResultSet(i, limit)}
+                    onExport={set.allowExport ? (limit) => onExportResultSet(i, limit) : null}
                     onShowExecuteDetail={() => onShowExecuteDetail(set.initialSql, set.traceId)}
                     onSubmitRows={(newRows, limit, autoCommit, columns) =>
                       onSubmitRows(
