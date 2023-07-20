@@ -168,6 +168,7 @@ const FormModal: React.FC<IProps> = (props) => {
                 nodes: [
                   {
                     autoApproval: false,
+                    externalApproval: false,
                   },
                 ],
                 approvalExpirationIntervalSeconds: 24,
