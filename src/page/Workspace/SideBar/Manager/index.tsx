@@ -41,7 +41,7 @@ const Manager: React.FC<{}> = function () {
                   <ListItem
                     key="sessionParams"
                     title="全局变量"
-                    desc="查询和还原被删除的数据库对象"
+                    desc="管理数据源下所有会话变量"
                     icon={<Icon component={VariableSvg} style={{ fontSize: 18 }} />}
                     actions={[]}
                     onClick={() => {

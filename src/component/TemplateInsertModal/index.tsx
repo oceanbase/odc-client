@@ -209,31 +209,25 @@ export async function getCopyText(
     }
     case DragInsertType.INSERT: {
       return (
-        '<com.oceanbase.odc.snippet>' +
         'INSERT INTO ' +
         _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
         '(' +
         _escape(await getColumns(objType, name, sessionId)) +
-        ') VALUES(${1:expr}, ${2:expr});' +
-        '</com.oceanbase.odc.snippet>'
+        ') VALUES(${1:expr}, ${2:expr});'
       );
     }
     case DragInsertType.DELETE: {
       return (
-        '<com.oceanbase.odc.snippet>' +
         'DELETE FROM ' +
         _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
-        ' WHERE ${1:where_condition};' +
-        '</com.oceanbase.odc.snippet>'
+        ' WHERE ${1:where_condition};'
       );
     }
     case DragInsertType.UPDATE: {
       return (
-        '<com.oceanbase.odc.snippet>' +
         'UPDATE ' +
         _escape(getQuoteTableName(name, dbSession?.connection?.dialectType)) +
-        ' SET ${1:col_name1=expr1} WHERE ${2:where_condition};' +
-        '</com.oceanbase.odc.snippet>'
+        ' SET ${1:col_name1=expr1} WHERE ${2:where_condition};'
       );
     }
     default: {

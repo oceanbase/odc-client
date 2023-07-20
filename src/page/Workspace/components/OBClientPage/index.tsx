@@ -19,6 +19,7 @@ const { Text } = Typography;
 interface IOBClientProps {
   modalStore?: ModalStore;
   datasourceId: number;
+  databaseId?: number;
   theme?: string;
   /**
    * 适配工作台之外的样式
@@ -85,12 +86,12 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
   }
 
   private initTerminal = async () => {
-    const { datasourceId, theme } = this.props;
+    const { datasourceId, theme, databaseId } = this.props;
     const dom = this.xtermRef.current;
     if (!dom) {
       return;
     }
-    const session = await sessionManager.createSession(datasourceId, null);
+    const session = await sessionManager.createSession(datasourceId, databaseId);
     if (!session) {
       return;
     }

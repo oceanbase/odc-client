@@ -451,11 +451,12 @@ export class OBClientPage extends Page {
     time: number;
     index: number;
     dataSourceId: number;
+    databaseId: number;
   };
   static getTitleByParams(params: OBClientPage['pageParams']) {
     return formatMessage({ id: 'odc.helper.page.openPage.CommandLineWindow' }) + params?.index;
   }
-  constructor(dataSourceId: number, currentNum: number) {
+  constructor(dataSourceId: number, currentNum: number, databaseId?: number) {
     super();
     this.pageKey = 'obclientPage-' + generateUniqKey();
     this.pageTitle = '--';
@@ -465,6 +466,7 @@ export class OBClientPage extends Page {
       time: Date.now(),
       index: currentNum,
       dataSourceId,
+      databaseId,
     };
   }
 }

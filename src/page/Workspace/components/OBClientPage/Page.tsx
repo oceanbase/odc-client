@@ -10,6 +10,12 @@ interface IProps {
 
 export default inject('settingStore')(
   observer(function OBClientPage({ params, settingStore }: IProps) {
-    return <OBClient theme={settingStore.theme?.cmdTheme} datasourceId={params?.dataSourceId} />;
+    return (
+      <OBClient
+        theme={settingStore.theme?.cmdTheme}
+        databaseId={params?.databaseId}
+        datasourceId={params?.dataSourceId}
+      />
+    );
   }),
 );
