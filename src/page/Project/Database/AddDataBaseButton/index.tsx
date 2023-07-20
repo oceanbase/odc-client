@@ -100,6 +100,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               placeholder="请选择未分配项目的数据库"
               style={{ width: '100%' }}
               loading={databasesListLoading}
+              optionFilterProp="children"
             >
               {databases?.contents?.map((p) => {
                 if (!p.project?.builtin) {

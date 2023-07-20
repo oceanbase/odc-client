@@ -2,6 +2,7 @@ import MessageCount from '@/component/Task/component/MessageCount';
 import { IPageType } from '@/d.ts/_index';
 import LinkOutlined from '@/svgr/icon_connection.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
+import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon, {
   AppstoreOutlined,
@@ -39,8 +40,12 @@ const Sider: React.FC<IProps> = function () {
     >
       <div>
         <Logo collapsed={collapsed} />
-        <SpaceSelect collapsed={collapsed} />
-        <Divider style={{ margin: '0 0 14px' }} />
+        {isClient() ? null : (
+          <>
+            <SpaceSelect collapsed={collapsed} />
+            <Divider style={{ margin: '0 0 14px' }} />
+          </>
+        )}
         <Space
           size={mentItemGap}
           direction="vertical"

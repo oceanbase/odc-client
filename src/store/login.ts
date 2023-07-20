@@ -40,7 +40,7 @@ export class UserStore {
   public organizations: IOrganization[] = [];
 
   @observable
-  public organizationId: number = parseInt(sessionStorage.getItem(sessionKey));
+  public organizationId: number = parseInt(sessionStorage.getItem(sessionKey)) || null;
 
   @observable
   public scriptStore: ScriptStore = new ScriptStore();
