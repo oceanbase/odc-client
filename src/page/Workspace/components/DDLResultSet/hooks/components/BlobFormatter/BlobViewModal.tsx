@@ -2,6 +2,7 @@ import { generateSessionSid } from '@/common/network/pathUtil';
 import { fetchResultCache, IDataFormmater } from '@/common/network/sql';
 import ODCDragger from '@/component/OSSDragger2';
 import { LobExt, RSModifyDataType } from '@/d.ts';
+import login from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { formatBytes, getBlobValueKey } from '@/util/utils';
@@ -308,6 +309,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
               'Accept-Language': getLocale(),
+              currentOrganizationId: login.organizationId?.toString(),
             }}
             onFileChange={(files) => {
               const file = files?.[0];

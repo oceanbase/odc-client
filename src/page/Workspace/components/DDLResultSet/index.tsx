@@ -245,6 +245,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     });
   }, []);
 
+  const rowsRef = useRef<any[]>();
+
   /**
    * 切换编辑态和原始数据的rows
    */
@@ -252,6 +254,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     return editRows || originRows;
   }, [originRows, editRows]);
 
+  rowsRef.current = rows;
   /**
    * 表格实际展示的rows，比如过滤后的rows。
    */
@@ -598,7 +601,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               if (file) {
                 const serverFileName = await uploadTableObject(file, sessionId);
                 if (serverFileName) {
-                  const newRows = [...rows];
+                  const newRows = [...rowsRef.current];
                   const targetRowIndex = newRows.findIndex(
                     (newRow) => newRow._rowIndex === row._rowIndex,
                   );

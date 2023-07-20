@@ -89,7 +89,6 @@ class CreateModal extends React.Component<IProps, IState> {
       this.props.modalStore.changeImportModal(false);
       return;
     }
-    this.resetFormData();
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ImportDrawer.AreYouSureYouWant',
@@ -97,6 +96,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
       centered: true,
       onOk: () => {
+        this.resetFormData();
         this.props.modalStore.changeImportModal(false);
       },
     });

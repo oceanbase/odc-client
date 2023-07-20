@@ -149,6 +149,7 @@ class CsvMapping extends React.Component<
                   allowClear
                   onChange={this.changeDestColumnName.bind(this, i)}
                   style={{ width: 100 }}
+                  getPopupContainer={(trigger) => trigger?.parentNode}
                   dropdownStyle={{
                     width: 170,
                     minWidth: 170,

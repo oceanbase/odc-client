@@ -12,6 +12,7 @@ import CsvFormItem from '../formitem/CsvFormItem';
 import { checkImportFile, getFileTypeWithImportType, getSizeLimitTip } from '../helper';
 
 import { DbObjectTypeTextMap } from '@/constant/label';
+import login from '@/store/login';
 import { isClient } from '@/util/env';
 import { getLocale } from 'umi';
 import FormContext from '../FormContext';
@@ -210,6 +211,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                 headers={{
                   'X-XSRF-TOKEN': ctoken || '',
                   'Accept-Language': getLocale(),
+                  currentOrganizationId: login.organizationId?.toString(),
                 }}
                 onChange={(info) => {
                   const file = info.fileList?.[0];

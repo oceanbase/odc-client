@@ -99,6 +99,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                     tenantName: tenantId,
                     type: tenantMode === 'MySQL' ? ConnectType.OB_MYSQL : ConnectType.OB_ORACLE,
                     username: null,
+                    password: '',
                   });
                 }
                 return (

@@ -14,6 +14,7 @@ import {
   TaskType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
+import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
@@ -525,6 +526,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
               'Accept-Language': getLocale(),
+              currentOrganizationId: login.organizationId?.toString(),
             }}
             defaultFileList={defaultFileList.sqlFiles}
             onFileChange={(files) => {
@@ -620,6 +622,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
               'Accept-Language': getLocale(),
+              currentOrganizationId: login.organizationId?.toString(),
             }}
             defaultFileList={defaultFileList.rollbackSqlFiles}
             onFileChange={(files) => {
