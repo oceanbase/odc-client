@@ -23,7 +23,7 @@ import {
 } from 'antd';
 import md5 from 'blueimp-md5';
 import { inject, observer } from 'mobx-react';
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import HelpDoc from '@/component/helpDoc';
 import { encrypt } from '@/util/utils';
@@ -93,6 +93,10 @@ export default inject('userStore')(
           testListener.current = null;
         }
       }
+
+      useEffect(() => {
+        removeTestListener();
+      }, []);
       function addTestListener(testId: string) {
         removeTestListener();
         testListener.current = (e) => {

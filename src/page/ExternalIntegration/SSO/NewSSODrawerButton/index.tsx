@@ -63,10 +63,11 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
       <Drawer
         width={520}
         title="新建 SSO 集成"
-        visible={open}
+        open={open}
         onClose={() => {
           setOpen(false);
         }}
+        destroyOnClose
         footer={
           <Space style={{ float: 'right' }}>
             <Button

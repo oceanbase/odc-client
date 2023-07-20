@@ -73,6 +73,13 @@ export default function SSO() {
       title: '类型',
       dataIndex: 'type',
       width: 80,
+      render(value, record, index) {
+        try {
+          return JSON.parse(record.configuration)?.type || '-';
+        } catch (e) {
+          return '-';
+        }
+      },
     },
     {
       title: '创建日期',
