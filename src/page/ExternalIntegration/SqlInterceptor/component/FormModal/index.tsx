@@ -30,6 +30,7 @@ interface IProps {
   type: IntegrationType;
   title: string;
   visible: boolean;
+  template: string;
   editId?: number;
   onClose: () => void;
   handleStatusChange?: (status: boolean, data: IManagerIntegration) => void;
@@ -37,7 +38,7 @@ interface IProps {
 }
 
 const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
-  const { type, title, visible, editId } = props;
+  const { type, title, visible, editId, template } = props;
   const [hasChange, setHasChange] = useState(false);
   const [enableSecretEdit, setEnableSecretEdit] = useState(false);
   const [data, setData] = useState(null);
@@ -195,6 +196,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
           initialValues={
             data || {
               enabled: true,
+              configuration: template,
               encryption: {
                 enabled: true,
                 algorithm: EncryptionAlgorithm.AES256_BASE64,
@@ -253,7 +255,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
               },
             ]}
           >
-            <YamlEditor ref={editorRef} onValueChange={handleChange} />
+            <YamlEditor defaultValue={template} ref={editorRef} onValueChange={handleChange} />
           </Form.Item>
           <Form.Item
             valuePropName="checked"

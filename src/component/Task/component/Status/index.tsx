@@ -187,6 +187,14 @@ export const cycleStatus = {
     icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Terminated' }), //已终止
   },
+  [TaskStatus.COMPLETED]: {
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
+    text: '已完成',
+  },
+  [TaskStatus.EXECUTION_FAILED]: {
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
+    text: '执行失败',
+  },
 };
 
 // 子任务状态（仅周期任务 + 无锁结构变更）

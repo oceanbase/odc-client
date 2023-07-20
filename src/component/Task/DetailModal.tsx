@@ -234,7 +234,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const getExecuteRecord = async function () {
-    if (type === TaskType.DATA_ARCHIVE) {
+    if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type)) {
       loadDataArchiveSubTask();
     } else {
       loadSubTask();

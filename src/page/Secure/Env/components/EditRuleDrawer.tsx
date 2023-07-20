@@ -137,7 +137,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             ))}
           </Checkbox.Group>
         </Form.Item>
-        {isExternalApproval && (
+        {isExternalApproval && ruleType === RuleType.SQL_CHECK && (
           <Form.Item
             name="externalApproval"
             label="配置外部 SQL 检查集成"

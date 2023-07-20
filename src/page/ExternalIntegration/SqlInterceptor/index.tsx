@@ -23,16 +23,19 @@ import type { FixedType } from 'rc-table/lib/interface';
 import React, { useRef, useState } from 'react';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
+import { APPROVAL_TEMPLATE, SQL_INTERCEPTOR_TEMPLATE } from './constant';
 import styles from './index.less';
 
 const pageMeta = {
   [IPageType.ExternalIntegration_Sql]: {
     title: ' SQL 审核集成',
     type: IntegrationType.SQL_INTERCEPTOR,
+    template: SQL_INTERCEPTOR_TEMPLATE,
   },
   [IPageType.ExternalIntegration_Approval]: {
     title: '审批集成',
     type: IntegrationType.APPROVAL,
+    template: APPROVAL_TEMPLATE,
   },
 };
 
@@ -49,7 +52,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const tableRef = useRef<ITableInstance>();
-  const { title, type } = pageMeta[pageKey];
+  const { title, type, template } = pageMeta[pageKey];
 
   const openFormModal = (id: number = null) => {
     setFormModalVisible(true);
@@ -270,6 +273,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
       <FormModal
         type={type}
         title={title}
+        template={template}
         editId={editId}
         visible={formModalVisible}
         handleStatusChange={handleStatusChange}
