@@ -1,3 +1,4 @@
+import { IResponseData } from '@/d.ts';
 import { IRule, IRuleSet, RuleType } from '@/d.ts/rule';
 import request from '@/util/request';
 import * as mockjs from 'mockjs';
@@ -154,11 +155,11 @@ export async function listRulesets(): Promise<IRuleSet[]> {
   return ret?.data?.contents || [];
 }
 
-export async function listRules(rulesetId: number, params: any): Promise<IRule[]> {
+export async function listRules(rulesetId: number, params: any): Promise<IResponseData<IRule>> {
   const ret = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules`, {
     params,
   });
-  return ret?.data?.contents;
+  return ret?.data;
 }
 
 export async function getRuleset(
