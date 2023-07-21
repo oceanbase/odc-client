@@ -229,15 +229,15 @@ export interface IResourceRole {
   roleName: string;
   description: string;
 }
-
+export interface IResponseDataPage {
+  number: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
 export interface IResponseData<T> {
   contents: T[];
-  page: {
-    number: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-  };
+  page: IResponseDataPage;
 }
 
 export enum IConnectionStatus {
