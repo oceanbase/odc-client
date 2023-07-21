@@ -241,7 +241,7 @@ const SensitiveRule = ({ projectId }) => {
         } else {
           message.error('删除失败');
         }
-        tableRef.current?.reload();
+        tableRef.current?.reloadFirstPage?.();
       },
       onCancel: () => {},
       okText: '确定',

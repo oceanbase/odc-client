@@ -330,7 +330,7 @@ const SensitiveColumn = ({
           } else {
             message.error('删除失败');
           }
-          tableRef.current?.reload?.();
+          tableRef.current?.reloadFirstPage?.();
           tableRef.current?.resetSelectedRows();
           setSubmiting(false);
         }

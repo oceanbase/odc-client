@@ -35,7 +35,6 @@ const Environment: React.FC<{}> = ({}) => {
   const [subTypeFilters, setSubTypeFilters] = useState([]);
   const [supportedDialectTypeFilters, setSupportedDialectTypeFilters] = useState([]);
   const [rules, setRules] = useState<IRule[]>([]);
-
   const [selectedRecord, setSelectedRecord] = useState<{
     value: number;
     label: string;
@@ -61,7 +60,7 @@ const Environment: React.FC<{}> = ({}) => {
         value: d,
       })),
     );
-    setRules(rulesets || []);
+    setRules(rulesets?.contents);
     setTableLoading(false);
   };
 
@@ -123,7 +122,7 @@ const Environment: React.FC<{}> = ({}) => {
         value: d,
       })),
     );
-    setRules(rulesets || []);
+    setRules(rulesets?.contents);
     setTableLoading(false);
   };
   const exReload = async (args: ITableLoadOptions) => {
@@ -162,7 +161,7 @@ const Environment: React.FC<{}> = ({}) => {
           value: d,
         })),
       );
-      setRules(rulesets || []);
+      setRules(rulesets?.contents);
       setTableLoading(false);
     }
   };

@@ -177,20 +177,6 @@ const getColumns: (columnsFunction: {
       // width: 92,
       dataIndex: 'level',
       key: 'level',
-      filters: [
-        {
-          text: '无需改进',
-          value: 0,
-        },
-        {
-          text: '建议改进',
-          value: 1,
-        },
-        {
-          text: '必须改进',
-          value: 2,
-        },
-      ],
       render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
@@ -304,7 +290,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     if (selectedRecord && ruleType) {
       handleInitRules(selectedRecord?.value, ruleType);
       if (tableRef.current) {
-        tableRef?.current?.resetPaganition();
+        tableRef.current?.resetPaganition?.();
       }
     }
   }, [selectedRecord, ruleType]);
