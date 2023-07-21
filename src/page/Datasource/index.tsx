@@ -19,7 +19,7 @@ import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
-const ExtraContent = ({ cid }: { cid: number }) => {
+const ExtraContent = ({ cid, name }: { cid: number; name: string }) => {
   const nav = useNavigate();
   return (
     <Space>
@@ -31,7 +31,8 @@ const ExtraContent = ({ cid }: { cid: number }) => {
               key: 'delete',
               async onClick() {
                 Modal.confirm({
-                  title: '确认删除吗？',
+                  title: `是否确认删除 ${name}`,
+                  content: '删除后将无法访问该连接',
                   async onOk() {
                     const isSuccess = await deleteConnection(cid?.toString());
                     if (isSuccess) {
@@ -159,7 +160,7 @@ const Index: React.FC<IProps> = function () {
       icon={OBSvg}
       tabList={tabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent cid={cid} />}
+      tabBarExtraContent={<ExtraContent cid={cid} name={connection?.name} />}
       onTabChange={handleChange}
       bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
     >
