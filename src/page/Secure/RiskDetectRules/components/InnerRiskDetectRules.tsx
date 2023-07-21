@@ -11,7 +11,13 @@ import {
   CommonTableMode,
   IOperationOptionType,
 } from '../../components/SecureTable/interface';
-import { InnerRiskDetectRulesProps, SelectItemProps } from '../interface';
+import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
+import {
+  InnerRiskDetectRulesProps,
+  SelectItemProps,
+  TaskTypeEnum,
+  TaskTypeTextMap,
+} from '../interface';
 import FormRiskDetectDrawer from './FormRiskDetectDrawer';
 import styles from './index.less';
 import ViewRiskDetectDrawer from './ViewRiskDetectDrawer';
@@ -237,40 +243,40 @@ const getEnvironmentOptions = async () => {
 const getTaskTypeOptions = () => {
   const newTaskTypeOptions = [
     {
-      label: 'IMPORT',
-      value: 'import',
+      label: TaskTypeTextMap[TaskTypeEnum.IMPORT],
+      value: TaskTypeEnum.IMPORT,
     },
     {
-      label: 'EXPORT',
-      value: 'export',
+      label: TaskTypeTextMap[TaskTypeEnum.EXPORT],
+      value: TaskTypeEnum.EXPORT,
     },
     {
-      label: 'MOCKDATA',
-      value: 'mockdata',
+      label: TaskTypeTextMap[TaskTypeEnum.MOCKDATA],
+      value: TaskTypeEnum.MOCKDATA,
     },
     {
-      label: 'ASYNC',
-      value: 'async',
+      label: TaskTypeTextMap[TaskTypeEnum.ASYNC],
+      value: TaskTypeEnum.ASYNC,
     },
     {
-      label: 'PARTITION_PLAN',
-      value: 'partition_plan',
+      label: TaskTypeTextMap[TaskTypeEnum.PARTITION_PLAN],
+      value: TaskTypeEnum.PARTITION_PLAN,
     },
     {
-      label: 'SQL_PLAN',
-      value: 'sql_plan',
+      label: TaskTypeTextMap[TaskTypeEnum.SQL_PLAN],
+      value: TaskTypeEnum.SQL_PLAN,
     },
     {
-      label: 'ALTER_SCHEDULE',
-      value: 'alter_schedule',
+      label: TaskTypeTextMap[TaskTypeEnum.ALTER_SCHEDULE],
+      value: TaskTypeEnum.ALTER_SCHEDULE,
     },
     {
-      label: 'SHADOWTABLE_SYNC',
-      value: 'shadowtable_sync',
+      label: TaskTypeTextMap[TaskTypeEnum.SHADOWTABLE_SYNC],
+      value: TaskTypeEnum.SHADOWTABLE_SYNC,
     },
     {
-      label: 'DATA_SAVE',
-      value: 'data_save',
+      label: TaskTypeTextMap[TaskTypeEnum.DATA_SAVE],
+      value: TaskTypeEnum.DATA_SAVE,
     },
   ];
   return newTaskTypeOptions;
@@ -278,16 +284,16 @@ const getTaskTypeOptions = () => {
 const getSqlCheckResultOptions = () => {
   const sqlCheckResultOptions = [
     {
-      label: '无需改进',
-      value: '' + 1,
+      label: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+      value: RiskLevelEnum.DEFAULT,
     },
     {
-      label: '建议改进',
-      value: '' + 2,
+      label: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+      value: RiskLevelEnum.SUGGEST,
     },
     {
-      label: '必须改进',
-      value: '' + 3,
+      label: RiskLevelTextMap[RiskLevelEnum.MUST],
+      value: RiskLevelEnum.MUST,
     },
   ];
   return sqlCheckResultOptions;
