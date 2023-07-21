@@ -1,71 +1,14 @@
-import DisplayTable from '@/component/DisplayTable';
 import { useRoleListByIds } from '@/component/Manage/RoleList';
 import Status from '@/component/Manage/Status';
 import type { IAutoAuthRule } from '@/d.ts';
-import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
-import { isNull } from 'lodash';
 import React, { useContext } from 'react';
 import { actionLabelMap } from '../..';
 import { ResourceContext } from '../../../context';
 import styles from '../../index.less';
 import { operationOptions } from '../FormModal/conditionSelect';
-import { connectionAccessActionOptions, connectionAccessTypeOptions } from '../FormModal/index';
-
-const getColumns = (resource) => {
-  return [
-    {
-      dataIndex: 'resourceType',
-      title: formatMessage({
-        id: 'odc.components.AutoAuthPage.component.ObjectType',
-      }), //对象类型
-      width: 120,
-      ellipsis: true,
-      render: (resourceType) => {
-        return (
-          <span>
-            {connectionAccessTypeOptions?.find((item) => item.value === resourceType)?.label}
-          </span>
-        );
-      },
-    },
-    {
-      dataIndex: 'resourceId',
-      title: formatMessage({
-        id: 'odc.components.AutoAuthPage.component.ObjectName',
-      }), //对象名称
-      ellipsis: true,
-      render: (resourceId, _) => {
-        return (
-          <span>
-            {isNull(resourceId)
-              ? formatMessage({
-                  id: 'odc.components.AutoAuthPage.component.All',
-                }) //全部
-              : resource[_?.resourceType]?.find((item) => item.id === resourceId)?.name}
-          </span>
-        );
-      },
-    },
-    {
-      dataIndex: 'actions',
-      title: formatMessage({
-        id: 'odc.components.AutoAuthPage.component.Permission',
-      }), //权限
-      width: 110,
-      ellipsis: true,
-      render: (actions) => {
-        return (
-          <span>
-            {connectionAccessActionOptions?.find((item) => item.value === actions)?.label}
-          </span>
-        );
-      },
-    },
-  ];
-};
 
 const DetailContent: React.FC<{
   data: IAutoAuthRule;
@@ -87,15 +30,9 @@ const DetailContent: React.FC<{
     ?.filter((item) => item.action === 'BindRole')
     ?.map((item) => item?.arguments?.roleId);
   const roles = useRoleListByIds(_roles, roleIds);
-  const columns = getColumns({
-    [IManagerResourceType.resource]: _resource,
-  });
   const actionsLabel = [];
   const hasRole = actions?.some((item) => item.action === 'BindRole');
   const hasPermission = actions?.some((item) => item.action === 'BindPermission');
-  const resource = actions
-    ?.filter((item) => item.action === 'BindPermission')
-    ?.map((item) => item?.arguments);
   if (hasRole) {
     actionsLabel.push(actionLabelMap.BindRole);
   }
@@ -163,25 +100,6 @@ const DetailContent: React.FC<{
         </Descriptions.Item>
       </Descriptions>
       <Divider style={{ margin: '12px 0' }} />
-      {!!resource?.length && (
-        <Descriptions column={1} layout="vertical">
-          <Descriptions.Item
-            label={formatMessage({
-              id: 'odc.components.AutoAuthPage.component.ConnectionAccess',
-            })} /*连接访问权限*/
-          >
-            <DisplayTable
-              rowKey="id"
-              columns={columns}
-              dataSource={resource}
-              scroll={null}
-              pageSize={10}
-              showSizeChanger={false}
-            />
-          </Descriptions.Item>
-        </Descriptions>
-      )}
-
       <Descriptions column={1}>
         <Descriptions.Item
           label={formatMessage({

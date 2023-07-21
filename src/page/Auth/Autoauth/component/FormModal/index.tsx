@@ -9,7 +9,7 @@ import {
 } from '@/common/network/manager';
 import appConfig from '@/constant/appConfig';
 import type { IAutoAuthRule, VariableExpression } from '@/d.ts';
-import { IManagerResourceType, IManagerRole } from '@/d.ts';
+import { IManagerRole } from '@/d.ts';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -31,28 +31,6 @@ import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useState } from 'react';
 import ConditionSelect from './conditionSelect';
 import styles from './index.less';
-
-export const connectionAccessTypeOptions = [
-  {
-    label: '数据源',
-    value: IManagerResourceType.resource,
-  },
-];
-
-export const connectionAccessActionOptions = [
-  {
-    label: formatMessage({ id: 'odc.components.FormAutoAuthModal.ReadOnly' }), //只读
-    value: 'readonlyconnect',
-  },
-  {
-    label: formatMessage({ id: 'odc.components.FormAutoAuthModal.ReadWrite' }), //读写
-    value: 'connect',
-  },
-  {
-    label: formatMessage({ id: 'odc.components.FormAutoAuthModal.CanApply' }), //可申请
-    value: 'apply',
-  },
-];
 
 interface IProps {
   visible: boolean;

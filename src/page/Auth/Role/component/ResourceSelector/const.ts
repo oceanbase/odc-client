@@ -1,5 +1,6 @@
 import { IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import { ResourceManagementAction } from '../../../utils';
 
 // 链接访问权限
 export const connectionAccessTypeOptions = [
@@ -19,35 +20,6 @@ export enum ConnectionAccessAction {
   connect = 'connect',
   apply = 'apply',
 }
-
-export const connectionAccessActionMap = {
-  [ConnectionAccessAction.readonlyconnect]: ['readonlyconnect'],
-  [ConnectionAccessAction.connect]: ['connect'],
-  [ConnectionAccessAction.apply]: ['apply'],
-};
-
-export const connectionAccessActionOptions = [
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.ReadOnly',
-    }), //只读
-    value: ConnectionAccessAction.readonlyconnect,
-  },
-
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.ReadWrite',
-    }), //读写
-    value: ConnectionAccessAction.connect,
-  },
-
-  {
-    label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.CanApply',
-    }), //可申请
-    value: ConnectionAccessAction.apply,
-  },
-];
 
 // 资源管理权限
 export const resourceManagementTypeOptions = [
@@ -73,18 +45,6 @@ export const resourceManagementTypeOptions = [
     value: IManagerResourceType.user,
   },
 ];
-
-export enum ResourceManagementAction {
-  can_manage = 'can_manage',
-  can_update = 'can_update',
-  can_read = 'can_read',
-}
-
-export const resourceManagementActionMap = {
-  [ResourceManagementAction.can_manage]: ['delete', 'read', 'update'],
-  [ResourceManagementAction.can_update]: ['read', 'update'],
-  [ResourceManagementAction.can_read]: ['read'],
-};
 
 export const resourceManagementActionOptions = [
   {

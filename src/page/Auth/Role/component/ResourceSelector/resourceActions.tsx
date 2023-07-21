@@ -1,19 +1,9 @@
 import { IManagerRolePermissionType } from '@/d.ts';
-import type { ConnectionAccessAction, ResourceManagementAction, SystemAction } from './const';
-import {
-  connectionAccessActionMap,
-  connectionAccessActionOptions,
-  resourceManagementActionMap,
-  resourceManagementActionOptions,
-  systemActionMap,
-  systemActionOptions,
-} from './const';
+import { ResourceManagementAction, resourceManagementActionMap } from '../../../utils';
+import type { ConnectionAccessAction, SystemAction } from './const';
+import { resourceManagementActionOptions, systemActionMap, systemActionOptions } from './const';
 
 class ResourceActions {
-  [IManagerRolePermissionType.connectionAccessPermissions] = {
-    actionMap: connectionAccessActionMap,
-    options: connectionAccessActionOptions,
-  };
   [IManagerRolePermissionType.resourceManagementPermissions] = {
     actionMap: resourceManagementActionMap,
     options: resourceManagementActionOptions,

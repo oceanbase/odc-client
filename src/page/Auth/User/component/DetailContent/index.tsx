@@ -8,17 +8,32 @@ import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { actionTypes, IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getSourceAuthLabelString, getSourceAuthOptions, sourceAuthMap } from '@/util/manage';
 import { getFormatDateTime } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Modal, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';
+
+const authFilters = [
+  {
+    text: '可新建',
+    value: ResourceManagementAction.can_create,
+  },
+  {
+    text: '仅查看',
+    value: ResourceManagementAction.can_read,
+  },
+  {
+    text: '可编辑',
+    value: ResourceManagementAction.can_update,
+  },
+  {
+    text: '可管理',
+    value: ResourceManagementAction.can_manage,
+  },
+];
 
 const getColumns = () => {
-  const authFilters = getSourceAuthOptions().map(({ title: text, value }) => ({
-    text,
-    value,
-  }));
   return [
     {
       dataIndex: 'name',
@@ -35,9 +50,9 @@ const getColumns = () => {
       ellipsis: true,
       filters: authFilters,
       onFilter: (value, record) => {
-        return sourceAuthMap[value].hasSourceAuth(record?.permittedActions);
+        return resourceAuthMap[value].hasAuth(record?.permittedActions);
       },
-      render: (permittedActions) => getSourceAuthLabelString(permittedActions),
+      render: (permittedActions) => getAuthLabelString(permittedActions),
     },
   ];
 };
