@@ -209,6 +209,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlStore.clear(pageKey);
     if (session) {
       executeTaskManager.stopTask(session.sessionId);
+      if (sqlStore.runningPageKey[pageKey]) {
+        sqlStore.stopExec(pageKey, session?.sessionId);
+      }
     }
   }
 
