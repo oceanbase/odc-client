@@ -378,7 +378,6 @@ class UserPage extends React.PureComponent<IProps, IState> {
       action: actionTypes.update,
     }).accessible;
 
-    console.log('roles :', roles);
     return (
       <>
         <CommonTable

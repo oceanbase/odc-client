@@ -9,11 +9,8 @@ import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ResourceContext } from '../../../context';
-import {
-  resourceManagementActionMap,
-  SystemAction,
-  systemActionMap,
-} from '../ResourceSelector/const';
+import { resourceManagementActionMap } from '../../../utils';
+import { SystemAction, systemActionMap } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
 import { FormContent, RoleResource } from './component';
 import styles from './index.less';
