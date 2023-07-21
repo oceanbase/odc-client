@@ -118,10 +118,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
         // 操作执行中，关闭窗口将终止窗口操作，确认关闭吗？
         onOk: async () => {
-          await sqlStore.stopExec(
-            targetPageKey,
-            pageStore.pages.find((page) => page.key === targetPageKey)?.params?.sessionId,
-          );
           pageStore.close(targetPageKey);
         },
       });

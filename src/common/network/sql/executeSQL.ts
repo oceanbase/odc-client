@@ -130,7 +130,7 @@ export default async function executeSQL(
     return null;
   }
   let results = await executeTaskManager.addAndWaitTask(requestId, sessionId);
-  results = results.map((result) => {
+  results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;
     }
