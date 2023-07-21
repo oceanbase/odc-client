@@ -130,25 +130,27 @@ const DetectWay = ({
         )}
         {type === SensitiveRuleType.GROOVY && (
           <>
-            <div
-              style={{
-                height: '250px',
-                overflowY: 'hidden',
-              }}
-            >
+            <div className={styles.editor}>
               <Space size={4} style={{ marginBottom: '5px' }}>
                 <div>Groovy脚本</div>
                 {/* <a onClick={() => message.error('文档未就位')}>查看文档</a> */}
               </Space>
-              <CommonIDE
-                session={null}
-                bordered={true}
-                language={'groovy'}
-                initialSQL={script}
-                onSQLChange={(script) => {
-                  handleScriptChange(script);
+              <div
+                style={{
+                  height: '250px',
+                  paddingBottom: '12px',
                 }}
-              />
+              >
+                <CommonIDE
+                  session={null}
+                  bordered={true}
+                  language={'groovy'}
+                  initialSQL={script}
+                  onSQLChange={(script) => {
+                    handleScriptChange(script);
+                  }}
+                />
+              </div>
             </div>
             <div className={hasValidated ? styles.errorTip : styles.errorTipHidden}>
               请输入Groovy脚本
