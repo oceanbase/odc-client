@@ -126,7 +126,8 @@ export default inject('userStore')(
           ['ssoParameter', 'authorizationGrantType'],
           ['ssoParameter', 'userInfoAuthenticationMethod'],
           ['ssoParameter', 'issueUrl'],
-          'mappingRule',
+          ['mappingRule', 'userProfileViewType'],
+          'nestedAttributeField',
         ]);
         if (!value) {
           return;
@@ -469,6 +470,42 @@ export default inject('userStore')(
               }
             }}
           </Form.Item>
+          <Form.Item
+            rules={[requiredRule]}
+            name={['mappingRule', 'userProfileViewType']}
+            label="用户信息数据结构类型"
+          >
+            <Select
+              options={[
+                {
+                  label: 'FLAT',
+                  value: 'FLAT',
+                },
+                {
+                  label: 'NESTED',
+                  value: 'NESTED',
+                },
+              ]}
+              style={{ width: 200 }}
+              placeholder="请输入"
+            />
+          </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {({ getFieldValue }) => {
+              const userProfileViewType = getFieldValue(['mappingRule', 'userProfileViewType']);
+              if (userProfileViewType === 'NESTED') {
+                return (
+                  <Form.Item
+                    label="获取嵌套用户数据"
+                    name={'nestedAttributeField'}
+                    rules={[requiredRule]}
+                  >
+                    <Input style={{ width: '100%' }} placeholder="请输入" />
+                  </Form.Item>
+                );
+              }
+            }}
+          </Form.Item>
           <Form.Item>
             <HelpDoc
               leftText
@@ -509,42 +546,6 @@ export default inject('userStore')(
             label="用户昵称字段"
           >
             <Select mode="tags" style={{ width: 200 }} placeholder="请输入" />
-          </Form.Item>
-          <Form.Item
-            rules={[requiredRule]}
-            name={['mappingRule', 'userProfileViewType']}
-            label="用户信息数据结构类型"
-          >
-            <Select
-              options={[
-                {
-                  label: 'FLAT',
-                  value: 'FLAT',
-                },
-                {
-                  label: 'NESTED',
-                  value: 'NESTED',
-                },
-              ]}
-              style={{ width: 200 }}
-              placeholder="请输入"
-            />
-          </Form.Item>
-          <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              const userProfileViewType = getFieldValue(['mappingRule', 'userProfileViewType']);
-              if (userProfileViewType === 'NESTED') {
-                return (
-                  <Form.Item
-                    label="获取嵌套用户数据"
-                    name={'nestedAttributeField'}
-                    rules={[requiredRule]}
-                  >
-                    <Input style={{ width: '100%' }} placeholder="请输入" />
-                  </Form.Item>
-                );
-              }
-            }}
           </Form.Item>
           <Form.List name={['mappingRule', 'extraInfo']}>
             {(fields, operation) => {
