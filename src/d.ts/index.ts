@@ -98,15 +98,26 @@ export enum IManagerDetailTabs {
   ROLE = 'ROLE',
   TASK_FLOW = 'TASK_FLOW',
 }
-
+/**
+ * ODC_CONNECTION
+ODC_PROJECT
+ODC_ROLE
+ODC_USER
+ODC_AUTOMATION_RULE
+ODC_ENVIRONMENT
+ODC_RISK_LEVEL
+ODC_RULESET
+ODC_INTEGRATION
+ODC_RISK_DETECT_RULE
+ODC_APPROVAL_FLOW_CONFIG
+ODC_AUDIT_EVENT
+ */
 export enum IManagerResourceType {
   user = 'ODC_USER',
   role = 'ODC_ROLE',
   project = 'ODC_PROJECT',
   resource = 'ODC_CONNECTION',
-  workspace = 'ODC_WORKSPACE',
   system_config = 'ODC_SYSTEM_CONFIG',
-  private_connection = 'ODC_PRIVATE_CONNECTION',
   odc_data_masking_rule = 'ODC_DATA_MASKING_RULE',
   odc_data_masking_policy = 'ODC_DATA_MASKING_POLICY',
   odc_audit_event = 'ODC_AUDIT_EVENT',
@@ -118,6 +129,7 @@ export enum IManagerResourceType {
   risk_detect = 'ODC_RISK_DETECT_RULE',
   ruleset = 'ODC_RULESET',
   integration = 'ODC_INTEGRATION',
+  environment = 'ODC_ENVIRONMENT',
 }
 
 export enum actionTypes {

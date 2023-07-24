@@ -45,7 +45,6 @@ import RollbackSvg from '@/svgr/Roll-back.svg';
 // @ts-ignore
 import { uploadTableObject } from '@/common/network/sql';
 import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import SessionStore from '@/store/sessionManager/session';
 import MockSvg from '@/svgr/mock_toolbar.svg';
 import { isObjectColumn } from '@/util/column';
@@ -784,15 +783,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </>
               ) : (
                 <>
-                  <WorkspaceAcess action={actionTypes.update}>
-                    <ToolbarButton
-                      text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
-                      icon={<EditOutlined />}
-                      onClick={() => {
-                        setIsEditing(true);
-                      }}
-                    />
-                  </WorkspaceAcess>
+                  <ToolbarButton
+                    text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
+                  />
 
                   {autoCommit ? null : (
                     <>
@@ -873,13 +870,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <ToolbarDivider />
                 </>
               ) : (
-                <WorkspaceAcess action={actionTypes.update}>
-                  <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
-                    icon={<EditOutlined />}
-                    onClick={handleToggleEditable}
-                  />
-                </WorkspaceAcess>
+                <ToolbarButton
+                  text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
+                  icon={<EditOutlined />}
+                  onClick={handleToggleEditable}
+                />
               )
             ) : null}
             {!isEditing && onExport && settingStore.enableDBExport ? (
@@ -895,23 +890,21 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
             {!isEditing && showMock ? (
               <>
-                <WorkspaceAcess action={actionTypes.update}>
-                  <ToolbarButton
-                    text={
-                      formatMessage({
-                        id: 'odc.components.DDLResultSet.AnalogData',
-                      })
+                <ToolbarButton
+                  text={
+                    formatMessage({
+                      id: 'odc.components.DDLResultSet.AnalogData',
+                    })
 
-                      // 模拟数据
-                    }
-                    icon={<Icon component={MockSvg} />}
-                    onClick={() => {
-                      modal.changeDataMockerModal(true, {
-                        tableName: table?.tableName,
-                      });
-                    }}
-                  />
-                </WorkspaceAcess>
+                    // 模拟数据
+                  }
+                  icon={<Icon component={MockSvg} />}
+                  onClick={() => {
+                    modal.changeDataMockerModal(true, {
+                      tableName: table?.tableName,
+                    });
+                  }}
+                />
               </>
             ) : null}
             {showExplain &&

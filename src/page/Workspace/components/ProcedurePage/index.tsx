@@ -17,7 +17,6 @@ import { formatMessage, FormattedMessage } from 'umi';
 
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -263,14 +262,12 @@ class ProcedurePage extends Component<
               </TabPane>
               <TabPane tab={'DDL'} key={PropsTab.DDL}>
                 <Toolbar>
-                  <WorkspaceAcess action={actionTypes.update}>
-                    <ToolbarButton
-                      disabled={isMySQL}
-                      text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                      icon={<EditOutlined />}
-                      onClick={this.editProcedure.bind(this, procedure.proName)}
-                    />
-                  </WorkspaceAcess>
+                  <ToolbarButton
+                    disabled={isMySQL}
+                    text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                    icon={<EditOutlined />}
+                    onClick={this.editProcedure.bind(this, procedure.proName)}
+                  />
                   <ToolbarButton
                     text={
                       formatMessage({

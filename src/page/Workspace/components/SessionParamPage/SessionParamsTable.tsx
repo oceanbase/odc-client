@@ -3,11 +3,10 @@ import {
   fetchVariableList,
   getVariableUpdateDML,
 } from '@/common/network/sessionParams';
-import { WorkspaceAcess } from '@/component/Acess';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
-import { actionTypes, IConnectionProperty } from '@/d.ts';
+import { IConnectionProperty } from '@/d.ts';
 import { ConnectionPropertyType } from '@/d.ts/datasource';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
@@ -163,15 +162,13 @@ function SessionParamsTable(props: {
         >
           <Toolbar>
             <div className="tools-left">
-              <WorkspaceAcess action={actionTypes.update}>
-                <ToolbarButton
-                  isShowText
-                  text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                  icon={<EditOutlined />}
-                  onClick={handleOpenEditModal}
-                  // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
-                />
-              </WorkspaceAcess>
+              <ToolbarButton
+                isShowText
+                text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                icon={<EditOutlined />}
+                onClick={handleOpenEditModal}
+                // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
+              />
             </div>
             <div className="tools-right">
               <Search

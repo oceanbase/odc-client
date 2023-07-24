@@ -17,7 +17,6 @@ import { Component } from 'react';
 import { formatMessage, FormattedMessage } from 'umi';
 
 import { getFunctionByFuncName } from '@/common/network';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { PLType } from '@/constant/plType';
@@ -265,13 +264,11 @@ class FunctionPage extends Component<
               <TabPane tab={'DDL'} key={PropsTab.DDL}>
                 <Toolbar>
                   {!isMySQL && (
-                    <WorkspaceAcess action={actionTypes.update}>
-                      <ToolbarButton
-                        text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                        icon={<EditOutlined />}
-                        onClick={this.editFunction.bind(this, func.funName)}
-                      />
-                    </WorkspaceAcess>
+                    <ToolbarButton
+                      text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                      icon={<EditOutlined />}
+                      onClick={this.editFunction.bind(this, func.funName)}
+                    />
                   )}
 
                   <ToolbarButton

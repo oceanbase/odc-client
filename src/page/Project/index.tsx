@@ -1,6 +1,6 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { Button, Menu, Space } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { history, useParams } from 'umi';
 import Database from './Database';
 import Setting from './Setting';
@@ -146,6 +146,25 @@ const Index: React.FC<IProps> = function () {
       ?.filter(Boolean) || [],
   );
 
+  const displayTabs = useMemo(() => {
+    let roleTabConfig = {
+      [ProjectRole.DBA]: [IPageType.Project_Database, IPageType.Project_Task, IPageType.Sensitive],
+      [ProjectRole.DEVELOPER]: [IPageType.Project_Database, IPageType.Project_Task],
+      [ProjectRole.OWNER]: [
+        IPageType.Project_Database,
+        IPageType.Project_Task,
+        IPageType.Sensitive,
+        IPageType.Project_Setting,
+        IPageType.Project_User,
+      ],
+    };
+    const currentRoles = project?.currentUserResourceRoles || [];
+    const roleTabs: IPageType[] = currentRoles?.reduce((prev, current) => {
+      return prev.concat(roleTabConfig[current]);
+    }, []);
+    return tabs.filter((tab) => roleTabs.includes(tab?.key));
+  }, [tabs, project]);
+
   return (
     <PageContainer
       titleProps={{
@@ -162,13 +181,7 @@ const Index: React.FC<IProps> = function () {
           : {}
       }
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
-      tabList={
-        project?.currentUserResourceRoles?.some((role) =>
-          [ProjectRole.DBA, ProjectRole.OWNER].includes(role),
-        )
-          ? tabs
-          : tabs?.filter((tab) => tab.key !== IPageType.Sensitive)
-      }
+      tabList={displayTabs}
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent projectId={projectId} />}
       onTabChange={handleChange}
