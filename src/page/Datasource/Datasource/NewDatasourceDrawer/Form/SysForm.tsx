@@ -50,7 +50,11 @@ export default (props: IProps) => {
     params.password = params?.sysTenantPassword;
     const res = await testConnection(params, AccountType.SYS_READ, true);
     const error = res?.errMsg || res?.data?.errorMessage;
-    !error ? message.success('连接成功') : message.error(error);
+    !error
+      ? message.success(
+          formatMessage({ id: 'odc.NewDatasourceDrawer.Form.SysForm.ConnectionSuccessful' }), //连接成功
+        )
+      : message.error(error);
   }
 
   if (haveOCP()) {

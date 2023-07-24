@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Empty, Input, Spin, Tree, TreeDataNode } from 'antd';
 import ResourceTree from '..';
@@ -89,7 +90,9 @@ export default forwardRef(function ProjectTree(props, ref) {
               onSearch={(v) => {
                 setSearchKey(v);
               }}
-              placeholder="搜索项目名称"
+              placeholder={formatMessage({
+                id: 'odc.ResourceTree.Project.SearchForProjectName',
+              })} /*搜索项目名称*/
               style={{ width: '100%' }}
               size="small"
             />

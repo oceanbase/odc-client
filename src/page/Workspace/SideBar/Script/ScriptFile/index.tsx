@@ -35,7 +35,11 @@ export default inject('userStore')(
     return (
       <div className={styles.script}>
         <div className={styles.search}>
-          <Input.Search onSearch={(v) => setSearchVaue(v)} placeholder="搜索脚本" size="small" />
+          <Input.Search
+            onSearch={(v) => setSearchVaue(v)}
+            placeholder={formatMessage({ id: 'odc.Script.ScriptFile.SearchScript' })}
+            /*搜索脚本*/ size="small"
+          />
         </div>
         <div className={styles.list}>
           <Spin spinning={loading}>

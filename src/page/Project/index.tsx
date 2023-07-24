@@ -1,4 +1,5 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { formatMessage } from '@/util/intl';
 import { Button, Menu, Space } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { history, useParams } from 'umi';
@@ -19,8 +20,8 @@ import Sensitive from './Sensitive';
 
 const menu = (
   <Menu>
-    <Menu.Item>菜单项一</Menu.Item>
-    <Menu.Item>菜单项二</Menu.Item>
+    <Menu.Item>{formatMessage({ id: 'odc.page.Project.MenuItem' }) /*菜单项一*/}</Menu.Item>
+    <Menu.Item>{formatMessage({ id: 'odc.page.Project.MenuItem.1' }) /*菜单项二*/}</Menu.Item>
   </Menu>
 );
 
@@ -28,12 +29,12 @@ const ExtraContent = ({ projectId }) => {
   return (
     <Space size={12}>
       <Button onClick={() => gotoSQLWorkspace(projectId)} type="primary">
-        登录数据库
+        {formatMessage({ id: 'odc.page.Project.LogOnToTheDatabase' }) /*登录数据库*/}
       </Button>
       {/* <Dropdown.Button
-        overlay={menu}
-        buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
-      /> */}
+         overlay={menu}
+         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
+        /> */}
     </Space>
   );
 };
@@ -60,23 +61,23 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '数据库',
+    tab: formatMessage({ id: 'odc.page.Project.Database' }), //数据库
     key: IPageType.Project_Database,
   },
   {
-    tab: '工单',
+    tab: formatMessage({ id: 'odc.page.Project.Ticket' }), //工单
     key: IPageType.Project_Task,
   },
   {
-    tab: '成员',
+    tab: formatMessage({ id: 'odc.page.Project.Member' }), //成员
     key: IPageType.Project_User,
   },
   {
-    tab: '敏感数据',
+    tab: formatMessage({ id: 'odc.page.Project.SensitiveData' }), //敏感数据
     key: IPageType.Sensitive,
   },
   {
-    tab: '设置',
+    tab: formatMessage({ id: 'odc.page.Project.Settings' }), //设置
     key: IPageType.Project_Setting,
   },
 ];
@@ -185,7 +186,11 @@ const Index: React.FC<IProps> = function () {
       tabActiveKey={page}
       tabBarExtraContent={<ExtraContent projectId={projectId} />}
       onTabChange={handleChange}
-      bigSelectBottom={<Link to={'/project'}>查看所有项目</Link>}
+      bigSelectBottom={
+        <Link to={'/project'}>
+          {formatMessage({ id: 'odc.page.Project.ViewAllProjects' }) /*查看所有项目*/}
+        </Link>
+      }
     >
       <ProjectContext.Provider value={{ project, projectId, reloadProject }}>
         <Component key={id} id={id} />

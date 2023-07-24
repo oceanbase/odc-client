@@ -14,6 +14,7 @@ import {
   ITableInstance,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
+import { formatMessage } from '@/util/intl';
 import { message, Modal, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -39,7 +40,7 @@ const getColumns: (columnsFunction: {
 }) => {
   return [
     {
-      title: '规则名称',
+      title: formatMessage({ id: 'odc.components.SensitiveRule.RuleName' }), //规则名称
       width: 170,
       dataIndex: 'name',
       key: 'name',
@@ -63,24 +64,25 @@ const getColumns: (columnsFunction: {
     //   render: (text) => text || '-',
     // },
     {
-      title: '识别方式',
+      title: formatMessage({ id: 'odc.components.SensitiveRule.IdentificationMethod' }), //识别方式
       width: 170,
       dataIndex: 'type',
       key: 'type',
       filters: [
         {
-          text: '路径',
+          text: formatMessage({ id: 'odc.components.SensitiveRule.Path' }), //路径
           value: SensitiveRuleType.PATH,
         },
         {
-          text: '正则',
+          text: formatMessage({ id: 'odc.components.SensitiveRule.Regular' }), //正则
           value: SensitiveRuleType.REGEX,
         },
         {
-          text: '脚本',
+          text: formatMessage({ id: 'odc.components.SensitiveRule.Script' }), //脚本
           value: SensitiveRuleType.GROOVY,
         },
       ],
+
       onCell: () => {
         return {
           style: {
@@ -94,7 +96,7 @@ const getColumns: (columnsFunction: {
       render: (text, record) => <TooltipContent content={DetectRuleTypeMap[record?.type] || '-'} />,
     },
     {
-      title: '脱敏算法',
+      title: formatMessage({ id: 'odc.components.SensitiveRule.DesensitizationAlgorithm' }), //脱敏算法
       width: 156,
       dataIndex: 'maskingAlgorithmId',
       key: 'maskingAlgorithmId',
@@ -121,20 +123,21 @@ const getColumns: (columnsFunction: {
     //   render: (text) => text || '-',
     // },
     {
-      title: '启用状态',
+      title: formatMessage({ id: 'odc.components.SensitiveRule.EnableStatus' }), //启用状态
       width: 80,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [
         {
-          text: '启用',
+          text: formatMessage({ id: 'odc.components.SensitiveRule.Enable' }), //启用
           value: true,
         },
         {
-          text: '禁用',
+          text: formatMessage({ id: 'odc.components.SensitiveRule.Disable' }), //禁用
           value: false,
         },
       ],
+
       render: (_, { id, enabled }, index) => (
         <StatusSwitch
           checked={enabled}
@@ -144,15 +147,21 @@ const getColumns: (columnsFunction: {
       ),
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'odc.components.SensitiveRule.Operation' }), //操作
       width: 154,
       key: 'action',
       render: (_, record, index) => (
         <>
           <Space>
-            <a onClick={() => handleViewDrawerOpen(record)}>查看</a>
-            <a onClick={() => hanldeEditDrawerOpen(record)}>编辑</a>
-            <a onClick={() => handleDelete(record)}>删除</a>
+            <a onClick={() => handleViewDrawerOpen(record)}>
+              {formatMessage({ id: 'odc.components.SensitiveRule.View' }) /*查看*/}
+            </a>
+            <a onClick={() => hanldeEditDrawerOpen(record)}>
+              {formatMessage({ id: 'odc.components.SensitiveRule.Edit' }) /*编辑*/}
+            </a>
+            <a onClick={() => handleDelete(record)}>
+              {formatMessage({ id: 'odc.components.SensitiveRule.Delete' }) /*删除*/}
+            </a>
           </Space>
         </>
       ),
@@ -233,28 +242,36 @@ const SensitiveRule = ({ projectId }) => {
 
   const handleDelete = async (record: any) => {
     return Modal.confirm({
-      title: '确认要删除敏感列吗？',
+      title: formatMessage({ id: 'odc.components.SensitiveRule.AreYouSureYouWant' }), //确认要删除敏感列吗？
       onOk: async () => {
         const result = await deleteSensitiveRule(projectId, record?.id);
         if (result) {
-          message.success('删除成功');
+          message.success(
+            formatMessage({ id: 'odc.components.SensitiveRule.DeletedSuccessfully' }), //删除成功
+          );
         } else {
-          message.error('删除失败');
+          message.error(
+            formatMessage({ id: 'odc.components.SensitiveRule.FailedToDelete' }), //删除失败
+          );
         }
         tableRef.current?.reloadFirstPage?.();
       },
       onCancel: () => {},
-      okText: '确定',
-      cancelText: '取消',
+      okText: formatMessage({ id: 'odc.components.SensitiveRule.Ok' }), //确定
+      cancelText: formatMessage({ id: 'odc.components.SensitiveRule.Cancel' }), //取消
     });
   };
 
   const handleStatusSwitch = async (id: number, enabled: boolean) => {
     const result = await setEnabled(projectId, id, enabled);
     if (result) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({ id: 'odc.components.SensitiveRule.UpdatedSuccessfully' }), //更新成功
+      );
     } else {
-      message.error('更新失败');
+      message.error(
+        formatMessage({ id: 'odc.components.SensitiveRule.UpdateFailed' }), //更新失败
+      );
     }
     tableRef.current?.reload?.();
   };
@@ -271,9 +288,10 @@ const SensitiveRule = ({ projectId }) => {
   const operationOptions = [];
   operationOptions.push({
     type: IOperationOptionType.button,
-    content: '新建识别规则',
-    otherContent: '识别规则可用于扫描添加敏感列',
-    //新建流程
+    content: formatMessage({ id: 'odc.components.SensitiveRule.CreateAnIdentificationRule' }), //新建识别规则
+    otherContent: formatMessage({
+      id: 'odc.components.SensitiveRule.IdentificationRulesCanBeUsed',
+    }), //识别规则可用于扫描添加敏感列 //新建流程
     isPrimary: true,
     onClick: handleCreateClick,
   });
@@ -292,7 +310,7 @@ const SensitiveRule = ({ projectId }) => {
         showToolbar={true}
         showPagination={true}
         filterContent={{
-          searchPlaceholder: '请输入规则名称',
+          searchPlaceholder: formatMessage({ id: 'odc.components.SensitiveRule.EnterARuleName' }), //请输入规则名称
         }}
         operationContent={{
           options: operationOptions,
@@ -309,6 +327,7 @@ const SensitiveRule = ({ projectId }) => {
           },
         }}
       />
+
       <FormDrawer
         {...{
           isEdit,
@@ -317,6 +336,7 @@ const SensitiveRule = ({ projectId }) => {
           handleFormDrawerClose,
         }}
       />
+
       <ViewDrawer
         {...{
           projectId: projectId,

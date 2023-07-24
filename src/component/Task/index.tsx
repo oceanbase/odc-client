@@ -26,7 +26,7 @@ export const TaskExecStrategyMap = {
   [TaskExecStrategy.WEEK]: formatMessage({
     id: 'odc.components.TaskManagePage.ScheduledExecution',
   }), //定时执行
-  [TaskExecStrategy.START_NOW]: '立即执行'
+  [TaskExecStrategy.START_NOW]: formatMessage({ id: 'odc.component.Task.ExecuteNow' }), //立即执行
 };
 
 interface IProps {

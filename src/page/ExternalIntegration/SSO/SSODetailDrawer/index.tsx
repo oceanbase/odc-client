@@ -1,5 +1,6 @@
 import { getIntegrationDetail } from '@/common/network/manager';
 import { ISSOConfig, ISSOType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Descriptions, Drawer, Spin } from 'antd';
 import { useEffect, useMemo } from 'react';
@@ -97,38 +98,77 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
   return (
     <Drawer
       width={520}
-      title="SSO 配置"
+      title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.SsoConfiguration' })} /*SSO 配置*/
       visible={visible}
       onClose={() => close()}
       footer={
         <Button style={{ float: 'right' }} onClick={() => close()}>
-          关闭
+          {formatMessage({ id: 'odc.SSO.SSODetailDrawer.Close' }) /*关闭*/}
         </Button>
       }
     >
       <Spin spinning={loading}>
-        <Descriptions column={1} title="基本信息">
-          <Descriptions.Item label="配置名称">{data?.name}</Descriptions.Item>
-          <Descriptions.Item label="状态">{data?.enabled ? '启动' : '关闭'}</Descriptions.Item>
-          <Descriptions.Item label="类型">{configJson?.type}</Descriptions.Item>
+        <Descriptions
+          column={1}
+          title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.BasicInformation' })} /*基本信息*/
+        >
+          <Descriptions.Item
+            label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.ConfigurationName' })} /*配置名称*/
+          >
+            {data?.name}
+          </Descriptions.Item>
+          <Descriptions.Item
+            label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.Status' })} /*状态*/
+          >
+            {
+              data?.enabled
+                ? formatMessage({ id: 'odc.SSO.SSODetailDrawer.Start' }) //启动
+                : formatMessage({ id: 'odc.SSO.SSODetailDrawer.Close' }) //关闭
+            }
+          </Descriptions.Item>
+          <Descriptions.Item label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.Type' })} /*类型*/>
+            {configJson?.type}
+          </Descriptions.Item>
         </Descriptions>
         {renderConfig()}
-        <Descriptions column={2} title="用户字段映射">
-          <Descriptions.Item label="用户名字段">
+        <Descriptions
+          column={2}
+          title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.UserFieldMapping' })} /*用户字段映射*/
+        >
+          <Descriptions.Item
+            label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.UsernameField' })} /*用户名字段*/
+          >
             {configJson?.mappingRule?.userAccountNameField}
           </Descriptions.Item>
-          <Descriptions.Item label="用户昵称字段">
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'odc.SSO.SSODetailDrawer.UserNicknameField',
+            })} /*用户昵称字段*/
+          >
             {configJson?.mappingRule?.userNickNameField}
           </Descriptions.Item>
-          <Descriptions.Item label="用户信息数据结构类型">
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'odc.SSO.SSODetailDrawer.UserInformationDataStructureType',
+            })} /*用户信息数据结构类型*/
+          >
             {configJson?.mappingRule?.userProfileViewType}
           </Descriptions.Item>
           {configJson?.mappingRule?.userProfileViewType === 'NESTED' && (
-            <Descriptions.Item label="获取嵌套用户数据">{data?.name}</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'odc.SSO.SSODetailDrawer.ObtainNestedUserData',
+              })} /*获取嵌套用户数据*/
+            >
+              {data?.name}
+            </Descriptions.Item>
           )}
         </Descriptions>
         {configJson?.mappingRule?.extraInfo?.length ? (
-          <Descriptions column={1} title="自定义字段">
+          <Descriptions
+            column={1}
+            title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.CustomFields' })} /*自定义字段*/
+          >
             {configJson?.mappingRule?.extraInfo?.map((item) => {
               return (
                 <Descriptions.Item label={item.attributeName}>{item.expression}</Descriptions.Item>

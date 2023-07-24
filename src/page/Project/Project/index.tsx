@@ -5,6 +5,7 @@ import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
 import { Empty, List, Space, Spin } from 'antd';
 import VirtualList from 'rc-virtual-list';
@@ -15,11 +16,11 @@ import ListItem from './ListItem';
 
 const titleOptions: { label: string; value: 'all' | 'deleted' }[] = [
   {
-    label: '全部项目',
+    label: formatMessage({ id: 'odc.Project.Project.AllProjects' }), //全部项目
     value: 'all',
   },
   {
-    label: '归档项目',
+    label: formatMessage({ id: 'odc.Project.Project.ArchiveProject' }), //归档项目
     value: 'deleted',
   },
 ];
@@ -99,11 +100,12 @@ const Project = () => {
                 }}
                 searchTypes={[
                   {
-                    label: '项目名称',
+                    label: formatMessage({ id: 'odc.Project.Project.ProjectName' }), //项目名称
                     value: 'projectName',
                   },
                 ]}
               />
+
               <FilterIcon onClick={() => reload()}>
                 <Reload />
               </FilterIcon>

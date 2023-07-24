@@ -2,6 +2,7 @@ import { TaskExecStrategyMap } from '@/component/Task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space } from 'antd';
@@ -25,20 +26,37 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
   return (
     <>
       <Descriptions column={2}>
-        <Descriptions.Item span={2} label="任务编号">
+        <Descriptions.Item
+          span={2}
+          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.TaskNumber' })} /*任务编号*/
+        >
           {task?.id}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="任务类型">
-          数据清理
+        <Descriptions.Item
+          span={2}
+          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.TaskType' })} /*任务类型*/
+        >
+          {formatMessage({ id: 'odc.DataClearTask.DetailContent.DataCleansing' }) /*数据清理*/}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="数据库">
+        <Descriptions.Item
+          span={2}
+          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.Database' })} /*数据库*/
+        >
           {task?.databaseName || '-'}
         </Descriptions.Item>
-        {hasFlow && <Descriptions.Item label="风险等级">{task?.maxRiskLevel}</Descriptions.Item>}
+        {hasFlow && (
+          <Descriptions.Item
+            label={formatMessage({ id: 'odc.DataClearTask.DetailContent.RiskLevel' })} /*风险等级*/
+          >
+            {task?.maxRiskLevel}
+          </Descriptions.Item>
+        )}
       </Descriptions>
 
       <SimpleTextItem
-        label="变量配置"
+        label={formatMessage({
+          id: 'odc.DataClearTask.DetailContent.VariableConfiguration',
+        })} /*变量配置*/
         content={
           <div style={{ margin: '8px 0 12px' }}>
             <VariableConfig variables={jobParameters?.variables} />
@@ -46,8 +64,9 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <SimpleTextItem
-        label="清理范围"
+        label={formatMessage({ id: 'odc.DataClearTask.DetailContent.CleaningRange' })} /*清理范围*/
         content={
           <div style={{ margin: '8px 0 12px' }}>
             <ArchiveRange tables={jobParameters?.tables} />
@@ -55,8 +74,13 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <Descriptions column={2}>
-        <Descriptions.Item label="执行方式">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'odc.DataClearTask.DetailContent.ExecutionMethod',
+          })} /*执行方式*/
+        >
           {TaskExecStrategyMap[triggerConfig.triggerStrategy]}
         </Descriptions.Item>
         {isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
@@ -67,7 +91,9 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
               className={styles['next-time']}
               expandIcon={({ isActive }) => (
                 <SimpleTextItem
-                  label="下一次执行时间"
+                  label={formatMessage({
+                    id: 'odc.DataClearTask.DetailContent.NextExecutionTime',
+                  })} /*下一次执行时间*/
                   content={
                     <Space>
                       {getFormatDateTime(task.nextFireTimes?.[0])}
@@ -87,14 +113,26 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
-        <Descriptions.Item label="备注" span={2}>
+
+        <Descriptions.Item
+          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.Remarks' })}
+          /*备注*/ span={2}
+        >
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>
       <Divider style={{ marginTop: 4 }} />
       <Descriptions column={2}>
-        <Descriptions.Item label="创建人">{task?.creator?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{getFormatDateTime(task.createTime)}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.Founder' })} /*创建人*/
+        >
+          {task?.creator?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.CreationTime' })} /*创建时间*/
+        >
+          {getFormatDateTime(task.createTime)}
+        </Descriptions.Item>
       </Descriptions>
     </>
   );

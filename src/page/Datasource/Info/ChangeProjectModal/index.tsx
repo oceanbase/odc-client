@@ -1,6 +1,7 @@
 import { updateDataBase } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Form, message, Modal, Select } from 'antd';
 import { useEffect } from 'react';
@@ -32,7 +33,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
 
   return (
     <Modal
-      title="转移项目"
+      title={formatMessage({ id: 'odc.Info.ChangeProjectModal.TransferProject' })} /*转移项目*/
       open={visible}
       onCancel={close}
       onOk={async () => {
@@ -40,15 +41,25 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
         console.log(value);
         const isSuccess = await updateDataBase([database?.id], value.project);
         if (isSuccess) {
-          message.success('操作成功');
+          message.success(
+            formatMessage({ id: 'odc.Info.ChangeProjectModal.OperationSucceeded' }), //操作成功
+          );
           close();
           onSuccess();
         }
       }}
     >
       <Form requiredMark="optional" form={form} layout="vertical">
-        <Form.Item>数据库名称：{database?.name}</Form.Item>
-        <Form.Item required rules={[{ required: true }]} label="所属项目" name={'project'}>
+        <Form.Item>
+          {formatMessage({ id: 'odc.Info.ChangeProjectModal.DatabaseName' }) /*数据库名称：*/}
+          {database?.name}
+        </Form.Item>
+        <Form.Item
+          required
+          rules={[{ required: true }]}
+          label={formatMessage({ id: 'odc.Info.ChangeProjectModal.Project' })}
+          /*所属项目*/ name={'project'}
+        >
           <Select loading={loading} style={{ width: 240 }} showSearch optionFilterProp="children">
             {data?.contents?.map((item) => {
               return (

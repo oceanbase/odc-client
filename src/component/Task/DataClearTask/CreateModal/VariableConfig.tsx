@@ -1,5 +1,6 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
 import { variable } from './index';
@@ -12,27 +13,27 @@ const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => (
 const operatorOptions = ['+', '-'].map((item) => ({ label: item, value: item }));
 const timeUnitOptions = [
   {
-    label: '分',
+    label: formatMessage({ id: 'odc.DataClearTask.CreateModal.VariableConfig.Points' }), //分
     value: 's',
   },
   {
-    label: '小时',
+    label: formatMessage({ id: 'odc.DataClearTask.CreateModal.VariableConfig.Hours' }), //小时
     value: 'h',
   },
   {
-    label: '日',
+    label: formatMessage({ id: 'odc.DataClearTask.CreateModal.VariableConfig.Day' }), //日
     value: 'd',
   },
   {
-    label: '周',
+    label: formatMessage({ id: 'odc.DataClearTask.CreateModal.VariableConfig.Zhou' }), //周
     value: 'w',
   },
   {
-    label: '月',
+    label: formatMessage({ id: 'odc.DataClearTask.CreateModal.VariableConfig.Month' }), //月
     value: 'm',
   },
   {
-    label: '年',
+    label: formatMessage({ id: 'odc.DataClearTask.CreateModal.VariableConfig.Year' }), //年
     value: 'y',
   },
 ];
@@ -46,10 +47,19 @@ const VariableConfig: React.FC<IProps> = (props) => {
       keepExpand
       label={
         <Space>
-          变量配置
+          {
+            formatMessage({
+              id: 'odc.DataClearTask.CreateModal.VariableConfig.VariableConfiguration',
+            }) /*变量配置*/
+          }
+
           <span className={styles.desc}>
             <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
-              变量可在归档配置的过滤条件中引用
+              {
+                formatMessage({
+                  id: 'odc.DataClearTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn',
+                }) /*变量可在归档配置的过滤条件中引用*/
+              }
             </HelpDoc>
           </span>
         </Space>
@@ -57,11 +67,27 @@ const VariableConfig: React.FC<IProps> = (props) => {
     >
       <Space direction="vertical">
         <Space className={styles.infoLabel}>
-          <div style={{ width: '194px' }}>变量名</div>
-          <div style={{ width: '170px' }}>时间格式</div>
+          <div style={{ width: '194px' }}>
+            {
+              formatMessage({
+                id: 'odc.DataClearTask.CreateModal.VariableConfig.VariableName',
+              }) /*变量名*/
+            }
+          </div>
+          <div style={{ width: '170px' }}>
+            {
+              formatMessage({
+                id: 'odc.DataClearTask.CreateModal.VariableConfig.TimeFormat',
+              }) /*时间格式*/
+            }
+          </div>
           <div style={{ width: '250px' }}>
             <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
-              时间运算
+              {
+                formatMessage({
+                  id: 'odc.DataClearTask.CreateModal.VariableConfig.TimeOperation',
+                }) /*时间运算*/
+              }
             </HelpDoc>
           </div>
         </Space>
@@ -71,10 +97,19 @@ const VariableConfig: React.FC<IProps> = (props) => {
               {fields.map(({ key, name, ...restField }) => (
                 <Space key={key} align="baseline">
                   <Form.Item {...restField} style={{ width: '194px' }} name={[name, 'name']}>
-                    <Input placeholder="请输入" />
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseEnter',
+                      })} /*请输入*/
+                    />
                   </Form.Item>
                   <Form.Item {...restField} style={{ width: '170px' }} name={[name, 'format']}>
-                    <Select placeholder="请选择" options={timeFormatOptions} />
+                    <Select
+                      placeholder={formatMessage({
+                        id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
+                      })}
+                      /*请选择*/ options={timeFormatOptions}
+                    />
                   </Form.Item>
                   <Form.List name={[name, 'pattern']}>
                     {(subFields, { add: _add, remove: _remove }) => {
@@ -89,7 +124,9 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 name={[name, 'operator']}
                               >
                                 <Select
-                                  placeholder="请选择"
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
+                                  })} /*请选择*/
                                   style={{ width: 80 }}
                                   options={operatorOptions}
                                 />
@@ -99,7 +136,13 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 style={{ width: '80px' }}
                                 name={[name, 'step']}
                               >
-                                <InputNumber placeholder="请输入" min={1} style={{ width: 80 }} />
+                                <InputNumber
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseEnter',
+                                  })}
+                                  /*请输入*/ min={1}
+                                  style={{ width: 80 }}
+                                />
                               </Form.Item>
                               <Form.Item
                                 {...restField}
@@ -107,7 +150,9 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 name={[name, 'unit']}
                               >
                                 <Select
-                                  placeholder="请选择"
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
+                                  })} /*请选择*/
                                   style={{ width: 80 }}
                                   options={timeUnitOptions}
                                 />
@@ -133,7 +178,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
               ))}
               <Form.Item style={{ marginBottom: 0, width: '100%' }}>
                 <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
-                  添加变量
+                  {
+                    formatMessage({
+                      id: 'odc.DataClearTask.CreateModal.VariableConfig.AddVariables',
+                    }) /*添加变量*/
+                  }
                 </Button>
               </Form.Item>
             </div>

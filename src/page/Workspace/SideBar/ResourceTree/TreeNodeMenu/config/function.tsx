@@ -23,7 +23,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
   [ResourceNodeType.FunctionRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.function.BatchCompilation' }), //批量编译
+      ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       isHide(session, node) {
@@ -42,7 +44,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'CREATE',
-      text: ['新建函数'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.function.CreateAFunction' }), //新建函数
+      ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
@@ -65,6 +69,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
     },
   ],
+
   [ResourceNodeType.Function]: [
     {
       key: 'OVERVIEW',
@@ -73,6 +78,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.ResourceTree.config.treeNodesActions.See',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const func: IFunction = node.data;
@@ -131,6 +137,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
         }),
       ],
+
       ellipsis: true,
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
@@ -163,6 +170,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,

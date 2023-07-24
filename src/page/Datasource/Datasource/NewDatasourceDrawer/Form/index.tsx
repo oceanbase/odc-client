@@ -4,6 +4,7 @@ import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select, Space } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
@@ -141,7 +142,11 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         requiredMark="optional"
       >
         {isEdit ? (
-          <Form.Item rules={[{ required: true, max: 32 }]} label="数据源名称" name={'name'}>
+          <Form.Item
+            rules={[{ required: true, max: 32 }]}
+            label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.DataSourceName' })}
+            /*数据源名称*/ name={'name'}
+          >
             <Input style={{ width: '100%' }} />
           </Form.Item>
         ) : null}
@@ -149,7 +154,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
         <Form.Item
           rules={[{ required: true }]}
-          label="类型"
+          label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Type' })} /*类型*/
           name={'type'}
           noStyle={haveOCP() ? true : false}
         >
@@ -167,7 +172,11 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         </Form.Item>
         <AddressItems />
         <Account isEdit={isEdit} />
-        <Form.Item rules={[{ required: true }]} label="环境" name={'environmentId'}>
+        <Form.Item
+          rules={[{ required: true }]}
+          label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Environment' })}
+          /*环境*/ name={'environmentId'}
+        >
           <Select loading={loading} style={{ width: 208 }}>
             {environments?.map((env) => {
               return <Option value={env.id}>{env.name}</Option>;

@@ -1,5 +1,6 @@
 import { getIntegrationDetail, updateIntegration } from '@/common/network/manager';
 import { EncryptionAlgorithm, ISSOConfig } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
 import { useRequest, useUpdate } from 'ahooks';
 import { Button, Drawer, message, Space, Spin } from 'antd';
@@ -56,7 +57,9 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
       configuration: JSON.stringify(clone),
     });
     if (isSuccess) {
-      message.success('修改成功');
+      message.success(
+        formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Edit.ModifiedSuccessfully' }), //修改成功
+      );
       onSave();
       close();
     }
@@ -72,13 +75,21 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     <Drawer
       width={520}
       visible={visible}
-      title="编辑 SSO 集成配置"
+      title={formatMessage({
+        id: 'odc.SSO.NewSSODrawerButton.Edit.EditSsoIntegrationConfiguration',
+      })} /*编辑 SSO 集成配置*/
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          <Button onClick={() => close()}>取消</Button>
+          <Button onClick={() => close()}>
+            {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Edit.Cancel' }) /*取消*/}
+          </Button>
           <Button onClick={() => save()} type="primary">
-            确认修改
+            {
+              formatMessage({
+                id: 'odc.SSO.NewSSODrawerButton.Edit.ConfirmModification',
+              }) /*确认修改*/
+            }
           </Button>
         </Space>
       }

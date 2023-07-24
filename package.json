@@ -75,8 +75,8 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
+    "@ali/parrot-tool-must": "^2.3.5",
     "@alipay/monaco-plugin-ob": "0.0.16",
-    "@alipay/ob-intl-cli": "1.0.2",
     "@alipay/ob-parser-js": "1.0.9",
     "@alipay/ob-react-data-grid": "2.4.7",
     "@alipay/tracert": "4",

@@ -3,6 +3,7 @@ import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import StatusLabel, { subTaskStatus } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import { IAsyncTaskParams, SubTaskType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
@@ -11,11 +12,17 @@ import TaskTools from './TaskTools';
 
 const TaskLabelMap = {
   [TaskType.DATA_ARCHIVE]: {
-    [SubTaskType.DATA_ARCHIVE]: '数据归档',
-    [SubTaskType.DATA_ARCHIVE_ROLLBACK]: '回滚',
+    [SubTaskType.DATA_ARCHIVE]: formatMessage({
+      id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DataArchiving',
+    }), //数据归档
+    [SubTaskType.DATA_ARCHIVE_ROLLBACK]: formatMessage({
+      id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Rollback',
+    }), //回滚
   },
   [TaskType.DATA_DELETE]: {
-    [SubTaskType.DATA_DELETE]: '数据清理',
+    [SubTaskType.DATA_DELETE]: formatMessage({
+      id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DataCleansing',
+    }), //数据清理
   },
 };
 
@@ -45,14 +52,14 @@ const getConnectionColumns = (params: {
   return [
     {
       dataIndex: 'id',
-      title: '任务编号',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskNumber' }), //任务编号
       ellipsis: true,
       width: 80,
     },
 
     {
       dataIndex: 'jobGroup',
-      title: '任务类型',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskType' }), //任务类型
       ellipsis: true,
       width: 200,
       filterIcon: <FilterOutlined />,
@@ -65,7 +72,9 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'createTime',
-      title: '创建时间',
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskExecuteRecord.CreationTime',
+      }), //创建时间
       ellipsis: true,
       width: 180,
       render: (createTime) => getFormatDateTime(createTime),
@@ -73,7 +82,7 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'status',
-      title: '任务状态',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskStatus' }), //任务状态
       ellipsis: true,
       width: 140,
       filters: statusFilters,
@@ -95,7 +104,7 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Operation' }), //操作
       ellipsis: true,
       width: 92,
       render: (_, record) => {

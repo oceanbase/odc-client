@@ -1,6 +1,7 @@
 import { getUserSummaryList } from '@/common/network/project';
 import HelpDoc from '@/component/helpDoc';
 import login from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select } from 'antd';
 import React, { useEffect, useImperativeHandle } from 'react';
@@ -52,9 +53,14 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
           rules={[{ required: true }, { max: 32 }]}
           required
           name={'name'}
-          label="项目名称"
+          label={formatMessage({ id: 'odc.Project.CreateProject.ProjectName' })} /*项目名称*/
         >
-          <Input placeholder="请输入，32 个字符以内" style={{ width: 400 }} />
+          <Input
+            placeholder={formatMessage({
+              id: 'odc.Project.CreateProject.PleaseEnterLessThanCharacters',
+            })}
+            /*请输入，32 个字符以内*/ style={{ width: 400 }}
+          />
         </Form.Item>
         <Form.Item
           rules={[{ required: true }]}
@@ -62,7 +68,7 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
           name={'owner'}
           label={
             <HelpDoc leftText doc="projectOwner">
-              管理员
+              {formatMessage({ id: 'odc.Project.CreateProject.Administrator' }) /*管理员*/}
             </HelpDoc>
           }
         >
@@ -72,7 +78,7 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
             mode="multiple"
             style={{ width: 240 }}
             options={userOptions}
-            placeholder="请选择"
+            placeholder={formatMessage({ id: 'odc.Project.CreateProject.PleaseSelect' })} /*请选择*/
           />
         </Form.Item>
         <Form.Item
@@ -91,14 +97,14 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
             style={{ width: 240 }}
             optionFilterProp="label"
             options={userOptions}
-            placeholder="请选择"
+            placeholder={formatMessage({ id: 'odc.Project.CreateProject.PleaseSelect' })} /*请选择*/
           />
         </Form.Item>
         <Form.Item
           name={'developer'}
           label={
             <HelpDoc leftText doc="projectDev">
-              普通成员
+              {formatMessage({ id: 'odc.Project.CreateProject.CommonMember' }) /*普通成员*/}
             </HelpDoc>
           }
         >
@@ -108,12 +114,16 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
             optionFilterProp="label"
             style={{ width: 240 }}
             options={userOptions}
-            placeholder="请选择"
+            placeholder={formatMessage({ id: 'odc.Project.CreateProject.PleaseSelect' })} /*请选择*/
           />
         </Form.Item>
-        <Form.Item rules={[{ max: 256 }]} name={'description'} label="描述">
+        <Form.Item
+          rules={[{ max: 256 }]}
+          name={'description'}
+          label={formatMessage({ id: 'odc.Project.CreateProject.Description' })} /*描述*/
+        >
           <Input.TextArea
-            placeholder="请输入"
+            placeholder={formatMessage({ id: 'odc.Project.CreateProject.PleaseEnter' })} /*请输入*/
             style={{ width: 400 }}
             autoSize={{ minRows: 4, maxRows: 4 }}
           />

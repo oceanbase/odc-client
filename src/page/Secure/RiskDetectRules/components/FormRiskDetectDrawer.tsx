@@ -1,5 +1,6 @@
 import { createRiskDetectRules, updateRiskDetectRule } from '@/common/network/riskDetectRule';
 import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
+import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
@@ -23,6 +24,7 @@ interface FormRiskDetectDrawerProps {
   environmentIdMap: {
     [key in string | number]: string;
   };
+
   environmentOptions: SelectItemProps[];
   taskTypeOptions: SelectItemProps[];
   sqlCheckResultOptions: SelectItemProps[];
@@ -72,11 +74,23 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
       });
     }
     if (result) {
-      message.success(isEdit ? '保存成功' : '新建成功');
+      message.success(
+        isEdit
+          ? formatMessage({
+              id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.SavedSuccessfully',
+            }) //保存成功
+          : formatMessage({ id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.New' }), //新建成功
+      );
       handleDrawerClose();
       reload();
     } else {
-      message.error(isEdit ? '保存失败' : '新建失败');
+      message.error(
+        isEdit
+          ? formatMessage({ id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.SaveFailed' }) //保存失败
+          : formatMessage({
+              id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.FailedToCreate',
+            }), //新建失败
+      );
     }
   };
   useEffect(() => {
@@ -100,7 +114,15 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
 
   return (
     <Drawer
-      title={isEdit ? '编辑风险识别规则' : '新建风险识别规则'}
+      title={
+        isEdit
+          ? formatMessage({
+              id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.EditRiskIdentificationRules',
+            }) //编辑风险识别规则
+          : formatMessage({
+              id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.CreateARiskIdentificationRule',
+            }) //新建风险识别规则
+      }
       visible={formModalVisible}
       width={600}
       forceRender={true}
@@ -109,9 +131,23 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
-            <Button onClick={handleDrawerClose}>取消</Button>
+            <Button onClick={handleDrawerClose}>
+              {
+                formatMessage({
+                  id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.Cancel',
+                }) /*取消*/
+              }
+            </Button>
             <Button type="primary" onClick={handleDrawerSubmit}>
-              {isEdit ? '提交' : '新建'}
+              {
+                isEdit
+                  ? formatMessage({
+                      id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.Submit',
+                    }) //提交
+                  : formatMessage({
+                      id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.Create',
+                    }) //新建
+              }
             </Button>
           </Space>
         </div>
@@ -119,7 +155,13 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
       className={styles.drawer}
     >
       <Space align="center" className={styles.tag}>
-        <div className={styles.tagLabel}>风险等级: </div>
+        <div className={styles.tagLabel}>
+          {
+            formatMessage({
+              id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.RiskLevel',
+            }) /*风险等级:*/
+          }
+        </div>
         <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
       </Space>
       {formModalVisible && (
@@ -131,13 +173,17 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
           initialValues={selectedRecord}
         >
           <Form.Item
-            label={'规则名称'}
+            label={
+              formatMessage({ id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.RuleName' }) //规则名称
+            }
             name="name"
             required
             rules={[
               {
                 required: true,
-                message: '请输入规则名称',
+                message: formatMessage({
+                  id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.EnterARuleName',
+                }), //请输入规则名称
               },
             ]}
           >
@@ -145,7 +191,11 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
               style={{
                 width: '568px',
               }}
-              placeholder={'请输入规范名称'}
+              placeholder={
+                formatMessage({
+                  id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.EnterASpecificationName',
+                }) //请输入规范名称
+              }
             />
           </Form.Item>
           <Form.Item>

@@ -1,6 +1,7 @@
 import { SpaceType } from '@/d.ts/_index';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { inject, observer } from 'mobx-react';
 import { useContext, useRef, useState } from 'react';
@@ -19,7 +20,7 @@ export default inject('userStore')(
       userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
       SpaceType.PRIVATE;
     const datasource: ITab = {
-      title: '数据源',
+      title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.DataSource' }), //数据源
       key: ResourceTreeTab.datasource,
       render() {
         return <DatasourceTree ref={sourceRef} />;
@@ -29,7 +30,7 @@ export default inject('userStore')(
           ? {
               icon: PlusOutlined,
               key: 'add',
-              title: '添加数据源',
+              title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.AddADataSource' }), //添加数据源
               async onClick() {
                 return setAddVisible(true);
               },
@@ -38,7 +39,7 @@ export default inject('userStore')(
         {
           icon: ReloadOutlined,
           key: 'reload',
-          title: '刷新',
+          title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.Refresh' }), //刷新
           async onClick() {
             return await sourceRef.current?.reload?.();
           },
@@ -46,7 +47,7 @@ export default inject('userStore')(
       ].filter(Boolean),
     };
     const project: ITab = {
-      title: '项目',
+      title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.Project' }), //项目
       key: ResourceTreeTab.project,
       render() {
         return <ProjectTree ref={projectRef} />;
@@ -55,7 +56,7 @@ export default inject('userStore')(
         {
           icon: ReloadOutlined,
           key: 'reload',
-          title: '刷新',
+          title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.Refresh' }), //刷新
           async onClick() {
             return await projectRef.current?.reload?.();
           },
@@ -69,6 +70,7 @@ export default inject('userStore')(
           setSelectTabKey={resourcetreeContext?.setSelectTabKey}
           tabs={isPersonal ? [datasource] : [datasource, project]}
         />
+
         <NewDatasourceDrawer
           isPersonal={true}
           visible={addVisible}

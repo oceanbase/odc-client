@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Tree, TreeProps } from 'antd';
 import { useMemo, useState } from 'react';
@@ -54,14 +55,14 @@ export default function SelectTransfer(props: IProps) {
       return data.title?.toString()?.toLowerCase()?.includes(targetSearch?.toLowerCase?.());
     });
   }, [targetSearch, checkedData]);
-
+  const count = checkedKeys?.length || 0;
   return (
     <div style={{ height: 370, display: 'flex', border: '1px solid var(--odc-border-color)' }}>
       <div
         style={{ width: '100%', height: '100%', borderRight: '1px solid var(--odc-border-color)' }}
       >
         <Card
-          title="选择用户"
+          title={formatMessage({ id: 'odc.component.SelectTransfer.SelectUser' })} /*选择用户*/
           onSearch={(v) => {
             setSourceSearch(v);
           }}
@@ -79,11 +80,22 @@ export default function SelectTransfer(props: IProps) {
       </div>
       <div style={{ width: '100%', height: '100%' }}>
         <Card
-          title={`已选 ${checkedKeys?.length || 0} 项`}
+          title={
+            formatMessage(
+              {
+                id: 'odc.component.SelectTransfer.CountItemSelected',
+              },
+              { count: count },
+            ) //`已选 ${count} 项`
+          }
           onSearch={(v) => {
             setTargetSearch(v);
           }}
-          extra={<a onClick={() => setCheckedKeys([])}>清空</a>}
+          extra={
+            <a onClick={() => setCheckedKeys([])}>
+              {formatMessage({ id: 'odc.component.SelectTransfer.Clear' }) /*清空*/}
+            </a>
+          }
           disabled
         >
           <Tree

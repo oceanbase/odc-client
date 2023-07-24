@@ -37,8 +37,20 @@ const Sorter: React.FC<IProps> = function () {
               }) /*按更新时间排序*/
             }
           </Menu.Item>
-          <Menu.Item key={SortType.NAME_AZ}>按数据源名(A-Z)排序</Menu.Item>
-          <Menu.Item key={SortType.NAME_ZA}>按数据源名(Z-A)排序</Menu.Item>
+          <Menu.Item key={SortType.NAME_AZ}>
+            {
+              formatMessage({
+                id: 'odc.Header.Sorter.SortByDataSourceName',
+              }) /*按数据源名(A-Z)排序*/
+            }
+          </Menu.Item>
+          <Menu.Item key={SortType.NAME_ZA}>
+            {
+              formatMessage({
+                id: 'odc.Header.Sorter.SortByDataSourceName.1',
+              }) /*按数据源名(Z-A)排序*/
+            }
+          </Menu.Item>
         </Menu>
       }
     >

@@ -1,4 +1,5 @@
 import { ComponentType, PropertyMetadata } from '@/d.ts/rule';
+import { formatMessage } from '@/util/intl';
 import { Form, Input, InputNumber, Radio, Select } from 'antd';
 
 interface EditPropertyComponentMapProps {
@@ -35,7 +36,12 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           rules={[
             {
               required: true,
-              message: `请输入${label}`,
+              message: formatMessage(
+                {
+                  id: 'odc.Env.components.EditPropertyComponent.EnterLabel',
+                },
+                { label: label },
+              ), //`请输入${label}`
             },
           ]}
           tooltip={description}
@@ -52,7 +58,12 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           rules={[
             {
               required: true,
-              message: `请选择${label}`,
+              message: formatMessage(
+                {
+                  id: 'odc.Env.components.EditPropertyComponent.SelectLabel',
+                },
+                { label: label },
+              ), //`请选择${label}`
             },
           ]}
           tooltip={description}

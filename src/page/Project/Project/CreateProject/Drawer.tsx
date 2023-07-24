@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Drawer, FormInstance, message, Space } from 'antd';
 import { useRef, useState } from 'react';
@@ -43,7 +44,9 @@ export default function CreateProjectDrawer(props: IProps) {
           .filter(Boolean),
       });
       if (isSuccess) {
-        message.success('新建成功');
+        message.success(
+          formatMessage({ id: 'odc.Project.CreateProject.Drawer.New' }), //新建成功
+        );
         setOpen(false);
         props?.onCreate?.();
       }
@@ -62,18 +65,22 @@ export default function CreateProjectDrawer(props: IProps) {
         type="primary"
         onClick={props.disabled ? null : () => setOpen(true)}
       >
-        新建项目
+        {formatMessage({ id: 'odc.Project.CreateProject.Drawer.CreateAProject' }) /*新建项目*/}
       </Button>
       <Drawer
         width={520}
         onClose={onClose}
         open={open}
-        title="创建项目"
+        title={formatMessage({
+          id: 'odc.Project.CreateProject.Drawer.CreateAProject.1',
+        })} /*创建项目*/
         footer={
           <Space style={{ float: 'right' }}>
-            <Button onClick={onClose}>取消</Button>
+            <Button onClick={onClose}>
+              {formatMessage({ id: 'odc.Project.CreateProject.Drawer.Cancel' }) /*取消*/}
+            </Button>
             <Button loading={loading} type="primary" onClick={onSubmit}>
-              确定
+              {formatMessage({ id: 'odc.Project.CreateProject.Drawer.Ok' }) /*确定*/}
             </Button>
           </Space>
         }

@@ -199,7 +199,9 @@ function SessionManagementPage(props: IProps) {
     );
     if (data && !data?.find((item) => !item.killed)) {
       await fetchDatabaseSessionList();
-      message.success('关闭成功');
+      message.success(
+        formatMessage({ id: 'odc.components.SessionManagementPage.ClosedSuccessfully' }), //关闭成功
+      );
       setSelectedRows([]);
     } else {
       message.error(
@@ -234,7 +236,9 @@ function SessionManagementPage(props: IProps) {
                     disabled={!selectedRows.length}
                     text={<FormattedMessage id="workspace.window.session.button.closeSession" />}
                     confirmConfig={{
-                      title: '确认关闭会话',
+                      title: formatMessage({
+                        id: 'odc.components.SessionManagementPage.ConfirmToCloseTheSession',
+                      }), //确认关闭会话
                       onConfirm() {
                         kill('session');
                       },
@@ -252,7 +256,9 @@ function SessionManagementPage(props: IProps) {
                       }) //关闭查询
                     }
                     confirmConfig={{
-                      title: '确认关闭查询',
+                      title: formatMessage({
+                        id: 'odc.components.SessionManagementPage.ConfirmToCloseTheQuery',
+                      }), //确认关闭查询
                       onConfirm() {
                         kill('query');
                       },

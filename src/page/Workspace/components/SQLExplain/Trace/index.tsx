@@ -20,13 +20,13 @@ const Trace = ({ endTimestamp, startTimestamp, treeData }) => {
         {
           dataIndex: 'nodeWithHost',
           key: 'nodeWithHost',
-          title: '节点',
+          title: formatMessage({ id: 'odc.SQLExplain.Trace.Node' }), //节点
           width: 262,
         },
         {
           dataIndex: 'host',
           key: 'host',
-          title: '执行时间线',
+          title: formatMessage({ id: 'odc.SQLExplain.Trace.ExecutionTimeline' }), //执行时间线
           width: 711,
           render: (_, record) => (
             <ProgressBar

@@ -156,7 +156,11 @@ const Login: React.FC<ILoginFormProps> = ({
       {showOtherLoginButton && (
         <>
           <Divider style={{ color: 'var(--text-color-hint)' }} plain>
-            其他登录方式
+            {
+              formatMessage({
+                id: 'odc.component.Login.LoginForm.OtherLogonMethods',
+              }) /*其他登录方式*/
+            }
           </Divider>
           <Button
             htmlType="button"

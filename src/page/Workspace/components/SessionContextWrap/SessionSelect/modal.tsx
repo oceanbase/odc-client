@@ -4,6 +4,7 @@ import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Col, Form, Modal, Radio, Row, Select, Tag } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -88,7 +89,9 @@ export default inject('userStore')(
     return (
       <Modal
         open={visible}
-        title="切换数据库"
+        title={formatMessage({
+          id: 'odc.SessionContextWrap.SessionSelect.modal.SwitchDatabases',
+        })} /*切换数据库*/
         width={520}
         onCancel={close}
         onOk={async () => {
@@ -99,7 +102,10 @@ export default inject('userStore')(
       >
         {context?.datasourceMode ? (
           <Form form={form} layout="vertical">
-            <Form.Item label="数据源" name={'selectDatasource'}>
+            <Form.Item
+              label={formatMessage({ id: 'odc.SessionContextWrap.SessionSelect.modal.DataSource' })}
+              /*数据源*/ name={'selectDatasource'}
+            >
               <Select
                 loading={allDatasourceLoading}
                 showSearch
@@ -129,7 +135,10 @@ export default inject('userStore')(
           </Form>
         ) : (
           <Form form={form} layout="vertical">
-            <Form.Item label="类别" name={'databaseFrom'}>
+            <Form.Item
+              label={formatMessage({ id: 'odc.SessionContextWrap.SessionSelect.modal.Category' })}
+              /*类别*/ name={'databaseFrom'}
+            >
               <Radio.Group
                 onChange={(e) => {
                   reset();
@@ -147,11 +156,15 @@ export default inject('userStore')(
                   isPersonal
                     ? null
                     : {
-                        label: '项目',
+                        label: formatMessage({
+                          id: 'odc.SessionContextWrap.SessionSelect.modal.Project',
+                        }), //项目
                         value: 'project',
                       },
                   {
-                    label: '数据源',
+                    label: formatMessage({
+                      id: 'odc.SessionContextWrap.SessionSelect.modal.DataSource',
+                    }), //数据源
                     value: 'datasource',
                   },
                 ].filter(Boolean)}
@@ -163,7 +176,13 @@ export default inject('userStore')(
                 if (databaseFrom === 'project') {
                   return (
                     <>
-                      <Form.Item rules={[{ required: true }]} label="所属项目" name="project">
+                      <Form.Item
+                        rules={[{ required: true }]}
+                        label={formatMessage({
+                          id: 'odc.SessionContextWrap.SessionSelect.modal.Project.1',
+                        })}
+                        /*所属项目*/ name="project"
+                      >
                         <Select
                           showSearch
                           loading={projectLoading}
@@ -185,7 +204,13 @@ export default inject('userStore')(
                           })}
                         </Select>
                       </Form.Item>
-                      <Form.Item rules={[{ required: true }]} label="数据库" name="database">
+                      <Form.Item
+                        rules={[{ required: true }]}
+                        label={formatMessage({
+                          id: 'odc.SessionContextWrap.SessionSelect.modal.Database',
+                        })}
+                        /*数据库*/ name="database"
+                      >
                         <Select
                           showSearch
                           loading={databaseLoading}
@@ -210,7 +235,9 @@ export default inject('userStore')(
                         <Col span={18}>
                           <Form.Item
                             rules={[{ required: true }]}
-                            label="所属数据源"
+                            label={formatMessage({
+                              id: 'odc.SessionContextWrap.SessionSelect.modal.DataSource.1',
+                            })} /*所属数据源*/
                             name={'datasource'}
                           >
                             <Select
@@ -244,7 +271,12 @@ export default inject('userStore')(
                           </Form.Item>
                         </Col>
                         <Col span={6}>
-                          <Form.Item shouldUpdate label="环境">
+                          <Form.Item
+                            shouldUpdate
+                            label={formatMessage({
+                              id: 'odc.SessionContextWrap.SessionSelect.modal.Environment',
+                            })} /*环境*/
+                          >
                             {({ getFieldValue }) => {
                               const dsId = getFieldValue('datasource');
                               const ds = datasourceList?.contents?.find((item) => item.id == dsId);
@@ -260,7 +292,13 @@ export default inject('userStore')(
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Form.Item rules={[{ required: true }]} label="数据库" name="database">
+                      <Form.Item
+                        rules={[{ required: true }]}
+                        label={formatMessage({
+                          id: 'odc.SessionContextWrap.SessionSelect.modal.Database',
+                        })}
+                        /*数据库*/ name="database"
+                      >
                         <Select
                           loading={databaseLoading}
                           optionFilterProp="children"

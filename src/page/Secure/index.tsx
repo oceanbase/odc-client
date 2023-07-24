@@ -10,6 +10,7 @@ import {
 } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { history, useParams } from 'umi';
@@ -48,27 +49,27 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '环境',
+    tab: formatMessage({ id: 'odc.page.Secure.Environment' }), //环境
     key: IPageType.Secure_Env,
   },
   {
-    tab: '风险等级',
+    tab: formatMessage({ id: 'odc.page.Secure.RiskLevel' }), //风险等级
     key: IPageType.RiskLevel,
   },
   {
-    tab: '风险识别规则',
+    tab: formatMessage({ id: 'odc.page.Secure.RiskIdentificationRules' }), //风险识别规则
     key: IPageType.RiskDetectRules,
   },
   {
-    tab: '审批流程',
+    tab: formatMessage({ id: 'odc.page.Secure.ApprovalProcess' }), //审批流程
     key: IPageType.Secure_Approval,
   },
   {
-    tab: '脱敏算法',
+    tab: formatMessage({ id: 'odc.page.Secure.DesensitizationAlgorithm' }), //脱敏算法
     key: IPageType.MaskingAlgorithm,
   },
   {
-    tab: '操作记录',
+    tab: formatMessage({ id: 'odc.page.Secure.OperationRecord' }), //操作记录
     key: IPageType.Secure_Record,
     permission: createPermission(IManagerResourceType.odc_audit_event, actionTypes.read),
   },
@@ -95,7 +96,7 @@ const Index: React.FC<IProps> = function ({ userStore }) {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: '安全规范',
+        title: formatMessage({ id: 'odc.page.Secure.SafetySpecifications' }), //安全规范
       }}
       containerWrapStyle={
         [IPageType.Secure_Env, IPageType.RiskDetectRules, IPageType.RiskLevel].includes(page)

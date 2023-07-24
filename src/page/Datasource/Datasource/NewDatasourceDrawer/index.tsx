@@ -60,14 +60,16 @@ export default function NewDatasourceDrawer({
         ...values,
       });
       if (isSuccess) {
-        message.success('修改成功');
+        message.success(
+          formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.ModifiedSuccessfully' }), //修改成功
+        );
         onSuccess();
         close();
       }
       return;
     }
     Modal.confirm({
-      title: '请输入数据源名称',
+      title: formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.EnterADataSourceName' }), //请输入数据源名称
       content: <Input id="newCloudConnectionName" />,
       onOk: async (_close) => {
         const name = (document.querySelector('#newCloudConnectionName') as HTMLInputElement)?.value;
@@ -82,7 +84,9 @@ export default function NewDatasourceDrawer({
           throw new Error('');
         }
         if (name?.length > 128) {
-          message.warn('名称最大长度为 128');
+          message.warn(
+            formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.TheMaximumLengthOfThe' }), //名称最大长度为 128
+          );
           throw new Error('');
         }
         if (!/^[^\s]*$/.test(name)) {
@@ -98,7 +102,9 @@ export default function NewDatasourceDrawer({
           name,
         });
         if (isRepeat) {
-          message.warn('名称已存在');
+          message.warn(
+            formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.TheNameAlreadyExists' }), //名称已存在
+          );
           throw new Error();
         }
         return new Promise(async (resolve, reject) => {
@@ -137,15 +143,29 @@ export default function NewDatasourceDrawer({
   return (
     <Drawer
       width={520}
-      title={isEdit ? '编辑数据源' : '新建数据源'}
+      title={
+        isEdit
+          ? formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.EditDataSource' }) //编辑数据源
+          : formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.CreateADataSource' }) //新建数据源
+      }
       visible={visible}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          {isEdit ? <Button onClick={copyUri}>复制连接串</Button> : null}
-          <Button onClick={close}>取消</Button>
+          {isEdit ? (
+            <Button onClick={copyUri}>
+              {
+                formatMessage({
+                  id: 'odc.Datasource.NewDatasourceDrawer.CopyConnectionString',
+                }) /*复制连接串*/
+              }
+            </Button>
+          ) : null}
+          <Button onClick={close}>
+            {formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.Cancel' }) /*取消*/}
+          </Button>
           <Button onClick={submit} type="primary">
-            确定
+            {formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.Ok' }) /*确定*/}
           </Button>
         </Space>
       }

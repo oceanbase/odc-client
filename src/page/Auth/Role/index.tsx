@@ -107,7 +107,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '启用状态',
+        title: formatMessage({ id: 'odc.Auth.Role.EnableStatus' }), //启用状态
         width: 80,
         ellipsis: true,
         key: 'enabled',
@@ -468,6 +468,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             rowKey: 'id',
           }}
         />
+
         <FormModal
           editId={editId}
           copyId={copyId}
@@ -482,6 +483,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             this.context.loadRoles();
           }}
         />
+
         <CommonDetailModal
           width={720}
           visible={detailModalVisible}

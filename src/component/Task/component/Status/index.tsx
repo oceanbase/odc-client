@@ -189,11 +189,11 @@ export const cycleStatus = {
   },
   [TaskStatus.COMPLETED]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
-    text: '已完成',
+    text: formatMessage({ id: 'odc.component.Status.Completed' }), //已完成
   },
   [TaskStatus.EXECUTION_FAILED]: {
     icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '执行失败',
+    text: formatMessage({ id: 'odc.component.Status.ExecutionFailed' }), //执行失败
   },
 };
 
@@ -201,23 +201,23 @@ export const cycleStatus = {
 export const subTaskStatus = {
   [SubTaskStatus.DONE]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
-    text: '已完成',
+    text: formatMessage({ id: 'odc.component.Status.Completed' }), //已完成
   },
   [SubTaskStatus.CANCELED]: {
     icon: <StopFilled style={{ color: 'var(--icon-color-disable)' }} />,
-    text: '已取消',
+    text: formatMessage({ id: 'odc.component.Status.Canceled' }), //已取消
   },
   [SubTaskStatus.FAILED]: {
     icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '失败',
+    text: formatMessage({ id: 'odc.component.Status.Failed' }), //失败
   },
   [SubTaskStatus.PREPARING]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
-    text: '已创建',
+    text: formatMessage({ id: 'odc.component.Status.Created' }), //已创建
   },
   [SubTaskStatus.RUNNING]: {
     icon: <LoadingOutlined style={{ color: 'var(--icon-blue-color)' }} />,
-    text: '执行中',
+    text: formatMessage({ id: 'odc.component.Status.Running' }), //执行中
   },
 };
 

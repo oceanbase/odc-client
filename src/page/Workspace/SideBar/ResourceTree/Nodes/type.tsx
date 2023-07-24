@@ -1,5 +1,6 @@
 import { DbObjectType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { formatMessage } from '@/util/intl';
 import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeNodeData } from './function';
@@ -15,7 +16,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   const dbName = database.name;
   const types = dbSession?.database?.types;
   const treeData: TreeDataNode = {
-    title: '类型',
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Type' }), //类型
     key: `${database.id}-${dbName}-type`,
     type: ResourceNodeType.TypeRoot,
     data: database,
@@ -34,7 +35,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
 
       if (variables?.length) {
         variablesRoot = {
-          title: '变量',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Variable' }), //变量
           key: `${pkgKey}-variable`,
           type: ResourceNodeType.TypeVariableRoot,
           icon: (
@@ -44,6 +45,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
               }}
             />
           ),
+
           children: variables?.map((v, i) => {
             return {
               title: `${v.varName}:${v.varType}`,
@@ -56,7 +58,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
       }
       if (functions?.length) {
         programRoot = {
-          title: '子程序',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Subprogram' }), //子程序
           key: `${pkgKey}-program`,
           type: ResourceNodeType.TypeProgramRoot,
           icon: (
@@ -67,6 +69,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
               }}
             />
           ),
+
           children: functions.map((func, i) => {
             return FunctionTreeNodeData(
               func,
@@ -93,6 +96,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: [variablesRoot, programRoot].filter(Boolean),

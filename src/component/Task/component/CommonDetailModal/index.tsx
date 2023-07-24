@@ -172,6 +172,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
+
           {isCycleTask(task?.type) && (
             <>
               <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>
@@ -190,6 +191,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               </Radio.Button>
             </>
           )}
+
           {task?.type === TaskType.ONLINE_SCHEMA_CHANGE && (
             <Radio.Button value={TaskDetailType.PROGRESS}>
               {
@@ -199,6 +201,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
+
           {task?.type === TaskType.ASYNC && (
             <Radio.Button value={TaskDetailType.RESULT}>
               {
@@ -210,9 +213,13 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
+
           {task?.type === TaskType.ASYNC && (
-            <Radio.Button value={TaskDetailType.RECORD}>回滚工单</Radio.Button>
+            <Radio.Button value={TaskDetailType.RECORD}>
+              {formatMessage({ id: 'odc.component.CommonDetailModal.RollbackTicket' }) /*回滚工单*/}
+            </Radio.Button>
           )}
+
           {hasLog && (
             <Radio.Button value={TaskDetailType.LOG}>
               {

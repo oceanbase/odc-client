@@ -1,6 +1,7 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import { ITable } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import { IArchiveRange } from './index';
@@ -18,10 +19,26 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   }));
   return (
     <>
-      <Form.Item label="清理范围" name="archiveRange" required>
+      <Form.Item
+        label={formatMessage({ id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningRange' })}
+        /*清理范围*/ name="archiveRange"
+        required
+      >
         <Radio.Group>
-          <Radio.Button value={IArchiveRange.PORTION}>部分归档</Radio.Button>
-          <Radio.Button value={IArchiveRange.ALL}>整库归档</Radio.Button>
+          <Radio.Button value={IArchiveRange.PORTION}>
+            {
+              formatMessage({
+                id: 'odc.DataClearTask.CreateModal.ArchiveRange.PartialArchive',
+              }) /*部分归档*/
+            }
+          </Radio.Button>
+          <Radio.Button value={IArchiveRange.ALL}>
+            {
+              formatMessage({
+                id: 'odc.DataClearTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
+              }) /*整库归档*/
+            }
+          </Radio.Button>
         </Radio.Group>
       </Form.Item>
       <Form.Item shouldUpdate noStyle>
@@ -34,10 +51,20 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             <FormItemPanel keepExpand>
               <Space direction="vertical">
                 <Space className={styles.infoLabel}>
-                  <div style={{ width: '220px' }}>表名</div>
+                  <div style={{ width: '220px' }}>
+                    {
+                      formatMessage({
+                        id: 'odc.DataClearTask.CreateModal.ArchiveRange.TableName',
+                      }) /*表名*/
+                    }
+                  </div>
                   <div style={{ width: '400px' }}>
                     <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
-                      清理条件
+                      {
+                        formatMessage({
+                          id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
+                        }) /*清理条件*/
+                      }
                     </HelpDoc>
                   </div>
                 </Space>
@@ -53,13 +80,17 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             rules={[
                               {
                                 required: true,
-                                message: '请选择',
+                                message: formatMessage({
+                                  id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
+                                }), //请选择
                               },
                             ]}
                           >
                             <Select
                               showSearch
-                              placeholder="请选择"
+                              placeholder={formatMessage({
+                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
+                              })} /*请选择*/
                               options={tablesOptions}
                               filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
@@ -71,14 +102,22 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             style={{ width: '400px' }}
                             name={[name, 'conditionExpression']}
                           >
-                            <Input placeholder="请输入清理条件" />
+                            <Input
+                              placeholder={formatMessage({
+                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                              })} /*请输入清理条件*/
+                            />
                           </Form.Item>
                           {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
                         </Space>
                       ))}
                       <Form.Item style={{ marginBottom: 0 }}>
                         <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                          添加
+                          {
+                            formatMessage({
+                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
+                            }) /*添加*/
+                          }
                         </Button>
                       </Form.Item>
                     </div>

@@ -9,6 +9,7 @@ import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { AddSensitiveColumnType, ScanTableData } from '@/page/Project/Sensitive/interface';
 import SensitiveContext from '@/page/Project/Sensitive/SensitiveContext';
+import { formatMessage } from '@/util/intl';
 import { Button, Drawer, message, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -258,18 +259,28 @@ const FormSensitiveColumnDrawer = ({
     setSubmiting(true);
     const res = await batchCreateSensitiveColumns(context.projectId, data);
     if (res) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({ id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New' }), //新建成功
+      );
       onOk();
       reset();
       resetScanTableData();
     } else {
-      message.error('新建失败');
+      message.error(
+        formatMessage({
+          id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.FailedToCreate',
+        }), //新建失败
+      );
     }
   };
   const handleManualSubmit = async () => {
     const data = await formRef.validateFields().catch();
     if (data?.manual?.length === 0) {
-      return message.error('不能提交空表单');
+      return message.error(
+        formatMessage({
+          id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.AnEmptyFormCannotBe',
+        }), //不能提交空表单
+      );
     }
     data?.manual?.map((d) => {
       d.database = databasesMap.get(d.dataSource)?.find((database) => database?.id === d.database);
@@ -278,11 +289,17 @@ const FormSensitiveColumnDrawer = ({
     });
     const res = await batchCreateSensitiveColumns(context.projectId, data?.manual);
     if (res) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({ id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New' }), //新建成功
+      );
       onOk();
       formRef.resetFields();
     } else {
-      message.error('新建失败');
+      message.error(
+        formatMessage({
+          id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.FailedToCreate',
+        }), //新建失败
+      );
     }
   };
 
@@ -389,8 +406,12 @@ const FormSensitiveColumnDrawer = ({
     <Drawer
       title={
         addSensitiveColumnType === AddSensitiveColumnType.Manual
-          ? '手动添加敏感列'
-          : '扫描添加敏感列'
+          ? formatMessage({
+              id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ManuallyAddSensitiveColumns',
+            }) //手动添加敏感列
+          : formatMessage({
+              id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ScanToAddSensitiveColumns',
+            }) //扫描添加敏感列
       }
       width={addSensitiveColumnType === AddSensitiveColumnType.Manual ? 800 : 724}
       open={visible}
@@ -404,7 +425,13 @@ const FormSensitiveColumnDrawer = ({
           }}
         >
           <Space>
-            <Button onClick={hanldeClose}>取消</Button>
+            <Button onClick={hanldeClose}>
+              {
+                formatMessage({
+                  id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Cancel',
+                }) /*取消*/
+              }
+            </Button>
             <Button
               type="primary"
               disabled={submiting}
@@ -414,7 +441,11 @@ const FormSensitiveColumnDrawer = ({
                   : handleScanSubmit
               }
             >
-              提交
+              {
+                formatMessage({
+                  id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Submit',
+                }) /*提交*/
+              }
             </Button>
           </Space>
         </div>

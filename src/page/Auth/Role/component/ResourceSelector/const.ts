@@ -5,12 +5,12 @@ import { ResourceManagementAction } from '../../../utils';
 // 链接访问权限
 export const connectionAccessTypeOptions = [
   {
-    label: '数据源',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.DataSource' }), //数据源
     value: IManagerResourceType.project,
   },
 
   {
-    label: '项目',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.Project' }), //项目
     value: IManagerResourceType.project,
   },
 ];
@@ -24,11 +24,11 @@ export enum ConnectionAccessAction {
 // 资源管理权限
 export const resourceManagementTypeOptions = [
   {
-    label: '数据源',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.DataSource' }), //数据源
     value: IManagerResourceType.resource,
   },
   {
-    label: '项目',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.Project' }), //项目
     value: IManagerResourceType.project,
   },
   {
@@ -110,23 +110,23 @@ export const systemTypeOptions: {
     visible: false,
   },
   {
-    label: '审批流程',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.ApprovalProcess' }), //审批流程
     value: IManagerResourceType.approval_flow,
   },
   {
-    label: '风险等级',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.RiskLevel' }), //风险等级
     value: IManagerResourceType.risk_level,
   },
   {
-    label: '风险识别规则',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.RiskIdentificationRules' }), //风险识别规则
     value: IManagerResourceType.risk_detect,
   },
   {
-    label: '开发规范',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.DevelopmentSpecifications' }), //开发规范
     value: IManagerResourceType.ruleset,
   },
   {
-    label: '系统集成',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.SystemIntegration' }), //系统集成
     value: IManagerResourceType.integration,
   },
 ];
@@ -205,12 +205,12 @@ export const permissionMap = {
 // 可新建的资源管理权限
 export const createAbleResourceOptions = [
   {
-    label: '数据源',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.DataSource' }), //数据源
     value: IManagerResourceType.resource,
   },
 
   {
-    label: '项目',
+    label: formatMessage({ id: 'odc.component.ResourceSelector.const.Project' }), //项目
     value: IManagerResourceType.project,
   },
 

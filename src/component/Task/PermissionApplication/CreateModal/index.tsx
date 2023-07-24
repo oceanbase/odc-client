@@ -53,7 +53,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
     const closeWithConfirm = useCallback(() => {
       Modal.confirm({
-        title: '确认取消新建敏感列申请吗？',
+        title: formatMessage({ id: 'odc.PermissionApplication.CreateModal.AreYouSureYouWant' }), //确认取消新建敏感列申请吗？
         centered: true,
         onOk() {
           onClose();
@@ -102,7 +102,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         onClose={closeWithConfirm}
         destroyOnClose
         width={724}
-        title={'新建敏感列申请'}
+        title={
+          formatMessage({
+            id: 'odc.PermissionApplication.CreateModal.CreateASensitiveColumnRequest',
+          }) //新建敏感列申请
+        }
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>
@@ -138,12 +142,29 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         }
       >
         <Form form={form} layout="vertical" requiredMark="optional" initialValues={{}}>
-          <Form.Item label={'选择敏感列'} required>
+          <Form.Item
+            label={
+              formatMessage({ id: 'odc.PermissionApplication.CreateModal.SelectSensitiveColumns' }) //选择敏感列
+            }
+            required
+          >
             <div style={{ display: 'flex', columnGap: '8px', marginBottom: '8px' }}>
-              <span style={{ width: '153px' }}>数据源</span>
-              <span style={{ width: '153px' }}>数据库</span>
-              <span style={{ width: '153px' }}>表</span>
-              <span style={{ width: '153px' }}>列</span>
+              <span style={{ width: '153px' }}>
+                {
+                  formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.DataSource',
+                  }) /*数据源*/
+                }
+              </span>
+              <span style={{ width: '153px' }}>
+                {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Database' }) /*数据库*/}
+              </span>
+              <span style={{ width: '153px' }}>
+                {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Table' }) /*表*/}
+              </span>
+              <span style={{ width: '153px' }}>
+                {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Column' }) /*列*/}
+              </span>
             </div>
             <Form.List
               name="sensitiveColumn"
@@ -179,7 +200,14 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                             },
                           ]}
                         >
-                          <Select placeholder={'请选择'} style={{ width: '153px' }} />
+                          <Select
+                            placeholder={
+                              formatMessage({
+                                id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                              }) //请选择
+                            }
+                            style={{ width: '153px' }}
+                          />
                         </Form.Item>
                         <Form.Item
                           required
@@ -187,7 +215,14 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                           // label={showLabel ? '数据库' : ''}
                           fieldKey={[fieldKey, 'database']}
                         >
-                          <Select placeholder={'请选择'} style={{ width: '153px' }} />
+                          <Select
+                            placeholder={
+                              formatMessage({
+                                id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                              }) //请选择
+                            }
+                            style={{ width: '153px' }}
+                          />
                         </Form.Item>
                         <Form.Item
                           required
@@ -195,7 +230,14 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                           // label={showLabel ? '表' : ''}
                           fieldKey={[fieldKey, 'tableName']}
                         >
-                          <Select placeholder={'请选择'} style={{ width: '153px' }} />
+                          <Select
+                            placeholder={
+                              formatMessage({
+                                id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                              }) //请选择
+                            }
+                            style={{ width: '153px' }}
+                          />
                         </Form.Item>
                         <Form.Item
                           required
@@ -203,7 +245,14 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                           // label={showLabel ? '列' : ''}
                           fieldKey={[fieldKey, 'columnName']}
                         >
-                          <Select placeholder={'请选择'} style={{ width: '153px' }} />
+                          <Select
+                            placeholder={
+                              formatMessage({
+                                id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                              }) //请选择
+                            }
+                            style={{ width: '153px' }}
+                          />
                         </Form.Item>
                         {fields.length > 1 ? (
                           <div
@@ -225,63 +274,89 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     );
                   })}
                   <Button type="dashed" block onClick={add} style={{ width: '628px' }}>
-                    添加
+                    {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Add' }) /*添加*/}
                   </Button>
                 </>
               )}
             </Form.List>
           </Form.Item>
-          <Form.Item name={'expireTime'} label={'选择有效期'} required>
+          <Form.Item
+            name={'expireTime'}
+            label={
+              formatMessage({ id: 'odc.PermissionApplication.CreateModal.SelectValidityPeriod' }) //选择有效期
+            }
+            required
+          >
             <Radio.Group
               options={[
                 {
-                  label: '7天',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Days' }), //7天
                   value: '7d',
                 },
                 {
-                  label: '30天',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Days.1' }), //30天
                   value: '30d',
                 },
                 {
-                  label: '半年',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.HalfAYear' }), //半年
                   value: 'hy',
                 },
                 {
-                  label: '一年',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.OneYear' }), //一年
                   value: '1y',
                 },
                 {
-                  label: '三年',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.ThreeYears' }), //三年
                   value: '3y',
                 },
                 {
-                  label: '自定义',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Custom' }), //自定义
                   value: 'custom',
                 },
               ]}
             ></Radio.Group>
             <InputNumber />
           </Form.Item>
-          <Form.Item name={'range'} required label="选择生效范围">
+          <Form.Item
+            name={'range'}
+            required
+            label={formatMessage({
+              id: 'odc.PermissionApplication.CreateModal.SelectAnEffectiveRange',
+            })} /*选择生效范围*/
+          >
             <Checkbox.Group
               options={[
                 {
-                  label: 'SQL 窗口查询',
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.SqlWindowQuery',
+                  }), //SQL 窗口查询
                   value: 'sql-window',
                 },
                 {
-                  label: '导出',
+                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Export' }), //导出
                   value: 'export',
                 },
                 {
-                  label: '数据库变更',
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.DatabaseChanges',
+                  }), //数据库变更
                   value: 'databaseChange',
                 },
               ]}
             ></Checkbox.Group>
           </Form.Item>
-          <Form.Item name={'tip'} label={'备注'}>
-            <Input.TextArea placeholder="请输入" rows={3} />
+          <Form.Item
+            name={'tip'}
+            label={
+              formatMessage({ id: 'odc.PermissionApplication.CreateModal.Remarks' }) //备注
+            }
+          >
+            <Input.TextArea
+              placeholder={formatMessage({
+                id: 'odc.PermissionApplication.CreateModal.PleaseEnter',
+              })}
+              /*请输入*/ rows={3}
+            />
           </Form.Item>
         </Form>
       </Drawer>

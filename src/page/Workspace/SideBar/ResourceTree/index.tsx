@@ -1,6 +1,7 @@
 import Action from '@/component/Action';
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { formatMessage } from '@/util/intl';
 import { Input, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
@@ -131,7 +132,11 @@ const ResourceTree: React.FC<IProps> = function ({
                 reloadDatabase();
               }}
             >
-              刷新数据库列表
+              {
+                formatMessage({
+                  id: 'odc.SideBar.ResourceTree.RefreshTheDatabaseList',
+                }) /*刷新数据库列表*/
+              }
             </Action.Link>
           </Action.Group>
         </span>
@@ -140,7 +145,9 @@ const ResourceTree: React.FC<IProps> = function ({
         <Input.Search
           onSearch={(v) => setSearchValue(v)}
           size="small"
-          placeholder="搜索已加载对象"
+          placeholder={formatMessage({
+            id: 'odc.SideBar.ResourceTree.SearchForLoadedObjects',
+          })} /*搜索已加载对象*/
         />
       </div>
       <div ref={treeWrapperRef} className={styles.tree}>

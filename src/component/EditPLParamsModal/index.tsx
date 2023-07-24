@@ -122,7 +122,9 @@ function EditPLParamasModal({
     try {
       if (isOracle) {
         if (!anonymousBlockDdl) {
-          message.warn('语句不能为空');
+          message.warn(
+            formatMessage({ id: 'odc.component.EditPLParamsModal.StatementCannotBeEmpty' }), //语句不能为空
+          );
           return;
         }
         await onSave(null, anonymousBlockDdl);

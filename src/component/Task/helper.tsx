@@ -69,7 +69,7 @@ export function getTaskTypeList(
     },
 
     {
-      groupName: '数据导出',
+      groupName: formatMessage({ id: 'odc.component.Task.helper.DataExport' }), //数据导出
       group: [
         {
           value: TaskPageType.EXPORT,
@@ -80,7 +80,7 @@ export function getTaskTypeList(
     },
 
     {
-      groupName: '数据变更',
+      groupName: formatMessage({ id: 'odc.component.Task.helper.DataChanges' }), //数据变更
       group: [
         {
           value: TaskPageType.IMPORT,
@@ -117,14 +117,14 @@ export function getTaskTypeList(
         },
         {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
-          label: '无锁结构变更',
+          label: formatMessage({ id: 'odc.component.Task.helper.LockFreeStructureChange' }), //无锁结构变更
           enabled: true,
         },
       ],
     },
 
     {
-      groupName: '定时任务',
+      groupName: formatMessage({ id: 'odc.component.Task.helper.ScheduledTasks' }), //定时任务
       group: [
         {
           value: TaskPageType.SQL_PLAN,
@@ -144,12 +144,12 @@ export function getTaskTypeList(
         },
         {
           value: TaskPageType.DATA_ARCHIVE,
-          label: '数据归档',
+          label: formatMessage({ id: 'odc.component.Task.helper.DataArchiving' }), //数据归档
           enabled: true,
         },
         {
           value: TaskPageType.DATA_DELETE,
-          label: '数据清理',
+          label: formatMessage({ id: 'odc.component.Task.helper.DataCleansing' }), //数据清理
           enabled: true,
         },
       ],

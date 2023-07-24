@@ -1,4 +1,5 @@
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
+import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, FormInstance } from 'antd';
 import { SelectItemProps } from '../../interface';
@@ -16,6 +17,7 @@ export interface IConditionGroup {
   environmentIdMap: {
     [key in string | number]: string;
   };
+
   environmentOptions: SelectItemProps[];
   taskTypeOptions: SelectItemProps[];
   sqlCheckResultOptions: SelectItemProps[];
@@ -32,9 +34,15 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
   return (
     <div>
       <div className={styles.labelContainer}>
-        <span className={styles.label}>条件</span>
+        <span className={styles.label}>
+          {formatMessage({ id: 'odc.components.ConditionGroup.Condition' }) /*条件*/}
+        </span>
         <span className={styles.extra}>
-          条件是通过表达式配置的规则。例如：条件「环境 为 prod」将会匹配在「prod」环境中执行的工单。
+          {
+            formatMessage({
+              id: 'odc.components.ConditionGroup.TheConditionIsARule',
+            }) /*条件是通过表达式配置的规则。例如：条件「环境 为 prod」将会匹配在「prod」环境中执行的工单。*/
+          }
         </span>
       </div>
       <Form.List name="conditions" initialValue={selectedRecord?.conditions || []}>
@@ -70,7 +78,7 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
               block
               icon={<PlusOutlined />}
             >
-              条件
+              {formatMessage({ id: 'odc.components.ConditionGroup.Condition' }) /*条件*/}
             </Button>
           </>
         )}

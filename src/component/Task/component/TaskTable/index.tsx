@@ -80,13 +80,12 @@ export const TaskTypeMap = {
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
   }), //计划变更
 
-  [TaskType.SQL_PLAN]: 'SQL 计划',
-
-  [TaskType.DATA_ARCHIVE]: '数据归档',
-
-  [TaskType.ONLINE_SCHEMA_CHANGE]: '无锁结构变更',
-
-  [TaskType.DATA_DELETE]: '数据清理',
+  [TaskType.SQL_PLAN]: formatMessage({ id: 'odc.component.TaskTable.SqlPlan' }), //SQL 计划
+  [TaskType.DATA_ARCHIVE]: formatMessage({ id: 'odc.component.TaskTable.DataArchiving' }), //数据归档
+  [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
+    id: 'odc.component.TaskTable.LockFreeStructureChange',
+  }), //无锁结构变更
+  [TaskType.DATA_DELETE]: formatMessage({ id: 'odc.component.TaskTable.DataCleansing' }), //数据清理
 };
 
 export const getStatusFilters = (status: {
@@ -217,7 +216,7 @@ const TaskTable: React.FC<IProps> = inject(
       const columns = [
         {
           dataIndex: 'id',
-          title: '编号',
+          title: formatMessage({ id: 'odc.component.TaskTable.No' }), //编号
           filterDropdown: (props) => {
             return (
               <SearchFilter
@@ -238,6 +237,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
@@ -247,7 +247,7 @@ const TaskTable: React.FC<IProps> = inject(
 
         {
           dataIndex: 'type',
-          title: '类型',
+          title: formatMessage({ id: 'odc.component.TaskTable.Type' }), //类型
           ellipsis: true,
           width: 100,
           render: (type) => TaskTypeMap[type],
@@ -255,14 +255,14 @@ const TaskTable: React.FC<IProps> = inject(
 
         {
           dataIndex: 'description',
-          title: '工单描述',
+          title: formatMessage({ id: 'odc.component.TaskTable.TicketDescription' }), //工单描述
           ellipsis: true,
           render: (description) => description || '-',
         },
 
         {
           dataIndex: 'candidateApprovers',
-          title: '当前处理人',
+          title: formatMessage({ id: 'odc.component.TaskTable.CurrentHandler' }), //当前处理人
           ellipsis: true,
           width: 115,
           filterDropdown: (props) => {
@@ -270,7 +270,9 @@ const TaskTable: React.FC<IProps> = inject(
               <SearchFilter
                 {...props}
                 selectedKeys={filters?.candidateApprovers}
-                placeholder="当前处理人"
+                placeholder={formatMessage({
+                  id: 'odc.component.TaskTable.CurrentHandler',
+                })} /*当前处理人*/
               />
             );
           },
@@ -281,6 +283,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.candidateApprovers || null,
           filters: [],
           render: (candidateApprovers) =>
@@ -319,6 +322,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.creator || null,
           filters: [],
           render: (creator) => {
@@ -347,7 +351,7 @@ const TaskTable: React.FC<IProps> = inject(
 
         {
           dataIndex: 'status',
-          title: '状态',
+          title: formatMessage({ id: 'odc.component.TaskTable.Status' }), //状态
           width: 120,
           filters: taskStatusFilters,
           filteredValue: filters?.status || null,
@@ -405,10 +409,12 @@ const TaskTable: React.FC<IProps> = inject(
                   type: IOperationOptionType.dropdown,
                   content: (
                     <Button type="primary">
-                      新建工单
+                      {formatMessage({ id: 'odc.component.TaskTable.NewWorkOrder' }) /*新建工单*/}
+
                       <DownOutlined />
                     </Button>
                   ),
+
                   overlay: (
                     <Menu
                       onClick={({ key }) => {
@@ -431,7 +437,12 @@ const TaskTable: React.FC<IProps> = inject(
                 }
               : {
                   type: IOperationOptionType.button,
-                  content: `新建${taskLabelInfo.label}`,
+                  content: formatMessage(
+                    {
+                      id: 'odc.component.TaskTable.CreateTasklabelinfolabel',
+                    },
+                    { taskLabelInfoLabel: taskLabelInfo.label },
+                  ), //`新建${taskLabelInfo.label}`
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskPageType);

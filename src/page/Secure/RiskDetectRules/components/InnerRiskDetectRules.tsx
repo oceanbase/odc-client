@@ -3,6 +3,7 @@ import { deleteRiskDetectRule } from '@/common/network/riskDetectRule';
 import { Acess, canAcess, createPermission } from '@/component/Acess';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
+import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { message, Popconfirm, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -94,36 +95,46 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
   const handleDelete = async (id: number) => {
     const result: boolean = await deleteRiskDetectRule(id);
     if (result) {
-      message.success('删除成功');
+      message.success(
+        formatMessage({
+          id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.DeletedSuccessfully',
+        }), //删除成功
+      );
       reload();
     } else {
-      message.error('删除失败');
+      message.error(
+        formatMessage({ id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.FailedToDelete' }), //删除失败
+      );
     }
   };
 
   const columns: ColumnsType<IRiskDetectRule> = [
     {
-      title: '规则名称',
+      title: formatMessage({ id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.RuleName' }), //规则名称
       dataIndex: 'name',
       key: 'name',
       // width: 573,
     },
     {
-      title: '创建人',
+      title: formatMessage({ id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.Founder' }), //创建人
       dataIndex: 'creator',
       // width: 120,
       key: 'creator',
-      render: (_, record) => record?.creator?.name || '默认创建人',
+      render: (_, record) =>
+        record?.creator?.name ||
+        formatMessage({ id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.DefaultCreator' }), //默认创建人
     },
     {
-      title: '创建时间',
+      title: formatMessage({
+        id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.CreationTime',
+      }), //创建时间
       dataIndex: 'createTime',
       key: 'createTime',
       // width: 200,
       render: (text) => getLocalFormatDateTime(text),
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.Operation' }), //操作
       key: 'action',
       // width: 200,
       render: (value, record) => {
@@ -134,7 +145,11 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
                 handleDrawerView(record);
               }}
             >
-              查看
+              {
+                formatMessage({
+                  id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.View',
+                }) /*查看*/
+              }
             </a>
             <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
               <a
@@ -142,19 +157,39 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
                   handleDrawerEdit(record);
                 }}
               >
-                编辑
+                {
+                  formatMessage({
+                    id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.Edit',
+                  }) /*编辑*/
+                }
               </a>
             </Acess>
             <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.delete)}>
               <Popconfirm
-                title={'是否确定删除？'}
-                okText={'确定'}
-                cancelText={'取消'}
+                title={
+                  formatMessage({
+                    id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.AreYouSureYouWant',
+                  }) //是否确定删除？
+                }
+                okText={
+                  formatMessage({ id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.Ok' }) //确定
+                }
+                cancelText={
+                  formatMessage({
+                    id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.Cancel',
+                  }) //取消
+                }
                 onConfirm={() => {
                   handleDelete(record.id);
                 }}
               >
-                <a>删除</a>
+                <a>
+                  {
+                    formatMessage({
+                      id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.Delete',
+                    }) /*删除*/
+                  }
+                </a>
               </Popconfirm>
             </Acess>
           </Space>
@@ -162,6 +197,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
       },
     },
   ];
+
   const operationOptions = [];
   const canCreate = canAcess(
     createPermission(IManagerResourceType.risk_detect, actionTypes.create),
@@ -169,8 +205,9 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
   canCreate &&
     operationOptions.push({
       type: IOperationOptionType.button,
-      content: '新建风险识别规则',
-      //新建流程
+      content: formatMessage({
+        id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.CreateARiskIdentificationRule',
+      }), //新建风险识别规则 //新建流程
       isPrimary: true,
       onClick: handleDrawerCreate,
     });
@@ -189,7 +226,9 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
         titleContent={null}
         showPagination={false}
         filterContent={{
-          searchPlaceholder: '请输入规则名称搜索',
+          searchPlaceholder: formatMessage({
+            id: 'odc.RiskDetectRules.components.InnerRiskDetectRules.EnterARuleNameTo',
+          }), //请输入规则名称搜索
         }}
         operationContent={{
           options: operationOptions,
@@ -209,6 +248,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
           },
         }}
       />
+
       <FormRiskDetectDrawer
         {...{
           isEdit,
@@ -223,6 +263,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
           reload,
         }}
       />
+
       <ViewRiskDetectDrawer
         {...{
           organizationId,
@@ -289,6 +330,7 @@ const getTaskTypeOptions = () => {
       value: TaskTypeEnum.DATA_SAVE,
     },
   ];
+
   return newTaskTypeOptions;
 };
 const getSqlCheckResultOptions = () => {
@@ -306,5 +348,6 @@ const getSqlCheckResultOptions = () => {
       value: RiskLevelEnum.MUST,
     },
   ];
+
   return sqlCheckResultOptions;
 };

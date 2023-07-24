@@ -1,5 +1,6 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IPageType } from '@/d.ts/_index';
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 import { history, useParams } from 'umi';
 import SqlInterceptor from './SqlInterceptor';
@@ -21,15 +22,15 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '审批集成',
+    tab: formatMessage({ id: 'odc.page.ExternalIntegration.ApprovalIntegration' }), //审批集成
     key: IPageType.ExternalIntegration_Approval,
   },
   {
-    tab: 'SQL 审核集成',
+    tab: formatMessage({ id: 'odc.page.ExternalIntegration.SqlAuditIntegration' }), //SQL 审核集成
     key: IPageType.ExternalIntegration_Sql,
   },
   {
-    tab: 'SSO 集成',
+    tab: formatMessage({ id: 'odc.page.ExternalIntegration.SsoIntegration' }), //SSO 集成
     key: IPageType.ExternalIntegration_SSO,
   },
 ];
@@ -47,7 +48,7 @@ const Index: React.FC<IProps> = function () {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: '外部集成',
+        title: formatMessage({ id: 'odc.page.ExternalIntegration.ExternalIntegration' }), //外部集成
       }}
       tabList={tabs}
       tabActiveKey={page}

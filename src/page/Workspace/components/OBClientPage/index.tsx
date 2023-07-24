@@ -256,7 +256,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     if (this.props.simpleHeader) {
       return (
         <Button onClick={this.reconnect} disabled={!isClosed}>
-          重新连接
+          {formatMessage({ id: 'odc.components.OBClientPage.Reconnect' }) /*重新连接*/}
         </Button>
       );
     }

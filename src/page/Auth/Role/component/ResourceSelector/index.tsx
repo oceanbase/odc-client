@@ -120,7 +120,11 @@ const FormResourceSelector: React.FC<{
                   }) /*资源管理权限*/
                 }
               </span>
-              <Tooltip title="包括数据源、项目、角色、用户的管理权限（新建/管理/编辑/查看）">
+              <Tooltip
+                title={formatMessage({
+                  id: 'odc.component.ResourceSelector.IncludingDataSourcesProjectsRoles',
+                })} /*包括数据源、项目、角色、用户的管理权限（新建/管理/编辑/查看）*/
+              >
                 <QuestionCircleOutlined style={iconStyle} />
               </Tooltip>
             </Space>
@@ -134,7 +138,11 @@ const FormResourceSelector: React.FC<{
                   }) /*系统操作权限*/
                 }
               </span>
-              <Tooltip title="包括操作记录、系统配置、自动授权、审批流程、审批流程、风险识别规则、开发规范、系统集成的操作权限（查看/操作）">
+              <Tooltip
+                title={formatMessage({
+                  id: 'odc.component.ResourceSelector.IncludingOperationRecordsSystemConfiguration',
+                })} /*包括操作记录、系统配置、自动授权、审批流程、审批流程、风险识别规则、开发规范、系统集成的操作权限（查看/操作）*/
+              >
                 <QuestionCircleOutlined style={iconStyle} />
               </Tooltip>
             </Space>

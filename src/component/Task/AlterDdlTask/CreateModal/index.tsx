@@ -7,6 +7,7 @@ import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { formatMessage } from '@/util/intl';
 import { Button, Col, Drawer, Form, Input, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -41,7 +42,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消无锁结构变更吗？',
+        title: formatMessage({ id: 'odc.AlterDdlTask.CreateModal.AreYouSureYouWant' }), //确认取消无锁结构变更吗？
         centered: true,
         onOk: () => {
           props.modalStore.changeCreateDDLAlterTaskModal(false);
@@ -115,7 +116,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles['ddl-alter']}
       width={720}
-      title="新建无锁结构变更"
+      title={formatMessage({
+        id: 'odc.AlterDdlTask.CreateModal.NewLockFreeStructureChange',
+      })} /*新建无锁结构变更*/
       footer={
         <Space>
           <Button
@@ -123,10 +126,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
-            取消
+            {formatMessage({ id: 'odc.AlterDdlTask.CreateModal.Cancel' }) /*取消*/}
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
-            新建
+            {formatMessage({ id: 'odc.AlterDdlTask.CreateModal.Create' }) /*新建*/}
           </Button>
         </Space>
       }
@@ -147,13 +150,17 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
       >
         <DatabaseSelect projectId={projectId} />
         <Form.Item
-          label="变更定义"
+          label={formatMessage({
+            id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
+          })} /*变更定义*/
           name="sqlType"
           initialValue={SqlType.CREATE}
           rules={[
             {
               required: true,
-              message: '请选择变更定义',
+              message: formatMessage({
+                id: 'odc.AlterDdlTask.CreateModal.SelectAChangeDefinition',
+              }), //请选择变更定义
             },
           ]}
         >
@@ -164,12 +171,12 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="sqlContent"
-          label="SQL 内容"
+          label={formatMessage({ id: 'odc.AlterDdlTask.CreateModal.SqlContent' })} /*SQL 内容*/
           className={styles.sqlContent}
           rules={[
             {
               required: true,
-              message: '请填写 SQL 内容',
+              message: formatMessage({ id: 'odc.AlterDdlTask.CreateModal.EnterTheSqlContent' }), //请填写 SQL 内容
             },
           ]}
           style={{ height: '280px' }}
@@ -182,7 +189,11 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         <FormItemPanel
           label={
             <HelpDoc leftText isTip doc="schemaChangeSwapTable">
-              切换表设置
+              {
+                formatMessage({
+                  id: 'odc.AlterDdlTask.CreateModal.SwitchTableSettings',
+                }) /*切换表设置*/
+              }
             </HelpDoc>
           }
           keepExpand
@@ -192,23 +203,29 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               <Form.Item
                 label={
                   <HelpDoc leftText isTip doc="schemaChangeSwapTableTimeout">
-                    锁表超时时间
+                    {
+                      formatMessage({
+                        id: 'odc.AlterDdlTask.CreateModal.LockTableTimeout',
+                      }) /*锁表超时时间*/
+                    }
                   </HelpDoc>
                 }
                 required
               >
                 <Form.Item
-                  label="秒"
+                  label={formatMessage({ id: 'odc.AlterDdlTask.CreateModal.Seconds' })} /*秒*/
                   name="lockTableTimeOutSeconds"
                   rules={[
                     {
                       required: true,
-                      message: '请输入超时时间',
+                      message: formatMessage({
+                        id: 'odc.AlterDdlTask.CreateModal.EnterATimeoutPeriod',
+                      }), //请输入超时时间
                     },
                     {
                       type: 'number',
                       max: 3600,
-                      message: '最大不超过 3600 秒',
+                      message: formatMessage({ id: 'odc.AlterDdlTask.CreateModal.UpToSeconds' }), //最大不超过 3600 秒
                     },
                   ]}
                   initialValue={48}
@@ -216,7 +233,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 >
                   <InputNumber min={0} max={3600} />
                 </Form.Item>
-                <span className={styles.hour}>秒</span>
+                <span className={styles.hour}>
+                  {formatMessage({ id: 'odc.AlterDdlTask.CreateModal.Seconds' }) /*秒*/}
+                </span>
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -224,7 +243,11 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 name="swapTableNameRetryTimes"
                 label={
                   <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
-                    失败重试次数
+                    {
+                      formatMessage({
+                        id: 'odc.AlterDdlTask.CreateModal.NumberOfFailedRetries',
+                      }) /*失败重试次数*/
+                    }
                   </HelpDoc>
                 }
                 initialValue={3}
@@ -232,7 +255,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入失败重试次数',
+                    message: formatMessage({
+                      id: 'odc.AlterDdlTask.CreateModal.PleaseEnterTheNumberOf',
+                    }), //请输入失败重试次数
                   },
                 ]}
               >
@@ -241,52 +266,84 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Col>
           </Row>
           <Form.Item
-            label="完成后源表清理策略"
+            label={formatMessage({
+              id: 'odc.AlterDdlTask.CreateModal.SourceTableCleanupPolicyAfter',
+            })} /*完成后源表清理策略*/
             name="originTableCleanStrategy"
             initialValue={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}
             rules={[
               {
                 required: true,
-                message: '请选择清理策略',
+                message: formatMessage({ id: 'odc.AlterDdlTask.CreateModal.SelectACleanupPolicy' }), //请选择清理策略
               },
             ]}
           >
             <Radio.Group>
-              <Radio value={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}>重命名不处理</Radio>
-              <Radio value={ClearStrategy.ORIGIN_TABLE_DROP}>立即删除</Radio>
+              <Radio value={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}>
+                {
+                  formatMessage({
+                    id: 'odc.AlterDdlTask.CreateModal.RenameNotProcessed',
+                  }) /*重命名不处理*/
+                }
+              </Radio>
+              <Radio value={ClearStrategy.ORIGIN_TABLE_DROP}>
+                {formatMessage({ id: 'odc.AlterDdlTask.CreateModal.DeleteNow' }) /*立即删除*/}
+              </Radio>
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>
-        <FormItemPanel label="任务设置" keepExpand>
+        <FormItemPanel
+          label={formatMessage({ id: 'odc.AlterDdlTask.CreateModal.TaskSettings' })}
+          /*任务设置*/ keepExpand
+        >
           <TaskTimer isReadonlyPublicConn={false} />
           <Form.Item
-            label="任务错误处理"
+            label={formatMessage({
+              id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',
+            })} /*任务错误处理*/
             name="errorStrategy"
             initialValue={ErrorStrategy.ABORT}
             rules={[
               {
                 required: true,
-                message: '请选择任务错误处理',
+                message: formatMessage({
+                  id: 'odc.AlterDdlTask.CreateModal.SelectTaskErrorHandling',
+                }), //请选择任务错误处理
               },
             ]}
           >
             <Radio.Group>
-              <Radio value={ErrorStrategy.ABORT}>停止任务</Radio>
-              <Radio value={ErrorStrategy.CONTINUE}>忽略错误继续任务</Radio>
+              <Radio value={ErrorStrategy.ABORT}>
+                {formatMessage({ id: 'odc.AlterDdlTask.CreateModal.StopATask' }) /*停止任务*/}
+              </Radio>
+              <Radio value={ErrorStrategy.CONTINUE}>
+                {
+                  formatMessage({
+                    id: 'odc.AlterDdlTask.CreateModal.IgnoreErrorsToContinueThe',
+                  }) /*忽略错误继续任务*/
+                }
+              </Radio>
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>
         <Form.Item
-          label="备注"
+          label={formatMessage({ id: 'odc.AlterDdlTask.CreateModal.Remarks' })} /*备注*/
           name="description"
           rules={[
             {
               max: 200,
-              message: '备注不超过 200 个字符',
+              message: formatMessage({
+                id: 'odc.AlterDdlTask.CreateModal.TheDescriptionCannotExceedCharacters',
+              }), //备注不超过 200 个字符
             },
           ]}
         >
-          <Input.TextArea rows={3} placeholder="请输入备注" />
+          <Input.TextArea
+            rows={3}
+            placeholder={formatMessage({
+              id: 'odc.AlterDdlTask.CreateModal.EnterAComment',
+            })} /*请输入备注*/
+          />
         </Form.Item>
       </Form>
     </Drawer>

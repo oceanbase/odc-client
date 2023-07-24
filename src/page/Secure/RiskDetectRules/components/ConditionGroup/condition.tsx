@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Space } from 'antd';
 import { useEffect, useState } from 'react';
@@ -80,36 +81,46 @@ const Condition = ({
           rules={[
             {
               required: true,
-              message: '请选择表达式',
+              message: formatMessage({
+                id: 'odc.components.ConditionGroup.condition.PleaseSelectAnExpression',
+              }), //请选择表达式
             },
           ]}
         >
           <Select
             key={[name, 'expression', index].join('_')}
             style={{ width: '130px' }}
-            placeholder="请选择"
+            placeholder={formatMessage({
+              id: 'odc.components.ConditionGroup.condition.PleaseSelect',
+            })} /*请选择*/
             value={expressionType}
             onSelect={(value, _) => handleExpressionTypeChange(value)}
             options={[
               {
                 value: 'EnvironmentId',
-                label: '环境名称',
+                label: formatMessage({
+                  id: 'odc.components.ConditionGroup.condition.EnvironmentName',
+                }), //环境名称
               },
               {
                 value: 'ProjectName',
-                label: '项目名称',
+                label: formatMessage({ id: 'odc.components.ConditionGroup.condition.ProjectName' }), //项目名称
               },
               {
                 value: 'DatabaseName',
-                label: '数据库名称',
+                label: formatMessage({
+                  id: 'odc.components.ConditionGroup.condition.DatabaseName',
+                }), //数据库名称
               },
               {
                 value: 'TaskType',
-                label: '任务类型',
+                label: formatMessage({ id: 'odc.components.ConditionGroup.condition.TaskType' }), //任务类型
               },
               {
                 value: 'SqlCheckResult',
-                label: 'SQL 检查结果',
+                label: formatMessage({
+                  id: 'odc.components.ConditionGroup.condition.SqlCheckResults',
+                }), //SQL 检查结果
               },
             ]}
           />
@@ -121,13 +132,17 @@ const Condition = ({
           rules={[
             {
               required: true,
-              message: '请选择操作符',
+              message: formatMessage({
+                id: 'odc.components.ConditionGroup.condition.SelectAnOperator',
+              }), //请选择操作符
             },
           ]}
         >
           <Select
             style={{ width: '80px' }}
-            placeholder="请选择"
+            placeholder={formatMessage({
+              id: 'odc.components.ConditionGroup.condition.PleaseSelect',
+            })} /*请选择*/
             options={[
               {
                 value: 'equals',
@@ -135,7 +150,7 @@ const Condition = ({
               },
               {
                 value: 'contains',
-                label: '包含',
+                label: formatMessage({ id: 'odc.components.ConditionGroup.condition.Include' }), //包含
               },
             ]}
           />
@@ -148,7 +163,9 @@ const Condition = ({
           rules={[
             {
               required: true,
-              message: '请选择值',
+              message: formatMessage({
+                id: 'odc.components.ConditionGroup.condition.SelectAValue',
+              }), //请选择值
             },
           ]}
           shouldUpdate={(prevValues, curValues) => prevValues.value !== curValues.value}
@@ -157,13 +174,21 @@ const Condition = ({
             <Select
               key={[name, 'value', index].join('_')}
               style={{ width: '318px' }}
-              placeholder="请选择"
+              placeholder={formatMessage({
+                id: 'odc.components.ConditionGroup.condition.PleaseSelect',
+              })} /*请选择*/
               value={isEdit ? environmentIdMap?.[value] || '' : value}
               onSelect={(v, _) => setValue(v)}
               options={valueOptions}
             />
           ) : (
-            <Input value={value} style={{ width: '318px' }} placeholder="请选择" />
+            <Input
+              value={value}
+              style={{ width: '318px' }}
+              placeholder={formatMessage({
+                id: 'odc.components.ConditionGroup.condition.PleaseSelect',
+              })} /*请选择*/
+            />
           )}
         </Form.Item>
         {fields.length > 1 ? (
