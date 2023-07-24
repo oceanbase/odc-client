@@ -8,6 +8,7 @@ import TableCard from '@/component/Table/TableCard';
 import { actionTypes } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
+import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import { Button, message, Popconfirm, Space } from 'antd';
@@ -57,7 +58,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
   async function deleteDB(id: number) {
     const isSuccess = await runDeleteDB([id]);
     if (isSuccess) {
-      message.success('删除成功');
+      message.success(
+        formatMessage({ id: 'odc.Datasource.Info.DeletedSuccessfully' }), //删除成功
+      );
       reload();
     }
   }
@@ -65,7 +68,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
   async function sync() {
     const isSuccess = await runSync(toInteger(id));
     if (isSuccess) {
-      message.success('同步成功');
+      message.success(
+        formatMessage({ id: 'odc.Datasource.Info.SynchronizationSucceeded' }), //同步成功
+      );
       reload();
     }
   }
@@ -84,8 +89,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               onSuccess={() => reload}
               dataSourceId={id}
             />
+
             <Button loading={syncLoading} onClick={sync}>
-              同步数据库
+              {formatMessage({ id: 'odc.Datasource.Info.SynchronizeDatabases' }) /*同步数据库*/}
             </Button>
           </Space>
         )
@@ -96,12 +102,18 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
         rowKey={'id'}
         columns={[
           {
-            title: '数据库名称',
+            title: formatMessage({ id: 'odc.Datasource.Info.DatabaseName' }), //数据库名称
             dataIndex: 'name',
             render: (name, record) => {
               if (!record.existed) {
                 return (
-                  <HelpDoc leftText isTip={false} title="当前数据库不存在">
+                  <HelpDoc
+                    leftText
+                    isTip={false}
+                    title={formatMessage({
+                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                    })} /*当前数据库不存在*/
+                  >
                     {name}
                   </HelpDoc>
                 );
@@ -110,22 +122,22 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
-            title: '字符编码',
+            title: formatMessage({ id: 'odc.Datasource.Info.CharacterEncoding' }), //字符编码
             dataIndex: 'charsetName',
             width: 120,
           },
           {
-            title: '排序规则',
+            title: formatMessage({ id: 'odc.Datasource.Info.SortingRules' }), //排序规则
             dataIndex: 'collationName',
             width: 120,
           },
           {
-            title: '所属项目',
+            title: formatMessage({ id: 'odc.Datasource.Info.Project' }), //所属项目
             dataIndex: ['project', 'name'],
             width: 160,
           },
           {
-            title: '最近一次同步时间',
+            title: formatMessage({ id: 'odc.Datasource.Info.LastSynchronizationTime' }), //最近一次同步时间
             dataIndex: 'lastSyncTime',
             width: 200,
             render(v) {
@@ -133,7 +145,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
-            title: '操作',
+            title: formatMessage({ id: 'odc.Datasource.Info.Operation' }), //操作
             dataIndex: 'name',
             width: 110,
             render(_, record) {
@@ -148,19 +160,22 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                       }}
                       key={'transfer'}
                     >
-                      转移项目
+                      {formatMessage({ id: 'odc.Datasource.Info.TransferProject' }) /*转移项目*/}
                     </Action.Link>
                   )}
+
                   {canDelete && (
                     <Popconfirm
-                      title="确认删除吗？"
+                      title={formatMessage({
+                        id: 'odc.Datasource.Info.AreYouSureYouWant',
+                      })} /*确认删除吗？*/
                       disabled={record.existed}
                       onConfirm={() => {
                         return deleteDB(record.id);
                       }}
                     >
                       <Action.Link disabled={record.existed} key={'delete'}>
-                        删除
+                        {formatMessage({ id: 'odc.Datasource.Info.Delete' }) /*删除*/}
                       </Action.Link>
                     </Popconfirm>
                   )}
@@ -179,6 +194,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
           loadData(pageSize, current);
         }}
       />
+
       <ChangeProjectModal
         visible={visible}
         database={database}

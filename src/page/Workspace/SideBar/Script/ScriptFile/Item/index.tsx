@@ -59,7 +59,7 @@ export default function Item({
 
   const onDelete = (script: IScriptMeta) => {
     Modal.confirm({
-      title: '确定删除脚本',
+      title: formatMessage({ id: 'odc.ScriptFile.Item.OkDeleteScript' }), //确定删除脚本
       onOk() {
         return deleteScript([script?.id]).then((isSuccess) => {
           if (isSuccess) {
@@ -107,7 +107,7 @@ export default function Item({
                 }}
                 key={'copy'}
               >
-                复制路径
+                {formatMessage({ id: 'odc.ScriptFile.Item.CopyPath' }) /*复制路径*/}
               </Action.Link>
               {script?.contentLength >= maxScriptEditLength ? (
                 <Tooltip
@@ -140,11 +140,12 @@ export default function Item({
                   }
                 </Action.Link>
               )}
+
               <Action.Link onClick={() => downloadScript(script.id)} key="download">
-                下载
+                {formatMessage({ id: 'odc.ScriptFile.Item.Download' }) /*下载*/}
               </Action.Link>
               <Action.Link onClick={() => onDelete(script)} key="delete">
-                删除
+                {formatMessage({ id: 'odc.ScriptFile.Item.Delete' }) /*删除*/}
               </Action.Link>
             </Action.Group>
           ) : (

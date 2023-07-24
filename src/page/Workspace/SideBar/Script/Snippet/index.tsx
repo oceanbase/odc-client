@@ -54,7 +54,9 @@ export default inject('snippetStore')(
           <div className={styles.search}>
             <Input.Search
               onSearch={(v) => setSearchValue(v)}
-              placeholder="搜索代码片段"
+              placeholder={formatMessage({
+                id: 'odc.Script.Snippet.SearchForCodeSnippets',
+              })} /*搜索代码片段*/
               size="small"
             />
           </div>
@@ -87,7 +89,7 @@ export default inject('snippetStore')(
                         actions={[
                           {
                             icon: CopyOutlined,
-                            title: '复制',
+                            title: formatMessage({ id: 'odc.Script.Snippet.Copy' }), //复制
                             onClick() {
                               copyToCB(
                                 `<meta name='_!isODCSnippet_' content='yes' />${getWrapedSnippetBody(
@@ -109,7 +111,7 @@ export default inject('snippetStore')(
                           },
                           {
                             icon: EditOutlined,
-                            title: '编辑',
+                            title: formatMessage({ id: 'odc.Script.Snippet.Edit' }), //编辑
                             onClick() {
                               setSnipptVisible(true);
                               setSnippet(snippet);
@@ -117,7 +119,7 @@ export default inject('snippetStore')(
                           },
                           {
                             icon: DeleteOutlined,
-                            title: '删除',
+                            title: formatMessage({ id: 'odc.Script.Snippet.Delete' }), //删除
                             onClick() {
                               Modal.confirm({
                                 title: formatMessage(

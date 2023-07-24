@@ -152,7 +152,7 @@ export class TaskPage extends Page {
     super();
     this.pageKey = 'taskpage';
     this.pageType = PageType.TASKS;
-    this.pageTitle = '工单';
+    this.pageTitle = formatMessage({ id: 'odc.page.pages.Ticket' }); //工单
     this.pageParams = {};
   }
 }

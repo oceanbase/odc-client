@@ -1,4 +1,5 @@
 import Sider from '@/component/Task/Sider';
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 import SideTabs from '../components/SideTabs';
 import styles from './index.less';
@@ -10,7 +11,7 @@ const Task: React.FC<IProps> = () => {
     <SideTabs
       tabs={[
         {
-          title: '工单',
+          title: formatMessage({ id: 'odc.SideBar.Task.Ticket' }), //工单
           key: 'task',
           actions: [],
           render() {

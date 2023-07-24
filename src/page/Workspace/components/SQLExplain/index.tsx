@@ -85,6 +85,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           {filterContent}
         </div>
       ),
+
       maskClosable: true,
       okText: formatMessage({
         id: 'app.button.ok',
@@ -165,9 +166,12 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
             <Radio.Button value={TAB_NAME.SUMMARY}>
               <FormattedMessage id="workspace.window.sql.explain.tab.summary" />
             </Radio.Button>
-            <Radio.Button value={TAB_NAME.TRACE}>全链路 TRACE</Radio.Button>
+            <Radio.Button value={TAB_NAME.TRACE}>
+              {formatMessage({ id: 'odc.components.SQLExplain.FullLinkTrace' }) /*全链路 TRACE*/}
+            </Radio.Button>
           </Radio.Group>
         )}
+
         {showExplainText ? (
           <pre
             style={{
@@ -204,7 +208,11 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                       });
                     }}
                   >
-                    仅查看文本格式
+                    {
+                      formatMessage({
+                        id: 'odc.components.SQLExplain.ViewOnlyTextFormats',
+                      }) /*仅查看文本格式*/
+                    }
                   </Checkbox>
                 </div>
               </div>

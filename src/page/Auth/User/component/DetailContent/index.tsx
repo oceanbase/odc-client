@@ -16,19 +16,19 @@ import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '.
 
 const authFilters = [
   {
-    text: '可新建',
+    text: formatMessage({ id: 'odc.component.DetailContent.CanBeCreated' }), //可新建
     value: ResourceManagementAction.can_create,
   },
   {
-    text: '仅查看',
+    text: formatMessage({ id: 'odc.component.DetailContent.ViewOnly' }), //仅查看
     value: ResourceManagementAction.can_read,
   },
   {
-    text: '可编辑',
+    text: formatMessage({ id: 'odc.component.DetailContent.Editable' }), //可编辑
     value: ResourceManagementAction.can_update,
   },
   {
-    text: '可管理',
+    text: formatMessage({ id: 'odc.component.DetailContent.Manageable' }), //可管理
     value: ResourceManagementAction.can_manage,
   },
 ];
@@ -37,7 +37,7 @@ const getColumns = () => {
   return [
     {
       dataIndex: 'name',
-      title: '数据源',
+      title: formatMessage({ id: 'odc.component.DetailContent.DataSource' }), //数据源
       ellipsis: true,
     },
     {

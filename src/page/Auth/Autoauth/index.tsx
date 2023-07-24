@@ -104,7 +104,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '启用状态',
+        title: formatMessage({ id: 'odc.Auth.Autoauth.EnableStatus' }), //启用状态
         width: 100,
         ellipsis: true,
         key: 'enabled',
@@ -120,6 +120,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
             value: false,
           },
         ],
+
         render: (enabled, record) => (
           <Switch
             size="small"

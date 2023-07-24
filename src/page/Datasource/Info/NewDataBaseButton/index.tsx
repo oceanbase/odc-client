@@ -2,6 +2,7 @@ import { createDataBase } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input, message, Modal, Select, Space } from 'antd';
 import { toInteger } from 'lodash';
@@ -72,7 +73,9 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
       },
     });
     if (isSuccess) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({ id: 'odc.Info.NewDataBaseButton.New' }), //新建成功
+      );
       setOpen(false);
       onSuccess();
     }
@@ -81,22 +84,56 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
   return (
     <>
       <Button onClick={() => setOpen(true)} type="primary">
-        新建数据库
+        {formatMessage({ id: 'odc.Info.NewDataBaseButton.CreateADatabase' }) /*新建数据库*/}
       </Button>
-      <Modal open={open} title="新建数据库" onOk={submit} onCancel={close}>
+      <Modal
+        open={open}
+        title={formatMessage({ id: 'odc.Info.NewDataBaseButton.CreateADatabase' })}
+        /*新建数据库*/ onOk={submit}
+        onCancel={close}
+      >
         <Form form={form} initialValues={{}} layout="vertical">
-          <Form.Item name={'name'} label="数据库名称">
-            <Input style={{ width: 320 }} placeholder="请输入" />
+          <Form.Item
+            name={'name'}
+            label={formatMessage({ id: 'odc.Info.NewDataBaseButton.DatabaseName' })} /*数据库名称*/
+          >
+            <Input
+              style={{ width: 320 }}
+              placeholder={formatMessage({
+                id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+              })} /*请输入*/
+            />
           </Form.Item>
           <Space>
-            <Form.Item name={'charsetName'} label="字符编码">
-              <Input style={{ width: 200 }} placeholder="请输入" />
+            <Form.Item
+              name={'charsetName'}
+              label={formatMessage({
+                id: 'odc.Info.NewDataBaseButton.CharacterEncoding',
+              })} /*字符编码*/
+            >
+              <Input
+                style={{ width: 200 }}
+                placeholder={formatMessage({
+                  id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                })} /*请输入*/
+              />
             </Form.Item>
-            <Form.Item name={'collationName'} label="排序规则">
-              <Input style={{ width: 200 }} placeholder="请输入" />
+            <Form.Item
+              name={'collationName'}
+              label={formatMessage({ id: 'odc.Info.NewDataBaseButton.SortingRules' })} /*排序规则*/
+            >
+              <Input
+                style={{ width: 200 }}
+                placeholder={formatMessage({
+                  id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                })} /*请输入*/
+              />
             </Form.Item>
           </Space>
-          <Form.Item name={'projectId'} label="所属项目">
+          <Form.Item
+            name={'projectId'}
+            label={formatMessage({ id: 'odc.Info.NewDataBaseButton.Project' })} /*所属项目*/
+          >
             <Select style={{ width: 240 }} loading={projectListLoading}>
               {project?.contents?.map((p) => {
                 return <Select.Option key={p.id}>{p.name}</Select.Option>;

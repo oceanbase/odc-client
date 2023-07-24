@@ -23,7 +23,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
   [ResourceNodeType.ProcedureRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.procedure.BatchCompilation' }), //批量编译
+      ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       isHide(session, node) {
@@ -42,7 +44,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     },
     {
       key: 'CREATE',
-      text: ['新建存储过程'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.procedure.CreateAStoredProcedure' }), //新建存储过程
+      ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
@@ -65,6 +69,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       },
     },
   ],
+
   [ResourceNodeType.Procedure]: [
     {
       key: 'OVERVIEW',
@@ -73,6 +78,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.See',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const proc: IProcedure = node.data;
@@ -131,6 +137,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
         }),
       ],
+
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
       },
@@ -163,6 +170,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,

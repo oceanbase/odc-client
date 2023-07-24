@@ -3,6 +3,7 @@ import HelpDoc from '@/component/helpDoc';
 import SelectTransfer from '@/component/SelectTransfer';
 import { IManagerUser } from '@/d.ts';
 import { IProject, ProjectRole } from '@/d.ts/project';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Checkbox, Form, message, Modal } from 'antd';
 import { useEffect } from 'react';
@@ -63,24 +64,37 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
       members: newUsers,
     });
     if (isSuccess) {
-      message.success('添加成功');
+      message.success(
+        formatMessage({ id: 'odc.User.AddUserModal.AddedSuccessfully' }), //添加成功
+      );
       close();
       onSuccess();
     }
   }
 
   return (
-    <Modal title="添加成员" onCancel={() => close()} onOk={submit} visible={visible} width={760}>
+    <Modal
+      title={formatMessage({ id: 'odc.User.AddUserModal.AddMembers' })}
+      /*添加成员*/ onCancel={() => close()}
+      onOk={submit}
+      visible={visible}
+      width={760}
+    >
       <Form layout="vertical" form={form}>
-        <Form.Item rules={[{ required: true }]} name={'roles'} label="项目角色">
+        <Form.Item
+          rules={[{ required: true }]}
+          name={'roles'}
+          label={formatMessage({ id: 'odc.User.AddUserModal.ProjectRole' })} /*项目角色*/
+        >
           <Checkbox.Group
             options={[
               {
                 label: (
                   <HelpDoc leftText doc="projectOwner">
-                    管理员
+                    {formatMessage({ id: 'odc.User.AddUserModal.Administrator' }) /*管理员*/}
                   </HelpDoc>
                 ),
+
                 value: ProjectRole.OWNER,
               },
               {
@@ -89,14 +103,16 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
                     DBA
                   </HelpDoc>
                 ),
+
                 value: ProjectRole.DBA,
               },
               {
                 label: (
                   <HelpDoc leftText doc="projectDev">
-                    普通成员
+                    {formatMessage({ id: 'odc.User.AddUserModal.CommonMember' }) /*普通成员*/}
                   </HelpDoc>
                 ),
+
                 value: ProjectRole.DEVELOPER,
               },
             ]}
@@ -109,17 +125,17 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
           trigger="onCheck"
         >
           {/* <Transfer
-            className={styles.transfer}
-            showSearch
-            filterOption={filterOption}
-            dataSource={userList?.contents?.map((item) => {
-              return {
-                key: item.id,
-                ...item,
-              };
-            })}
-            render={(item) => `${item.name}(${item.accountName})`}
-          /> */}
+             className={styles.transfer}
+             showSearch
+             filterOption={filterOption}
+             dataSource={userList?.contents?.map((item) => {
+               return {
+                 key: item.id,
+                 ...item,
+               };
+             })}
+             render={(item) => `${item.name}(${item.accountName})`}
+            /> */}
           <SelectTransfer
             treeData={userList?.contents
               ?.map((item) => {

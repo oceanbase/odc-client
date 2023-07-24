@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Empty, Input, Popover, Spin, Tree, TreeDataNode } from 'antd';
 import ResourceTree from '..';
@@ -99,7 +100,9 @@ export default forwardRef(function DatasourceTree(props, ref) {
               onSearch={(v) => {
                 setSearchKey(v);
               }}
-              placeholder="搜索数据源"
+              placeholder={formatMessage({
+                id: 'odc.ResourceTree.Datasource.SearchForDataSources',
+              })} /*搜索数据源*/
               style={{ width: '100%' }}
               size="small"
             />

@@ -1,4 +1,5 @@
 import { PLType } from '@/constant/plType';
+import { formatMessage } from '@/util/intl';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 
@@ -2473,8 +2474,8 @@ export enum SubTaskStatus {
   RUNNING = 'RUNNING', // 运行中
   DONE = 'DONE', // 执行完成
   FAILED = 'FAILED', // 执行失败
-  CANCELED = 'CANCELED', // 执行取消
-}
+  CANCELED = 'CANCELED',
+} // 执行取消
 
 export enum StatusNodeType {
   FLOW_TASK = 'FLOW_TASK',
@@ -2809,20 +2810,15 @@ export enum MaskRuleType {
   NULL = 'NULL',
 }
 
-export enum MaskRyleTypeMap {
+export const MaskRyleTypeMap = {
   // 掩盖
-  MASK = '掩盖',
-  // 替换
-  SUBSTITUTION = '替换',
-  // 保留格式
-  PSEUDO = '保留格式',
-  // 哈希
-  HASH = '哈希',
-  // 取整
-  ROUNDING = '取整',
-  // 置空
-  NULL = '置空',
-}
+  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp' }), //掩盖 // 替换
+  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace' }), //替换 // 保留格式
+  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat' }), //保留格式 // 哈希
+  HASH: formatMessage({ id: 'odc.src.d.ts.Hash' }), //哈希 // 取整
+  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding' }), //取整 // 置空
+  NULL: formatMessage({ id: 'odc.src.d.ts.Empty' }), //置空
+};
 
 export enum MaskRuleCustomSegmentsType {
   // 位数

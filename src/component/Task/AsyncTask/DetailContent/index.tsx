@@ -105,7 +105,13 @@ export const getItems = (
             <SimpleTextItem
               label={
                 <Space>
-                  <span>回滚内容</span>
+                  <span>
+                    {
+                      formatMessage({
+                        id: 'odc.AsyncTask.DetailContent.RollbackContent',
+                      }) /*回滚内容*/
+                    }
+                  </span>
                   <DownloadFileAction
                     taskId={_task?.id}
                     objectId={result?.rollbackPlanResult?.objectId}

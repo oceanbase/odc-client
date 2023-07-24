@@ -402,7 +402,9 @@ const TaskFlow: React.FC<IProps> = (props) => {
             return (
               <Step
                 status={statusContent?.status as any}
-                title="生成备份回滚方案"
+                title={formatMessage({
+                  id: 'odc.component.CommonDetailModal.TaskFlow.GenerateABackupRollbackScheme',
+                })} /*生成备份回滚方案*/
                 description={<RollbackNode taskId={task?.id} node={item} result={result} />}
               />
             );

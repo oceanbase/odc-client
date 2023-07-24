@@ -1,26 +1,27 @@
 import DisplayTable from '@/component/DisplayTable';
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 
 const columns = [
   {
     dataIndex: 'name',
-    title: '变量名',
+    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.VariableName' }), //变量名
     ellipsis: true,
     width: 190,
-    render: (name) => name || '-'
+    render: (name) => name || '-',
   },
   {
     dataIndex: 'format',
-    title: '时间格式',
+    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeFormat' }), //时间格式
     ellipsis: true,
     width: 150,
-    render: (name) => name || '-'
+    render: (name) => name || '-',
   },
   {
     dataIndex: 'opration',
-    title: '时间运算',
+    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeOperation' }), //时间运算
     width: 160,
-    render: (name) => name || '-'
+    render: (name) => name || '-',
   },
 ];
 

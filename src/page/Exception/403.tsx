@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { getLocale } from 'umi';
 
 import Exception from '@/component/Exception/index';
@@ -17,7 +18,7 @@ export default () => {
       desc=""
       actions={
         <Button type="primary" onClick={back}>
-          重新登录
+          {formatMessage({ id: 'odc.page.Exception.403.LogOnAgain' }) /*重新登录*/}
         </Button>
       }
     />

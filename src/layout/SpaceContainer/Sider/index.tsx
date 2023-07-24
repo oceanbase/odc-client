@@ -48,6 +48,7 @@ const Sider: React.FC<IProps> = function () {
             <Divider style={{ margin: '0 0 14px' }} />
           </>
         )}
+
         <Space
           size={mentItemGap}
           direction="vertical"
@@ -60,7 +61,7 @@ const Sider: React.FC<IProps> = function () {
               selected={selected === IPageType.Project}
               icon={AppstoreOutlined}
               collapsed={collapsed}
-              label="项目"
+              label={formatMessage({ id: 'odc.SpaceContainer.Sider.Project' })} /*项目*/
             />
           </Link>
           <Link to={`/${IPageType.Datasource}`}>
@@ -69,7 +70,7 @@ const Sider: React.FC<IProps> = function () {
               selected={selected === IPageType.Datasource}
               icon={LinkOutlined}
               collapsed={collapsed}
-              label="数据源"
+              label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
             />
           </Link>
           <Link to={`/${IPageType.Task}`}>
@@ -80,7 +81,9 @@ const Sider: React.FC<IProps> = function () {
               collapsed={collapsed}
               label={
                 <MessageCount>
-                  <div style={{ width: '100px' }}>工单</div>
+                  <div style={{ width: '100px' }}>
+                    {formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/}
+                  </div>
                 </MessageCount>
               }
             />
@@ -98,7 +101,9 @@ const Sider: React.FC<IProps> = function () {
                 selected={selected === IPageType.Auth}
                 icon={TeamOutlined}
                 collapsed={collapsed}
-                label="用户权限"
+                label={formatMessage({
+                  id: 'odc.SpaceContainer.Sider.UserPermissions',
+                })} /*用户权限*/
               />
             </Link>
           </AcessMultiPermission>
@@ -108,7 +113,9 @@ const Sider: React.FC<IProps> = function () {
               selected={selected === IPageType.Secure}
               icon={ControlOutlined}
               collapsed={collapsed}
-              label="安全规范"
+              label={formatMessage({
+                id: 'odc.SpaceContainer.Sider.SafetySpecifications',
+              })} /*安全规范*/
             />
           </Link>
           <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
@@ -120,7 +127,9 @@ const Sider: React.FC<IProps> = function () {
                 selected={selected === IPageType.ExternalIntegration}
                 icon={ForkOutlined}
                 collapsed={collapsed}
-                label="外部集成"
+                label={formatMessage({
+                  id: 'odc.SpaceContainer.Sider.ExternalIntegration',
+                })} /*外部集成*/
               />
             </Link>
           </Acess>

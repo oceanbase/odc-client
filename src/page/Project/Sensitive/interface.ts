@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 export enum AddSensitiveColumnType {
   Manual,
   Scan,
@@ -46,7 +47,7 @@ export interface CheckboxInputProps {
 }
 
 export const DetectRuleTypeMap = {
-  PATH: '路径',
-  REGEX: '正则',
-  GROOVY: '脚本',
+  PATH: formatMessage({ id: 'odc.Project.Sensitive.interface.Path' }), //路径
+  REGEX: formatMessage({ id: 'odc.Project.Sensitive.interface.Regular' }), //正则
+  GROOVY: formatMessage({ id: 'odc.Project.Sensitive.interface.Script' }), //脚本
 };

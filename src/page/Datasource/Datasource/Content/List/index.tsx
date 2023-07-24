@@ -267,7 +267,10 @@ const List: React.FC<IProps> = forwardRef(function (
           }
           env={
             <Tag color={connection?.environmentStyle?.toLowerCase()}>
-              {connection?.environmentName || '无环境'}
+              {
+                connection?.environmentName ||
+                  formatMessage({ id: 'odc.Content.List.NoEnvironment' }) //无环境
+              }
             </Tag>
           }
         />

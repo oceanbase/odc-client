@@ -1,16 +1,17 @@
 import DisplayTable from '@/component/DisplayTable';
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 
 const columns = [
   {
     dataIndex: 'tableName',
-    title: '表名',
+    title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.TableName' }), //表名
     ellipsis: true,
     width: 190,
   },
   {
     dataIndex: 'conditionExpression',
-    title: '过滤条件',
+    title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.FilterConditions' }), //过滤条件
     ellipsis: true,
     width: 150,
   },

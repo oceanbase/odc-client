@@ -1,6 +1,7 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
+import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
 import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import Header from '../Header';
@@ -34,7 +35,7 @@ const Content = function (props: IProps, ref) {
   return (
     <PageContainer
       titleProps={{
-        title: '数据源',
+        title: formatMessage({ id: 'odc.Datasource.Content.DataSource' }), //数据源
         type: TitleType.TEXT,
         showDivider: true,
       }}

@@ -18,6 +18,7 @@ import {
   IRowSelecter,
   ITableInstance,
 } from '@/page/Secure/components/SecureTable/interface';
+import { formatMessage } from '@/util/intl';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Menu, message, Modal, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -51,7 +52,7 @@ const getColumns: ({
 }) => {
   return [
     {
-      title: '数据源',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.DataSource' }), //数据源
       width: 170,
       dataIndex: 'datasource',
       key: 'datasource',
@@ -74,7 +75,7 @@ const getColumns: ({
       ),
     },
     {
-      title: '数据库/schema',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.DatabaseSchema' }), //数据库/schema
       width: 170,
       dataIndex: 'database',
       key: 'database',
@@ -94,7 +95,7 @@ const getColumns: ({
       ),
     },
     {
-      title: '表',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.Table' }), //表
       width: 170,
       dataIndex: 'tableName',
       key: 'tableName',
@@ -111,7 +112,7 @@ const getColumns: ({
       render: (text, record, index) => <TooltipContent content={text} maxWdith={170} />,
     },
     {
-      title: '列',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.Column' }), //列
       width: 170,
       dataIndex: 'columnName',
       key: 'columnName',
@@ -128,7 +129,7 @@ const getColumns: ({
       render: (text, record, index) => <TooltipContent content={text} maxWdith={170} />,
     },
     {
-      title: '脱敏算法',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.DesensitizationAlgorithm' }), //脱敏算法
       width: 170,
       dataIndex: 'maskingAlgorithmId',
       key: 'maskingAlgorithmId',
@@ -141,20 +142,21 @@ const getColumns: ({
       ),
     },
     {
-      title: '启用状态',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.EnableStatus' }), //启用状态
       width: 80,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [
         {
-          text: '启用',
+          text: formatMessage({ id: 'odc.components.SensitiveColumn.Enable' }), //启用
           value: true,
         },
         {
-          text: '禁用',
+          text: formatMessage({ id: 'odc.components.SensitiveColumn.Disable' }), //禁用
           value: false,
         },
       ],
+
       render: (text, { id, enabled }, index) => (
         <StatusSwitch
           key={index}
@@ -166,7 +168,7 @@ const getColumns: ({
       ),
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.Operation' }), //操作
       width: 154,
       key: 'action',
       render: (_, record, index) => (
@@ -179,7 +181,7 @@ const getColumns: ({
             disabled={hasRowSelected}
             onClick={() => handleEdit(record.maskingAlgorithmId, [record.id])}
           >
-            编辑
+            {formatMessage({ id: 'odc.components.SensitiveColumn.Edit' }) /*编辑*/}
           </Button>
           <Button
             style={{
@@ -189,7 +191,7 @@ const getColumns: ({
             disabled={hasRowSelected}
             onClick={() => handleDelete([record.id])}
           >
-            删除
+            {formatMessage({ id: 'odc.components.SensitiveColumn.Delete' }) /*删除*/}
           </Button>
         </Space>
       ),
@@ -222,13 +224,13 @@ const SensitiveColumn = ({
   const rowSelector: IRowSelecter<ISensitiveColumn> = {
     options: [
       {
-        okText: '批量编辑',
+        okText: formatMessage({ id: 'odc.components.SensitiveColumn.BatchEdit' }), //批量编辑
         onOk: (keys) => {
           handleEdit(maskingAlgorithms?.[0]?.id, keys as number[], true);
         },
       },
       {
-        okText: '批量删除',
+        okText: formatMessage({ id: 'odc.components.SensitiveColumn.BatchDeletion' }), //批量删除
         onOk: (keys) => {
           handleDelete(keys as number[], true);
         },
@@ -269,14 +271,14 @@ const SensitiveColumn = ({
 
   const onClose = (fn) => {
     return Modal.confirm({
-      title: '确认要取消新建吗？',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.AreYouSureYouWant' }), //确认要取消新建吗？
       onOk: async () => {
         setVisible(false);
         fn?.();
       },
       onCancel: () => {},
-      okText: '确定',
-      cancelText: '取消',
+      okText: formatMessage({ id: 'odc.components.SensitiveColumn.Ok' }), //确定
+      cancelText: formatMessage({ id: 'odc.components.SensitiveColumn.Cancel' }), //取消
     });
   };
   const onOk = (fn?: () => void) => {
@@ -307,9 +309,13 @@ const SensitiveColumn = ({
   const handleStatusSwitch = async (id: number, enabled: boolean) => {
     const result = await setEnabled(projectId, id, enabled);
     if (result) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({ id: 'odc.components.SensitiveColumn.UpdatedSuccessfully' }), //更新成功
+      );
     } else {
-      message.error('更新失败');
+      message.error(
+        formatMessage({ id: 'odc.components.SensitiveColumn.UpdateFailed' }), //更新失败
+      );
     }
     tableRef.current?.reload?.();
   };
@@ -320,15 +326,19 @@ const SensitiveColumn = ({
       return;
     }
     return Modal.confirm({
-      title: '确认要删除敏感列吗？',
+      title: formatMessage({ id: 'odc.components.SensitiveColumn.AreYouSureYouWant.1' }), //确认要删除敏感列吗？
       onOk: debounce(async () => {
         if (!submiting) {
           setSubmiting(true);
           const result = await batchDeleteSensitiveColumns(projectId, ids);
           if (result) {
-            message.success('删除成功');
+            message.success(
+              formatMessage({ id: 'odc.components.SensitiveColumn.DeletedSuccessfully' }), //删除成功
+            );
           } else {
-            message.error('删除失败');
+            message.error(
+              formatMessage({ id: 'odc.components.SensitiveColumn.FailedToDelete' }), //删除失败
+            );
           }
           tableRef.current?.reloadFirstPage?.();
           tableRef.current?.resetSelectedRows();
@@ -336,8 +346,8 @@ const SensitiveColumn = ({
         }
       }),
       onCancel: () => {},
-      okText: '确定',
-      cancelText: '取消',
+      okText: formatMessage({ id: 'odc.components.SensitiveColumn.Ok' }), //确定
+      cancelText: formatMessage({ id: 'odc.components.SensitiveColumn.Cancel' }), //取消
     });
   };
   const columns: ColumnsType<ISensitiveColumn> = getColumns({
@@ -360,12 +370,18 @@ const SensitiveColumn = ({
       <Button type="primary">
         <a onClick={(e) => e.preventDefault()}>
           <Space>
-            添加敏感列
+            {
+              formatMessage({
+                id: 'odc.components.SensitiveColumn.AddSensitiveColumns',
+              }) /*添加敏感列*/
+            }
+
             <DownOutlined />
           </Space>
         </a>
       </Button>
     ),
+
     overlay: (
       <Menu>
         <Menu.Item
@@ -375,7 +391,7 @@ const SensitiveColumn = ({
             handleOpenEditSensitiveColumnDrawer();
           }}
         >
-          手动添加
+          {formatMessage({ id: 'odc.components.SensitiveColumn.ManuallyAdd' }) /*手动添加*/}
         </Menu.Item>
         <Menu.Item
           key={AddSensitiveColumnType.Scan}
@@ -384,10 +400,11 @@ const SensitiveColumn = ({
             handleOpenEditSensitiveColumnDrawer();
           }}
         >
-          扫描添加
+          {formatMessage({ id: 'odc.components.SensitiveColumn.ScanAdd' }) /*扫描添加*/}
         </Menu.Item>
       </Menu>
     ),
+
     onClick: () => {},
   });
   return (
@@ -400,7 +417,9 @@ const SensitiveColumn = ({
         showToolbar={true}
         showPagination={true}
         filterContent={{
-          searchPlaceholder: '请输入表名/列名',
+          searchPlaceholder: formatMessage({
+            id: 'odc.components.SensitiveColumn.EnterATableNameColumn',
+          }), //请输入表名/列名
         }}
         operationContent={{
           options: operationOptions,
@@ -419,6 +438,7 @@ const SensitiveColumn = ({
         rowSelecter={rowSelector}
         rowSelectedCallback={rowSelectedCallback}
       />
+
       <FormSensitiveColumnDrawer
         {...{
           isEdit,
@@ -429,6 +449,7 @@ const SensitiveColumn = ({
           initSensitiveColumn,
         }}
       />
+
       <EditModal
         {...{
           tableRef,

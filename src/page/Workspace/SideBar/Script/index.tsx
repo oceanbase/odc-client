@@ -64,11 +64,11 @@ const Script: React.FC<{}> = function () {
       <SideTabs
         tabs={[
           {
-            title: '脚本',
+            title: formatMessage({ id: 'odc.SideBar.Script.Script' }), //脚本
             key: 'script',
             actions: [
               {
-                title: '上传脚本',
+                title: formatMessage({ id: 'odc.SideBar.Script.UploadScript' }), //上传脚本
                 key: 'upload',
                 onClick() {
                   console.log('click');
@@ -77,7 +77,7 @@ const Script: React.FC<{}> = function () {
                 icon: UploadOutlined,
               },
               {
-                title: '刷新',
+                title: formatMessage({ id: 'odc.SideBar.Script.Refresh' }), //刷新
                 key: 'reload',
                 onClick() {
                   return login.scriptStore.getScriptList();
@@ -85,16 +85,17 @@ const Script: React.FC<{}> = function () {
                 icon: ReloadOutlined,
               },
             ],
+
             render() {
               return <ScriptFile uploadFiles={uploadFiles} setUploadFiles={setUploadFiles} />;
             },
           },
           {
-            title: '代码片段',
+            title: formatMessage({ id: 'odc.SideBar.Script.CodeSnippet' }), //代码片段
             key: 'snippet',
             actions: [
               {
-                title: '新建代码片段',
+                title: formatMessage({ id: 'odc.SideBar.Script.CreateACodeSnippet' }), //新建代码片段
                 key: 'add',
                 onClick() {
                   snippetRef.current?.newSnippet();
@@ -102,7 +103,7 @@ const Script: React.FC<{}> = function () {
                 icon: PlusOutlined,
               },
               {
-                title: '刷新',
+                title: formatMessage({ id: 'odc.SideBar.Script.Refresh' }), //刷新
                 key: 'reload',
                 onClick() {
                   snippetRef.current?.reload();
@@ -110,6 +111,7 @@ const Script: React.FC<{}> = function () {
                 icon: ReloadOutlined,
               },
             ],
+
             render() {
               return <Snippet ref={snippetRef} />;
             },

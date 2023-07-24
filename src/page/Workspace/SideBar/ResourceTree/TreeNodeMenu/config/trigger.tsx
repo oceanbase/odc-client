@@ -23,7 +23,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
   [ResourceNodeType.TriggerRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.trigger.BatchCompilation' }), //批量编译
+      ],
       icon: BatchCompileSvg,
       actionType: actionTypes.create,
       run(session, node) {
@@ -57,6 +59,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
   ],
+
   [ResourceNodeType.Trigger]: [
     {
       key: 'OVERVIEW_TRIGGER',

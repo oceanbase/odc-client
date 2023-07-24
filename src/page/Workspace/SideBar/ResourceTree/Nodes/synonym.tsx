@@ -2,6 +2,7 @@ import { DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import SynonymSvg from '@/svgr/menuSynonym.svg';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
@@ -13,7 +14,9 @@ export function SynonymTreeData(
   const dbName = database.name;
   const synonyms = isPublic ? dbSession?.database?.publicSynonyms : dbSession?.database?.synonyms;
   const treeData: TreeDataNode = {
-    title: isPublic ? '公共同义词' : '同义词',
+    title: isPublic
+      ? formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.CommonSynonyms' }) //公共同义词
+      : formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.Synonym' }), //同义词
     key: `${database.id}-${dbName}-synonym-${isPublic}`,
     type: isPublic ? ResourceNodeType.PublicSynonymRoot : ResourceNodeType.SynonymRoot,
     data: database,
@@ -39,6 +42,7 @@ export function SynonymTreeData(
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: true,
       };

@@ -1,5 +1,6 @@
 import { DbObjectType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
@@ -10,7 +11,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
   const dbName = database.name;
   const sequences = dbSession?.database?.sequences;
   const treeData: TreeDataNode = {
-    title: '序列',
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.sequence.Sequence' }), //序列
     key: `${database.id}-${dbName}-sequence`,
     type: ResourceNodeType.SequenceRoot,
     data: database,
@@ -34,6 +35,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: true,
       };

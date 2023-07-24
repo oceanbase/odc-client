@@ -6,6 +6,7 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import SensitiveContext from '@/page/Project/Sensitive/SensitiveContext';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Select, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
@@ -236,13 +237,17 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择数据源',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectADataSource',
+            }), //请选择数据源
           },
         ]}
       >
         <Select
           key={[fieldName, 'dataSource', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           onSelect={handleDataSourceSelect}
           options={dataSourceOptions}
@@ -257,13 +262,17 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择数据库',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectADatabase',
+            }), //请选择数据库
           },
         ]}
       >
         <Select
           key={[fieldName, 'database', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           onSelect={handleDatabaseSelect}
           options={databaseOptions}
@@ -279,13 +288,17 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择表',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectATable',
+            }), //请选择表
           },
         ]}
       >
         <Select
           key={[fieldName, 'tableName', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           options={tableOptions}
           value={tableName}
@@ -301,17 +314,23 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择列',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelectAColumn',
+            }), //请选择列
           },
           {
-            message: '敏感列已存在',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SensitiveColumnAlreadyExists',
+            }), //敏感列已存在
             validator: checkExist,
           },
         ]}
       >
         <Select
           key={[fieldName, 'columnName', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
@@ -338,13 +357,17 @@ const ManualRule = ({
         rules={[
           {
             required: true,
-            message: '请选择脱敏算法',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectADesensitizationAlgorithm',
+            }), //请选择脱敏算法
           },
         ]}
       >
         <Select
           key={[fieldName, 'maskingAlgorithmId', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '184px' }}
           options={maskingAlgorithmOptions}
           disabled={columnOptions?.length === 0 || columnName === ''}

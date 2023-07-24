@@ -17,6 +17,7 @@ import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
+import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Drawer, Form, Input, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -141,7 +142,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消此 数据归档吗？',
+        title: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.AreYouSureYouWant' }), //确认取消此 数据归档吗？
         centered: true,
         onOk: () => {
           props.modalStore.changeDataArchiveModal(false);
@@ -167,15 +168,28 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const handleEditAndConfirm = async (data: Partial<CreateTaskRecord>) => {
     Modal.confirm({
-      title: '确认要修改此 数据归档吗？',
+      title: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.AreYouSureYouWant.1' }), //确认要修改此 数据归档吗？
       content: (
         <>
-          <div>编辑数据归档</div>
-          <div>任务需要重新审批，审批通过后此任务将重新执行</div>
+          <div>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.EditDataArchive',
+              }) /*编辑数据归档*/
+            }
+          </div>
+          <div>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.TheTaskNeedsToBe',
+              }) /*任务需要重新审批，审批通过后此任务将重新执行*/
+            }
+          </div>
         </>
       ),
-      cancelText: '取消',
-      okText: '确定',
+
+      cancelText: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Cancel' }), //取消
+      okText: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Ok' }), //确定
       centered: true,
       onOk: () => {
         handleCreate(data);
@@ -289,7 +303,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles['data-archive']}
       width={760}
-      title={isEdit ? '编辑数据归档' : '新建数据归档'}
+      title={
+        isEdit
+          ? formatMessage({ id: 'odc.DataArchiveTask.CreateModal.EditDataArchive' }) //编辑数据归档
+          : formatMessage({ id: 'odc.DataArchiveTask.CreateModal.CreateADataArchive' }) //新建数据归档
+      }
       footer={
         <Space>
           <Button
@@ -297,10 +315,14 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
-            取消
+            {formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Cancel' }) /*取消*/}
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
-            {isEdit ? '保存' : '新建'}
+            {
+              isEdit
+                ? formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Save' }) //保存
+                : formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Create' }) //新建
+            }
           </Button>
         </Space>
       }
@@ -318,28 +340,62 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         <Space align="start">
-          <DatabaseSelect label="源端数据库" projectId={projectId} />
-          <DatabaseSelect label="目标数据库" name="targetDatabase" projectId={projectId} />
+          <DatabaseSelect
+            label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.SourceDatabase' })}
+            /*源端数据库*/ projectId={projectId}
+          />
+          <DatabaseSelect
+            label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.TargetDatabase' })}
+            /*目标数据库*/ name="targetDatabase"
+            projectId={projectId}
+          />
         </Space>
         <VariableConfig />
         <ArchiveRange tables={tables} />
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
           <Checkbox>
             <Space>
-              清理源端已归档数据
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                }) /*清理源端已归档数据*/
+              }
+
               <span className={styles.desc}>
-                若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚
+                {
+                  formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                  }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                }
               </span>
             </Space>
           </Checkbox>
         </Form.Item>
-        <Form.Item label="执行方式" name="triggerStrategy" required>
+        <Form.Item
+          label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod' })}
+          /*执行方式*/ name="triggerStrategy"
+          required
+        >
           <Radio.Group>
-            <Radio.Button value={TaskExecStrategy.START_NOW}>立即执行</Radio.Button>
+            <Radio.Button value={TaskExecStrategy.START_NOW}>
+              {formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ExecuteNow' }) /*立即执行*/}
+            </Radio.Button>
             {!isClient() ? (
-              <Radio.Button value={TaskExecStrategy.START_AT}>定时执行</Radio.Button>
+              <Radio.Button value={TaskExecStrategy.START_AT}>
+                {
+                  formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.ScheduledExecution',
+                  }) /*定时执行*/
+                }
+              </Radio.Button>
             ) : null}
-            <Radio.Button value={TaskExecStrategy.TIMER}>周期执行</Radio.Button>
+            <Radio.Button value={TaskExecStrategy.TIMER}>
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
+                }) /*周期执行*/
+              }
+            </Radio.Button>
           </Radio.Group>
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
@@ -367,16 +423,23 @@ const CreateModal: React.FC<IProps> = (props) => {
           }}
         </Form.Item>
         <Form.Item
-          label="备注"
+          label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Remarks' })} /*备注*/
           name="description"
           rules={[
             {
               max: 200,
-              message: '备注不超过 200 个字符',
+              message: formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.TheDescriptionCannotExceedCharacters',
+              }), //备注不超过 200 个字符
             },
           ]}
         >
-          <Input.TextArea rows={3} placeholder="请输入备注" />
+          <Input.TextArea
+            rows={3}
+            placeholder={formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.EnterAComment',
+            })} /*请输入备注*/
+          />
         </Form.Item>
       </Form>
     </Drawer>

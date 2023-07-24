@@ -12,6 +12,7 @@ import { TaskPageType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import modalStore from '@/store/modal';
+import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
@@ -89,7 +90,7 @@ const Database: React.FC<IProps> = ({ id }) => {
         rowKey={'id'}
         columns={[
           {
-            title: '数据库名称',
+            title: formatMessage({ id: 'odc.Project.Database.DatabaseName' }), //数据库名称
             dataIndex: 'name',
             render: (name, record) => {
               if (!record.existed) {
@@ -99,22 +100,22 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: '字符编码',
+            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
             dataIndex: 'charsetName',
             width: 120,
           },
           {
-            title: '排序规则',
+            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
             dataIndex: 'collationName',
             width: 120,
           },
           {
-            title: '所属数据源',
+            title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
           },
           {
-            title: '环境',
+            title: formatMessage({ id: 'odc.Project.Database.Environment' }), //环境
             dataIndex: 'environmentId',
             filters: envList?.map((env) => {
               return {
@@ -133,7 +134,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: '上一次同步时间',
+            title: formatMessage({ id: 'odc.Project.Database.LastSynchronizationTime' }), //上一次同步时间
             dataIndex: 'lastSyncTime',
             width: 170,
             render(v) {
@@ -141,7 +142,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: '操作',
+            title: formatMessage({ id: 'odc.Project.Database.Operation' }), //操作
             dataIndex: 'name',
             width: 200,
             render(_, record) {
@@ -156,7 +157,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.EXPORT, record.id);
                     }}
                   >
-                    导出
+                    {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
                   </Action.Link>
                   <Action.Link
                     key={'import'}
@@ -164,7 +165,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.IMPORT, record.id);
                     }}
                   >
-                    导入
+                    {formatMessage({ id: 'odc.Project.Database.Import' }) /*导入*/}
                   </Action.Link>
                   <Action.Link
                     key={'ddl'}
@@ -172,7 +173,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                   >
-                    数据库变更
+                    {formatMessage({ id: 'odc.Project.Database.DatabaseChanges' }) /*数据库变更*/}
                   </Action.Link>
                   <Action.Link
                     key={'login'}
@@ -180,7 +181,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
                   >
-                    登录数据库
+                    {
+                      formatMessage({
+                        id: 'odc.Project.Database.LogOnToTheDatabase',
+                      }) /*登录数据库*/
+                    }
                   </Action.Link>
                   <Action.Link
                     key={'transfer'}
@@ -189,7 +194,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setDatabase(record);
                     }}
                   >
-                    转移项目
+                    {formatMessage({ id: 'odc.Project.Database.TransferProject' }) /*转移项目*/}
                   </Action.Link>
                 </Action.Group>
               );
@@ -206,12 +211,14 @@ const Database: React.FC<IProps> = ({ id }) => {
           loadData(pageSize, current, filters['environmentId']?.[0]);
         }}
       />
+
       <ChangeProjectModal
         visible={visible}
         database={database}
         close={() => setVisible(false)}
         onSuccess={() => reload()}
       />
+
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
       <AsyncTaskCreateModal />

@@ -1,4 +1,5 @@
 import { resourceManagementActionOptions } from '@/page/Auth/Role/component/ResourceSelector/const';
+import { formatMessage } from '@/util/intl';
 
 export enum ResourceManagementAction {
   can_manage = 'can_manage',
@@ -56,7 +57,11 @@ export function hasManageAuth(auths: string[] = []) {
 }
 
 export const getAuthLabelString = (auths: string[] = []) => {
-  const labels = auths.includes('create') ? ['可新建'] : [];
+  const labels = auths.includes('create')
+    ? [
+        formatMessage({ id: 'odc.page.Auth.utils.CanBeCreated' }), //可新建
+      ]
+    : [];
   const otherLabel = resourceManagementActionOptions?.find((item) => {
     return resourceManagementActionMap[item?.value].every((action) => {
       return auths?.includes(action);

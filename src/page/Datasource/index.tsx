@@ -1,4 +1,5 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { formatMessage } from '@/util/intl';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from '@umijs/max';
 import { Button, Dropdown, message, Modal, Space } from 'antd';
@@ -36,16 +37,25 @@ const ExtraContent = ({
         menu={{
           items: [
             {
-              label: '删除',
+              label: formatMessage({ id: 'odc.page.Datasource.Delete' }), //删除
               key: 'delete',
               async onClick() {
                 Modal.confirm({
-                  title: `是否确认删除 ${name}`,
-                  content: '删除后将无法访问该连接',
+                  title: formatMessage(
+                    {
+                      id: 'odc.page.Datasource.ConfirmToDeleteName',
+                    },
+                    { name: name },
+                  ), //`是否确认删除 ${name}`
+                  content: formatMessage({
+                    id: 'odc.page.Datasource.TheConnectionCannotBeAccessed',
+                  }), //删除后将无法访问该连接
                   async onOk() {
                     const isSuccess = await deleteConnection(cid?.toString());
                     if (isSuccess) {
-                      message.success('删除成功');
+                      message.success(
+                        formatMessage({ id: 'odc.page.Datasource.DeletedSuccessfully' }), //删除成功
+                      );
                       nav('/datasource');
                     }
                   },
@@ -80,19 +90,19 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '数据库',
+    tab: formatMessage({ id: 'odc.page.Datasource.Database' }), //数据库
     key: IPageType.Datasource_info,
   },
   {
-    tab: '会话',
+    tab: formatMessage({ id: 'odc.page.Datasource.Session' }), //会话
     key: IPageType.Datasource_session,
   },
   {
-    tab: '回收站',
+    tab: formatMessage({ id: 'odc.page.Datasource.RecycleBin' }), //回收站
     key: IPageType.Datasource_recycle,
   },
   {
-    tab: '命令行窗口',
+    tab: formatMessage({ id: 'odc.page.Datasource.CommandLineWindow' }), //命令行窗口
     key: IPageType.Datasource_obclient,
   },
 ];
@@ -178,7 +188,11 @@ const Index: React.FC<IProps> = function () {
         />
       }
       onTabChange={handleChange}
-      bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
+      bigSelectBottom={
+        <Link to={'/datasource'}>
+          {formatMessage({ id: 'odc.page.Datasource.ViewAllDataSources' }) /*查看所有数据源*/}
+        </Link>
+      }
     >
       {Object.entries(Pages)
         .map(([key, Page]) => {

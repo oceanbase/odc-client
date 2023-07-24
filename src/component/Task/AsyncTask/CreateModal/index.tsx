@@ -560,9 +560,17 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Form.Item
             name="generateRollbackPlan"
             valuePropName="checked"
-            extra="可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考"
+            extra={formatMessage({
+              id: 'odc.AsyncTask.CreateModal.TheRollbackSchemeCanBe',
+            })} /*可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考*/
           >
-            <Checkbox>生成备份回滚方案</Checkbox>
+            <Checkbox>
+              {
+                formatMessage({
+                  id: 'odc.AsyncTask.CreateModal.GenerateABackupRollbackScheme',
+                }) /*生成备份回滚方案*/
+              }
+            </Checkbox>
           </Form.Item>
           <Form.Item name="rollbackContentType" initialValue={SQLContentType.TEXT} noStyle>
             <Radio.Group

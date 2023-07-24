@@ -1,5 +1,6 @@
 import CommonIDE from '@/component/CommonIDE';
 import { SensitiveRuleType } from '@/d.ts/sensitiveRule';
+import { formatMessage } from '@/util/intl';
 import { Form, Input, Radio, RadioChangeEvent, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
@@ -28,41 +29,82 @@ const DetectWay = ({
   }, [type]);
   return (
     <>
-      <div style={{ marginBottom: '4px' }}>识别方式</div>
+      <div style={{ marginBottom: '4px' }}>
+        {
+          formatMessage({
+            id: 'odc.SensitiveRule.components.DetectWay.IdentificationMethod',
+          }) /*识别方式*/
+        }
+      </div>
       <div className={styles.detectWay}>
         <Form.Item name="type" label="" required>
           <Radio.Group onChange={handleTypeChange}>
-            <Radio.Button value={SensitiveRuleType.PATH}>路径</Radio.Button>
-            <Radio.Button value={SensitiveRuleType.REGEX}>正则</Radio.Button>
-            <Radio.Button value={SensitiveRuleType.GROOVY}>脚本</Radio.Button>
+            <Radio.Button value={SensitiveRuleType.PATH}>
+              {formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.Path' }) /*路径*/}
+            </Radio.Button>
+            <Radio.Button value={SensitiveRuleType.REGEX}>
+              {formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.Regular' }) /*正则*/}
+            </Radio.Button>
+            <Radio.Button value={SensitiveRuleType.GROOVY}>
+              {formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.Script' }) /*脚本*/}
+            </Radio.Button>
           </Radio.Group>
         </Form.Item>
         {type === SensitiveRuleType.PATH && (
           <div>
             <div className={styles.tip}>
-              使用「*」作为通配符，使用「,」作为分割符，例如：db*.table.*a,*.*.name
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.UseAsTheWildcardAnd',
+                }) /*使用「*」作为通配符，使用「,」作为分割符，例如：db*.table.*a,*.*.name*/
+              }
             </div>
             <Form.Item
-              label="匹配的规则"
+              label={formatMessage({
+                id: 'odc.SensitiveRule.components.DetectWay.MatchingRules',
+              })} /*匹配的规则*/
               name="pathIncludes"
               required
               rules={[
                 {
                   required: true,
-                  message: '请输入匹配的规则',
+                  message: formatMessage({
+                    id: 'odc.SensitiveRule.components.DetectWay.EnterAMatchingRule',
+                  }), //请输入匹配的规则
                 },
               ]}
             >
-              <Input.TextArea placeholder="请输入" rows={4}></Input.TextArea>
+              <Input.TextArea
+                placeholder={formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.PleaseEnter',
+                })}
+                /*请输入*/ rows={4}
+              ></Input.TextArea>
             </Form.Item>
-            <Form.Item label="排除的规则" name="pathExcludes" required>
-              <Input.TextArea placeholder="请输入" rows={4}></Input.TextArea>
+            <Form.Item
+              label={formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.ExcludedRules' })}
+              /*排除的规则*/ name="pathExcludes"
+              required
+            >
+              <Input.TextArea
+                placeholder={formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.PleaseEnter',
+                })}
+                /*请输入*/ rows={4}
+              ></Input.TextArea>
             </Form.Item>
           </div>
         )}
+
         {type === SensitiveRuleType.REGEX && (
           <div>
-            <div className={styles.tip}>请先勾选识别对象，再填写对应的表达式</div>
+            <div className={styles.tip}>
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.SelectTheRecognitionObjectBefore',
+                }) /*请先勾选识别对象，再填写对应的表达式*/
+              }
+            </div>
             <div>
               <Form.Item name={'regExp'} fieldKey={'regExp'} noStyle>
                 <Form.Item
@@ -128,11 +170,18 @@ const DetectWay = ({
             </div>
           </div>
         )}
+
         {type === SensitiveRuleType.GROOVY && (
           <>
             <div className={styles.editor}>
               <Space size={4} style={{ marginBottom: '5px' }}>
-                <div>Groovy脚本</div>
+                <div>
+                  {
+                    formatMessage({
+                      id: 'odc.SensitiveRule.components.DetectWay.GroovyScript',
+                    }) /*Groovy脚本*/
+                  }
+                </div>
                 {/* <a onClick={() => message.error('文档未就位')}>查看文档</a> */}
               </Space>
               <div
@@ -153,7 +202,11 @@ const DetectWay = ({
               </div>
             </div>
             <div className={hasValidated ? styles.errorTip : styles.errorTipHidden}>
-              请输入Groovy脚本
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.PleaseEnterGroovyScript',
+                }) /*请输入Groovy脚本*/
+              }
             </div>
           </>
         )}

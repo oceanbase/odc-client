@@ -1,4 +1,5 @@
 import { getConnectionList } from '@/common/network/connection';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Form, Modal, Select } from 'antd';
 
@@ -22,7 +23,9 @@ export default function SelectModal({ open, onOk, onClose }: IProps) {
 
   return (
     <Modal
-      title="选择数据源"
+      title={formatMessage({
+        id: 'odc.component.SelectDatabase.component.SelectADataSource',
+      })} /*选择数据源*/
       open={open}
       onCancel={onClose}
       onOk={async () => {
@@ -34,12 +37,20 @@ export default function SelectModal({ open, onOk, onClose }: IProps) {
       }}
     >
       <Form form={form} layout="vertical">
-        <Form.Item name={'dataSourceId'} rules={[{ required: true }]} label="数据源">
+        <Form.Item
+          name={'dataSourceId'}
+          rules={[{ required: true }]}
+          label={formatMessage({
+            id: 'odc.component.SelectDatabase.component.DataSource',
+          })} /*数据源*/
+        >
           <Select
             showSearch
             optionFilterProp="children"
             loading={loading}
-            placeholder="请选择"
+            placeholder={formatMessage({
+              id: 'odc.component.SelectDatabase.component.PleaseSelect',
+            })} /*请选择*/
             style={{ width: 320 }}
           >
             {data?.contents?.map((item) => {

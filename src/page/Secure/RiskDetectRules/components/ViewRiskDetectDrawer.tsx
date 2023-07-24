@@ -1,5 +1,6 @@
 import { detailRiskDetectRule } from '@/common/network/riskDetectRule';
 import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
+import { formatMessage } from '@/util/intl';
 import { Descriptions, Drawer } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useEffect, useRef, useState } from 'react';
@@ -9,15 +10,23 @@ import { CommonTableBodyMode, CommonTableMode } from '../../components/SecureTab
 import { RiskLevelMapProps } from '../interface';
 
 export const ExpressionTypeMap = {
-  EnvironmentId: '环境名称',
-  ProjectName: '项目名称',
-  DatabaseName: '数据库名称',
-  TaskType: '任务类型',
-  SqlCheckResult: '检查结果',
+  EnvironmentId: formatMessage({
+    id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.EnvironmentName',
+  }), //环境名称
+  ProjectName: formatMessage({
+    id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.ProjectName',
+  }), //项目名称
+  DatabaseName: formatMessage({
+    id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.DatabaseName',
+  }), //数据库名称
+  TaskType: formatMessage({ id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.TaskType' }), //任务类型
+  SqlCheckResult: formatMessage({
+    id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.CheckResult',
+  }), //检查结果
 };
 export const OperationMap = {
   equals: '==',
-  contains: '包含',
+  contains: formatMessage({ id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.Include' }), //包含
 };
 
 interface ViewRiskDetectDrawerDrawer {
@@ -28,9 +37,11 @@ interface ViewRiskDetectDrawerDrawer {
   environmentIdMap: {
     [key in string | number]: string;
   };
+
   taskTypeIdMap: {
     [key in string | number]: string;
   };
+
   sqlCheckResultIdMap: {
     [key in string | number]: string;
   };
@@ -73,7 +84,11 @@ const ViewRiskDetectDrawer: React.FC<ViewRiskDetectDrawerDrawer> = ({
   }, [viewDrawerVisible, selectedRecord]);
   return (
     <Drawer
-      title={'风险识别规则详情'}
+      title={
+        formatMessage({
+          id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.DetailsOfRiskIdentificationRules',
+        }) //风险识别规则详情
+      }
       visible={viewDrawerVisible}
       width={960}
       onClose={() => {
@@ -81,13 +96,28 @@ const ViewRiskDetectDrawer: React.FC<ViewRiskDetectDrawerDrawer> = ({
       }}
     >
       <Descriptions column={1}>
-        <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'等级'}>
+        <Descriptions.Item
+          contentStyle={{ whiteSpace: 'pre' }}
+          label={
+            formatMessage({ id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.Grade' }) //等级
+          }
+        >
           <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
         </Descriptions.Item>
-        <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'规则名称'}>
+        <Descriptions.Item
+          contentStyle={{ whiteSpace: 'pre' }}
+          label={
+            formatMessage({ id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.RuleName' }) //规则名称
+          }
+        >
           {record?.name}
         </Descriptions.Item>
-        <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'条件'}>
+        <Descriptions.Item
+          contentStyle={{ whiteSpace: 'pre' }}
+          label={
+            formatMessage({ id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.Condition' }) //条件
+          }
+        >
           &nbsp;
         </Descriptions.Item>
       </Descriptions>
@@ -95,14 +125,15 @@ const ViewRiskDetectDrawer: React.FC<ViewRiskDetectDrawerDrawer> = ({
     </Drawer>
   );
 };
-
 const getSubTableColumns = (renderByExpressionType): ColumnsType<RiskDetectRuleCondition> => {
   return [
     {
       key: 'config',
       width: 928,
       dataIndex: 'config',
-      title: '配置值',
+      title: formatMessage({
+        id: 'odc.RiskDetectRules.components.ViewRiskDetectDrawer.ConfigurationValue',
+      }), //配置值
       render: (_, { expression, operation, value }) =>
         [
           ExpressionTypeMap[expression],

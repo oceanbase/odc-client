@@ -1,4 +1,5 @@
 import { listDatabases } from '@/common/network/database';
+import { formatMessage } from '@/util/intl';
 import { Form, Select, Space, Tag, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -11,7 +12,11 @@ interface IProps {
 const { Text } = Typography;
 
 const DatabaseSelect: React.FC<IProps> = (props) => {
-  const { label = '数据库', name = 'databaseId', projectId } = props;
+  const {
+    label = formatMessage({ id: 'odc.component.DatabaseSelect.Database' }), //数据库
+    name = 'databaseId',
+    projectId,
+  } = props;
   const [database, setDatabase] = useState([]);
   const [project, setProject] = useState(null);
 
@@ -25,6 +30,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           <Text type="secondary">{dataSource.name}</Text>
         </Space>
       ),
+
       value: id,
     }));
 
@@ -47,11 +53,19 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       label={label}
       name={name}
       required
-      extra={project && `当前项目: ${project.name}`}
+      extra={
+        project &&
+        formatMessage(
+          {
+            id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
+          },
+          { projectName: project.name },
+        ) //`当前项目: ${project.name}`
+      }
       rules={[
         {
           required: true,
-          message: '请选择数据库',
+          message: formatMessage({ id: 'odc.component.DatabaseSelect.SelectADatabase' }), //请选择数据库
         },
       ]}
     >

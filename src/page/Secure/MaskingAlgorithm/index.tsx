@@ -3,6 +3,7 @@ import TooltipContent from '@/component/TooltipContent';
 import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { IRule } from '@/d.ts/rule';
+import { formatMessage } from '@/util/intl';
 import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useRef, useState } from 'react';
@@ -26,20 +27,20 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
   }) => {
     return [
       {
-        title: '算法名称',
+        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.AlgorithmName' }), //算法名称
         width: 218,
         dataIndex: 'name',
         key: 'name',
       },
       {
-        title: '脱敏方式',
+        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.DesensitizationMethod' }), //脱敏方式
         width: 94,
         dataIndex: 'type',
         key: 'type',
         render: (text) => <TooltipContent content={MaskRyleTypeMap[text]} />,
       },
       {
-        title: '测试数据',
+        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.TestData' }), //测试数据
         width: 150,
         dataIndex: 'sampleContent',
         key: 'sampleContent',
@@ -56,7 +57,7 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
         render: (text) => <TooltipContent content={text} />,
       },
       {
-        title: '结果预览',
+        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.ResultPreview' }), //结果预览
         width: 378,
         dataIndex: 'maskedContent',
         key: 'maskedContent',
@@ -73,13 +74,15 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
         render: (text) => <TooltipContent content={text || '-'} />,
       },
       {
-        title: '操作',
+        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.Operation' }), //操作
         width: 80,
         key: 'action',
         render: (_, record, index) => (
           <>
             <Space>
-              <a onClick={() => handleViewDrawerOpen(record)}>查看</a>
+              <a onClick={() => handleViewDrawerOpen(record)}>
+                {formatMessage({ id: 'odc.Secure.MaskingAlgorithm.View' }) /*查看*/}
+              </a>
             </Space>
           </>
         ),
@@ -142,6 +145,7 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
           },
         }}
       />
+
       <ViewMaskingAlgorithmDrawer
         {...{
           visible,

@@ -1,5 +1,6 @@
 import { IManagerIntegration } from '@/d.ts';
 import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
+import { formatMessage } from '@/util/intl';
 import { Button, Checkbox, Descriptions, Drawer, Form, Radio, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
@@ -99,24 +100,44 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
   return (
     <Drawer
       open={editRuleDrawerVisible}
-      title={'编辑'}
+      title={
+        formatMessage({ id: 'odc.Env.components.EditRuleDrawer.Edit' }) //编辑
+      }
       width={480}
       className={styles.modal}
       onClose={onClose}
       destroyOnClose={true}
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end', columnGap: '8px' }}>
-          <Button onClick={onClose}>取消</Button>
+          <Button onClick={onClose}>
+            {formatMessage({ id: 'odc.Env.components.EditRuleDrawer.Cancel' }) /*取消*/}
+          </Button>
           <Button type="primary" onClick={onOk}>
-            提交
+            {formatMessage({ id: 'odc.Env.components.EditRuleDrawer.Submit' }) /*提交*/}
           </Button>
         </div>
       }
     >
       <Descriptions column={1}>
-        <Descriptions.Item label={'规则名称'}>{rule?.metadata?.name}</Descriptions.Item>
-        <Descriptions.Item label={'规则描述'}>{rule?.metadata?.description}</Descriptions.Item>
-        <Descriptions.Item label={'规则类型'}>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.RuleName' }) //规则名称
+          }
+        >
+          {rule?.metadata?.name}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.RuleDescription' }) //规则描述
+          }
+        >
+          {rule?.metadata?.description}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.RuleType' }) //规则类型
+          }
+        >
           {rule?.metadata?.subTypes?.join(',') || '-'}
         </Descriptions.Item>
       </Descriptions>
@@ -130,7 +151,13 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           activeKey: rule?.properties[rule?.metadata?.name],
         }}
       >
-        <Form.Item key={'appliedDialectTypes'} label={'支持数据源'} name={'appliedDialectTypes'}>
+        <Form.Item
+          key={'appliedDialectTypes'}
+          label={
+            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.SupportsDataSources' }) //支持数据源
+          }
+          name={'appliedDialectTypes'}
+        >
           <Checkbox.Group>
             {rule?.metadata?.supportedDialectTypes?.map((sdt) => (
               <Checkbox value={sdt}>{sdt}</Checkbox>
@@ -140,17 +167,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         {isExternalApproval && ruleType === RuleType.SQL_CHECK && (
           <Form.Item
             name="externalApproval"
-            label="配置外部 SQL 检查集成"
+            label={formatMessage({
+              id: 'odc.Env.components.EditRuleDrawer.ConfigureExternalSqlCheckIntegration',
+            })} /*配置外部 SQL 检查集成*/
             rules={[
               {
                 required: true,
-                message: '请选择',
+                message: formatMessage({ id: 'odc.Env.components.EditRuleDrawer.PleaseSelect' }), //请选择
               },
             ]}
           >
             <Select options={options} />
           </Form.Item>
         )}
+
         {rule?.metadata?.propertyMetadatas?.map((pm, index) => {
           return (
             <EditPropertyComponentMap
@@ -164,19 +194,41 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         })}
         {ruleType === RuleType.SQL_CHECK && (
           <Form.Item
-            label={'改进等级'}
+            label={
+              formatMessage({ id: 'odc.Env.components.EditRuleDrawer.ImprovementLevel' }) //改进等级
+            }
             name={'level'}
             rules={[
               {
                 required: true,
-                message: '请选择改进等级',
+                message: formatMessage({
+                  id: 'odc.Env.components.EditRuleDrawer.SelectAnImprovementLevel',
+                }), //请选择改进等级
               },
             ]}
           >
             <Radio.Group>
-              <Radio value={0}>无需改进</Radio>
-              <Radio value={1}>建议改进</Radio>
-              <Radio value={2}>必须改进</Radio>
+              <Radio value={0}>
+                {
+                  formatMessage({
+                    id: 'odc.Env.components.EditRuleDrawer.NoNeedToImprove',
+                  }) /*无需改进*/
+                }
+              </Radio>
+              <Radio value={1}>
+                {
+                  formatMessage({
+                    id: 'odc.Env.components.EditRuleDrawer.RecommendedImprovement',
+                  }) /*建议改进*/
+                }
+              </Radio>
+              <Radio value={2}>
+                {
+                  formatMessage({
+                    id: 'odc.Env.components.EditRuleDrawer.MustBeImproved',
+                  }) /*必须改进*/
+                }
+              </Radio>
             </Radio.Group>
           </Form.Item>
         )}

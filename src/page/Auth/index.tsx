@@ -4,6 +4,7 @@ import { canAcess, createPermission } from '@/component/Acess';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
+import { formatMessage } from '@/util/intl';
 import React, { useState } from 'react';
 import { history, useParams } from 'umi';
 import Autoauth from './Autoauth';
@@ -26,15 +27,15 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '用户',
+    tab: formatMessage({ id: 'odc.page.Auth.User' }), //用户
     key: IPageType.Auth_User,
   },
   {
-    tab: '角色',
+    tab: formatMessage({ id: 'odc.page.Auth.Role' }), //角色
     key: IPageType.Auth_Role,
   },
   {
-    tab: '自动授权',
+    tab: formatMessage({ id: 'odc.page.Auth.AutomaticAuthorization' }), //自动授权
     key: IPageType.Auth_Autoauth,
     permission: createPermission(IManagerResourceType.auto_auth, actionTypes.read),
   },
@@ -78,7 +79,7 @@ const Index: React.FC<IProps> = function () {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: '用户权限',
+        title: formatMessage({ id: 'odc.page.Auth.UserPermissions' }), //用户权限
       }}
       tabList={displayTabs}
       tabActiveKey={page}

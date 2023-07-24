@@ -4,6 +4,7 @@ import { statsSensitiveColumns } from '@/common/network/sensitiveColumn';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import { IDatasource } from '@/d.ts/datasource';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
+import { formatMessage } from '@/util/intl';
 import { useEffect, useState } from 'react';
 import SecureLayout from '../../Secure/components/SecureLayout';
 import SecureSider, { SiderItem } from '../../Secure/components/SecureSider';
@@ -90,13 +91,14 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
     const siderItems = [
       {
         value: 'sensitiveColumn',
-        label: '敏感列',
+        label: formatMessage({ id: 'odc.Project.Sensitive.SensitiveColumn' }), //敏感列
       },
       {
         value: 'detectRule',
-        label: '识别规则',
+        label: formatMessage({ id: 'odc.Project.Sensitive.IdentificationRules' }), //识别规则
       },
     ];
+
     handleItemClick(siderItems[0]);
     setSiderItemList(siderItems);
   };
@@ -178,6 +180,7 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
         selectedItem={selectedItem}
         handleItemClick={handleItemClick}
       />
+
       <SensitiveContext.Provider
         value={{
           projectId: id,

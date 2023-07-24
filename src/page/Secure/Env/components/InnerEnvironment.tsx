@@ -10,6 +10,7 @@ import {
   ITableInstance,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
+import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Descriptions, message, Space, Tabs, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -23,9 +24,9 @@ import styles from './index.less';
 
 export const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
   const levelMap = {
-    0: '无需改进',
-    1: '建议改进',
-    2: '必须改进',
+    0: formatMessage({ id: 'odc.Env.components.InnerEnvironment.NoNeedToImprove' }), //无需改进
+    1: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RecommendedImprovement' }), //建议改进
+    2: formatMessage({ id: 'odc.Env.components.InnerEnvironment.MustBeImproved' }), //必须改进
   };
   const colorMap = {
     0: 'green',
@@ -69,7 +70,7 @@ const getColumns: (columnsFunction: {
 }) => {
   return [
     {
-      title: '规则名称',
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' }), //规则名称
       width: 218,
       dataIndex: 'name',
       key: 'name',
@@ -100,8 +101,7 @@ const getColumns: (columnsFunction: {
       ),
     },
     {
-      title: '规则类型',
-      // width: 94,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleType' }), //规则类型 // width: 94,
       dataIndex: 'subTypes',
       key: 'subTypes',
       filters: subTypeFilters,
@@ -118,8 +118,7 @@ const getColumns: (columnsFunction: {
       render: (text, record) => <TooltipContent content={record?.metadata?.subTypes?.join(',')} />,
     },
     {
-      title: '支持数据源',
-      // width: 150,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.SupportsDataSources' }), //支持数据源 // width: 150,
       dataIndex: 'supportedDialectTypes',
       key: 'supportedDialectTypes',
       filters: supportedDialectTypeFilters,
@@ -136,8 +135,7 @@ const getColumns: (columnsFunction: {
       render: (text, record) => <TooltipContent content={record?.appliedDialectTypes?.join(',')} />,
     },
     {
-      title: '配置值',
-      // width: 378,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ConfigurationValue' }), //配置值 // width: 378,
       dataIndex: 'metadata',
       key: 'metadata',
       onCell: () => {
@@ -174,15 +172,13 @@ const getColumns: (columnsFunction: {
       },
     },
     {
-      title: '改进等级',
-      // width: 92,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ImprovementLevel' }), //改进等级 // width: 92,
       dataIndex: 'level',
       key: 'level',
       render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
-      title: '状态',
-      // width: 80,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.Status' }), //状态 // width: 80,
       dataIndex: 'status',
       key: 'status',
       render: (_, record, index) => {
@@ -197,7 +193,7 @@ const getColumns: (columnsFunction: {
       },
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.Operation' }), //操作
       width: 80,
       key: 'action',
       // fixed: 'right',
@@ -208,7 +204,9 @@ const getColumns: (columnsFunction: {
               fallback={<span>-</span>}
               {...createPermission(IManagerResourceType.environment, actionTypes.update)}
             >
-              <a onClick={() => handleOpenEditModal(record)}>编辑</a>
+              <a onClick={() => handleOpenEditModal(record)}>
+                {formatMessage({ id: 'odc.Env.components.InnerEnvironment.Edit' }) /*编辑*/}
+              </a>
             </Acess>
           </Space>
         </>
@@ -240,13 +238,16 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   const handleUpdateEnvironment = async (rule: IRule, fn?: () => void) => {
     const flag = await updateRule(selectedRecord.rulesetId, selectedData.id, rule);
     if (flag) {
-      message.success('提交成功');
-      // 刷新列表
+      message.success(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.SubmittedSuccessfully' }), //提交成功
+      ); // 刷新列表
       setEditRuleDrawerVisible(false);
       fn?.();
       tableRef?.current?.reload();
     } else {
-      message.error('提交失败');
+      message.error(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.FailedToSubmit' }), //提交失败
+      );
     }
   };
   const handleOpenEditModal = async (record: IRule) => {
@@ -268,10 +269,14 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
         enabled: !rule.enabled,
       })) || false;
     if (updateResult) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.UpdatedSuccessfully' }), //更新成功
+      );
       handleRulesReload();
     } else {
-      message.success('更新失败');
+      message.success(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.UpdateFailed' }), //更新失败
+      );
     }
   };
   const handleRulesReload = () => {
@@ -309,11 +314,18 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     <>
       <div className={styles.innerEnv}>
         <Space className={styles.tag}>
-          <div className={styles.tagLabel}>标签样式: </div>
+          <div className={styles.tagLabel}>
+            {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
+          </div>
           <RiskLevelLabel content={selectedRecord?.label} color={selectedRecord?.style} />
         </Space>
         <Descriptions column={1}>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
+          <Descriptions.Item
+            contentStyle={{ whiteSpace: 'pre' }}
+            label={
+              formatMessage({ id: 'odc.Env.components.InnerEnvironment.Description' }) //描述
+            }
+          >
             {selectedRecord?.description}
           </Descriptions.Item>
         </Descriptions>
@@ -324,8 +336,16 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           activeKey={ruleType}
           onTabClick={handleTabClick}
         >
-          <Tabs.TabPane tab="SQL 检查规范" key={RuleType.SQL_CHECK} />
-          <Tabs.TabPane tab="SQL 窗口规范" key={RuleType.SQL_CONSOLE} />
+          <Tabs.TabPane
+            tab={formatMessage({ id: 'odc.Env.components.InnerEnvironment.SqlCheckSpecification' })}
+            /*SQL 检查规范*/ key={RuleType.SQL_CHECK}
+          />
+          <Tabs.TabPane
+            tab={formatMessage({
+              id: 'odc.Env.components.InnerEnvironment.SqlWindowSpecification',
+            })}
+            /*SQL 窗口规范*/ key={RuleType.SQL_CONSOLE}
+          />
         </Tabs>
         <div style={{ height: '100%', flexGrow: 1, marginTop: '12px' }}>
           {ruleType === RuleType.SQL_CHECK ? (

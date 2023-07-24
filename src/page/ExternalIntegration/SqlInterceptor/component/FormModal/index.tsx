@@ -7,6 +7,7 @@ import {
 import YamlEditor from '@/component/YamlEditor';
 import type { IManagerIntegration, IntegrationType } from '@/d.ts';
 import { EncryptionAlgorithm } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { decrypt, encrypt } from '@/util/utils';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import {
@@ -76,11 +77,15 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
   const handleCreate = async (values: Partial<IManagerIntegration>) => {
     const res = await createIntegration(values);
     if (res) {
-      message.success('创建成功');
+      message.success(
+        formatMessage({ id: 'odc.component.FormModal.CreatedSuccessfully' }), //创建成功
+      );
       props.reloadData?.();
       handleClose();
     } else {
-      message.error('创建失败');
+      message.error(
+        formatMessage({ id: 'odc.component.FormModal.FailedToCreate' }), //创建失败
+      );
     }
   };
 
@@ -91,11 +96,15 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
     });
 
     if (res) {
-      message.success('保存成功');
+      message.success(
+        formatMessage({ id: 'odc.component.FormModal.SavedSuccessfully' }), //保存成功
+      );
       props.reloadData?.();
       handleClose();
     } else {
-      message.error('保存失败');
+      message.error(
+        formatMessage({ id: 'odc.component.FormModal.SaveFailed' }), //保存失败
+      );
     }
   };
 
@@ -126,9 +135,11 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
   const handleCancel = () => {
     if (hasChange) {
       Modal.confirm({
-        title: isEdit ? '确定要取消编辑吗？取消保存后，所编辑的内容将不生效' : '确定要取消新建吗?',
-        cancelText: '取消',
-        okText: '确定',
+        title: isEdit
+          ? formatMessage({ id: 'odc.component.FormModal.AreYouSureYouWant' }) //确定要取消编辑吗？取消保存后，所编辑的内容将不生效
+          : formatMessage({ id: 'odc.component.FormModal.AreYouSureYouWant.1' }), //确定要取消新建吗?
+        cancelText: formatMessage({ id: 'odc.component.FormModal.Cancel' }), //取消
+        okText: formatMessage({ id: 'odc.component.FormModal.Ok' }), //确定
         centered: true,
         onOk: () => {
           setHasChange(false);
@@ -175,13 +186,24 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
     <>
       <Drawer
         width={564}
-        title={`${isEdit ? '编辑' : '新建'}${title}`}
+        title={
+          (isEdit
+            ? formatMessage({ id: 'odc.component.FormModal.Edit' }) //编辑
+            : formatMessage({ id: 'odc.component.FormModal.Create' })) + //新建
+          `${title}`
+        }
         className={styles.interceptor}
         footer={
           <Space>
-            <Button onClick={handleCancel}>取消</Button>
+            <Button onClick={handleCancel}>
+              {formatMessage({ id: 'odc.component.FormModal.Cancel' }) /*取消*/}
+            </Button>
             <Button type="primary" onClick={handleSubmit}>
-              {isEdit ? '保存' : '新建'}
+              {
+                isEdit
+                  ? formatMessage({ id: 'odc.component.FormModal.Save' }) //保存
+                  : formatMessage({ id: 'odc.component.FormModal.Create' }) //新建
+              }
             </Button>
           </Space>
         }
@@ -206,52 +228,92 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
           onFieldsChange={handleEditStatus}
         >
           <Form.Item
-            label={`${title}名称`}
+            label={
+              formatMessage(
+                {
+                  id: 'odc.component.FormModal.TitleName',
+                },
+                { title: title },
+              ) //`${title}名称`
+            }
             name="name"
             validateTrigger="onBlur"
             rules={[
               {
                 required: true,
-                message: `请输入 ${title}名称`,
+                message: formatMessage(
+                  {
+                    id: 'odc.component.FormModal.EnterATitleName',
+                  },
+                  { title: title },
+                ), //`请输入 ${title}名称`
               },
               {
                 max: 64,
-                message: '名称不超过 64个字符',
+                message: formatMessage({
+                  id: 'odc.component.FormModal.TheNameCannotExceedCharacters',
+                }), //名称不超过 64个字符
               },
               {
-                validator: validTrimEmptyWithWarn('名称首尾包含空格'),
+                validator: validTrimEmptyWithWarn(
+                  formatMessage({ id: 'odc.component.FormModal.TheNameContainsSpacesAt' }), //名称首尾包含空格
+                ),
               },
               {
-                message: '名称已存在',
+                message: formatMessage({ id: 'odc.component.FormModal.TheNameAlreadyExists' }), //名称已存在
                 validator: checkNameRepeat,
               },
             ]}
           >
-            <Input placeholder="请输入名称" />
+            <Input
+              placeholder={formatMessage({
+                id: 'odc.component.FormModal.EnterAName',
+              })} /*请输入名称*/
+            />
           </Form.Item>
           <Form.Item
-            label={`${title}状态`}
+            label={
+              formatMessage(
+                {
+                  id: 'odc.component.FormModal.TitleStatus',
+                },
+                { title: title },
+              ) //`${title}状态`
+            }
             name="enabled"
             rules={[
               {
                 required: true,
-                message: '请选择状态',
+                message: formatMessage({ id: 'odc.component.FormModal.SelectAStatus' }), //请选择状态
               },
             ]}
           >
             <Radio.Group onChange={handleStatusChange}>
-              <Radio value={true}>启用</Radio>
-              <Radio value={false}>停用</Radio>
+              <Radio value={true}>
+                {formatMessage({ id: 'odc.component.FormModal.Enable' }) /*启用*/}
+              </Radio>
+              <Radio value={false}>
+                {formatMessage({ id: 'odc.component.FormModal.Disable' }) /*停用*/}
+              </Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item
             className={styles.editor}
-            label={`${title}配置`}
+            label={
+              formatMessage(
+                {
+                  id: 'odc.component.FormModal.TitleConfiguration',
+                },
+                { title: title },
+              ) //`${title}配置`
+            }
             name="configuration"
             rules={[
               {
                 required: true,
-                message: '请输入配置',
+                message: formatMessage({
+                  id: 'odc.component.FormModal.PleaseEnterTheConfiguration',
+                }), //请输入配置
               },
             ]}
           >
@@ -263,11 +325,17 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             rules={[
               {
                 required: true,
-                message: '请选择状态',
+                message: formatMessage({ id: 'odc.component.FormModal.SelectAStatus' }), //请选择状态
               },
             ]}
           >
-            <Checkbox>是否启用加密</Checkbox>
+            <Checkbox>
+              {
+                formatMessage({
+                  id: 'odc.component.FormModal.WhetherToEnableEncryption',
+                }) /*是否启用加密*/
+              }
+            </Checkbox>
           </Form.Item>
           <Form.Item shouldUpdate={true} noStyle>
             {({ getFieldValue }) => {
@@ -279,12 +347,14 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                 <Space className={styles.block} direction="vertical">
                   <Space size={20}>
                     <Form.Item
-                      label="加密算法"
+                      label={formatMessage({
+                        id: 'odc.component.FormModal.EncryptionAlgorithm',
+                      })} /*加密算法*/
                       name={['encryption', 'algorithm']}
                       rules={[
                         {
                           required: true,
-                          message: '请选择状态',
+                          message: formatMessage({ id: 'odc.component.FormModal.SelectAStatus' }), //请选择状态
                         },
                       ]}
                     >
@@ -304,26 +374,35 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                     </Form.Item>
                     {!isEdit || enableSecretEdit ? (
                       <Form.Item
-                        label="加密密钥"
+                        label={formatMessage({
+                          id: 'odc.component.FormModal.EncryptionKey',
+                        })} /*加密密钥*/
                         name={['encryption', 'secret']}
                         rules={[
                           {
                             required: true,
-                            message: '请输入密钥',
+                            message: formatMessage({ id: 'odc.component.FormModal.EnterAKey' }), //请输入密钥
                           },
                         ]}
                       >
                         <Input.Password style={{ width: '232px' }} />
                       </Form.Item>
                     ) : (
-                      <Form.Item label="加密密钥" required>
+                      <Form.Item
+                        label={formatMessage({ id: 'odc.component.FormModal.EncryptionKey' })}
+                        /*加密密钥*/ required
+                      >
                         <Input.Password style={{ width: '232px' }} value="******" disabled={true} />
                       </Form.Item>
                     )}
                   </Space>
                   {isEdit && (
                     <Button type="link" onClick={handleCancelSecretEdit}>
-                      {enableSecretEdit ? '取消修改' : '修改密码'}
+                      {
+                        enableSecretEdit
+                          ? formatMessage({ id: 'odc.component.FormModal.CancelModification' }) //取消修改
+                          : formatMessage({ id: 'odc.component.FormModal.ChangePassword' }) //修改密码
+                      }
                     </Button>
                   )}
                 </Space>
@@ -331,12 +410,14 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             }}
           </Form.Item>
           <Form.Item
-            label="备注"
+            label={formatMessage({ id: 'odc.component.FormModal.Remarks' })} /*备注*/
             name="description"
             rules={[
               {
                 max: 140,
-                message: '备注不超过 140 个字符',
+                message: formatMessage({
+                  id: 'odc.component.FormModal.TheDescriptionCannotExceedCharacters',
+                }), //备注不超过 140 个字符
               },
             ]}
           >

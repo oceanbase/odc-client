@@ -2,6 +2,7 @@ import { getTaskFlowList } from '@/common/network/manager';
 import { updateRiskLevel } from '@/common/network/riskLevel';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -69,12 +70,16 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
     const rawData = await formRef.validateFields().catch();
     const result = await updateRiskLevel(selectedRecord?.id, rawData);
     if (result) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.UpdatedSuccessfully' }), //更新成功
+      );
       handleEditRiskLevelDrawerClose();
       formRef.resetFields();
       reload();
     } else {
-      message.error('更新失败');
+      message.error(
+        formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.UpdateFailed' }), //更新失败
+      );
     }
   };
   useEffect(() => {
@@ -86,7 +91,9 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
 
   return (
     <Drawer
-      title={'编辑风险等级'}
+      title={
+        formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.EditRiskLevel' }) //编辑风险等级
+      }
       width={520}
       visible={visible}
       footerStyle={{
@@ -97,9 +104,11 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
       onClose={onClose}
       footer={
         <Space>
-          <Button onClick={onClose}>取消</Button>
+          <Button onClick={onClose}>
+            {formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.Cancel' }) /*取消*/}
+          </Button>
           <Button type="primary" onClick={handleFormSubmit}>
-            确定
+            {formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.Ok' }) /*确定*/}
           </Button>
         </Space>
       }
@@ -107,25 +116,38 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
     >
       <Spin spinning={loading}>
         <Descriptions column={1}>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'风险等级'}>
+          <Descriptions.Item
+            contentStyle={{ whiteSpace: 'pre' }}
+            label={
+              formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.RiskLevel' }) //风险等级
+            }
+          >
             <RiskLevelLabel level={selectedRecord?.level} color={selectedRecord?.style} />
           </Descriptions.Item>
         </Descriptions>
         <Form form={formRef} layout={'vertical'} requiredMark={'optional'}>
           <Form.Item
-            label={'选择审批流程'}
+            label={
+              formatMessage({
+                id: 'odc.RiskLevel.components.FormRiskLevelDrawer.SelectApprovalProcess',
+              }) //选择审批流程
+            }
             name="approvalFlowConfigId"
             required
             rules={[
               {
                 required: true,
-                message: '请选择审批流程',
+                message: formatMessage({
+                  id: 'odc.RiskLevel.components.FormRiskLevelDrawer.SelectAnApprovalProcess',
+                }), //请选择审批流程
               },
             ]}
           >
             <Select
               options={approvalProcessOptions}
-              placeholder={'请选择'}
+              placeholder={
+                formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.PleaseSelect' }) //请选择
+              }
               style={{ width: '250px' }}
               open={selectOpen}
               onDropdownVisibleChange={(visible) => setSelectOpen(visible)}
@@ -146,7 +168,11 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
                     }}
                   >
                     <PlusOutlined />
-                    新建审批流程
+                    {
+                      formatMessage({
+                        id: 'odc.RiskLevel.components.FormRiskLevelDrawer.CreateAnApprovalProcess',
+                      }) /*新建审批流程*/
+                    }
                   </Button>
                   <CreateApproval
                     {...{
@@ -159,8 +185,19 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
               )}
             />
           </Form.Item>
-          <Form.Item label={'描述'} name="description">
-            <Input.TextArea placeholder={'请输入描述'} />
+          <Form.Item
+            label={
+              formatMessage({ id: 'odc.RiskLevel.components.FormRiskLevelDrawer.Description' }) //描述
+            }
+            name="description"
+          >
+            <Input.TextArea
+              placeholder={
+                formatMessage({
+                  id: 'odc.RiskLevel.components.FormRiskLevelDrawer.EnterADescription',
+                }) //请输入描述
+              }
+            />
           </Form.Item>
         </Form>
       </Spin>

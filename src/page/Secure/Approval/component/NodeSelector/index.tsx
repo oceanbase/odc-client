@@ -1,4 +1,5 @@
 import type { IManagerIntegration, IManagerRole } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { Form, Select } from 'antd';
 import { uniqBy } from 'lodash';
 
@@ -23,8 +24,18 @@ export const NodeSelector: React.FC<INodeSelectorProps> = (props) => {
       disabled: selectedNodes?.some((item) => item.id === role.id),
     };
   });
-  const message = `请选择${title}`;
-  const placeholder = `请选择${title}`;
+  const message = formatMessage(
+    {
+      id: 'odc.component.NodeSelector.SelectTitle',
+    },
+    { title: title },
+  ); //`请选择${title}`
+  const placeholder = formatMessage(
+    {
+      id: 'odc.component.NodeSelector.SelectTitle',
+    },
+    { title: title },
+  ); //`请选择${title}`
   return (
     <Form.Item
       name={name}

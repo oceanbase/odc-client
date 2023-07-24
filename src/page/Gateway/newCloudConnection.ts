@@ -92,7 +92,7 @@ export const action = async (config: INewCloudConnection) => {
   }
   const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
   if (!personalOrganization) {
-    return '个人空间不存在！';
+    return formatMessage({ id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist' }); //个人空间不存在！
   }
   const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
   if (!isSuccess) {

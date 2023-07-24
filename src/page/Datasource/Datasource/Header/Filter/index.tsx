@@ -60,7 +60,9 @@ const Filter: React.FC<IProps> = function ({}) {
             alignItems: 'center',
           }}
         >
-          <Typography.Text strong>筛选数据源</Typography.Text>
+          <Typography.Text strong>
+            {formatMessage({ id: 'odc.Header.Filter.FilterDataSources' }) /*筛选数据源*/}
+          </Typography.Text>
           <a onClick={clear}>{formatMessage({ id: 'odc.Header.Filter.Clear' }) /*清空*/}</a>
         </div>
       }

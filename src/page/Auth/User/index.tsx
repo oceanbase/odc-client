@@ -141,7 +141,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '启用状态',
+        title: formatMessage({ id: 'odc.Auth.User.EnableStatus' }), //启用状态
         width: 80,
         ellipsis: true,
         key: 'enabled',
@@ -477,6 +477,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                     id: 'odc.components.UserPage.Role.1',
                                                   }) /*角色：*/
                                                 }
+
                                                 {item.roleNames?.join(' | ') || '-'}
                                               </div>
                                             </>

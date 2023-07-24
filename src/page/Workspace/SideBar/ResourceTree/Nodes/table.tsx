@@ -1,6 +1,7 @@
 import { fieldIconMap } from '@/constant';
 import { DbObjectType, IPartitionType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { formatMessage } from '@/util/intl';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import Icon, { FolderOpenFilled } from '@ant-design/icons';
 import {
@@ -22,7 +23,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   const dbName = database.name;
   const tables = dbSession?.database?.tables;
   const treeData: TreeDataNode = {
-    title: '表',
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Table' }), //表
     key: `${database?.id}-${dbName}-table`,
     type: ResourceNodeType.TableRoot,
     data: database,
@@ -36,7 +37,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
       let columnRoot: TreeDataNode;
       if (table.columns) {
         columnRoot = {
-          title: '列',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Column' }), //列
           type: ResourceNodeType.TableColumnRoot,
           key: `${tableKey}-column`,
           sessionId: dbSession?.sessionId,
@@ -48,6 +49,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               }}
             />
           ),
+
           children: table.columns?.map((c) => {
             return {
               title: c.name,
@@ -62,6 +64,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               isLeaf: true,
             };
           }),
@@ -70,7 +73,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
       let indexRoot: TreeDataNode;
       if (table.indexes?.length) {
         indexRoot = {
-          title: '索引',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Index' }), //索引
           type: ResourceNodeType.TableIndexRoot,
           key: `${tableKey}-index`,
           data: table,
@@ -81,6 +84,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               }}
             />
           ),
+
           sessionId: dbSession?.sessionId,
           children: table.indexes?.map((c) => {
             return {
@@ -96,6 +100,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               sessionId: dbSession?.sessionId,
               isLeaf: true,
             };
@@ -104,7 +109,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
       }
 
       let partitionRoot: TreeDataNode = {
-        title: '分区',
+        title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Partition' }), //分区
         type: ResourceNodeType.TablePartitionRoot,
         key: `${tableKey}-partition`,
         data: table,
@@ -137,9 +142,11 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               type: ResourceNodeType.TablePartition,
             },
           ];
+
           break;
         }
         case IPartitionType.KEY: {
@@ -158,9 +165,11 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               type: ResourceNodeType.TablePartition,
             },
           ];
+
           break;
         }
         case IPartitionType.LIST: {
@@ -178,6 +187,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               type: ResourceNodeType.TablePartition,
             };
           });
@@ -198,6 +208,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               type: ResourceNodeType.TablePartition,
             };
           });
@@ -218,6 +229,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               type: ResourceNodeType.TablePartition,
             };
           });
@@ -238,6 +250,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               type: ResourceNodeType.TablePartition,
             };
           });
@@ -264,7 +277,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
 
       if (constraint.length) {
         constraintRoot = {
-          title: '约束',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Constraints' }), //约束
           type: ResourceNodeType.TableConstraintRoot,
           key: `${tableKey}-constraint`,
           data: table,
@@ -276,6 +289,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               }}
             />
           ),
+
           children: constraint.map((c) => {
             return {
               title: c.name,
@@ -291,6 +305,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                   }}
                 />
               ),
+
               key: `${tableKey}-constraint-${c.name}`,
             };
           }),
@@ -318,6 +333,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: table.columns
