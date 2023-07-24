@@ -1,5 +1,5 @@
 import { getRoleDetail, setRoleEnable } from '@/common/network/manager';
-import { Acess, actionTypes, canAcess, systemUpdatePermissions } from '@/component/Acess';
+import { Acess, actionTypes, canAcess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import { EmptyLabel } from '@/component/CommonFilter';
 import CommonTable from '@/component/CommonTable';
@@ -160,7 +160,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                   /* 查看 */
                 }
               </Action.Link>
-              <Acess {...systemUpdatePermissions[IManagerResourceType.role]}>
+              <Acess {...createPermission(IManagerResourceType.role, actionTypes.update)}>
                 <Action.Group>
                   <Action.Link
                     disabled={isBuiltIn}

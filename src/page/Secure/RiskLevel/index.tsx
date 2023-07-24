@@ -1,4 +1,6 @@
 import { listRiskLevels } from '@/common/network/riskLevel';
+import { Acess, createPermission } from '@/component/Acess';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -79,7 +81,9 @@ const RiskLevel = ({ userStore }) => {
         return (
           <Space>
             <a onClick={() => handleView(record)}>查看</a>
-            <a onClick={() => handleEdit(record)}>编辑</a>
+            <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
+              <a onClick={() => handleEdit(record)}>编辑</a>
+            </Acess>
           </Space>
         );
       },

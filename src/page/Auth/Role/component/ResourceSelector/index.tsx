@@ -59,7 +59,7 @@ const FormResourceSelector: React.FC<{
     handleFieldChange,
     handlePermissionTypeChange,
   } = props;
-  const { permissionType: initPermissionType = [], systemPermissions = {} } = initialValue ?? {};
+  const { permissionType: initPermissionType = [] } = initialValue ?? {};
   const [permissionType, setPermissionType] = useState([]);
   const { resource, roles, users } = useContext(ResourceContext);
 

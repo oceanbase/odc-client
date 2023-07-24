@@ -1,8 +1,8 @@
-import { EnablePermission } from '@/constant';
 import {
   actionTypes,
   IConnection,
   IManagePagesKeys,
+  IManagerResourceType,
   IManagerResourceType as resourceTypes,
 } from '@/d.ts';
 import authStore, { AuthStore, AuthStoreContext } from '@/store/auth';
@@ -41,6 +41,18 @@ const Acess = observer(
 );
 
 /**
+ * 存在一个权限，就可以返回
+ */
+const AcessMultiPermission = observer(
+  (props: { fallback?: ReactElement; children?: ReactElement; permissions: AcessParameter[] }) => {
+    const { children, permissions, fallback = <NoAuth /> } = props;
+    const results = useMultiAcess(props.permissions);
+    if (results?.find((item) => item.accessible)) return children;
+    return fallback;
+  },
+);
+
+/**
  * hooks 获取权限信息
  */
 function useAcess(permission: AcessParameter): AcessResult {
@@ -48,23 +60,24 @@ function useAcess(permission: AcessParameter): AcessResult {
   return getAcess(authState, permission);
 }
 
-function isSubResource(parentResourceIdentifier: string, resourceIdentifier: string) {
-  const [resourceType, resourceId] = parentResourceIdentifier?.split(':') ?? [];
-  const [type, id] = resourceIdentifier?.split(':') ?? [];
-  const isSameType = resourceType === type;
-  if (resourceId === '*' || !resourceId) return isSameType;
-  return isSameType && id === resourceId;
+/**
+ * hooks 获取权限信息
+ */
+function useMultiAcess(permissions: AcessParameter[]): AcessResult[] {
+  const authState = useContext(AuthStoreContext);
+  return permissions?.map((p) => getAcess(authState, p));
 }
 
+/**
+ * 获取指定的资源是否有权限
+ */
 function getAcess(authState: AuthStore, permission: AcessParameter) {
   const { resourceIdentifier = '', action } = permission;
   if (!(isString(action) && isString(resourceIdentifier))) return { accessible: false };
-  const { permissions } = authState;
-  const hasPermission = permissions?.some((item) => {
-    return isSubResource(item?.resourceType, resourceIdentifier) && item?.actions?.includes(action);
-  });
+  const [resourceType, resourceId] = resourceIdentifier?.split(':') ?? [];
+  const actions = authState.getResourceActions(resourceId, resourceType as IManagerResourceType);
   return {
-    accessible: EnablePermission && hasPermission,
+    accessible: actions.has(action as actionTypes),
   };
 }
 
@@ -76,10 +89,7 @@ function NoAuth(): JSX.Element {
   return null;
 }
 
-function createSystemPermission(
-  resourceType: resourceTypes,
-  action: actionTypes = actionTypes.read,
-) {
+function createPermission(resourceType: resourceTypes, action: actionTypes = actionTypes.read) {
   return {
     resourceIdentifier: `${resourceType}:*`,
     action,
@@ -88,32 +98,19 @@ function createSystemPermission(
 
 const systemUpdatePermissions = {
   // 资源管理权限
-  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.update),
-  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.update),
-  [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.update),
-  [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.update),
+  [resourceTypes.resource]: createPermission(resourceTypes.resource, actionTypes.update),
+  [resourceTypes.project]: createPermission(resourceTypes.project, actionTypes.update),
+  [resourceTypes.user]: createPermission(resourceTypes.user, actionTypes.update),
+  [resourceTypes.role]: createPermission(resourceTypes.role, actionTypes.update),
   // 系统操作权限
-  [resourceTypes.flow_config]: createSystemPermission(
-    resourceTypes.flow_config,
-    actionTypes.update,
-  ),
-  [resourceTypes.odc_data_masking_rule]: createSystemPermission(
-    resourceTypes.odc_data_masking_rule,
-    actionTypes.update,
-  ),
-  [resourceTypes.odc_audit_event]: createSystemPermission(
+  [resourceTypes.flow_config]: createPermission(resourceTypes.flow_config, actionTypes.update),
+  [resourceTypes.odc_audit_event]: createPermission(
     resourceTypes.odc_audit_event,
     actionTypes.update,
   ),
-  [resourceTypes.auto_auth]: createSystemPermission(resourceTypes.auto_auth, actionTypes.update),
-  [resourceTypes.system_config]: createSystemPermission(
-    resourceTypes.system_config,
-    actionTypes.update,
-  ),
-  [resourceTypes.integration]: createSystemPermission(
-    resourceTypes.integration,
-    actionTypes.update,
-  ),
+  [resourceTypes.auto_auth]: createPermission(resourceTypes.auto_auth, actionTypes.update),
+  [resourceTypes.system_config]: createPermission(resourceTypes.system_config, actionTypes.update),
+  [resourceTypes.integration]: createPermission(resourceTypes.integration, actionTypes.update),
 };
 
 // 写权限
@@ -129,4 +126,11 @@ export function isReadonlyPublicConnection(connection: Partial<IConnection>) {
   return hasSourceReadAuth(connection?.permittedActions);
 }
 
-export { Acess, useAcess, canAcess, actionTypes, systemUpdatePermissions };
+export {
+  Acess,
+  AcessMultiPermission,
+  canAcess,
+  actionTypes,
+  systemUpdatePermissions,
+  createPermission,
+};
