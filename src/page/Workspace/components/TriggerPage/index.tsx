@@ -1,5 +1,4 @@
 import { getTriggerByName } from '@/common/network/trigger';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
@@ -336,15 +335,13 @@ class TriggerPage extends Component<
                       </div>
                     ) : (
                       <>
-                        <WorkspaceAcess action={actionTypes.update}>
-                          <ToolbarButton
-                            text={formatMessage({
-                              id: 'workspace.window.session.button.edit',
-                            })}
-                            icon={<EditOutlined />}
-                            onClick={this.handleEditBaseInfo}
-                          />
-                        </WorkspaceAcess>
+                        <ToolbarButton
+                          text={formatMessage({
+                            id: 'workspace.window.session.button.edit',
+                          })}
+                          icon={<EditOutlined />}
+                          onClick={this.handleEditBaseInfo}
+                        />
 
                         <ToolbarButton
                           text={formatMessage({
@@ -536,15 +533,13 @@ class TriggerPage extends Component<
               */}
               <TabPane tab={'DDL'} key={PropsTab.DDL}>
                 <Toolbar>
-                  <WorkspaceAcess action={actionTypes.update}>
-                    <ToolbarButton
-                      text={formatMessage({
-                        id: 'workspace.window.session.button.edit',
-                      })}
-                      icon={<EditOutlined />}
-                      onClick={this.editTrigger}
-                    />
-                  </WorkspaceAcess>
+                  <ToolbarButton
+                    text={formatMessage({
+                      id: 'workspace.window.session.button.edit',
+                    })}
+                    icon={<EditOutlined />}
+                    onClick={this.editTrigger}
+                  />
 
                   <ToolbarButton
                     text={

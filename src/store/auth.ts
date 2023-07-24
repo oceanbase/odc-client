@@ -1,5 +1,4 @@
 import { getCurrentUserPermissions } from '@/common/network/manager';
-import { IManagerResourceType } from '@/d.ts';
 import { action, observable } from 'mobx';
 import { createContext } from 'react';
 
@@ -49,14 +48,6 @@ export class AuthStore {
     } catch (e) {
       console.error('GetCurrentUserPermissions Failed', e);
     }
-  }
-  @action
-  public appendConnectionPermissions(connectionId, actions: string[]) {
-    this.permissions = this.permissions.concat({
-      resourceId: Date.now(),
-      resourceType: IManagerResourceType.workspace + ':' + connectionId,
-      actions: actions,
-    });
   }
 }
 
