@@ -5,6 +5,7 @@ import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import { actionTypes } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -69,19 +70,25 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
     }
   }
 
+  const canCreate = datasource?.permittedActions?.includes(actionTypes.create);
+  const canDelete = datasource?.permittedActions?.includes(actionTypes.delete);
+  const canUpdate = datasource?.permittedActions?.includes(actionTypes.update);
+
   return (
     <TableCard
       title={
-        <Space>
-          <NewDataBaseButton
-            mode={datasource?.dialectType}
-            onSuccess={() => reload}
-            dataSourceId={id}
-          />
-          <Button loading={syncLoading} onClick={sync}>
-            同步数据库
-          </Button>
-        </Space>
+        canUpdate && (
+          <Space>
+            <NewDataBaseButton
+              mode={datasource?.dialectType}
+              onSuccess={() => reload}
+              dataSourceId={id}
+            />
+            <Button loading={syncLoading} onClick={sync}>
+              同步数据库
+            </Button>
+          </Space>
+        )
       }
       extra={<Reload onClick={reload} />}
     >
@@ -132,27 +139,31 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             render(_, record) {
               return (
                 <Action.Group size={3}>
-                  <Action.Link
-                    disabled={!record.existed}
-                    onClick={() => {
-                      setVisible(true);
-                      setDatabase(record);
-                    }}
-                    key={'transfer'}
-                  >
-                    转移项目
-                  </Action.Link>
-                  <Popconfirm
-                    title="确认删除吗？"
-                    disabled={record.existed}
-                    onConfirm={() => {
-                      return deleteDB(record.id);
-                    }}
-                  >
-                    <Action.Link disabled={record.existed} key={'delete'}>
-                      删除
+                  {canUpdate && (
+                    <Action.Link
+                      disabled={!record.existed}
+                      onClick={() => {
+                        setVisible(true);
+                        setDatabase(record);
+                      }}
+                      key={'transfer'}
+                    >
+                      转移项目
                     </Action.Link>
-                  </Popconfirm>
+                  )}
+                  {canDelete && (
+                    <Popconfirm
+                      title="确认删除吗？"
+                      disabled={record.existed}
+                      onConfirm={() => {
+                        return deleteDB(record.id);
+                      }}
+                    >
+                      <Action.Link disabled={record.existed} key={'delete'}>
+                        删除
+                      </Action.Link>
+                    </Popconfirm>
+                  )}
                 </Action.Group>
               );
             },

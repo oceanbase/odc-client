@@ -118,8 +118,6 @@ export enum IManagerResourceType {
   project = 'ODC_PROJECT',
   resource = 'ODC_CONNECTION',
   system_config = 'ODC_SYSTEM_CONFIG',
-  odc_data_masking_rule = 'ODC_DATA_MASKING_RULE',
-  odc_data_masking_policy = 'ODC_DATA_MASKING_POLICY',
   odc_audit_event = 'ODC_AUDIT_EVENT',
   data_masking = 'ODC_DATA_MASKING_RULE',
   flow_config = 'ODC_FLOW_CONFIG',

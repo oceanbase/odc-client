@@ -1,6 +1,8 @@
 import { getConnectionList } from '@/common/network/connection';
 import { getRoleList, getUserList } from '@/common/network/manager';
+import { canAcess, createPermission } from '@/component/Acess';
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import React, { useState } from 'react';
 import { history, useParams } from 'umi';
@@ -34,6 +36,7 @@ const tabs = [
   {
     tab: '自动授权',
     key: IPageType.Auth_Autoauth,
+    permission: createPermission(IManagerResourceType.auto_auth, actionTypes.read),
   },
 ];
 
@@ -64,13 +67,20 @@ const Index: React.FC<IProps> = function () {
     setPublicConnections(res?.contents);
   };
 
+  const displayTabs = tabs.filter((tab) => {
+    if (tab.permission) {
+      return canAcess(tab.permission)?.accessible;
+    }
+    return true;
+  });
+
   return (
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
         title: '用户权限',
       }}
-      tabList={tabs}
+      tabList={displayTabs}
       tabActiveKey={page}
       onTabChange={handleChange}
     >

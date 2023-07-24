@@ -1,5 +1,7 @@
 import { listEnvironments } from '@/common/network/env';
 import { deleteRiskDetectRule } from '@/common/network/riskDetectRule';
+import { Acess, canAcess, createPermission } from '@/component/Acess';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { message, Popconfirm, Space } from 'antd';
@@ -134,36 +136,44 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
             >
               查看
             </a>
-            <a
-              onClick={async () => {
-                handleDrawerEdit(record);
-              }}
-            >
-              编辑
-            </a>
-            <Popconfirm
-              title={'是否确定删除？'}
-              okText={'确定'}
-              cancelText={'取消'}
-              onConfirm={() => {
-                handleDelete(record.id);
-              }}
-            >
-              <a>删除</a>
-            </Popconfirm>
+            <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
+              <a
+                onClick={async () => {
+                  handleDrawerEdit(record);
+                }}
+              >
+                编辑
+              </a>
+            </Acess>
+            <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.delete)}>
+              <Popconfirm
+                title={'是否确定删除？'}
+                okText={'确定'}
+                cancelText={'取消'}
+                onConfirm={() => {
+                  handleDelete(record.id);
+                }}
+              >
+                <a>删除</a>
+              </Popconfirm>
+            </Acess>
           </Space>
         );
       },
     },
   ];
   const operationOptions = [];
-  operationOptions.push({
-    type: IOperationOptionType.button,
-    content: '新建风险识别规则',
-    //新建流程
-    isPrimary: true,
-    onClick: handleDrawerCreate,
-  });
+  const canCreate = canAcess(
+    createPermission(IManagerResourceType.risk_detect, actionTypes.create),
+  )?.accessible;
+  canCreate &&
+    operationOptions.push({
+      type: IOperationOptionType.button,
+      content: '新建风险识别规则',
+      //新建流程
+      isPrimary: true,
+      onClick: handleDrawerCreate,
+    });
   operationOptions.push({
     type: IOperationOptionType.icon,
   });

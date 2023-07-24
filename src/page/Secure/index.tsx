@@ -1,6 +1,13 @@
 import { getUserList } from '@/common/network/manager';
+import { canAcess, createPermission } from '@/component/Acess';
 import PageContainer, { TitleType } from '@/component/PageContainer';
-import { IManagerUser, IManageUserListParams, IResponseData } from '@/d.ts';
+import {
+  actionTypes,
+  IManagerResourceType,
+  IManagerUser,
+  IManageUserListParams,
+  IResponseData,
+} from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
@@ -63,6 +70,7 @@ const tabs = [
   {
     tab: '操作记录',
     key: IPageType.Secure_Record,
+    permission: createPermission(IManagerResourceType.odc_audit_event, actionTypes.read),
   },
 ];
 
@@ -81,6 +89,8 @@ const Index: React.FC<IProps> = function ({ userStore }) {
     setUsers(users);
   };
 
+  const displayTabs = tabs?.filter((tab) => (tab.permission ? canAcess(tab.permission) : true));
+
   return (
     <PageContainer
       titleProps={{
@@ -94,7 +104,7 @@ const Index: React.FC<IProps> = function ({ userStore }) {
             }
           : {}
       }
-      tabList={tabs}
+      tabList={displayTabs}
       tabActiveKey={page}
       onTabChange={handleChange}
     >

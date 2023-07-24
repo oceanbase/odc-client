@@ -4,7 +4,7 @@ import {
   getResourceRoles,
   getTaskFlowList,
 } from '@/common/network/manager';
-import { actionTypes, canAcess } from '@/component/Acess';
+import { Acess, actionTypes, canAcess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
@@ -124,7 +124,7 @@ class Approval extends React.PureComponent<IProps, IState> {
         fixed: 'right' as FixedType,
         render: (value, record) => (
           <Action.Group>
-            <Action.Group>
+            <Acess {...createPermission(IManagerResourceType.approval_flow, actionTypes.update)}>
               <Action.Link
                 disabled={record.builtIn}
                 onClick={async () => {
@@ -133,6 +133,8 @@ class Approval extends React.PureComponent<IProps, IState> {
               >
                 编辑
               </Action.Link>
+            </Acess>
+            <Acess {...createPermission(IManagerResourceType.approval_flow, actionTypes.delete)}>
               <Action.Link
                 disabled={record.builtIn}
                 onClick={async () => {
@@ -141,7 +143,7 @@ class Approval extends React.PureComponent<IProps, IState> {
               >
                 删除
               </Action.Link>
-            </Action.Group>
+            </Acess>
           </Action.Group>
         ),
       },
@@ -232,7 +234,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, editId, flowList, roles, integrations } = this.state;
     const canAcessCreate = canAcess({
-      resourceIdentifier: IManagerResourceType.resource,
+      resourceIdentifier: IManagerResourceType.approval_flow,
       action: actionTypes.create,
     }).accessible;
     return (

@@ -2,7 +2,7 @@ import { getIntegrationList } from '@/common/network/manager';
 import { updateRule } from '@/common/network/ruleset';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IntegrationType } from '@/d.ts';
+import { actionTypes, IManagerResourceType, IntegrationType } from '@/d.ts';
 import { IRule, RuleType } from '@/d.ts/rule';
 import {
   CommonTableBodyMode,
@@ -17,6 +17,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../../components/SecureTable';
 import EditRuleDrawer from './EditRuleDrawer';
 
+import { Acess, createPermission } from '@/component/Acess';
 import RiskLevelLabel from '../../components/RiskLevelLabel';
 import styles from './index.less';
 
@@ -203,7 +204,12 @@ const getColumns: (columnsFunction: {
       render: (_, record, index) => (
         <>
           <Space>
-            <a onClick={() => handleOpenEditModal(record)}>编辑</a>
+            <Acess
+              fallback={<span>-</span>}
+              {...createPermission(IManagerResourceType.environment, actionTypes.update)}
+            >
+              <a onClick={() => handleOpenEditModal(record)}>编辑</a>
+            </Acess>
           </Space>
         </>
       ),

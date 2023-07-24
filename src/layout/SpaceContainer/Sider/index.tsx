@@ -1,4 +1,6 @@
+import { Acess, AcessMultiPermission, createPermission } from '@/component/Acess';
 import MessageCount from '@/component/Task/component/MessageCount';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import LinkOutlined from '@/svgr/icon_connection.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
@@ -83,15 +85,23 @@ const Sider: React.FC<IProps> = function () {
               }
             />
           </Link>
-          <Link to={`/${IPageType.Auth}/${IPageType.Auth_User}`}>
-            <MenuItem
-              key={IPageType.Auth}
-              selected={selected === IPageType.Auth}
-              icon={TeamOutlined}
-              collapsed={collapsed}
-              label="用户权限"
-            />
-          </Link>
+          <AcessMultiPermission
+            permissions={[
+              createPermission(IManagerResourceType.user, actionTypes.read),
+              createPermission(IManagerResourceType.role, actionTypes.read),
+              createPermission(IManagerResourceType.auto_auth, actionTypes.read),
+            ]}
+          >
+            <Link to={`/${IPageType.Auth}/${IPageType.Auth_User}`}>
+              <MenuItem
+                key={IPageType.Auth}
+                selected={selected === IPageType.Auth}
+                icon={TeamOutlined}
+                collapsed={collapsed}
+                label="用户权限"
+              />
+            </Link>
+          </AcessMultiPermission>
           <Link to={`/${IPageType.Secure}/${IPageType.Secure_Env}`}>
             <MenuItem
               key={IPageType.Secure}
@@ -101,15 +111,19 @@ const Sider: React.FC<IProps> = function () {
               label="安全规范"
             />
           </Link>
-          <Link to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}>
-            <MenuItem
-              key={IPageType.ExternalIntegration}
-              selected={selected === IPageType.ExternalIntegration}
-              icon={ForkOutlined}
-              collapsed={collapsed}
-              label="外部集成"
-            />
-          </Link>
+          <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
+            <Link
+              to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}
+            >
+              <MenuItem
+                key={IPageType.ExternalIntegration}
+                selected={selected === IPageType.ExternalIntegration}
+                icon={ForkOutlined}
+                collapsed={collapsed}
+                label="外部集成"
+              />
+            </Link>
+          </Acess>
         </Space>
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>

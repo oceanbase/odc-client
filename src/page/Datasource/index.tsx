@@ -13,13 +13,22 @@ import {
   getConnectionDetail,
   getConnectionList,
 } from '@/common/network/connection';
+import { actionTypes } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
 import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
-const ExtraContent = ({ cid, name }: { cid: number; name: string }) => {
+const ExtraContent = ({
+  cid,
+  name,
+  permissions,
+}: {
+  cid: number;
+  name: string;
+  permissions: actionTypes[];
+}) => {
   const nav = useNavigate();
   return (
     <Space>
@@ -42,6 +51,7 @@ const ExtraContent = ({ cid, name }: { cid: number; name: string }) => {
                   },
                 });
               },
+              disabled: !permissions?.includes(actionTypes.delete),
             },
           ],
         }}
@@ -160,7 +170,13 @@ const Index: React.FC<IProps> = function () {
       icon={OBSvg}
       tabList={tabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent cid={cid} name={connection?.name} />}
+      tabBarExtraContent={
+        <ExtraContent
+          permissions={connection?.permittedActions as actionTypes[]}
+          cid={cid}
+          name={connection?.name}
+        />
+      }
       onTabChange={handleChange}
       bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
     >

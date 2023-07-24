@@ -123,9 +123,6 @@ export const Revise_Field_Map_V1_To_V2 = new Map([
   ['sysUserPassword', 'sysTenantPassword'],
 ]);
 
-// 管控台-权限功能开关
-export const EnablePermission = true;
-
 // 管控台-角色管理-系统权限入口
 export const EnableRoleSystemPermission = true;
 

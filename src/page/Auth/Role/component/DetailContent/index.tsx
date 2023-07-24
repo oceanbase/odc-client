@@ -316,15 +316,13 @@ const UserDetail: React.FC<{
       ),
     }));
 
-  const _systemOperationPermissions = systemOperationPermissions
-    ?.filter((item) => item.resourceType !== IManagerResourceType.odc_data_masking_policy)
-    ?.map(({ actions, ...rest }) => ({
-      ...rest,
-      actions: resourceActions.getActionStringValue(
-        actions,
-        IManagerRolePermissionType.systemOperationPermissions,
-      ),
-    }));
+  const _systemOperationPermissions = systemOperationPermissions?.map(({ actions, ...rest }) => ({
+    ...rest,
+    actions: resourceActions.getActionStringValue(
+      actions,
+      IManagerRolePermissionType.systemOperationPermissions,
+    ),
+  }));
   const handleDelete = async () => {
     const res = await deleteRole(id);
     if (res) {
