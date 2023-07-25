@@ -130,7 +130,7 @@ export default inject('userStore')(
           ['ssoParameter', 'userInfoAuthenticationMethod'],
           ['ssoParameter', 'issueUrl'],
           ['mappingRule', 'userProfileViewType'],
-          'nestedAttributeField',
+          ['mappingRule', 'nestedAttributeField'],
         ]);
         if (!value) {
           return;
@@ -648,7 +648,7 @@ export default inject('userStore')(
                     label={formatMessage({
                       id: 'odc.NewSSODrawerButton.SSOForm.ObtainNestedUserData',
                     })} /*获取嵌套用户数据*/
-                    name={'nestedAttributeField'}
+                    name={['mappingRule', 'nestedAttributeField']}
                     rules={[requiredRule]}
                   >
                     <Input

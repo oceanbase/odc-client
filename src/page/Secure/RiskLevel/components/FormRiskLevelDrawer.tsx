@@ -37,9 +37,6 @@ const FormRiskLevelDrawer: React.FC<FormRiskLevelDrawerProps> = ({
   userStore,
   handleEditRiskLevelDrawerClose,
 }) => {
-  const {
-    user: { organizationId },
-  } = userStore;
   const [formRef] = useForm();
   const [createApprovalDrawerOpen, setCreateApprovalDrawerOpen] = useState<boolean>(false);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);

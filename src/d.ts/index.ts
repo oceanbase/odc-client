@@ -3090,9 +3090,6 @@ export enum IClientAuthenticationMethod {
 
 export enum IAuthorizationGrantType {
   authorization_code = 'authorization_code',
-  refresh_token = 'refresh_token',
-  client_credentials = 'client_credentials',
-  password = 'password',
 }
 
 export enum IUserInfoAuthenticationMethod {
