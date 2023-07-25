@@ -26,10 +26,6 @@ export function getRuleDecetedList(riskLevel: IRiskLevel): RiskLevelMapProps {
 const RiskDetectRules: React.FC<{
   userStore: UserStore;
 }> = ({ userStore }) => {
-  const {
-    user: { organizationId },
-  } = userStore;
-
   const [siderLoading, setSiderLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [riskDetectRules, setRiskDetectRules] = useState<IRiskDetectRule[]>([]);
@@ -85,8 +81,8 @@ const RiskDetectRules: React.FC<{
         return riskDetectRule;
       }
     });
-    handleItemClick(rawData[0]);
-    setSiderItemList(rawData);
+    rawData?.length > 0 && handleItemClick(rawData[0]);
+    rawData?.length > 0 && setSiderItemList(rawData);
   };
   const initRiskDetectRules = async () => {
     setSiderLoading(true);

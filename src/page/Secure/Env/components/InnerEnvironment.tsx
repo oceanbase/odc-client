@@ -20,18 +20,19 @@ import EditRuleDrawer from './EditRuleDrawer';
 
 import { Acess, createPermission } from '@/component/Acess';
 import RiskLevelLabel from '../../components/RiskLevelLabel';
+import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import styles from './index.less';
 
 export const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
   const levelMap = {
-    0: formatMessage({ id: 'odc.Env.components.InnerEnvironment.NoNeedToImprove' }), //无需改进
-    1: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RecommendedImprovement' }), //建议改进
-    2: formatMessage({ id: 'odc.Env.components.InnerEnvironment.MustBeImproved' }), //必须改进
+    [RiskLevelEnum.DEFAULT]: RiskLevelTextMap[RiskLevelEnum.DEFAULT], //无需改进
+    [RiskLevelEnum.SUGGEST]: RiskLevelTextMap[RiskLevelEnum.SUGGEST], //建议改进
+    [RiskLevelEnum.MUST]: RiskLevelTextMap[RiskLevelEnum.MUST], //必须改进
   };
   const colorMap = {
-    0: 'green',
-    1: 'yellow',
-    2: 'red',
+    [RiskLevelEnum.DEFAULT]: 'green',
+    [RiskLevelEnum.SUGGEST]: 'yellow',
+    [RiskLevelEnum.MUST]: 'red',
   };
   return <RiskLevelLabel content={levelMap[level]} color={colorMap[level]} />;
 };
@@ -175,6 +176,20 @@ const getColumns: (columnsFunction: {
       title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ImprovementLevel' }), //改进等级 // width: 92,
       dataIndex: 'level',
       key: 'level',
+      filters: [
+        {
+          text: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+          value: RiskLevelEnum.DEFAULT,
+        },
+        {
+          text: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+          value: RiskLevelEnum.SUGGEST,
+        },
+        {
+          text: RiskLevelTextMap[RiskLevelEnum.MUST],
+          value: RiskLevelEnum.MUST,
+        },
+      ],
       render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
