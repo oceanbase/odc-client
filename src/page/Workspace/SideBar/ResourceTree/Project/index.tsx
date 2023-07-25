@@ -15,7 +15,7 @@ import ProjectSvg from '@/svgr/project_space.svg';
 
 export default forwardRef(function ProjectTree(props, ref) {
   const { data, loading, run } = useRequest(listProjects, {
-    defaultParams: [null, 1, 9999, null],
+    defaultParams: [null, 1, 9999, false],
   });
 
   const [searchKey, setSearchKey] = useState('');
