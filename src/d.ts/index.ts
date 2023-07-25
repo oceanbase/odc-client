@@ -118,7 +118,6 @@ export enum IManagerResourceType {
   role = 'ODC_ROLE',
   project = 'ODC_PROJECT',
   resource = 'ODC_CONNECTION',
-  system_config = 'ODC_SYSTEM_CONFIG',
   odc_audit_event = 'ODC_AUDIT_EVENT',
   data_masking = 'ODC_DATA_MASKING_RULE',
   flow_config = 'ODC_FLOW_CONFIG',
@@ -155,7 +154,6 @@ export enum IManagePagesKeys {
   RISK_DATA = 'riskdata',
   TASK_FLOW = 'task',
   SECURITY_AUDIT = 'security_audit',
-  SYSTEM_CONFIG = 'system_config',
   MASK_DATA = 'mask_data',
   INTEGRATION_APPROVAL = 'integration_approval',
   SQL_INTERCEPTOR = 'sql_interceptor',
@@ -1700,6 +1698,7 @@ export enum SubTaskType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   DATA_DELETE = 'DATA_DELETE',
   DATA_ARCHIVE_ROLLBACK = 'DATA_ARCHIVE_ROLLBACK',
+  ASYNC = 'ASYNC',
 }
 
 export enum TaskSubType {

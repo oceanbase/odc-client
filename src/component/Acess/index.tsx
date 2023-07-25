@@ -109,7 +109,6 @@ const systemUpdatePermissions = {
     actionTypes.update,
   ),
   [resourceTypes.auto_auth]: createPermission(resourceTypes.auto_auth, actionTypes.update),
-  [resourceTypes.system_config]: createPermission(resourceTypes.system_config, actionTypes.update),
   [resourceTypes.integration]: createPermission(resourceTypes.integration, actionTypes.update),
 };
 

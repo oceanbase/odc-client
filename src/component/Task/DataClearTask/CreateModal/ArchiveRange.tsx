@@ -25,20 +25,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
         required
       >
         <Radio.Group>
-          <Radio.Button value={IArchiveRange.PORTION}>
-            {
-              formatMessage({
-                id: 'odc.DataClearTask.CreateModal.ArchiveRange.PartialArchive',
-              }) /*部分归档*/
-            }
-          </Radio.Button>
-          <Radio.Button value={IArchiveRange.ALL}>
-            {
-              formatMessage({
-                id: 'odc.DataClearTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
-              }) /*整库归档*/
-            }
-          </Radio.Button>
+          <Radio.Button value={IArchiveRange.PORTION}>部分清理</Radio.Button>
+          <Radio.Button value={IArchiveRange.ALL}>整库清理</Radio.Button>
         </Radio.Group>
       </Form.Item>
       <Form.Item shouldUpdate noStyle>

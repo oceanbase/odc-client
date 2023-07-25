@@ -253,6 +253,10 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
     setRollbackContentType(SQLContentType.TEXT);
+    setDefaultFileList({
+      rollbackSqlFiles: [],
+      sqlFiles: [],
+    });
   };
 
   const handleCancel = (hasEdit: boolean) => {
