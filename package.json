@@ -76,8 +76,8 @@
   },
   "devDependencies": {
     "@ali/parrot-tool-must": "^2.3.5",
-    "@alipay/monaco-plugin-ob": "0.0.16",
-    "@alipay/ob-parser-js": "1.0.9",
+    "@alipay/monaco-plugin-ob": "0.0.18",
+    "@alipay/ob-parser-js": "2.0.3",
     "@alipay/ob-react-data-grid": "2.4.7",
     "@alipay/tracert": "4",
     "@ant-design/pro-layout": "^6.5.0",
