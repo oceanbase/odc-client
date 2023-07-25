@@ -80,8 +80,8 @@ const Environment: React.FC<{}> = ({}) => {
   const initSiderData = async (envs?: IEnvironment[]) => {
     setSiderLoading(true);
     const resData = envs.map(getEnvTypeList).sort((a, b) => a?.envId - b?.envId);
-    handleItemClick(resData[0]);
-    setSiderItemList(resData);
+    resData?.length > 0 && handleItemClick(resData[0]);
+    resData?.length > 0 && setSiderItemList(resData);
     setSiderLoading(false);
   };
 

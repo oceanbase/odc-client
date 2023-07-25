@@ -1,7 +1,7 @@
 import { IManagerIntegration } from '@/d.ts';
 import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
-import { Button, Checkbox, Descriptions, Drawer, Form, Radio, Select } from 'antd';
+import { Button, Checkbox, Descriptions, Drawer, Form, Radio } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
 import EditPropertyComponentMap from './EditPropertyComponent';
@@ -69,7 +69,6 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
   };
   useEffect(() => {
     if (editRuleDrawerVisible) {
-      console.log(rule);
       const {
         appliedDialectTypes = [],
         level = 0,
@@ -85,11 +84,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
       );
       propertyMetadatas.forEach((pm, index) => {
         newInitData[`activeKey${index}`] = properties[pm.name];
-        if (pm?.candidates) {
-          newInitData[`options${index}`] = pm?.candidates?.map((candidate) => ({
-            value: candidate,
-            label: candidate,
-          }));
+        if (
+          pm?.name ===
+          '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.metadata.name}'
+        ) {
+          newInitData[`options${index}`] = options;
+        } else {
+          if (pm?.candidates) {
+            newInitData[`options${index}`] = pm?.candidates?.map((candidate) => ({
+              value: candidate,
+              label: candidate,
+            }));
+          } else {
+            newInitData[`options${index}`] = [];
+          }
         }
       });
       setIsExternalApproval(isExternalApproval);
@@ -164,22 +172,6 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             ))}
           </Checkbox.Group>
         </Form.Item>
-        {isExternalApproval && ruleType === RuleType.SQL_CHECK && (
-          <Form.Item
-            name="externalApproval"
-            label={formatMessage({
-              id: 'odc.Env.components.EditRuleDrawer.ConfigureExternalSqlCheckIntegration',
-            })} /*配置外部 SQL 检查集成*/
-            rules={[
-              {
-                required: true,
-                message: formatMessage({ id: 'odc.Env.components.EditRuleDrawer.PleaseSelect' }), //请选择
-              },
-            ]}
-          >
-            <Select options={options} />
-          </Form.Item>
-        )}
 
         {rule?.metadata?.propertyMetadatas?.map((pm, index) => {
           return (
