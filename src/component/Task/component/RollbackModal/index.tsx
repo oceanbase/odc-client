@@ -2,18 +2,20 @@ import { RollbackType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import type { RadioChangeEvent } from 'antd';
 import { Modal, Radio, Space, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 const { Text } = Typography;
 
 interface IProps {
   open: boolean;
+  generateRollbackPlan: boolean;
   onOk: (type: RollbackType) => void;
   onCancel: () => void;
 }
 
 const RollBackModal: React.FC<IProps> = (props) => {
-  const { open, onOk, onCancel } = props;
+  const { open, generateRollbackPlan, onOk, onCancel } = props;
   const [value, setValue] = useState<RollbackType>(RollbackType.REF);
+  const [disabledRef, setDisabledRef] = useState(false);
 
   const handleChange = (e: RadioChangeEvent) => {
     setValue(e.target.value);
@@ -22,6 +24,11 @@ const RollBackModal: React.FC<IProps> = (props) => {
   const handleOk = () => {
     onOk(value);
   };
+
+  useEffect(() => {
+    setDisabledRef(!generateRollbackPlan);
+    setValue(generateRollbackPlan ? RollbackType.REF : RollbackType.CUSTOM);
+  }, [generateRollbackPlan]);
 
   return (
     <Modal
@@ -42,16 +49,10 @@ const RollBackModal: React.FC<IProps> = (props) => {
           }
         </Text>
         <Radio.Group onChange={handleChange} value={value}>
-          <Radio value={RollbackType.REF}>
-            {
-              formatMessage({
-                id: 'odc.component.RollbackModal.ReferenceSystemGeneratedSolutions',
-              }) /*引用系统生成的方案*/
-            }
+          <Radio value={RollbackType.REF} disabled={disabledRef}>
+            引用系统生成的方案
           </Radio>
-          <Radio value={RollbackType.CUSTOM}>
-            {formatMessage({ id: 'odc.component.RollbackModal.Custom' }) /*自定义*/}
-          </Radio>
+          <Radio value={RollbackType.CUSTOM}>自定义</Radio>
         </Radio.Group>
       </Space>
     </Modal>

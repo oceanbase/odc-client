@@ -7,6 +7,7 @@ import {
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import {
+  IAsyncTaskParams,
   ICycleTaskRecord,
   ITaskResult,
   RollbackType,
@@ -727,7 +728,16 @@ const ActionBar: React.FC<IProps> = inject(
             return renderTool(tool);
           })}
         </Action.Group>
-        <RollBackModal open={openRollback} onOk={confirmRollback} onCancel={handleCloseRollback} />
+        {isDetailModal && (
+          <RollBackModal
+            open={openRollback}
+            generateRollbackPlan={
+              (task as TaskDetail<IAsyncTaskParams>)?.parameters?.generateRollbackPlan
+            }
+            onOk={confirmRollback}
+            onCancel={handleCloseRollback}
+          />
+        )}
       </>
     );
   }),

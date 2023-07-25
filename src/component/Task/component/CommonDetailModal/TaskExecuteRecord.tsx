@@ -24,6 +24,9 @@ const TaskLabelMap = {
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DataCleansing',
     }), //数据清理
   },
+  [TaskType.SQL_PLAN]: {
+    [SubTaskType.ASYNC]: '数据库变更',
+  },
 };
 
 const statusFilters = Object.keys(subTaskStatus).map((key) => {
@@ -49,6 +52,7 @@ const getConnectionColumns = (params: {
 }) => {
   const { taskType, taskId, onReloadList, onApprovalVisible, onDetailVisible } = params;
   const jobFilter = getJobFilter(taskType);
+  const isSqlPlan = taskType === TaskType.SQL_PLAN;
   return [
     {
       dataIndex: 'id',
@@ -67,7 +71,9 @@ const getConnectionColumns = (params: {
       onFilter: (value: string, record) => {
         return value === record.jobGroup;
       },
-      render: (jobGroup) => TaskLabelMap[taskType][jobGroup],
+      render: (jobGroup) => {
+        return TaskLabelMap[taskType][isSqlPlan ? SubTaskType.ASYNC : jobGroup];
+      },
     },
 
     {
@@ -93,9 +99,9 @@ const getConnectionColumns = (params: {
       render: (status, record) => {
         return (
           <StatusLabel
-            type={record.jobGroup}
+            type={isSqlPlan ? TaskType.ASYNC : record.jobGroup}
             status={status}
-            isSubTask
+            isSubTask={!isSqlPlan}
             progress={Math.floor(record.progressPercentage)}
           />
         );

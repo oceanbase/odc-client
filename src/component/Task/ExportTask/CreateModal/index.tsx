@@ -185,12 +185,12 @@ class CreateModal extends React.Component<IProps, IState> {
             }
             this.props.modalStore.changeExportModal(false);
             openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+            this.resetFormData();
+            this.setState({
+              submitting: false,
+            });
           }
         } finally {
-          this.resetFormData();
-          this.setState({
-            submitting: false,
-          });
         }
       }
     });

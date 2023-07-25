@@ -50,10 +50,6 @@ const defaultData = {
       actions: SystemAction.action_read,
     },
     {
-      resourceType: IManagerResourceType.system_config,
-      actions: SystemAction.action_read,
-    },
-    {
       resourceType: IManagerResourceType.approval_flow,
       actions: SystemAction.action_create_delete_update,
     },

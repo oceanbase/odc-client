@@ -46,6 +46,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
   const formRef = useRef<FormInstance>(null);
   const editorRef = useRef(null);
   const isEdit = !!editId;
+  const showEditPasswordButton = isEdit && data?.encryption?.enabled;
 
   const loadDetailDate = async (id: number) => {
     const detail = await getIntegrationDetail(id);
@@ -56,6 +57,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
         data.encryption.secret = decrypt(secret);
       }
       setData(data);
+      setEnableSecretEdit(!enabled);
       formRef.current.setFieldsValue(data);
       editorRef.current?.setValue(data.configuration);
     }
@@ -396,7 +398,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                       </Form.Item>
                     )}
                   </Space>
-                  {isEdit && (
+                  {showEditPasswordButton && (
                     <Button type="link" onClick={handleCancelSecretEdit}>
                       {
                         enableSecretEdit

@@ -98,12 +98,6 @@ export const systemTypeOptions: {
   },
   {
     label: formatMessage({
-      id: 'odc.components.FormResourceSelector.const.SystemConfiguration',
-    }), //系统配置
-    value: IManagerResourceType.system_config,
-  },
-  {
-    label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.AutomaticAuthorization',
     }), //自动授权
     value: IManagerResourceType.auto_auth,
@@ -153,7 +147,7 @@ export const systemActionOptions = [
       id: 'odc.components.FormResourceSelector.const.Operational',
     }), //可操作
     value: SystemAction.action_update_read,
-    enableKeys: [IManagerResourceType.system_config],
+    enableKeys: [],
   },
   {
     label: formatMessage({
@@ -183,7 +177,6 @@ export const systemActionOptions = [
     value: SystemAction.action_read,
     enableKeys: [
       IManagerResourceType.odc_audit_event,
-      IManagerResourceType.system_config,
       IManagerResourceType.auto_auth,
       IManagerResourceType.integration,
     ],
