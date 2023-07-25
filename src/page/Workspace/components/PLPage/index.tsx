@@ -180,8 +180,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
 
   private timerAutoRunPLAction: any;
 
-  private debugLines: number[] = [];
-
   debugMode: monaco.editor.IContextKey<boolean>;
 
   public async componentDidMount() {
@@ -704,10 +702,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           },
         ]);
       } else {
-        if (this.debugLines.includes(lineNumber)) {
-          return;
-        }
-        this.debugLines.push(lineNumber);
         await this.addBreakpoint(lineNumber);
       }
     });
@@ -744,7 +738,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       );
       if (isSuccess) {
         this.syncEditorStatus();
-        this.debugLines = this.debugLines?.filter((item) => item !== lineNum);
       }
     }
   };

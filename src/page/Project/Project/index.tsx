@@ -1,8 +1,10 @@
 import { listProjects } from '@/common/network/project';
+import { Acess, createPermission } from '@/component/Acess';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
@@ -91,7 +93,12 @@ const Project = () => {
         className={styles.content}
         header={
           <div className={styles.header}>
-            {<CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />}
+            <Acess
+              fallback={<span></span>}
+              {...createPermission(IManagerResourceType.project, actionTypes.create)}
+            >
+              <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
+            </Acess>
             <Space size={12}>
               <Search
                 onSearch={(v) => {
