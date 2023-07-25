@@ -71,9 +71,7 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.PublicConnection',
-      }), //所属公共连接
+      title: '数据源',
       ellipsis: true,
       key: 'connectionName',
       filterDropdown: (props) => {
