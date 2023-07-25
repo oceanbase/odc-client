@@ -149,12 +149,12 @@
     kitx "^1.2.1"
     xml2js "^0.5.0"
 
-"@alipay/monaco-plugin-ob@0.0.16":
-  version "0.0.16"
-  resolved "https://registry.antgroup-inc.cn/@alipay/monaco-plugin-ob/-/monaco-plugin-ob-0.0.16.tgz#0d8b6266ff9e2a1773cc084b463bfe2f4d32868f"
-  integrity sha512-0PU9kqrLN8hRV2iMi06vbtxhh8JSSSPcZp2j3RreipSflNWcpTxH04ZO8kpCC3tE/lwh77BXcOZtDf5SjhtPAw==
+"@alipay/monaco-plugin-ob@0.0.18":
+  version "0.0.18"
+  resolved "https://registry.antgroup-inc.cn/@alipay/monaco-plugin-ob/-/monaco-plugin-ob-0.0.18.tgz#3ae31d9dd71fbc7923145504e7d888098a1961c6"
+  integrity sha512-QPzz8UIVTSE7sHpxmf8vOAHQDlzDSBx0TQ7JnYEFszpjIhl/9O7JX3Q0jff1Qa9X09YnngsaM+lYKGQy3NhkiA==
   dependencies:
-    "@alipay/ob-parser-js" "^2.0.1"
+    "@alipay/ob-parser-js" "^2.0.4"
     antlr4 "~4.8.0"
     comlink "^4.3.1"
 
@@ -165,21 +165,21 @@
   dependencies:
     blueimp-md5 "^2.10.0"
 
-"@alipay/ob-parser-js@1.0.9":
-  version "1.0.9"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-parser-js/download/@alipay/ob-parser-js-1.0.9.tgz#fcfe4cbe1d33e081dd239ca8b63033cd1f214b18"
-  integrity sha512-VxHyefZKjgmA+caRYnhg4c1GAwgTvM6ksxlX2yYYJ+kKDu65dkcT9R7T86wtNbrEKQHA8D6HC8nX9B6wLJOO0g==
+"@alipay/ob-parser-js@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-parser-js/-/ob-parser-js-2.0.3.tgz#aa713ee57f2c567e00397e34ac5e81524a60ee8c"
+  integrity sha512-VgQ2kfuoZx+AYs2GJmvUPMAZLfLvWoZNpzmyBR8tP8/T1ygt1M36AC9WR6fMCIXplY1pHRno8rLOlBkKZA2OVA==
   dependencies:
-    "@alipay/ob-sql-formatter" "^1.0.8"
+    "@alipay/ob-sql-formatter" "^1.0.9"
     antlr4 "~4.8.0"
     lodash "^4.17.20"
 
-"@alipay/ob-parser-js@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.antgroup-inc.cn/@alipay/ob-parser-js/-/ob-parser-js-2.0.1.tgz#33b44edbea1aa3b3d3edd557c132e7a7be6039ea"
-  integrity sha512-WP7+ua90WW/MWBEVP29Hp6JMIvBgmf1OFF1RFEqKPbc5oMi1fm+NjOBo1z6O3Zx0Mp3SAK0chnoEtfKRe9N6Kg==
+"@alipay/ob-parser-js@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-parser-js/-/ob-parser-js-2.0.4.tgz#c98e81b0eef01b9a54323656a5e307a972075e96"
+  integrity sha512-6BfCXwL+E5XEIrJwIIi3MJOerOkUuGuXLqFmLKWccw4DxnR4Ham17re+7xkDd2VX7Dsy+2OGsxeB6ubBNlLa+A==
   dependencies:
-    "@alipay/ob-sql-formatter" "^1.0.9"
+    "@alipay/ob-sql-formatter" "^1.0.10"
     antlr4 "~4.8.0"
     lodash "^4.17.20"
 
@@ -191,10 +191,10 @@
     "@juggle/resize-observer" "^3.3.1"
     clsx "^1.1.1"
 
-"@alipay/ob-sql-formatter@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-sql-formatter/download/@alipay/ob-sql-formatter-1.0.8.tgz#fae21b84196cdb29a2c2dc2a5714a5879da5abc0"
-  integrity sha512-3a+xvpPAsnHbrlP0mzDo24nU81/sp90ueU3ElwPlbJz9j3E6jfl/OsE5Sa7Mwv+ozC9/WgCj0h9Bp3L/IsKTCg==
+"@alipay/ob-sql-formatter@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-sql-formatter/-/ob-sql-formatter-1.0.10.tgz#2a41234f697ebd768fa574d60ad0d0616fb79e82"
+  integrity sha512-TAWVZkIhDzPB/zCrbBiGFqx0SDupstU8Lx/MBP+mk5yD+qnANCjdMjDXQzQwIAXRTSN/Mmd/EYw0A1uBuI+WUw==
 
 "@alipay/ob-sql-formatter@^1.0.9":
   version "1.0.9"
