@@ -21,7 +21,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const [project, setProject] = useState(null);
 
   const databaseOptions = database
-    ?.filter((item) => !item?.project.builtin)
+    ?.filter((item) => !!item?.project?.id)
     ?.map(({ name, id, environment, dataSource }) => ({
       label: (
         <Space size={2} data-label={name}>

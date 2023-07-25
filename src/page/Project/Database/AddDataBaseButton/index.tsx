@@ -127,7 +127,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               optionFilterProp="children"
             >
               {databases?.contents?.map((p) => {
-                if (!p.project?.builtin) {
+                if (!!p.project?.id) {
                   return (
                     <Select.Option disabled={true} key={p.id}>
                       {p.name}

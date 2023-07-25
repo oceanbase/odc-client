@@ -68,7 +68,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
                 </Select.Option>
               );
             })}
-            {isProjectNotFound ? (
+            {isProjectNotFound && database?.project?.id ? (
               <Select.Option value={database?.project?.id} key={database?.project?.id}>
                 {database?.project?.name}
               </Select.Option>
