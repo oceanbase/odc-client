@@ -68,6 +68,9 @@ export default class ScriptPage extends PureComponent<IProps> {
       snippet.resetSnippets();
     }
   }
+  getSession() {
+    return this.props.session;
+  }
 
   renderPanels = () => {
     const {

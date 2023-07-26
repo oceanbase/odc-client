@@ -3,8 +3,10 @@ import { listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal, Select } from 'antd';
+import { Form, message, Modal } from 'antd';
+import { isUndefined } from 'lodash';
 import { useEffect } from 'react';
+import ProjectSelect from './ProjectSelect';
 
 interface IProps {
   visible: boolean;
@@ -24,12 +26,10 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
     if (visible) {
       run(null, 1, 9999);
       form.setFieldsValue({
-        project: database?.project?.id,
+        project: database?.project?.id || null,
       });
     }
   }, [visible]);
-
-  const isProjectNotFound = !data?.contents?.find((item) => item.id === database?.project?.id);
 
   return (
     <Modal
@@ -56,24 +56,21 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
         </Form.Item>
         <Form.Item
           required
-          rules={[{ required: true }]}
+          rules={[
+            {
+              validator(rule, value, callback) {
+                if (isUndefined(value)) {
+                  callback('请选择项目');
+                  return;
+                }
+                callback();
+              },
+            },
+          ]}
           label={formatMessage({ id: 'odc.Info.ChangeProjectModal.Project' })}
           /*所属项目*/ name={'project'}
         >
-          <Select loading={loading} style={{ width: 240 }} showSearch optionFilterProp="children">
-            {data?.contents?.map((item) => {
-              return (
-                <Select.Option value={item.id} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              );
-            })}
-            {isProjectNotFound && database?.project?.id ? (
-              <Select.Option value={database?.project?.id} key={database?.project?.id}>
-                {database?.project?.name}
-              </Select.Option>
-            ) : null}
-          </Select>
+          <ProjectSelect projects={data?.contents} currentDatabase={database} />
         </Form.Item>
       </Form>
     </Modal>
