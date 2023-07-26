@@ -67,7 +67,7 @@ export function getItems(
   if (!task) {
     return [];
   }
-  const maxRiskLevel = task?.maxRiskLevel;
+  const riskLevel = task?.riskLevel;
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
   const riskItem: [string, string] = [
     formatMessage({ id: 'odc.AlterDdlTask.DetailContent.RiskLevel' }), //风险等级
@@ -75,7 +75,7 @@ export function getItems(
       {
         id: 'odc.AlterDdlTask.DetailContent.MaxrisklevelLevel',
       },
-      { maxRiskLevel: maxRiskLevel },
+      { maxRiskLevel: riskLevel },
     ), //`${maxRiskLevel}级`
   ];
   const timerExecutionItem: [string, string] = [

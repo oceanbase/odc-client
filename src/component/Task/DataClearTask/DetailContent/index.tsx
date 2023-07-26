@@ -48,7 +48,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           <Descriptions.Item
             label={formatMessage({ id: 'odc.DataClearTask.DetailContent.RiskLevel' })} /*风险等级*/
           >
-            {task?.maxRiskLevel}
+            {task?.riskLevel}
           </Descriptions.Item>
         )}
       </Descriptions>

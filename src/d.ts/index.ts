@@ -2023,7 +2023,7 @@ export interface TaskRecord<P> {
   createTime: number;
   completeTime: number;
   status: TaskStatus;
-  maxRiskLevel?: number;
+  riskLevel?: number;
   parameters?: P;
   executionStrategy?: TaskExecStrategy;
   executionTime?: number;
@@ -2157,7 +2157,7 @@ export interface ICycleTaskRecord<T> {
     name: string;
     dbMode: ConnectionMode;
   };
-  maxRiskLevel?: number;
+  riskLevel?: number;
   description?: string;
 }
 
@@ -2182,7 +2182,7 @@ export interface IDataArchiveTaskRecord {
   executionStrategy: TaskExecStrategy;
   executionTime: number;
   id: number;
-  maxRiskLevel: number;
+  riskLevel: number;
   nodeList: ITaskFlowNode[];
   parameters: {
     progressPercentage: number;

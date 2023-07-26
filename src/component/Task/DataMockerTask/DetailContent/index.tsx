@@ -223,7 +223,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   }
 
   if (hasFlow) {
-    const maxRiskLevel = task?.maxRiskLevel;
+    const riskLevel = task?.riskLevel;
     const flowInfo: [string, string | number, number?][] = [
       [
         formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
@@ -232,7 +232,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
             id: 'odc.component.DetailModal.dataMocker.Maxrisklevel',
           },
 
-          { maxRiskLevel: maxRiskLevel },
+          { maxRiskLevel: riskLevel },
         ),
         //风险等级
       ],
