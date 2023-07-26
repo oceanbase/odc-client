@@ -183,10 +183,10 @@
     antlr4 "~4.8.0"
     lodash "^4.17.20"
 
-"@alipay/ob-react-data-grid@2.4.7":
-  version "2.4.7"
-  resolved "https://registry.npm.alibaba-inc.com/@alipay/ob-react-data-grid/download/@alipay/ob-react-data-grid-2.4.7.tgz#dd376b973b648e3e2d099bd6693af941f88f8cae"
-  integrity sha512-qwd078LMANXfujh47rXtMV/A8q9xFAdb8gXx7xKRrJvliXfkE9TrIi1Ux44P7WaeBgznRzxinb318vdI/jI6mA==
+"@alipay/ob-react-data-grid@2.4.8":
+  version "2.4.8"
+  resolved "https://registry.antgroup-inc.cn/@alipay/ob-react-data-grid/-/ob-react-data-grid-2.4.8.tgz#9cbf044b648c0a3cc97629e01a26c3a7b0930b04"
+  integrity sha512-Z8B/w6R6TNRiN8MBuDrCZUUObMvTbuOB1bnWM1H6EobAl2gCfDPMys/DQn3j17Jf4jC9UpVwHqsFrbfyBjHEIw==
   dependencies:
     "@juggle/resize-observer" "^3.3.1"
     clsx "^1.1.1"

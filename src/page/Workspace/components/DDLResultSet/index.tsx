@@ -32,7 +32,7 @@ import Icon, {
   VerticalLeftOutlined,
   VerticalRightOutlined,
 } from '@ant-design/icons';
-import { useControllableValue } from 'ahooks';
+import { useControllableValue, useUpdate } from 'ahooks';
 import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -153,8 +153,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     onSubmitRows,
     enableRowId,
   } = props;
-  const [queryEditableLoading, setQueryEditableLoading] = useState(false);
   const sessionId = session?.sessionId;
+
+  const update = useUpdate();
 
   /**
    * 编辑中的rows
@@ -241,6 +242,12 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       endIdx: 1,
       rowIdx,
       endRowIdx: rowIdx,
+    });
+    setTimeout(() => {
+      /**
+       * grid 触发onchange的时候，自身的selectRange还没更新，所以需要过一下更新
+       */
+      update();
     });
   }, []);
 
@@ -671,7 +678,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   let filterRowIdx;
   if (selectedCellRowsKey.length === 1) {
     selectedRowIdx = rows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
-    filterRowIdx = filterRows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
+    filterRowIdx = gridRef.current?.selectedRange?.rowIdx;
   }
   const rgdColumns = useColumns(
     columnsToDisplay,
@@ -705,7 +712,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const isInTransaction = session?.transState?.transState === TransState.IDLE;
   return (
     <div style={{ height: resultHeight, display: 'flex', flexDirection: 'column' }}>
-      <Spin spinning={queryEditableLoading}>
+      <Spin spinning={false}>
         <Toolbar compact>
           <div className={styles.toolsLeft}>
             {isEditing ? (
