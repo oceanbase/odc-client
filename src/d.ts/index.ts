@@ -1802,6 +1802,7 @@ export interface ExportFormData {
   encoding?: IMPORT_ENCODING;
   maskStrategy: string;
   useSys: boolean;
+  description?: string;
 
   batchCommitNum: number;
   skippedDataType: string[];
@@ -1882,6 +1883,7 @@ export interface ImportFormData {
   sysUserPassword?: string;
   overwriteSysConfig?: boolean;
   stopWhenError: boolean;
+  description?: string;
 
   encoding: IMPORT_ENCODING; // 文件编码
 
@@ -2320,6 +2322,7 @@ export interface ISQLPlanTaskParams {
 
 export interface IAlterScheduleTaskParams {
   taskType: TaskType.ALTER_SCHEDULE;
+  taskId: number;
   operationType: TaskOperationType;
   allowConcurrent: boolean;
   scheduleTaskParameters: {

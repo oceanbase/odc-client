@@ -3,6 +3,7 @@ import { isReadonlyPublicConnection } from '@/component/Acess';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
   ConnectionMode,
@@ -26,7 +27,6 @@ import {
   Checkbox,
   Drawer,
   Form,
-  Input,
   InputNumber,
   message,
   Modal,
@@ -83,7 +83,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
   const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
   const { asyncTaskData } = modalStore;
-  const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent;
+  const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql;
   const initRollbackContent = '';
 
   const [defaultFileList, setDefaultFileList] = useState({
@@ -147,7 +147,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (asyncTaskData) {
+    if (asyncTaskData?.task) {
       loadRollbackData();
     }
   }, [asyncTaskData]);
@@ -802,26 +802,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             </span>
           </Form.Item>
         )}
-
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.components.CreateAsyncTaskModal.TaskDescription',
-          })}
-          /* 任务描述 */
-          name="description"
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.components.CreateAsyncTaskModal.TheTaskDescriptionCannotExceed',
-              }),
-
-              // 任务描述不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea rows={6} />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );

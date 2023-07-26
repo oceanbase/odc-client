@@ -411,8 +411,8 @@ export async function getTaskFlowList(
  * 任务流程名称 重名验证
  */
 export async function getTaskFlowExists(name: string): Promise<boolean> {
-  const result = await request.post('/api/v2/regulation/approvalFlows/exists', {
-    data: {
+  const result = await request.get('/api/v2/regulation/approvalFlows/exists', {
+    params: {
       name,
     },
   });

@@ -2,13 +2,14 @@ import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { Button, Col, Drawer, Form, Input, InputNumber, Modal, Radio, Row, Space } from 'antd';
+import { Button, Col, Drawer, Form, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
@@ -326,25 +327,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>
-        <Form.Item
-          label={formatMessage({ id: 'odc.AlterDdlTask.CreateModal.Remarks' })} /*备注*/
-          name="description"
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.AlterDdlTask.CreateModal.TheDescriptionCannotExceedCharacters',
-              }), //备注不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea
-            rows={3}
-            placeholder={formatMessage({
-              id: 'odc.AlterDdlTask.CreateModal.EnterAComment',
-            })} /*请输入备注*/
-          />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );

@@ -115,6 +115,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
               // 清除记录
               result?.clearCount,
             ],
+            ['描述', task?.description || '-'],
           ],
         };
 

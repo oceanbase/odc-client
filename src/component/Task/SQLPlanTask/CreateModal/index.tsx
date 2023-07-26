@@ -4,6 +4,7 @@ import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   ConnectionMode,
   CreateTaskRecord,
@@ -26,7 +27,6 @@ import {
   Button,
   Drawer,
   Form,
-  Input,
   InputNumber,
   message,
   Modal,
@@ -734,30 +734,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.components.CreateSQLPlanTaskModal.Remarks',
-          })}
-          /*备注*/
-          name="description"
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.components.CreateSQLPlanTaskModal.TheDescriptionCannotExceedCharacters',
-              }),
-              //备注不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea
-            rows={3}
-            placeholder={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.EnterAComment',
-            })}
-            /*请输入备注*/
-          />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );
