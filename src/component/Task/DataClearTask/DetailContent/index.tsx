@@ -114,10 +114,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         )}
 
-        <Descriptions.Item
-          label={formatMessage({ id: 'odc.DataClearTask.DetailContent.Remarks' })}
-          /*备注*/ span={2}
-        >
+        <Descriptions.Item label="描述" span={2}>
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>

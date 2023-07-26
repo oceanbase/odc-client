@@ -93,6 +93,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     databaseId,
                     executionStrategy,
                     executionTime,
+                    description,
                     ...rest
                   } = values;
                   const serverData = converFormToServerData(rest as any, dbMode, databaseName);
@@ -107,6 +108,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     parameters: {
                       taskDetail: JSON.stringify(serverData),
                     },
+                    description,
                   });
 
                   setConfirmLoading(false);

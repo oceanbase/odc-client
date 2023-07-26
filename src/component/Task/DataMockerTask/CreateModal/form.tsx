@@ -1,6 +1,7 @@
 import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import { ConnectionMode, ITable, TaskExecStrategy } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -326,6 +327,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
           >
             <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
           </FormItemPanel>
+          <DescriptionInput />
         </Form>
       );
     }),

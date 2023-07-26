@@ -1,5 +1,10 @@
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
-import type { IConnectionPartitionPlan, TaskRecordParameters, TaskStatus } from '@/d.ts';
+import type {
+  IAlterScheduleTaskParams,
+  IConnectionPartitionPlan,
+  TaskRecordParameters,
+  TaskStatus,
+} from '@/d.ts';
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
@@ -198,9 +203,13 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     visible: boolean = false,
   ) => {
-    const { id } = task ?? {};
+    const { id, type } = task ?? {};
+    const detailId =
+      type === TaskType.ALTER_SCHEDULE
+        ? (task as TaskRecord<IAlterScheduleTaskParams>)?.parameters?.taskId
+        : id;
     this.setState({
-      detailId: id,
+      detailId,
       detailType:
         (task as TaskRecord<TaskRecordParameters>)?.type ||
         (task as ICycleTaskRecord<any>)?.type ||

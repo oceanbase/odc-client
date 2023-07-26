@@ -2,6 +2,7 @@ import { getTableListByDatabaseName } from '@/common/network/table';
 import { createTask, getCycleTaskDetail } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   CreateTaskRecord,
   ICycleTaskTriggerConfig,
@@ -20,7 +21,7 @@ import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Drawer, Form, Input, Modal, Radio, Space } from 'antd';
+import { Button, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
@@ -395,25 +396,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             return null;
           }}
         </Form.Item>
-        <Form.Item
-          label={formatMessage({ id: 'odc.DataClearTask.CreateModal.Remarks' })} /*备注*/
-          name="description"
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.DataClearTask.CreateModal.TheDescriptionCannotExceedCharacters',
-              }), //备注不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea
-            rows={3}
-            placeholder={formatMessage({
-              id: 'odc.DataClearTask.CreateModal.EnterAComment',
-            })} /*请输入备注*/
-          />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );

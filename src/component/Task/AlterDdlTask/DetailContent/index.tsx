@@ -127,11 +127,7 @@ export function getItems(
           ErrorStrategyText[parameters.errorStrategy],
           2,
         ],
-        [
-          formatMessage({ id: 'odc.AlterDdlTask.DetailContent.Remarks' }), //备注
-          task?.description,
-          2,
-        ],
+        ['描述', task?.description, 2],
       ].filter(Boolean),
     },
     {
