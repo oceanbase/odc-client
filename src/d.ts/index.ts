@@ -155,8 +155,8 @@ export enum IManagePagesKeys {
   TASK_FLOW = 'task',
   SECURITY_AUDIT = 'security_audit',
   MASK_DATA = 'mask_data',
-  INTEGRATION_APPROVAL = 'integration_approval',
-  SQL_INTERCEPTOR = 'sql_interceptor',
+  INTEGRATION_APPROVAL = 'approval',
+  SQL_INTERCEPTOR = 'sql',
 }
 
 export interface IManagerUser {

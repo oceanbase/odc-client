@@ -198,6 +198,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         modal.changeExportModal(true, {
           type: DbObjectType.function,
           name: func.funName,
+          databaseId: session?.database.databaseId,
         });
       },
     },
