@@ -16,9 +16,18 @@
     https://stackoverflow.com*
     http://www.w3.org*
     https://ant.design*
-    https://f7a1adcbaf4b4472baab9faf8f999229@o1337429.ingest.sentry.io/6607252
+    https://859452cf23044aeda8677a8bdcc53081@obc-sentry.oceanbase.com/3
     https://electronjs.org*
     https://www.aliyun.com*
+    https://datatracker.ietf.org/*
+    https://momentjs.com/*
+    https://developer.apple.com*
+    https://www.google.com/*
+    https://www.microsoft.com/*
+    https://support.apple.com/*
+    https://www.mozilla.org*
+    https://ur.alipay.com*
+    http://editorconfig.org*
 
 --------------------------------------------------------
 # Should use GLOB wildcard to config and analysis the ignored folder
