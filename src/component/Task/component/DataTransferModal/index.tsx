@@ -471,7 +471,7 @@ class TaskContent extends React.Component<any, any> {
     const transferDDL = !!taskConfig?.transferDDL;
     const transferData = !!taskConfig?.transferData;
     const haveMask = !!taskConfig?.maskingPolicy?.name;
-    const maxRiskLevel = task?.maxRiskLevel;
+    const riskLevel = task?.riskLevel;
     return (
       <div>
         {haveMask && (
@@ -538,7 +538,7 @@ class TaskContent extends React.Component<any, any> {
                       id: 'odc.component.DataTransferModal.Maxrisklevel',
                     },
 
-                    { maxRiskLevel: maxRiskLevel },
+                    { maxRiskLevel: riskLevel },
                   )
 
                   //`${maxRiskLevel}级`
@@ -595,6 +595,11 @@ class TaskContent extends React.Component<any, any> {
           </div>
         </>
         {haveCsvMapping && <CsvTable data={taskConfig?.csvColumnMappings} />}
+        <Row>
+          <Col span={24}>
+            <SimpleTextItem label="描述" content={task?.description || '-'} />
+          </Col>
+        </Row>
         <Row className={styles.spaceBlock}>
           <Col span={12}>
             <SimpleTextItem

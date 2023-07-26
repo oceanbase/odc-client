@@ -21,9 +21,11 @@ interface DataMockerData {
 }
 
 interface AsyncData {
-  type: RollbackType;
+  type?: RollbackType;
   task?: TaskDetail<IAsyncTaskParams>;
-  objectId: string;
+  objectId?: string;
+  sql?: string;
+  databaseId?: number;
 }
 
 interface ApplyPermissionData {}

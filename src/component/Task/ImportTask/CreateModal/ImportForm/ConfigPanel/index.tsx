@@ -2,6 +2,7 @@ import { getTableListByDatabaseName } from '@/common/network/table';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
 import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
@@ -211,6 +212,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport, pr
           form={form}
         />
       )}
+      <DescriptionInput />
     </>
   );
 };

@@ -60,7 +60,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
               id: 'odc.DataArchiveTask.DetailContent.RiskLevel',
             })} /*风险等级*/
           >
-            {task?.maxRiskLevel}
+            {task?.riskLevel}
           </Descriptions.Item>
         )}
       </Descriptions>

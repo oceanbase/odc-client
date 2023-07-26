@@ -3,6 +3,7 @@ import CreatePackageModal from '@/component/CreatePackageModal';
 import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
+import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import DataMockerTaskCreateModal from '@/component/Task/DataMockerTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
@@ -27,6 +28,7 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <DataMockerTaskCreateModal />
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
+      <AsyncTaskCreateModal />
     </>
   );
 };

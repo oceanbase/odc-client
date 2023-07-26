@@ -250,7 +250,9 @@ const TaskTable: React.FC<IProps> = inject(
           title: formatMessage({ id: 'odc.component.TaskTable.Type' }), //类型
           ellipsis: true,
           width: 100,
-          render: (type) => TaskTypeMap[type],
+          render: (type, record) => {
+            return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
+          },
         },
 
         {
