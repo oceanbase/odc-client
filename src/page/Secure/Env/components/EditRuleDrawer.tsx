@@ -31,7 +31,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
   const [isExternalApproval, setIsExternalApproval] = useState(false);
   const options = integrations?.map(({ id, name }) => {
     return {
-      id,
+      value: id,
       label: name,
     };
   });
