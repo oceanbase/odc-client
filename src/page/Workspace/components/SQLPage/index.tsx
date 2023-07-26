@@ -603,6 +603,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         editRows,
         this.getSession()?.sessionId,
         this.getSession()?.database?.dbName,
+        resultSet.whereColumns,
       );
 
       if (!res) {

@@ -1397,6 +1397,10 @@ export interface ISqlExecuteResult {
   dbObjectType?: DbObjectType;
   dbObjectName?: string;
   connectionReset: boolean;
+  /**
+   * 透传，脱敏后端依赖
+   */
+  whereColumns?: string[];
   timer: {
     stages: IResultTimerStage[];
     startTimeMillis: number; // 开始时间

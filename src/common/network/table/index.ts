@@ -183,6 +183,7 @@ export async function batchGetDataModifySQL(
   }[],
   sessionId: string,
   dbName: string,
+  whereColumns: string[],
 ): Promise<{
   sql: string;
   tip: string;
@@ -192,6 +193,7 @@ export async function batchGetDataModifySQL(
     data: {
       tableName,
       schemaName,
+      whereColumns,
       rows: updateRows.map((updateRow) => {
         const { type, row, initialRow, enableRowId } = updateRow;
         return {

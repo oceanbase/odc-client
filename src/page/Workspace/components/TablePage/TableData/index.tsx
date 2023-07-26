@@ -185,6 +185,7 @@ class TableData extends React.Component<
       editRows,
       session.sessionId,
       session?.database?.dbName,
+      resultSet.whereColumns,
     );
     if (!res) {
       return;
