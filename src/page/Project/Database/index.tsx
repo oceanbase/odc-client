@@ -3,6 +3,7 @@ import { listEnvironments } from '@/common/network/env';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
+import HelpDoc from '@/component/helpDoc';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
@@ -94,7 +95,17 @@ const Database: React.FC<IProps> = ({ id }) => {
             dataIndex: 'name',
             render: (name, record) => {
               if (!record.existed) {
-                return name;
+                return (
+                  <HelpDoc
+                    leftText
+                    isTip={false}
+                    title={formatMessage({
+                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                    })} /*当前数据库不存在*/
+                  >
+                    {name}
+                  </HelpDoc>
+                );
               }
               return <a onClick={() => gotoSQLWorkspace(toInteger(id), null, record.id)}>{name}</a>;
             },

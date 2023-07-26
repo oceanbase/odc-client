@@ -47,7 +47,7 @@ import { uploadTableObject } from '@/common/network/sql';
 import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
 import SessionStore from '@/store/sessionManager/session';
 import MockSvg from '@/svgr/mock_toolbar.svg';
-import { isObjectColumn } from '@/util/column';
+import { getNlsValueKey, isObjectColumn } from '@/util/column';
 import { generateUniqKey, getBlobValueKey } from '@/util/utils';
 import type { DataGridRef } from '@alipay/ob-react-data-grid';
 import { defaultOnCopy, defaultOnCopyCsv } from '@alipay/ob-react-data-grid';
@@ -533,6 +533,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               ...newRows[targetRowIndex],
               [columnKey]: null,
               [getBlobValueKey(columnKey)]: null,
+              [getNlsValueKey(columnKey)]: null,
               _originRow: originRows.find((row) => {
                 return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
               }),
