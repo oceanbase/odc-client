@@ -117,6 +117,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         modalStore.changeExportModal(true, {
           type: DbObjectType.table,
           name: table?.info?.tableName,
+          databaseId: session?.database.databaseId,
         });
       },
     },

@@ -3,9 +3,11 @@ import HelpDoc from '@/component/helpDoc';
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, Select, Space } from 'antd';
+import { Button, Form, Input, Radio, Select, Space, Typography } from 'antd';
 import { IArchiveRange } from './index';
 import styles from './index.less';
+
+const { Text } = Typography;
 
 interface IProps {
   tables: ITable[];
@@ -60,11 +62,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   </div>
                   <div style={{ width: '400px' }}>
                     <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
-                      {
-                        formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
-                        }) /*过滤条件*/
-                      }
+                      <Space>
+                        <span>过滤条件</span>
+                        <Text type="secondary">(可选)</Text>
+                      </Space>
                     </HelpDoc>
                   </div>
                 </Space>

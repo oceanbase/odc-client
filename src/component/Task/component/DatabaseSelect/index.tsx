@@ -74,6 +74,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         filterOption={(input, option) =>
           (option?.label?.props?.['data-label'] ?? '').toLowerCase().includes(input.toLowerCase())
         }
+        placeholder="请选择"
         style={{ width: '320px' }}
         options={databaseOptions}
         onChange={handleDatabaseChange}

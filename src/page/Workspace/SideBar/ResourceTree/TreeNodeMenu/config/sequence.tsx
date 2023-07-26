@@ -127,6 +127,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         modal.changeExportModal(true, {
           type: DbObjectType.sequence,
           name: sequenceInfo?.name,
+          databaseId: session?.database.databaseId,
         });
       },
     },

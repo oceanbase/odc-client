@@ -198,6 +198,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         modal.changeExportModal(true, {
           type: DbObjectType.procedure,
           name: proc.proName,
+          databaseId: session?.database.databaseId,
         });
       },
     },
