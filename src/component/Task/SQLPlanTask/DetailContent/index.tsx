@@ -69,7 +69,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
             })}
             /*风险等级*/
           >
-            {task?.maxRiskLevel}
+            {task?.riskLevel}
           </Descriptions.Item>
         )}
 
