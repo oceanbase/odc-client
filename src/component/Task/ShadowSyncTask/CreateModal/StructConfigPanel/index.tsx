@@ -1,8 +1,9 @@
 import { setShadowSyncRecordStatus } from '@/common/network/task';
 import FormItemPanel from '@/component/FormItemPanel';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import { SchemaComparingResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Divider, Form, Input, Radio } from 'antd';
+import { Divider, Form, Radio } from 'antd';
 import { forwardRef, useImperativeHandle } from 'react';
 import TaskTimer from '../../../component/TimerSelect';
 import { ErrorStrategy, IContentProps } from '../interface';
@@ -159,24 +160,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
           </Form.Item>
         </FormItemPanel>
         <Divider />
-        <Form.Item
-          name="description"
-          label={formatMessage({
-            id: 'odc.CreateShadowSyncModal.StructConfigPanel.Remarks',
-          })} /*备注*/
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.components.CreateAsyncTaskModal.TheTaskDescriptionCannotExceed',
-              }),
-
-              // 任务描述不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea rows={6} />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </>
   );

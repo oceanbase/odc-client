@@ -12,7 +12,6 @@ import DataTransferTaskContent from '@/component/Task/component/DataTransferModa
 import type { ILog } from '@/component/Task/component/Log';
 import type {
   CycleTaskDetail,
-  IAlterScheduleTaskParams,
   IConnectionPartitionPlan,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
@@ -148,23 +147,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     );
   } else if (task?.type === TaskType.SQL_PLAN) {
     taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.ALTER_SCHEDULE) {
-    const { scheduleTaskParameters, triggerConfig, operationType, allowConcurrent } = (
-      task as TaskDetail<IAlterScheduleTaskParams>
-    )?.parameters;
-    taskContent = (
-      <SqlPlanTaskContent
-        task={{
-          ...task,
-          jobParameters: scheduleTaskParameters,
-          triggerConfig,
-          allowConcurrent,
-          nextFireTimes: [],
-        }}
-        operationType={operationType}
-        hasFlow={hasFlow}
-      />
-    );
   } else {
     getItems = taskContentMap[task?.type]?.getItems;
   }
@@ -299,7 +281,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const loadData = () => {
-    if (isCycleTask(type)) {
+    if (isCycleTask(type) || type === TaskType.ALTER_SCHEDULE) {
       loadCycleTaskData();
     } else {
       loadTaskData();

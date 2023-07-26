@@ -37,7 +37,7 @@ export const getItems = (
       sectionRender: (task: TaskDetail<IAsyncTaskParams>) => {
         const parameters = task?.parameters;
         const executionTimeout = parameters.timeoutMillis / 1000 / 60 / 60;
-        const maxRiskLevel = task?.maxRiskLevel;
+        const riskLevel = task?.riskLevel;
         return (
           <>
             <SimpleTextItem
@@ -76,7 +76,7 @@ export const getItems = (
                       id: 'odc.component.AsyncTaskModal.Maxrisklevel',
                     },
 
-                    { maxRiskLevel: maxRiskLevel },
+                    { maxRiskLevel: riskLevel },
                   )
                   //`${maxRiskLevel}级`
                 }

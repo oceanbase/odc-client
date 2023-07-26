@@ -90,7 +90,7 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
           label={formatMessage({
             id: 'odc.component.DetailModal.partition.RiskLevel',
           })}
-          /*风险等级*/ content={task?.maxRiskLevel}
+          /*风险等级*/ content={task?.riskLevel}
         />
       )}
       <SimpleTextItem
