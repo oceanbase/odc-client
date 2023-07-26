@@ -173,6 +173,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
               modal.changeExportModal(true, {
                 type: DbObjectType.table,
                 name: table?.info?.tableName,
+                databaseId: session?.database.databaseId,
               });
             }}
           />

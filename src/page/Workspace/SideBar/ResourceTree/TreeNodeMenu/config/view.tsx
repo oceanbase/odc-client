@@ -79,6 +79,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
         modal.changeExportModal(true, {
           type: DbObjectType.view,
           name: view.viewName,
+          databaseId: session?.database.databaseId,
         });
       },
     },

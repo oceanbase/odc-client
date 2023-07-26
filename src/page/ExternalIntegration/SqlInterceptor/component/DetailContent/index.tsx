@@ -49,9 +49,7 @@ const Detail: React.FC<{
           }
         >
           {
-            enabled
-              ? formatMessage({ id: 'odc.component.DetailContent.Enable' }) //开启
-              : formatMessage({ id: 'odc.component.DetailContent.Disable' }) //停用
+            enabled ? '启用' : formatMessage({ id: 'odc.component.DetailContent.Disable' }) //停用
           }
         </Descriptions.Item>
         <Descriptions.Item>

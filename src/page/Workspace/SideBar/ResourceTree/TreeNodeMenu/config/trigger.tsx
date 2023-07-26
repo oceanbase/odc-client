@@ -176,6 +176,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         modal.changeExportModal(true, {
           type: DbObjectType.trigger,
           name: trigger?.triggerName,
+          databaseId: session?.database.databaseId,
         });
       },
     },

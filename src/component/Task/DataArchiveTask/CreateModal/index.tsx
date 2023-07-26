@@ -404,7 +404,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             const triggerStrategy = getFieldValue('triggerStrategy') || [];
             if (triggerStrategy === TaskExecStrategy.START_AT) {
               return (
-                <Form.Item name="startAt">
+                <Form.Item name="startAt" label="执行时间" required>
                   <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
                 </Form.Item>
               );

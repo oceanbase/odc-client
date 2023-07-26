@@ -387,7 +387,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                           },
                         ]}
                       >
-                        <Input.Password style={{ width: '232px' }} />
+                        <Input.Password placeholder="请输入" style={{ width: '232px' }} />
                       </Form.Item>
                     ) : (
                       <Form.Item
