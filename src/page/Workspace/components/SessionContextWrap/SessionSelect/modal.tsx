@@ -147,8 +147,13 @@ export default inject('userStore')(
                   });
                   if (e.target.value === 'project') {
                     fetchProjects(null, 1, 9999, false);
+
+                    form.getFieldValue('project') &&
+                      fetchDatabase(form.getFieldValue('project'), null, 1, 9999);
                   } else {
                     fetchDatasource();
+                    form.getFieldValue('datasource') &&
+                      fetchDatabase(null, form.getFieldValue('datasource'), 1, 9999);
                   }
                 }}
                 optionType="button"

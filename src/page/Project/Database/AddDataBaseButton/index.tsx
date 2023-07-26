@@ -89,6 +89,8 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                 })} /*所属数据源*/
               >
                 <Select
+                  showSearch
+                  optionFilterProp="children"
                   loading={dataSourceListLoading || dataSourceLoading}
                   style={{ width: 'calc(100% - 10px)' }}
                   placeholder={formatMessage({
@@ -104,6 +106,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             </Col>
             <Col span={6}>
               <Form.Item
+                requiredMark={false}
                 label={formatMessage({ id: 'odc.Database.AddDataBaseButton.Environment' })} /*环境*/
               >
                 <Tag color={dataSource?.environmentStyle?.toLowerCase()}>
