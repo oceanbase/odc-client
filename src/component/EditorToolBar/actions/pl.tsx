@@ -20,7 +20,7 @@ import { ToolBarActions } from '..';
 const { confirm } = Modal;
 
 export const getStatus = (ctx: PLPage) => {
-  const isMySQL = ctx.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = ctx.getSession?.()?.connection.dialectType === ConnectionMode.OB_MYSQL;
   const plSchema = ctx.getFormatPLSchema && ctx.getFormatPLSchema();
   return [plType.PROCEDURE, plType.FUNCTION].includes(plSchema?.plType) && isMySQL
     ? IConStatus.DISABLE
