@@ -102,6 +102,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
           type:
             synonymType === SynonymType.PUBLIC ? DbObjectType.public_synonym : DbObjectType.synonym,
           name: synonym?.synonymName,
+          databaseId: session?.database.databaseId,
         });
       },
     },

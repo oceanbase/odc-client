@@ -2,7 +2,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import { variable } from './index';
 import styles from './index.less';
 
@@ -55,11 +55,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
 
           <span className={styles.desc}>
             <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
-              {
-                formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn',
-                }) /*变量可在归档配置的过滤条件中引用*/
-              }
+              变量可在归档配置的过滤条件中引用 (可选)
             </HelpDoc>
           </span>
         </Space>
@@ -81,7 +77,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
               }) /*时间格式*/
             }
           </div>
-          <div style={{ width: '250px' }}>
+          <div style={{ width: '305px' }}>
             <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
               {
                 formatMessage({
@@ -157,23 +153,31 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                   options={timeUnitOptions}
                                 />
                               </Form.Item>
-                              <Button type="text" disabled={disabledAdd}>
-                                <PlusOutlined onClick={() => _add()} />
-                              </Button>
-                              <Button type="text">
-                                <MinusOutlined
-                                  onClick={() => {
-                                    if (subFields?.length > 1) _remove(name);
-                                  }}
-                                />
-                              </Button>
+                              <Tooltip title="添加时间运算">
+                                <Button type="text" disabled={disabledAdd}>
+                                  <PlusOutlined onClick={() => _add()} />
+                                </Button>
+                              </Tooltip>
+                              <Tooltip title="删除时间运算">
+                                <Button type="text">
+                                  <MinusOutlined
+                                    onClick={() => {
+                                      if (subFields?.length > 1) _remove(name);
+                                    }}
+                                  />
+                                </Button>
+                              </Tooltip>
                             </Space>
                           ))}
                         </div>
                       );
                     }}
                   </Form.List>
-                  {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
+                  {fields?.length > 1 && (
+                    <Tooltip title="删除变量">
+                      <DeleteOutlined onClick={() => remove(name)} />
+                    </Tooltip>
+                  )}
                 </Space>
               ))}
               <Form.Item style={{ marginBottom: 0, width: '100%' }}>

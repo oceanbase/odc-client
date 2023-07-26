@@ -134,6 +134,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           exportPkgBody: !!pkgBodyList[DbObjectType.package_body]?.find(
             (item) => item === pkgInfo.packageName,
           ),
+          databaseId: session?.database.databaseId,
         });
       },
     },
