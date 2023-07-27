@@ -18,7 +18,7 @@ const RuleResult: React.FC<IProps> = function ({ data }) {
     <Space direction="vertical">
       {data.map((item) => {
         return (
-          <div className={styles.item}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <RenderLevel level={item?.level} />
             <div className={styles.desc}>{item.metadata?.name}</div>
           </div>
