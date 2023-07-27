@@ -1,5 +1,6 @@
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
+import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { PLType } from '@/constant/plType';
 import {
   ConnectionMode,
@@ -94,7 +95,7 @@ export class SQLStore {
       });
       const data = await executeSQL('commit;', sessionId, dbName);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
-      if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
+      if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
         );
@@ -113,7 +114,7 @@ export class SQLStore {
       this.rollbackPageKey.add(pageKey);
       const data = await executeSQL('rollback;', sessionId, dbName);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
-      if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
+      if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
         );
@@ -146,12 +147,12 @@ export class SQLStore {
     isSection: boolean,
     sessionId: string,
     dbName: string,
-  ): Promise<ISqlExecuteResult[]> {
+  ): Promise<IExecuteTaskResult> {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
     }
 
-    let record; // 需要忽略默认错误处理
+    let record: IExecuteTaskResult; // 需要忽略默认错误处理
     const session = sessionManager.sessionMap.get(sessionId);
     try {
       this.runningPageKey.add(pageKey);
@@ -174,8 +175,8 @@ export class SQLStore {
     }
 
     // 兼容后端不按约定返回的情况
-    if (!record) {
-      return null;
+    if (!record || record.invalid) {
+      return record;
     }
     /**
      * 刷新一下delimiter
@@ -188,7 +189,7 @@ export class SQLStore {
     runInAction(() => {
       // 加入历史记录
       /** Record去除rows,性能优化 */
-      const recordWithoutRows = record.map((result) => {
+      const recordWithoutRows = record.executeResult.map((result) => {
         return {
           ...result,
           rows: [],
@@ -215,8 +216,8 @@ export class SQLStore {
         });
         this.resultSets.set(pageKey, [
           ...lockedResultSets,
-          this.getLogTab(record),
-          ...generateResultSetColumns(record, session?.connection?.dialectType),
+          this.getLogTab(record.executeResult),
+          ...generateResultSetColumns(record.executeResult, session?.connection?.dialectType),
         ]);
       }
     });
@@ -349,7 +350,15 @@ export class SQLStore {
       });
     } else {
       const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
-      if (data?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS && ignoreError) {
+      if (data?.invalid) {
+        return {
+          status: 'FAIL',
+          errorMessage: '',
+        };
+      } else if (
+        data?.executeResult?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS &&
+        ignoreError
+      ) {
         return {
           status: 'FAIL',
           errorMessage: data?.[0]?.track,
@@ -411,8 +420,10 @@ export class SQLStore {
         session?.sessionId,
         session?.database?.dbName,
       );
-
-      if (!record?.length) {
+      if (record?.invalid) {
+        return;
+      }
+      if (!record?.executeResult?.length) {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.record.empty',
@@ -422,7 +433,7 @@ export class SQLStore {
       } // 加入历史记录
 
       this.records = [
-        ...record.reverse().map((result) => {
+        ...record?.executeResult.reverse().map((result) => {
           return {
             ...result,
           };
@@ -431,7 +442,11 @@ export class SQLStore {
       ]; // 在结果集中重新执行 SQL 肯定只有一条
 
       resultSet[resultSetIndex] = {
-        ...generateResultSetColumns(record, session?.connection?.dialectType, target.uniqKey)[0],
+        ...generateResultSetColumns(
+          record.executeResult,
+          session?.connection?.dialectType,
+          target.uniqKey,
+        )[0],
       };
       this.resultSets.set(pageKey, clone(resultSet));
     }

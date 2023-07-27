@@ -19,7 +19,7 @@ const SQLLintResult: React.FC<IProps> = function ({ data }) {
     <Collapse
       className={styles.collapse}
       ghost
-      defaultActiveKey={[0, 1, 2, 3, 4, 5]}
+      defaultActiveKey={data?.map((item, index) => index)}
       expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
     >
       {data?.map?.((item, index) => {

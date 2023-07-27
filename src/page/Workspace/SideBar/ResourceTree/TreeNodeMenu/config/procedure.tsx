@@ -1,4 +1,5 @@
-import { deleteProcedure, getProcedureByProName } from '@/common/network';
+import { getProcedureByProName } from '@/common/network';
+import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, DbObjectType, IProcedure, PageType } from '@/d.ts';
@@ -252,7 +253,11 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteProcedure(proc?.proName, session?.sessionId, session?.database?.dbName);
+            const isSuccess = await dropObject(
+              proc?.proName,
+              DbObjectType.procedure,
+              session?.sessionId,
+            );
             await session.database.getProcedureList();
 
             message.success(

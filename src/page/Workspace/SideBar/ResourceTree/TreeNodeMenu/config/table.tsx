@@ -1,4 +1,5 @@
-import { dropTable, getTableInfo } from '@/common/network/table';
+import { dropObject } from '@/common/network/database';
+import { getTableInfo } from '@/common/network/table';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
 import { DbObjectType, DragInsertType, ResourceTreeNodeMenuKeys } from '@/d.ts';
@@ -278,7 +279,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           icon: <QuestionCircleFilled />,
           centered: true,
           onOk: async () => {
-            const success = await dropTable(tableName, session.sessionId, session.database?.dbName);
+            const success = await dropObject(tableName, DbObjectType.table, session.sessionId);
             if (success) {
               await session.database.getTableList();
               message.success(

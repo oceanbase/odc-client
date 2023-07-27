@@ -44,7 +44,13 @@ export default forwardRef<any, { session: SessionStore }>(function TableExecuteM
       }}
       onSave={async () => {
         const results = await executeSQL(sql, session?.sessionId, session?.database?.dbName);
-        const result = results?.find((result) => result.track);
+        if (results.invalid) {
+          promiseResolveRef.current?.(false);
+          promiseResolveRef.current = null;
+          setVisible(false);
+          return;
+        }
+        const result = results?.executeResult?.find((result) => result.track);
         if (!result?.track) {
           promiseResolveRef?.current?.(true);
           promiseResolveRef.current = null;

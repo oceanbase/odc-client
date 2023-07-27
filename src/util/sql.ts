@@ -1,7 +1,8 @@
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, IFormatPLSchema, IPLParam } from '@/d.ts';
+import { ConnectionMode, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
 import { Oracle } from './dataType';
+import { getQuoteTableName } from './utils';
 
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。
@@ -276,4 +277,34 @@ export function textExpaste(text: string, dialectType?: ConnectionMode) {
     .replace(/(\S+)[ \t]?/g, dialectType === ConnectionMode.OB_ORACLE ? "'$1'," : '"$1",')
     .replace(/,(\s*)$/, ')$1')
     .replace(/^(\s*)/, '$1(');
+}
+
+export function getDropSQL(
+  objName: string,
+  objType: DbObjectType,
+  schemaName: string,
+  mode: ConnectionMode,
+) {
+  let objTypeKeywords = {
+    [DbObjectType.table]: 'TABLE',
+    [DbObjectType.view]: 'VIEW',
+    [DbObjectType.function]: 'FUNCTION',
+    [DbObjectType.procedure]: 'PROCEDURE',
+    [DbObjectType.package]: 'PACKAGE',
+    [DbObjectType.package_body]: 'PACKAGE BODY',
+    [DbObjectType.sequence]: 'SEQUENCE',
+    [DbObjectType.type]: 'TYPE',
+    [DbObjectType.synonym]: 'SYNONYM',
+    [DbObjectType.public_synonym]: 'PUBLIC SYNONYM',
+    [DbObjectType.trigger]: 'TRIGGER',
+  };
+  const objTypeKeyword: string = objTypeKeywords[objType];
+  if (!objTypeKeyword) {
+    return null;
+  }
+  const objNameItem = [schemaName, objName]
+    .filter(Boolean)
+    .map((item) => getQuoteTableName(item, mode))
+    ?.join('.');
+  return `DROP ${objTypeKeyword} ${objNameItem}`;
 }

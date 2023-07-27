@@ -1,4 +1,5 @@
-import { deleteFunction, getFunctionByFuncName } from '@/common/network';
+import { getFunctionByFuncName } from '@/common/network';
+import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, DbObjectType, IFunction, PageType } from '@/d.ts';
@@ -252,7 +253,14 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteFunction(func?.funName, session?.sessionId, session?.database?.dbName);
+            const isSuccess = await dropObject(
+              func?.funName,
+              DbObjectType.function,
+              session?.sessionId,
+            );
+            if (!isSuccess) {
+              return;
+            }
             await session.database.getFunctionList();
 
             message.success(

@@ -33,7 +33,7 @@ export default forwardRef(function ProjectTree(props, ref) {
         reload() {
           setSelectKeys([]);
           context?.setSelectProjectId(null);
-          return run(null, 1, 9999, null);
+          return run(null, 1, 9999, false);
         },
       };
     },

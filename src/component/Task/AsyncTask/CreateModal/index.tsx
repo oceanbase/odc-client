@@ -3,6 +3,7 @@ import { isReadonlyPublicConnection } from '@/component/Acess';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
+import RuleResult from '@/component/SQLLintResult/RuleResult';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
@@ -25,6 +26,7 @@ import {
   AutoComplete,
   Button,
   Checkbox,
+  Divider,
   Drawer,
   Form,
   InputNumber,
@@ -442,6 +444,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
+        <Form.Item requiredMark={false} label="该操作已被以下规则拦截，请发起审批">
+          <RuleResult data={asyncTaskData?.rules} />
+          <Divider style={{ margin: '8px 0px' }} />
+        </Form.Item>
         <DatabaseSelect projectId={projectId} />
         <Form.Item
           label={formatMessage({

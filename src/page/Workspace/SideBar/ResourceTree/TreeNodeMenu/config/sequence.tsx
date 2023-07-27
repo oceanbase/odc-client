@@ -1,4 +1,5 @@
-import { deleteSequence, getSequence } from '@/common/network/sequence';
+import { dropObject } from '@/common/network/database';
+import { getSequence } from '@/common/network/sequence';
 import { actionTypes } from '@/component/Acess';
 import { DbObjectType, ISequence, ResourceTreeNodeMenuKeys } from '@/d.ts';
 import { openSequenceViewPage } from '@/store/helper/page';
@@ -98,7 +99,14 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteSequence(sequenceInfo?.name, session?.sessionId, session?.database?.dbName);
+            const isSuccess = await dropObject(
+              sequenceInfo?.name,
+              DbObjectType.sequence,
+              session?.sessionId,
+            );
+            if (!isSuccess) {
+              return;
+            }
             await session?.database?.getSequenceList();
             message.success(
               formatMessage({

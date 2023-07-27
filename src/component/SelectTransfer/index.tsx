@@ -72,7 +72,7 @@ export default function SelectTransfer(props: IProps) {
             checkable
             selectable={false}
             checkedKeys={checkedKeys}
-            onCheck={setCheckedKeys}
+            onCheck={(v) => setCheckedKeys(v as string[])}
             height={274}
             treeData={sourceDisplayTreeData}
           />

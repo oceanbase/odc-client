@@ -10,7 +10,8 @@ import { formatMessage } from '@/util/intl';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
-import { deleteTrigger, getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
+import { dropObject } from '@/common/network/database';
+import { getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
@@ -226,11 +227,14 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteTrigger(
+            const isSuccess = await dropObject(
               trigger?.triggerName,
+              DbObjectType.trigger,
               session?.sessionId,
-              session?.database?.dbName,
             );
+            if (!isSuccess) {
+              return;
+            }
             await session.database.getTriggerList();
 
             message.success(

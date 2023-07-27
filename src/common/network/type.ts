@@ -23,12 +23,6 @@ export async function getType(
   return res?.data;
 }
 
-export async function deleteType(typeName: string, sessionId: string, dbName: string) {
-  const sid = generateTypeSid(typeName, sessionId, dbName);
-  const res = await request.delete(`/api/v1/type/${sid}`);
-  return !res?.isError;
-}
-
 export async function getTypeCreateSQL(
   typeName: string,
   type: Partial<ITypeForm>,

@@ -209,7 +209,11 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           onCancel={() => setDDL('')}
           onSave={async () => {
             const results = await executeSQL(DDL, session?.sessionId, session?.odcDatabase?.name);
-            const result = results?.find((result) => result.track);
+            if (results?.invalid) {
+              setDDL('');
+              return;
+            }
+            const result = results?.executeResult?.find((result) => result.track);
             if (!result?.track) {
               // 关闭创建表页面
               page.close(pageKey);

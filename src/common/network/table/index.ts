@@ -107,16 +107,6 @@ export async function generateCreateTableDDL(
   return res?.data?.sql;
 }
 
-export async function dropTable(tableName: string, sessionId: string, dbName: string) {
-  const res = await request.delete(
-    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
-      dbName,
-    )}/tables/${encodeObjName(tableName)}`,
-  );
-
-  return !res?.isError;
-}
-
 export async function generateUpdateTableDDL(
   newData: Partial<ITableModel>,
   oldData: Partial<ITableModel>,

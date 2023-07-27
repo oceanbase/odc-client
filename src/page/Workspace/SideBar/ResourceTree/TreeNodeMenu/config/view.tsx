@@ -1,4 +1,5 @@
-import { deleteView, getView } from '@/common/network/view';
+import { dropObject } from '@/common/network/database';
+import { getView } from '@/common/network/view';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
 import { DbObjectType, DragInsertType, IView, ResourceTreeNodeMenuKeys } from '@/d.ts';
@@ -193,11 +194,7 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           icon: <QuestionCircleFilled />,
           centered: true,
           onOk: async () => {
-            const isSuccess = await deleteView(
-              view.viewName,
-              session.sessionId,
-              session?.database?.dbName,
-            );
+            const isSuccess = await dropObject(view.viewName, DbObjectType.view, session.sessionId);
             if (!isSuccess) {
               return;
             }
