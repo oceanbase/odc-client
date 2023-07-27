@@ -24,6 +24,7 @@ import type {
 } from '@/d.ts';
 import {
   CommonTaskLogType,
+  IFlowTaskType,
   TaskFlowNodeType,
   TaskRecordParameters,
   TaskStatus,
@@ -101,7 +102,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [loading, setLoading] = useState(false);
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const hasFlow = !!task?.nodeList?.find(
-    (node) => node.nodeType === TaskFlowNodeType.APPROVAL_TASK,
+    (node) =>
+      node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.SQL_CHECK,
   );
   const hasLog = true;
   const hasResult =
