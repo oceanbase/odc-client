@@ -393,6 +393,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
 
+  useEffect(() => {
+    if (initSqlContent) {
+      handleSqlChange('sqlContent', initSqlContent);
+    }
+  }, [initSqlContent]);
+
   return (
     <Drawer
       destroyOnClose

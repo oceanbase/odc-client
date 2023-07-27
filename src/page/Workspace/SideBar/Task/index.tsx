@@ -15,11 +15,7 @@ const Task: React.FC<IProps> = () => {
           key: 'task',
           actions: [],
           render() {
-            return (
-              <div>
-                <Sider className={styles.taskSider} isPage={true} />
-              </div>
-            );
+            return <Sider className={styles.taskSider} isPage={true} />;
           },
         },
       ]}

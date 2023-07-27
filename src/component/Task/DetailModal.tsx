@@ -24,6 +24,7 @@ import type {
 } from '@/d.ts';
 import {
   CommonTaskLogType,
+  IFlowTaskType,
   TaskFlowNodeType,
   TaskRecordParameters,
   TaskStatus,
@@ -101,7 +102,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [loading, setLoading] = useState(false);
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const hasFlow = !!task?.nodeList?.find(
-    (node) => node.nodeType === TaskFlowNodeType.APPROVAL_TASK,
+    (node) =>
+      node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.SQL_CHECK,
   );
   const hasLog = true;
   const hasResult =
@@ -216,7 +218,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const getExecuteRecord = async function () {
-    if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type)) {
+    if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.ALTER_SCHEDULE].includes(type)) {
       loadDataArchiveSubTask();
     } else {
       loadSubTask();

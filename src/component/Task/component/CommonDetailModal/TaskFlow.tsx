@@ -461,11 +461,8 @@ const TaskFlow: React.FC<IProps> = (props) => {
                             /*可处理人*/
                           >
                             {externalFlowInstanceUrl ? (
-                              formatMessage({
-                                id: 'odc.component.CommonTaskDetailModal.TaskFlow.AlibabaGroupApproval',
-                              })
+                              '外部审批'
                             ) : (
-                              //阿里集团审批
                               <MultiLineOverflowText
                                 className={styles.approverWrapper}
                                 isShowMore

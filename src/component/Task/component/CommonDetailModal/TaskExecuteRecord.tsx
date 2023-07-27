@@ -18,6 +18,7 @@ const TaskLabelMap = {
     [SubTaskType.DATA_ARCHIVE_ROLLBACK]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Rollback',
     }), //回滚
+    [SubTaskType.DATA_ARCHIVE_DELETE]: '源表清理',
   },
   [TaskType.DATA_DELETE]: {
     [SubTaskType.DATA_DELETE]: formatMessage({
