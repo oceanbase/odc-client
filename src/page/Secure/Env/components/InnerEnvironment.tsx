@@ -58,12 +58,14 @@ interface InnerEnvProps {
 }
 const getColumns: (columnsFunction: {
   selectedRecord: any;
+  integrationsIdMap: { [key in string]: string };
   subTypeFilters: { text: string; value: string }[];
   supportedDialectTypeFilters: { text: string; value: string }[];
   handleOpenEditModal: (record: IRule) => void;
   handleSwtichRuleStatus: (rulesetId: number, rule: IRule) => void;
 }) => ColumnsType<IRule> = ({
   selectedRecord,
+  integrationsIdMap = {},
   subTypeFilters,
   supportedDialectTypeFilters,
   handleOpenEditModal = () => {},
@@ -154,6 +156,12 @@ const getColumns: (columnsFunction: {
         const { propertyMetadatas } = metadata;
         const keys = Object.keys(properties) || [];
         let content;
+        if (
+          keys?.[0] ===
+          '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.metadata.name}'
+        ) {
+          return integrationsIdMap?.[properties?.[keys?.[0]]] || '-';
+        }
         if (keys.length === 0) {
           content = '-';
         } else if (keys.length === 1) {
@@ -244,6 +252,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   const tableRef = useRef<ITableInstance>();
   const [selectedData, setSelectedData] = useState<IRule>(null);
   const [integrations, setIntegrations] = useState([]);
+  const [integrationsIdMap, setIntegrationsIdMap] = useState<{ [key in string]: string }>();
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
 
   const handleCloseModal = (fn?: () => void) => {
@@ -302,11 +311,17 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     const integrations = await getIntegrationList({
       type: IntegrationType.SQL_INTERCEPTOR,
     });
-    setIntegrations(integrations?.contents);
+    const map = {};
+    integrations?.contents?.forEach((content) => {
+      map[content.id] = content.name;
+    });
+    setIntegrationsIdMap(map);
+    setIntegrations(integrations?.contents?.filter((content) => content?.enabled));
   };
 
   const columns: ColumnsType<IRule> = getColumns({
     selectedRecord,
+    integrationsIdMap,
     handleOpenEditModal,
     handleSwtichRuleStatus,
     subTypeFilters,
