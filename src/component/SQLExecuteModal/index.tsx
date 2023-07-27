@@ -25,7 +25,9 @@ function SQLExecuteModal(props: {
   const doExecuteSQL = useCallback(async () => {
     try {
       const result = await executeSQL(innerSQL, session.sessionId, session.database?.dbName);
-      if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
+      if (result.invalid) {
+        onClose();
+      } else if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
         onSuccess(innerSQL);
         message.success(
           formatMessage({
@@ -33,7 +35,7 @@ function SQLExecuteModal(props: {
           }), // 执行成功
         );
       } else {
-        notification.error(result?.[0]);
+        notification.error(result?.executeResult?.[0]);
       }
     } catch (e) {
       //
@@ -49,7 +51,7 @@ function SQLExecuteModal(props: {
       bodyStyle={{
         height: 400,
       }}
-      visible={visible}
+      open={visible}
       destroyOnClose
       okButtonProps={{
         disabled: !innerSQL,

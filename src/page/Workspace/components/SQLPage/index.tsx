@@ -648,8 +648,21 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       /**
        * 这里只需要第一个错误的节点，因为一个报错，后面的都会取消执行，没必要把取消执行的错误也抛出去
        */
-      const errorResult = result?.find((item) => item.status !== ISqlExecuteResultStatus.SUCCESS);
-
+      const errorResult = result?.executeResult?.find(
+        (item) => item.status !== ISqlExecuteResultStatus.SUCCESS,
+      );
+      if (result.invalid) {
+        this.setState({
+          showDataExecuteSQLModal: false,
+          updateDataDML: '',
+          tipToShow: '',
+          editingMap: {
+            ...this.state.editingMap,
+            [sqlStore.resultSets?.get(pageKey)?.[resultSetIndex]?.uniqKey]: false,
+          },
+        });
+        return;
+      }
       if (!errorResult) {
         let msg;
 
@@ -989,13 +1002,17 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.sessionId,
       this.getSession()?.database?.dbName,
     );
-
-    this.getSession()?.initSessionStatus();
-    if (!results) {
+    if (results.invalid) {
       return;
     }
-    if (results?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)) {
-      this.showFirrstErrorStmt(results, sectionRange);
+    this.getSession()?.initSessionStatus();
+    if (!results?.executeResult) {
+      return;
+    }
+    if (
+      results?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
+    ) {
+      this.showFirrstErrorStmt(results?.executeResult, sectionRange);
     }
     /**
      * 装填一下额外数据,详细的列名

@@ -1,4 +1,5 @@
-import { deletePackage, getExportObjects, getPackageBodyCreateSQL } from '@/common/network';
+import { getExportObjects, getPackageBodyCreateSQL } from '@/common/network';
+import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { DbObjectType, IPackage, PageType } from '@/d.ts';
@@ -173,9 +174,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            if (
-              !(await deletePackage(pkg.packageName, session?.sessionId, session?.database?.dbName))
-            ) {
+            if (!(await dropObject(pkg.packageName, DbObjectType.package, session?.sessionId))) {
               return;
             }
             await session?.database?.getPackageList();

@@ -1,6 +1,6 @@
 import InputBigNumber from '@/component/InputBigNumber';
-import { DragInsertTypeText, SQLLintModeText, SQLSessionModeText } from '@/constant/label';
-import { AutoCommitMode, DragInsertType, IUserConfig, SQLLintMode, SQLSessionMode } from '@/d.ts';
+import { DragInsertTypeText, SQLSessionModeText } from '@/constant/label';
+import { AutoCommitMode, DragInsertType, IUserConfig, SQLSessionMode } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { Form, Radio, Select, Space } from 'antd';
@@ -279,27 +279,6 @@ const UserConfigForm: React.FC<IProps> = (props) => {
           <Radio value={DragInsertType.INSERT}>{DragInsertTypeText[DragInsertType.INSERT]}</Radio>
           <Radio value={DragInsertType.UPDATE}>{DragInsertTypeText[DragInsertType.UPDATE]}</Radio>
           <Radio value={DragInsertType.DELETE}>{DragInsertTypeText[DragInsertType.DELETE]}</Radio>
-        </Radio.Group>
-      </Form.Item>
-      <Form.Item
-        name={'sqlexecute.sqlCheckMode'}
-        label={
-          <ConfigItem
-            title={
-              formatMessage({ id: 'odc.component.UserConfigForm.SqlCheck' }) //SQL 检查
-            }
-            desc={
-              formatMessage({
-                id: 'odc.component.UserConfigForm.SelectTheStandardCheckMethod',
-              }) //选择 SQL 执行时规范检查方式
-            }
-          />
-        }
-        required
-      >
-        <Radio.Group>
-          <Radio value={SQLLintMode.MANUAL}>{SQLLintModeText[SQLLintMode.MANUAL]}</Radio>
-          <Radio value={SQLLintMode.AUTO}>{SQLLintModeText[SQLLintMode.AUTO]}</Radio>
         </Radio.Group>
       </Form.Item>
     </Form>

@@ -69,11 +69,6 @@ export async function getPackageCreateSQL(
   return ret?.data?.sql;
 }
 
-export async function deleteProcedure(funName: string, sessionId: string, dbName: string) {
-  const sid = generateProcedureSid(funName, sessionId, dbName);
-  await request.delete(`/api/v1/procedure/${sid}`);
-}
-
 export async function getPackageBodyCreateSQL(
   packageName: string,
   sessionId: string,
@@ -87,26 +82,6 @@ export async function getPackageBodyCreateSQL(
     },
   });
   return ret?.data?.sql;
-}
-
-export async function deletePackage(
-  packageName: string,
-  sessionId: string,
-  dbName: string,
-): Promise<boolean> {
-  const sid = generatePackageSid(packageName, sessionId, dbName);
-  const result = await request.delete(`/api/v1/package/${sid}`);
-  return !!result?.data;
-}
-
-export async function deletePackageBody(
-  packageName: string,
-  sessionId: string,
-  dbName: string,
-): Promise<boolean> {
-  const sid = generatePackageSid(packageName, sessionId, dbName);
-  const result = await request.delete(`/api/v1/package/deletePackageBody/${sid}`);
-  return !!result?.data;
 }
 
 export async function getPackage(pkgName: string, sessionId: string, dbName: string) {

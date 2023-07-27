@@ -1,6 +1,10 @@
-import { IResponseData } from '@/d.ts';
+import { DbObjectType, IResponseData } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import sessionManager from '@/store/sessionManager';
+import notification from '@/util/notification';
 import request from '@/util/request';
+import { getDropSQL } from '@/util/sql';
+import { executeSQL } from './sql';
 
 export async function listDatabases(
   projectId?: number,
@@ -61,4 +65,23 @@ export async function deleteDatabase(databaseIds: number[]): Promise<boolean> {
     },
   });
   return res?.data;
+}
+
+export async function dropObject(objName: string, objType: DbObjectType, sessionId: string) {
+  const schemaName = sessionManager.sessionMap.get(sessionId)?.database?.dbName;
+  const result = await executeSQL(
+    getDropSQL(
+      objName,
+      objType,
+      schemaName,
+      sessionManager.sessionMap.get(sessionId)?.connection?.dialectType,
+    ),
+    sessionId,
+    schemaName,
+  );
+  const error = result?.executeResult?.find((item) => item.track);
+  if (error) {
+    notification.error(error);
+  }
+  return result?.executeSuccess;
 }

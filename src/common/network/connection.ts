@@ -223,7 +223,7 @@ export async function getConnectionDetail(sid: number): Promise<IDatasource> {
 
 export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
   const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
-  return data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
+  return data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
 }
 
 export async function newSessionByDataBase(

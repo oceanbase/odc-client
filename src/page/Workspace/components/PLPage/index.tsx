@@ -885,9 +885,13 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.sessionId,
       this.getSession()?.database.dbName,
     );
-    let isSuccess = data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
+    if (data.invalid) {
+      pageStore.cancelSaving(pageKey);
+      return;
+    }
+    let isSuccess = data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
     if (!isSuccess) {
-      notification.error(data?.[0]);
+      notification.error(data?.executeResult?.[0]);
     }
 
     if (isSuccess) {

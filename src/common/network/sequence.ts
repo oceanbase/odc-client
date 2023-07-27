@@ -33,9 +33,3 @@ export async function getSequence(sequenceName: string, sessionId: string, dbNam
   const res = await request.get(`/api/v1/sequence/${sid}`);
   return res?.data;
 }
-
-export async function deleteSequence(sequenceName: string, sessionId: string, dbName: string) {
-  const sid = generateSequenceSid(sequenceName, sessionId, dbName);
-  const res = await request.delete(`/api/v1/sequence/${sid}`);
-  return !res?.isError;
-}

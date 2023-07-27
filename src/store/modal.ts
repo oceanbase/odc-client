@@ -1,4 +1,5 @@
 import { DbObjectType, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
+import { IRule } from '@/d.ts/rule';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -22,10 +23,14 @@ interface DataMockerData {
 
 interface AsyncData {
   type?: RollbackType;
-  task?: TaskDetail<IAsyncTaskParams>;
+  task?: Partial<TaskDetail<IAsyncTaskParams>>;
   objectId?: string;
   sql?: string;
   databaseId?: number;
+  /**
+   * 违反的校验规则
+   */
+  rules?: IRule[];
 }
 
 interface ApplyPermissionData {}
@@ -262,7 +267,7 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: any) {
+  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
     this.createAsyncTaskVisible = isShow;
     this.asyncTaskData = isShow ? data : null;
   }

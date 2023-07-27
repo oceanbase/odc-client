@@ -222,8 +222,17 @@ class TableData extends React.Component<
         session.sessionId,
         session.database.dbName,
       );
+      if (result.invalid) {
+        this.setState({
+          showDataExecuteSQLModal: false,
+          isEditing: false,
+          updateDataDML: '',
+          tipToShow: '',
+        });
+        return;
+      }
 
-      if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
+      if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
         let msg;
 
         if (session.params.autoCommit) {
@@ -254,8 +263,8 @@ class TableData extends React.Component<
         this._resultSetKey = generateUniqKey();
         await this.reloadTableData(tableName);
         message.success(msg);
-      } else if (result?.[0]?.track) {
-        notification.error(result?.[0]);
+      } else if (result?.executeResult?.[0]?.track) {
+        notification.error(result?.executeResult?.[0]);
       }
     } catch (e) {
       //
