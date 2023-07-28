@@ -195,7 +195,9 @@ class UserPage extends React.PureComponent<IProps, IState> {
                   }) /* 查看 */
                 }
               </Action.Link>
-              <Acess {...createPermission(IManagerResourceType.user, actionTypes.update)}>
+              <Acess
+                {...createPermission(IManagerResourceType.user, actionTypes.update, record.id)}
+              >
                 <Action.Group>
                   <Action.Link
                     disabled={disabledOp}

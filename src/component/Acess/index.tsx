@@ -53,6 +53,27 @@ const AcessMultiPermission = observer(
 );
 
 /**
+ * 存在指定资源类型的权限，就能返回
+ * 和 AcessMultiPermission 需要精确匹配一个资源不同，这个只会检查是否有该资源类型的权限。
+ */
+const AccessResourceTypePermission = observer(
+  (props: { fallback?: ReactElement; children?: ReactElement; permissions: AcessParameter[] }) => {
+    const { children, permissions, fallback = <NoAuth /> } = props;
+    const authState = useContext(AuthStoreContext);
+    const isExist = !!permissions.find(({ resourceIdentifier, action }) => {
+      const [resourceType, resourceId] = resourceIdentifier?.split(':') ?? [];
+      const resourceIds = authState.getResourceByAction(
+        resourceType as IManagerResourceType,
+        action as actionTypes,
+      );
+      return !!resourceIds?.length;
+    });
+    if (isExist) return children;
+    return fallback;
+  },
+);
+
+/**
  * hooks 获取权限信息
  */
 function useAcess(permission: AcessParameter): AcessResult {
@@ -89,9 +110,13 @@ function NoAuth(): JSX.Element {
   return null;
 }
 
-function createPermission(resourceType: resourceTypes, action: actionTypes = actionTypes.read) {
+function createPermission(
+  resourceType: resourceTypes,
+  action: actionTypes = actionTypes.read,
+  resourceId?: any,
+) {
   return {
-    resourceIdentifier: `${resourceType}:*`,
+    resourceIdentifier: `${resourceType}:${resourceId ?? '*'}`,
     action,
   };
 }
@@ -128,6 +153,7 @@ export function isReadonlyPublicConnection(connection: Partial<IConnection>) {
 export {
   Acess,
   AcessMultiPermission,
+  AccessResourceTypePermission,
   canAcess,
   actionTypes,
   systemUpdatePermissions,

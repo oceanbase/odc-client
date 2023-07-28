@@ -1,4 +1,4 @@
-import { Acess, AcessMultiPermission, createPermission } from '@/component/Acess';
+import { AccessResourceTypePermission, Acess, createPermission } from '@/component/Acess';
 import MessageCount from '@/component/Task/component/MessageCount';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
@@ -88,10 +88,12 @@ const Sider: React.FC<IProps> = function () {
               }
             />
           </Link>
-          <AcessMultiPermission
+          <AccessResourceTypePermission
             permissions={[
               createPermission(IManagerResourceType.user, actionTypes.read),
+              createPermission(IManagerResourceType.user, actionTypes.create),
               createPermission(IManagerResourceType.role, actionTypes.read),
+              createPermission(IManagerResourceType.role, actionTypes.create),
               createPermission(IManagerResourceType.auto_auth, actionTypes.read),
             ]}
           >
@@ -106,7 +108,7 @@ const Sider: React.FC<IProps> = function () {
                 })} /*用户权限*/
               />
             </Link>
-          </AcessMultiPermission>
+          </AccessResourceTypePermission>
           <Link to={`/${IPageType.Secure}/${IPageType.Secure_Env}`}>
             <MenuItem
               key={IPageType.Secure}
