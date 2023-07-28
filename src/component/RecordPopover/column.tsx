@@ -1,0 +1,173 @@
+import Action from '@/component/Action';
+import SearchFilter from '@/component/SearchFilter';
+import TreeFilter from '@/component/TreeFilter';
+import { AuditEventResult } from '@/d.ts';
+import { Status } from '@/page/Secure/components/RecordPage/component';
+import { isClient } from '@/util/env';
+import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/utils';
+import { FilterFilled, SearchOutlined } from '@ant-design/icons';
+import type { DataNode } from 'antd/lib/tree';
+
+export const getPageColumns = (params: {
+  openDetailModal: (args: { id: number; [key: string]: any }) => void;
+  eventfilter: {
+    text: string;
+    value: string;
+  }[];
+
+  eventOptions: DataNode[];
+}) => {
+  const { eventfilter, eventOptions } = params;
+  const columns = [
+    {
+      title: formatMessage({
+        id: 'odc.component.RecordPopover.components.EventType',
+      }),
+
+      //事件类型
+      width: 120,
+      ellipsis: true,
+      key: 'typeName',
+      dataIndex: 'typeName',
+      filters: eventfilter,
+    },
+
+    {
+      title: formatMessage({
+        id: 'odc.component.RecordPopover.components.EventAction',
+      }),
+
+      //事件操作
+      width: 160,
+      ellipsis: true,
+      key: 'actionName',
+      filterDropdown: (props) => {
+        return <TreeFilter {...props} treeData={eventOptions} />;
+      },
+      filterIcon: (filtered) => (
+        <FilterFilled style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
+      ),
+
+      dataIndex: 'actionName',
+    },
+
+    {
+      title: '数据源',
+      ellipsis: true,
+      key: 'connectionName',
+      filterDropdown: (props) => {
+        return <SearchFilter {...props} placeholder={'请输入所属数据源'} />;
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
+      ),
+
+      dataIndex: 'connectionName',
+      render: (connectionName) => connectionName || '-',
+    },
+
+    {
+      title: formatMessage({
+        id: 'odc.component.RecordPopover.components.IpSource',
+      }),
+
+      //IP来源
+      width: 132,
+      ellipsis: true,
+      key: 'clientIpAddress',
+      filterDropdown: (props) => {
+        return (
+          <SearchFilter
+            {...props}
+            placeholder={formatMessage({
+              id: 'odc.component.RecordPopover.components.EnterAnIpSource',
+            })}
+
+            /*请输入IP来源*/
+          />
+        );
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
+      ),
+
+      dataIndex: 'clientIpAddress',
+      render: (clientIpAddress) => clientIpAddress || '-',
+    },
+
+    {
+      title: formatMessage({
+        id: 'odc.component.RecordPopover.components.ExecutionTime',
+      }),
+
+      //执行时间
+      width: 190,
+      ellipsis: true,
+      key: 'startTime',
+      dataIndex: 'startTime',
+      sorter: true,
+      render: (startTime) => getLocalFormatDateTime(startTime),
+    },
+
+    {
+      title: formatMessage({
+        id: 'odc.component.RecordPopover.components.ExecutionResult',
+      }),
+
+      //执行结果
+      width: 80,
+      ellipsis: true,
+      key: 'result',
+      dataIndex: 'result',
+      filters: [
+        {
+          text: formatMessage({
+            id: 'odc.component.RecordPopover.components.Successful',
+          }),
+
+          //成功
+          value: AuditEventResult.SUCCESS,
+        },
+
+        {
+          text: formatMessage({
+            id: 'odc.component.RecordPopover.components.Failed',
+          }),
+
+          //失败
+          value: AuditEventResult.FAILED,
+        },
+      ],
+
+      render: (result) => <Status result={result} />,
+    },
+
+    {
+      title: formatMessage({
+        id: 'odc.component.RecordPopover.components.Actions',
+      }),
+
+      //操作
+      width: 80,
+      key: 'action',
+      render: (value, record) => (
+        <Action.Link
+          onClick={async () => {
+            params.openDetailModal(record);
+          }}
+        >
+          {
+            formatMessage({
+              id: 'odc.component.RecordPopover.components.View',
+            })
+
+            /*查看*/
+          }
+        </Action.Link>
+      ),
+    },
+  ];
+
+  return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'connectionName');
+};

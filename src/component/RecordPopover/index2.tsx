@@ -1,6 +1,6 @@
 import { getAuditList } from '@/common/network/manager';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
-import { AuditEventMetaMap } from '@/page/Secure/components/RecordPage';
+import { AuditEventMetaMap } from '@/page/Secure/components/RecordPage/interface';
 import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
 import { SyncOutlined } from '@ant-design/icons';
@@ -52,9 +52,9 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
       return;
     }
     const {
-      type,
+      typeName: type,
       executeTime: _executeTime = executeTime,
-      action,
+      actionName: action,
       connectionName,
       clientIpAddress,
       result,
