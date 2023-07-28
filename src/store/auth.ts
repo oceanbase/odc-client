@@ -59,6 +59,23 @@ export class AuthStore {
         ?.all?.concat(this.permissions.get(resourceType).resourceIds.get(resourceId) || []) || [],
     );
   }
+
+  public getResourceByAction(resourceType: IManagerResourceType, action: actionTypes): any[] {
+    const resource = this.permissions.get(resourceType);
+    if (!resource) {
+      return [];
+    }
+    let resourceIds = [];
+    if (resource.all?.includes(action)) {
+      resourceIds.push('*');
+    }
+    resource.resourceIds.forEach((actions, key) => {
+      if (actions?.includes(action)) {
+        resourceIds.push(key);
+      }
+    });
+    return resourceIds;
+  }
 }
 
 const authStore = new AuthStore();

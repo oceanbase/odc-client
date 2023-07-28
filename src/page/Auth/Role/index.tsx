@@ -160,7 +160,9 @@ class RolePage extends React.PureComponent<IProps, IState> {
                   /* 查看 */
                 }
               </Action.Link>
-              <Acess {...createPermission(IManagerResourceType.role, actionTypes.update)}>
+              <Acess
+                {...createPermission(IManagerResourceType.role, actionTypes.update, record.id)}
+              >
                 <Action.Group>
                   <Action.Link
                     disabled={isBuiltIn}
