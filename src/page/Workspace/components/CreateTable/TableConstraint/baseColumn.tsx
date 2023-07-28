@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../../EditableTable/Editors/TextEditor';
 import { useTableConfig } from '../config';
-import { ReadonlyCheckBoxFormatter } from '../RdgFomatter/CheckboxFormatter';
+import { CheckBoxFormatter, ReadonlyCheckBoxFormatter } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
 
 export function useDeferColumn(mode: ConnectionMode) {
@@ -70,5 +70,23 @@ export function useEnableColumn(mode: ConnectionMode) {
     width: 100,
     editor: TextEditor,
     formatter: ReadonlyCheckBoxFormatter,
+  };
+}
+
+export function useEnableColumnForeign(mode: ConnectionMode) {
+  const config = useTableConfig(mode);
+  if (!config.constraintEnableConfigurable) {
+    return null;
+  }
+  return {
+    key: 'enable',
+    name: formatMessage({
+      id: 'odc.CreateTable.TableConstraint.baseColumn.WhetherToEnable',
+    }), //是否启用
+    resizable: true,
+    editable: false,
+    filterable: false,
+    width: 100,
+    formatter: CheckBoxFormatter,
   };
 }
