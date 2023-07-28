@@ -450,10 +450,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <Form.Item requiredMark={false} label="该操作已被以下规则拦截，请发起审批">
-          <RuleResult data={asyncTaskData?.rules} />
-          <Divider style={{ margin: '8px 0px' }} />
-        </Form.Item>
+        {asyncTaskData?.rules?.length ? (
+          <Form.Item requiredMark={false} label="该操作已被以下规则拦截，请发起审批">
+            <RuleResult data={asyncTaskData?.rules} />
+            <Divider style={{ margin: '8px 0px' }} />
+          </Form.Item>
+        ) : null}
         <DatabaseSelect projectId={projectId} />
         <Form.Item
           label={formatMessage({
