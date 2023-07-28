@@ -2122,8 +2122,10 @@ export interface IDataArchiveJobParameters {
   name: string;
   sourceDatabaseId: number;
   sourceDatabaseName?: string;
+  sourceDataSourceName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
+  targetDataSourceName?: string;
   tables: {
     conditionExpression: string;
     tableName: string;
