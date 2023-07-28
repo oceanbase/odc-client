@@ -1,3 +1,4 @@
+import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
@@ -22,6 +23,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.database.OpenTheAnonymousBlockWindow' }), //打开匿名块窗口
       ],
+      isHide(_, node) {
+        const database: IDatabase = node.data;
+        return database?.dataSource?.dialectType === ConnectionMode.OB_MYSQL;
+      },
       ellipsis: true,
       run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
