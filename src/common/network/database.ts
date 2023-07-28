@@ -13,6 +13,10 @@ export async function listDatabases(
   size?: number,
   name?: string,
   environmentId?: number,
+  /**
+   * 是否包含未分配项目的数据库
+   */
+  containsUnassigned?: boolean,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -22,6 +26,7 @@ export async function listDatabases(
       page,
       size,
       environmentId,
+      containsUnassigned,
     },
   });
 
