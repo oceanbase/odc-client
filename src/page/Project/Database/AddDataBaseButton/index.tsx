@@ -63,7 +63,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
         {formatMessage({ id: 'odc.Database.AddDataBaseButton.AddDatabase' }) /*添加数据库*/}
       </Button>
       <Modal
-        visible={open}
+        open={open}
         title={formatMessage({ id: 'odc.Database.AddDataBaseButton.AddDatabase' })}
         /*添加数据库*/ onOk={submit}
         onCancel={close}
@@ -75,7 +75,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999);
+              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true);
             }
           }}
         >
