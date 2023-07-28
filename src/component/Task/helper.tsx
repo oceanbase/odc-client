@@ -118,7 +118,7 @@ export function getTaskTypeList(
         {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
           label: formatMessage({ id: 'odc.component.Task.helper.LockFreeStructureChange' }), //无锁结构变更
-          enabled: true,
+          enabled: settingStore.enableOSC,
         },
       ],
     },

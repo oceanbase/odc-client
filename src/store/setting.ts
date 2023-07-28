@@ -73,6 +73,9 @@ export class SettingStore {
   public enableDBExport: boolean = false;
 
   @observable
+  public enableOSC: boolean = false;
+
+  @observable
   public enableAll: boolean = false;
 
   @observable
@@ -204,6 +207,7 @@ export class SettingStore {
     this.enableDBExport =
       res?.['odc.features.task.export.enabled'] === 'true' && this.enableDataExport;
     this.enableMockdata = res?.['odc.features.task.mockdata.enabled'] === 'true';
+    this.enableOSC = res?.['odc.features.task.osc.enabled'] === 'true';
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
   }
 
