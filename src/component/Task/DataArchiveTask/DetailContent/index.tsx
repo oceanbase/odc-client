@@ -5,12 +5,13 @@ import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } fr
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Collapse, Descriptions, Divider, Space } from 'antd';
+import { Collapse, Descriptions, Divider, Space, Typography } from 'antd';
 import React from 'react';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
 import VariableConfig from './VariableConfig';
 
+const { Text } = Typography;
 const { Panel } = Collapse;
 
 interface IProps {
@@ -44,7 +45,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             id: 'odc.DataArchiveTask.DetailContent.SourceDatabase',
           })} /*源数据库*/
         >
-          {jobParameters?.sourceDatabaseName || '-'}
+          <Space size={2}>
+            <span>{jobParameters?.sourceDatabaseName}</span>
+            <Text type="secondary">{jobParameters?.sourceDataSourceName}</Text>
+          </Space>
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -52,7 +56,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             id: 'odc.DataArchiveTask.DetailContent.TargetDatabase',
           })} /*目标数据库*/
         >
-          {jobParameters?.targetDatabaseName || '-'}
+          <Space size={2}>
+            <span>{jobParameters?.targetDatabaseName}</span>
+            <Text type="secondary">{jobParameters?.targetDataSourceName}</Text>
+          </Space>
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item

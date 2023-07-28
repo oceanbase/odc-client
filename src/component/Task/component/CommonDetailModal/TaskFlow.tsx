@@ -171,7 +171,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
     let _node = node;
     if (
       node.nodeType === TaskFlowNodeType.SERVICE_TASK &&
-      node.taskType !== IFlowTaskType.SQL_CHECK
+      ![IFlowTaskType.SQL_CHECK, IFlowTaskType.GENERATE_ROLLBACK].includes(node.taskType)
     ) {
       const { deadlineTime, completeTime, operator, status, taskType } = node;
       let title = formatMessage({
