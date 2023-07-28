@@ -203,7 +203,9 @@ const FormResourceSelector: React.FC<{
                     <ResourceSelector
                       name="resourceManagementPermissions"
                       optionsMap={resourceManagementOptionsMap}
-                      typeOptions={resourceManagementTypeOptions}
+                      typeOptions={resourceManagementTypeOptions?.filter(
+                        (item) => item.value !== IManagerResourceType.project,
+                      )}
                       actionOptions={resourceManagementActionOptions}
                       initialValue={initialValue}
                       isEdit={isEdit}

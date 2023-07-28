@@ -79,3 +79,20 @@ export const ReadonlyCheckBoxFormatter = (props) => {
     />
   );
 };
+
+export const CheckBoxFormatter = (props) => {
+  const { row, onRowChange } = props;
+  const { enable } = row;
+  return (
+    <Checkbox
+      checked={!!enable}
+      tabIndex={-1}
+      onChange={() => {
+        onRowChange({
+          ...row,
+          enable: !enable,
+        });
+      }}
+    />
+  );
+};
