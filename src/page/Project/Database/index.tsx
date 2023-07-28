@@ -17,7 +17,7 @@ import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Tag } from 'antd';
+import { Input, Space, Tag } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
@@ -26,6 +26,7 @@ interface IProps {
 }
 const Database: React.FC<IProps> = ({ id }) => {
   const [total, setTotal] = useState(0);
+  const [searchValue, setSearchValue] = useState('');
 
   const [data, setData] = useState<IDatabase[]>([]);
 
@@ -40,19 +41,19 @@ const Database: React.FC<IProps> = ({ id }) => {
 
   const { data: envList } = useRequest(listEnvironments);
 
-  const loadData = async (pageSize, current, environmentId) => {
+  const loadData = async (pageSize, current, environmentId, name: string = searchValue) => {
     params.current.pageSize = pageSize;
     params.current.current = current;
     params.current.environmentId = environmentId;
-    const res = await listDatabases(parseInt(id), null, current, pageSize, null, environmentId);
+    const res = await listDatabases(parseInt(id), null, current, pageSize, name, environmentId);
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
     }
   };
 
-  function reload() {
-    loadData(params.current.pageSize, params.current.current, params.current.environmentId);
+  function reload(name: string = searchValue) {
+    loadData(params.current.pageSize, params.current.current, params.current.environmentId, name);
   }
 
   const handleMenuClick = (type: TaskPageType, databaseId: number) => {
@@ -82,9 +83,19 @@ const Database: React.FC<IProps> = ({ id }) => {
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
       extra={
-        <FilterIcon onClick={reload}>
-          <Reload />
-        </FilterIcon>
+        <Space>
+          <Input.Search
+            onSearch={(v) => {
+              setSearchValue(v);
+              reload(v);
+            }}
+            placeholder="搜索数据库"
+            style={{ width: 200 }}
+          />
+          <FilterIcon onClick={() => reload()}>
+            <Reload />
+          </FilterIcon>
+        </Space>
       }
     >
       <MiniTable<IDatabase>
