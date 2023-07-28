@@ -18,7 +18,7 @@ http:
 api:
   # API configurations used to start a process instance
   start:
-    # Request method, supported values: GET ｜ POST ｜ PUT ｜ PATCH
+    # Request method, supported values: GET | POST | PUT | PATCH
     method: ~
     # Request URI
     url: ~
