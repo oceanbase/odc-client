@@ -2,7 +2,7 @@ import { CommonTableMode } from '@/component/CommonTable/interface';
 import SecureTable from '@/page/Secure/components/SecureTable';
 import { CommonTableBodyMode } from '@/page/Secure/components/SecureTable/interface';
 import { formatMessage } from '@/util/intl';
-import { CheckCircleTwoTone, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   Button,
   Collapse,
@@ -85,7 +85,7 @@ const ScanForm = ({
           </Button>
           {successful && (
             <Space>
-              <CheckCircleTwoTone twoToneColor="#52c41a" />
+              <CheckCircleFilled style={{ color: '#52c41a' }} />
               <div>
                 {
                   formatMessage({
