@@ -2,7 +2,9 @@ import DelimiterSelect from '@/component/DelimiterSelect';
 import SQLConfig from '@/component/SQLConfig';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
+import { SpaceType } from '@/d.ts/_index';
 import { SQLPage } from '@/page/Workspace/components/SQLPage';
+import login from '@/store/login';
 import sqlStore from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { SaveOutlined } from '@ant-design/icons';
@@ -240,6 +242,11 @@ const sqlActions: ToolBarActions = {
   SQL_LINT: {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.SqlCheck' }), //SQL 检查
     icon: 'LINT',
+    isVisible(ctx: SQLPage) {
+      return (
+        login.organizations?.find((o) => o.id === login.organizationId)?.type !== SpaceType.PRIVATE
+      );
+    },
     async action(ctx: any) {
       await ctx.doSQLLint();
     },

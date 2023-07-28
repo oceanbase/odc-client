@@ -4,9 +4,10 @@ import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Button, Form, Input, message, Modal, Select, Space } from 'antd';
+import { Button, Form, Input, message, Modal, Space } from 'antd';
 import { toInteger } from 'lodash';
 import { useEffect, useState } from 'react';
+import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
 
 interface IProps {
   dataSourceId: string;
@@ -134,11 +135,7 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
             name={'projectId'}
             label={formatMessage({ id: 'odc.Info.NewDataBaseButton.Project' })} /*所属项目*/
           >
-            <Select style={{ width: 240 }} loading={projectListLoading}>
-              {project?.contents?.map((p) => {
-                return <Select.Option key={p.id}>{p.name}</Select.Option>;
-              })}
-            </Select>
+            <ProjectSelect projects={project?.contents} currentDatabase={null} />
           </Form.Item>
         </Form>
       </Modal>
