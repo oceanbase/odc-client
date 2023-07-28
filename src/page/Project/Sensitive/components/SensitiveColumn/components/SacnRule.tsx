@@ -101,15 +101,14 @@ const ScanRule = ({ formRef, reset }) => {
     reset();
   };
   useEffect(() => {
+    initDataSources();
+    initDetectRules();
+  }, []);
+  useEffect(() => {
     if (dataSourceId !== -1) {
       initDatabases(context.projectId, dataSourceId);
     }
   }, [dataSourceId]);
-  useEffect(() => {
-    initDataSources();
-    initDatabases();
-    initDetectRules();
-  }, []);
 
   return (
     <div style={{ display: 'flex', columnGap: '8px' }}>

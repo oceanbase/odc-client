@@ -1,45 +1,9 @@
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form } from 'antd';
-import { useWatch } from 'antd/lib/form/Form';
-import { useEffect, useState } from 'react';
 import ManualRule from './ManualRule';
 
 const ManualForm = ({ formRef, databasesMap, setDatabasesMap }) => {
-  const [disabledAdd, setDisabledAdd] = useState<boolean>(true);
-  const manual = useWatch('manual', formRef);
-  const handleAdd = async (fn) => {
-    const { manual } = await formRef.getFieldsValue();
-    if (
-      manual?.every(
-        (rule) =>
-          rule?.dataSource &&
-          rule?.database &&
-          rule?.tableName !== '' &&
-          rule?.columnName !== '' &&
-          rule?.maskingAlgorithmId,
-      )
-    ) {
-      fn?.();
-      setDisabledAdd(true);
-    }
-  };
-  useEffect(() => {
-    if (
-      manual?.every(
-        (rule) =>
-          rule?.dataSource &&
-          rule?.database &&
-          rule?.tableName !== '' &&
-          rule?.columnName !== '' &&
-          rule?.maskingAlgorithmId,
-      )
-    ) {
-      setDisabledAdd(false);
-    } else {
-      setDisabledAdd(true);
-    }
-  }, [manual]);
   return (
     <>
       <div style={{ display: 'flex', columnGap: '8px', marginBottom: '8px' }}>
@@ -86,11 +50,10 @@ const ManualForm = ({ formRef, databasesMap, setDatabasesMap }) => {
               </div>
               <Form.Item>
                 <Button
-                  disabled={disabledAdd}
                   type="dashed"
                   icon={<PlusOutlined />}
                   block
-                  onClick={() => handleAdd(add)}
+                  onClick={() => add()}
                   style={{ width: '746px' }}
                 >
                   {formatMessage({ id: 'odc.SensitiveColumn.components.ManualForm.Add' }) /*添加*/}

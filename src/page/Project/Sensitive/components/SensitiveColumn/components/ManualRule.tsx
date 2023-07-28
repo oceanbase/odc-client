@@ -123,61 +123,71 @@ const ManualRule = ({
 
   const handleDataSourceSelect = async (value: number) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setDataSourceId(value);
-    manual[index] = {
-      dataSource: value,
-      columnName: undefined,
-      database: undefined,
-      maskingAlgorithmId: undefined,
-      tableName: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+    if (dataSourceId !== value) {
+      setDataSourceId(value);
+
+      manual[index] = {
+        dataSource: value,
+        columnName: undefined,
+        database: undefined,
+        maskingAlgorithmId: undefined,
+        tableName: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
   const handleDatabaseSelect = async (value: number) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setDatabaseId(value);
-    manual[index] = {
-      ...manual[index],
-      database: value,
-      tableName: undefined,
-      columnName: undefined,
-      maskingAlgorithmId: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+    if (databaseId !== value) {
+      setDatabaseId(value);
+
+      manual[index] = {
+        ...manual[index],
+        database: value,
+        tableName: undefined,
+        columnName: undefined,
+        maskingAlgorithmId: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
   const handleTableSelect = async (value: string) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setTableName(value);
+    if (value !== tableName) {
+      setTableName(value);
 
-    manual[index] = {
-      ...manual[index],
-      tableName: value,
-      columnName: undefined,
-      maskingAlgorithmId: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+      manual[index] = {
+        ...manual[index],
+        tableName: value,
+        columnName: undefined,
+        maskingAlgorithmId: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
-  const hanleColumnSelect = async (value: any) => {
+  const hanleColumnSelect = async (value: string) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setColumnName(value);
+    if (columnName !== value) {
+      setColumnName(value);
 
-    manual[index] = {
-      ...manual[index],
-      columnName: value,
-      maskingAlgorithmId: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+      manual[index] = {
+        ...manual[index],
+        columnName: value,
+        maskingAlgorithmId: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
   const checkExist = async (ruler, value) => {
