@@ -11,7 +11,7 @@ import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Button, message, Popconfirm, Space } from 'antd';
+import { Button, Input, message, Popconfirm, Space } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useRef, useState } from 'react';
 import ChangeProjectModal from './ChangeProjectModal';
@@ -22,6 +22,7 @@ interface IProps {
 }
 const Info: React.FC<IProps> = ({ id, datasource }) => {
   const [total, setTotal] = useState(0);
+  const [searchValue, setSearchValue] = useState('');
 
   const [visible, setVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
@@ -33,10 +34,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
 
   const [data, setData] = useState<IDatabase[]>([]);
 
-  const loadData = async (pageSize, current) => {
+  const loadData = async (pageSize, current, name: string = searchValue) => {
     lastParams.current.pageSize = pageSize;
     lastParams.current.current = current;
-    const res = await getDataSourceManageDatabase(parseInt(id));
+    const res = await getDataSourceManageDatabase(parseInt(id), name);
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
@@ -51,8 +52,8 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
     manual: true,
   });
 
-  function reload() {
-    loadData(lastParams?.current?.pageSize, lastParams?.current?.current);
+  function reload(name: string = searchValue) {
+    loadData(lastParams?.current?.pageSize, lastParams?.current?.current, name);
   }
 
   async function deleteDB(id: number) {
@@ -86,7 +87,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
           <Space>
             <NewDataBaseButton
               mode={datasource?.dialectType}
-              onSuccess={() => reload}
+              onSuccess={() => reload()}
               dataSourceId={id}
             />
 
@@ -96,7 +97,19 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
           </Space>
         )
       }
-      extra={<Reload onClick={reload} />}
+      extra={
+        <Space>
+          <Input.Search
+            onSearch={(v) => {
+              setSearchValue(v);
+              reload(v);
+            }}
+            placeholder="搜索数据库"
+            style={{ width: 200 }}
+          />
+          <Reload onClick={() => reload()} />
+        </Space>
+      }
     >
       <MiniTable<IDatabase>
         rowKey={'id'}

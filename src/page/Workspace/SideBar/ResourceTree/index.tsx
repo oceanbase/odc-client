@@ -45,12 +45,14 @@ const ResourceTree: React.FC<IProps> = function ({
   }, []);
 
   const treeData: TreeDataNode[] = (() => {
-    const root = databases?.map((database) => {
-      const dbId = database.id;
-      const dbSessionId = databaseSessions[dbId];
-      const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-      return DataBaseTreeData(dbSession, database, database?.id);
-    });
+    const root = databases
+      ?.filter((db) => db.existed)
+      ?.map((database) => {
+        const dbId = database.id;
+        const dbSessionId = databaseSessions[dbId];
+        const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+        return DataBaseTreeData(dbSession, database, database?.id);
+      });
     return root || [];
   })();
 
