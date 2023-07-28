@@ -19,10 +19,11 @@ export function FunctionTreeNodeData(
   packageName?: string,
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
+  index?: number,
 ): TreeDataNode {
   const funcKey = `${dbSession?.database?.databaseId}-${
     packageName ? '' : dbSession?.database?.functionVersion
-  }-${packageName}-${dbName}-function-${func.funName}`;
+  }-${packageName}-${dbName}-function-${func.funName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let returnroot: TreeDataNode;
   let variableRoot: TreeDataNode;
@@ -142,8 +143,8 @@ export function FunctionTreeData(
   };
 
   if (functions?.length) {
-    treeData.children = functions.map((func) => {
-      return FunctionTreeNodeData(func, dbSession, dbName, packageName);
+    treeData.children = functions.map((func, i) => {
+      return FunctionTreeNodeData(func, dbSession, dbName, packageName, null, null, i);
     });
   }
   return treeData;

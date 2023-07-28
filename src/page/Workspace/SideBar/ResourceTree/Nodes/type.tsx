@@ -77,6 +77,8 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
               dbName,
               `${pkgKey}-${i}`,
               ResourceNodeType.TypeFunction,
+              null,
+              i,
             );
           }),
         };
