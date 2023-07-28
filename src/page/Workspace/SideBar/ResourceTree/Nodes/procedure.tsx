@@ -19,10 +19,11 @@ export function ProcedureTreeNodeData(
   packageName?: string,
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
+  index?: number,
 ): TreeDataNode {
   const funcKey = `${dbSession?.database?.databaseId}-${
     packageName ? '' : dbSession?.database?.procedureVersion
-  }-${packageName}-${dbName}-procedure-${proc.proName}`;
+  }-${packageName}-${dbName}-procedure-${proc.proName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let variableRoot: TreeDataNode;
 
@@ -117,8 +118,8 @@ export function ProcedureTreeData(
   };
 
   if (procedures?.length) {
-    treeData.children = procedures.map((proc) => {
-      return ProcedureTreeNodeData(proc, dbSession, dbName, packageName);
+    treeData.children = procedures.map((proc, index) => {
+      return ProcedureTreeNodeData(proc, dbSession, dbName, packageName, null, null, index);
     });
   }
   return treeData;

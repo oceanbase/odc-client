@@ -100,6 +100,8 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                   dbName,
                   `${pkgKey}-${i}`,
                   ResourceNodeType.PackageHeadFunction,
+                  null,
+                  i,
                 );
               })
               .concat(
@@ -110,6 +112,8 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                     dbName,
                     `${pkgKey}-${i}`,
                     ResourceNodeType.PackageHeadProcedure,
+                    null,
+                    i,
                   );
                 }),
               ),
@@ -183,6 +187,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                   pkgKey + '-body-' + i,
                   ResourceNodeType.PackageBodyFunction,
                   pkg,
+                  i,
                 );
               })
               .concat(
@@ -194,6 +199,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                     pkgKey + '-body-' + i,
                     ResourceNodeType.PackageBodyProcedure,
                     pkg,
+                    i,
                   );
                 }),
               ),
