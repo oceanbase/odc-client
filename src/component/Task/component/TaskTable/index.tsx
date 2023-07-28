@@ -8,11 +8,11 @@ import type {
 import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
 import { getCronExecuteCycleByObject, translator } from '@/component/Crontab';
 import SearchFilter from '@/component/SearchFilter';
-import StatusLabel, { status } from '@/component/Task/component/Status';
+import StatusLabel, { cycleStatus, status } from '@/component/Task/component/Status';
 import { TimeOptions } from '@/component/TimeSelect';
 import UserPopover from '@/component/UserPopover';
 import type { ICycleTaskTriggerConfig, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageType, TaskStatus, TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
@@ -93,18 +93,18 @@ export const getStatusFilters = (status: {
     text: string;
   };
 }) => {
-  return Object.keys(status).map((key) => {
-    return {
-      text: status?.[key].text,
-      value: key,
-    };
-  });
+  return Object.keys(status)
+    ?.filter((key) => key !== TaskStatus.WAIT_FOR_CONFIRM)
+    .map((key) => {
+      return {
+        text: status?.[key].text,
+        value: key,
+      };
+    });
 };
 
 export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
 export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
-
-const taskStatusFilters = getStatusFilters(status);
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
@@ -129,6 +129,9 @@ const TaskTable: React.FC<IProps> = inject(
   observer((props) => {
     const { taskStore, settingStore, tableRef } = props;
     const { tasks, cycleTasks, taskPageScope, taskPageType } = taskStore;
+    const taskStatusFilters = getStatusFilters(
+      isCycleTaskPage(taskPageType) ? cycleStatus : status,
+    );
     const currentTask = isCycleTaskPage(taskPageType) ? cycleTasks : tasks;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
