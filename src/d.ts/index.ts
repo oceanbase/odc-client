@@ -2176,6 +2176,7 @@ export interface ICycleTaskRecord<T> {
 
   createTime: number;
   jobs?: unknown;
+  approveInstanceId?: number;
   nextFireTimes: number[];
   status: TaskStatus;
   allowConcurrent: boolean;
