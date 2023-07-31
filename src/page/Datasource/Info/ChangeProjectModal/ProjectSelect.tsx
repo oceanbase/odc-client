@@ -1,5 +1,6 @@
 import { IDatabase } from '@/d.ts/database';
 import { IProject } from '@/d.ts/project';
+import { formatMessage } from '@/util/intl';
 import { Checkbox, Select, Space } from 'antd';
 import { isNull } from 'lodash';
 
@@ -40,7 +41,11 @@ export default function ProjectSelect({ projects, value, currentDatabase, onChan
         checked={_isNull}
         onChange={(e) => (e.target.checked ? onChange(null) : onChange(undefined))}
       >
-        不分配项目
+        {
+          formatMessage({
+            id: 'odc.Info.ChangeProjectModal.ProjectSelect.DoNotAssignProjects',
+          }) /*不分配项目*/
+        }
       </Checkbox>
     </Space>
   );

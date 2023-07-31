@@ -203,17 +203,32 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           >
             <Radio.Group>
               <Radio value={RiskLevelEnum.DEFAULT}>
-                <HelpDoc leftText title="允许执行">
+                <HelpDoc
+                  leftText
+                  title={formatMessage({
+                    id: 'odc.Env.components.EditRuleDrawer.AllowExecution',
+                  })} /*允许执行*/
+                >
                   {RiskLevelTextMap[RiskLevelEnum.DEFAULT]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.SUGGEST}>
-                <HelpDoc leftText title="执行之前需要审批">
+                <HelpDoc
+                  leftText
+                  title={formatMessage({
+                    id: 'odc.Env.components.EditRuleDrawer.ApprovalRequiredBeforeExecution',
+                  })} /*执行之前需要审批*/
+                >
                   {RiskLevelTextMap[RiskLevelEnum.SUGGEST]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.MUST}>
-                <HelpDoc leftText title="禁止执行，无法发起审批">
+                <HelpDoc
+                  leftText
+                  title={formatMessage({
+                    id: 'odc.Env.components.EditRuleDrawer.ExecutionIsProhibitedAndApproval',
+                  })} /*禁止执行，无法发起审批*/
+                >
                   {RiskLevelTextMap[RiskLevelEnum.MUST]}
                 </HelpDoc>
               </Radio>

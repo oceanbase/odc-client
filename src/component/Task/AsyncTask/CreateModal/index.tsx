@@ -451,7 +451,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         {asyncTaskData?.rules?.length ? (
-          <Form.Item requiredMark={false} label="该操作已被以下规则拦截，请发起审批">
+          <Form.Item
+            requiredMark={false}
+            label={formatMessage({
+              id: 'odc.AsyncTask.CreateModal.ThisOperationHasBeenBlocked',
+            })} /*该操作已被以下规则拦截，请发起审批*/
+          >
             <RuleResult data={asyncTaskData?.rules} />
             <Divider style={{ margin: '8px 0px' }} />
           </Form.Item>
@@ -816,6 +821,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             </span>
           </Form.Item>
         )}
+
         <DescriptionInput />
       </Form>
     </Drawer>

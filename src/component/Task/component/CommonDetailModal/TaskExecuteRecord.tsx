@@ -18,7 +18,9 @@ const TaskLabelMap = {
     [SubTaskType.DATA_ARCHIVE_ROLLBACK]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Rollback',
     }), //回滚
-    [SubTaskType.DATA_ARCHIVE_DELETE]: '源表清理',
+    [SubTaskType.DATA_ARCHIVE_DELETE]: formatMessage({
+      id: 'odc.component.CommonDetailModal.TaskExecuteRecord.SourceTableCleanup',
+    }), //源表清理
   },
   [TaskType.DATA_DELETE]: {
     [SubTaskType.DATA_DELETE]: formatMessage({
@@ -26,7 +28,9 @@ const TaskLabelMap = {
     }), //数据清理
   },
   [TaskType.SQL_PLAN]: {
-    [SubTaskType.ASYNC]: '数据库变更',
+    [SubTaskType.ASYNC]: formatMessage({
+      id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DatabaseChanges',
+    }), //数据库变更
   },
 };
 

@@ -102,16 +102,21 @@ export const AuditEventMetaMap = {
   }), //计划变更
 
   // 数据库管理
-  [AuditEventType.DATABASE_MANAGEMENT]: '数据库管理',
-
+  [AuditEventType.DATABASE_MANAGEMENT]: formatMessage({
+    id: 'odc.components.RecordPage.interface.DatabaseManagement',
+  }), //数据库管理
   // 权限申请
-  [AuditEventType.PERMISSION_APPLY]: '权限申请',
-
+  [AuditEventType.PERMISSION_APPLY]: formatMessage({
+    id: 'odc.components.RecordPage.interface.PermissionApplication',
+  }), //权限申请
   // 数据源管理
-  [AuditEventType.DATASOURCE_MANAGEMENT]: '数据源管理',
-
+  [AuditEventType.DATASOURCE_MANAGEMENT]: formatMessage({
+    id: 'odc.components.RecordPage.interface.DataSourceManagement',
+  }), //数据源管理
   // 项目管理
-  [AuditEventType.PROJECT_MANAGEMENT]: '项目管理',
+  [AuditEventType.PROJECT_MANAGEMENT]: formatMessage({
+    id: 'odc.components.RecordPage.interface.ProjectManagement',
+  }), //项目管理
 };
 
 export const AuditEventActionMap = {
@@ -126,8 +131,9 @@ export const AuditEventActionMap = {
   }),
 
   // 重置密码
-  [AuditEventActionType.RESET_PASSWORD]: '重置密码',
-
+  [AuditEventActionType.RESET_PASSWORD]: formatMessage({
+    id: 'odc.components.RecordPage.interface.ResetPassword',
+  }), //重置密码
   // 设置密码
   [AuditEventActionType.SET_PASSWORD]: formatMessage({
     id: 'odc.components.RecordPage.SetPassword',
@@ -525,22 +531,39 @@ export const AuditEventActionMap = {
   }), //拒绝
 
   // 数据管理事件操作
-  [AuditEventActionType.ADD_DATABASE]: '增加数据库',
-  [AuditEventActionType.TRANSFER_DATABASE_TO_PROJECT]: '转移项目',
-  [AuditEventActionType.DELETE_DATABASE]: '删除数据库',
-
+  [AuditEventActionType.ADD_DATABASE]: formatMessage({
+    id: 'odc.components.RecordPage.interface.AddDatabase',
+  }), //增加数据库
+  [AuditEventActionType.TRANSFER_DATABASE_TO_PROJECT]: formatMessage({
+    id: 'odc.components.RecordPage.interface.TransferProject',
+  }), //转移项目
+  [AuditEventActionType.DELETE_DATABASE]: formatMessage({
+    id: 'odc.components.RecordPage.interface.DeleteADatabase',
+  }), //删除数据库
   // 权限申请任务事件操作
-  [AuditEventActionType.CREATE_PERMISSION_APPLY_TASK]: '创建权限申请任务',
-  [AuditEventActionType.APPROVE_PERMISSION_APPLY_TASK]: '同意权限申请任务',
-  [AuditEventActionType.REJECT_PERMISSION_APPLY_TASK]: '拒绝权限申请任务',
-
+  [AuditEventActionType.CREATE_PERMISSION_APPLY_TASK]: formatMessage({
+    id: 'odc.components.RecordPage.interface.CreateAPermissionRequestTask',
+  }), //创建权限申请任务
+  [AuditEventActionType.APPROVE_PERMISSION_APPLY_TASK]: formatMessage({
+    id: 'odc.components.RecordPage.interface.PermissionRequestTask',
+  }), //同意权限申请任务
+  [AuditEventActionType.REJECT_PERMISSION_APPLY_TASK]: formatMessage({
+    id: 'odc.components.RecordPage.interface.DenyPermissionRequestTask',
+  }), //拒绝权限申请任务
   // 数据源管理事件操作
-  [AuditEventActionType.CREATE_DATASOURCE]: '创建数据源',
-  [AuditEventActionType.DELETE_DATASOURCE]: '删除数据源',
-  [AuditEventActionType.UPDATE_DATASOURCE]: '更新数据源',
-
+  [AuditEventActionType.CREATE_DATASOURCE]: formatMessage({
+    id: 'odc.components.RecordPage.interface.CreateADataSource',
+  }), //创建数据源
+  [AuditEventActionType.DELETE_DATASOURCE]: formatMessage({
+    id: 'odc.components.RecordPage.interface.DeleteADataSource',
+  }), //删除数据源
+  [AuditEventActionType.UPDATE_DATASOURCE]: formatMessage({
+    id: 'odc.components.RecordPage.interface.UpdateDataSource',
+  }), //更新数据源
   // 项目管理事件操作
-  [AuditEventActionType.CREATE_PROJECT]: '创建项目',
+  [AuditEventActionType.CREATE_PROJECT]: formatMessage({
+    id: 'odc.components.RecordPage.interface.CreateAProject',
+  }), //创建项目
 };
 
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {

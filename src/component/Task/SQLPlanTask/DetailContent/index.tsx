@@ -201,7 +201,10 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
                 }) //待当前任务执行完毕在新周期发起任务
           }
         </Descriptions.Item>
-        <Descriptions.Item label="描述" span={2}>
+        <Descriptions.Item
+          label={formatMessage({ id: 'odc.SQLPlanTask.DetailContent.Description' })}
+          /*描述*/ span={2}
+        >
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>

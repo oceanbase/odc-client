@@ -566,7 +566,10 @@ class TaskContent extends React.Component<any, any> {
         {haveCsvMapping && <CsvTable data={taskConfig?.csvColumnMappings} />}
         <Row>
           <Col span={24}>
-            <SimpleTextItem label="描述" content={task?.description || '-'} />
+            <SimpleTextItem
+              label={formatMessage({ id: 'odc.component.DataTransferModal.Description' })}
+              /*描述*/ content={task?.description || '-'}
+            />
           </Col>
         </Row>
         <Row className={styles.spaceBlock}>

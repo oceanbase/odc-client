@@ -150,7 +150,11 @@ export function getItems(
           ErrorStrategyText[parameters.errorStrategy],
         ],
 
-        ['描述', task?.description, 2],
+        [
+          formatMessage({ id: 'odc.ShadowSyncTask.DetailContent.Description' }), //描述
+          task?.description,
+          2,
+        ],
       ].filter(Boolean),
     },
 

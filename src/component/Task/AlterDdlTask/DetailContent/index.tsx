@@ -82,6 +82,7 @@ export function getItems(
     formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ExecutionTime' }), //执行时间
     getFormatDateTime(task?.executionTime),
   ];
+
   return [
     {
       // @ts-ignore
@@ -90,6 +91,7 @@ export function getItems(
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.TaskNumber' }), //任务编号
           task.id,
         ],
+
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.TaskType' }), //任务类型
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.LockFreeStructureChange' }), //无锁结构变更
@@ -98,36 +100,47 @@ export function getItems(
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.Library' }), //所属库
           task?.databaseName || '-',
         ],
+
         hasFlow ? riskItem : null,
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ChangeDefinition' }), //变更定义
           TaskExecStrategyMap[task?.executionStrategy],
           hasFlow ? 2 : 1,
         ],
+
         [null, <SQLContentSection task={task} key={task.id} />, 2],
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.LockTableTimeout' }), //锁表超时时间
           `${parameters?.lockTableTimeOutSeconds}s`,
         ],
+
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.NumberOfFailedRetries' }), //失败重试次数
           parameters?.swapTableNameRetryTimes,
         ],
+
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.SourceTableCleanupPolicyAfter' }), //完成后源表清理策略
           ClearStrategyMap[parameters?.originTableCleanStrategy],
         ],
+
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ExecutionMethod' }), //执行方式
           TaskExecStrategyMap[task?.executionStrategy],
         ],
+
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.TaskErrorHandling' }), //任务错误处理
           ErrorStrategyText[parameters.errorStrategy],
           2,
         ],
-        ['描述', task?.description, 2],
+
+        [
+          formatMessage({ id: 'odc.AlterDdlTask.DetailContent.Description' }), //描述
+          task?.description,
+          2,
+        ],
       ].filter(Boolean),
     },
     {
@@ -137,6 +150,7 @@ export function getItems(
           task?.creator?.name || '-',
           2,
         ],
+
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.CreationTime' }), //创建时间
           getFormatDateTime(task.createTime),

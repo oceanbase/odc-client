@@ -60,7 +60,9 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
             {
               validator(rule, value, callback) {
                 if (isUndefined(value)) {
-                  callback('请选择项目');
+                  callback(
+                    formatMessage({ id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject' }), //请选择项目
+                  );
                   return;
                 }
                 callback();

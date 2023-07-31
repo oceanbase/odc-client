@@ -3,6 +3,7 @@ import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
 import PersonalSvg from '@/svgr/personal_space.svg';
 import GroupSvg from '@/svgr/project_space.svg';
+import { formatMessage } from '@/util/intl';
 import Icon, { CheckOutlined, ExclamationCircleFilled, SwapOutlined } from '@ant-design/icons';
 import { Checkbox, Modal, Select, Space, Typography } from 'antd';
 import classNames from 'classnames';
@@ -33,7 +34,12 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
     const tipVisible = localStorage.getItem(ORGANIZATION_TIP_VSIBLE_KEY);
     if (tipVisible !== 'no') {
       Modal.confirm({
-        title: `确认要切换为${ori.displayName}吗`,
+        title: formatMessage(
+          {
+            id: 'odc.Sider.SpaceSelect.AreYouSureYouWant',
+          },
+          { oriDisplayName: ori.displayName },
+        ), //`确认要切换为${ori.displayName}吗`
         icon: <ExclamationCircleFilled />,
         content: (
           <>
@@ -44,12 +50,13 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
                 localStorage.setItem(ORGANIZATION_TIP_VSIBLE_KEY, value);
               }}
             >
-              不再提示
+              {formatMessage({ id: 'odc.Sider.SpaceSelect.NoMorePrompt' }) /*不再提示*/}
             </Checkbox>
           </>
         ),
-        okText: '确定',
-        cancelText: '取消',
+
+        okText: formatMessage({ id: 'odc.Sider.SpaceSelect.Ok' }), //确定
+        cancelText: formatMessage({ id: 'odc.Sider.SpaceSelect.Cancel' }), //取消
         onOk: () => {
           handleOk(ori);
         },

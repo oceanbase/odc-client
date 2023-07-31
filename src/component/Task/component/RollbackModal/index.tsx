@@ -50,9 +50,15 @@ const RollBackModal: React.FC<IProps> = (props) => {
         </Text>
         <Radio.Group onChange={handleChange} value={value}>
           <Radio value={RollbackType.REF} disabled={disabledRef}>
-            引用系统生成的方案
+            {
+              formatMessage({
+                id: 'odc.component.RollbackModal.ReferenceSystemGeneratedSolutions',
+              }) /*引用系统生成的方案*/
+            }
           </Radio>
-          <Radio value={RollbackType.CUSTOM}>自定义</Radio>
+          <Radio value={RollbackType.CUSTOM}>
+            {formatMessage({ id: 'odc.component.RollbackModal.Custom' }) /*自定义*/}
+          </Radio>
         </Radio.Group>
       </Space>
     </Modal>

@@ -264,8 +264,9 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
         alertInfoContent={
           pageKey === IManagePagesKeys.SQL_INTERCEPTOR
             ? {
-                message:
-                  '请按照 安全规范 - SQL 开发规范 - SQL 窗口规则 路径，使用您已配置并开启的 SQL 拦截集成',
+                message: formatMessage({
+                  id: 'odc.ExternalIntegration.SqlInterceptor.FollowTheSecuritySpecificationSql',
+                }), //请按照 安全规范 - SQL 开发规范 - SQL 窗口规则 路径，使用您已配置并开启的 SQL 拦截集成
               }
             : null
         }
@@ -290,6 +291,7 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
                   }
                 </span>
               ),
+
               isPrimary: true,
               onClick: handleCreate,
             },
