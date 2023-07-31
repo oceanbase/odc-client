@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { Badge, Tooltip } from 'antd';
 import classNames from 'classnames';
 
 import styles from './index.less';
@@ -10,9 +10,18 @@ interface IProps {
   label: React.ReactNode;
   selected?: boolean;
   disableTip?: boolean;
+  showDot?: boolean;
 }
 
-export default function ({ collapsed, icon, label, selected, disableTip, ...rest }: IProps) {
+export default function ({
+  collapsed,
+  icon,
+  label,
+  selected,
+  disableTip,
+  showDot,
+  ...rest
+}: IProps) {
   if (collapsed) {
     if (disableTip) {
       return (
@@ -27,12 +36,14 @@ export default function ({ collapsed, icon, label, selected, disableTip, ...rest
     }
     return (
       <Tooltip title={label} placement="right">
-        <Icon
-          className={classNames(styles.collapsedIcon, {
-            [styles.selected]: selected,
-          })}
-          component={icon}
-        />
+        <Badge dot={showDot}>
+          <Icon
+            className={classNames(styles.collapsedIcon, {
+              [styles.selected]: selected,
+            })}
+            component={icon}
+          />
+        </Badge>
       </Tooltip>
     );
   }

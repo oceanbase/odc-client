@@ -3,8 +3,11 @@ import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
+import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
+
+const ENABLE_PATTERN_OPERATOR = false;
 
 const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => ({
   label: item,
@@ -91,7 +94,12 @@ const VariableConfig: React.FC<IProps> = (props) => {
           {(fields, { add, remove }) => (
             <div className={styles.infoBlock}>
               {fields.map(({ key, name, ...restField }) => (
-                <Space key={key} align="baseline">
+                <div
+                  key={key}
+                  className={classNames(styles.variables, {
+                    [styles.delete]: fields?.length > 1,
+                  })}
+                >
                   <Form.Item {...restField} style={{ width: '194px' }} name={[name, 'name']}>
                     <Input
                       placeholder={formatMessage({
@@ -113,64 +121,53 @@ const VariableConfig: React.FC<IProps> = (props) => {
                       return (
                         <div className={styles.infoBlock}>
                           {subFields.map(({ key, name, ...restField }) => (
-                            <Space size={5} key={key} align="baseline">
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'operator']}
-                              >
+                            <div className={styles.pattern}>
+                              <Form.Item {...restField} name={[name, 'operator']}>
                                 <Select
                                   placeholder={formatMessage({
                                     id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
                                   })} /*请选择*/
-                                  style={{ width: 80 }}
                                   options={operatorOptions}
                                 />
                               </Form.Item>
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'step']}
-                              >
+                              <Form.Item {...restField} name={[name, 'step']}>
                                 <InputNumber
                                   placeholder={formatMessage({
                                     id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseEnter',
                                   })}
                                   /*请输入*/ min={1}
-                                  style={{ width: 80 }}
                                 />
                               </Form.Item>
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'unit']}
-                              >
+                              <Form.Item {...restField} name={[name, 'unit']}>
                                 <Select
                                   placeholder={formatMessage({
                                     id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
                                   })} /*请选择*/
-                                  style={{ width: 80 }}
                                   options={timeUnitOptions}
                                 />
                               </Form.Item>
-                              <Button type="text" disabled={disabledAdd}>
-                                <PlusOutlined onClick={() => _add()} />
-                              </Button>
-                              <Button type="text">
-                                <MinusOutlined
-                                  onClick={() => {
-                                    if (subFields?.length > 1) _remove(name);
-                                  }}
-                                />
-                              </Button>
-                            </Space>
+                              {ENABLE_PATTERN_OPERATOR && (
+                                <>
+                                  <Button type="text" disabled={disabledAdd}>
+                                    <PlusOutlined onClick={() => _add()} />
+                                  </Button>
+                                  <Button type="text">
+                                    <MinusOutlined
+                                      onClick={() => {
+                                        if (subFields?.length > 1) _remove(name);
+                                      }}
+                                    />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
                           ))}
                         </div>
                       );
                     }}
                   </Form.List>
                   {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
-                </Space>
+                </div>
               ))}
               <Form.Item style={{ marginBottom: 0, width: '100%' }}>
                 <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>

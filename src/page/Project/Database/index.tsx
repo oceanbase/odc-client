@@ -70,9 +70,7 @@ const Database: React.FC<IProps> = ({ id }) => {
         break;
       case TaskPageType.ASYNC:
         modalStore.changeCreateAsyncTaskModal(true, {
-          task: {
-            databaseId,
-          },
+          databaseId,
         });
         break;
       default:

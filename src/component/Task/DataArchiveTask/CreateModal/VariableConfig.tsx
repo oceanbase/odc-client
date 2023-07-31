@@ -3,8 +3,11 @@ import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
+import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
+
+const ENABLE_PATTERN_OPERATOR = false;
 
 const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => ({
   label: item,
@@ -91,15 +94,20 @@ const VariableConfig: React.FC<IProps> = (props) => {
           {(fields, { add, remove }) => (
             <div className={styles.infoBlock}>
               {fields.map(({ key, name, ...restField }) => (
-                <Space key={key} align="baseline">
-                  <Form.Item {...restField} style={{ width: '194px' }} name={[name, 'name']}>
+                <div
+                  key={key}
+                  className={classNames(styles.variables, {
+                    [styles.delete]: fields?.length > 1,
+                  })}
+                >
+                  <Form.Item {...restField} name={[name, 'name']}>
                     <Input
                       placeholder={formatMessage({
                         id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
                       })} /*请输入*/
                     />
                   </Form.Item>
-                  <Form.Item {...restField} style={{ width: '170px' }} name={[name, 'format']}>
+                  <Form.Item {...restField} name={[name, 'format']}>
                     <Select
                       placeholder={formatMessage({
                         id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
@@ -113,61 +121,50 @@ const VariableConfig: React.FC<IProps> = (props) => {
                       return (
                         <div className={styles.infoBlock}>
                           {subFields.map(({ key, name, ...restField }) => (
-                            <Space size={5} key={key} align="baseline">
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'operator']}
-                              >
+                            <div className={styles.pattern}>
+                              <Form.Item {...restField} name={[name, 'operator']}>
                                 <Select
                                   placeholder={formatMessage({
                                     id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
                                   })} /*请选择*/
-                                  style={{ width: 80 }}
                                   options={operatorOptions}
                                 />
                               </Form.Item>
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'step']}
-                              >
+                              <Form.Item {...restField} name={[name, 'step']}>
                                 <InputNumber
                                   placeholder={formatMessage({
                                     id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
                                   })}
                                   /*请输入*/ min={1}
-                                  style={{ width: 80 }}
                                 />
                               </Form.Item>
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'unit']}
-                              >
+                              <Form.Item {...restField} name={[name, 'unit']}>
                                 <Select
                                   placeholder={formatMessage({
                                     id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
                                   })} /*请选择*/
-                                  style={{ width: 80 }}
                                   options={timeUnitOptions}
                                 />
                               </Form.Item>
-                              <Tooltip title="添加时间运算">
-                                <Button type="text" disabled={disabledAdd}>
-                                  <PlusOutlined onClick={() => _add()} />
-                                </Button>
-                              </Tooltip>
-                              <Tooltip title="删除时间运算">
-                                <Button type="text">
-                                  <MinusOutlined
-                                    onClick={() => {
-                                      if (subFields?.length > 1) _remove(name);
-                                    }}
-                                  />
-                                </Button>
-                              </Tooltip>
-                            </Space>
+                              {ENABLE_PATTERN_OPERATOR && (
+                                <>
+                                  <Tooltip title="添加时间运算">
+                                    <Button type="text" disabled={disabledAdd}>
+                                      <PlusOutlined onClick={() => _add()} />
+                                    </Button>
+                                  </Tooltip>
+                                  <Tooltip title="删除时间运算">
+                                    <Button type="text">
+                                      <MinusOutlined
+                                        onClick={() => {
+                                          if (subFields?.length > 1) _remove(name);
+                                        }}
+                                      />
+                                    </Button>
+                                  </Tooltip>
+                                </>
+                              )}
+                            </div>
                           ))}
                         </div>
                       );
@@ -178,7 +175,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                       <DeleteOutlined onClick={() => remove(name)} />
                     </Tooltip>
                   )}
-                </Space>
+                </div>
               ))}
               <Form.Item style={{ marginBottom: 0, width: '100%' }}>
                 <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>

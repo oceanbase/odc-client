@@ -4,6 +4,7 @@ import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
+import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import styles from './index.less';
 
@@ -46,7 +47,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       }) /*表名*/
                     }
                   </div>
-                  <div style={{ width: '400px' }}>
+                  <div style={{ width: '460px' }}>
                     <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
                       {
                         formatMessage({
@@ -60,10 +61,14 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   {(fields, { add, remove }) => (
                     <div className={styles.infoBlock}>
                       {fields.map(({ key, name, ...restField }: any, index) => (
-                        <Space key={key} align="baseline">
+                        <div
+                          key={key}
+                          className={classNames(styles.tables, {
+                            [styles.delete]: fields?.length > 1,
+                          })}
+                        >
                           <Form.Item
                             {...restField}
-                            style={{ width: '220px' }}
                             name={[name, 'tableName']}
                             rules={[
                               {
@@ -85,11 +90,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               }
                             />
                           </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            style={{ width: '400px' }}
-                            name={[name, 'conditionExpression']}
-                          >
+                          <Form.Item {...restField} name={[name, 'conditionExpression']}>
                             <Input
                               placeholder={formatMessage({
                                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
@@ -97,7 +98,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             />
                           </Form.Item>
                           {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
-                        </Space>
+                        </div>
                       ))}
                       <Form.Item style={{ marginBottom: 0 }}>
                         <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>

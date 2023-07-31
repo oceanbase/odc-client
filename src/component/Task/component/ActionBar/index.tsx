@@ -115,6 +115,7 @@ const ActionBar: React.FC<IProps> = inject(
       props.modalStore.changeCreateAsyncTaskModal(true, {
         type,
         task: task as TaskDetail<IAsyncTaskParams>,
+        databaseId: task?.databaseId,
         objectId: result?.rollbackPlanResult?.objectId,
       });
     };
