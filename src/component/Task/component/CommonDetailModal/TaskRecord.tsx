@@ -1,7 +1,6 @@
 import { getTaskList } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
-import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import StatusLabel, { status } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import { TaskDetail, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
@@ -131,8 +130,6 @@ const SubTaskRecord: React.FC<IProps> = (props) => {
   const [subTasks, setSubTasks] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
-  const [approvalVisible, setApprovalVisible] = useState(false);
-  const [approvalStatus, setApprovalStatus] = useState(false);
   const databaseFilters = getDatabaseFilters(subTasks);
 
   const loadData = async () => {
@@ -151,16 +148,6 @@ const SubTaskRecord: React.FC<IProps> = (props) => {
   ) => {
     setDetailId(task?.id);
     setDetailVisible(visible);
-  };
-
-  const handleApprovalVisible = (
-    task: TaskRecord<TaskRecordParameters>,
-    status: boolean,
-    visible: boolean = false,
-  ) => {
-    setDetailId(task?.id);
-    setApprovalVisible(visible);
-    setApprovalStatus(status);
   };
 
   const reloadList = () => {
@@ -189,19 +176,8 @@ const SubTaskRecord: React.FC<IProps> = (props) => {
         type={TaskType.ASYNC}
         detailId={detailId}
         visible={detailVisible}
-        onApprovalVisible={handleApprovalVisible}
         onDetailVisible={handleDetailVisible}
         onReloadList={reloadList}
-      />
-
-      <ApprovalModal
-        type={TaskType.ASYNC}
-        id={detailId}
-        visible={approvalVisible}
-        approvalStatus={approvalStatus}
-        onCancel={() => {
-          setApprovalVisible(false);
-        }}
       />
     </>
   );

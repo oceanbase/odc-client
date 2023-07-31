@@ -18,6 +18,7 @@ interface IProps {
   approvalStatus: boolean;
   partitionPlan?: IConnectionPartitionPlan;
   onCancel: () => void;
+  onReload: () => void;
 }
 
 const ApprovalModal: React.FC<IProps> = inject('taskStore')(
@@ -32,6 +33,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
       } else {
         res = await approveTask(props.id, value);
       }
+      props?.onReload();
       onCancel();
       if (res) {
         taskStore.getTaskMetaInfo();
@@ -47,6 +49,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
       onCancel();
       if (res) {
         taskStore.getTaskMetaInfo();
+        props?.onReload();
         message.success(
           formatMessage({
             id: 'odc.TaskManagePage.component.ApprovalModal.Rejected',

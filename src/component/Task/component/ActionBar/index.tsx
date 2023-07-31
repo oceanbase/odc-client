@@ -8,7 +8,6 @@ import {
 import Action from '@/component/Action';
 import {
   IAsyncTaskParams,
-  ICycleTaskRecord,
   ITaskResult,
   RollbackType,
   TaskDetail,
@@ -42,11 +41,8 @@ interface IProps {
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: Partial<TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
+  onReload?: () => void;
+  onApprovalVisible?: (status: boolean, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
 }
@@ -97,6 +93,7 @@ const ActionBar: React.FC<IProps> = inject(
         );
 
         props.onReloadList();
+        props?.onReload?.();
       }
     };
 
@@ -148,7 +145,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleApproval = async (status: boolean) => {
-      props.onApprovalVisible(task as TaskRecord<TaskRecordParameters>, status, true);
+      props.onApprovalVisible(status, true);
     };
 
     const handleReTry = async () => {

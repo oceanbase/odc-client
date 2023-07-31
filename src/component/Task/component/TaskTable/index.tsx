@@ -112,11 +112,6 @@ interface IProps {
   settingStore?: SettingStore;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
@@ -379,7 +374,6 @@ const TaskTable: React.FC<IProps> = inject(
             <TaskTools
               task={record}
               onReloadList={props.onReloadList}
-              onApprovalVisible={props.onApprovalVisible}
               onDetailVisible={props.onDetailVisible}
             />
           ),
