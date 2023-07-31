@@ -113,7 +113,7 @@ export function getTaskTypeList(
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
           }),
           //影子表同步
-          enabled: true,
+          enabled: !isClient(),
         },
         {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
@@ -145,12 +145,12 @@ export function getTaskTypeList(
         {
           value: TaskPageType.DATA_ARCHIVE,
           label: formatMessage({ id: 'odc.component.Task.helper.DataArchiving' }), //数据归档
-          enabled: true,
+          enabled: !isClient(),
         },
         {
           value: TaskPageType.DATA_DELETE,
           label: formatMessage({ id: 'odc.component.Task.helper.DataCleansing' }), //数据清理
-          enabled: true,
+          enabled: !isClient(),
         },
       ],
     },

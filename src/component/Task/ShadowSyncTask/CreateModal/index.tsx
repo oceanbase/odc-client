@@ -86,6 +86,14 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   const nextStepName = nextStep?.name;
   const prevStepName = prevStep?.name;
 
+  const handleReset = () => {
+    _setData({
+      ...defaultData,
+    });
+    setIsChanged(false);
+    setStepIdx(0);
+  };
+
   function close(force: boolean = false) {
     if (isChanged && !force) {
       Modal.confirm({
@@ -95,10 +103,12 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         centered: true,
         onOk: () => {
           modalStore.changeShadowSyncVisible(false);
+          handleReset();
         },
       });
     } else {
       modalStore.changeShadowSyncVisible(false);
+      handleReset();
     }
   }
   async function submit() {
@@ -134,6 +144,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
     <Drawer
       className={styles.drawer}
       visible={modalStore.addShadowSyncVisible}
+      destroyOnClose
       onClose={() => close()}
       width={720}
       title={formatMessage({
