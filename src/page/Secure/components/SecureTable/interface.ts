@@ -14,6 +14,7 @@ export interface ITableInstance {
   reload: (args?: ITableLoadOptions) => void;
   resetSelectedRows: () => void;
   resetPaganition?: () => void;
+  resetFilterAndSort?: () => void;
   reloadFirstPage?: (args?: ITableLoadOptions) => void;
 }
 export interface ITitleContent {

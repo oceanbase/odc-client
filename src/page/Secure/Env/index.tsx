@@ -2,7 +2,7 @@ import { listEnvironments } from '@/common/network/env';
 import { listRules, statsRules } from '@/common/network/ruleset';
 import { IEnvironment } from '@/d.ts/environment';
 import { IRule, RuleType } from '@/d.ts/rule';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import { ITableLoadOptions } from '../components/SecureTable/interface';
@@ -33,6 +33,8 @@ const Environment: React.FC<{}> = ({}) => {
   const [siderLoading, setSiderLoading] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [subTypeFilters, setSubTypeFilters] = useState([]);
+  const [listParams, setListParams] = useState(null);
+  const loadParams = useRef(null);
   const [supportedDialectTypeFilters, setSupportedDialectTypeFilters] = useState([]);
   const [rules, setRules] = useState<IRule[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<{
@@ -91,7 +93,7 @@ const Environment: React.FC<{}> = ({}) => {
   };
   const exSearch = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { subTypes, supportedDialectTypes, level } = filters ?? {};
+    const { subTypes, supportedDialectTypes, level, name = [] } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const params = {
@@ -122,10 +124,28 @@ const Environment: React.FC<{}> = ({}) => {
         value: d,
       })),
     );
-    setRules(rulesets?.contents);
+    if (Array.isArray(name) && name?.length === 1) {
+      setRules(
+        rulesets?.contents?.filter((content) => content?.metadata?.name?.includes(name?.[0])),
+      );
+    } else {
+      setRules(rulesets?.contents);
+    }
     setTableLoading(false);
   };
+  const resetPartialFilterParams = () => {
+    // loadParams.current = null;
+    // setListParams(null);
+  };
   const exReload = async (args: ITableLoadOptions) => {
+    loadParams.current = args;
+    const filters = {
+      ...args?.filters,
+    };
+    setListParams({
+      ...args,
+      filters,
+    });
     if (selectedRecord && selectedRecord.value) {
       const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
       const { subTypes, supportedDialectTypes, level } = filters ?? {};
@@ -179,6 +199,8 @@ const Environment: React.FC<{}> = ({}) => {
       <InnerEnvironment
         {...{
           rules,
+          listParams,
+          resetPartialFilterParams,
           selectedRecord,
           handleInitRules,
           tableLoading,
