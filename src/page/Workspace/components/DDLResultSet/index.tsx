@@ -910,6 +910,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   onClick={() => {
                     modal.changeDataMockerModal(true, {
                       tableName: table?.tableName,
+                      databaseId: session?.database?.databaseId,
                     });
                   }}
                 />
