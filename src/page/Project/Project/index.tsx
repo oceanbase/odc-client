@@ -38,7 +38,7 @@ const Project = () => {
 
   const isProjectDeleted = projectType === 'deleted';
 
-  const appendData = async (currentPage, dataSource, projectType) => {
+  const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
     try {
       const isProjectDeleted = projectType === 'deleted';
@@ -60,19 +60,19 @@ const Project = () => {
     }
   };
 
-  function reload(newProjectType?: string) {
+  function reload(newProjectType?: string, projectSearchName?: string) {
     setCurrentPage(0);
     setDataSource([]);
-    appendData(0, [], newProjectType || projectType);
+    appendData(0, [], newProjectType || projectType, projectSearchName);
   }
 
   useEffect(() => {
-    appendData(currentPage, dataSource, projectType);
+    appendData(currentPage, dataSource, projectType, projectSearchName);
   }, []);
 
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
-      appendData(currentPage, dataSource, projectType);
+      appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
 
@@ -103,7 +103,7 @@ const Project = () => {
               <Search
                 onSearch={(v) => {
                   setProjectSearchName(v);
-                  reload();
+                  reload(null, v);
                 }}
                 searchTypes={[
                   {
