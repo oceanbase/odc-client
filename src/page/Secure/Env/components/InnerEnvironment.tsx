@@ -166,15 +166,17 @@ const getColumns: (columnsFunction: {
           content = '-';
         } else if (keys.length === 1) {
           const [pm] = propertyMetadatas;
-          if (Array.isArray(properties[pm.name])) {
+          if (Array.isArray(properties?.[pm?.name])) {
             content =
-              properties[pm.name].length > 0 ? properties[pm.name].join(',').toString() : '-';
+              properties?.[pm?.name]?.length > 0
+                ? properties?.[pm?.name]?.join(',').toString()
+                : '-';
           } else {
-            content = content = properties?.[pm.name]?.toString() || '-';
+            content = properties?.[pm?.name]?.toString() || '-';
           }
         } else {
           content = propertyMetadatas
-            .map((pm) => `${pm.displayName}: ${properties[pm.name]}`)
+            .map((pm) => `${pm?.displayName}: ${properties?.[pm?.name]}`)
             .join(',');
         }
         return <TooltipContent content={content} />;
