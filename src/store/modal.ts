@@ -19,6 +19,7 @@ interface ConnectionData {
 
 interface DataMockerData {
   tableName?: string;
+  databaseId?: number;
 }
 
 interface AsyncData {

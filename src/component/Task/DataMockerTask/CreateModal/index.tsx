@@ -45,7 +45,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
     return (
       <Drawer
-        visible={modalStore.dataMockerVisible}
+        open={modalStore.dataMockerVisible}
         onClose={closeWithConfirm}
         destroyOnClose
         width={720}
@@ -139,6 +139,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       >
         <DataMockerForm
           tableName={modalStore.dataMockerData?.tableName}
+          dbId={modalStore.dataMockerData?.databaseId}
           projectId={projectId}
           onDbModeChange={handleDbModeChange}
           ref={formRef}

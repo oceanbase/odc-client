@@ -7,6 +7,7 @@ interface IProps {
   label?: string;
   name?: string;
   projectId?: number;
+  onChange?: (v: number) => void;
 }
 
 const { Text } = Typography;
@@ -16,6 +17,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     label = formatMessage({ id: 'odc.component.DatabaseSelect.Database' }), //数据库
     name = 'databaseId',
     projectId,
+    onChange,
   } = props;
   const [database, setDatabase] = useState([]);
   const [project, setProject] = useState(null);
@@ -42,6 +44,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const handleDatabaseChange = (value) => {
     const project = database?.find((item) => item.id === value)?.project;
     setProject(project);
+    onChange?.(value);
   };
 
   useEffect(() => {

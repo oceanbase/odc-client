@@ -150,6 +150,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         const tableName = (node.data as ITableModel)?.info?.tableName;
         modalStore.changeDataMockerModal(true, {
           tableName,
+          databaseId: session?.database?.databaseId,
         });
       },
     },
