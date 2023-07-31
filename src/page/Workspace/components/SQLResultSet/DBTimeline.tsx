@@ -28,7 +28,7 @@ export default function DBTimeline({ row }: IProps) {
       key: 'ODC Rewrite SQL',
     },
     {
-      title: 'SQL 预检查',
+      title: formatMessage({ id: 'odc.components.SQLResultSet.DBTimeline.SqlPrecheck' }), //SQL 预检查
       key: 'Sql intercept pre-check',
     },
     {
@@ -63,7 +63,7 @@ export default function DBTimeline({ row }: IProps) {
       key: 'Init warning message',
     },
     {
-      title: 'SQL 后置检查',
+      title: formatMessage({ id: 'odc.components.SQLResultSet.DBTimeline.SqlPostCheck' }), //SQL 后置检查
       key: 'Sql intercept after-check',
     },
   ];

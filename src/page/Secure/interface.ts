@@ -14,6 +14,6 @@ export enum RiskLevelEnum {
 
 export const RiskLevelTextMap = {
   [RiskLevelEnum.DEFAULT]: formatMessage({ id: 'odc.page.Secure.interface.NoNeedToImprove' }), //无需改进
-  [RiskLevelEnum.SUGGEST]: '需要审批',
+  [RiskLevelEnum.SUGGEST]: formatMessage({ id: 'odc.page.Secure.interface.ApprovalRequired' }), //需要审批
   [RiskLevelEnum.MUST]: formatMessage({ id: 'odc.page.Secure.interface.MustBeImproved' }), //必须改进
 };

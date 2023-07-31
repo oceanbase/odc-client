@@ -58,7 +58,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
 
           <span className={styles.desc}>
             <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
-              变量可在归档配置的过滤条件中引用 (可选)
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn.1',
+                }) /*变量可在归档配置的过滤条件中引用 (可选)*/
+              }
             </HelpDoc>
           </span>
         </Space>
@@ -148,12 +152,20 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               </Form.Item>
                               {ENABLE_PATTERN_OPERATOR && (
                                 <>
-                                  <Tooltip title="添加时间运算">
+                                  <Tooltip
+                                    title={formatMessage({
+                                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddTimeOperation',
+                                    })} /*添加时间运算*/
+                                  >
                                     <Button type="text" disabled={disabledAdd}>
                                       <PlusOutlined onClick={() => _add()} />
                                     </Button>
                                   </Tooltip>
-                                  <Tooltip title="删除时间运算">
+                                  <Tooltip
+                                    title={formatMessage({
+                                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteTimeOperation',
+                                    })} /*删除时间运算*/
+                                  >
                                     <Button type="text">
                                       <MinusOutlined
                                         onClick={() => {
@@ -171,7 +183,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
                     }}
                   </Form.List>
                   {fields?.length > 1 && (
-                    <Tooltip title="删除变量">
+                    <Tooltip
+                      title={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
+                      })} /*删除变量*/
+                    >
                       <DeleteOutlined onClick={() => remove(name)} />
                     </Tooltip>
                   )}

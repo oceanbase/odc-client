@@ -49,7 +49,9 @@ const Detail: React.FC<{
           }
         >
           {
-            enabled ? '启用' : formatMessage({ id: 'odc.component.DetailContent.Disable' }) //停用
+            enabled
+              ? formatMessage({ id: 'odc.component.DetailContent.Enable.1' }) //启用
+              : formatMessage({ id: 'odc.component.DetailContent.Disable' }) //停用
           }
         </Descriptions.Item>
         <Descriptions.Item>
@@ -101,6 +103,7 @@ const Detail: React.FC<{
             </Space>
           </Descriptions.Item>
         }
+
         <Descriptions.Item
           label={formatMessage({ id: 'odc.component.DetailContent.Remarks' })} /*备注*/
         >

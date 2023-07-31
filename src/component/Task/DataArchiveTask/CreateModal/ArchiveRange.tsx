@@ -64,8 +64,20 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   <div style={{ width: '460px' }}>
                     <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
                       <Space>
-                        <span>过滤条件</span>
-                        <Text type="secondary">(可选)</Text>
+                        <span>
+                          {
+                            formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
+                            }) /*过滤条件*/
+                          }
+                        </span>
+                        <Text type="secondary">
+                          {
+                            formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                            }) /*(可选)*/
+                          }
+                        </Text>
                       </Space>
                     </HelpDoc>
                   </div>

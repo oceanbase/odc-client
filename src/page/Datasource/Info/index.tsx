@@ -104,9 +104,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               setSearchValue(v);
               reload(v);
             }}
-            placeholder="搜索数据库"
+            placeholder={formatMessage({ id: 'odc.Datasource.Info.SearchDatabase' })} /*搜索数据库*/
             style={{ width: 200 }}
           />
+
           <Reload onClick={() => reload()} />
         </Space>
       }

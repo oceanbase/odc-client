@@ -3,6 +3,7 @@ import { ISqlExecuteResultStatus, type ISqlExecuteResult } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
+import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { Modal } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
@@ -165,7 +166,7 @@ export default async function executeSQL(
     const isBan = violatedRules?.find((rule) => rule.level === 2);
     if (isBan) {
       Modal.error({
-        title: '该操作已被以下规则拦截',
+        title: formatMessage({ id: 'odc.network.sql.executeSQL.ThisOperationHasBeenBlocked' }), //该操作已被以下规则拦截
         content: <RuleResult data={violatedRules} />,
       });
     }

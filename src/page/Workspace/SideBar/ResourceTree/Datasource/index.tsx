@@ -122,7 +122,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
                         menu={{
                           items: [
                             {
-                              label: '编辑',
+                              label: formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' }), //编辑
                               key: 'edit',
                               onClick: (e) => {
                                 e.domEvent?.stopPropagation();
@@ -130,17 +130,26 @@ export default forwardRef(function DatasourceTree(props, ref) {
                               },
                             },
                             {
-                              label: '删除',
+                              label: formatMessage({ id: 'odc.ResourceTree.Datasource.Delete' }), //删除
                               key: 'delete',
                               onClick: (e) => {
                                 e.domEvent?.stopPropagation();
                                 const name = node.title;
                                 Modal.confirm({
-                                  title: `确认删除数据源 ${name}?`,
+                                  title: formatMessage(
+                                    {
+                                      id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
+                                    },
+                                    { name: name },
+                                  ), //`确认删除数据源 ${name}?`
                                   async onOk() {
                                     const isSuccess = await deleteConnection(node.key as any);
                                     if (isSuccess) {
-                                      message.success('删除成功');
+                                      message.success(
+                                        formatMessage({
+                                          id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
+                                        }), //删除成功
+                                      );
                                       if (selectKeys.includes(toInteger(node.key))) {
                                         setSelectKeys([]);
                                       }

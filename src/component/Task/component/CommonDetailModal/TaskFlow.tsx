@@ -461,7 +461,9 @@ const TaskFlow: React.FC<IProps> = (props) => {
                             /*可处理人*/
                           >
                             {externalFlowInstanceUrl ? (
-                              '外部审批'
+                              formatMessage({
+                                id: 'odc.component.CommonDetailModal.TaskFlow.ExternalApproval',
+                              }) //外部审批
                             ) : (
                               <MultiLineOverflowText
                                 className={styles.approverWrapper}

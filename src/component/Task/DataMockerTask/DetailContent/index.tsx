@@ -115,7 +115,11 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
               // 清除记录
               result?.clearCount,
             ],
-            ['描述', task?.description || '-'],
+
+            [
+              formatMessage({ id: 'odc.DataMockerTask.DetailContent.Description' }), //描述
+              task?.description || '-',
+            ],
           ],
         };
 

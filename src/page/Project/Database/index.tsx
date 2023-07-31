@@ -87,9 +87,12 @@ const Database: React.FC<IProps> = ({ id }) => {
               setSearchValue(v);
               reload(v);
             }}
-            placeholder="搜索数据库"
+            placeholder={formatMessage({
+              id: 'odc.Project.Database.SearchDatabase',
+            })} /*搜索数据库*/
             style={{ width: 200 }}
           />
+
           <FilterIcon onClick={() => reload()}>
             <Reload />
           </FilterIcon>

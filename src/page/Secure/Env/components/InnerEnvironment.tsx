@@ -200,10 +200,11 @@ const getColumns: (columnsFunction: {
           value: RiskLevelEnum.MUST,
         },
       ],
+
       render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
-      title: '是否启用',
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.WhetherToEnable' }), //是否启用
       dataIndex: 'status',
       key: 'status',
       render: (_, record, index) => {
@@ -372,6 +373,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
             tab={formatMessage({ id: 'odc.Env.components.InnerEnvironment.SqlCheckSpecification' })}
             /*SQL 检查规范*/ key={RuleType.SQL_CHECK}
           />
+
           <Tabs.TabPane
             tab={formatMessage({
               id: 'odc.Env.components.InnerEnvironment.SqlWindowSpecification',

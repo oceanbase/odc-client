@@ -345,6 +345,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.SourceDatabase' })}
             /*源端数据库*/ projectId={projectId}
           />
+
           <DatabaseSelect
             label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.TargetDatabase' })}
             /*目标数据库*/ name="targetDatabase"
@@ -404,7 +405,11 @@ const CreateModal: React.FC<IProps> = (props) => {
             const triggerStrategy = getFieldValue('triggerStrategy') || [];
             if (triggerStrategy === TaskExecStrategy.START_AT) {
               return (
-                <Form.Item name="startAt" label="执行时间" required>
+                <Form.Item
+                  name="startAt"
+                  label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ExecutionTime' })}
+                  /*执行时间*/ required
+                >
                   <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
                 </Form.Item>
               );

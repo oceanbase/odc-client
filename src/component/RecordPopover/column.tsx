@@ -53,11 +53,18 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: '数据源',
+      title: formatMessage({ id: 'odc.component.RecordPopover.column.DataSource' }), //数据源
       ellipsis: true,
       key: 'connectionName',
       filterDropdown: (props) => {
-        return <SearchFilter {...props} placeholder={'请输入所属数据源'} />;
+        return (
+          <SearchFilter
+            {...props}
+            placeholder={
+              formatMessage({ id: 'odc.component.RecordPopover.column.EnterADataSource' }) //请输入所属数据源
+            }
+          />
+        );
       },
       filterIcon: (filtered) => (
         <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
