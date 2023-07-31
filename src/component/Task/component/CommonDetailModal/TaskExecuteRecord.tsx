@@ -1,5 +1,4 @@
 import DisplayTable from '@/component/DisplayTable';
-import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import StatusLabel, { subTaskStatus } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import { IAsyncTaskParams, SubTaskType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
@@ -52,10 +51,9 @@ const getConnectionColumns = (params: {
   taskType: TaskType;
   taskId: number;
   onReloadList: () => void;
-  onApprovalVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
 }) => {
-  const { taskType, taskId, onReloadList, onApprovalVisible, onDetailVisible } = params;
+  const { taskType, taskId, onReloadList, onDetailVisible } = params;
   const jobFilter = getJobFilter(taskType);
   const isSqlPlan = taskType === TaskType.SQL_PLAN;
   return [
@@ -125,7 +123,6 @@ const getConnectionColumns = (params: {
             record={record}
             showRollback={record?.jobGroup === SubTaskType.DATA_ARCHIVE}
             onReloadList={onReloadList}
-            onApprovalVisible={onApprovalVisible}
             onDetailVisible={onDetailVisible}
           />
         );
@@ -144,8 +141,6 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const { task, subTasks, onReload } = props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
-  const [approvalVisible, setApprovalVisible] = useState(false);
-  const [approvalStatus, setApprovalStatus] = useState(false);
   const taskId = task?.id;
 
   const handleDetailVisible = (
@@ -154,16 +149,6 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   ) => {
     setDetailId(task?.id);
     setDetailVisible(visible);
-  };
-
-  const handleApprovalVisible = (
-    task: TaskRecord<TaskRecordParameters>,
-    status: boolean,
-    visible: boolean = false,
-  ) => {
-    setDetailId(task?.id);
-    setApprovalVisible(visible);
-    setApprovalStatus(status);
   };
 
   return (
@@ -175,7 +160,6 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
           taskType: task?.type,
           taskId,
           onReloadList: onReload,
-          onApprovalVisible: handleApprovalVisible,
           onDetailVisible: handleDetailVisible,
         })}
         dataSource={subTasks}
@@ -187,19 +171,8 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         type={TaskType.ASYNC}
         detailId={detailId}
         visible={detailVisible}
-        onApprovalVisible={handleApprovalVisible}
         onDetailVisible={handleDetailVisible}
         onReloadList={onReload}
-      />
-
-      <ApprovalModal
-        type={TaskType.ASYNC}
-        id={detailId}
-        visible={approvalVisible}
-        approvalStatus={approvalStatus}
-        onCancel={() => {
-          setApprovalVisible(false);
-        }}
       />
     </>
   );

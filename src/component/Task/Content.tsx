@@ -15,14 +15,13 @@ import type { Moment } from 'moment';
 import React from 'react';
 import AlterDDLTaskCreateModal from './AlterDdlTask';
 import AsyncTaskCreateModal from './AsyncTask';
-import ApprovalModal from './component/ApprovalModal';
 import TaskTable from './component/TaskTable';
 import DataArchiveTaskCreateModal from './DataArchiveTask';
 import DataClearTaskCreateModal from './DataClearTask';
 import DataMockerTaskCreateModal from './DataMockerTask';
 import DetailModal from './DetailModal';
 import ExportTaskCreateModal from './ExportTask';
-import { isCycleTask, isCycleTaskPage } from './helper';
+import { isCycleTaskPage } from './helper';
 import ImportTaskCreateModal from './ImportTask';
 import PartitionTaskCreateModal from './PartitionTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
@@ -42,8 +41,6 @@ interface IState {
   detailId: number;
   detailType: TaskType;
   detailVisible: boolean;
-  approvalVisible: boolean;
-  approvalStatus: boolean;
   partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
 }
@@ -57,8 +54,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailId: props.taskStore?.defaultOpenTaskId,
       detailType: props.taskStore?.defauleOpenTaskType,
       detailVisible: !!props.taskStore?.defaultOpenTaskId,
-      approvalVisible: false,
-      approvalStatus: false,
       partitionPlan: null,
       status: null,
     };
@@ -184,21 +179,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     this.tableRef.current.reload();
   };
 
-  private handleApprovalVisible = (
-    task: TaskRecord<TaskRecordParameters>,
-    approvalStatus: boolean,
-    visible: boolean = false,
-  ) => {
-    const { id, type, status } = task ?? {};
-    this.setState({
-      detailId: isCycleTask(type) ? task?.approveInstanceId : id,
-      detailType: type,
-      approvalVisible: visible,
-      approvalStatus,
-      status,
-    });
-  };
-
   private handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     visible: boolean = false,
@@ -262,22 +242,13 @@ class TaskManaerContent extends React.Component<IProps, IState> {
 
   render() {
     const { projectId } = this.props;
-    const {
-      detailId,
-      detailType,
-      detailVisible,
-      approvalVisible,
-      approvalStatus,
-      partitionPlan,
-      status,
-    } = this.state;
+    const { detailId, detailType, detailVisible, partitionPlan } = this.state;
     return (
       <>
         <div className={styles.content}>
           <TaskTable
             tableRef={this.tableRef}
             getTaskList={this.loadList}
-            onApprovalVisible={this.handleApprovalVisible}
             onDetailVisible={this.handleDetailVisible}
             onReloadList={this.reloadList}
             onMenuClick={this.handleMenuClick}
@@ -289,23 +260,8 @@ class TaskManaerContent extends React.Component<IProps, IState> {
           visible={detailVisible}
           partitionPlan={partitionPlan}
           onPartitionPlanChange={this.handlePartitionPlanChange}
-          onApprovalVisible={this.handleApprovalVisible}
           onDetailVisible={this.handleDetailVisible}
           onReloadList={this.reloadList}
-        />
-
-        <ApprovalModal
-          type={detailType}
-          id={detailId}
-          visible={approvalVisible}
-          status={status}
-          approvalStatus={approvalStatus}
-          partitionPlan={partitionPlan}
-          onCancel={() => {
-            this.setState({
-              approvalVisible: false,
-            });
-          }}
         />
         <AsyncTaskCreateModal projectId={projectId} />
         <DataMockerTaskCreateModal projectId={projectId} />

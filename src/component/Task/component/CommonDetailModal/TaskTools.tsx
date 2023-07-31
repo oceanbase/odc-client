@@ -4,14 +4,7 @@ import {
   stopDataArchiveSubTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
-import {
-  ICycleTaskRecord,
-  ITaskResult,
-  SubTaskStatus,
-  TaskDetail,
-  TaskRecord,
-  TaskRecordParameters,
-} from '@/d.ts';
+import { ITaskResult, SubTaskStatus, TaskDetail, TaskRecord, TaskRecordParameters } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
@@ -34,11 +27,6 @@ interface IProps {
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
   onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
 }

@@ -33,6 +33,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import TaskTools from './component/ActionBar';
+import ApprovalModal from './component/ApprovalModal';
 import { DataArchiveTaskContent } from './DataArchiveTask';
 import { DataClearTaskContent } from './DataClearTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
@@ -48,11 +49,6 @@ interface IProps {
   visible: boolean;
   partitionPlan?: IConnectionPartitionPlan;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: TaskDetail<TaskRecordParameters>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
   onPartitionPlanChange?: (value: IConnectionPartitionPlan) => void;
 }
@@ -101,6 +97,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [logType, setLogType] = useState<CommonTaskLogType>(CommonTaskLogType.ALL);
   const [loading, setLoading] = useState(false);
   const [disabledSubmit, setDisabledSubmit] = useState(true);
+  const [approvalVisible, setApprovalVisible] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState(false);
   const hasFlow = !!task?.nodeList?.find(
     (node) =>
       node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.SQL_CHECK,
@@ -334,6 +332,19 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     props.onDetailVisible(null, false);
   };
 
+  const handleReloadData = () => {
+    if (isCycleTask(type) || type === TaskType.ALTER_SCHEDULE) {
+      getCycleTask();
+    } else {
+      getTask();
+    }
+  };
+
+  const handleApprovalVisible = (approvalStatus: boolean = false, visible: boolean = false) => {
+    setApprovalVisible(visible);
+    setApprovalStatus(approvalStatus);
+  };
+
   const modalProps = {
     result,
     log,
@@ -352,7 +363,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         task={task}
         result={result}
         onReloadList={props.onReloadList}
-        onApprovalVisible={props.onApprovalVisible}
+        onReload={handleReloadData}
+        onApprovalVisible={handleApprovalVisible}
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
       />
@@ -360,18 +372,32 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   return (
-    <CommonDetailModal
-      {...modalProps}
-      // @ts-ignore
-      task={task}
-      hasFlow={hasFlow}
-      onClose={onClose}
-      onDetailTypeChange={handleDetailTypeChange}
-      onLogTypeChange={handleLogTypeChange}
-      onReload={loadData}
-      taskContent={taskContent}
-      getItems={getItems}
-    />
+    <>
+      <CommonDetailModal
+        {...modalProps}
+        // @ts-ignore
+        task={task}
+        hasFlow={hasFlow}
+        onClose={onClose}
+        onDetailTypeChange={handleDetailTypeChange}
+        onLogTypeChange={handleLogTypeChange}
+        onReload={loadData}
+        taskContent={taskContent}
+        getItems={getItems}
+      />
+      <ApprovalModal
+        type={type}
+        id={detailId}
+        visible={approvalVisible}
+        status={task?.status}
+        approvalStatus={approvalStatus}
+        partitionPlan={partitionPlan}
+        onReload={handleReloadData}
+        onCancel={() => {
+          handleApprovalVisible(false);
+        }}
+      />
+    </>
   );
 });
 
