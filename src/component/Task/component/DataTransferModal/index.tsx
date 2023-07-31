@@ -1,11 +1,10 @@
 import { downloadTaskFlow } from '@/common/network/task';
-import { RuleContent } from '@/component/MaskPolicySelecter';
 import { TaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { Alert, Col, Divider, Popover, Row, Space, Typography } from 'antd';
+import { Alert, Col, Divider, Row, Space } from 'antd';
 import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
@@ -226,36 +225,6 @@ class TaskContent extends React.Component<any, any> {
           </Row>
           <Row>
             <Col span={12}>{fileEncoding}</Col>
-            <Col span={12}>
-              {!isClient() && (
-                <SimpleTextItem
-                  label={formatMessage({
-                    id: 'odc.component.DataTransferModal.DesensitizationData',
-                  })}
-                  /*脱敏数据*/
-                  content={
-                    maskingPolicyName ? (
-                      <Popover
-                        content={
-                          <RuleContent label={maskingPolicyName} rules={maskingPolicyRules} />
-                        }
-                        placement="bottom"
-                      >
-                        <Typography.Link>{maskingPolicyName}</Typography.Link>
-                      </Popover>
-                    ) : (
-                      formatMessage({
-                        id: 'odc.component.DataTransferModal.NonDesensitization',
-                      })
-                    )
-
-                    //不脱敏
-                  }
-                />
-              )}
-            </Col>
-          </Row>
-          <Row>
             <Col span={12}>
               <SimpleTextItem
                 label={
