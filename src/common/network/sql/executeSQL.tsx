@@ -172,9 +172,7 @@ export default async function executeSQL(
     !isBan &&
       modal.changeCreateAsyncTaskModal(true, {
         sql: serverParams.sql,
-        task: {
-          databaseId: session?.database?.databaseId,
-        },
+        databaseId: session?.database?.databaseId,
         rules: violatedRules,
       });
 

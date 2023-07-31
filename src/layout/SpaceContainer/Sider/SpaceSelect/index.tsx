@@ -1,14 +1,16 @@
+import { IOrganization } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
 import PersonalSvg from '@/svgr/personal_space.svg';
 import GroupSvg from '@/svgr/project_space.svg';
-import Icon, { CheckOutlined, SwapOutlined } from '@ant-design/icons';
-import { Select, Space } from 'antd';
+import Icon, { CheckOutlined, ExclamationCircleFilled, SwapOutlined } from '@ant-design/icons';
+import { Checkbox, Modal, Select, Space, Typography } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { history } from 'umi';
 import styles from './index.less';
 
+const ORGANIZATION_TIP_VSIBLE_KEY = 'odc_organization_tip_visible';
 interface ISpaceSelect {
   collapsed: boolean;
   userStore?: UserStore;
@@ -16,15 +18,44 @@ interface ISpaceSelect {
 const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
   const { collapsed, userStore } = props;
 
-  const handleChange = async (oriId: number) => {
-    const ori = userStore?.organizations?.find((item) => item.id == oriId);
-    const isSuccess = await userStore?.switchCurrentOrganization(oriId);
+  const handleOk = async (ori: IOrganization) => {
+    const isSuccess = await userStore?.switchCurrentOrganization(ori.id);
     if (!isSuccess) {
       return;
     }
-
     if (ori?.type === SpaceType.SYNERGY) {
       history.push('/project');
+    }
+  };
+
+  const handleChange = async (oriId: number) => {
+    const ori = userStore?.organizations?.find((item) => item.id == oriId);
+    const tipVisible = localStorage.getItem(ORGANIZATION_TIP_VSIBLE_KEY);
+    if (tipVisible !== 'no') {
+      Modal.confirm({
+        title: `确认要切换为${ori.displayName}吗`,
+        icon: <ExclamationCircleFilled />,
+        content: (
+          <>
+            <Typography.Paragraph>{ori.description}</Typography.Paragraph>
+            <Checkbox
+              onChange={(e) => {
+                const value = e.target.checked ? 'no' : 'yes';
+                localStorage.setItem(ORGANIZATION_TIP_VSIBLE_KEY, value);
+              }}
+            >
+              不再提示
+            </Checkbox>
+          </>
+        ),
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          handleOk(ori);
+        },
+      });
+    } else {
+      handleOk(ori);
     }
   };
 

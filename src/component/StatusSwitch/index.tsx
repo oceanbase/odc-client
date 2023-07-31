@@ -2,6 +2,7 @@ import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Popconfirm, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
+import styles from './index.less';
 
 const StatusSwitch: React.FC<{
   checked: boolean;
@@ -52,6 +53,7 @@ const StatusSwitch: React.FC<{
 
   return (
     <Popconfirm
+      overlayClassName={styles.popconfirm}
       placement="topRight"
       open={visible}
       overlayStyle={{

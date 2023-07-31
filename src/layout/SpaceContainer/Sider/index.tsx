@@ -1,7 +1,7 @@
 import { AccessResourceTypePermission, Acess, createPermission } from '@/component/Acess';
-import MessageCount from '@/component/Task/component/MessageCount';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
+import { TaskStore } from '@/store/task';
 import LinkOutlined from '@/svgr/icon_connection.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
 import { isClient } from '@/util/env';
@@ -16,9 +16,10 @@ import Icon, {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Divider, Space } from 'antd';
+import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'umi';
 import HelpItem from './HelpItem';
 import styles from './index.less';
@@ -27,13 +28,23 @@ import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
 
-interface IProps {}
+interface IProps {
+  taskStore?: TaskStore;
+}
 
-const Sider: React.FC<IProps> = function () {
+const Sider: React.FC<IProps> = function (props) {
+  const { taskStore } = props;
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const selected = location?.pathname?.split('/')[1];
   const mentItemGap = collapsed ? 12 : 12;
+  const _count = taskStore.pendingApprovalInstanceIds?.length ?? 0;
+  const count = !isClient() ? _count : 0;
+
+  useEffect(() => {
+    props.taskStore?.getTaskMetaInfo();
+  }, []);
+
   return (
     <div
       className={classNames(styles.sider, {
@@ -64,6 +75,26 @@ const Sider: React.FC<IProps> = function () {
               label={formatMessage({ id: 'odc.SpaceContainer.Sider.Project' })} /*项目*/
             />
           </Link>
+          <Link to={`/${IPageType.Task}`}>
+            <MenuItem
+              key={IPageType.Task}
+              selected={selected === IPageType.Task}
+              icon={TaskSvg}
+              collapsed={collapsed}
+              showDot={!!count}
+              label={
+                collapsed ? (
+                  formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/
+                ) : (
+                  <Badge showZero={false} count={count} overflowCount={100} offset={[-8, 5]}>
+                    <div style={{ width: '100px' }}>
+                      {formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/}
+                    </div>
+                  </Badge>
+                )
+              }
+            />
+          </Link>
           <Link to={`/${IPageType.Datasource}`}>
             <MenuItem
               key={IPageType.Datasource}
@@ -71,21 +102,6 @@ const Sider: React.FC<IProps> = function () {
               icon={LinkOutlined}
               collapsed={collapsed}
               label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
-            />
-          </Link>
-          <Link to={`/${IPageType.Task}`}>
-            <MenuItem
-              key={IPageType.Task}
-              selected={selected === IPageType.Task}
-              icon={TaskSvg}
-              collapsed={collapsed}
-              label={
-                <MessageCount>
-                  <div style={{ width: '100px' }}>
-                    {formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/}
-                  </div>
-                </MessageCount>
-              }
             />
           </Link>
           <AccessResourceTypePermission
@@ -162,4 +178,4 @@ const Sider: React.FC<IProps> = function () {
   );
 };
 
-export default Sider;
+export default inject('taskStore')(observer(Sider));
