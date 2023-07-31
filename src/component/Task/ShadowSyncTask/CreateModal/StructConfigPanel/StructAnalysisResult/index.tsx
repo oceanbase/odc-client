@@ -1,7 +1,7 @@
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
-import { SchemaComparingResult, ConnectionMode } from '@/d.ts';
+import { ConnectionMode, SchemaComparingResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Tabs } from 'antd';
 import { useMemo, useRef, useState } from 'react';
@@ -159,7 +159,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
               position: 'relative',
             }}
           >
-            <MonacoEditor value={data?.allDDL} readOnly language={connectionMode} />
+            <MonacoEditor defaultValue={data?.allDDL} readOnly language={connectionMode} />
           </div>
         </Tabs.TabPane>
       </Tabs>
