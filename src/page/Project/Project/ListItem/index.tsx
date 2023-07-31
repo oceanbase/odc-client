@@ -31,7 +31,7 @@ export default forwardRef(function ListItem(
       <div className={classNames(styles.block, styles.users)}>
         <Space>
           <Icon style={{ color: 'var(--icon-color-disable)' }} component={UserSvg} />
-          {data.members?.find((item) => item.role === ProjectRole.OWNER)?.name || '-'}
+          {data.members?.filter((item) => item.role === ProjectRole.OWNER)?.join(', ') || '-'}
         </Space>
       </div>
     </div>
