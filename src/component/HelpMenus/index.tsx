@@ -6,6 +6,7 @@ import React from 'react';
 
 import appConfig from '@/constant/appConfig';
 import modal from '@/store/modal';
+import { isClient } from '@/util/env';
 import type { DropDownProps } from 'antd/lib/dropdown';
 import VersionModal from '../VersionModal';
 import ModalHelpAbout from './components/ModalHelpAbout';
@@ -30,7 +31,7 @@ export default class HelpMenus extends React.Component<
   };
 
   HELP_MENUS = [
-    {
+    !isClient() && {
       title: formatMessage({
         id: 'odc.component.HelpMenus.ProductFunctionIntroduction',
       }), // 产品功能介绍
@@ -73,7 +74,7 @@ export default class HelpMenus extends React.Component<
         });
       },
     },
-  ];
+  ].filter(Boolean);
 
   public getHelpMenus = () => {
     return (

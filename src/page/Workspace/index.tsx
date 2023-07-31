@@ -1,10 +1,8 @@
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
-import openNewVersionTip from '@/component/VersionModal/NewVersion';
 import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import appConfig from '@/constant/appConfig';
 import type { IPage } from '@/d.ts';
-import localLoginHistoy from '@/service/localLoginHistoy';
 import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -208,10 +206,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       await pageStore.initStore();
-      if (localLoginHistoy.isNewVersion()) {
-        localLoginHistoy.updateVersion();
-        settingStore.enableVersionTip && openNewVersionTip();
-      }
+      // if (localLoginHistoy.isNewVersion()) {
+      //   localLoginHistoy.updateVersion();
+      //   settingStore.enableVersionTip && openNewVersionTip();
+      // }
       setIsReady(true);
       /**
        * TODO

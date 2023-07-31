@@ -7,6 +7,7 @@ import { Menu } from 'antd';
 import React, { useState } from 'react';
 
 import appConfig from '@/constant/appConfig';
+import { isClient } from '@/util/env';
 import DropMenu from '../DropMenu';
 
 interface IProps {}
@@ -16,7 +17,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
   const [showModalAbout, setShowModalAbout] = useState(false);
 
   const HELP_MENUS = [
-    {
+    !isClient() && {
       title: formatMessage({ id: 'odc.Sider.HelpItem.Features' }), //功能介绍
       key: 'versionInfo',
       action() {
@@ -50,7 +51,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
         setShowModalFeedback(true);
       },
     },
-  ];
+  ].filter(Boolean);
 
   const getHelpMenus = () => {
     return (

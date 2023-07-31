@@ -3,7 +3,7 @@ import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
-import { UserStore } from '@/store/login';
+import login, { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Col, Form, Modal, Radio, Row, Select, Tag } from 'antd';
@@ -77,7 +77,7 @@ export default inject('userStore')(
           return;
         }
         if (context?.from === 'datasource') {
-          fetchDatasource();
+          fetchDatasource(login.isPrivateSpace());
           fetchDatabase(null, sessionDatabase?.dataSource?.id, 1, 9999);
         } else {
           fetchProjects(null, 1, 9999);
@@ -151,7 +151,7 @@ export default inject('userStore')(
                     form.getFieldValue('project') &&
                       fetchDatabase(form.getFieldValue('project'), null, 1, 9999);
                   } else {
-                    fetchDatasource();
+                    fetchDatasource(login.isPrivateSpace());
                     form.getFieldValue('datasource') &&
                       fetchDatabase(null, form.getFieldValue('datasource'), 1, 9999);
                   }
