@@ -153,7 +153,7 @@ export default async function executeSQL(
   });
   const taskInfo: ISQLExecuteTask = res?.data;
   const rootViolatedRules = taskInfo?.violatedRules || [];
-  const violatedRules = taskInfo.sqls?.reduce((prev, current) => {
+  const violatedRules = taskInfo?.sqls?.reduce((prev, current) => {
     return prev.concat(current?.violatedRules || []);
   }, rootViolatedRules);
   if (violatedRules?.length) {
