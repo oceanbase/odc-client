@@ -1,9 +1,11 @@
+import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration } from '@/d.ts';
 import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
 import { Button, Checkbox, Descriptions, Drawer, Form, Radio } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
+import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import EditPropertyComponentMap from './EditPropertyComponent';
 import styles from './index.less';
 interface EditRuleDrawerProps {
@@ -200,26 +202,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             ]}
           >
             <Radio.Group>
-              <Radio value={0}>
-                {
-                  formatMessage({
-                    id: 'odc.Env.components.EditRuleDrawer.NoNeedToImprove',
-                  }) /*无需改进*/
-                }
+              <Radio value={RiskLevelEnum.DEFAULT}>
+                <HelpDoc leftText title="允许执行">
+                  {RiskLevelTextMap[RiskLevelEnum.DEFAULT]}
+                </HelpDoc>
               </Radio>
-              <Radio value={1}>
-                {
-                  formatMessage({
-                    id: 'odc.Env.components.EditRuleDrawer.RecommendedImprovement',
-                  }) /*建议改进*/
-                }
+              <Radio value={RiskLevelEnum.SUGGEST}>
+                <HelpDoc leftText title="执行之前需要审批">
+                  {RiskLevelTextMap[RiskLevelEnum.SUGGEST]}
+                </HelpDoc>
               </Radio>
-              <Radio value={2}>
-                {
-                  formatMessage({
-                    id: 'odc.Env.components.EditRuleDrawer.MustBeImproved',
-                  }) /*必须改进*/
-                }
+              <Radio value={RiskLevelEnum.MUST}>
+                <HelpDoc leftText title="禁止执行，无法发起审批">
+                  {RiskLevelTextMap[RiskLevelEnum.MUST]}
+                </HelpDoc>
               </Radio>
             </Radio.Group>
           </Form.Item>
