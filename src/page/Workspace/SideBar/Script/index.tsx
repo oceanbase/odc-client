@@ -47,6 +47,7 @@ const Script: React.FC<{}> = function () {
           headers={{
             'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
             'Accept-Language': getLocale(),
+            currentOrganizationId: login.organizationId?.toString(),
           }}
           action={window.ODCApiHost + `/api/v2/script/scripts/batchUpload`}
           accept=".sql, .pl, .txt"
