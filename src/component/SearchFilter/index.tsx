@@ -6,7 +6,7 @@ import styles from './index.less';
 
 interface ISearchFilterProps extends FilterDropdownProps {
   placeholder: any;
-  filters: any;
+  filters?: any;
   selectedKeys: any;
 }
 

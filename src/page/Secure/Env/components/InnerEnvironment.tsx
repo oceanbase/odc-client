@@ -11,7 +11,7 @@ import {
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
 import { formatMessage } from '@/util/intl';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Descriptions, message, Space, Tabs, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
@@ -19,6 +19,7 @@ import SecureTable from '../../components/SecureTable';
 import EditRuleDrawer from './EditRuleDrawer';
 
 import { Acess, createPermission } from '@/component/Acess';
+import SearchFilter from '@/component/SearchFilter';
 import RiskLevelLabel from '../../components/RiskLevelLabel';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import styles from './index.less';
@@ -48,6 +49,8 @@ interface InnerEnvProps {
   tableLoading: boolean;
   exSearch: (args?: ITableLoadOptions) => Promise<any>;
   exReload: (args?: ITableLoadOptions) => Promise<any>;
+  listParams: any;
+  resetPartialFilterParams: () => void;
   rules: IRule[];
   ruleType: RuleType;
   setRuleType: (value: any) => void;
@@ -59,6 +62,7 @@ interface InnerEnvProps {
 const getColumns: (columnsFunction: {
   selectedRecord: any;
   integrationsIdMap: { [key in string]: string };
+  listParams: any;
   subTypeFilters: { text: string; value: string }[];
   supportedDialectTypeFilters: { text: string; value: string }[];
   handleOpenEditModal: (record: IRule) => void;
@@ -66,18 +70,20 @@ const getColumns: (columnsFunction: {
 }) => ColumnsType<IRule> = ({
   selectedRecord,
   integrationsIdMap = {},
+  listParams,
   subTypeFilters,
   supportedDialectTypeFilters,
   handleOpenEditModal = () => {},
   handleSwtichRuleStatus = () => {},
 }) => {
+  const { filters } = listParams ?? {};
   return [
     {
       title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' }), //规则名称
       width: 218,
       dataIndex: 'name',
       key: 'name',
-      // fixed: 'left',
+      filters: [],
       onCell: () => {
         return {
           style: {
@@ -88,6 +94,23 @@ const getColumns: (columnsFunction: {
           },
         };
       },
+      filterDropdown: (props) => {
+        return (
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.name}
+            placeholder={formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' })} //规则名称
+          />
+        );
+      },
+
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? 'var(--icon-color-focus)' : undefined,
+          }}
+        />
+      ),
       render: (text, record, index) => (
         <div
           style={{
@@ -246,6 +269,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   subTypeFilters,
   supportedDialectTypeFilters,
   rules,
+  listParams,
   handleInitRules,
   ruleType,
   setRuleType,
@@ -328,6 +352,7 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     handleOpenEditModal,
     handleSwtichRuleStatus,
     subTypeFilters,
+    listParams,
     supportedDialectTypeFilters,
   });
   useEffect(() => {
@@ -337,6 +362,9 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
         tableRef.current?.resetPaganition?.();
       }
     }
+    return () => {
+      tableRef.current?.resetFilterAndSort();
+    };
   }, [selectedRecord, ruleType]);
 
   useEffect(() => {
