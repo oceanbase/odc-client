@@ -259,7 +259,6 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private handleRoleEnable = async (data: { role: IManagerRole; enabled: boolean }) => {
-    const { updateRoleById } = this.context;
     const { role, enabled } = data;
     const res = await setRoleEnable({
       id: role.id,
@@ -272,7 +271,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
           ? formatMessage({ id: 'odc.components.RolePage.Enabled' }) // 启用成功
           : formatMessage({ id: 'odc.components.RolePage.Disabled' }), // 停用成功
       );
-      updateRoleById({ ...role, enabled });
+      this.context.loadRoles();
     } else {
       message.error(
         enabled
