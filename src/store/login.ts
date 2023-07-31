@@ -53,6 +53,12 @@ export class UserStore {
     return !!organizations;
   }
 
+  public isPrivateSpace() {
+    return (
+      this.organizations?.find((o) => o.id === this.organizationId)?.type === SpaceType.PRIVATE
+    );
+  }
+
   @action
   public async login(params: {
     username?: string;

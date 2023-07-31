@@ -1,4 +1,3 @@
-import appConfig from '@/constant/appConfig';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Typography } from 'antd';
@@ -13,40 +12,18 @@ function getVersionModalImg(fileName: string) {
 
 const webVersionInfo: VersionMenuType[] = [
   {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.HomePageManagement',
-    }),
-    // 首页管理
+    title: '高效开发',
     content: (
       <div>
+        <Paragraph>ODC 提供了丰富且易用的工具能力，帮助您快速进行数据库开发。</Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.OnTheOdcHomepageYou',
-            })
-            /* 进入 ODC 首页，可以看到连接列表。在个人连接 TAB
-      ，用户可以新建、编辑、删除、登录连接，并可以执行打标签、置顶等操作。在公共连接
-      TAB，可以查看、登录已被授权的连接。 */
-          }
+          ODC 提供了数据库对象管理、数据导入导出、SQL 编辑与执行、PL
+          编译与调试、数据生成、执行分析、数据库运维等工具能力。
         </Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.HistoryOnTheHomePage',
-            })
-            /* 首页的 [历史记录] 保存了最近 48h 的登录记录，用户可通过该入口快速恢复未保存的 SQL
-      窗口内容。 */
-          }
-        </Paragraph>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.TheHomepageNavigationBarProvides',
-            })
-            /* 首页导航栏提供了部分功能的快捷入口，其中鼠标悬停账号下可以看到 [个人设置] 
-      入口，用户可根据自己的开发习惯自定义分隔符、Oracle 或 MySQL
-      的事务提交模式以及查询结果条数限制。 */
-          }
+          同时为了提高您的使用体验，也做了如下功能设计：支持拖拽对象生成 SQL 语句、支持类 EXCEL
+          的结果集编辑交互、在编辑 SQL 时支持语法高亮和 SQL
+          自动补全、支持代码片段的定义与引用以及支持快速生成测试数据等。
         </Paragraph>
       </div>
     ),
@@ -55,23 +32,17 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.ConnectionManagement',
-    }),
-
-    // 连接管理
+    title: '变更风险管控',
     content: (
       <div>
+        <Paragraph>ODC 为生产安全场景提供了完备的解决方案。</Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.GoToTheInternalConnection',
-            })
-            /* 进入连接内部，通过 schema 切换可实现连接内不同 schema 之间的跳转，跳转后可对对应的 schema
-      下的对象进行相关的数据库开发工作。
-      如果在连接内部，希望打开其它连接，可通过鼠标悬停左上角导航栏中的 ODC 图标，选择 
-      [新窗口打开连接] 并发打开多个连接，连接间 session 独立，互不影响。 */
-          }
+          首先数据库地址和账号密码信息由 DBA 录入，并授权给开发者访问，避免账号密码泄漏。
+        </Paragraph>
+        <Paragraph>
+          其次 ODC 提供了完善的数据库开发规范，您可以根据环境差异灵活地定义 SQL 检查规则和 SQL
+          窗口拦截规则。根据不同的风险等级，对您的操作进行建议、上升至 DBA
+          审批或拦截，控制变更风险保障生产系统稳定运行。
         </Paragraph>
       </div>
     ),
@@ -80,30 +51,17 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.BuiltInTools',
-    }),
-    // 内置工具
+    title: '安全合规',
     content: (
       <div>
+        <Paragraph>ODC 提供了数据脱敏和细粒度审计能力保障数据安全和合规。</Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.OdcHasASeriesOf',
-            })
-            /* ODC 内置了一系列开发工具，进入连接内部，鼠标悬停 [工具] 
-      项，可以看到导入、导出、模拟数据等工具。 */
-          }
+          ODC 内置了完善的脱敏算法和灵活的识别规则，可以保证您在 SQL
+          窗口访问、数据出库等场景下敏感数据的安全，满足隐私数据安全合规的诉求。
         </Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.TheImportToolAllowsYou',
-            })
-            /* 通过导入工具可以将通过 ODC 导出的文件、SQL
-      文件等导入到数据库中。通过导出工具可将数据库中的结构和数据导出成 SQL 或 CSV
-      格式。通过模拟数据工具可以快速为指定表生成指定格式的测试数据，极大提升开发效率。 */
-          }
+          同时 ODC 还提供了操作审计和 SQL 审计的能力。您在 ODC
+          上所有的功能操作都会被同步到操作记录中心，此外在 ODC 上发起的所有 SQL 请求也会被记录。
         </Paragraph>
       </div>
     ),
@@ -112,30 +70,18 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.SqlWindow',
-    }),
+    title: '数据生命周期管理',
 
-    /* SQL 窗口 */ content: (
+    content: (
       <div>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.SqlWindowIsTheMain',
-            })
-            /* SQL 窗口是用户进行数据库开发的主要功能模块，内置了一系列编辑辅助工具及快捷功能入口。打开
-      SQL 窗口，用户可编辑和保存 SQL 或 PL
-      语句，在编写过程中会根据语法和语义展示相关提示，已编写内容涉及到关键字部分会高亮展示。同时提供了代码片段功能，用来辅助记忆常用片段，提高编写效率。 */
-          }
+          ODC 提供了数据生命周期管理能力来为您提供数据处理解决方案。ODC
+          的数据处理能力包括数据清理、数据归档和分区计划。
         </Paragraph>
+        <Paragraph>通过数据清理，您可以定期清理掉业务表中的过期数据，实现在线库的瘦身。</Paragraph>
+        <Paragraph>通过数据归档，您可以配置灵活的归档条件，实现冷热数据分离。</Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.InAdditionToTheSql',
-            })
-            /* 除了 SQL 窗口外，ODC 提供了匿名块窗口进行匿名块的编辑、运行和调试。此外 ODC
-      还支持命令行窗口，通过命令行窗口用户可执行 SQL、运行脚本。 */
-          }
+          通过分区计划，您可以按需求定期新增和删除分区，实现 RANGE 分区自动维护。
         </Paragraph>
       </div>
     ),
@@ -144,139 +90,40 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.ResultSetManagement',
-    }),
-    // 结果集管理
+    title: '开放集成',
     content: (
       <div>
+        <Paragraph>ODC 支持单点登录、工单审批集成、SQL 审核集成及数据库堡垒机集成。</Paragraph>
+        <Paragraph>单点登录（SSO）支持 OAuth2、OIDC 协议。</Paragraph>
+        <Paragraph>工单审批支持 BPMS 和自定义审批系统。</Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.ForSqlTheQueryResult',
-            })
-            /* 对于 SQL
-      查询的结果集，支持行模式、列模式查看。对于文本，支持用文本查看器查看，对于大字段，支持用大字段查看器查看。 */
-          }
+          SQL 审核支持您使用企业已有的 SQL 审核平台对 ODC 内执行的 SQL 语句进行审核。
         </Paragraph>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.WhenExportingResultSetsYou',
-            })
-            /* 在对结果集进行导出时，支持选中部分结果集复制成 SQL 语句或 CSV
-      文本。同时支持导出全部结果集成 SQL 、CSV 或 EXCEL 格式。 */
-          }
-        </Paragraph>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.WhenYouSelectAndCopy',
-            })
-            /* 在对结果集进行选择复制时，其交互类似 EXCEL
-      表格的操作交互。支持全选、单列、多列、单行、多行选择，支持冻结指定行数据，同时支持将结果集的内容直接复制粘贴到
-      EXCEL 中。 */
-          }
-        </Paragraph>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.ForASingleTableQuery',
-            })
-            /* 对于单表查询，支持对结果集进行编辑，编辑时可根据数据类型提供组件（数字、字符、日期等）辅助编辑。 */
-          }
-        </Paragraph>
+        <Paragraph>数据库堡垒机集成支持票据的自动登录和数据库账密的自动填写等能力。</Paragraph>
       </div>
     ),
 
     img: 'resultset.jpg',
   },
 
-  appConfig.debug.enable && {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.PlDebugging',
-    }),
-    // PL 调试
+  {
+    title: '协同效率',
     content: (
       <div>
+        <Paragraph>ODC 提供了一系列功能、设计理念来帮助提升您的效率。</Paragraph>
+        <Paragraph>比如您可以通过批量导入的能力避免繁重的手动单条录入。</Paragraph>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.OdcCustomizesPlBasedOn',
-            })
-            /* ODC 根据 OceanBase 内核的调试能力定制了 PL
-      调试模块。调试过程中支持设置、取消断点，提供多种调试模式（批量执行、单步执行、跳入、跳出），并可在结果观察区查看调试过程中各种信息的变化。 */
-          }
+          又比如项目 OWNER 负责管理项目所有数据库和成员、项目 DBA 负责管理项目所有数据库、项目
+          DEVELOPER
+          专注访问项目所有数据库，不需要为协作者配置复杂的权限，只需把协作者加入到指定的项目中即可实现团队协作模式。
         </Paragraph>
-        <Text strong>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.Note',
-            })
-            /* 需要注意: */
-          }
-        </Text>
         <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.ArmVersionObIsNot',
-            })
-            /* 1、不支持调试 arm 版 OB ； */
-          }
+          再比如通过配置自动授权规则，实现了根据访问者是否触发授权条件来自动给访问者授权。
         </Paragraph>
       </div>
     ),
 
     img: 'pldebug.jpg',
-  },
-
-  {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.ControlCollaboration',
-    }), //管控协同
-    content: (
-      <div>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.OdcProvidesTheConsoleFunction',
-            })
-            /* ODC 提供了管控台功能，可根据企业的实际情况配置用户群体的角色和权限(默认内置 system_admin
-      角色及 admin 用户)，并可对 ODC
-      内的连接资源进行单独和批量管理（可通过资源组实现批量管理的能力），从而可以快速便捷地做到整个
-      ODC 平台的权限管控，实现各角色间的高效协作。 */
-          }
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.OdcTheVersionProvidesUnified',
-            }) /*ODC 3.3.0
-          版本开始提供变更统一管控的能力，用户可对公共只读连接数据库变更。该能力包含了变更流程的定义，以及变更流程的发起两部分。管理员用户可定义、调整变更流程，普通用户可根据管理员定义的流程发起变更*/
-          }
-        </Paragraph>
-      </div>
-    ),
-
-    img: 'manager.jpg',
-  },
-
-  {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.OperationRecords',
-    }), //操作记录
-    content: (
-      <div>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.ToEnsureThatUserOperations',
-            }) /*为了保证用户在 ODC 上进行的操作可追溯，ODC 3.3.0
-          版本开始提供了操作记录的能力。该能力包含操作记录查看和操作记录管理两部分。普通用户可根据事件类型、事件操作、所属连接等查找记录、并支持查看操作详情；管理员可查看和导出所有用户的操作记录。*/
-          }
-        </Paragraph>
-      </div>
-    ),
-
-    img: 'record.png',
   },
 ].filter(Boolean);
 

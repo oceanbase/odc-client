@@ -9,6 +9,7 @@ import { message } from 'antd';
 import { action, observable } from 'mobx';
 
 import appConfig from '@/constant/appConfig';
+import { isClient } from '@/util/env';
 import request from '@/util/request';
 import { initTracert } from '@/util/tracert';
 
@@ -199,7 +200,8 @@ export class SettingStore {
     this.enableOBClient = res?.['odc.features.obclient.enabled'] === 'true';
     this.maxResultSetRows = maxResultsetRows === -1 ? Number.MAX_SAFE_INTEGER : maxResultsetRows;
     this.maxSessionCount = maxSessionCount === -1 ? Number.MAX_SAFE_INTEGER : maxSessionCount;
-    this.enableVersionTip = res?.['odc.features.show-new-features.enabled'] === 'true';
+    this.enableVersionTip =
+      !isClient() && res?.['odc.features.show-new-features.enabled'] === 'true';
     this.enablePersonalRecord = res?.['odc.features.personal-audit.enabled'] === 'true';
     this.enableAsyncTask = res?.['odc.features.task.async.enabled'] === 'true';
     this.enableDBImport = res?.['odc.features.task.import.enabled'] === 'true';

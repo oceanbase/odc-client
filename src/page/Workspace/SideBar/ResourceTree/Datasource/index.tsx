@@ -14,12 +14,15 @@ import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import login from '@/store/login';
 import OBSvg from '@/svgr/source_ob.svg';
 import { isClient } from '@/util/env';
 import { toInteger, toNumber } from 'lodash';
 
 export default forwardRef(function DatasourceTree(props, ref) {
-  const { data, loading, run } = useRequest(getDataSourceGroupByProject);
+  const { data, loading, run } = useRequest(getDataSourceGroupByProject, {
+    defaultParams: [login.isPrivateSpace()],
+  });
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [searchKey, setSearchKey] = useState('');
 
