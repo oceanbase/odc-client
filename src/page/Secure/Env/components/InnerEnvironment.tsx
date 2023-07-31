@@ -201,7 +201,7 @@ const getColumns: (columnsFunction: {
       render: (_, record) => <RenderLevel level={record.level} />,
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.Status' }), //状态 // width: 80,
+      title: '是否启用',
       dataIndex: 'status',
       key: 'status',
       render: (_, record, index) => {
