@@ -113,7 +113,7 @@ export function getTaskTypeList(
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
           }),
           //影子表同步
-          enabled: !isClient(),
+          enabled: true,
         },
         {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
