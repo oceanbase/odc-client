@@ -1,7 +1,7 @@
 import { listEnvironments } from '@/common/network/env';
 import { deleteRiskDetectRule } from '@/common/network/riskDetectRule';
 import { Acess, canAcess, createPermission } from '@/component/Acess';
-import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { actionTypes, IManagerResourceType, TaskType } from '@/d.ts';
 import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -15,12 +15,7 @@ import {
   IOperationOptionType,
 } from '../../components/SecureTable/interface';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
-import {
-  InnerRiskDetectRulesProps,
-  SelectItemProps,
-  TaskTypeEnum,
-  TaskTypeTextMap,
-} from '../interface';
+import { InnerRiskDetectRulesProps, SelectItemProps } from '../interface';
 import FormRiskDetectDrawer from './FormRiskDetectDrawer';
 import styles from './index.less';
 import ViewRiskDetectDrawer from './ViewRiskDetectDrawer';
@@ -294,40 +289,40 @@ const getEnvironmentOptions = async () => {
 const getTaskTypeOptions = () => {
   const newTaskTypeOptions = [
     {
-      label: TaskTypeTextMap[TaskTypeEnum.IMPORT],
-      value: TaskTypeEnum.IMPORT,
+      label: TaskType.IMPORT,
+      value: TaskType.IMPORT,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.EXPORT],
-      value: TaskTypeEnum.EXPORT,
+      label: TaskType.EXPORT,
+      value: TaskType.EXPORT,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.MOCKDATA],
-      value: TaskTypeEnum.MOCKDATA,
+      label: TaskType.DATAMOCK,
+      value: TaskType.DATAMOCK,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.ASYNC],
-      value: TaskTypeEnum.ASYNC,
+      label: TaskType.ASYNC,
+      value: TaskType.ASYNC,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.PARTITION_PLAN],
-      value: TaskTypeEnum.PARTITION_PLAN,
+      label: TaskType.PARTITION_PLAN,
+      value: TaskType.PARTITION_PLAN,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.SQL_PLAN],
-      value: TaskTypeEnum.SQL_PLAN,
+      label: TaskType.SQL_PLAN,
+      value: TaskType.SQL_PLAN,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.ALTER_SCHEDULE],
-      value: TaskTypeEnum.ALTER_SCHEDULE,
+      label: TaskType.ALTER_SCHEDULE,
+      value: TaskType.ALTER_SCHEDULE,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.SHADOWTABLE_SYNC],
-      value: TaskTypeEnum.SHADOWTABLE_SYNC,
+      label: TaskType.SHADOW,
+      value: TaskType.SHADOW,
     },
     {
-      label: TaskTypeTextMap[TaskTypeEnum.DATA_SAVE],
-      value: TaskTypeEnum.DATA_SAVE,
+      label: TaskType.DATA_SAVE,
+      value: TaskType.DATA_SAVE,
     },
   ];
 
