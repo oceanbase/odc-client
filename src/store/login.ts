@@ -125,7 +125,12 @@ export class UserStore {
      * 退出登录更新一下配置，刷新一下sso配置
      */
     setting.fetchSystemInfo();
+    this.broadcastLogoutMsg();
     return res?.data;
+  }
+  private LogoutEventKey = 'odc_msg_logout';
+  public async broadcastLogoutMsg() {
+    window.localStorage.setItem(this.LogoutEventKey, Date.now().toString());
   }
 
   @action
@@ -180,8 +185,22 @@ export class UserStore {
       tracert.setUser(this.user.id);
       await setting.getUserConfig();
       await setting.getSystemConfig();
+      this.addLogoutListener();
     }
     return !!user;
+  }
+  public _logoutListenerExist;
+  public addLogoutListener() {
+    if (this._logoutListenerExist) {
+      return;
+    }
+    window.addEventListener('storage', (e) => {
+      const { key } = e;
+      if (key === this.LogoutEventKey) {
+        location.reload();
+      }
+    });
+    this._logoutListenerExist = true;
   }
 
   @action
