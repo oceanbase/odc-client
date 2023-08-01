@@ -101,7 +101,7 @@ export default inject('userStore')(
         }}
       >
         {context?.datasourceMode ? (
-          <Form form={form} layout="vertical">
+          <Form requiredMark={false} form={form} layout="vertical">
             <Form.Item
               label={formatMessage({ id: 'odc.SessionContextWrap.SessionSelect.modal.DataSource' })}
               /*数据源*/ name={'selectDatasource'}
@@ -134,7 +134,7 @@ export default inject('userStore')(
             </Form.Item>
           </Form>
         ) : (
-          <Form form={form} layout="vertical">
+          <Form requiredMark={false} form={form} layout="vertical">
             <Form.Item
               label={formatMessage({ id: 'odc.SessionContextWrap.SessionSelect.modal.Category' })}
               /*类别*/ name={'databaseFrom'}
