@@ -168,16 +168,6 @@ const CommonTable: <RecordType extends object = any>(
     resetPaganition: () => {
       setPagination({ ...pagination, current: 1 });
     },
-    resetFilterAndSort: () => {
-      setFilters({
-        level: [],
-        name: [],
-        subTypes: [],
-        supportedDialectTypes: [],
-      });
-      setSorter(null);
-      handleReload();
-    },
     reloadFirstPage: (args?: ITableLoadOptions) => {
       const newArgs = {
         ...args,

@@ -276,7 +276,8 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   exReload,
   exSearch,
 }) => {
-  const tableRef = useRef<ITableInstance>();
+  const tableRef1 = useRef<ITableInstance>();
+  const tableRef2 = useRef<ITableInstance>();
   const [selectedData, setSelectedData] = useState<IRule>(null);
   const [integrations, setIntegrations] = useState([]);
   const [integrationsIdMap, setIntegrationsIdMap] = useState<{ [key in string]: string }>();
@@ -294,7 +295,11 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
       ); // 刷新列表
       setEditRuleDrawerVisible(false);
       fn?.();
-      tableRef?.current?.reload();
+      if (ruleType === RuleType.SQL_CHECK) {
+        tableRef1.current?.reload?.();
+      } else {
+        tableRef2.current?.reload?.();
+      }
     } else {
       message.error(
         formatMessage({ id: 'odc.Env.components.InnerEnvironment.FailedToSubmit' }), //提交失败
@@ -358,14 +363,13 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   useEffect(() => {
     if (selectedRecord && ruleType) {
       handleInitRules(selectedRecord?.value, ruleType);
-      if (tableRef.current) {
-        tableRef.current?.resetPaganition?.();
+      if (ruleType === RuleType.SQL_CHECK) {
+        tableRef1.current?.resetPaganition?.();
+      } else {
+        tableRef2.current?.resetPaganition?.();
       }
     }
-    return () => {
-      tableRef.current?.resetFilterAndSort();
-    };
-  }, [selectedRecord, ruleType]);
+  }, [selectedRecord]);
 
   useEffect(() => {
     loadIntegrations();
@@ -410,9 +414,9 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           />
         </Tabs>
         <div style={{ height: '100%', flexGrow: 1, marginTop: '12px' }}>
-          {ruleType === RuleType.SQL_CHECK ? (
+          {ruleType === RuleType.SQL_CHECK && (
             <SecureTable
-              ref={tableRef}
+              ref={tableRef1}
               mode={CommonTableMode.SMALL}
               body={CommonTableBodyMode.BIG}
               titleContent={null}
@@ -433,9 +437,10 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
                 loading: tableLoading,
               }}
             />
-          ) : (
+          )}
+          {ruleType === RuleType.SQL_CONSOLE && (
             <SecureTable
-              ref={tableRef}
+              ref={tableRef2}
               mode={CommonTableMode.SMALL}
               body={CommonTableBodyMode.BIG}
               titleContent={null}

@@ -126,7 +126,9 @@ const Environment: React.FC<{}> = ({}) => {
     );
     if (Array.isArray(name) && name?.length === 1) {
       setRules(
-        rulesets?.contents?.filter((content) => content?.metadata?.name?.includes(name?.[0])),
+        rulesets?.contents?.filter((content) =>
+          content?.metadata?.name?.toLowerCase()?.includes(name?.[0]?.toLowerCase()),
+        ),
       );
     } else {
       setRules(rulesets?.contents);
@@ -168,7 +170,7 @@ const Environment: React.FC<{}> = ({}) => {
         level,
         ...params,
       });
-      const rawData = await statsRules(selectedRecord?.value, RuleType.SQL_CHECK);
+      const rawData = await statsRules(selectedRecord?.value, ruleType);
       setSubTypeFilters(
         rawData?.subTypes?.distinct?.map((d) => ({
           text: d,
