@@ -14,7 +14,7 @@ interface IProps {
 const MinWidth = 180;
 
 const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, editorGroup }) {
-  const [sideWidth, setSideWidth] = useState(MinWidth * 2);
+  const [sideWidth, setSideWidth] = useState(MinWidth + 100);
   const minSizeEventCountRef = useRef(0);
   const splitRef = useRef<SplitPane>();
   const context = useContext(ActivityBarContext);
