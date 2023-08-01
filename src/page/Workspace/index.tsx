@@ -11,7 +11,6 @@ import type { SessionManagerStore } from '@/store/sessionManager';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import task from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { history, useLocation, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
@@ -223,7 +222,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       modalStore.clear();
       taskStore.clear();
       executeTaskManager.stopAllTask();
-      task.setTaskCreateEnabled();
       sessionManagerStore.destoryStore(true);
     };
   }, []);

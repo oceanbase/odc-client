@@ -115,7 +115,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setSqlContentType(sqlContentType);
     setFormData(formData);
     form.setFieldsValue(formData);
-    crontabRef.current.setValue({
+    crontabRef.current?.setValue({
       mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,

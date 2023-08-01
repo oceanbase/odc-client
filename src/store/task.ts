@@ -5,7 +5,12 @@ import {
   getTaskList,
   getTaskMetaInfo,
 } from '@/common/network/task';
-import type { IMaskPolicy, IResponseData, ISqlPlayJobParameters, IDataArchiveJobParameters } from '@/d.ts';
+import type {
+  IDataArchiveJobParameters,
+  IMaskPolicy,
+  IResponseData,
+  ISqlPlayJobParameters,
+} from '@/d.ts';
 import {
   ICycleTaskRecord,
   TaskPageScope,
@@ -30,11 +35,6 @@ export class TaskStore {
    */
   @observable
   public defauleOpenTaskType: TaskType;
-  /**
-   * 是否允许创建任务
-   */
-  @observable
-  public enabledCreate: boolean;
 
   /**
    * 任务流程
@@ -58,7 +58,9 @@ export class TaskStore {
    * sql 计划列表
    */
   @observable
-  public cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
+  public cycleTasks: IResponseData<
+    ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
+  >;
 
   /**
    * task page 的 tab
@@ -119,11 +121,6 @@ export class TaskStore {
   @action
   public changeTaskPageScope = (taskPageScope: TaskPageScope) => {
     this.taskPageScope = taskPageScope;
-  };
-
-  @action
-  public setTaskCreateEnabled = (enabled: boolean = false) => {
-    this.enabledCreate = enabled;
   };
 
   @action

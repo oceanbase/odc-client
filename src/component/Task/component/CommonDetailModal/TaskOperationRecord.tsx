@@ -106,10 +106,11 @@ const getConnectionColumns = (params: {
 
 interface IProps {
   opRecord: TaskRecord<any>[];
+  onReload: () => void;
 }
 
 const TaskOperationRecord: React.FC<IProps> = (props) => {
-  const { opRecord } = props;
+  const { opRecord, onReload } = props;
   const [detailId, setDetailId] = useState(null);
   const [subTask, setSubTask] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
@@ -153,6 +154,7 @@ const TaskOperationRecord: React.FC<IProps> = (props) => {
         operationType={parameters?.operationType}
         onClose={() => {
           handleDetailVisible(null);
+          onReload();
         }}
       />
     </>
