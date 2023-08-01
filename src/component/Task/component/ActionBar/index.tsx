@@ -672,7 +672,8 @@ const ActionBar: React.FC<IProps> = inject(
       } else {
         tools = [viewBtn];
       }
-      if (!taskStore.enabledCreate) {
+      // 仅 sql 计划支持编辑
+      if (task?.type !== TaskType.SQL_PLAN) {
         tools = tools.filter((item) => item.key !== 'edit');
       }
       return tools;
