@@ -222,7 +222,10 @@ class TableData extends React.Component<
         session.sessionId,
         session.database.dbName,
       );
-      if (result.invalid) {
+      if (!result) {
+        return;
+      }
+      if (result?.invalid) {
         this.setState({
           showDataExecuteSQLModal: false,
           isEditing: false,

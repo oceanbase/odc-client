@@ -25,7 +25,10 @@ function SQLExecuteModal(props: {
   const doExecuteSQL = useCallback(async () => {
     try {
       const result = await executeSQL(innerSQL, session.sessionId, session.database?.dbName);
-      if (result.invalid) {
+      if (!result) {
+        return;
+      }
+      if (result?.invalid) {
         onClose();
       } else if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
         onSuccess(innerSQL);

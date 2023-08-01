@@ -175,7 +175,10 @@ class RecycleBin extends Component<
       this.session?.sessionId,
       this.session?.database?.dbName,
     );
-    if (result.invalid) {
+    if (!result) {
+      return;
+    }
+    if (result?.invalid) {
       this.setState({
         showExecuteSQLModal: false,
         showDeleteDrawer: false,
