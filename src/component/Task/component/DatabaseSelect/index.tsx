@@ -1,7 +1,7 @@
 import { listDatabases } from '@/common/network/database';
 import { formatMessage } from '@/util/intl';
 import { Form, Select, Space, Tag, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface IProps {
   label?: string;
@@ -20,8 +20,8 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     onChange,
   } = props;
   const [database, setDatabase] = useState([]);
-  const [project, setProject] = useState(null);
-
+  const form = Form.useFormInstance();
+  const databaseId = Form.useWatch(name, form);
   const databaseOptions = database
     ?.filter((item) => !!item?.project?.id)
     ?.map(({ name, id, environment, dataSource }) => ({
@@ -42,10 +42,12 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   };
 
   const handleDatabaseChange = (value) => {
-    const project = database?.find((item) => item.id === value)?.project;
-    setProject(project);
     onChange?.(value);
   };
+
+  const project = useMemo(() => {
+    return database?.find((item) => item.id === databaseId)?.project;
+  }, [database, databaseId]);
 
   useEffect(() => {
     loadDatabase(projectId);
