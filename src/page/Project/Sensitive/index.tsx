@@ -5,7 +5,7 @@ import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import { IDatasource } from '@/d.ts/datasource';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { formatMessage } from '@/util/intl';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SecureLayout from '../../Secure/components/SecureLayout';
 import SecureSider, { SiderItem } from '../../Secure/components/SecureSider';
 import SensitiveColumn from './components/SensitiveColumn';
@@ -168,11 +168,21 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
       case 'detectRule': {
         return <SensitiveRule projectId={id} />;
       }
+      default: {
+        return (
+          <SensitiveColumn
+            {...{
+              projectId: id,
+              dataSourceFilters,
+              databaseFilters,
+              maskingAlgorithmFilters,
+              initSensitiveColumn,
+            }}
+          />
+        );
+      }
     }
   };
-  useEffect(() => {
-    initSensitiveColumn();
-  }, []);
   return (
     <SecureLayout>
       <SecureSider
