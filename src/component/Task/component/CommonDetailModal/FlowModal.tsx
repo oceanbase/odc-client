@@ -71,7 +71,7 @@ const FlowModal: React.FC<IProps> = function (props) {
                 handleApprovalVisible(true, true);
               }}
             >
-              审批
+              通过
             </Button>
             <Button
               onClick={() => {
