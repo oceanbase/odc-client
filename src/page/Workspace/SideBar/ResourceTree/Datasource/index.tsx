@@ -16,7 +16,6 @@ import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawe
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
 import OBSvg from '@/svgr/source_ob.svg';
-import { isClient } from '@/util/env';
 import { toInteger, toNumber } from 'lodash';
 
 export default forwardRef(function DatasourceTree(props, ref) {
@@ -118,7 +117,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
                   titleRender={(node) => {
                     return (
                       <Dropdown
-                        trigger={isClient() ? ['contextMenu'] : []}
+                        trigger={login.isPrivateSpace() ? ['contextMenu'] : []}
                         menu={{
                           items: [
                             {
