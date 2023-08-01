@@ -16,6 +16,7 @@ const antdTheme = {
   'drawer-body-padding': '12px 24px 24px 24px',
   'tree-bg': 'transparent',
   'drawer-header-close-size': '47px',
+  'descriptions-title-margin-bottom': '12px'
 };
 
 const odcTheme = {
