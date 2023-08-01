@@ -43,7 +43,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
   };
   const onOk = async () => {
     const rawData = await formRef.validateFields().catch();
-    const { appliedDialectTypes = [], level = 0 } = rawData;
+    const { appliedDialectTypes = [], level = 1 } = rawData;
     const activeKeys = Object.keys(rawData).filter((key) => key.includes('activeKey')) || [];
     const activeProperties = {};
     activeKeys.forEach((activeKey) => {
@@ -169,8 +169,10 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           name={'appliedDialectTypes'}
         >
           <Checkbox.Group>
-            {rule?.metadata?.supportedDialectTypes?.map((sdt) => (
-              <Checkbox value={sdt}>{sdt}</Checkbox>
+            {rule?.metadata?.supportedDialectTypes?.map((sdt, index) => (
+              <Checkbox value={sdt} key={index}>
+                {sdt}
+              </Checkbox>
             ))}
           </Checkbox.Group>
         </Form.Item>
