@@ -1,12 +1,11 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask, getCycleTaskDetail } from '@/common/network/task';
+import { createTask } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
-import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   CreateTaskRecord,
   ICycleTaskTriggerConfig,
-  IDataArchiveJobParameters,
   ITable,
   TaskExecStrategy,
   TaskOperationType,
@@ -102,34 +101,6 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const { dataArchiveVisible, SQLPlanEditId } = modalStore;
   const isEdit = !!SQLPlanEditId;
-  const loadEditData = async (editId: number) => {
-    const data = await getCycleTaskDetail<IDataArchiveJobParameters>(editId);
-    const {
-      jobParameters,
-      triggerConfig: { triggerStrategy, cronExpression, hours, days },
-      ...rest
-    } = data;
-    const formData = {
-      ...rest,
-      ...jobParameters,
-    };
-    setFormData(formData);
-    form.setFieldsValue(formData);
-    crontabRef.current.setValue({
-      mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
-      dateType: triggerStrategy as any,
-      cronString: cronExpression,
-      hour: hours,
-      dayOfMonth: days,
-      dayOfWeek: days,
-    });
-  };
-
-  useEffect(() => {
-    if (SQLPlanEditId) {
-      loadEditData(SQLPlanEditId);
-    }
-  }, [SQLPlanEditId]);
 
   const setFormStatus = (fieldName: string, errorMessage: string) => {
     form.setFields([

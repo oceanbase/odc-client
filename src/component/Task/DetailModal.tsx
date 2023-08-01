@@ -335,6 +335,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const handleReloadData = () => {
     if (isCycleTask(type) || type === TaskType.ALTER_SCHEDULE) {
       getCycleTask();
+      if (detailType === TaskDetailType.OPERATION_RECORD) {
+        getOperationRecord();
+      }
     } else {
       getTask();
     }
