@@ -59,7 +59,13 @@ export default function SelectTransfer(props: IProps) {
   return (
     <div style={{ height: 370, display: 'flex', border: '1px solid var(--odc-border-color)' }}>
       <div
-        style={{ width: '100%', height: '100%', borderRight: '1px solid var(--odc-border-color)' }}
+        style={{
+          width: '50%',
+          flexShrink: 0,
+          flexGrow: 0,
+          height: '100%',
+          borderRight: '1px solid var(--odc-border-color)',
+        }}
       >
         <Card
           title={formatMessage({ id: 'odc.component.SelectTransfer.SelectUser' })} /*选择用户*/
@@ -105,13 +111,26 @@ export default function SelectTransfer(props: IProps) {
             treeData={targetDisplayTreeData}
             titleRender={(node) => {
               return (
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{node.title}</span>
-                  <Delete
-                    onClick={() => {
-                      setCheckedKeys(checkedKeys.filter((key) => key !== node.key));
+                <div style={{ display: 'flex', maxWidth: '100%', justifyContent: 'space-between' }}>
+                  <span
+                    style={{
+                      flexGrow: 1,
+                      flexShrink: 1,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
                     }}
-                  />
+                    title={node.title}
+                  >
+                    {node.title}
+                  </span>
+                  <span style={{ flexGrow: 0, flexShrink: 0 }}>
+                    <Delete
+                      onClick={() => {
+                        setCheckedKeys(checkedKeys.filter((key) => key !== node.key));
+                      }}
+                    />
+                  </span>
                 </div>
               );
             }}

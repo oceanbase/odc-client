@@ -7,6 +7,7 @@ import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Checkbox, Form, message, Modal } from 'antd';
 import { useEffect } from 'react';
+import { projectRoleTextMap } from '..';
 interface IProps {
   close: () => void;
   onSuccess: () => void;
@@ -80,7 +81,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
       visible={visible}
       width={760}
     >
-      <Form layout="vertical" form={form}>
+      <Form requiredMark={false} layout="vertical" form={form}>
         <Form.Item
           rules={[{ required: true }]}
           name={'roles'}
@@ -91,7 +92,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
               {
                 label: (
                   <HelpDoc leftText doc="projectOwner">
-                    {formatMessage({ id: 'odc.User.AddUserModal.Administrator' }) /*管理员*/}
+                    {projectRoleTextMap[ProjectRole.OWNER]}
                   </HelpDoc>
                 ),
 
@@ -100,7 +101,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
               {
                 label: (
                   <HelpDoc leftText doc="projectDBA">
-                    DBA
+                    {projectRoleTextMap[ProjectRole.DBA]}
                   </HelpDoc>
                 ),
 
@@ -109,7 +110,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
               {
                 label: (
                   <HelpDoc leftText doc="projectDev">
-                    {formatMessage({ id: 'odc.User.AddUserModal.CommonMember' }) /*普通成员*/}
+                    {projectRoleTextMap[ProjectRole.DEVELOPER]}
                   </HelpDoc>
                 ),
 

@@ -11,6 +11,12 @@ import React, { useContext, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
+
+export const projectRoleTextMap = {
+  [ProjectRole.OWNER]: formatMessage({ id: 'odc.User.AddUserModal.Administrator' }),
+  [ProjectRole.DEVELOPER]: formatMessage({ id: 'odc.User.AddUserModal.CommonMember' }),
+  [ProjectRole.DBA]: 'DBA',
+};
 interface IProps {
   id: string;
 }
@@ -84,7 +90,7 @@ const User: React.FC<IProps> = ({ id }) => {
             dataIndex: 'roles',
             width: 370,
             render(v) {
-              return v?.join(' | ');
+              return v?.map((item) => projectRoleTextMap[item] || item)?.join(' | ');
             },
           },
           {
