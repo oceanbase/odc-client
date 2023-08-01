@@ -2,10 +2,14 @@ import { IRiskDetectRule } from '@/d.ts/riskDetectRule';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, FormInstance } from 'antd';
-import { SelectItemProps } from '../../interface';
+import { Expression, SelectItemProps } from '../../interface';
 import Condition from './condition';
 import styles from './index.less';
-
+export function valueIsSelect(value: string): boolean {
+  return [Expression.ENVIRONMENT_ID, Expression.TASK_TYPE, Expression.SQL_CHECK_RESULT].includes(
+    value as Expression,
+  );
+}
 export interface ICondition {
   level?: number;
   hasCondition?: boolean;
@@ -15,6 +19,12 @@ export interface IConditionGroup {
   isEdit: boolean;
   selectedRecord: IRiskDetectRule;
   environmentIdMap: {
+    [key in string | number]: string;
+  };
+  taskTypeIdMap: {
+    [key in string | number]: string;
+  };
+  sqlCheckResultIdMap: {
     [key in string | number]: string;
   };
 
@@ -27,6 +37,8 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
   selectedRecord,
   formRef,
   environmentIdMap,
+  taskTypeIdMap,
+  sqlCheckResultIdMap,
   environmentOptions,
   taskTypeOptions,
   sqlCheckResultOptions,
@@ -45,7 +57,7 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
           }
         </span>
       </div>
-      <Form.List name="conditions" initialValue={selectedRecord?.conditions || []}>
+      <Form.List name="conditions">
         {(fields, { add, remove }, { errors }) => (
           <>
             {fields.map(({ key, name, fieldKey }: any, index) => {
@@ -54,6 +66,10 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
                   key={key}
                   {...{
                     index,
+                    condition: selectedRecord?.conditions[index],
+                    isSelect: valueIsSelect(
+                      selectedRecord?.conditions?.[index]?.expression || Expression.ENVIRONMENT_ID,
+                    ),
                     name,
                     fields,
                     remove,
@@ -62,6 +78,8 @@ const ConditionGroup: React.FC<IConditionGroup> = ({
                     isEdit,
 
                     environmentIdMap,
+                    taskTypeIdMap,
+                    sqlCheckResultIdMap,
                     environmentOptions,
                     taskTypeOptions,
                     sqlCheckResultOptions,

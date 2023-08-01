@@ -24,6 +24,12 @@ interface FormRiskDetectDrawerProps {
   environmentIdMap: {
     [key in string | number]: string;
   };
+  taskTypeIdMap: {
+    [key in string | number]: string;
+  };
+  sqlCheckResultIdMap: {
+    [key in string | number]: string;
+  };
 
   environmentOptions: SelectItemProps[];
   taskTypeOptions: SelectItemProps[];
@@ -44,6 +50,8 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
   riskLevel,
   reload,
   environmentIdMap,
+  taskTypeIdMap,
+  sqlCheckResultIdMap,
   environmentOptions,
   taskTypeOptions,
   sqlCheckResultOptions,
@@ -110,6 +118,9 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
         });
       }
     }
+    return () => {
+      formRef.resetFields();
+    };
   }, [formModalVisible]);
 
   return (
@@ -165,13 +176,7 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
         <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
       </Space>
       {formModalVisible && (
-        <Form
-          key="createForm"
-          form={formRef}
-          layout="vertical"
-          requiredMark="optional"
-          initialValues={selectedRecord}
-        >
+        <Form key="createForm" form={formRef} layout="vertical" requiredMark="optional">
           <Form.Item
             label={
               formatMessage({ id: 'odc.RiskDetectRules.components.FormRiskDetectDrawer.RuleName' }) //规则名称
@@ -205,6 +210,8 @@ const FormRiskDetectDrawer: React.FC<FormRiskDetectDrawerProps> = ({
                 formRef,
                 selectedRecord,
                 environmentIdMap,
+                taskTypeIdMap,
+                sqlCheckResultIdMap,
                 environmentOptions,
                 taskTypeOptions,
                 sqlCheckResultOptions,
