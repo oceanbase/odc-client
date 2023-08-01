@@ -26,3 +26,9 @@ export interface SelectItemProps {
   label: string;
   value: string | number;
 }
+
+export enum Expression {
+  ENVIRONMENT_ID = 'EnvironmentId',
+  TASK_TYPE = 'TaskType',
+  SQL_CHECK_RESULT = 'SqlCheckResult',
+}
