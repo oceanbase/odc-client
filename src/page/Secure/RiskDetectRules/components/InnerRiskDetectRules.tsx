@@ -64,7 +64,7 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
 
     const sqlCheckResultOptions = await getSqlCheckResultOptions();
     const sqlChekcResultMap = {};
-    sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap[value] = label));
+    sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap['' + value] = label));
     setSqlCheckResultIdMap(sqlChekcResultMap);
     setSqlCheckResultOptions(sqlCheckResultOptions);
   };
@@ -252,6 +252,8 @@ const InnerRiskDetectRules: React.FC<InnerRiskDetectRulesProps> = ({
           formModalVisible,
           setFormModalVisible,
           environmentIdMap,
+          taskTypeIdMap,
+          sqlCheckResultIdMap,
           environmentOptions,
           taskTypeOptions,
           sqlCheckResultOptions,
@@ -332,15 +334,15 @@ const getSqlCheckResultOptions = () => {
   const sqlCheckResultOptions = [
     {
       label: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
-      value: RiskLevelEnum.DEFAULT,
+      value: '' + RiskLevelEnum.DEFAULT,
     },
     {
       label: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
-      value: RiskLevelEnum.SUGGEST,
+      value: '' + RiskLevelEnum.SUGGEST,
     },
     {
       label: RiskLevelTextMap[RiskLevelEnum.MUST],
-      value: RiskLevelEnum.MUST,
+      value: '' + RiskLevelEnum.MUST,
     },
   ];
 

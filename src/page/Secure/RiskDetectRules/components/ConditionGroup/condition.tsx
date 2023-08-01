@@ -1,8 +1,10 @@
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Space } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { Expression } from '../../interface';
+import { valueIsSelect } from './index';
 import styles from './index.less';
 export interface ICondition {
   level?: number;
@@ -17,60 +19,65 @@ const Condition = ({
   formRef,
   isEdit,
 
+  isSelect,
+  condition,
   environmentIdMap,
+  taskTypeIdMap,
+  sqlCheckResultIdMap,
   environmentOptions,
   taskTypeOptions,
   sqlCheckResultOptions,
 }) => {
-  const expressionValue = formRef.getFieldsValue()?.conditions?.[index]?.expression;
+  const expressionValue = condition?.expression || Expression.ENVIRONMENT_ID;
   const [expressionType, setExpressionType] = useState<string>(expressionValue);
-  const [value, setValue] = useState<string>();
-
-  const [IsSelect, setIsSelect] = useState<boolean>(
-    expressionValue
-      ? ['EnvironmentId', 'TaskType', 'SqlCheckResult'].includes(expressionValue)
-      : ['EnvironmentId', 'TaskType', 'SqlCheckResult'].includes(expressionType),
-  );
+  const [value, setValue] = useState<string>(condition?.value || '');
+  const firstTimeLoad = useRef<boolean>(true);
+  const [IsSelect, setIsSelect] = useState<boolean>(isSelect);
   const [valueOptions, setValueOptions] = useState<
     {
       label: string;
       value: string;
     }[]
-  >([]);
+  >(environmentOptions);
+  const [valueMap, setValueMap] = useState<{ [key in string | number]: string }>(environmentIdMap);
+
   const handleExpressionTypeChange = (value) => {
     setExpressionType(value);
   };
   const initCondition = async () => {
-    const expressionType = expressionValue || 'EnvironmentId';
+    const newCondition = await formRef.getFieldsValue()?.conditions?.[index];
 
-    if (expressionType === 'EnvironmentId') {
+    if (newCondition) {
+      setExpressionType(newCondition?.expression || Expression.ENVIRONMENT_ID);
+      setIsSelect(valueIsSelect(newCondition?.expression || Expression.ENVIRONMENT_ID));
+    }
+    if (expressionType === Expression.ENVIRONMENT_ID) {
       setValueOptions(environmentOptions);
+      setValueMap(environmentIdMap);
     }
-    if (expressionType === 'TaskType') {
+    if (expressionType === Expression.TASK_TYPE) {
       setValueOptions(taskTypeOptions);
+      setValueMap(taskTypeIdMap);
     }
-    if (expressionType === 'SqlCheckResult') {
+    if (expressionType === Expression.SQL_CHECK_RESULT) {
       setValueOptions(sqlCheckResultOptions);
+      setValueMap(sqlCheckResultIdMap);
+    }
+  };
+  const handleExpressionChange = async () => {
+    const newFieldValues = await formRef.getFieldsValue();
+    await initCondition();
+    if (!firstTimeLoad.current) {
+      // Expression 变更后 对应Condition种的value值置空
+      newFieldValues.conditions[index].value = undefined;
+      formRef.setFieldsValue(newFieldValues);
+    } else {
+      firstTimeLoad.current = false;
     }
   };
   useEffect(() => {
-    initCondition();
-  }, [expressionType, environmentOptions, taskTypeOptions, sqlCheckResultOptions]);
-  useEffect(() => {
-    // Expression 变更后 对应Condition种的value值置空
-    const newFieldValues = formRef.getFieldsValue();
-    newFieldValues.conditions[index].value = undefined;
-    formRef.setFieldsValue(newFieldValues);
+    handleExpressionChange();
   }, [expressionType]);
-  useEffect(() => {
-    setIsSelect(
-      expressionValue
-        ? ['EnvironmentId', 'TaskType', 'SqlCheckResult'].includes(expressionValue)
-        : expressionType
-        ? ['EnvironmentId', 'TaskType', 'SqlCheckResult'].includes(expressionType)
-        : true,
-    );
-  }, [expressionValue, expressionType]);
   return (
     <div key={index} className={styles.condition}>
       <Space key={fieldKey} className={styles.conditionItem}>
@@ -127,7 +134,6 @@ const Condition = ({
         </Form.Item>
         <Form.Item
           name={[name, 'operation']}
-          fieldKey={[name, 'operation']}
           required
           rules={[
             {
@@ -156,9 +162,7 @@ const Condition = ({
           />
         </Form.Item>
         <Form.Item
-          key={[name, 'value'].join('_')}
           name={[name, 'value']}
-          fieldKey={[name, 'value']}
           required
           rules={[
             {
@@ -168,7 +172,8 @@ const Condition = ({
               }), //请选择值
             },
           ]}
-          shouldUpdate={(prevValues, curValues) => prevValues.value !== curValues.value}
+
+          // shouldUpdate={(prevValues, curValues) => prevValues.value !== curValues.value}
         >
           {IsSelect ? (
             <Select
@@ -177,7 +182,7 @@ const Condition = ({
               placeholder={formatMessage({
                 id: 'odc.components.ConditionGroup.condition.PleaseSelect',
               })} /*请选择*/
-              value={isEdit ? environmentIdMap?.[value] || '' : value}
+              value={isEdit ? valueMap?.[value] || '' : value}
               onSelect={(v, _) => setValue(v)}
               options={valueOptions}
             />
