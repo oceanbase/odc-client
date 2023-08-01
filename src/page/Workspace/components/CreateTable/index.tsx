@@ -209,6 +209,9 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           onCancel={() => setDDL('')}
           onSave={async () => {
             const results = await executeSQL(DDL, session?.sessionId, session?.odcDatabase?.name);
+            if (!results) {
+              return;
+            }
             if (results?.invalid) {
               setDDL('');
               return;

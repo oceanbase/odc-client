@@ -645,13 +645,19 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         this.getSession()?.sessionId,
         this.getSession()?.database?.dbName,
       );
+      if (!result) {
+        return;
+      }
       /**
        * 这里只需要第一个错误的节点，因为一个报错，后面的都会取消执行，没必要把取消执行的错误也抛出去
        */
       const errorResult = result?.executeResult?.find(
         (item) => item.status !== ISqlExecuteResultStatus.SUCCESS,
       );
-      if (result.invalid) {
+      if (!result) {
+        return;
+      }
+      if (result?.invalid) {
         this.setState({
           showDataExecuteSQLModal: false,
           updateDataDML: '',
@@ -1002,7 +1008,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.sessionId,
       this.getSession()?.database?.dbName,
     );
-    if (results.invalid) {
+    if (results?.invalid || !results) {
       return;
     }
     this.getSession()?.initSessionStatus();
