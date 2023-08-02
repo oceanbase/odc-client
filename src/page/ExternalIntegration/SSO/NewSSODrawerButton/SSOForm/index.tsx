@@ -266,6 +266,7 @@ export default inject('userStore')(
                       rules={[requiredRule]}
                       name={['ssoParameter', 'clientId']}
                       label="Client ID"
+                      messageVariables={{ label: 'Client ID' }}
                     >
                       <Input
                         style={{ width: '100%' }}
@@ -279,6 +280,7 @@ export default inject('userStore')(
                       rules={[requiredRule]}
                       name={['ssoParameter', 'secret']}
                       label="Client Secret"
+                      messageVariables={{ label: 'Client Secret' }}
                     >
                       <Input
                         style={{ width: '100%' }}
@@ -300,6 +302,7 @@ export default inject('userStore')(
                           Auth URL
                         </HelpDoc>
                       }
+                      messageVariables={{ label: 'Auth URL' }}
                     >
                       <Input
                         style={{ width: '100%' }}
@@ -321,6 +324,7 @@ export default inject('userStore')(
                           User Info URL
                         </HelpDoc>
                       }
+                      messageVariables={{ label: 'User Info URL' }}
                     >
                       <Input
                         style={{ width: '100%' }}
@@ -342,6 +346,7 @@ export default inject('userStore')(
                           Token URL
                         </HelpDoc>
                       }
+                      messageVariables={{ label: 'Token URL' }}
                     >
                       <Input
                         style={{ width: '100%' }}
@@ -363,6 +368,7 @@ export default inject('userStore')(
                           Redirect URL
                         </HelpDoc>
                       }
+                      messageVariables={{ label: 'Redirect URL' }}
                     >
                       <Input.TextArea
                         autoSize={{ minRows: 2, maxRows: 3 }}
@@ -386,6 +392,7 @@ export default inject('userStore')(
                           Scope
                         </HelpDoc>
                       }
+                      messageVariables={{ label: 'Scope' }}
                     >
                       <Select
                         mode="tags"

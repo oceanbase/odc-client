@@ -731,7 +731,8 @@ const ActionBar: React.FC<IProps> = inject(
           <RollBackModal
             open={openRollback}
             generateRollbackPlan={
-              (task as TaskDetail<IAsyncTaskParams>)?.parameters?.generateRollbackPlan
+              (task as TaskDetail<IAsyncTaskParams>)?.parameters?.generateRollbackPlan &&
+              !!result?.rollbackPlanResult?.objectId
             }
             onOk={confirmRollback}
             onCancel={handleCloseRollback}
