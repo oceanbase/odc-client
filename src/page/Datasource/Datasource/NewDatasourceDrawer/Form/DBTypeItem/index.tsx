@@ -32,6 +32,7 @@ export default function DBTypeItem() {
   const typeSelect = (
     <Form.Item
       shouldUpdate
+      requiredMark={false}
       label={formatMessage({ id: 'odc.Form.DBTypeItem.DataSourceType' })} /*数据源类型*/
     >
       {({ getFieldValue, setFieldsValue }) => {

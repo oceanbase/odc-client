@@ -123,16 +123,6 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
-            dataIndex: 'charsetName',
-            width: 120,
-          },
-          {
-            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
-            dataIndex: 'collationName',
-            width: 120,
-          },
-          {
             title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
@@ -155,6 +145,16 @@ const Database: React.FC<IProps> = ({ id }) => {
                 </Tag>
               );
             },
+          },
+          {
+            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
+            dataIndex: 'charsetName',
+            width: 120,
+          },
+          {
+            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
+            dataIndex: 'collationName',
+            width: 120,
           },
           {
             title: formatMessage({ id: 'odc.Project.Database.LastSynchronizationTime' }), //上一次同步时间
