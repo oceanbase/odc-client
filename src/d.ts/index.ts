@@ -1,3 +1,5 @@
+import { PLType } from '@/constant/plType';
+import { formatMessage } from '@/util/intl';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 
@@ -97,17 +99,25 @@ export enum IManagerDetailTabs {
   ROLE = 'ROLE',
   TASK_FLOW = 'TASK_FLOW',
 }
-
+/**
+ * ODC_CONNECTION
+ODC_PROJECT
+ODC_ROLE
+ODC_USER
+ODC_AUTOMATION_RULE
+ODC_ENVIRONMENT
+ODC_RISK_LEVEL
+ODC_RULESET
+ODC_INTEGRATION
+ODC_RISK_DETECT_RULE
+ODC_APPROVAL_FLOW_CONFIG
+ODC_AUDIT_EVENT
+ */
 export enum IManagerResourceType {
   user = 'ODC_USER',
   role = 'ODC_ROLE',
   project = 'ODC_PROJECT',
   resource = 'ODC_CONNECTION',
-  workspace = 'ODC_WORKSPACE',
-  system_config = 'ODC_SYSTEM_CONFIG',
-  private_connection = 'ODC_PRIVATE_CONNECTION',
-  odc_data_masking_rule = 'ODC_DATA_MASKING_RULE',
-  odc_data_masking_policy = 'ODC_DATA_MASKING_POLICY',
   odc_audit_event = 'ODC_AUDIT_EVENT',
   data_masking = 'ODC_DATA_MASKING_RULE',
   flow_config = 'ODC_FLOW_CONFIG',
@@ -117,6 +127,7 @@ export enum IManagerResourceType {
   risk_detect = 'ODC_RISK_DETECT_RULE',
   ruleset = 'ODC_RULESET',
   integration = 'ODC_INTEGRATION',
+  environment = 'ODC_ENVIRONMENT',
 }
 
 export enum actionTypes {
@@ -143,7 +154,6 @@ export enum IManagePagesKeys {
   RISK_DATA = 'riskdata',
   TASK_FLOW = 'task',
   SECURITY_AUDIT = 'security_audit',
-  SYSTEM_CONFIG = 'system_config',
   MASK_DATA = 'mask_data',
   INTEGRATION_APPROVAL = 'integration_approval',
   SQL_INTERCEPTOR = 'sql_interceptor',
@@ -228,15 +238,15 @@ export interface IResourceRole {
   roleName: string;
   description: string;
 }
-
+export interface IResponseDataPage {
+  number: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
 export interface IResponseData<T> {
   contents: T[];
-  page: {
-    number: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-  };
+  page: IResponseDataPage;
 }
 
 export enum IConnectionStatus {
@@ -378,6 +388,14 @@ export enum AuditEventType {
   DATA_MASKING_POLICY = 'DATA_MASKING_POLICY',
   // 计划变更
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  // 数据库管理
+  DATABASE_MANAGEMENT = 'DATABASE_MANAGEMENT',
+  // 权限申请
+  PERMISSION_APPLY = 'PERMISSION_APPLY',
+  // 数据源管理
+  DATASOURCE_MANAGEMENT = 'DATASOURCE_MANAGEMENT',
+  // 项目管理
+  PROJECT_MANAGEMENT = 'PROJECT_MANAGEMENT',
 }
 
 export enum AuditEventActionType {
@@ -386,6 +404,7 @@ export enum AuditEventActionType {
   // 密码管理
   CHANGE_PASSWORD = 'CHANGE_PASSWORD',
   RESET_PASSWORD = 'RESET_PASSWORD',
+  SET_PASSWORD = 'SET_PASSWORD',
   // 连接管理
   CREATE_CONNECTION = 'CREATE_CONNECTION',
   DELETE_CONNECTION = 'DELETE_CONNECTION',
@@ -492,6 +511,20 @@ export enum AuditEventActionType {
   EXECUTE_ALTER_SCHEDULE_TASK = 'EXECUTE_ALTER_SCHEDULE_TASK',
   APPROVE_ALTER_SCHEDULE_TASK = 'APPROVE_ALTER_SCHEDULE_TASK',
   REJECT_ALTER_SCHEDULE_TASK = 'REJECT_ALTER_SCHEDULE_TASK',
+  // 数据库管理
+  ADD_DATABASE = 'ADD_DATABASE',
+  TRANSFER_DATABASE_TO_PROJECT = 'TRANSFER_DATABASE_TO_PROJECT',
+  DELETE_DATABASE = 'DELETE_DATABASE',
+  // 权限申请
+  CREATE_PERMISSION_APPLY_TASK = 'CREATE_PERMISSION_APPLY_TASK',
+  APPROVE_PERMISSION_APPLY_TASK = 'APPROVE_PERMISSION_APPLY_TASK',
+  REJECT_PERMISSION_APPLY_TASK = 'REJECT_PERMISSION_APPLY_TASK',
+  // 数据源管理
+  CREATE_DATASOURCE = 'CREATE_DATASOURCE',
+  DELETE_DATASOURCE = 'DELETE_DATASOURCE',
+  UPDATE_DATASOURCE = 'UPDATE_DATASOURCE',
+  // 项目管理
+  CREATE_PROJECT = 'CREATE_PROJECT',
 }
 
 export enum AuditEventDialectType {
@@ -860,6 +893,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   editable?: boolean;
   // 是否正在编辑
   isEditing?: boolean;
+  allowExport?: boolean;
   columnList?: ITableColumn[]; // 是否已经查询过支持编辑，该接口响应很慢，尽可能少调用
   resultSetMetaData?: {
     columnList?: ITableColumn[];
@@ -882,6 +916,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
       localizedMessage: string;
       row: number;
       text: string;
+      level?: number;
       type: string;
     }[];
   }[];
@@ -1086,6 +1121,10 @@ export enum ParamMode {
 export interface IPLParam {
   dataType: string;
   defaultValue: string;
+  /**
+   * odc 自定义属性，保存原value
+   */
+  originDefaultValue?: string;
   paramMode: ParamMode;
   paramName: string;
   seqNum: number;
@@ -1381,6 +1420,10 @@ export interface ISqlExecuteResult {
   dbObjectType?: DbObjectType;
   dbObjectName?: string;
   connectionReset: boolean;
+  /**
+   * 透传，脱敏后端依赖
+   */
+  whereColumns?: string[];
   timer: {
     stages: IResultTimerStage[];
     startTimeMillis: number; // 开始时间
@@ -1654,6 +1697,7 @@ export enum TaskPageType {
   SENSITIVE_COLUMN = 'SENSITIVE_COLUMN',
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  DATA_DELETE = 'DATA_DELETE',
 }
 
 export enum TaskType {
@@ -1670,12 +1714,19 @@ export enum TaskType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   MIGRATION = 'DATA_ARCHIVE',
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  DATA_DELETE = 'DATA_DELETE',
+}
+
+export enum TaskJobType {
+  DATA_DELETE = 'DATA_DELETE',
 }
 
 export enum SubTaskType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
-  DATA_CLEAR = 'DATA_CLEAR',
+  DATA_DELETE = 'DATA_DELETE',
   DATA_ARCHIVE_ROLLBACK = 'DATA_ARCHIVE_ROLLBACK',
+  DATA_ARCHIVE_DELETE = 'DATA_ARCHIVE_DELETE',
+  ASYNC = 'ASYNC',
 }
 
 export enum TaskSubType {
@@ -1779,6 +1830,7 @@ export interface ExportFormData {
   encoding?: IMPORT_ENCODING;
   maskStrategy: string;
   useSys: boolean;
+  description?: string;
 
   batchCommitNum: number;
   skippedDataType: string[];
@@ -1859,6 +1911,7 @@ export interface ImportFormData {
   sysUserPassword?: string;
   overwriteSysConfig?: boolean;
   stopWhenError: boolean;
+  description?: string;
 
   encoding: IMPORT_ENCODING; // 文件编码
 
@@ -1998,7 +2051,7 @@ export interface TaskRecord<P> {
   createTime: number;
   completeTime: number;
   status: TaskStatus;
-  maxRiskLevel?: number;
+  riskLevel?: number;
   parameters?: P;
   executionStrategy?: TaskExecStrategy;
   executionTime?: number;
@@ -2069,6 +2122,25 @@ export interface IDataArchiveJobParameters {
   name: string;
   sourceDatabaseId: number;
   sourceDatabaseName?: string;
+  sourceDataSourceName?: string;
+  targetDataBaseId: number;
+  targetDatabaseName?: string;
+  targetDataSourceName?: string;
+  tables: {
+    conditionExpression: string;
+    tableName: string;
+  }[];
+  variables: {
+    name: string;
+    pattern: string;
+  }[];
+}
+
+export interface IDataClearJobParameters {
+  deleteAfterMigration: boolean;
+  name: string;
+  sourceDatabaseId: number;
+  sourceDatabaseName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
   tables: {
@@ -2104,6 +2176,7 @@ export interface ICycleTaskRecord<T> {
 
   createTime: number;
   jobs?: unknown;
+  approveInstanceId?: number;
   nextFireTimes: number[];
   status: TaskStatus;
   allowConcurrent: boolean;
@@ -2115,7 +2188,7 @@ export interface ICycleTaskRecord<T> {
     name: string;
     dbMode: ConnectionMode;
   };
-  maxRiskLevel?: number;
+  riskLevel?: number;
   description?: string;
 }
 
@@ -2140,7 +2213,7 @@ export interface IDataArchiveTaskRecord {
   executionStrategy: TaskExecStrategy;
   executionTime: number;
   id: number;
-  maxRiskLevel: number;
+  riskLevel: number;
   nodeList: ITaskFlowNode[];
   parameters: {
     progressPercentage: number;
@@ -2280,6 +2353,7 @@ export interface ISQLPlanTaskParams {
 
 export interface IAlterScheduleTaskParams {
   taskType: TaskType.ALTER_SCHEDULE;
+  taskId: number;
   operationType: TaskOperationType;
   allowConcurrent: boolean;
   scheduleTaskParameters: {
@@ -2433,8 +2507,8 @@ export enum SubTaskStatus {
   RUNNING = 'RUNNING', // 运行中
   DONE = 'DONE', // 执行完成
   FAILED = 'FAILED', // 执行失败
-  CANCELED = 'CANCELED', // 执行取消
-}
+  CANCELED = 'CANCELED',
+} // 执行取消
 
 export enum StatusNodeType {
   FLOW_TASK = 'FLOW_TASK',
@@ -2769,20 +2843,15 @@ export enum MaskRuleType {
   NULL = 'NULL',
 }
 
-export enum MaskRyleTypeMap {
+export const MaskRyleTypeMap = {
   // 掩盖
-  MASK = '掩盖',
-  // 替换
-  SUBSTITUTION = '替换',
-  // 保留格式
-  PSEUDO = '保留格式',
-  // 哈希
-  HASH = '哈希',
-  // 取整
-  ROUNDING = '取整',
-  // 置空
-  NULL = '置空',
-}
+  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp' }), //掩盖 // 替换
+  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace' }), //替换 // 保留格式
+  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat' }), //保留格式 // 哈希
+  HASH: formatMessage({ id: 'odc.src.d.ts.Hash' }), //哈希 // 取整
+  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding' }), //取整 // 置空
+  NULL: formatMessage({ id: 'odc.src.d.ts.Empty' }), //置空
+};
 
 export enum MaskRuleCustomSegmentsType {
   // 位数
@@ -3055,9 +3124,6 @@ export enum IClientAuthenticationMethod {
 
 export enum IAuthorizationGrantType {
   authorization_code = 'authorization_code',
-  refresh_token = 'refresh_token',
-  client_credentials = 'client_credentials',
-  password = 'password',
 }
 
 export enum IUserInfoAuthenticationMethod {
@@ -3115,6 +3181,34 @@ export type ISSOConfig =
       mappingRule: ISSO_MAPPINGRULE;
     };
 
+export interface IFormatPLSchema {
+  plName?: string;
+  plType: PLType;
+  packageName?: string;
+  ddl?: string;
+  params?: IPLParam[];
+  function?: IFunction;
+  procedure?: IProcedure;
+}
+
+export interface IPLOutParam extends IPLParam {
+  value: string;
+}
+export interface IPLExecResult {
+  status: 'FAIL' | 'SUCCESS' | '';
+  errorMessage?: string;
+  dbms?: {
+    line: string;
+  };
+  returnValue?: IPLOutParam;
+  outParams?: IPLOutParam[];
+}
+export interface IPLCompileResult {
+  messages: string;
+  statementWarnings: string;
+  status: boolean;
+  track: string;
+}
 export interface INlsObject {
   /**
    * 格式化后的数据

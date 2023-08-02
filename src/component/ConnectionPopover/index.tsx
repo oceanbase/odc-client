@@ -17,7 +17,9 @@ const ConnectionPopover: React.FC<{
   clusterStore?: ClusterStore;
 }> = (props) => {
   const { connection, clusterStore, showResourceGroups = false, showType = true } = props;
-
+  if (!connection) {
+    return null;
+  }
   let clusterAndTenant = (
     <div>
       {

@@ -1,5 +1,11 @@
-import type { ISqlExecuteResult } from '@/d.ts';
+import RuleResult from '@/component/SQLLintResult/RuleResult';
+import { ISqlExecuteResultStatus, type ISqlExecuteResult } from '@/d.ts';
+import { IRule } from '@/d.ts/rule';
+import modal from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
+import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
+import { Modal } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 
 export interface IExecuteSQLParams {
@@ -13,7 +19,29 @@ export interface IExecuteSQLParams {
   split?: boolean;
 }
 
-type TaskCallback = (result: ISqlExecuteResult[]) => void;
+export interface ISQLExecuteTaskSQL {
+  sqlTuple: {
+    sqlId: string;
+    originalSql: string;
+    executedSql: string;
+  };
+  violatedRules: IRule[];
+}
+export interface ISQLExecuteTask {
+  requestId: string;
+  sqls: ISQLExecuteTaskSQL[];
+  violatedRules: IRule[];
+}
+
+/**
+ * 包含拦截信息和执行结果
+ */
+export interface IExecuteTaskResult {
+  invalid: boolean;
+  executeSuccess: boolean;
+  violatedRules: ISQLExecuteTaskSQL['violatedRules'];
+  executeResult: ISqlExecuteResult[];
+}
 
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -107,7 +135,7 @@ export default async function executeSQL(
   params: IExecuteSQLParams | string,
   sessionId: string,
   dbName: string,
-): Promise<ISqlExecuteResult[]> {
+): Promise<IExecuteTaskResult> {
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
     typeof params === 'string'
@@ -123,18 +151,57 @@ export default async function executeSQL(
   const res = await request.post(`/api/v2/datasource/sessions/${sid}/sqls/asyncExecute`, {
     data: serverParams,
   });
+  const taskInfo: ISQLExecuteTask = res?.data;
+  const rootViolatedRules = taskInfo?.violatedRules || [];
+  const violatedRules = taskInfo?.sqls?.reduce((prev, current) => {
+    return prev.concat(current?.violatedRules || []);
+  }, rootViolatedRules);
+  if (violatedRules?.length) {
+    /**
+     * 拦截
+     * level = 1: 发起审批
+     * level = 2: 拒绝执行
+     */
+    const session = sessionManager.sessionMap.get(sessionId);
+    const isBan = violatedRules?.find((rule) => rule.level === 2);
+    if (isBan) {
+      Modal.error({
+        title: formatMessage({ id: 'odc.network.sql.executeSQL.ThisOperationHasBeenBlocked' }), //该操作已被以下规则拦截
+        content: <RuleResult data={violatedRules} />,
+      });
+    }
+    !isBan &&
+      modal.changeCreateAsyncTaskModal(true, {
+        sql: serverParams.sql,
+        databaseId: session?.database?.databaseId,
+        rules: violatedRules,
+      });
 
-  const requestId = res?.data?.requestId;
-  const sqls = res?.data?.sqls;
+    return {
+      invalid: true,
+      executeSuccess: false,
+      executeResult: [],
+      violatedRules: violatedRules,
+    };
+  }
+
+  const requestId = taskInfo?.requestId;
+  const sqls = taskInfo?.sqls;
   if (!requestId || !sqls?.length) {
     return null;
   }
   let results = await executeTaskManager.addAndWaitTask(requestId, sessionId);
-  results = results.map((result) => {
+  results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;
     }
     return result;
   });
-  return results || [];
+  return {
+    invalid: false,
+    executeSuccess:
+      !!results && !results?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS),
+    executeResult: results || [],
+    violatedRules: [],
+  };
 }

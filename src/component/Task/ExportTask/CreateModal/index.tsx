@@ -185,9 +185,9 @@ class CreateModal extends React.Component<IProps, IState> {
             }
             this.props.modalStore.changeExportModal(false);
             openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+            this.resetFormData();
           }
         } finally {
-          this.resetFormData();
           this.setState({
             submitting: false,
           });
@@ -255,14 +255,29 @@ class CreateModal extends React.Component<IProps, IState> {
   };
 
   static getDerivedStateFromProps(props, state) {
-    const nextDatabaseId = props.modalStore.exportModalData?.databaseId;
-    const preDatabaseId = state.formData.databaseId;
-    if (nextDatabaseId && nextDatabaseId !== preDatabaseId) {
+    const nextModalData = props.modalStore?.exportModalData;
+    if (nextModalData) {
+      const { databaseId, name, type, exportPkgBody } = nextModalData;
+      const formData = {
+        ...state.formData,
+        databaseId,
+      };
+      if (name) {
+        formData.exportDbObjects = [
+          {
+            objectName: name,
+            dbObjectType: type,
+          },
+        ];
+      }
+      if (type === DbObjectType.package && exportPkgBody) {
+        formData.exportDbObjects.push({
+          objectName: name,
+          dbObjectType: DbObjectType.package_body,
+        });
+      }
       return {
-        formData: {
-          ...state.formData,
-          databaseId: nextDatabaseId,
-        },
+        formData,
       };
     }
   }

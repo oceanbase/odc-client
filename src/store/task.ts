@@ -35,11 +35,6 @@ export class TaskStore {
    */
   @observable
   public defauleOpenTaskType: TaskType;
-  /**
-   * 是否允许创建任务
-   */
-  @observable
-  public enabledCreate: boolean;
 
   /**
    * 任务流程
@@ -126,11 +121,6 @@ export class TaskStore {
   @action
   public changeTaskPageScope = (taskPageScope: TaskPageScope) => {
     this.taskPageScope = taskPageScope;
-  };
-
-  @action
-  public setTaskCreateEnabled = (enabled: boolean = false) => {
-    this.enabledCreate = enabled;
   };
 
   @action

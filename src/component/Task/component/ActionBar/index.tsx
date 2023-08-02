@@ -2,14 +2,12 @@ import {
   createTask,
   downloadTaskFlow,
   executeTask,
-  getAsyncResultSet,
   getTaskResult,
   stopTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import {
-  ICycleTaskRecord,
-  ISqlExecuteResultStatus,
+  IAsyncTaskParams,
   ITaskResult,
   RollbackType,
   TaskDetail,
@@ -19,7 +17,6 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import { openSQLResultSetViewPage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
@@ -30,7 +27,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadFile, getLocalFormatDateTime } from '@/util/utils';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isCycleTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
 
@@ -44,11 +41,8 @@ interface IProps {
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: Partial<TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
+  onReload?: () => void;
+  onApprovalVisible?: (status: boolean, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
 }
@@ -71,10 +65,8 @@ const ActionBar: React.FC<IProps> = inject(
     } = props;
     const isOwner = user?.id === task?.creator?.id;
     const isApprovable = task?.approvable;
-    const [viewLoading, setViewLoading] = useState(false);
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
-    const wrapperRef = useRef(null);
     const disabledApproval =
       task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
 
@@ -101,6 +93,7 @@ const ActionBar: React.FC<IProps> = inject(
         );
 
         props.onReloadList();
+        props?.onReload?.();
       }
     };
 
@@ -118,7 +111,8 @@ const ActionBar: React.FC<IProps> = inject(
       closeTaskDetail();
       props.modalStore.changeCreateAsyncTaskModal(true, {
         type,
-        task,
+        task: task as TaskDetail<IAsyncTaskParams>,
+        databaseId: task?.databaseId,
         objectId: result?.rollbackPlanResult?.objectId,
       });
     };
@@ -151,7 +145,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleApproval = async (status: boolean) => {
-      props.onApprovalVisible(task as TaskRecord<TaskRecordParameters>, status, true);
+      props.onApprovalVisible(status, true);
     };
 
     const handleReTry = async () => {
@@ -172,38 +166,6 @@ const ActionBar: React.FC<IProps> = inject(
 
           //再次发起成功
         );
-      }
-    };
-
-    const viewResult = async () => {
-      setViewLoading(true);
-      try {
-        const resultSets = await getAsyncResultSet(task.id);
-        if (resultSets) {
-          /**
-           * 没有成功的请求的话，这里就不去展示结果了。
-           */
-
-          const haveSuccessQuery = !!resultSets?.find(
-            (result) => result.status === ISqlExecuteResultStatus.SUCCESS && result.columns?.length,
-          );
-
-          if (!haveSuccessQuery) {
-            message.warn(
-              formatMessage({
-                id: 'odc.TaskManagePage.component.TaskTools.NoResultsToView',
-              }),
-              //无可查看的结果信息
-            );
-            return;
-          }
-          // TODO: 跳转过去，显示的信息待确定，暂时使用id占位
-          await openSQLResultSetViewPage(task.id, resultSets);
-          taskStore.changeTaskManageVisible(false);
-          props.onDetailVisible(null, false);
-        }
-      } finally {
-        setViewLoading(false);
       }
     };
 
@@ -473,18 +435,6 @@ const ActionBar: React.FC<IProps> = inject(
         type: 'button',
       };
 
-      const viewResultBtn = {
-        key: 'viewResult',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.QueryResults',
-        }),
-
-        //查询结果
-        isLoading: viewLoading,
-        action: viewResult,
-        type: 'button',
-      };
-
       if (isDetailModal) {
         switch (status) {
           case TaskStatus.REJECTED:
@@ -582,7 +532,6 @@ const ActionBar: React.FC<IProps> = inject(
           if (settingStore.enableDataExport) {
             tools.unshift(downloadViewResultBtn);
           }
-          tools.unshift(viewResultBtn);
         }
       } else {
         tools = [viewBtn];
@@ -723,7 +672,8 @@ const ActionBar: React.FC<IProps> = inject(
       } else {
         tools = [viewBtn];
       }
-      if (!taskStore.enabledCreate) {
+      // 仅 sql 计划支持编辑
+      if (task?.type !== TaskType.SQL_PLAN) {
         tools = tools.filter((item) => item.key !== 'edit');
       }
       return tools;
@@ -777,7 +727,16 @@ const ActionBar: React.FC<IProps> = inject(
             return renderTool(tool);
           })}
         </Action.Group>
-        <RollBackModal open={openRollback} onOk={confirmRollback} onCancel={handleCloseRollback} />
+        {isDetailModal && (
+          <RollBackModal
+            open={openRollback}
+            generateRollbackPlan={
+              (task as TaskDetail<IAsyncTaskParams>)?.parameters?.generateRollbackPlan
+            }
+            onOk={confirmRollback}
+            onCancel={handleCloseRollback}
+          />
+        )}
       </>
     );
   }),

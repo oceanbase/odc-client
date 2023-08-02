@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Typography } from 'antd';
 
 import Icon, { FormatPainterFilled } from '@ant-design/icons';
@@ -18,12 +19,20 @@ export default function DefaultPage() {
   const context = useContext(ActivityBarContext);
   return (
     <div style={{ marginLeft: '50%', marginTop: 100, transform: 'translateX(-50%)', width: 360 }}>
-      <Typography.Title level={4}>快速开始</Typography.Title>
+      <Typography.Title level={4}>
+        {formatMessage({ id: 'odc.component.WindowManager.DefaultPage.QuickStart' }) /*快速开始*/}
+      </Typography.Title>
       <div onClick={() => openNewSQLPage(null, 'datasource')} className={styles.item}>
         <div className={styles.icon}>
           <Icon component={ConsoleSQLSvg} />
         </div>
-        <div className={styles.label}>打开 SQL 窗口</div>
+        <div className={styles.label}>
+          {
+            formatMessage({
+              id: 'odc.component.WindowManager.DefaultPage.OpenTheSqlWindow',
+            }) /*打开 SQL 窗口*/
+          }
+        </div>
       </div>
       <div
         onClick={() => openNewDefaultPLPage(null, null, null, 'datasource')}
@@ -32,13 +41,25 @@ export default function DefaultPage() {
         <div className={styles.icon}>
           <Icon component={ConsolePLSvg} />
         </div>
-        <div className={styles.label}>打开匿名块窗口</div>
+        <div className={styles.label}>
+          {
+            formatMessage({
+              id: 'odc.component.WindowManager.DefaultPage.OpenTheAnonymousBlockWindow',
+            }) /*打开匿名块窗口*/
+          }
+        </div>
       </div>
       <div onClick={() => context?.setActiveKey(ActivityBarItemType.Task)} className={styles.item}>
         <div className={styles.icon}>
           <Icon component={TaskSvg} />
         </div>
-        <div className={styles.label}>查看工单</div>
+        <div className={styles.label}>
+          {
+            formatMessage({
+              id: 'odc.component.WindowManager.DefaultPage.ViewTickets',
+            }) /*查看工单*/
+          }
+        </div>
       </div>
       <div
         onClick={() =>
@@ -49,7 +70,13 @@ export default function DefaultPage() {
         <div className={styles.icon}>
           <Icon component={FormatPainterFilled} />
         </div>
-        <div className={styles.label}>切换主题</div>
+        <div className={styles.label}>
+          {
+            formatMessage({
+              id: 'odc.component.WindowManager.DefaultPage.SwitchTopics',
+            }) /*切换主题*/
+          }
+        </div>
       </div>
     </div>
   );

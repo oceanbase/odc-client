@@ -1,4 +1,33 @@
 .data-archive {
+  .variables {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: 194px 170px 1fr;
+    align-items: baseline;
+    &.delete {
+      grid-template-columns: 194px 170px 1fr 18px;
+    }
+    :global {
+      .ant-input-number {
+        width: 100%;
+      }
+    }
+  }
+  .pattern {
+    display: grid;
+    grid-gap: 5px;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .tables {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: 220px 1fr;
+    align-items: baseline;
+    &.delete {
+      grid-template-columns: 220px 1fr 18px;
+    }
+  }
   .hide {
     display: none;
   }
@@ -6,13 +35,13 @@
   .des {
     color: var(--text-color-secondary);
     font-size: 12;
-    line-height: 20px;
+    line-height: 16px;
   }
   .desc {
     margin-top: 4;
     color: var(--text-color-hint);
     font-size: 12;
-    line-height: 20px;
+    line-height: 16px;
   }
   .hour {
     margin-left: 8px;

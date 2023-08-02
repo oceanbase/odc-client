@@ -6,6 +6,7 @@ import {
 } from '@/common/network/manager';
 import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration, IManagerRole } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { hourToSeconds, secondsToHour } from '@/util/utils';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { Button, Drawer, Form, Input, InputNumber, message, Modal, Space } from 'antd';
@@ -30,8 +31,9 @@ const FormModal: React.FC<IProps> = (props) => {
   const [form] = useForm();
   const { visible, editId, roles, integrations } = props;
   const isEdit = !!editId;
-  const submitText = isEdit ? '保存' : '新建';
-
+  const submitText = isEdit
+    ? formatMessage({ id: 'odc.component.FormModal.Save' }) //保存
+    : formatMessage({ id: 'odc.component.FormModal.Create' }); //新建
   useEffect(() => {
     if (editId) {
       loadEditData(editId);
@@ -81,31 +83,41 @@ const FormModal: React.FC<IProps> = (props) => {
   async function handleCreate(values: any) {
     const data = await createTaskFlow(values);
     if (data) {
-      message.success('流程创建成功');
+      message.success(
+        formatMessage({ id: 'odc.component.FormModal.ProcessCreatedSuccessfully' }), //流程创建成功
+      );
       props.reloadData();
       handleClose();
     } else {
-      message.error('流程创建失败');
+      message.error(
+        formatMessage({ id: 'odc.component.FormModal.ProcessCreationFailed' }), //流程创建失败
+      );
     }
   }
 
   async function handleEdit(values) {
     const data = await updateTaskFlow(values);
     if (data) {
-      message.success('流程保存成功');
+      message.success(
+        formatMessage({ id: 'odc.component.FormModal.ProcessSavedSuccessfully' }), //流程保存成功
+      );
       props.reloadData();
       props.onClose();
     } else {
-      message.error('流程保存失败');
+      message.error(
+        formatMessage({ id: 'odc.component.FormModal.ProcessSaveFailed' }), //流程保存失败
+      );
     }
   }
 
   function handleCancel(_isEdit: boolean) {
     if (hasChange) {
       Modal.confirm({
-        title: _isEdit ? '确定要取消编辑吗？取消保存后，所编辑的内容将不生效' : '确定要取消新建吗?',
-        cancelText: '取消',
-        okText: '确定',
+        title: _isEdit
+          ? formatMessage({ id: 'odc.component.FormModal.AreYouSureYouWant' }) //确定要取消编辑吗？取消保存后，所编辑的内容将不生效
+          : formatMessage({ id: 'odc.component.FormModal.AreYouSureYouWant.1' }), //确定要取消新建吗?
+        cancelText: formatMessage({ id: 'odc.component.FormModal.Cancel' }), //取消
+        okText: formatMessage({ id: 'odc.component.FormModal.Ok' }), //确定
         centered: true,
         onOk: () => {
           setHasChange(false);
@@ -136,7 +148,11 @@ const FormModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       width={520}
-      title={isEdit ? '编辑审批流程' : '新建审批流程'}
+      title={
+        isEdit
+          ? formatMessage({ id: 'odc.component.FormModal.EditApprovalProcess' }) //编辑审批流程
+          : formatMessage({ id: 'odc.component.FormModal.CreateAnApprovalProcess' }) //新建审批流程
+      }
       className={styles.taskModal}
       footer={
         <Space>
@@ -145,7 +161,7 @@ const FormModal: React.FC<IProps> = (props) => {
               handleCancel(isEdit);
             }}
           >
-            取消
+            {formatMessage({ id: 'odc.component.FormModal.Cancel' }) /*取消*/}
           </Button>
           <Button type="primary" onClick={handleSubmit}>
             {submitText}
@@ -168,8 +184,10 @@ const FormModal: React.FC<IProps> = (props) => {
                 nodes: [
                   {
                     autoApproval: false,
+                    externalApproval: false,
                   },
                 ],
+
                 approvalExpirationIntervalSeconds: 24,
                 waitExecutionExpirationIntervalSeconds: 24,
                 executionExpirationIntervalSeconds: 24,
@@ -178,39 +196,56 @@ const FormModal: React.FC<IProps> = (props) => {
         }
       >
         <Form.Item
-          label="流程名称"
+          label={formatMessage({ id: 'odc.component.FormModal.ProcessName' })} /*流程名称*/
           name="name"
           validateTrigger="onBlur"
           rules={[
             {
               required: true,
-              message: '请输入流程名称',
+              message: formatMessage({ id: 'odc.component.FormModal.EnterAProcessName' }), //请输入流程名称
             },
             {
               max: 128,
-              message: '流程名称不超过 128 个字符',
+              message: formatMessage({ id: 'odc.component.FormModal.TheProcessNameCannotExceed' }), //流程名称不超过 128 个字符
             },
             {
-              validator: validTrimEmptyWithWarn('流程名称首尾包含空格'),
+              validator: validTrimEmptyWithWarn(
+                formatMessage({ id: 'odc.component.FormModal.TheProcessNameContainsSpaces' }), //流程名称首尾包含空格
+              ),
             },
             {
-              message: '流程名称已存在',
+              message: formatMessage({ id: 'odc.component.FormModal.TheProcessNameAlreadyExists' }), //流程名称已存在
               validator: checkNameRepeat,
             },
           ]}
         >
-          <Input placeholder="请输入任务流程名称" />
+          <Input
+            placeholder={formatMessage({
+              id: 'odc.component.FormModal.EnterATaskFlowName',
+            })} /*请输入任务流程名称*/
+          />
         </Form.Item>
-        <Form.Item className={styles.taskProcess} label="设置审批节点" required>
+        <Form.Item
+          className={styles.taskProcess}
+          label={formatMessage({ id: 'odc.component.FormModal.SetApprovalNode' })}
+          /*设置审批节点*/ required
+        >
           <AuthNode roles={roles} integrations={integrations} />
         </Form.Item>
-        <Form.Item label="流程有效期" required>
+        <Form.Item
+          label={formatMessage({ id: 'odc.component.FormModal.ProcessValidityPeriod' })}
+          /*流程有效期*/ required
+        >
           <Space size={40} className={styles.infoBlock}>
             <Form.Item
               required
               label={
                 <HelpDoc leftText isTip doc="approvalExpiration">
-                  审批有效期
+                  {
+                    formatMessage({
+                      id: 'odc.component.FormModal.ValidityPeriodOfApproval',
+                    }) /*审批有效期*/
+                  }
                 </HelpDoc>
               }
             >
@@ -220,20 +255,24 @@ const FormModal: React.FC<IProps> = (props) => {
                   rules={[
                     {
                       required: true,
-                      message: '请输入',
+                      message: formatMessage({ id: 'odc.component.FormModal.PleaseEnter' }), //请输入
                     },
                   ]}
                 >
                   <InputNumber max={240} min={0} />
                 </Form.Item>
-                <span>小时</span>
+                <span>{formatMessage({ id: 'odc.component.FormModal.Hours' }) /*小时*/}</span>
               </Space>
             </Form.Item>
             <Form.Item
               required
               label={
                 <HelpDoc leftText isTip doc="waitExecutionExpiration">
-                  执行等待有效期
+                  {
+                    formatMessage({
+                      id: 'odc.component.FormModal.ExecutionWaitingPeriod',
+                    }) /*执行等待有效期*/
+                  }
                 </HelpDoc>
               }
             >
@@ -241,14 +280,18 @@ const FormModal: React.FC<IProps> = (props) => {
                 <Form.Item name="waitExecutionExpirationIntervalSeconds">
                   <InputNumber max={240} min={0} />
                 </Form.Item>
-                <span>小时</span>
+                <span>{formatMessage({ id: 'odc.component.FormModal.Hours' }) /*小时*/}</span>
               </Space>
             </Form.Item>
             <Form.Item
               required
               label={
                 <HelpDoc leftText isTip doc="executionExpiration">
-                  执行有效期
+                  {
+                    formatMessage({
+                      id: 'odc.component.FormModal.ExecutionValidityPeriod',
+                    }) /*执行有效期*/
+                  }
                 </HelpDoc>
               }
             >
@@ -258,13 +301,13 @@ const FormModal: React.FC<IProps> = (props) => {
                   rules={[
                     {
                       required: true,
-                      message: '请输入',
+                      message: formatMessage({ id: 'odc.component.FormModal.PleaseEnter' }), //请输入
                     },
                   ]}
                 >
                   <InputNumber max={240} min={0} />
                 </Form.Item>
-                <span>小时</span>
+                <span>{formatMessage({ id: 'odc.component.FormModal.Hours' }) /*小时*/}</span>
               </Space>
             </Form.Item>
           </Space>

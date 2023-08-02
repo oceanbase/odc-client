@@ -93,7 +93,7 @@ class MainServer {
   private async checkServerIsReady() {
     try {
       await new Promise((resolve, reject) => {
-        get(`http://localhost:${this.port}/api/v1/info`, (resp) => {
+        const res = get(`http://localhost:${this.port}/api/v1/info`, (resp) => {
           log.info('check server api status: ', resp.statusCode);
           let data = '';
           // A chunk of data has been recieved.
@@ -107,6 +107,7 @@ class MainServer {
           log.info('check server with resp err');
           reject(err);
         });
+        res.setTimeout(2000);
       });
       return true;
     } catch (e) {

@@ -42,7 +42,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
     }
     await userStore.getOrganizations();
     const isSuccess = await userStore.switchCurrentOrganization();
-    const isLoginPage = location.hash.indexOf('login') > -1;
+    const isLoginPage = location.pathname.indexOf('login') > -1;
     if (!userStore.organizations?.length || !isSuccess) {
       if (isClient()) {
         /**

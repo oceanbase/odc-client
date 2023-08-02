@@ -6,12 +6,22 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import SensitiveContext from '@/page/Project/Sensitive/SensitiveContext';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Select, Space } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import styles from './index.less';
 
-const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => {
+const ManualRule = ({
+  fields,
+  index,
+  formRef,
+  databasesMap,
+  setDatabasesMap,
+  fieldKey,
+  fieldName,
+  remove,
+}) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const { dataSources = [], maskingAlgorithmOptions, projectId } = sensitiveContext;
@@ -54,6 +64,8 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
       value: content.id,
     }));
     setDatabases(rawData?.contents);
+    databasesMap.set(dataSourceId, rawData.contents);
+    setDatabasesMap(databasesMap);
     setTableName('');
     setColumnName('');
     setDatabaseOptions(resData);
@@ -111,61 +123,71 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
 
   const handleDataSourceSelect = async (value: number) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setDataSourceId(value);
-    manual[index] = {
-      dataSource: value,
-      columnName: undefined,
-      database: undefined,
-      maskingAlgorithmId: undefined,
-      tableName: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+    if (dataSourceId !== value) {
+      setDataSourceId(value);
+
+      manual[index] = {
+        dataSource: value,
+        columnName: undefined,
+        database: undefined,
+        maskingAlgorithmId: undefined,
+        tableName: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
   const handleDatabaseSelect = async (value: number) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setDatabaseId(value);
-    manual[index] = {
-      ...manual[index],
-      columnName: undefined,
-      database: value,
-      maskingAlgorithmId: undefined,
-      tableName: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+    if (databaseId !== value) {
+      setDatabaseId(value);
+
+      manual[index] = {
+        ...manual[index],
+        database: value,
+        tableName: undefined,
+        columnName: undefined,
+        maskingAlgorithmId: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
   const handleTableSelect = async (value: string) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setTableName(value);
+    if (value !== tableName) {
+      setTableName(value);
 
-    manual[index] = {
-      ...manual[index],
-      columnName: undefined,
-      maskingAlgorithmId: undefined,
-      tableName: value,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+      manual[index] = {
+        ...manual[index],
+        tableName: value,
+        columnName: undefined,
+        maskingAlgorithmId: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
-  const hanleColumnSelect = async (value: any) => {
+  const hanleColumnSelect = async (value: string) => {
     const { manual = [] } = await formRef.getFieldsValue();
-    setColumnName(value);
+    if (columnName !== value) {
+      setColumnName(value);
 
-    manual[index] = {
-      ...manual[index],
-      columnName: value,
-      maskingAlgorithmId: undefined,
-    };
-    formRef.setFieldsValue({
-      manual,
-    });
+      manual[index] = {
+        ...manual[index],
+        columnName: value,
+        maskingAlgorithmId: undefined,
+      };
+      formRef.setFieldsValue({
+        manual,
+      });
+    }
   };
 
   const checkExist = async (ruler, value) => {
@@ -225,13 +247,17 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
         rules={[
           {
             required: true,
-            message: '请选择数据源',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectADataSource',
+            }), //请选择数据源
           },
         ]}
       >
         <Select
           key={[fieldName, 'dataSource', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           onSelect={handleDataSourceSelect}
           options={dataSourceOptions}
@@ -246,13 +272,17 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
         rules={[
           {
             required: true,
-            message: '请选择数据库',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectADatabase',
+            }), //请选择数据库
           },
         ]}
       >
         <Select
           key={[fieldName, 'database', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           onSelect={handleDatabaseSelect}
           options={databaseOptions}
@@ -268,13 +298,17 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
         rules={[
           {
             required: true,
-            message: '请选择表',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectATable',
+            }), //请选择表
           },
         ]}
       >
         <Select
           key={[fieldName, 'tableName', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           options={tableOptions}
           value={tableName}
@@ -290,17 +324,23 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
         rules={[
           {
             required: true,
-            message: '请选择列',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelectAColumn',
+            }), //请选择列
           },
           {
-            message: '敏感列已存在',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SensitiveColumnAlreadyExists',
+            }), //敏感列已存在
             validator: checkExist,
           },
         ]}
       >
         <Select
           key={[fieldName, 'columnName', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
@@ -327,13 +367,17 @@ const ManualRule = ({ fields, index, formRef, fieldKey, fieldName, remove }) => 
         rules={[
           {
             required: true,
-            message: '请选择脱敏算法',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualRule.SelectADesensitizationAlgorithm',
+            }), //请选择脱敏算法
           },
         ]}
       >
         <Select
           key={[fieldName, 'maskingAlgorithmId', index].join('_')}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '184px' }}
           options={maskingAlgorithmOptions}
           disabled={columnOptions?.length === 0 || columnName === ''}

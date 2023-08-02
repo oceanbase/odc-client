@@ -1,5 +1,6 @@
 import SessionStore from '@/store/sessionManager/session';
 import PackageSvg from '@/svgr/menuPkg.svg';
+import { formatMessage } from '@/util/intl';
 import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeNodeData } from './function';
@@ -18,8 +19,8 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   const dbName = database.name;
   const packages = dbSession?.database?.packages;
   const treeData: TreeDataNode = {
-    title: '程序包',
-    key: `${dbName}-package`,
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Package' }), //程序包
+    key: `${database.id}-${dbName}-package`,
     type: ResourceNodeType.PackageRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -27,7 +28,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   };
   if (packages) {
     treeData.children = packages.map((pkg) => {
-      const pkgKey = `${dbSession?.database?.packageVersion}-${dbName}-package-${pkg.packageName}`;
+      const pkgKey = `${database.id}-${dbSession?.database?.packageVersion}-${dbName}-package-${pkg.packageName}`;
 
       const { packageHead, packageBody } = pkg;
 
@@ -36,7 +37,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
       if (packageHead) {
         let variablesRoot: TreeDataNode, programRoot: TreeDataNode;
         headRoot = {
-          title: '包头',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Baotou' }), //包头
           key: `${pkgKey}-head`,
           data: pkg,
           icon: (
@@ -47,12 +48,13 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
               }}
             />
           ),
+
           sessionId: dbSession?.sessionId,
           type: ResourceNodeType.PackageHead,
         };
         if (packageHead.variables?.length) {
           variablesRoot = {
-            title: '变量',
+            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Variable' }), //变量
             key: `${pkgKey}-head-variable`,
             type: ResourceNodeType.PackageHeadVariableRoot,
             icon: (
@@ -62,6 +64,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                 }}
               />
             ),
+
             children: packageHead.variables?.map((v, i) => {
               return {
                 title: `${v.varName}:${v.varType}`,
@@ -76,7 +79,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
           let functions = packageHead.functions || [];
           let procedures = packageHead.procedures || [];
           programRoot = {
-            title: '子程序',
+            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Subprogram' }), //子程序
             key: `${pkgKey}-head-program`,
             type: ResourceNodeType.PackageHeadProgramRoot,
             data: pkg,
@@ -88,6 +91,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                 }}
               />
             ),
+
             children: functions
               .map((func, i) => {
                 return FunctionTreeNodeData(
@@ -96,6 +100,8 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                   dbName,
                   `${pkgKey}-${i}`,
                   ResourceNodeType.PackageHeadFunction,
+                  null,
+                  i,
                 );
               })
               .concat(
@@ -106,6 +112,8 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                     dbName,
                     `${pkgKey}-${i}`,
                     ResourceNodeType.PackageHeadProcedure,
+                    null,
+                    i,
                   );
                 }),
               ),
@@ -117,7 +125,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
       if (packageBody) {
         let variablesRoot: TreeDataNode, programRoot: TreeDataNode;
         bodyRoot = {
-          title: '包体',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.PackageBody' }), //包体
           key: `${pkgKey}-body`,
           type: ResourceNodeType.PackageBody,
           sessionId: dbSession?.sessionId,
@@ -133,7 +141,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
         };
         if (packageBody.variables?.length) {
           variablesRoot = {
-            title: '变量',
+            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Variable' }), //变量
             key: `${pkgKey}-body-variable`,
             type: ResourceNodeType.PackageBodyVariableRoot,
             icon: (
@@ -143,6 +151,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                 }}
               />
             ),
+
             children: packageBody.variables?.map((v, i) => {
               return {
                 title: `${v.varName}:${v.varType}`,
@@ -157,7 +166,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
           let functions = packageBody.functions || [];
           let procedures = packageBody.procedures || [];
           programRoot = {
-            title: '子程序',
+            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Subprogram' }), //子程序
             key: `${pkgKey}-body-program`,
             type: ResourceNodeType.PackageBodyProgramRoot,
             icon: (
@@ -168,6 +177,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                 }}
               />
             ),
+
             children: functions
               .map((func, i) => {
                 return FunctionTreeNodeData(
@@ -177,6 +187,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                   pkgKey + '-body-' + i,
                   ResourceNodeType.PackageBodyFunction,
                   pkg,
+                  i,
                 );
               })
               .concat(
@@ -188,6 +199,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                     pkgKey + '-body-' + i,
                     ResourceNodeType.PackageBodyProcedure,
                     pkg,
+                    i,
                   );
                 }),
               ),
@@ -212,6 +224,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: haveData ? [headRoot, bodyRoot].filter(Boolean) : null,

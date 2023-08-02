@@ -10,11 +10,10 @@ import styles from './index.less';
 
 const TaskPopover: React.FC<{
   taskStore?: TaskStore;
-  enabledCreate?: boolean;
   showAllSchemaTaskType?: boolean;
 }> = inject('taskStore')(
   observer(function (props) {
-    const { taskStore, enabledCreate, showAllSchemaTaskType } = props;
+    const { taskStore, showAllSchemaTaskType } = props;
     const count = taskStore.pendingApprovalInstanceIds?.length ?? 0;
     const badgeProps = {
       showZero: !isClient(),
@@ -34,7 +33,6 @@ const TaskPopover: React.FC<{
         >
           <HeaderBtn
             onClick={() => {
-              taskStore.setTaskCreateEnabled(enabledCreate);
               openTasksPage();
               taskStore.showAllSchemaTaskType = showAllSchemaTaskType;
             }}

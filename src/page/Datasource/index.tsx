@@ -1,4 +1,5 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { formatMessage } from '@/util/intl';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from '@umijs/max';
 import { Button, Dropdown, message, Modal, Space } from 'antd';
@@ -13,13 +14,22 @@ import {
   getConnectionDetail,
   getConnectionList,
 } from '@/common/network/connection';
+import { actionTypes } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
+import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
-
-const ExtraContent = ({ cid }: { cid: number }) => {
+const ExtraContent = ({
+  cid,
+  name,
+  permissions,
+}: {
+  cid: number;
+  name: string;
+  permissions: actionTypes[];
+}) => {
   const nav = useNavigate();
   return (
     <Space>
@@ -27,20 +37,31 @@ const ExtraContent = ({ cid }: { cid: number }) => {
         menu={{
           items: [
             {
-              label: '删除',
+              label: formatMessage({ id: 'odc.page.Datasource.Delete' }), //删除
               key: 'delete',
               async onClick() {
                 Modal.confirm({
-                  title: '确认删除吗？',
+                  title: formatMessage(
+                    {
+                      id: 'odc.page.Datasource.ConfirmToDeleteName',
+                    },
+                    { name: name },
+                  ), //`是否确认删除 ${name}`
+                  content: formatMessage({
+                    id: 'odc.page.Datasource.TheConnectionCannotBeAccessed',
+                  }), //删除后将无法访问该连接
                   async onOk() {
                     const isSuccess = await deleteConnection(cid?.toString());
                     if (isSuccess) {
-                      message.success('删除成功');
+                      message.success(
+                        formatMessage({ id: 'odc.page.Datasource.DeletedSuccessfully' }), //删除成功
+                      );
                       nav('/datasource');
                     }
                   },
                 });
               },
+              disabled: !permissions?.includes(actionTypes.delete),
             },
           ],
         }}
@@ -69,19 +90,19 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '数据库',
+    tab: formatMessage({ id: 'odc.page.Datasource.Database' }), //数据库
     key: IPageType.Datasource_info,
   },
   {
-    tab: '会话',
+    tab: formatMessage({ id: 'odc.page.Datasource.Session' }), //会话
     key: IPageType.Datasource_session,
   },
   {
-    tab: '回收站',
+    tab: formatMessage({ id: 'odc.page.Datasource.RecycleBin' }), //回收站
     key: IPageType.Datasource_recycle,
   },
   {
-    tab: '命令行窗口',
+    tab: formatMessage({ id: 'odc.page.Datasource.CommandLineWindow' }), //命令行窗口
     key: IPageType.Datasource_obclient,
   },
 ];
@@ -156,11 +177,22 @@ const Index: React.FC<IProps> = function () {
         options: options,
         onChange: handleSelectChange,
       }}
+      icon={OBSvg}
       tabList={tabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent cid={cid} />}
+      tabBarExtraContent={
+        <ExtraContent
+          permissions={connection?.permittedActions as actionTypes[]}
+          cid={cid}
+          name={connection?.name}
+        />
+      }
       onTabChange={handleChange}
-      bigSelectBottom={<Link to={'/datasource'}>查看所有数据源</Link>}
+      bigSelectBottom={
+        <Link to={'/datasource'}>
+          {formatMessage({ id: 'odc.page.Datasource.ViewAllDataSources' }) /*查看所有数据源*/}
+        </Link>
+      }
     >
       {Object.entries(Pages)
         .map(([key, Page]) => {
@@ -179,7 +211,7 @@ const Index: React.FC<IProps> = function () {
                   zIndex: key === page ? 'unset' : -999,
                 }}
               >
-                <Page.component key={id} id={id} />
+                <Page.component datasource={connection} key={id} id={id} />
               </div>
             );
           }

@@ -3,6 +3,8 @@ import { isReadonlyPublicConnection } from '@/component/Acess';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
+import RuleResult from '@/component/SQLLintResult/RuleResult';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
   ConnectionMode,
@@ -14,6 +16,7 @@ import {
   TaskType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
+import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
@@ -23,9 +26,9 @@ import {
   AutoComplete,
   Button,
   Checkbox,
+  Divider,
   Drawer,
   Form,
-  Input,
   InputNumber,
   message,
   Modal,
@@ -82,7 +85,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
   const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
   const { asyncTaskData } = modalStore;
-  const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent;
+  const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql;
   const initRollbackContent = '';
 
   const [defaultFileList, setDefaultFileList] = useState({
@@ -146,7 +149,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (asyncTaskData) {
+    if (asyncTaskData?.task) {
       loadRollbackData();
     }
   }, [asyncTaskData]);
@@ -252,6 +255,10 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
     setRollbackContentType(SQLContentType.TEXT);
+    setDefaultFileList({
+      rollbackSqlFiles: [],
+      sqlFiles: [],
+    });
   };
 
   const handleCancel = (hasEdit: boolean) => {
@@ -386,6 +393,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
 
+  useEffect(() => {
+    if (initSqlContent) {
+      handleSqlChange('sqlContent', initSqlContent);
+    }
+  }, [initSqlContent]);
+
   return (
     <Drawer
       destroyOnClose
@@ -430,13 +443,24 @@ const CreateModal: React.FC<IProps> = (props) => {
         name="basic"
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
-          databaseId: asyncTaskData?.task?.databaseId,
+          databaseId: asyncTaskData?.databaseId,
         }}
         layout="vertical"
         requiredMark="optional"
         form={form}
         onFieldsChange={handleFieldsChange}
       >
+        {asyncTaskData?.rules?.length ? (
+          <Form.Item
+            requiredMark={false}
+            label={formatMessage({
+              id: 'odc.AsyncTask.CreateModal.ThisOperationHasBeenBlocked',
+            })} /*该操作已被以下规则拦截，请发起审批*/
+          >
+            <RuleResult data={asyncTaskData?.rules} />
+            <Divider style={{ margin: '8px 0px' }} />
+          </Form.Item>
+        ) : null}
         <DatabaseSelect projectId={projectId} />
         <Form.Item
           label={formatMessage({
@@ -525,6 +549,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
               'Accept-Language': getLocale(),
+              currentOrganizationId: login.organizationId?.toString(),
             }}
             defaultFileList={defaultFileList.sqlFiles}
             onFileChange={(files) => {
@@ -558,9 +583,17 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Form.Item
             name="generateRollbackPlan"
             valuePropName="checked"
-            extra="可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考"
+            extra={formatMessage({
+              id: 'odc.AsyncTask.CreateModal.TheRollbackSchemeCanBe',
+            })} /*可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考*/
           >
-            <Checkbox>生成备份回滚方案</Checkbox>
+            <Checkbox>
+              {
+                formatMessage({
+                  id: 'odc.AsyncTask.CreateModal.GenerateABackupRollbackScheme',
+                }) /*生成备份回滚方案*/
+              }
+            </Checkbox>
           </Form.Item>
           <Form.Item name="rollbackContentType" initialValue={SQLContentType.TEXT} noStyle>
             <Radio.Group
@@ -620,6 +653,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
               'Accept-Language': getLocale(),
+              currentOrganizationId: login.organizationId?.toString(),
             }}
             defaultFileList={defaultFileList.rollbackSqlFiles}
             onFileChange={(files) => {
@@ -788,25 +822,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Form.Item>
         )}
 
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.components.CreateAsyncTaskModal.TaskDescription',
-          })}
-          /* 任务描述 */
-          name="description"
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.components.CreateAsyncTaskModal.TheTaskDescriptionCannotExceed',
-              }),
-
-              // 任务描述不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea rows={6} />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );

@@ -89,6 +89,7 @@ export async function createBatchExportTask(formData: ExportFormData) {
       taskType: TaskType.EXPORT,
       executionStrategy: formData?.executionStrategy,
       executionTime: formData?.executionTime,
+      description: formData?.description,
       parameters: {
         ...serverParams,
       },
@@ -179,6 +180,7 @@ export async function createBatchImportTask(
       taskType: TaskType.IMPORT,
       executionStrategy: formData?.executionStrategy,
       executionTime: formData?.executionTime,
+      description: formData?.description,
       parameters: {
         ...serverParams,
       },

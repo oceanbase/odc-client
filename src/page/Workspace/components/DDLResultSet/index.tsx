@@ -32,7 +32,7 @@ import Icon, {
   VerticalLeftOutlined,
   VerticalRightOutlined,
 } from '@ant-design/icons';
-import { useControllableValue } from 'ahooks';
+import { useControllableValue, useUpdate } from 'ahooks';
 import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -45,10 +45,9 @@ import RollbackSvg from '@/svgr/Roll-back.svg';
 // @ts-ignore
 import { uploadTableObject } from '@/common/network/sql';
 import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import SessionStore from '@/store/sessionManager/session';
 import MockSvg from '@/svgr/mock_toolbar.svg';
-import { isObjectColumn } from '@/util/column';
+import { getNlsValueKey, isObjectColumn } from '@/util/column';
 import { generateUniqKey, getBlobValueKey } from '@/util/utils';
 import type { DataGridRef } from '@alipay/ob-react-data-grid';
 import { defaultOnCopy, defaultOnCopyCsv } from '@alipay/ob-react-data-grid';
@@ -154,8 +153,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     onSubmitRows,
     enableRowId,
   } = props;
-  const [queryEditableLoading, setQueryEditableLoading] = useState(false);
   const sessionId = session?.sessionId;
+
+  const update = useUpdate();
 
   /**
    * 编辑中的rows
@@ -243,7 +243,15 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       rowIdx,
       endRowIdx: rowIdx,
     });
+    setTimeout(() => {
+      /**
+       * grid 触发onchange的时候，自身的selectRange还没更新，所以需要过一下更新
+       */
+      update();
+    });
   }, []);
+
+  const rowsRef = useRef<any[]>();
 
   /**
    * 切换编辑态和原始数据的rows
@@ -251,6 +259,12 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const rows: any[] = useMemo(() => {
     return editRows || originRows;
   }, [originRows, editRows]);
+
+  rowsRef.current = rows;
+  /**
+   * 表格实际展示的rows，比如过滤后的rows。
+   */
+  const filterRows = gridRef.current?.rows;
   /**
    * 外部columns更新，自身的columns需要更新。
    */
@@ -526,6 +540,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               ...newRows[targetRowIndex],
               [columnKey]: null,
               [getBlobValueKey(columnKey)]: null,
+              [getNlsValueKey(columnKey)]: null,
               _originRow: originRows.find((row) => {
                 return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
               }),
@@ -593,7 +608,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               if (file) {
                 const serverFileName = await uploadTableObject(file, sessionId);
                 if (serverFileName) {
-                  const newRows = [...rows];
+                  const newRows = [...rowsRef.current];
                   const targetRowIndex = newRows.findIndex(
                     (newRow) => newRow._rowIndex === row._rowIndex,
                   );
@@ -660,8 +675,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
    * 选中并且为单行的时候才会存在，用来标识当前单选情况下的行
    */
   let selectedRowIdx;
+  let filterRowIdx;
   if (selectedCellRowsKey.length === 1) {
     selectedRowIdx = rows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
+    filterRowIdx = gridRef.current?.selectedRange?.rowIdx;
   }
   const rgdColumns = useColumns(
     columnsToDisplay,
@@ -695,7 +712,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const isInTransaction = session?.transState?.transState === TransState.IDLE;
   return (
     <div style={{ height: resultHeight, display: 'flex', flexDirection: 'column' }}>
-      <Spin spinning={queryEditableLoading}>
+      <Spin spinning={false}>
         <Toolbar compact>
           <div className={styles.toolsLeft}>
             {isEditing ? (
@@ -774,15 +791,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </>
               ) : (
                 <>
-                  <WorkspaceAcess action={actionTypes.update}>
-                    <ToolbarButton
-                      text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
-                      icon={<EditOutlined />}
-                      onClick={() => {
-                        setIsEditing(true);
-                      }}
-                    />
-                  </WorkspaceAcess>
+                  <ToolbarButton
+                    text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
+                  />
 
                   {autoCommit ? null : (
                     <>
@@ -863,13 +878,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <ToolbarDivider />
                 </>
               ) : (
-                <WorkspaceAcess action={actionTypes.update}>
-                  <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
-                    icon={<EditOutlined />}
-                    onClick={handleToggleEditable}
-                  />
-                </WorkspaceAcess>
+                <ToolbarButton
+                  text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
+                  icon={<EditOutlined />}
+                  onClick={handleToggleEditable}
+                />
               )
             ) : null}
             {!isEditing && onExport && settingStore.enableDBExport ? (
@@ -885,23 +898,22 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
             {!isEditing && showMock ? (
               <>
-                <WorkspaceAcess action={actionTypes.update}>
-                  <ToolbarButton
-                    text={
-                      formatMessage({
-                        id: 'odc.components.DDLResultSet.AnalogData',
-                      })
+                <ToolbarButton
+                  text={
+                    formatMessage({
+                      id: 'odc.components.DDLResultSet.AnalogData',
+                    })
 
-                      // 模拟数据
-                    }
-                    icon={<Icon component={MockSvg} />}
-                    onClick={() => {
-                      modal.changeDataMockerModal(true, {
-                        tableName: table?.tableName,
-                      });
-                    }}
-                  />
-                </WorkspaceAcess>
+                    // 模拟数据
+                  }
+                  icon={<Icon component={MockSvg} />}
+                  onClick={() => {
+                    modal.changeDataMockerModal(true, {
+                      tableName: table?.tableName,
+                      databaseId: session?.database?.databaseId,
+                    });
+                  }}
+                />
               </>
             ) : null}
             {showExplain &&
@@ -1152,9 +1164,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             }}
             setSelectedRowIndex={setSelectedRowIndex}
             columns={columnsToDisplay}
-            selectedRow={rows[selectedRowIdx]}
-            currentIdx={selectedRowIdx}
-            total={rows.length}
+            selectedRow={filterRows?.[filterRowIdx]}
+            currentIdx={filterRowIdx}
+            total={filterRows?.length}
             useUniqueColumnName={useUniqueColumnName}
           />
         </ResultContext.Provider>

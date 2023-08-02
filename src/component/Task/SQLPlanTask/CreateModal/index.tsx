@@ -4,6 +4,7 @@ import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   ConnectionMode,
   CreateTaskRecord,
@@ -17,6 +18,7 @@ import {
   TaskType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
+import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
@@ -25,7 +27,6 @@ import {
   Button,
   Drawer,
   Form,
-  Input,
   InputNumber,
   message,
   Modal,
@@ -114,7 +115,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setSqlContentType(sqlContentType);
     setFormData(formData);
     form.setFieldsValue(formData);
-    crontabRef.current.setValue({
+    crontabRef.current?.setValue({
       mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
       dateType: triggerStrategy as any,
       cronString: cronExpression,
@@ -405,6 +406,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     headers: {
       'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
       'Accept-Language': getLocale(),
+      currentOrganizationId: login.organizationId?.toString(),
     },
 
     defaultFileList: formData?.sqlFiles,
@@ -732,30 +734,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.components.CreateSQLPlanTaskModal.Remarks',
-          })}
-          /*备注*/
-          name="description"
-          rules={[
-            {
-              max: 200,
-              message: formatMessage({
-                id: 'odc.components.CreateSQLPlanTaskModal.TheDescriptionCannotExceedCharacters',
-              }),
-              //备注不超过 200 个字符
-            },
-          ]}
-        >
-          <Input.TextArea
-            rows={3}
-            placeholder={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.EnterAComment',
-            })}
-            /*请输入备注*/
-          />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );

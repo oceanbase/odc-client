@@ -4,6 +4,8 @@ export const defaultMainWebHeight = 760;
 
 export const minJDKVersion = '1.8.0';
 
+export const maxJDKVersion = '1.8.0';
+
 export const minJDKReleaseVersion = 200;
 
 export const mainWebWindowConfig = {

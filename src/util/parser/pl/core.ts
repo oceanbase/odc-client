@@ -1,4 +1,4 @@
-import { PLLexer as OraclePLLexer } from '@alipay/ob-parser-js/lib/parser/oracle/PLLexer';
+import { PlSqlLexer as OraclePLLexer } from '@alipay/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { CommonTokenStream, Token } from 'antlr4';
 import { CaseInsensitiveStream } from '../common';
 

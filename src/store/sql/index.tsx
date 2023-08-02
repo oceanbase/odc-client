@@ -1,8 +1,13 @@
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
+import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
+import { PLType } from '@/constant/plType';
 import {
   ConnectionMode,
+  IFormatPLSchema,
   ILogItem,
+  IPLCompileResult,
+  IPLExecResult,
   IResultSet,
   ISqlExecuteResult,
   ISqlExecuteResultStatus,
@@ -90,7 +95,7 @@ export class SQLStore {
       });
       const data = await executeSQL('commit;', sessionId, dbName);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
-      if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
+      if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
         );
@@ -109,7 +114,7 @@ export class SQLStore {
       this.rollbackPageKey.add(pageKey);
       const data = await executeSQL('rollback;', sessionId, dbName);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
-      if (data?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
+      if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
           formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
         );
@@ -142,12 +147,12 @@ export class SQLStore {
     isSection: boolean,
     sessionId: string,
     dbName: string,
-  ): Promise<ISqlExecuteResult[]> {
+  ): Promise<IExecuteTaskResult> {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
     }
 
-    let record; // 需要忽略默认错误处理
+    let record: IExecuteTaskResult; // 需要忽略默认错误处理
     const session = sessionManager.sessionMap.get(sessionId);
     try {
       this.runningPageKey.add(pageKey);
@@ -170,8 +175,8 @@ export class SQLStore {
     }
 
     // 兼容后端不按约定返回的情况
-    if (!record) {
-      return null;
+    if (!record || record.invalid) {
+      return record;
     }
     /**
      * 刷新一下delimiter
@@ -184,7 +189,7 @@ export class SQLStore {
     runInAction(() => {
       // 加入历史记录
       /** Record去除rows,性能优化 */
-      const recordWithoutRows = record.map((result) => {
+      const recordWithoutRows = record.executeResult.map((result) => {
         return {
           ...result,
           rows: [],
@@ -211,8 +216,8 @@ export class SQLStore {
         });
         this.resultSets.set(pageKey, [
           ...lockedResultSets,
-          this.getLogTab(record),
-          ...generateResultSetColumns(record, session?.connection?.dialectType),
+          this.getLogTab(record.executeResult),
+          ...generateResultSetColumns(record.executeResult, session?.connection?.dialectType),
         ]);
       }
     });
@@ -258,7 +263,12 @@ export class SQLStore {
   } // 编译 PL
 
   @action
-  public async compilePL(plName: string, obDbObjectType: string, sessionId, dbName) {
+  public async compilePL(
+    plName: string,
+    obDbObjectType: string,
+    sessionId,
+    dbName,
+  ): Promise<IPLCompileResult> {
     const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.post(`/api/v1/pl/compile/${sid}`, {
       data: { obDbObjectType, plName },
@@ -307,28 +317,48 @@ export class SQLStore {
 
   // 运行 PL
   @action
-  public async execPL(plSchema: any, ignoreError?: boolean, sessionId?: string, dbName?: string) {
+  public async execPL(
+    plSchema: IFormatPLSchema,
+    anonymousBlockDdl?: string,
+    ignoreError?: boolean,
+    sessionId?: string,
+    dbName?: string,
+  ): Promise<IPLExecResult> {
     const sid = generateDatabaseSid(dbName, sessionId);
     const { plName } = plSchema;
     let res;
     let dbms;
-    if (plSchema.proName) {
+    if (plSchema.plType === PLType.PROCEDURE) {
       res = await request.put(`/api/v1/pl/callProcedure/${sid}`, {
-        data: plSchema,
+        data: {
+          procedure: plSchema?.procedure,
+          anonymousBlockDdl,
+        },
         params: {
           ignoreError,
         },
       });
-    } else if (plSchema.funName) {
+    } else if (plSchema.plType === PLType.FUNCTION) {
       res = await request.put(`/api/v1/pl/callFunction/${sid}`, {
-        data: plSchema,
+        data: {
+          function: plSchema?.function,
+          anonymousBlockDdl,
+        },
         params: {
           ignoreError,
         },
       });
     } else {
       const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
-      if (data?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS && ignoreError) {
+      if (data?.invalid) {
+        return {
+          status: 'FAIL',
+          errorMessage: '',
+        };
+      } else if (
+        data?.executeResult?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS &&
+        ignoreError
+      ) {
         return {
           status: 'FAIL',
           errorMessage: data?.[0]?.track,
@@ -390,8 +420,10 @@ export class SQLStore {
         session?.sessionId,
         session?.database?.dbName,
       );
-
-      if (!record?.length) {
+      if (record?.invalid) {
+        return;
+      }
+      if (!record?.executeResult?.length) {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.record.empty',
@@ -401,7 +433,7 @@ export class SQLStore {
       } // 加入历史记录
 
       this.records = [
-        ...record.reverse().map((result) => {
+        ...record?.executeResult.reverse().map((result) => {
           return {
             ...result,
           };
@@ -410,7 +442,11 @@ export class SQLStore {
       ]; // 在结果集中重新执行 SQL 肯定只有一条
 
       resultSet[resultSetIndex] = {
-        ...generateResultSetColumns(record, session?.connection?.dialectType, target.uniqKey)[0],
+        ...generateResultSetColumns(
+          record.executeResult,
+          session?.connection?.dialectType,
+          target.uniqKey,
+        )[0],
       };
       this.resultSets.set(pageKey, clone(resultSet));
     }

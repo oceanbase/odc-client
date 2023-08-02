@@ -8,6 +8,7 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
 import { message } from 'antd';
+import { Base64 } from 'js-base64';
 import { isNil, toInteger } from 'lodash';
 import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
@@ -51,7 +52,7 @@ export async function getTableInfo(
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
-    )}/tables/${encodeObjName(tableName)}`,
+    )}/tables/${encodeObjName(Base64.encode(tableName))}`,
   );
 
   return convertServerTableToTable(res?.data);
@@ -104,16 +105,6 @@ export async function generateCreateTableDDL(
   );
 
   return res?.data?.sql;
-}
-
-export async function dropTable(tableName: string, sessionId: string, dbName: string) {
-  const res = await request.delete(
-    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
-      dbName,
-    )}/tables/${encodeObjName(tableName)}`,
-  );
-
-  return !res?.isError;
 }
 
 export async function generateUpdateTableDDL(
@@ -182,6 +173,7 @@ export async function batchGetDataModifySQL(
   }[],
   sessionId: string,
   dbName: string,
+  whereColumns: string[],
 ): Promise<{
   sql: string;
   tip: string;
@@ -191,6 +183,7 @@ export async function batchGetDataModifySQL(
     data: {
       tableName,
       schemaName,
+      whereColumns,
       rows: updateRows.map((updateRow) => {
         const { type, row, initialRow, enableRowId } = updateRow;
         return {

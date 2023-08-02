@@ -1,5 +1,4 @@
 import { getSequence } from '@/common/network/sequence';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
@@ -158,21 +157,19 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
               })}
               key={PropsTab.INFO}
             >
-              <WorkspaceAcess action={actionTypes.update}>
-                <Toolbar>
-                  <Toolbar.Button
-                    text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                    icon={<EditOutlined />}
-                    onClick={this.showSequenceEditModal}
-                  />
+              <Toolbar>
+                <Toolbar.Button
+                  text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                  icon={<EditOutlined />}
+                  onClick={this.showSequenceEditModal}
+                />
 
-                  <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
-                    icon={<SyncOutlined />}
-                    onClick={this.reloadSequence.bind(this, params.sequenceName)}
-                  />
-                </Toolbar>
-              </WorkspaceAcess>
+                <ToolbarButton
+                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                  icon={<SyncOutlined />}
+                  onClick={this.reloadSequence.bind(this, params.sequenceName)}
+                />
+              </Toolbar>
               <ObjectInfoView
                 data={[
                   {

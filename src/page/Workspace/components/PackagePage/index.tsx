@@ -21,7 +21,6 @@ import { FormattedMessage } from 'umi';
 // @ts-ignore
 
 import { getPackage } from '@/common/network';
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
@@ -330,17 +329,15 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                   </TabPane>
                   <TabPane tab={'DDL'} key={PropsTab.PACKAGE_HEAD_CODE}>
                     <Toolbar>
-                      <WorkspaceAcess action={actionTypes.update}>
-                        <ToolbarButton
-                          text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                          icon={<EditOutlined />}
-                          onClick={this.handleEditPackage.bind(
-                            this,
-                            pkg.packageName,
-                            PropsTab.PACKAGE_HEAD_CODE,
-                          )}
-                        />
-                      </WorkspaceAcess>
+                      <ToolbarButton
+                        text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                        icon={<EditOutlined />}
+                        onClick={this.handleEditPackage.bind(
+                          this,
+                          pkg.packageName,
+                          PropsTab.PACKAGE_HEAD_CODE,
+                        )}
+                      />
                       <ToolbarButton
                         text={
                           formatMessage({
@@ -468,17 +465,15 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                   </TabPane>
                   <TabPane tab={'DDL'} key={PropsTab.PACKAGE_BODY_CODE}>
                     <Toolbar>
-                      <WorkspaceAcess action={actionTypes.update}>
-                        <ToolbarButton
-                          text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                          icon={<EditOutlined />}
-                          onClick={this.handleEditPackage.bind(
-                            this,
-                            pkg.packageName,
-                            PropsTab.PACKAGE_BODY_CODE,
-                          )}
-                        />
-                      </WorkspaceAcess>
+                      <ToolbarButton
+                        text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                        icon={<EditOutlined />}
+                        onClick={this.handleEditPackage.bind(
+                          this,
+                          pkg.packageName,
+                          PropsTab.PACKAGE_BODY_CODE,
+                        )}
+                      />
                       <ToolbarButton
                         text={
                           formatMessage({

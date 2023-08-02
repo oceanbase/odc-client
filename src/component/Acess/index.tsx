@@ -1,15 +1,14 @@
-import { EnablePermission } from '@/constant';
 import {
   actionTypes,
   IConnection,
-  IConnectionType,
   IManagePagesKeys,
+  IManagerResourceType,
   IManagerResourceType as resourceTypes,
 } from '@/d.ts';
 import authStore, { AuthStore, AuthStoreContext } from '@/store/auth';
 import { isString } from 'lodash';
 import { observer } from 'mobx-react';
-import React, { ReactElement, useContext } from 'react';
+import { ReactElement, useContext } from 'react';
 
 interface AcessParameter {
   // 'key value expression like project:10',
@@ -42,6 +41,39 @@ const Acess = observer(
 );
 
 /**
+ * 存在一个权限，就可以返回
+ */
+const AcessMultiPermission = observer(
+  (props: { fallback?: ReactElement; children?: ReactElement; permissions: AcessParameter[] }) => {
+    const { children, permissions, fallback = <NoAuth /> } = props;
+    const results = useMultiAcess(props.permissions);
+    if (results?.find((item) => item.accessible)) return children;
+    return fallback;
+  },
+);
+
+/**
+ * 存在指定资源类型的权限，就能返回
+ * 和 AcessMultiPermission 需要精确匹配一个资源不同，这个只会检查是否有该资源类型的权限。
+ */
+const AccessResourceTypePermission = observer(
+  (props: { fallback?: ReactElement; children?: ReactElement; permissions: AcessParameter[] }) => {
+    const { children, permissions, fallback = <NoAuth /> } = props;
+    const authState = useContext(AuthStoreContext);
+    const isExist = !!permissions.find(({ resourceIdentifier, action }) => {
+      const [resourceType, resourceId] = resourceIdentifier?.split(':') ?? [];
+      const resourceIds = authState.getResourceByAction(
+        resourceType as IManagerResourceType,
+        action as actionTypes,
+      );
+      return !!resourceIds?.length;
+    });
+    if (isExist) return children;
+    return fallback;
+  },
+);
+
+/**
  * hooks 获取权限信息
  */
 function useAcess(permission: AcessParameter): AcessResult {
@@ -50,36 +82,23 @@ function useAcess(permission: AcessParameter): AcessResult {
 }
 
 /**
- * 高阶组件 获取权限信息
+ * hooks 获取权限信息
  */
-function withAcess(permission: AcessParameter) {
-  return function <P>(
-    RenderComponent: React.ComponentType<P>,
-  ): React.ComponentType<P & Partial<AcessResult>> {
-    return observer((props: P) => {
-      const authState = useAcess(permission);
-      return <RenderComponent {...props} {...authState} />;
-    });
-  };
+function useMultiAcess(permissions: AcessParameter[]): AcessResult[] {
+  const authState = useContext(AuthStoreContext);
+  return permissions?.map((p) => getAcess(authState, p));
 }
 
-function isSubResource(parentResourceIdentifier: string, resourceIdentifier: string) {
-  const [resourceType, resourceId] = parentResourceIdentifier?.split(':') ?? [];
-  const [type, id] = resourceIdentifier?.split(':') ?? [];
-  const isSameType = resourceType === type;
-  if (resourceId === '*' || !resourceId) return isSameType;
-  return isSameType && id === resourceId;
-}
-
+/**
+ * 获取指定的资源是否有权限
+ */
 function getAcess(authState: AuthStore, permission: AcessParameter) {
   const { resourceIdentifier = '', action } = permission;
   if (!(isString(action) && isString(resourceIdentifier))) return { accessible: false };
-  const { permissions } = authState;
-  const hasPermission = permissions?.some((item) => {
-    return isSubResource(item?.resourceType, resourceIdentifier) && item?.actions?.includes(action);
-  });
+  const [resourceType, resourceId] = resourceIdentifier?.split(':') ?? [];
+  const actions = authState.getResourceActions(resourceId, resourceType as IManagerResourceType);
   return {
-    accessible: EnablePermission && hasPermission,
+    accessible: actions.has(action as actionTypes),
   };
 }
 
@@ -91,201 +110,33 @@ function NoAuth(): JSX.Element {
   return null;
 }
 
-function createSystemPermission(
+function createPermission(
   resourceType: resourceTypes,
   action: actionTypes = actionTypes.read,
+  resourceId?: any,
 ) {
   return {
-    resourceIdentifier: `${resourceType}:*`,
+    resourceIdentifier: `${resourceType}:${resourceId ?? '*'}`,
     action,
   };
 }
-
-const systemReadPermissions = {
-  // 资源管理权限
-  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource),
-  [resourceTypes.project]: createSystemPermission(resourceTypes.project),
-  [resourceTypes.user]: createSystemPermission(resourceTypes.user),
-  [resourceTypes.role]: createSystemPermission(resourceTypes.role),
-  // 系统操作权限
-  [resourceTypes.flow_config]: createSystemPermission(resourceTypes.flow_config),
-  [resourceTypes.odc_data_masking_rule]: createSystemPermission(
-    resourceTypes.odc_data_masking_rule,
-  ),
-  [resourceTypes.odc_audit_event]: createSystemPermission(resourceTypes.odc_audit_event),
-  [resourceTypes.auto_auth]: createSystemPermission(resourceTypes.auto_auth),
-  [resourceTypes.system_config]: createSystemPermission(resourceTypes.system_config),
-  [resourceTypes.integration]: createSystemPermission(resourceTypes.integration),
-};
 
 const systemUpdatePermissions = {
   // 资源管理权限
-  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.update),
-  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.update),
-  [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.update),
-  [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.update),
+  [resourceTypes.resource]: createPermission(resourceTypes.resource, actionTypes.update),
+  [resourceTypes.project]: createPermission(resourceTypes.project, actionTypes.update),
+  [resourceTypes.user]: createPermission(resourceTypes.user, actionTypes.update),
+  [resourceTypes.role]: createPermission(resourceTypes.role, actionTypes.update),
   // 系统操作权限
-  [resourceTypes.flow_config]: createSystemPermission(
-    resourceTypes.flow_config,
-    actionTypes.update,
-  ),
-  [resourceTypes.odc_data_masking_rule]: createSystemPermission(
-    resourceTypes.odc_data_masking_rule,
-    actionTypes.update,
-  ),
-  [resourceTypes.odc_audit_event]: createSystemPermission(
+  [resourceTypes.flow_config]: createPermission(resourceTypes.flow_config, actionTypes.update),
+  [resourceTypes.odc_audit_event]: createPermission(
     resourceTypes.odc_audit_event,
     actionTypes.update,
   ),
-  [resourceTypes.auto_auth]: createSystemPermission(resourceTypes.auto_auth, actionTypes.update),
-  [resourceTypes.system_config]: createSystemPermission(
-    resourceTypes.system_config,
-    actionTypes.update,
-  ),
-  [resourceTypes.integration]: createSystemPermission(
-    resourceTypes.integration,
-    actionTypes.update,
-  ),
+  [resourceTypes.auto_auth]: createPermission(resourceTypes.auto_auth, actionTypes.update),
+  [resourceTypes.integration]: createPermission(resourceTypes.integration, actionTypes.update),
 };
 
-const systemCreatePermissions = {
-  // 资源管理权限
-  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.create),
-  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.create),
-  [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.create),
-  [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.create),
-  [resourceTypes.integration]: createSystemPermission(
-    resourceTypes.integration,
-    actionTypes.create,
-  ),
-};
-
-const systemDeletePermissions = {
-  // 资源管理权限
-  [resourceTypes.resource]: createSystemPermission(resourceTypes.resource, actionTypes.delete),
-  [resourceTypes.project]: createSystemPermission(resourceTypes.project, actionTypes.delete),
-  [resourceTypes.user]: createSystemPermission(resourceTypes.user, actionTypes.delete),
-  [resourceTypes.role]: createSystemPermission(resourceTypes.role, actionTypes.delete),
-  // 系统操作权限
-  [resourceTypes.flow_config]: createSystemPermission(
-    resourceTypes.flow_config,
-    actionTypes.delete,
-  ),
-  [resourceTypes.odc_data_masking_rule]: createSystemPermission(
-    resourceTypes.odc_data_masking_rule,
-    actionTypes.delete,
-  ),
-  [resourceTypes.odc_audit_event]: createSystemPermission(
-    resourceTypes.odc_audit_event,
-    actionTypes.delete,
-  ),
-  [resourceTypes.auto_auth]: createSystemPermission(resourceTypes.auto_auth, actionTypes.delete),
-  [resourceTypes.system_config]: createSystemPermission(
-    resourceTypes.system_config,
-    actionTypes.delete,
-  ),
-  [resourceTypes.integration]: createSystemPermission(
-    resourceTypes.integration,
-    actionTypes.delete,
-  ),
-};
-
-/** 管控台入口权限控制 */
-function withSystemAcess<P>(
-  RenderComponent: React.ComponentType<P>,
-): React.ComponentType<P & Partial<AcessResult>> {
-  return observer((props: P) => {
-    // 资源管理权限
-    const { accessible: hasUser } = useAcess(systemReadPermissions[resourceTypes.user]);
-    const { accessible: hasRole } = useAcess(systemReadPermissions[resourceTypes.role]);
-    const { accessible: hasProject } = useAcess(systemReadPermissions[resourceTypes.project]);
-    const { accessible: hasConnection } = useAcess(systemReadPermissions[resourceTypes.resource]);
-    // 系统操作权限
-    const { accessible: hasFlowConfig } = useAcess(
-      systemReadPermissions[resourceTypes.flow_config],
-    );
-    const { accessible: hasDataMaskingRule } = useAcess(
-      systemReadPermissions[resourceTypes.odc_data_masking_rule],
-    );
-    const { accessible: hasAuditEvent } = useAcess(
-      systemReadPermissions[resourceTypes.odc_audit_event],
-    );
-    const { accessible: hasAutoAuth } = useAcess(systemReadPermissions[resourceTypes.auto_auth]);
-    const { accessible: hasSystemConfig } = useAcess(
-      systemReadPermissions[resourceTypes.system_config],
-    );
-    const { accessible: hasIntegration } = useAcess(
-      systemReadPermissions[resourceTypes.integration],
-    );
-
-    const accessibleResourceManagement = [hasUser, hasRole, hasProject, hasConnection];
-    const accessibleSystemOperation = [
-      hasFlowConfig,
-      hasDataMaskingRule,
-      hasAuditEvent,
-      hasAutoAuth,
-      hasSystemConfig,
-    ];
-    const accessible = [...accessibleResourceManagement, ...accessibleSystemOperation]?.some(
-      (accessible) => accessible,
-    );
-    const systemPages = {
-      // 资源管理
-      [IManagePagesKeys.INDEX]: hasUser,
-      [IManagePagesKeys.USER]: hasUser,
-      [IManagePagesKeys.ROLE]: hasRole,
-      [IManagePagesKeys.CONNECTION]: hasConnection,
-      [IManagePagesKeys.RESOURCE]: hasProject,
-      // 系统操作
-      [IManagePagesKeys.TASK_FLOW]: hasFlowConfig,
-      [IManagePagesKeys.MASK_DATA]: hasDataMaskingRule,
-      [IManagePagesKeys.SECURITY_AUDIT]: hasAuditEvent,
-      [IManagePagesKeys.SYSTEM_CONFIG]: hasSystemConfig,
-      [IManagePagesKeys.INTEGRATION_APPROVAL]: hasIntegration,
-    };
-    return <RenderComponent {...props} accessible={accessible} systemPages={systemPages} />;
-  });
-}
-
-/** 工作台权限控制组件 */
-function withWorkspaceAcess(action: actionTypes) {
-  return function <P>(
-    RenderComponent: React.ComponentType<P>,
-  ): React.ComponentType<P & Partial<AcessResult>> {
-    return observer((props: P) => {
-      const { accessible: hasWorkspaceAcess } = useAcess({
-        action,
-        resourceIdentifier: `${resourceTypes.workspace}:${''}`,
-      });
-      // 个人链接，无权限限制
-      return <RenderComponent {...props} accessible={true} />;
-    });
-  };
-}
-
-const withWorkspaceCreateAcess = withWorkspaceAcess(actionTypes.create);
-
-type WorkspaceAcessProps = {
-  fallback?: ReactElement;
-  action: actionTypes;
-  children: ReactElement;
-};
-
-const WorkspaceAcess = ({ fallback = <NoAuth />, children, action }: WorkspaceAcessProps) => {
-  const Render = withWorkspaceAcess(action)((props: any) => {
-    if (props.accessible) return children;
-    return fallback;
-  });
-  return <Render />;
-};
-
-const canAcessWorkspace = (action: actionTypes, connectionType: IConnectionType): boolean => {
-  if (!action) return true;
-  return canAcess({
-    resourceIdentifier: `${resourceTypes.workspace}:${''}`,
-    action,
-  }).accessible;
-};
 // 写权限
 export function hasSourceWriteAuth(auths: string[] = []) {
   return auths?.includes('connect');
@@ -301,18 +152,10 @@ export function isReadonlyPublicConnection(connection: Partial<IConnection>) {
 
 export {
   Acess,
-  useAcess,
+  AcessMultiPermission,
+  AccessResourceTypePermission,
   canAcess,
-  withAcess,
-  withSystemAcess,
-  resourceTypes,
   actionTypes,
-  withWorkspaceCreateAcess,
-  AcessResult,
-  canAcessWorkspace,
-  WorkspaceAcess,
   systemUpdatePermissions,
-  systemDeletePermissions,
-  systemReadPermissions,
-  systemCreatePermissions,
+  createPermission,
 };

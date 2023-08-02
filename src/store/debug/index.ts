@@ -55,6 +55,8 @@ export class Debug {
   @observable
   public result: IDebugResult;
 
+  public anonymousBlock: string;
+
   public session: SessionStore;
 
   public onContextChangeQueue?: ((
@@ -83,7 +85,7 @@ export class Debug {
       config.packageName,
       Debug.getConfigSchema(config),
       config.plType,
-      config.content,
+      config.anonymousBlock,
       config.session,
     );
     if (debugId) {
@@ -121,6 +123,7 @@ export class Debug {
     this.procedure = config.procedure;
     this.onContextChangeQueue = [config.onContextChange];
     this.session = config.session;
+    this.anonymousBlock = config.anonymousBlock;
     this.plInfo = [
       {
         content: config.content,
@@ -143,7 +146,7 @@ export class Debug {
   /**
    * 重新进行调试
    */
-  public async recoverDebug(newParams?: IPLParam[]) {
+  public async recoverDebug(newParams?: IPLParam[], ddl?: string) {
     const oldStatus = this.status;
     try {
       this.status = DebugStatus.RECOVER;
@@ -156,7 +159,7 @@ export class Debug {
         this.packageName,
         this.getPlSchema(),
         this.plType,
-        mainPl.content,
+        ddl,
         this.session,
       );
       if (debugId) {
@@ -574,7 +577,7 @@ export class Debug {
     plName: string,
     packageName: string,
     session: SessionStore,
-  ) {
+  ): Promise<string> {
     if (packageName) {
       return (await getPackage(packageName, session?.sessionId, session?.database?.dbName))
         ?.packageBody?.basicInfo?.ddl;

@@ -4,13 +4,14 @@ import {
   getResourceRoles,
   getTaskFlowList,
 } from '@/common/network/manager';
-import { actionTypes, canAcess } from '@/component/Acess';
+import { Acess, actionTypes, canAcess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
 import { IManagerResourceType, IntegrationType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { secondsToHour } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { message, Modal, Space } from 'antd';
@@ -24,7 +25,7 @@ const renderTime = (time) => {
   return (
     <Space size={4}>
       <span>{secondsToHour(time)}</span>
-      <span>小时</span>
+      <span>{formatMessage({ id: 'odc.Secure.Approval.Hours' }) /*小时*/}</span>
     </Space>
   );
 };
@@ -33,7 +34,7 @@ const renderNodes = (nodes: ITaskFlowNode[]) => {
   return nodes
     ?.map((item) => {
       if (item.autoApproval) {
-        return '自动审批';
+        return formatMessage({ id: 'odc.Secure.Approval.AutomaticApproval' }); //自动审批
       }
       return item.resourceRoleName || item.externalApprovalName;
     })
@@ -71,7 +72,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   private getPageColumns = () => {
     return [
       {
-        title: '流程名称',
+        title: formatMessage({ id: 'odc.Secure.Approval.ProcessName' }), //流程名称
         width: 200,
         dataIndex: 'name',
         ellipsis: true,
@@ -79,14 +80,14 @@ class Approval extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '审批流程',
+        title: formatMessage({ id: 'odc.Secure.Approval.ApprovalProcess' }), //审批流程
         dataIndex: 'nodes',
         className: styles.title,
         ellipsis: true,
         render: renderNodes,
       },
       {
-        title: '审批有效期',
+        title: formatMessage({ id: 'odc.Secure.Approval.ValidityPeriodOfApproval' }), //审批有效期
         width: 132,
         dataIndex: 'approvalExpirationIntervalSeconds',
         className: styles.title,
@@ -94,7 +95,7 @@ class Approval extends React.PureComponent<IProps, IState> {
         render: renderTime,
       },
       {
-        title: '执行等待有效期',
+        title: formatMessage({ id: 'odc.Secure.Approval.ExecutionWaitingPeriod' }), //执行等待有效期
         width: 132,
         dataIndex: 'waitExecutionExpirationIntervalSeconds',
         className: styles.title,
@@ -102,7 +103,7 @@ class Approval extends React.PureComponent<IProps, IState> {
         render: renderTime,
       },
       {
-        title: '执行有效期',
+        title: formatMessage({ id: 'odc.Secure.Approval.ExecutionValidityPeriod' }), //执行有效期
         width: 132,
         dataIndex: 'executionExpirationIntervalSeconds',
         className: styles.title,
@@ -110,7 +111,7 @@ class Approval extends React.PureComponent<IProps, IState> {
         render: renderTime,
       },
       {
-        title: '使用数量',
+        title: formatMessage({ id: 'odc.Secure.Approval.UsageQuantity' }), //使用数量
         width: 180,
         dataIndex: 'referencedCount',
         className: styles.title,
@@ -118,30 +119,32 @@ class Approval extends React.PureComponent<IProps, IState> {
         ellipsis: true,
       },
       {
-        title: '操作',
+        title: formatMessage({ id: 'odc.Secure.Approval.Operation' }), //操作
         width: 200,
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => (
           <Action.Group>
-            <Action.Group>
+            <Acess {...createPermission(IManagerResourceType.approval_flow, actionTypes.update)}>
               <Action.Link
                 disabled={record.builtIn}
                 onClick={async () => {
                   this.openFormModal(record.id);
                 }}
               >
-                编辑
+                {formatMessage({ id: 'odc.Secure.Approval.Edit' }) /*编辑*/}
               </Action.Link>
+            </Acess>
+            <Acess {...createPermission(IManagerResourceType.approval_flow, actionTypes.delete)}>
               <Action.Link
                 disabled={record.builtIn}
                 onClick={async () => {
                   this.handleDelete(record.id);
                 }}
               >
-                删除
+                {formatMessage({ id: 'odc.Secure.Approval.Delete' }) /*删除*/}
               </Action.Link>
-            </Action.Group>
+            </Acess>
           </Action.Group>
         ),
       },
@@ -157,10 +160,10 @@ class Approval extends React.PureComponent<IProps, IState> {
 
   private handleDelete = (param: React.Key | React.Key[]) => {
     Modal.confirm({
-      title: '确认要删除审批流程吗？',
+      title: formatMessage({ id: 'odc.Secure.Approval.AreYouSureYouWant' }), //确认要删除审批流程吗？
       icon: <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />,
-      cancelText: '取消',
-      okText: '确定',
+      cancelText: formatMessage({ id: 'odc.Secure.Approval.Cancel' }), //取消
+      okText: formatMessage({ id: 'odc.Secure.Approval.Ok' }), //确定
       centered: true,
       onOk: () => {
         this.handleConfirmDelete(param as number);
@@ -171,7 +174,9 @@ class Approval extends React.PureComponent<IProps, IState> {
   private handleConfirmDelete = async (id: number) => {
     const res = await deleteTaskFlow(id);
     if (res) {
-      message.success('删除成功');
+      message.success(
+        formatMessage({ id: 'odc.Secure.Approval.DeletedSuccessfully' }), //删除成功
+      );
       this.reloadData();
     }
   };
@@ -232,7 +237,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, editId, flowList, roles, integrations } = this.state;
     const canAcessCreate = canAcess({
-      resourceIdentifier: IManagerResourceType.resource,
+      resourceIdentifier: IManagerResourceType.approval_flow,
       action: actionTypes.create,
     }).accessible;
     return (
@@ -241,7 +246,7 @@ class Approval extends React.PureComponent<IProps, IState> {
           ref={this.tableRef}
           titleContent={null}
           filterContent={{
-            searchPlaceholder: '请输入流程名称',
+            searchPlaceholder: formatMessage({ id: 'odc.Secure.Approval.EnterAProcessName' }), //请输入流程名称
           }}
           operationContent={
             canAcessCreate
@@ -249,7 +254,7 @@ class Approval extends React.PureComponent<IProps, IState> {
                   options: [
                     {
                       type: IOperationOptionType.button,
-                      content: '新建审批流程',
+                      content: formatMessage({ id: 'odc.Secure.Approval.CreateAnApprovalProcess' }), //新建审批流程
                       isPrimary: true,
                       onClick: this.handleCreate,
                     },

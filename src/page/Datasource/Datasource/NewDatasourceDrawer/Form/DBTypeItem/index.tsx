@@ -1,5 +1,6 @@
 import { ConnectType } from '@/d.ts';
 import OBSvg from '@/svgr/source_ob.svg';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Form, Radio, Space } from 'antd';
 
@@ -29,7 +30,10 @@ const typeMap = {
 
 export default function DBTypeItem() {
   const typeSelect = (
-    <Form.Item shouldUpdate label="数据源类型">
+    <Form.Item
+      shouldUpdate
+      label={formatMessage({ id: 'odc.Form.DBTypeItem.DataSourceType' })} /*数据源类型*/
+    >
       {({ getFieldValue, setFieldsValue }) => {
         const type: ConnectType = getFieldValue('type');
         const dbType: DBType = typeMap[type] || dbType2Ins[DBTypeEnum.OceanBase];
@@ -48,6 +52,7 @@ export default function DBTypeItem() {
                     OceanBase
                   </Space>
                 ),
+
                 value: oceanbase.type,
               },
             ]}
@@ -65,5 +70,6 @@ export default function DBTypeItem() {
       }}
     </Form.Item>
   );
+
   return <>{typeSelect}</>;
 }

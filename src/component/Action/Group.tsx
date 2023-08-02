@@ -49,6 +49,9 @@ export default ({
   const EllipsisIcon = ellipsisIcon === 'vertical' ? MoreOutlined : EllipsisOutlined;
   const visibleActions = Array.isArray(children)
     ? children.filter((c) => {
+        if (!c) {
+          return false;
+        }
         if (isBoolean(c.props.visible) && shouldVisible)
           return c.props.visible && shouldVisible(c.key as string);
         if (isBoolean(c.props.visible)) return c.props.visible;

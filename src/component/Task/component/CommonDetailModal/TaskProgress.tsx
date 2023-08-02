@@ -4,6 +4,7 @@ import DisplayTable from '@/component/DisplayTable';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import { ConnectionMode, TaskDetail, TaskRecordParameters } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { Drawer, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SimpleTextItem } from '../SimpleTextItem';
@@ -13,7 +14,7 @@ const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
   return [
     {
       dataIndex: 'resultJson',
-      title: '源表',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.SourceTable' }), //源表
       ellipsis: true,
       render: (resultJson) => {
         return <span>{JSON.parse(resultJson ?? '{}')?.originTableName}</span>;
@@ -21,7 +22,7 @@ const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
     },
     {
       dataIndex: 'status',
-      title: '执行状态',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.ExecutionStatus' }), //执行状态
       ellipsis: true,
       width: 140,
       render: (status, record) => {
@@ -32,7 +33,7 @@ const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
     },
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.Operation' }), //操作
       ellipsis: true,
       width: 92,
       render: (_, record) => {
@@ -42,7 +43,7 @@ const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
               params?.onOpenDetail(record?.id);
             }}
           >
-            查看
+            {formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.View' }) /*查看*/}
           </Action.Link>
         );
       },
@@ -95,9 +96,30 @@ const TaskProgress: React.FC<IProps> = (props) => {
             const resultJson = JSON.parse(record?.resultJson);
             return (
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 8px' }}>
-                <span>预估数据行数：{resultJson?.fullTransferEstimatedCount}</span>
-                <span>实际拷贝行数：{resultJson?.fullTransferFinishedCount}</span>
-                <span>数据一致性校验：-</span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'odc.component.CommonDetailModal.TaskProgress.EstimatedNumberOfRows',
+                    }) /*预估数据行数：*/
+                  }
+                  {resultJson?.fullTransferEstimatedCount ?? '-'}
+                </span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'odc.component.CommonDetailModal.TaskProgress.ActualNumberOfCopies',
+                    }) /*实际拷贝行数：*/
+                  }
+                  {resultJson?.fullTransferFinishedCount ?? '-'}
+                </span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'odc.component.CommonDetailModal.TaskProgress.DataConsistencyCheck',
+                    }) /*数据一致性校验：*/
+                  }
+                  {resultJson?.fullVerificationResultDescription ?? '-'}{' '}
+                </span>
               </div>
             );
           },
@@ -105,6 +127,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
         disablePagination
         scroll={null}
       />
+
       <Drawer
         width={560}
         title={resultJson?.originTableName}
@@ -114,7 +137,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
       >
         <Space direction="vertical" style={{ display: 'flex' }}>
           <SimpleTextItem
-            label="新表 DDL"
+            label={formatMessage({
+              id: 'odc.component.CommonDetailModal.TaskProgress.NewTableDdl',
+            })} /*新表 DDL*/
             content={
               <div style={{ marginTop: '8px' }}>
                 <SQLContent
@@ -128,8 +153,11 @@ const TaskProgress: React.FC<IProps> = (props) => {
             }
             direction="column"
           />
+
           <SimpleTextItem
-            label="源表 DDL"
+            label={formatMessage({
+              id: 'odc.component.CommonDetailModal.TaskProgress.SourceTableDdl',
+            })} /*源表 DDL*/
             content={
               <div style={{ marginTop: '8px' }}>
                 <SQLContent

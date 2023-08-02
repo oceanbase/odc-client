@@ -1,16 +1,13 @@
-import { IConnection, IConnectionStatus } from '@/d.ts';
+import { actionTypes, IConnection, IConnectionStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Popover, Space, Tooltip } from 'antd';
+import { message, Popover, Space, Tooltip } from 'antd';
 import React from 'react';
 
 import OBSvg from '@/svgr/source_ob.svg';
-import Icon, {
-  ExclamationCircleFilled,
-  Loading3QuartersOutlined,
-  MinusCircleFilled,
-} from '@ant-design/icons';
+import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
+import { IDatasource } from '@/d.ts/datasource';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -89,10 +86,10 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
       default: {
         return (
           <Tooltip title={status?.errorMessage} placement="top">
-            <ExclamationCircleFilled
-              style={{
-                color: '#F5222D',
-              }}
+            <Icon
+              component={OBSvg}
+              style={{ filter: 'grayscale(1)' }}
+              className={styles.activeStatus}
             />
           </Tooltip>
         );
@@ -103,11 +100,22 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
   const isActive = [IConnectionStatus.ACTIVE, IConnectionStatus.NOPASSWORD].includes(
     connection?.status?.status,
   );
-
+  function openConnection(connection: IDatasource) {
+    if (!isActive) {
+      return;
+    }
+    if (!connection.permittedActions?.includes(actionTypes.update)) {
+      message.error(
+        formatMessage({ id: 'odc.List.ConnectionNameItem.TheDataSourceIsNot' }), //无该数据源权限
+      );
+      return;
+    }
+    openNewConnection(connection);
+  }
   return (
     <div
       className={classNames(styles.container, { [styles.isActive]: isActive })}
-      onClick={isActive ? () => openNewConnection(connection) : null}
+      onClick={() => openConnection(connection)}
     >
       <Space>
         {getStatusIcon()}

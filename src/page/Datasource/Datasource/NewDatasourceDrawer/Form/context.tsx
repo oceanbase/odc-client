@@ -14,6 +14,7 @@ interface IDatasouceFormContext {
     type: ConnectType;
   };
   isEdit?: boolean;
+  originDatasource?: IDatasource;
 }
 
 const DatasourceFormContext = React.createContext<IDatasouceFormContext>({

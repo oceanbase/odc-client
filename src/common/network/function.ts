@@ -17,9 +17,3 @@ export async function getFunctionCreateSQL(
   });
   return ret?.data?.sql;
 }
-
-export async function deleteFunction(funName: string, sessionId: string, dbName: string) {
-  const sid = generateFunctionSid(funName, sessionId, dbName);
-  const res = await request.delete(`/api/v1/function/${sid}`);
-  return !res?.isError;
-}

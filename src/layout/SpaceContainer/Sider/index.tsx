@@ -1,7 +1,10 @@
-import MessageCount from '@/component/Task/component/MessageCount';
+import { AccessResourceTypePermission, Acess, createPermission } from '@/component/Acess';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
+import { TaskStore } from '@/store/task';
 import LinkOutlined from '@/svgr/icon_connection.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
+import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon, {
   AppstoreOutlined,
@@ -13,9 +16,10 @@ import Icon, {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Divider, Space } from 'antd';
+import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'umi';
 import HelpItem from './HelpItem';
 import styles from './index.less';
@@ -24,13 +28,23 @@ import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
 
-interface IProps {}
+interface IProps {
+  taskStore?: TaskStore;
+}
 
-const Sider: React.FC<IProps> = function () {
+const Sider: React.FC<IProps> = function (props) {
+  const { taskStore } = props;
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const selected = location?.pathname?.split('/')[1];
   const mentItemGap = collapsed ? 12 : 12;
+  const _count = taskStore.pendingApprovalInstanceIds?.length ?? 0;
+  const count = !isClient() ? _count : 0;
+
+  useEffect(() => {
+    props.taskStore?.getTaskMetaInfo();
+  }, []);
+
   return (
     <div
       className={classNames(styles.sider, {
@@ -39,8 +53,13 @@ const Sider: React.FC<IProps> = function () {
     >
       <div>
         <Logo collapsed={collapsed} />
-        <SpaceSelect collapsed={collapsed} />
-        <Divider style={{ margin: '0 0 14px' }} />
+        {isClient() ? null : (
+          <>
+            <SpaceSelect collapsed={collapsed} />
+            <Divider style={{ margin: '0 0 14px' }} />
+          </>
+        )}
+
         <Space
           size={mentItemGap}
           direction="vertical"
@@ -53,16 +72,7 @@ const Sider: React.FC<IProps> = function () {
               selected={selected === IPageType.Project}
               icon={AppstoreOutlined}
               collapsed={collapsed}
-              label="项目"
-            />
-          </Link>
-          <Link to={`/${IPageType.Datasource}`}>
-            <MenuItem
-              key={IPageType.Datasource}
-              selected={selected === IPageType.Datasource}
-              icon={LinkOutlined}
-              collapsed={collapsed}
-              label="数据源"
+              label={formatMessage({ id: 'odc.SpaceContainer.Sider.Project' })} /*项目*/
             />
           </Link>
           <Link to={`/${IPageType.Task}`}>
@@ -71,40 +81,76 @@ const Sider: React.FC<IProps> = function () {
               selected={selected === IPageType.Task}
               icon={TaskSvg}
               collapsed={collapsed}
+              showDot={!!count}
               label={
-                <MessageCount>
-                  <div style={{ width: '100px' }}>工单</div>
-                </MessageCount>
+                collapsed ? (
+                  formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/
+                ) : (
+                  <Badge showZero={false} count={count} overflowCount={100} offset={[-8, 5]}>
+                    <div style={{ width: '100px' }}>
+                      {formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/}
+                    </div>
+                  </Badge>
+                )
               }
             />
           </Link>
-          <Link to={`/${IPageType.Auth}/${IPageType.Auth_User}`}>
+          <Link to={`/${IPageType.Datasource}`}>
             <MenuItem
-              key={IPageType.Auth}
-              selected={selected === IPageType.Auth}
-              icon={TeamOutlined}
+              key={IPageType.Datasource}
+              selected={selected === IPageType.Datasource}
+              icon={LinkOutlined}
               collapsed={collapsed}
-              label="用户权限"
+              label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
             />
           </Link>
+          <AccessResourceTypePermission
+            permissions={[
+              createPermission(IManagerResourceType.user, actionTypes.read),
+              createPermission(IManagerResourceType.user, actionTypes.create),
+              createPermission(IManagerResourceType.role, actionTypes.read),
+              createPermission(IManagerResourceType.role, actionTypes.create),
+              createPermission(IManagerResourceType.auto_auth, actionTypes.read),
+            ]}
+          >
+            <Link to={`/${IPageType.Auth}/${IPageType.Auth_User}`}>
+              <MenuItem
+                key={IPageType.Auth}
+                selected={selected === IPageType.Auth}
+                icon={TeamOutlined}
+                collapsed={collapsed}
+                label={formatMessage({
+                  id: 'odc.SpaceContainer.Sider.UserPermissions',
+                })} /*用户权限*/
+              />
+            </Link>
+          </AccessResourceTypePermission>
           <Link to={`/${IPageType.Secure}/${IPageType.Secure_Env}`}>
             <MenuItem
               key={IPageType.Secure}
               selected={selected === IPageType.Secure}
               icon={ControlOutlined}
               collapsed={collapsed}
-              label="安全规范"
+              label={formatMessage({
+                id: 'odc.SpaceContainer.Sider.SafetySpecifications',
+              })} /*安全规范*/
             />
           </Link>
-          <Link to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}>
-            <MenuItem
-              key={IPageType.ExternalIntegration}
-              selected={selected === IPageType.ExternalIntegration}
-              icon={ForkOutlined}
-              collapsed={collapsed}
-              label="外部集成"
-            />
-          </Link>
+          <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
+            <Link
+              to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}
+            >
+              <MenuItem
+                key={IPageType.ExternalIntegration}
+                selected={selected === IPageType.ExternalIntegration}
+                icon={ForkOutlined}
+                collapsed={collapsed}
+                label={formatMessage({
+                  id: 'odc.SpaceContainer.Sider.ExternalIntegration',
+                })} /*外部集成*/
+              />
+            </Link>
+          </Acess>
         </Space>
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>
@@ -132,4 +178,4 @@ const Sider: React.FC<IProps> = function () {
   );
 };
 
-export default Sider;
+export default inject('taskStore')(observer(Sider));

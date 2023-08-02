@@ -1,4 +1,5 @@
-import { deleteFunction, getFunctionByFuncName } from '@/common/network';
+import { getFunctionByFuncName } from '@/common/network';
+import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, DbObjectType, IFunction, PageType } from '@/d.ts';
@@ -23,9 +24,15 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
   [ResourceNodeType.FunctionRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.function.BatchCompilation' }), //批量编译
+      ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
+      isHide(session, node) {
+        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+        return isMySQL;
+      },
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_FUNCTION,
@@ -38,7 +45,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'CREATE',
-      text: ['新建函数'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.function.CreateAFunction' }), //新建函数
+      ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
@@ -61,6 +70,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
     },
   ],
+
   [ResourceNodeType.Function]: [
     {
       key: 'OVERVIEW',
@@ -69,6 +79,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.ResourceTree.config.treeNodesActions.See',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const func: IFunction = node.data;
@@ -127,6 +138,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
         }),
       ],
+
       ellipsis: true,
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
@@ -159,6 +171,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
@@ -186,6 +199,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         modal.changeExportModal(true, {
           type: DbObjectType.function,
           name: func.funName,
+          databaseId: session?.database.databaseId,
         });
       },
     },
@@ -239,7 +253,14 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteFunction(func?.funName, session?.sessionId, session?.database?.dbName);
+            const isSuccess = await dropObject(
+              func?.funName,
+              DbObjectType.function,
+              session?.sessionId,
+            );
+            if (!isSuccess) {
+              return;
+            }
             await session.database.getFunctionList();
 
             message.success(

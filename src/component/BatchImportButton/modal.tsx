@@ -1,4 +1,5 @@
 import ODCDragger from '@/component/OSSDragger';
+import login from '@/store/login';
 import { formatMessage, getLocalTemplate } from '@/util/intl';
 import { downloadFile } from '@/util/utils';
 import { InfoCircleFilled } from '@ant-design/icons';
@@ -160,6 +161,7 @@ const BatchImportModal: React.FC<IProps> = (props) => {
             headers={{
               'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
               'Accept-Language': getLocale(),
+              currentOrganizationId: login.organizationId?.toString(),
             }}
             fileList={result}
             onChange={handleFileChange}

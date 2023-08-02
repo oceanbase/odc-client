@@ -24,12 +24,6 @@ export async function getView(viewName: string, sessionId: string, dbName: strin
   return res?.data;
 }
 
-export async function deleteView(viewName: string, sessionId: string, dbName: string) {
-  const sid = generateViewSid(viewName, dbName, sessionId);
-  const res = await request.delete(`/api/v1/view/${sid}`);
-  return !res?.isError;
-}
-
 export async function getViewCreateSQL(view: ICreateView, sessionId, dbName) {
   const { viewName } = view;
   const sid = generateViewSid(viewName, dbName, sessionId);

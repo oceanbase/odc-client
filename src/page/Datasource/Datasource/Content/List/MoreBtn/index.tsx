@@ -1,5 +1,5 @@
 import { deleteConnection } from '@/common/network/connection';
-import { IConnection } from '@/d.ts';
+import { actionTypes, IConnection } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import {
@@ -8,11 +8,12 @@ import {
   EllipsisOutlined,
   QuestionCircleFilled,
 } from '@ant-design/icons';
-import { Dropdown, Menu, message, Modal } from 'antd';
+import { Dropdown, message, Modal } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext from '../../../ParamContext';
 
 import { ModalStore } from '@/store/modal';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 
@@ -89,41 +90,56 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
     });
   }
 
+  const items: ItemType[] = [
+    connection.permittedActions?.includes(actionTypes.update)
+      ? {
+          label: formatMessage({ id: 'odc.List.MoreBtn.Edit' }),
+          key: Actions.EDIT,
+          icon: <EditOutlined />,
+        }
+      : null,
+    connection.permittedActions?.includes(actionTypes.delete)
+      ? {
+          label: formatMessage({ id: 'odc.List.MoreBtn.Remove' }) /*移除*/,
+          key: Actions.REMOVE,
+          icon: <DeleteOutlined />,
+        }
+      : null,
+    {
+      type: 'divider',
+    },
+    {
+      label:
+        formatMessage({ id: 'odc.List.MoreBtn.UpdatedOn' }) +
+        getFormatDateTime(connection?.updateTime),
+      key: 'updateTime',
+      disabled: true,
+      style: { color: 'var(--text-color-hint)' },
+    },
+  ];
+
   return (
     <Dropdown
-      overlay={
-        <Menu
-          className={styles.menu}
-          onClick={(e) => {
-            switch (e.key) {
-              case Actions.EDIT: {
-                edit();
-                return;
-              }
-              case Actions.COPY: {
-                copy();
-                return;
-              }
-              case Actions.REMOVE: {
-                remove();
-                return;
-              }
+      menu={{
+        items: items?.filter(Boolean),
+        className: styles.menu,
+        onClick(e) {
+          switch (e.key) {
+            case Actions.EDIT: {
+              edit();
+              return;
             }
-          }}
-        >
-          <Menu.Item icon={<EditOutlined />} key={Actions.EDIT}>
-            {formatMessage({ id: 'odc.List.MoreBtn.Edit' }) /*编辑*/}
-          </Menu.Item>
-          <Menu.Item icon={<DeleteOutlined />} key={Actions.REMOVE}>
-            {formatMessage({ id: 'odc.List.MoreBtn.Remove' }) /*移除*/}
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item style={{ color: 'var(--text-color-hint)' }} key={'updateTime'} disabled>
-            {formatMessage({ id: 'odc.List.MoreBtn.UpdatedOn' }) /*更新于*/}
-            {getFormatDateTime(connection?.updateTime)}
-          </Menu.Item>
-        </Menu>
-      }
+            case Actions.COPY: {
+              copy();
+              return;
+            }
+            case Actions.REMOVE: {
+              remove();
+              return;
+            }
+          }
+        },
+      }}
     >
       <EllipsisOutlined
         style={{ cursor: 'default', fontSize: 14, color: 'var(--icon-color-normal)' }}

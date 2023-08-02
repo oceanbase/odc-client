@@ -1,203 +1,20 @@
 import { getAuditDetail, getAuditEventMeta } from '@/common/network/manager';
-import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
-import SearchFilter from '@/component/SearchFilter';
 import { TimeOptions } from '@/component/TimeSelect';
-import TreeFilter from '@/component/TreeFilter';
-import { AuditEventResult, IAudit, IAuditEvent, IResponseData } from '@/d.ts';
-import {
-  AuditEventActionMap,
-  AuditEventMetaMap,
-  getEventFilterAndOptions,
-} from '@/page/Secure/components/RecordPage';
-import { RecordContent, Status } from '@/page/Secure/components/RecordPage/component';
+import { IAudit, IAuditEvent, IResponseData } from '@/d.ts';
+import { RecordContent } from '@/page/Secure/components/RecordPage/component';
+import { getEventFilterAndOptions } from '@/page/Secure/components/RecordPage/interface';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { FilterFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, DatePicker } from 'antd';
-import type { DataNode } from 'antd/lib/tree';
 import type { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
+import { getPageColumns } from './column';
 
 const { RangePicker } = DatePicker;
-
-export const getPageColumns = (params: {
-  openDetailModal: (args: { id: number; [key: string]: any }) => void;
-  eventfilter: {
-    text: string;
-    value: string;
-  }[];
-
-  eventOptions: DataNode[];
-}) => {
-  const { eventfilter, eventOptions } = params;
-  const columns = [
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.EventType',
-      }),
-
-      //事件类型
-      width: 120,
-      ellipsis: true,
-      key: 'type',
-      dataIndex: 'type',
-      filters: eventfilter,
-      render: (type) => AuditEventMetaMap[type],
-    },
-
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.EventAction',
-      }),
-
-      //事件操作
-      width: 160,
-      ellipsis: true,
-      key: 'action',
-      filterDropdown: (props) => {
-        return <TreeFilter {...props} treeData={eventOptions} />;
-      },
-      filterIcon: (filtered) => (
-        <FilterFilled style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
-      ),
-
-      dataIndex: 'action',
-      render: (action) => AuditEventActionMap[action],
-    },
-
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.PublicConnection',
-      }), //所属公共连接
-      ellipsis: true,
-      key: 'connectionName',
-      filterDropdown: (props) => {
-        return (
-          <SearchFilter
-            {...props}
-            placeholder={formatMessage({
-              id: 'odc.component.RecordPopover.components.EnterAPublicConnection',
-            })} /*请输入所属公共连接*/
-          />
-        );
-      },
-      filterIcon: (filtered) => (
-        <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
-      ),
-
-      dataIndex: 'connectionName',
-      render: (connectionName) => connectionName || '-',
-    },
-
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.IpSource',
-      }),
-
-      //IP来源
-      width: 132,
-      ellipsis: true,
-      key: 'clientIpAddress',
-      filterDropdown: (props) => {
-        return (
-          <SearchFilter
-            {...props}
-            placeholder={formatMessage({
-              id: 'odc.component.RecordPopover.components.EnterAnIpSource',
-            })}
-
-            /*请输入IP来源*/
-          />
-        );
-      },
-      filterIcon: (filtered) => (
-        <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
-      ),
-
-      dataIndex: 'clientIpAddress',
-      render: (clientIpAddress) => clientIpAddress || '-',
-    },
-
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.ExecutionTime',
-      }),
-
-      //执行时间
-      width: 190,
-      ellipsis: true,
-      key: 'startTime',
-      dataIndex: 'startTime',
-      sorter: true,
-      render: (startTime) => getLocalFormatDateTime(startTime),
-    },
-
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.ExecutionResult',
-      }),
-
-      //执行结果
-      width: 80,
-      ellipsis: true,
-      key: 'result',
-      dataIndex: 'result',
-      filters: [
-        {
-          text: formatMessage({
-            id: 'odc.component.RecordPopover.components.Successful',
-          }),
-
-          //成功
-          value: AuditEventResult.SUCCESS,
-        },
-
-        {
-          text: formatMessage({
-            id: 'odc.component.RecordPopover.components.Failed',
-          }),
-
-          //失败
-          value: AuditEventResult.FAILED,
-        },
-      ],
-
-      render: (result) => <Status result={result} />,
-    },
-
-    {
-      title: formatMessage({
-        id: 'odc.component.RecordPopover.components.Actions',
-      }),
-
-      //操作
-      width: 80,
-      key: 'action',
-      render: (value, record) => (
-        <Action.Link
-          onClick={async () => {
-            params.openDetailModal(record);
-          }}
-        >
-          {
-            formatMessage({
-              id: 'odc.component.RecordPopover.components.View',
-            })
-
-            /*查看*/
-          }
-        </Action.Link>
-      ),
-    },
-  ];
-
-  return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'connectionName');
-};
 
 export const RecordTable: React.FC<{
   tableRef: React.RefObject<ITableInstance>;

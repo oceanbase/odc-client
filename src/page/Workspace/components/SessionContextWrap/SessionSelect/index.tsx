@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useContext, useState } from 'react';
 import SessionContext from '../context';
 
@@ -110,7 +111,13 @@ export default function SessionSelect({
     <>
       {!context?.databaseId && !context?.datasourceId ? (
         <div className={styles.line}>
-          <a onClick={() => setVisible(true)}>请选择数据库</a>
+          <a onClick={() => setVisible(true)}>
+            {
+              formatMessage({
+                id: 'odc.SessionContextWrap.SessionSelect.SelectADatabase',
+              }) /*请选择数据库*/
+            }
+          </a>
         </div>
       ) : (
         <div className={styles.line}>
@@ -125,6 +132,7 @@ export default function SessionSelect({
           )}
         </div>
       )}
+
       {!readonly && (
         <SelectModal
           dialectTypes={dialectTypes || []}

@@ -1,6 +1,7 @@
 import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import { ConnectionMode, ITable, TaskExecStrategy } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -24,6 +25,7 @@ interface IDataMockerFormProps {
   settingStore?: SettingStore;
   ref?: React.Ref<FormInstance>;
   tableName?: string;
+  dbId?: number;
   projectId: number;
   onDbModeChange: (mode: ConnectionMode) => void;
 }
@@ -31,13 +33,14 @@ interface IDataMockerFormProps {
 const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
   observer(
     forwardRef((props, ref) => {
-      const { settingStore, tableName, projectId, onDbModeChange } = props;
+      const { settingStore, tableName, dbId, projectId, onDbModeChange } = props;
       const [form] = Form.useForm<IMockFormData>();
       /**
        * 字段长度信息表
        */
       const [columnSizeMap, setColumnSizeMap] = useState({});
       const databaseId = Form.useWatch('databaseId', form);
+      const formTableName = Form.useWatch('tableName', form);
       const { session, database } = useDBSession(databaseId);
       const [tables, setTables] = useState<ITable[]>();
       const forceUpdate = useUpdate();
@@ -54,7 +57,6 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
       };
 
       useEffect(() => {
-        form.resetFields(['tableName', 'columns']);
         if (databaseName) {
           loadTables(databaseName);
         }
@@ -119,17 +121,24 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
         },
         [form, databaseName],
       );
-
-      /**
-       * 外部传入表
-       */
       useEffect(() => {
+        if (session && formTableName) {
+          /**
+           * 获取最新表columns
+           */
+          fetchTable(formTableName);
+        }
+      }, [formTableName, session]);
+
+      useEffect(() => {
+        /**
+         * 初始化
+         */
         form.setFieldsValue({
           tableName,
+          databaseId: dbId,
         });
-
-        fetchTable(tableName);
-      }, [tableName]);
+      }, []);
       /**
        * render
        */
@@ -147,7 +156,10 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             databaseName,
           }}
         >
-          <DatabaseSelect projectId={projectId} />
+          <DatabaseSelect
+            onChange={(v) => form.resetFields(['tableName', 'columns'])}
+            projectId={projectId}
+          />
           <Row gutter={14}>
             <Col span={12}>
               <Form.Item
@@ -173,7 +185,6 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     id: 'odc.component.DataMockerDrawer.form.SelectATable',
                   })}
                   /* 请选择表 */ showSearch
-                  onSelect={fetchTable}
                 >
                   {tables?.map((table) => {
                     return (
@@ -326,6 +337,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
           >
             <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
           </FormItemPanel>
+          <DescriptionInput />
         </Form>
       );
     }),

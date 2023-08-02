@@ -1,9 +1,12 @@
 import { updateDataBase } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal, Select } from 'antd';
+import { Form, message, Modal } from 'antd';
+import { isUndefined } from 'lodash';
 import { useEffect } from 'react';
+import ProjectSelect from './ProjectSelect';
 
 interface IProps {
   visible: boolean;
@@ -23,39 +26,53 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
     if (visible) {
       run(null, 1, 9999);
       form.setFieldsValue({
-        project: database?.project?.id,
+        project: database?.project?.id || null,
       });
     }
   }, [visible]);
 
   return (
     <Modal
-      title="转移项目"
-      visible={visible}
+      title={formatMessage({ id: 'odc.Info.ChangeProjectModal.TransferProject' })} /*转移项目*/
+      open={visible}
       onCancel={close}
       onOk={async () => {
         const value = await form.validateFields();
         console.log(value);
         const isSuccess = await updateDataBase([database?.id], value.project);
         if (isSuccess) {
-          message.success('操作成功');
+          message.success(
+            formatMessage({ id: 'odc.Info.ChangeProjectModal.OperationSucceeded' }), //操作成功
+          );
           close();
           onSuccess();
         }
       }}
     >
-      <Form form={form} layout="vertical">
-        <Form.Item>数据库名称：{database?.name}</Form.Item>
-        <Form.Item required rules={[{ required: true }]} label="所属项目" name={'project'}>
-          <Select loading={loading} style={{ width: 240 }} showSearch optionFilterProp="children">
-            {data?.contents?.map((item) => {
-              return (
-                <Select.Option value={item.id} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              );
-            })}
-          </Select>
+      <Form requiredMark="optional" form={form} layout="vertical">
+        <Form.Item>
+          {formatMessage({ id: 'odc.Info.ChangeProjectModal.DatabaseName' }) /*数据库名称：*/}
+          {database?.name}
+        </Form.Item>
+        <Form.Item
+          required
+          rules={[
+            {
+              validator(rule, value, callback) {
+                if (isUndefined(value)) {
+                  callback(
+                    formatMessage({ id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject' }), //请选择项目
+                  );
+                  return;
+                }
+                callback();
+              },
+            },
+          ]}
+          label={formatMessage({ id: 'odc.Info.ChangeProjectModal.Project' })}
+          /*所属项目*/ name={'project'}
+        >
+          <ProjectSelect projects={data?.contents} currentDatabase={database} />
         </Form.Item>
       </Form>
     </Modal>

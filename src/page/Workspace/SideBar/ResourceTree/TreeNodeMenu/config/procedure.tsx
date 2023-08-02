@@ -1,4 +1,5 @@
-import { deleteProcedure, getProcedureByProName } from '@/common/network';
+import { getProcedureByProName } from '@/common/network';
+import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, DbObjectType, IProcedure, PageType } from '@/d.ts';
@@ -23,9 +24,15 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
   [ResourceNodeType.ProcedureRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.procedure.BatchCompilation' }), //批量编译
+      ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
+      isHide(session, node) {
+        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+        return isMySQL;
+      },
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PROCEDURE,
@@ -38,7 +45,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     },
     {
       key: 'CREATE',
-      text: ['新建存储过程'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.procedure.CreateAStoredProcedure' }), //新建存储过程
+      ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
@@ -61,6 +70,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       },
     },
   ],
+
   [ResourceNodeType.Procedure]: [
     {
       key: 'OVERVIEW',
@@ -69,6 +79,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.See',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const proc: IProcedure = node.data;
@@ -127,6 +138,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
         }),
       ],
+
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
       },
@@ -159,6 +171,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
@@ -186,6 +199,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         modal.changeExportModal(true, {
           type: DbObjectType.procedure,
           name: proc.proName,
+          databaseId: session?.database.databaseId,
         });
       },
     },
@@ -239,7 +253,11 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteProcedure(proc?.proName, session?.sessionId, session?.database?.dbName);
+            const isSuccess = await dropObject(
+              proc?.proName,
+              DbObjectType.procedure,
+              session?.sessionId,
+            );
             await session.database.getProcedureList();
 
             message.success(

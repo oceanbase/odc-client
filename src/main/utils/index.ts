@@ -4,7 +4,7 @@ import detectPort from 'detect-port';
 import { app, dialog } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import { minJDKReleaseVersion, minJDKVersion } from '../config';
+import { maxJDKVersion, minJDKReleaseVersion, minJDKVersion } from '../config';
 import log from './log';
 
 export function isODCSchemaUrl(url) {
@@ -68,6 +68,7 @@ export async function checkJavaVersions(): Promise<boolean> {
     let javaVersion = /(java|openjdk)\s+version\s+"([\w.]+)"/.exec(data)?.[2];
     log.info('javaVersion:' + javaVersion);
     log.info('minVersion:' + minJDKVersion);
+    log.info('maxVersion:' + maxJDKVersion);
     if (javaVersion) {
       let javaReleaseVersion = parseInt(javaVersion.split('_')[1]) || 9999;
       javaVersion = javaVersion.split('_')[0];
@@ -82,6 +83,22 @@ export async function checkJavaVersions(): Promise<boolean> {
           title: '检查Java环境失败',
           message: 'Java 版本过低',
           detail: `请安装${minJDKVersion}_${minJDKReleaseVersion}版本以上的Java`,
+          cancelId: 1,
+        });
+        if (id === 0) {
+          resolve(true);
+          return;
+        }
+        resolve(false);
+        return;
+      } else if (compareVersions(javaVersion, maxJDKVersion) === 1) {
+        const id = dialog.showMessageBoxSync({
+          type: 'error',
+          buttons: ['继续启动', '关闭'],
+          defaultId: 1,
+          title: '检查Java环境失败',
+          message: 'Java 版本过高',
+          detail: `请安装${maxJDKVersion}版本的Java`,
           cancelId: 1,
         });
         if (id === 0) {

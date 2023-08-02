@@ -40,7 +40,10 @@ export interface IState {
     errorMsg: string;
     errorIndex: number;
   }[];
-
+  sessionData: {
+    sessionId: string;
+    databaseName: string;
+  };
   submitting: boolean;
   isSaveDefaultConfig: boolean;
 }
@@ -62,6 +65,7 @@ class CreateModal extends React.Component<IProps, IState> {
       csvMappingErrors: null,
       submitting: false,
       isSaveDefaultConfig: false,
+      sessionData: null,
       formData: this.getDefaultFormData(),
     };
   }
@@ -89,7 +93,6 @@ class CreateModal extends React.Component<IProps, IState> {
       this.props.modalStore.changeImportModal(false);
       return;
     }
-    this.resetFormData();
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ImportDrawer.AreYouSureYouWant',
@@ -97,6 +100,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
       centered: true,
       onOk: () => {
+        this.resetFormData();
         this.props.modalStore.changeImportModal(false);
       },
     });
@@ -256,6 +260,7 @@ class CreateModal extends React.Component<IProps, IState> {
       columnDelimiter,
       columnSeparator,
     } = this.state.formData;
+    const { sessionId, databaseName } = this.state.sessionData ?? {};
     const fileInfo = await getCsvFileInfo({
       blankToNull,
       columnSeparator,
@@ -280,7 +285,11 @@ class CreateModal extends React.Component<IProps, IState> {
 
     const tableName = this.state.formData.tableName;
     if (tableName) {
-      const columns = await getTableColumnList(this.state.formData.tableName);
+      const columns = await getTableColumnList(
+        this.state.formData.tableName,
+        databaseName,
+        sessionId,
+      );
       this.setState({
         csvColumnMappings: fileInfo?.map((column, i) => {
           return {
@@ -307,7 +316,8 @@ class CreateModal extends React.Component<IProps, IState> {
     }
   };
 
-  private resolveTableColumnsToCsv = async (tableName: string, databaseName?: string) => {
+  private resolveTableColumnsToCsv = async (tableName: string) => {
+    const { sessionId, databaseName } = this.state.sessionData ?? {};
     if (!tableName) {
       this.setState({
         csvColumnMappings: this.state.csvColumnMappings?.map((column, i) => {
@@ -323,7 +333,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
       return;
     }
-    const columns = await getTableColumnList(tableName, databaseName);
+    const columns = await getTableColumnList(tableName, databaseName, sessionId);
     this.setState({
       csvColumnMappings: this.state.csvColumnMappings?.map((column, i) => {
         return {
@@ -410,6 +420,12 @@ class CreateModal extends React.Component<IProps, IState> {
     }
   }
 
+  private handleSessionChange = (sessionData: { sessionId: string; databaseName: string }) => {
+    this.setState({
+      sessionData,
+    });
+  };
+
   render() {
     const { modalStore, projectId } = this.props;
     const {
@@ -495,6 +511,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 ref={this._formRef}
                 onChangeCsvColumnMappings={this.onChangeCsvColumnMappings}
                 resolveTableColumnsToCsv={this.resolveTableColumnsToCsv}
+                onSessionChange={this.handleSessionChange}
               />
             </FormConfigContext.Provider>
           </CsvProvider.Provider>

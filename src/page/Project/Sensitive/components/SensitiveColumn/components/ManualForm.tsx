@@ -1,52 +1,31 @@
+import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form } from 'antd';
-import { useWatch } from 'antd/lib/form/Form';
-import { useEffect, useState } from 'react';
 import ManualRule from './ManualRule';
 
-const ManualForm = ({ formRef }) => {
-  const [disabledAdd, setDisabledAdd] = useState<boolean>(true);
-  const manual = useWatch('manual', formRef);
-  const handleAdd = async (fn) => {
-    const { manual } = await formRef.getFieldsValue();
-    if (
-      manual?.every(
-        (rule) =>
-          rule?.dataSource &&
-          rule?.database &&
-          rule?.tableName !== '' &&
-          rule?.columnName !== '' &&
-          rule?.maskingAlgorithmId,
-      )
-    ) {
-      fn?.();
-      setDisabledAdd(true);
-    }
-  };
-  useEffect(() => {
-    if (
-      manual?.every(
-        (rule) =>
-          rule?.dataSource &&
-          rule?.database &&
-          rule?.tableName !== '' &&
-          rule?.columnName !== '' &&
-          rule?.maskingAlgorithmId,
-      )
-    ) {
-      setDisabledAdd(false);
-    } else {
-      setDisabledAdd(true);
-    }
-  }, [manual]);
+const ManualForm = ({ formRef, databasesMap, setDatabasesMap }) => {
   return (
     <>
       <div style={{ display: 'flex', columnGap: '8px', marginBottom: '8px' }}>
-        <span style={{ width: '132px' }}>数据源</span>
-        <span style={{ width: '132px' }}>数据库</span>
-        <span style={{ width: '132px' }}>表</span>
-        <span style={{ width: '132px' }}>列</span>
-        <span style={{ width: '184px' }}>脱敏算法</span>
+        <span style={{ width: '132px' }}>
+          {formatMessage({ id: 'odc.SensitiveColumn.components.ManualForm.DataSource' }) /*数据源*/}
+        </span>
+        <span style={{ width: '132px' }}>
+          {formatMessage({ id: 'odc.SensitiveColumn.components.ManualForm.Database' }) /*数据库*/}
+        </span>
+        <span style={{ width: '132px' }}>
+          {formatMessage({ id: 'odc.SensitiveColumn.components.ManualForm.Table' }) /*表*/}
+        </span>
+        <span style={{ width: '132px' }}>
+          {formatMessage({ id: 'odc.SensitiveColumn.components.ManualForm.Column' }) /*列*/}
+        </span>
+        <span style={{ width: '184px' }}>
+          {
+            formatMessage({
+              id: 'odc.SensitiveColumn.components.ManualForm.DesensitizationAlgorithm',
+            }) /*脱敏算法*/
+          }
+        </span>
       </div>
       <Form form={formRef} layout="vertical">
         <Form.List name="manual">
@@ -62,6 +41,8 @@ const ManualForm = ({ formRef }) => {
                       formRef,
                       fieldKey: field.key,
                       fieldName: field.name,
+                      databasesMap,
+                      setDatabasesMap,
                       remove,
                     }}
                   />
@@ -69,14 +50,13 @@ const ManualForm = ({ formRef }) => {
               </div>
               <Form.Item>
                 <Button
-                  disabled={disabledAdd}
                   type="dashed"
                   icon={<PlusOutlined />}
                   block
-                  onClick={() => handleAdd(add)}
+                  onClick={() => add()}
                   style={{ width: '746px' }}
                 >
-                  添加
+                  {formatMessage({ id: 'odc.SensitiveColumn.components.ManualForm.Add' }) /*添加*/}
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>

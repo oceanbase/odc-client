@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 export enum ActivityBarItemType {
   Database = 'database',
   Script = 'script',
@@ -6,8 +7,10 @@ export enum ActivityBarItemType {
 }
 
 export const ActivityBarItemTypeText = {
-  [ActivityBarItemType.Database]: '数据库',
-  [ActivityBarItemType.Task]: '任务',
-  [ActivityBarItemType.Script]: '脚本',
-  [ActivityBarItemType.Manager]: '运维管理',
+  [ActivityBarItemType.Database]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Database' }), //数据库
+  [ActivityBarItemType.Task]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Task' }), //任务
+  [ActivityBarItemType.Script]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Script' }), //脚本
+  [ActivityBarItemType.Manager]: formatMessage({
+    id: 'odc.Workspace.ActivityBar.type.OMManagement',
+  }), //运维管理
 };

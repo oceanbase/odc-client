@@ -14,7 +14,7 @@ import { SelectEditor, WrapSelectEditor } from '../../../EditableTable/Editors/S
 import { TextEditor } from '../../../EditableTable/Editors/TextEditor';
 import { TableColumn, TableForeignConstraint } from '../../interface';
 import TableContext from '../../TableContext';
-import { useDeferColumn, useEnableColumn } from '../baseColumn';
+import { useDeferColumn, useEnableColumnForeign } from '../baseColumn';
 
 function TableSelect(props) {
   const { row } = props;
@@ -88,7 +88,7 @@ export function useColumns(
   databases: IDatabase[],
   mode: ConnectionMode,
 ): Column<TableForeignConstraint, TableForeignConstraint>[] {
-  const enableColumn = useEnableColumn(mode);
+  const enableColumn = useEnableColumnForeign(mode);
   const deferColumn = useDeferColumn(mode);
   const validColumns = useMemo(() => {
     return uniq(columns?.filter((column) => !!column.name?.trim()).map((column) => column.name));

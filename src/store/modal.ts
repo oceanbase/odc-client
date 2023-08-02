@@ -1,4 +1,5 @@
 import { DbObjectType, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
+import { IRule } from '@/d.ts/rule';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -18,12 +19,19 @@ interface ConnectionData {
 
 interface DataMockerData {
   tableName?: string;
+  databaseId?: number;
 }
 
 interface AsyncData {
-  type: RollbackType;
-  task?: TaskDetail<IAsyncTaskParams>;
-  objectId: string;
+  type?: RollbackType;
+  task?: Partial<TaskDetail<IAsyncTaskParams>>;
+  objectId?: string;
+  sql?: string;
+  databaseId?: number;
+  /**
+   * 违反的校验规则
+   */
+  rules?: IRule[];
 }
 
 interface ApplyPermissionData {}
@@ -78,6 +86,9 @@ export class ModalStore {
 
   @observable
   public dataArchiveVisible: boolean = false;
+
+  @observable
+  public dataClearVisible: boolean = false;
 
   @observable
   public createSQLPlanVisible: boolean = false;
@@ -257,7 +268,7 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: any) {
+  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
     this.createAsyncTaskVisible = isShow;
     this.asyncTaskData = isShow ? data : null;
   }
@@ -276,6 +287,11 @@ export class ModalStore {
   @action
   public changeDataArchiveModal(isShow: boolean = true) {
     this.dataArchiveVisible = isShow;
+  }
+
+  @action
+  public changeDataClearModal(isShow: boolean = true) {
+    this.dataClearVisible = isShow;
   }
 
   @action
@@ -322,6 +338,7 @@ export class ModalStore {
     this.applyPermissionVisible = false;
     this.partitionVisible = false;
     this.dataArchiveVisible = false;
+    this.dataClearVisible = false;
     this.dataMockerData = null;
     this.createSequenceModalVisible = false;
     this.versionModalVisible = false;

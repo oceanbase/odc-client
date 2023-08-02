@@ -1,5 +1,10 @@
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
-import type { IConnectionPartitionPlan, TaskRecordParameters, TaskStatus } from '@/d.ts';
+import type {
+  IAlterScheduleTaskParams,
+  IConnectionPartitionPlan,
+  TaskRecordParameters,
+  TaskStatus,
+} from '@/d.ts';
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
@@ -10,13 +15,13 @@ import type { Moment } from 'moment';
 import React from 'react';
 import AlterDDLTaskCreateModal from './AlterDdlTask';
 import AsyncTaskCreateModal from './AsyncTask';
-import ApprovalModal from './component/ApprovalModal';
 import TaskTable from './component/TaskTable';
 import DataArchiveTaskCreateModal from './DataArchiveTask';
+import DataClearTaskCreateModal from './DataClearTask';
 import DataMockerTaskCreateModal from './DataMockerTask';
 import DetailModal from './DetailModal';
 import ExportTaskCreateModal from './ExportTask';
-import { isCycleTask, isCycleTaskPage } from './helper';
+import { isCycleTaskPage } from './helper';
 import ImportTaskCreateModal from './ImportTask';
 import PartitionTaskCreateModal from './PartitionTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
@@ -36,8 +41,6 @@ interface IState {
   detailId: number;
   detailType: TaskType;
   detailVisible: boolean;
-  approvalVisible: boolean;
-  approvalStatus: boolean;
   partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
 }
@@ -51,8 +54,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailId: props.taskStore?.defaultOpenTaskId,
       detailType: props.taskStore?.defauleOpenTaskType,
       detailVisible: !!props.taskStore?.defaultOpenTaskId,
-      approvalVisible: false,
-      approvalStatus: false,
       partitionPlan: null,
       status: null,
     };
@@ -178,28 +179,17 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     this.tableRef.current.reload();
   };
 
-  private handleApprovalVisible = (
-    task: TaskRecord<TaskRecordParameters>,
-    approvalStatus: boolean,
-    visible: boolean = false,
-  ) => {
-    const { id, type, status } = task ?? {};
-    this.setState({
-      detailId: isCycleTask(type) ? task?.approveInstanceId : id,
-      detailType: type,
-      approvalVisible: visible,
-      approvalStatus,
-      status,
-    });
-  };
-
   private handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     visible: boolean = false,
   ) => {
-    const { id } = task ?? {};
+    const { id, type } = task ?? {};
+    const detailId =
+      type === TaskType.ALTER_SCHEDULE
+        ? (task as TaskRecord<IAlterScheduleTaskParams>)?.parameters?.taskId
+        : id;
     this.setState({
-      detailId: id,
+      detailId,
       detailType:
         (task as TaskRecord<TaskRecordParameters>)?.type ||
         (task as ICycleTaskRecord<any>)?.type ||
@@ -235,6 +225,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.DATA_ARCHIVE:
         modalStore.changeDataArchiveModal(true);
         break;
+      case TaskPageType.DATA_DELETE:
+        modalStore.changeDataClearModal(true);
+        break;
       case TaskPageType.ONLINE_SCHEMA_CHANGE:
         modalStore.changeCreateDDLAlterTaskModal(true);
         break;
@@ -249,22 +242,13 @@ class TaskManaerContent extends React.Component<IProps, IState> {
 
   render() {
     const { projectId } = this.props;
-    const {
-      detailId,
-      detailType,
-      detailVisible,
-      approvalVisible,
-      approvalStatus,
-      partitionPlan,
-      status,
-    } = this.state;
+    const { detailId, detailType, detailVisible, partitionPlan } = this.state;
     return (
       <>
         <div className={styles.content}>
           <TaskTable
             tableRef={this.tableRef}
             getTaskList={this.loadList}
-            onApprovalVisible={this.handleApprovalVisible}
             onDetailVisible={this.handleDetailVisible}
             onReloadList={this.reloadList}
             onMenuClick={this.handleMenuClick}
@@ -276,23 +260,8 @@ class TaskManaerContent extends React.Component<IProps, IState> {
           visible={detailVisible}
           partitionPlan={partitionPlan}
           onPartitionPlanChange={this.handlePartitionPlanChange}
-          onApprovalVisible={this.handleApprovalVisible}
           onDetailVisible={this.handleDetailVisible}
           onReloadList={this.reloadList}
-        />
-
-        <ApprovalModal
-          type={detailType}
-          id={detailId}
-          visible={approvalVisible}
-          status={status}
-          approvalStatus={approvalStatus}
-          partitionPlan={partitionPlan}
-          onCancel={() => {
-            this.setState({
-              approvalVisible: false,
-            });
-          }}
         />
         <AsyncTaskCreateModal projectId={projectId} />
         <DataMockerTaskCreateModal projectId={projectId} />
@@ -302,6 +271,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         <SQLPlanTaskCreateModal projectId={projectId} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
         <DataArchiveTaskCreateModal projectId={projectId} />
+        <DataClearTaskCreateModal projectId={projectId} />
         <AlterDDLTaskCreateModal projectId={projectId} />
       </>
     );

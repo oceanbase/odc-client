@@ -12,6 +12,8 @@ class CsvMapping extends React.Component<
   {
     csvColumnMappings: CsvColumnMapping[];
     tableName: string;
+    databaseName: string;
+    sessionId: string;
     onChangeCsvColumnMappings: (csvColumnMappings: CsvColumnMapping[]) => void;
     csvMappingErrors: {
       errorMsg: string;
@@ -32,7 +34,8 @@ class CsvMapping extends React.Component<
     this.getTableColumns();
   }
   getTableColumns = async () => {
-    const columns = await getTableColumnList(this.props.tableName);
+    const { databaseName, sessionId } = this.props;
+    const columns = await getTableColumnList(this.props.tableName, databaseName, sessionId);
     this.setState({
       columns,
     });
@@ -149,6 +152,7 @@ class CsvMapping extends React.Component<
                   allowClear
                   onChange={this.changeDestColumnName.bind(this, i)}
                   style={{ width: 100 }}
+                  getPopupContainer={(trigger) => trigger?.parentNode}
                   dropdownStyle={{
                     width: 170,
                     minWidth: 170,

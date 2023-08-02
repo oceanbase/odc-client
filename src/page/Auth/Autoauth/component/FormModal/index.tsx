@@ -4,19 +4,12 @@ import {
   getAutoRuleEventList,
   geteAutoRuleExists,
   getPromptExpression,
-  getPublicConnectionList,
   getRoleList,
   updateAutoRule,
 } from '@/common/network/manager';
-import { IResourceOption, ResourceSelector } from '@/component/Manage/ResourceSelector';
 import appConfig from '@/constant/appConfig';
-import type {
-  IAutoAuthRule,
-  IManagerPublicConnection,
-  IManagerResourceGroup,
-  VariableExpression,
-} from '@/d.ts';
-import { IManagerResourceType, IManagerRole } from '@/d.ts';
+import type { IAutoAuthRule, VariableExpression } from '@/d.ts';
+import { IManagerRole } from '@/d.ts';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -39,28 +32,6 @@ import React, { useEffect, useState } from 'react';
 import ConditionSelect from './conditionSelect';
 import styles from './index.less';
 
-export const connectionAccessTypeOptions = [
-  {
-    label: '数据源',
-    value: IManagerResourceType.resource,
-  },
-];
-
-export const connectionAccessActionOptions = [
-  {
-    label: formatMessage({ id: 'odc.components.FormAutoAuthModal.ReadOnly' }), //只读
-    value: 'readonlyconnect',
-  },
-  {
-    label: formatMessage({ id: 'odc.components.FormAutoAuthModal.ReadWrite' }), //读写
-    value: 'connect',
-  },
-  {
-    label: formatMessage({ id: 'odc.components.FormAutoAuthModal.CanApply' }), //可申请
-    value: 'apply',
-  },
-];
-
 interface IProps {
   visible: boolean;
   editId?: number;
@@ -80,38 +51,17 @@ export interface IOption {
   value: string | number;
 }
 
-const getResourceOptions = (data: IManagerPublicConnection[] | IManagerResourceGroup[]) => {
-  return (
-    data?.map(({ id, name, ...rest }) => ({
-      ...rest,
-      resourceId: id,
-      name,
-    })) ?? []
-  );
-};
-
 const FormModal: React.FC<IProps> = (props) => {
   const { visible, editId } = props;
   const [hasChange, setHasChange] = useState(false);
-  const [dataSource, setDataSource] = useState<IManagerPublicConnection[]>([]);
   const [roles, setRoles] = useState<IManagerRole[]>([]);
   const [data, setData] = useState<Partial<IAutoAuthRuleFormData>>(null);
   const [events, setEvents] = useState([]);
   const [variableExpression, setVariableExpression] = useState<VariableExpression>({});
-  const [connectionAccessOptionsMap, setConnectionAccessOptionsMap] = useState<{
-    [key: string]: IResourceOption[];
-  }>({
-    [IManagerResourceType.auto_auth]: getResourceOptions(dataSource),
-  });
 
   const loadRoles = async () => {
     const roles = await getRoleList();
     setRoles(roles?.contents);
-  };
-
-  const loadDataSource = async () => {
-    const dataSource = await getPublicConnectionList();
-    setDataSource(dataSource?.contents);
   };
 
   const initialValue = {};
@@ -167,13 +117,9 @@ const FormModal: React.FC<IProps> = (props) => {
       loadVariableExpression(eventName);
       const _actions = [];
       const hasRole = actions?.some((item) => item.action === 'BindRole');
-      const hasPermission = actions?.some((item) => item.action === 'BindPermission');
       const roles = actions
         ?.filter((item) => item.action === 'BindRole')
         ?.map((item) => item?.arguments?.roleId);
-      const permissions = actions
-        ?.filter((item) => item.action === 'BindPermission')
-        ?.map((item) => item?.arguments);
       const conditions = res?.conditions?.map(({ expression, object, operation, value }) => {
         return {
           expression,
@@ -185,14 +131,10 @@ const FormModal: React.FC<IProps> = (props) => {
       if (hasRole) {
         _actions.push('BindRole');
       }
-      if (hasPermission) {
-        _actions.push('BindPermission');
-      }
       const formData = {
         ...res,
         actions: _actions,
         roles,
-        permissions,
         conditions,
       };
       setData(formData);
@@ -206,14 +148,7 @@ const FormModal: React.FC<IProps> = (props) => {
     }
     loadEventList();
     loadRoles();
-    loadDataSource();
   }, [editId, visible]);
-
-  useEffect(() => {
-    setConnectionAccessOptionsMap({
-      [IManagerResourceType.resource]: getResourceOptions(dataSource),
-    });
-  }, [dataSource]);
 
   const handleClose = () => {
     form?.resetFields();
@@ -269,24 +204,13 @@ const FormModal: React.FC<IProps> = (props) => {
   };
 
   const getFormData = (values: Record<string, any>) => {
-    const { name, enabled, eventId, description, conditions = [], roles, permissions } = values;
+    const { name, enabled, eventId, description, conditions = [], roles } = values;
     const actions = [];
     roles?.forEach((id) => {
       actions.push({
         action: 'BindRole',
         arguments: {
           roleId: id,
-        },
-      });
-    });
-
-    permissions?.forEach(({ resourceType, resourceId, actions: _actions }) => {
-      actions.push({
-        action: 'BindPermission',
-        arguments: {
-          resourceType,
-          resourceId,
-          actions: _actions,
         },
       });
     });
@@ -366,16 +290,6 @@ const FormModal: React.FC<IProps> = (props) => {
     if (isRepeat) {
       throw new Error();
     }
-  };
-
-  const handleConnectionAccessOptionsChange = (value) => {
-    setConnectionAccessOptionsMap(value);
-  };
-
-  const handleFieldChange = (label: string, value: any) => {
-    form.setFieldsValue({
-      [label]: value,
-    });
   };
 
   const handleEventChange = async (id: string) => {
@@ -607,27 +521,6 @@ const FormModal: React.FC<IProps> = (props) => {
 
                   value: 'BindRole',
                 },
-                {
-                  label: (
-                    <Space>
-                      {
-                        formatMessage({
-                          id: 'odc.components.FormAutoAuthModal.GrantAccessToConnections',
-                        }) /*授予连接访问权限*/
-                      }
-
-                      <Tooltip
-                        title={formatMessage({
-                          id: 'odc.components.FormAutoAuthModal.CustomPublicConnectionAccessPermissions',
-                        })} /*自定义公共连接的访问权限（只读/读写/申请）*/
-                      >
-                        <QuestionCircleOutlined style={iconStyle} />
-                      </Tooltip>
-                    </Space>
-                  ),
-
-                  value: 'BindPermission',
-                },
               ]}
             />
           </Form.Item>
@@ -636,7 +529,6 @@ const FormModal: React.FC<IProps> = (props) => {
             {({ getFieldValue }) => {
               const action = getFieldValue('actions');
               const isBindRole = action?.includes('BindRole');
-              const isBindPermission = action?.includes('BindPermission');
               const items = [];
               if (isBindRole) {
                 items.push(
@@ -668,43 +560,6 @@ const FormModal: React.FC<IProps> = (props) => {
                       }}
                     />
                   </Form.Item>,
-                );
-              }
-              if (isBindPermission) {
-                items.push(
-                  <>
-                    <div className={styles['resource-header']}>
-                      <div style={{ width: '100px' }}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.FormAutoAuthModal.AccessiblePublicConnections',
-                          }) /*可访问的公共连接*/
-                        }
-                      </div>
-                      <div style={{ width: '108px' }}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.FormAutoAuthModal.AccessPermission',
-                          }) /*访问权限*/
-                        }
-                      </div>
-                    </div>
-                    <ResourceSelector
-                      required={false}
-                      name="permissions"
-                      optionsMap={connectionAccessOptionsMap}
-                      onOptionsChange={handleConnectionAccessOptionsChange}
-                      typeOptions={connectionAccessTypeOptions}
-                      actionOptions={connectionAccessActionOptions}
-                      initialValue={data}
-                      isEdit={isEdit}
-                      isCopy={false}
-                      formRef={{
-                        current: form,
-                      }}
-                      onFieldChange={handleFieldChange}
-                    />
-                  </>,
                 );
               }
               return items;

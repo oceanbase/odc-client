@@ -1,6 +1,8 @@
+import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Popconfirm, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
+import styles from './index.less';
 
 const StatusSwitch: React.FC<{
   checked: boolean;
@@ -10,7 +12,13 @@ const StatusSwitch: React.FC<{
   onConfirm: () => void;
   onCancel: () => void;
 }> = (props) => {
-  const { disabled = false, title = '确定要关闭吗？', overlayStyle, onConfirm, onCancel } = props;
+  const {
+    disabled = false,
+    title = formatMessage({ id: 'odc.component.StatusSwitch.AreYouSureYouWant' }), //确定要关闭吗？
+    overlayStyle,
+    onConfirm,
+    onCancel,
+  } = props;
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useControllableValue(props, {
@@ -28,9 +36,11 @@ const StatusSwitch: React.FC<{
     setVisible(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setLoading(true);
-    onConfirm();
+    await onConfirm();
+    setLoading(false);
+    setVisible(false);
   };
 
   useEffect(() => {
@@ -43,15 +53,16 @@ const StatusSwitch: React.FC<{
 
   return (
     <Popconfirm
+      overlayClassName={styles.popconfirm}
       placement="topRight"
-      visible={visible}
+      open={visible}
       overlayStyle={{
         width: '180px',
         ...overlayStyle,
       }}
       title={title}
-      okText="确定"
-      cancelText="取消"
+      okText={formatMessage({ id: 'odc.component.StatusSwitch.Ok' })} /*确定*/
+      cancelText={formatMessage({ id: 'odc.component.StatusSwitch.Cancel' })} /*取消*/
       okButtonProps={{ loading }}
       onConfirm={handleConfirm}
       onCancel={handleCancel}

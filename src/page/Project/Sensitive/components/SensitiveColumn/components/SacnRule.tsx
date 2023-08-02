@@ -3,11 +3,14 @@ import { listDatabases } from '@/common/network/database';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
+import { formatMessage } from '@/util/intl';
 import { Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
+import SensitiveContext from '../../../SensitiveContext';
 
-const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
+const ScanRule = ({ formRef, reset }) => {
   const context = useContext(ProjectContext);
+  const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
   const [databaseId, setDatabaseId] = useState<number>(0);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
@@ -15,7 +18,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
 
   const initDataSources = async () => {
-    const rawData = await getConnectionList({});
+    const rawData = await getConnectionList({ projectId: sensitiveContext.projectId });
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
@@ -27,7 +30,6 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
     id: number = dataSourceId,
   ) => {
     const rawData = await listDatabases(projectId, id);
-    setDatabases(rawData?.contents);
     const resData =
       rawData?.contents?.map((content) => ({
         label: content.name,
@@ -37,7 +39,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
       resData?.length > 0
         ? [
             {
-              label: '全部',
+              label: formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.All' }), //全部
               value: -1,
             },
             ...resData,
@@ -57,7 +59,7 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
       resData?.length > 0
         ? [
             {
-              label: '全部',
+              label: formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.All' }), //全部
               value: -1,
             },
             ...resData,
@@ -99,43 +101,52 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
     reset();
   };
   useEffect(() => {
+    initDataSources();
+    initDetectRules();
+  }, []);
+  useEffect(() => {
     if (dataSourceId !== -1) {
       initDatabases(context.projectId, dataSourceId);
     }
   }, [dataSourceId]);
-  useEffect(() => {
-    initDataSources();
-    initDatabases();
-    initDetectRules();
-  }, []);
 
   return (
     <div style={{ display: 'flex', columnGap: '8px' }}>
       <Form.Item
-        label={'数据源'}
+        label={
+          formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.DataSource' }) //数据源
+        }
         name="connectionId"
         rules={[
           {
             required: true,
-            message: '请选择数据源',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.SacnRule.SelectADataSource',
+            }), //请选择数据源
           },
         ]}
       >
         <Select
           options={dataSourceOptions}
           onChange={handleDataSourceIdChange}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
+          }
           maxTagCount="responsive"
           style={{ width: '170px' }}
         ></Select>
       </Form.Item>
       <Form.Item
-        label={'数据库'}
+        label={
+          formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.Database' }) //数据库
+        }
         name="databaseIds"
         rules={[
           {
             required: true,
-            message: '请选择数据库',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.SacnRule.SelectADatabase',
+            }), //请选择数据库
           },
         ]}
       >
@@ -144,7 +155,9 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
           options={databaseIdsOptions}
           // onChange={handleDatabaseIdsChange}
           onSelect={handleDatabaseIdsSelect}
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
+          }
           maxTagCount="responsive"
           disabled={
             databaseIdsOptions?.length === 1 ||
@@ -155,12 +168,16 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
         />
       </Form.Item>
       <Form.Item
-        label={'识别规则'}
+        label={
+          formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.IdentificationRules' }) //识别规则
+        }
         name="sensitiveRuleIds"
         rules={[
           {
             required: true,
-            message: '请选择识别规则',
+            message: formatMessage({
+              id: 'odc.SensitiveColumn.components.SacnRule.SelectAnIdentificationRule',
+            }), //请选择识别规则
           },
         ]}
       >
@@ -172,7 +189,9 @@ const ScanRule = ({ formRef, resetScanTableData, reset, setDatabases }) => {
             databaseIdsOptions?.length === 1 || sensitiveOptions?.length === 1 || databaseId === 0
           }
           maxTagCount="responsive"
-          placeholder={'请选择'}
+          placeholder={
+            formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
+          }
           style={{ width: '244px' }}
         />
       </Form.Item>

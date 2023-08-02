@@ -1,10 +1,10 @@
 import DelimiterSelect from '@/component/DelimiterSelect';
 import SQLConfig from '@/component/SQLConfig';
-import { getConfirmTitle } from '@/component/SubmitConfirm';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
+import { SpaceType } from '@/d.ts/_index';
 import { SQLPage } from '@/page/Workspace/components/SQLPage';
-import setting from '@/store/setting';
+import login from '@/store/login';
 import sqlStore from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { SaveOutlined } from '@ant-design/icons';
@@ -55,29 +55,16 @@ const sqlActions: ToolBarActions = {
         commitingPageKey,
         isRunningSection,
       } = sqlStore;
-      if (setting.enableMultiSession) {
-        if (
-          commitingPageKey.has(pageKey) ||
-          !!rollbackPageKey.has(pageKey) ||
-          !!stopingPageKey.has(pageKey)
-        ) {
-          return IConStatus.DISABLE;
-        } else if (runningPageKey.has(pageKey) && !isRunningSection.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        return IConStatus.INIT;
-      } else {
-        if (commitingPageKey?.size || !!rollbackPageKey?.size || !!stopingPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        if (runningPageKey.has(pageKey) && !isRunningSection.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        if (runningPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        return IConStatus.INIT;
+      if (
+        commitingPageKey.has(pageKey) ||
+        !!rollbackPageKey.has(pageKey) ||
+        !!stopingPageKey.has(pageKey)
+      ) {
+        return IConStatus.DISABLE;
+      } else if (runningPageKey.has(pageKey) && !isRunningSection.has(pageKey)) {
+        return IConStatus.RUNNING;
       }
+      return IConStatus.INIT;
     },
 
     async action(ctx: any) {
@@ -100,29 +87,16 @@ const sqlActions: ToolBarActions = {
         commitingPageKey,
         isRunningSection,
       } = sqlStore;
-      if (setting.enableMultiSession) {
-        if (
-          commitingPageKey.has(pageKey) ||
-          rollbackPageKey.has(pageKey) ||
-          stopingPageKey.has(pageKey)
-        ) {
-          return IConStatus.DISABLE;
-        } else if (runningPageKey.has(pageKey) && isRunningSection.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        return IConStatus.INIT;
-      } else {
-        if (commitingPageKey?.size || !!rollbackPageKey?.size || !!stopingPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        if (runningPageKey.has(pageKey) && isRunningSection.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        if (runningPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        return IConStatus.INIT;
+      if (
+        commitingPageKey.has(pageKey) ||
+        rollbackPageKey.has(pageKey) ||
+        stopingPageKey.has(pageKey)
+      ) {
+        return IConStatus.DISABLE;
+      } else if (runningPageKey.has(pageKey) && isRunningSection.has(pageKey)) {
+        return IConStatus.RUNNING;
       }
+      return IConStatus.INIT;
     },
 
     async action(ctx: any) {
@@ -135,14 +109,6 @@ const sqlActions: ToolBarActions = {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Submitted' }), // 提交
     icon: 'SQL_COMMIT',
     confirmConfig: () => {
-      if (!setting.enableMultiSession) {
-        /**
-         * 共享session下面需要提示会对其他窗口有影响
-         */
-        return {
-          title: getConfirmTitle(),
-        };
-      }
       return null;
     },
 
@@ -153,29 +119,16 @@ const sqlActions: ToolBarActions = {
       if (transaction?.transState === TransState.IDLE) {
         return IConStatus.DISABLE;
       }
-      if (setting.enableMultiSession) {
-        if (
-          runningPageKey.has(pageKey) ||
-          rollbackPageKey.has(pageKey) ||
-          stopingPageKey.has(pageKey)
-        ) {
-          return IConStatus.DISABLE;
-        } else if (commitingPageKey.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        return IConStatus.INIT;
-      } else {
-        if (runningPageKey?.size || !!rollbackPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        if (commitingPageKey.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        if (commitingPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        return IConStatus.INIT;
+      if (
+        runningPageKey.has(pageKey) ||
+        rollbackPageKey.has(pageKey) ||
+        stopingPageKey.has(pageKey)
+      ) {
+        return IConStatus.DISABLE;
+      } else if (commitingPageKey.has(pageKey)) {
+        return IConStatus.RUNNING;
       }
+      return IConStatus.INIT;
     },
 
     isVisible(ctx: SQLPage) {
@@ -197,11 +150,6 @@ const sqlActions: ToolBarActions = {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Rollback' }), // 回滚
     icon: 'SQL_ROLLBACK',
     confirmConfig: () => {
-      if (!setting.enableMultiSession) {
-        return {
-          title: getConfirmTitle(true),
-        };
-      }
       return null;
     },
     statusFunc: (ctx: SQLPage) => {
@@ -212,29 +160,16 @@ const sqlActions: ToolBarActions = {
       if (transaction?.transState === TransState.IDLE) {
         return IConStatus.DISABLE;
       }
-      if (setting.enableMultiSession) {
-        if (
-          runningPageKey.has(pageKey) ||
-          commitingPageKey.has(pageKey) ||
-          stopingPageKey.has(pageKey)
-        ) {
-          return IConStatus.DISABLE;
-        } else if (rollbackPageKey.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        return IConStatus.INIT;
-      } else {
-        if (runningPageKey?.size || commitingPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        if (rollbackPageKey.has(pageKey)) {
-          return IConStatus.RUNNING;
-        }
-        if (rollbackPageKey?.size) {
-          return IConStatus.DISABLE;
-        }
-        return IConStatus.INIT;
+      if (
+        runningPageKey.has(pageKey) ||
+        commitingPageKey.has(pageKey) ||
+        stopingPageKey.has(pageKey)
+      ) {
+        return IConStatus.DISABLE;
+      } else if (rollbackPageKey.has(pageKey)) {
+        return IConStatus.RUNNING;
       }
+      return IConStatus.INIT;
     },
 
     isVisible(ctx: SQLPage) {
@@ -307,6 +242,11 @@ const sqlActions: ToolBarActions = {
   SQL_LINT: {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.SqlCheck' }), //SQL 检查
     icon: 'LINT',
+    isVisible(ctx: SQLPage) {
+      return (
+        login.organizations?.find((o) => o.id === login.organizationId)?.type !== SpaceType.PRIVATE
+      );
+    },
     async action(ctx: any) {
       await ctx.doSQLLint();
     },

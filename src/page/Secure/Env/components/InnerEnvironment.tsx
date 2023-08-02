@@ -2,7 +2,7 @@ import { getIntegrationList } from '@/common/network/manager';
 import { updateRule } from '@/common/network/ruleset';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IntegrationType } from '@/d.ts';
+import { actionTypes, IManagerResourceType, IntegrationType } from '@/d.ts';
 import { IRule, RuleType } from '@/d.ts/rule';
 import {
   CommonTableBodyMode,
@@ -10,27 +10,32 @@ import {
   ITableInstance,
   ITableLoadOptions,
 } from '@/page/Secure/components/SecureTable/interface';
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Descriptions, message, Space, Tabs, Tag, Tooltip } from 'antd';
+import { formatMessage } from '@/util/intl';
+import { QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Descriptions, message, Space, Tabs, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useRef, useState } from 'react';
 import SecureTable from '../../components/SecureTable';
 import EditRuleDrawer from './EditRuleDrawer';
 
+import { Acess, createPermission } from '@/component/Acess';
+import SearchFilter from '@/component/SearchFilter';
+import RiskLevelLabel from '../../components/RiskLevelLabel';
+import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import styles from './index.less';
 
-const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
+export const RenderLevel: React.FC<{ level: number }> = ({ level }) => {
   const levelMap = {
-    0: '无需改进',
-    1: '建议改进',
-    2: '必须改进',
+    [RiskLevelEnum.DEFAULT]: RiskLevelTextMap[RiskLevelEnum.DEFAULT], //无需改进
+    [RiskLevelEnum.SUGGEST]: RiskLevelTextMap[RiskLevelEnum.SUGGEST], //建议改进
+    [RiskLevelEnum.MUST]: RiskLevelTextMap[RiskLevelEnum.MUST], //必须改进
   };
   const colorMap = {
-    0: 'green',
-    1: 'yellow',
-    2: 'red',
+    [RiskLevelEnum.DEFAULT]: 'green',
+    [RiskLevelEnum.SUGGEST]: 'yellow',
+    [RiskLevelEnum.MUST]: 'red',
   };
-  return <Tag color={colorMap[level]}>{levelMap[level]}</Tag>;
+  return <RiskLevelLabel content={levelMap[level]} color={colorMap[level]} />;
 };
 interface InnerEnvProps {
   selectedRecord: {
@@ -44,6 +49,8 @@ interface InnerEnvProps {
   tableLoading: boolean;
   exSearch: (args?: ITableLoadOptions) => Promise<any>;
   exReload: (args?: ITableLoadOptions) => Promise<any>;
+  listParams: any;
+  resetPartialFilterParams: () => void;
   rules: IRule[];
   ruleType: RuleType;
   setRuleType: (value: any) => void;
@@ -54,24 +61,29 @@ interface InnerEnvProps {
 }
 const getColumns: (columnsFunction: {
   selectedRecord: any;
+  integrationsIdMap: { [key in string]: string };
+  listParams: any;
   subTypeFilters: { text: string; value: string }[];
   supportedDialectTypeFilters: { text: string; value: string }[];
   handleOpenEditModal: (record: IRule) => void;
   handleSwtichRuleStatus: (rulesetId: number, rule: IRule) => void;
 }) => ColumnsType<IRule> = ({
   selectedRecord,
+  integrationsIdMap = {},
+  listParams,
   subTypeFilters,
   supportedDialectTypeFilters,
   handleOpenEditModal = () => {},
   handleSwtichRuleStatus = () => {},
 }) => {
+  const { filters } = listParams ?? {};
   return [
     {
-      title: '规则名称',
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' }), //规则名称
       width: 218,
       dataIndex: 'name',
       key: 'name',
-      // fixed: 'left',
+      filters: [],
       onCell: () => {
         return {
           style: {
@@ -82,6 +94,23 @@ const getColumns: (columnsFunction: {
           },
         };
       },
+      filterDropdown: (props) => {
+        return (
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.name}
+            placeholder={formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' })} //规则名称
+          />
+        );
+      },
+
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? 'var(--icon-color-focus)' : undefined,
+          }}
+        />
+      ),
       render: (text, record, index) => (
         <div
           style={{
@@ -98,8 +127,7 @@ const getColumns: (columnsFunction: {
       ),
     },
     {
-      title: '规则类型',
-      // width: 94,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleType' }), //规则类型 // width: 94,
       dataIndex: 'subTypes',
       key: 'subTypes',
       filters: subTypeFilters,
@@ -116,8 +144,7 @@ const getColumns: (columnsFunction: {
       render: (text, record) => <TooltipContent content={record?.metadata?.subTypes?.join(',')} />,
     },
     {
-      title: '支持数据源',
-      // width: 150,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.SupportsDataSources' }), //支持数据源 // width: 150,
       dataIndex: 'supportedDialectTypes',
       key: 'supportedDialectTypes',
       filters: supportedDialectTypeFilters,
@@ -134,8 +161,7 @@ const getColumns: (columnsFunction: {
       render: (text, record) => <TooltipContent content={record?.appliedDialectTypes?.join(',')} />,
     },
     {
-      title: '配置值',
-      // width: 378,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ConfigurationValue' }), //配置值 // width: 378,
       dataIndex: 'metadata',
       key: 'metadata',
       onCell: () => {
@@ -153,27 +179,55 @@ const getColumns: (columnsFunction: {
         const { propertyMetadatas } = metadata;
         const keys = Object.keys(properties) || [];
         let content;
+        if (
+          keys?.[0] ===
+          '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.metadata.name}'
+        ) {
+          return integrationsIdMap?.[properties?.[keys?.[0]]] || '-';
+        }
         if (keys.length === 0) {
           content = '-';
         } else if (keys.length === 1) {
           const [pm] = propertyMetadatas;
-          if (Array.isArray(properties[pm.name])) {
+          if (Array.isArray(properties?.[pm?.name])) {
             content =
-              properties[pm.name].length > 0 ? properties[pm.name].join(',').toString() : '-';
+              properties?.[pm?.name]?.length > 0
+                ? properties?.[pm?.name]?.join(',').toString()
+                : '-';
           } else {
-            content = content = properties?.[pm.name]?.toString() || '-';
+            content = properties?.[pm?.name]?.toString() || '-';
           }
         } else {
           content = propertyMetadatas
-            .map((pm) => `${pm.displayName}: ${properties[pm.name]}`)
+            .map((pm) => `${pm?.displayName}: ${properties?.[pm?.name]}`)
             .join(',');
         }
         return <TooltipContent content={content} />;
       },
     },
     {
-      title: '状态',
-      // width: 80,
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ImprovementLevel' }), //改进等级 // width: 92,
+      dataIndex: 'level',
+      key: 'level',
+      filters: [
+        {
+          text: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+          value: RiskLevelEnum.DEFAULT,
+        },
+        {
+          text: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+          value: RiskLevelEnum.SUGGEST,
+        },
+        {
+          text: RiskLevelTextMap[RiskLevelEnum.MUST],
+          value: RiskLevelEnum.MUST,
+        },
+      ],
+
+      render: (_, record) => <RenderLevel level={record.level} />,
+    },
+    {
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.WhetherToEnable' }), //是否启用
       dataIndex: 'status',
       key: 'status',
       render: (_, record, index) => {
@@ -188,14 +242,21 @@ const getColumns: (columnsFunction: {
       },
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.Operation' }), //操作
       width: 80,
       key: 'action',
       // fixed: 'right',
       render: (_, record, index) => (
         <>
           <Space>
-            <a onClick={() => handleOpenEditModal(record)}>编辑</a>
+            <Acess
+              fallback={<span>-</span>}
+              {...createPermission(IManagerResourceType.environment, actionTypes.update)}
+            >
+              <a onClick={() => handleOpenEditModal(record)}>
+                {formatMessage({ id: 'odc.Env.components.InnerEnvironment.Edit' }) /*编辑*/}
+              </a>
+            </Acess>
           </Space>
         </>
       ),
@@ -208,15 +269,18 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   subTypeFilters,
   supportedDialectTypeFilters,
   rules,
+  listParams,
   handleInitRules,
   ruleType,
   setRuleType,
   exReload,
   exSearch,
 }) => {
-  const tableRef = useRef<ITableInstance>();
+  const tableRef1 = useRef<ITableInstance>();
+  const tableRef2 = useRef<ITableInstance>();
   const [selectedData, setSelectedData] = useState<IRule>(null);
   const [integrations, setIntegrations] = useState([]);
+  const [integrationsIdMap, setIntegrationsIdMap] = useState<{ [key in string]: string }>();
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
 
   const handleCloseModal = (fn?: () => void) => {
@@ -226,13 +290,20 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
   const handleUpdateEnvironment = async (rule: IRule, fn?: () => void) => {
     const flag = await updateRule(selectedRecord.rulesetId, selectedData.id, rule);
     if (flag) {
-      message.success('提交成功');
-      // 刷新列表
+      message.success(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.SubmittedSuccessfully' }), //提交成功
+      ); // 刷新列表
       setEditRuleDrawerVisible(false);
       fn?.();
-      tableRef?.current?.reload();
+      if (ruleType === RuleType.SQL_CHECK) {
+        tableRef1.current?.reload?.();
+      } else {
+        tableRef2.current?.reload?.();
+      }
     } else {
-      message.error('提交失败');
+      message.error(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.FailedToSubmit' }), //提交失败
+      );
     }
   };
   const handleOpenEditModal = async (record: IRule) => {
@@ -254,10 +325,14 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
         enabled: !rule.enabled,
       })) || false;
     if (updateResult) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.UpdatedSuccessfully' }), //更新成功
+      );
       handleRulesReload();
     } else {
-      message.success('更新失败');
+      message.success(
+        formatMessage({ id: 'odc.Env.components.InnerEnvironment.UpdateFailed' }), //更新失败
+      );
     }
   };
   const handleRulesReload = () => {
@@ -268,24 +343,33 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     const integrations = await getIntegrationList({
       type: IntegrationType.SQL_INTERCEPTOR,
     });
-    setIntegrations(integrations?.contents);
+    const map = {};
+    integrations?.contents?.forEach((content) => {
+      map[content.id] = content.name;
+    });
+    setIntegrationsIdMap(map);
+    setIntegrations(integrations?.contents?.filter((content) => content?.enabled));
   };
 
   const columns: ColumnsType<IRule> = getColumns({
     selectedRecord,
+    integrationsIdMap,
     handleOpenEditModal,
     handleSwtichRuleStatus,
     subTypeFilters,
+    listParams,
     supportedDialectTypeFilters,
   });
   useEffect(() => {
     if (selectedRecord && ruleType) {
       handleInitRules(selectedRecord?.value, ruleType);
-      if (tableRef.current) {
-        tableRef?.current?.resetPaganition();
+      if (ruleType === RuleType.SQL_CHECK) {
+        tableRef1.current?.resetPaganition?.();
+      } else {
+        tableRef2.current?.resetPaganition?.();
       }
     }
-  }, [selectedRecord, ruleType]);
+  }, [selectedRecord]);
 
   useEffect(() => {
     loadIntegrations();
@@ -295,11 +379,18 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
     <>
       <div className={styles.innerEnv}>
         <Space className={styles.tag}>
-          <div className={styles.tagLabel}>标签样式: </div>
-          <Tag color={selectedRecord?.style?.toLowerCase()}>{selectedRecord?.label}</Tag>
+          <div className={styles.tagLabel}>
+            {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
+          </div>
+          <RiskLevelLabel content={selectedRecord?.label} color={selectedRecord?.style} />
         </Space>
         <Descriptions column={1}>
-          <Descriptions.Item contentStyle={{ whiteSpace: 'pre' }} label={'描述'}>
+          <Descriptions.Item
+            contentStyle={{ whiteSpace: 'pre' }}
+            label={
+              formatMessage({ id: 'odc.Env.components.InnerEnvironment.Description' }) //描述
+            }
+          >
             {selectedRecord?.description}
           </Descriptions.Item>
         </Descriptions>
@@ -310,13 +401,22 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
           activeKey={ruleType}
           onTabClick={handleTabClick}
         >
-          <Tabs.TabPane tab="SQL 检查规范" key={RuleType.SQL_CHECK} />
-          <Tabs.TabPane tab="SQL 窗口规范" key={RuleType.SQL_CONSOLE} />
+          <Tabs.TabPane
+            tab={formatMessage({ id: 'odc.Env.components.InnerEnvironment.SqlCheckSpecification' })}
+            /*SQL 检查规范*/ key={RuleType.SQL_CHECK}
+          />
+
+          <Tabs.TabPane
+            tab={formatMessage({
+              id: 'odc.Env.components.InnerEnvironment.SqlWindowSpecification',
+            })}
+            /*SQL 窗口规范*/ key={RuleType.SQL_CONSOLE}
+          />
         </Tabs>
         <div style={{ height: '100%', flexGrow: 1, marginTop: '12px' }}>
-          {ruleType === RuleType.SQL_CHECK ? (
+          {ruleType === RuleType.SQL_CHECK && (
             <SecureTable
-              ref={tableRef}
+              ref={tableRef1}
               mode={CommonTableMode.SMALL}
               body={CommonTableBodyMode.BIG}
               titleContent={null}
@@ -337,9 +437,10 @@ const InnerEnvironment: React.FC<InnerEnvProps> = ({
                 loading: tableLoading,
               }}
             />
-          ) : (
+          )}
+          {ruleType === RuleType.SQL_CONSOLE && (
             <SecureTable
-              ref={tableRef}
+              ref={tableRef2}
               mode={CommonTableMode.SMALL}
               body={CommonTableBodyMode.BIG}
               titleContent={null}

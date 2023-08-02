@@ -36,7 +36,7 @@ const Script: React.FC<{}> = function () {
   }
   return (
     <>
-      <div style={{ display: 'none' }}>
+      <div style={{ display: 'none', pointerEvents: 'none' }}>
         <Upload
           showUploadList={false}
           name="file"
@@ -47,6 +47,7 @@ const Script: React.FC<{}> = function () {
           headers={{
             'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') || '',
             'Accept-Language': getLocale(),
+            currentOrganizationId: login.organizationId?.toString(),
           }}
           action={window.ODCApiHost + `/api/v2/script/scripts/batchUpload`}
           accept=".sql, .pl, .txt"
@@ -64,19 +65,20 @@ const Script: React.FC<{}> = function () {
       <SideTabs
         tabs={[
           {
-            title: '脚本',
+            title: formatMessage({ id: 'odc.SideBar.Script.Script' }), //脚本
             key: 'script',
             actions: [
               {
-                title: '上传脚本',
+                title: formatMessage({ id: 'odc.SideBar.Script.UploadScript' }), //上传脚本
                 key: 'upload',
                 onClick() {
+                  console.log('click');
                   uploadRef.current?.click();
                 },
                 icon: UploadOutlined,
               },
               {
-                title: '刷新',
+                title: formatMessage({ id: 'odc.SideBar.Script.Refresh' }), //刷新
                 key: 'reload',
                 onClick() {
                   return login.scriptStore.getScriptList();
@@ -84,16 +86,17 @@ const Script: React.FC<{}> = function () {
                 icon: ReloadOutlined,
               },
             ],
+
             render() {
               return <ScriptFile uploadFiles={uploadFiles} setUploadFiles={setUploadFiles} />;
             },
           },
           {
-            title: '代码片段',
+            title: formatMessage({ id: 'odc.SideBar.Script.CodeSnippet' }), //代码片段
             key: 'snippet',
             actions: [
               {
-                title: '新建代码片段',
+                title: formatMessage({ id: 'odc.SideBar.Script.CreateACodeSnippet' }), //新建代码片段
                 key: 'add',
                 onClick() {
                   snippetRef.current?.newSnippet();
@@ -101,7 +104,7 @@ const Script: React.FC<{}> = function () {
                 icon: PlusOutlined,
               },
               {
-                title: '刷新',
+                title: formatMessage({ id: 'odc.SideBar.Script.Refresh' }), //刷新
                 key: 'reload',
                 onClick() {
                   snippetRef.current?.reload();
@@ -109,6 +112,7 @@ const Script: React.FC<{}> = function () {
                 icon: ReloadOutlined,
               },
             ],
+
             render() {
               return <Snippet ref={snippetRef} />;
             },

@@ -119,10 +119,10 @@ class CreateViewPage extends Component<
       session?.sessionId,
       session?.odcDatabase?.name,
     );
-    if (!results || !results.length) {
+    if (results?.invalid || !results?.executeResult?.length) {
       return;
     }
-    const { dbObjectName: viewName, track } = results[0];
+    const { dbObjectName: viewName, track } = results.executeResult[0];
     if (!track) {
       message.success(
         formatMessage(

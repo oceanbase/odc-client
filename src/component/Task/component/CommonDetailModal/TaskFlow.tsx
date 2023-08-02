@@ -171,7 +171,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
     let _node = node;
     if (
       node.nodeType === TaskFlowNodeType.SERVICE_TASK &&
-      node.taskType !== IFlowTaskType.SQL_CHECK
+      ![IFlowTaskType.SQL_CHECK, IFlowTaskType.GENERATE_ROLLBACK].includes(node.taskType)
     ) {
       const { deadlineTime, completeTime, operator, status, taskType } = node;
       let title = formatMessage({
@@ -402,7 +402,9 @@ const TaskFlow: React.FC<IProps> = (props) => {
             return (
               <Step
                 status={statusContent?.status as any}
-                title="生成备份回滚方案"
+                title={formatMessage({
+                  id: 'odc.component.CommonDetailModal.TaskFlow.GenerateABackupRollbackScheme',
+                })} /*生成备份回滚方案*/
                 description={<RollbackNode taskId={task?.id} node={item} result={result} />}
               />
             );
@@ -460,10 +462,9 @@ const TaskFlow: React.FC<IProps> = (props) => {
                           >
                             {externalFlowInstanceUrl ? (
                               formatMessage({
-                                id: 'odc.component.CommonTaskDetailModal.TaskFlow.AlibabaGroupApproval',
-                              })
+                                id: 'odc.component.CommonDetailModal.TaskFlow.ExternalApproval',
+                              }) //外部审批
                             ) : (
-                              //阿里集团审批
                               <MultiLineOverflowText
                                 className={styles.approverWrapper}
                                 isShowMore

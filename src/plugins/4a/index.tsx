@@ -1,4 +1,3 @@
-import modal from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { ODC } from '../odc';
 
@@ -25,8 +24,6 @@ export function apply(ODC: ODC) {
         /**
          * 需要审批，sql默认从data.sql取，目前只有tableModify和execute
          */
-        const sql = data.sql;
-        modal.changeCreateAsyncTaskModal(true, { sql });
         ODC.utils.message.warning(
           errMsg || formatMessage({ id: 'odc.plugins.4a.TheCurrentSqlCannotBe' }), //当前 SQL 无法直接执行，请提交审批
         );

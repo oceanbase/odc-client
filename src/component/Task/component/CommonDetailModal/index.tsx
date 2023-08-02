@@ -6,6 +6,7 @@ import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType } from '@/d.ts'
 import { formatMessage } from '@/util/intl';
 import { Drawer, Radio, Spin } from 'antd';
 import React from 'react';
+import { isCycleTask } from '../../helper';
 import styles from './index.less';
 import TaskExecuteRecord from './TaskExecuteRecord';
 import TaskFlow from './TaskFlow';
@@ -66,7 +67,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskExecuteRecord task={task} subTasks={subTasks} onReload={onReload} />;
       break;
     case TaskDetailType.OPERATION_RECORD:
-      content = <TaskOperationRecord opRecord={opRecord} />;
+      content = <TaskOperationRecord opRecord={opRecord} onReload={onReload} />;
       break;
     case TaskDetailType.PROGRESS:
       content = <TaskProgress task={task} />;
@@ -106,6 +107,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.ALTER_SCHEDULE,
     TaskType.DATA_ARCHIVE,
     TaskType.ONLINE_SCHEMA_CHANGE,
+    TaskType.DATA_DELETE,
   ].includes(task?.type);
   const hasLog = [
     TaskType.ASYNC,
@@ -170,7 +172,8 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
-          {[TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(task?.type) && (
+
+          {isCycleTask(task?.type) && (
             <>
               <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>
                 {
@@ -188,6 +191,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               </Radio.Button>
             </>
           )}
+
           {task?.type === TaskType.ONLINE_SCHEMA_CHANGE && (
             <Radio.Button value={TaskDetailType.PROGRESS}>
               {
@@ -197,6 +201,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
+
           {task?.type === TaskType.ASYNC && (
             <Radio.Button value={TaskDetailType.RESULT}>
               {
@@ -208,9 +213,13 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               }
             </Radio.Button>
           )}
+
           {task?.type === TaskType.ASYNC && (
-            <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>回滚工单</Radio.Button>
+            <Radio.Button value={TaskDetailType.RECORD}>
+              {formatMessage({ id: 'odc.component.CommonDetailModal.RollbackTicket' }) /*回滚工单*/}
+            </Radio.Button>
           )}
+
           {hasLog && (
             <Radio.Button value={TaskDetailType.LOG}>
               {
