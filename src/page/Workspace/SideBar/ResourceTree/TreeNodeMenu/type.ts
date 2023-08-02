@@ -28,6 +28,7 @@ export interface IProps {
   dbSession: SessionStore;
   node: TreeDataNode;
   databaseFrom: 'datasource' | 'project';
+  showTip?: boolean;
 }
 
 export interface IOptions {

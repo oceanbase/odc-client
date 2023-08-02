@@ -10,7 +10,7 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 
 const TreeNodeMenu = (props: IProps) => {
-  const { type = '', dbSession, databaseFrom, node } = props;
+  const { type = '', dbSession, databaseFrom, node, showTip } = props;
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
   const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
@@ -39,6 +39,9 @@ const TreeNodeMenu = (props: IProps) => {
         <Tooltip placement="right" title={node.warning}>
           <InfoCircleFilled style={{ color: 'var(--icon-color-3)', paddingLeft: 5 }} />
         </Tooltip>
+      ) : null}
+      {node.tip && showTip ? (
+        <span style={{ color: 'var(--text-color-placeholder)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
     </span>
   );
