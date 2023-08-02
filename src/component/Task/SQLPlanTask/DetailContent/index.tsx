@@ -69,7 +69,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
             })}
             /*风险等级*/
           >
-            {task?.maxRiskLevel}
+            {task?.riskLevel}
           </Descriptions.Item>
         )}
 
@@ -202,10 +202,8 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
           }
         </Descriptions.Item>
         <Descriptions.Item
-          label={formatMessage({
-            id: 'odc.component.DetailModal.sqlPlan.Remarks',
-          })}
-          /*备注*/ span={2}
+          label={formatMessage({ id: 'odc.SQLPlanTask.DetailContent.Description' })}
+          /*描述*/ span={2}
         >
           {task?.description || '-'}
         </Descriptions.Item>

@@ -9,24 +9,27 @@ export async function createDebugSession(
   packageName: string,
   plSchema: IFunction | IProcedure | null,
   plType: PLType,
-  content: string,
+  anonymousBlock: string,
   session: SessionStore,
 ): Promise<string> {
   const reqParams: any = {
     sid: generateDatabaseSid(session?.database?.dbName, session?.sessionId),
-    debugType: plType,
+    // 存在anonymousBlock的情况下，实际上走的是匿名块跳入的方式，所以类型是ANONYMOUSBLOCK；
+    debugType: anonymousBlock ? PLType.ANONYMOUSBLOCK : plType,
   };
   switch (plType) {
     case PLType.FUNCTION: {
       reqParams.function = plSchema;
+      reqParams.anonymousBlock = anonymousBlock;
       break;
     }
     case PLType.PROCEDURE: {
       reqParams.procedure = plSchema;
+      reqParams.anonymousBlock = anonymousBlock;
       break;
     }
     case PLType.ANONYMOUSBLOCK: {
-      reqParams.anonymousBlock = content;
+      reqParams.anonymousBlock = anonymousBlock;
       break;
     }
     default: {

@@ -1,5 +1,6 @@
 import { DbObjectType, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { formatMessage } from '@/util/intl';
 
 import Icon, { InfoOutlined, NumberOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
@@ -18,17 +19,18 @@ export function FunctionTreeNodeData(
   packageName?: string,
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
+  index?: number,
 ): TreeDataNode {
-  const funcKey = `${
+  const funcKey = `${dbSession?.database?.databaseId}-${
     packageName ? '' : dbSession?.database?.functionVersion
-  }-${packageName}-${dbName}-function-${func.funName}`;
+  }-${packageName}-${dbName}-function-${func.funName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let returnroot: TreeDataNode;
   let variableRoot: TreeDataNode;
 
   if (func.params?.length) {
     paramRoot = {
-      title: '参数',
+      title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.Parameter' }), //参数
       key: `${funcKey}-param`,
       type: ResourceNodeType.FunctionParamRoot,
       icon: (
@@ -39,6 +41,7 @@ export function FunctionTreeNodeData(
           }}
         />
       ),
+
       children: func.params.map((p) => {
         return {
           title: p.paramName,
@@ -52,7 +55,7 @@ export function FunctionTreeNodeData(
 
   if (func.returnType) {
     returnroot = {
-      title: '返回值',
+      title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.ReturnType' }), //返回类型
       key: `${funcKey}-returnType`,
       type: ResourceNodeType.FunctionReturnTypeRoot,
       icon: (
@@ -62,6 +65,7 @@ export function FunctionTreeNodeData(
           }}
         />
       ),
+
       children: [
         {
           title: func.returnType,
@@ -75,7 +79,7 @@ export function FunctionTreeNodeData(
 
   if (func.variables?.length) {
     variableRoot = {
-      title: '变量',
+      title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.Variable' }), //变量
       key: `${funcKey}-variable`,
       icon: (
         <InfoOutlined
@@ -84,6 +88,7 @@ export function FunctionTreeNodeData(
           }}
         />
       ),
+
       type: ResourceNodeType.FunctionVariableRoot,
       children: func.variables.map((p) => {
         return {
@@ -112,6 +117,7 @@ export function FunctionTreeNodeData(
         }}
       />
     ),
+
     sessionId: dbSession?.sessionId,
     packageName: packageName,
     data: func,
@@ -128,8 +134,8 @@ export function FunctionTreeData(
   const dbName = database.name;
   const functions = dbSession?.database?.functions;
   const treeData: TreeDataNode = {
-    title: '函数',
-    key: `${packageName}-pkg-${dbName}-function`,
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.Function' }), //函数
+    key: `${database.id}-${packageName}-pkg-${dbName}-function`,
     type: ResourceNodeType.FunctionRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -137,8 +143,8 @@ export function FunctionTreeData(
   };
 
   if (functions?.length) {
-    treeData.children = functions.map((func) => {
-      return FunctionTreeNodeData(func, dbSession, dbName, packageName);
+    treeData.children = functions.map((func, i) => {
+      return FunctionTreeNodeData(func, dbSession, dbName, packageName, null, null, i);
     });
   }
   return treeData;

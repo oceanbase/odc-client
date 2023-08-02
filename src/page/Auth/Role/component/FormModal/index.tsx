@@ -9,11 +9,8 @@ import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ResourceContext } from '../../../context';
-import {
-  resourceManagementActionMap,
-  SystemAction,
-  systemActionMap,
-} from '../ResourceSelector/const';
+import { resourceManagementActionMap } from '../../../utils';
+import { SystemAction, systemActionMap } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
 import { FormContent, RoleResource } from './component';
 import styles from './index.less';
@@ -53,10 +50,6 @@ const defaultData = {
       actions: SystemAction.action_read,
     },
     {
-      resourceType: IManagerResourceType.system_config,
-      actions: SystemAction.action_read,
-    },
-    {
       resourceType: IManagerResourceType.approval_flow,
       actions: SystemAction.action_create_delete_update,
     },
@@ -74,7 +67,7 @@ const defaultData = {
     },
     {
       resourceType: IManagerResourceType.integration,
-      actions: SystemAction.action_all,
+      actions: SystemAction.action_create_delete_update_read,
     },
   ],
   createAbleResource: [

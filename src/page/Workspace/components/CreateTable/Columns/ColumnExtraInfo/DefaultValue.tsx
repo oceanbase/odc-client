@@ -31,7 +31,7 @@ const DefaultValue: React.FC<IProps> = function ({ column, originColumns, onChan
     return !originData?.generated && !originData?.autoIncrement;
   }, [pageContext.editMode, column, originColumns]);
 
-  const isNullValue = defaultValueOrExpr === null;
+  const isNullValue = isNil(defaultValueOrExpr);
 
   return (
     <Form layout="vertical">

@@ -8,11 +8,11 @@ import type {
 import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
 import { getCronExecuteCycleByObject, translator } from '@/component/Crontab';
 import SearchFilter from '@/component/SearchFilter';
-import StatusLabel, { status } from '@/component/Task/component/Status';
+import StatusLabel, { cycleStatus, status } from '@/component/Task/component/Status';
 import { TimeOptions } from '@/component/TimeSelect';
 import UserPopover from '@/component/UserPopover';
 import type { ICycleTaskTriggerConfig, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageType, TaskStatus, TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
@@ -80,11 +80,12 @@ export const TaskTypeMap = {
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
   }), //计划变更
 
-  [TaskType.SQL_PLAN]: 'SQL 计划',
-
-  [TaskType.DATA_ARCHIVE]: '数据归档',
-
-  [TaskType.ONLINE_SCHEMA_CHANGE]: '无锁结构变更',
+  [TaskType.SQL_PLAN]: formatMessage({ id: 'odc.component.TaskTable.SqlPlan' }), //SQL 计划
+  [TaskType.DATA_ARCHIVE]: formatMessage({ id: 'odc.component.TaskTable.DataArchiving' }), //数据归档
+  [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
+    id: 'odc.component.TaskTable.LockFreeStructureChange',
+  }), //无锁结构变更
+  [TaskType.DATA_DELETE]: formatMessage({ id: 'odc.component.TaskTable.DataCleansing' }), //数据清理
 };
 
 export const getStatusFilters = (status: {
@@ -92,18 +93,18 @@ export const getStatusFilters = (status: {
     text: string;
   };
 }) => {
-  return Object.keys(status).map((key) => {
-    return {
-      text: status?.[key].text,
-      value: key,
-    };
-  });
+  return Object.keys(status)
+    ?.filter((key) => key !== TaskStatus.WAIT_FOR_CONFIRM)
+    .map((key) => {
+      return {
+        text: status?.[key].text,
+        value: key,
+      };
+    });
 };
 
 export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
 export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
-
-const taskStatusFilters = getStatusFilters(status);
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
@@ -111,11 +112,6 @@ interface IProps {
   settingStore?: SettingStore;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
@@ -128,6 +124,9 @@ const TaskTable: React.FC<IProps> = inject(
   observer((props) => {
     const { taskStore, settingStore, tableRef } = props;
     const { tasks, cycleTasks, taskPageScope, taskPageType } = taskStore;
+    const taskStatusFilters = getStatusFilters(
+      isCycleTaskPage(taskPageType) ? cycleStatus : status,
+    );
     const currentTask = isCycleTaskPage(taskPageType) ? cycleTasks : tasks;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
@@ -215,7 +214,7 @@ const TaskTable: React.FC<IProps> = inject(
       const columns = [
         {
           dataIndex: 'id',
-          title: '编号',
+          title: formatMessage({ id: 'odc.component.TaskTable.No' }), //编号
           filterDropdown: (props) => {
             return (
               <SearchFilter
@@ -236,6 +235,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
@@ -245,22 +245,24 @@ const TaskTable: React.FC<IProps> = inject(
 
         {
           dataIndex: 'type',
-          title: '类型',
+          title: formatMessage({ id: 'odc.component.TaskTable.Type' }), //类型
           ellipsis: true,
           width: 100,
-          render: (type) => TaskTypeMap[type],
+          render: (type, record) => {
+            return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
+          },
         },
 
         {
           dataIndex: 'description',
-          title: '工单描述',
+          title: formatMessage({ id: 'odc.component.TaskTable.TicketDescription' }), //工单描述
           ellipsis: true,
           render: (description) => description || '-',
         },
 
         {
           dataIndex: 'candidateApprovers',
-          title: '当前处理人',
+          title: formatMessage({ id: 'odc.component.TaskTable.CurrentHandler' }), //当前处理人
           ellipsis: true,
           width: 115,
           filterDropdown: (props) => {
@@ -268,7 +270,9 @@ const TaskTable: React.FC<IProps> = inject(
               <SearchFilter
                 {...props}
                 selectedKeys={filters?.candidateApprovers}
-                placeholder="当前处理人"
+                placeholder={formatMessage({
+                  id: 'odc.component.TaskTable.CurrentHandler',
+                })} /*当前处理人*/
               />
             );
           },
@@ -279,6 +283,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.candidateApprovers || null,
           filters: [],
           render: (candidateApprovers) =>
@@ -317,6 +322,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.creator || null,
           filters: [],
           render: (creator) => {
@@ -345,7 +351,7 @@ const TaskTable: React.FC<IProps> = inject(
 
         {
           dataIndex: 'status',
-          title: '状态',
+          title: formatMessage({ id: 'odc.component.TaskTable.Status' }), //状态
           width: 120,
           filters: taskStatusFilters,
           filteredValue: filters?.status || null,
@@ -368,7 +374,6 @@ const TaskTable: React.FC<IProps> = inject(
             <TaskTools
               task={record}
               onReloadList={props.onReloadList}
-              onApprovalVisible={props.onApprovalVisible}
               onDetailVisible={props.onDetailVisible}
             />
           ),
@@ -403,10 +408,12 @@ const TaskTable: React.FC<IProps> = inject(
                   type: IOperationOptionType.dropdown,
                   content: (
                     <Button type="primary">
-                      新建工单
+                      {formatMessage({ id: 'odc.component.TaskTable.NewWorkOrder' }) /*新建工单*/}
+
                       <DownOutlined />
                     </Button>
                   ),
+
                   overlay: (
                     <Menu
                       onClick={({ key }) => {
@@ -429,7 +436,12 @@ const TaskTable: React.FC<IProps> = inject(
                 }
               : {
                   type: IOperationOptionType.button,
-                  content: `新建${taskLabelInfo.label}`,
+                  content: formatMessage(
+                    {
+                      id: 'odc.component.TaskTable.CreateTasklabelinfolabel',
+                    },
+                    { taskLabelInfoLabel: taskLabelInfo.label },
+                  ), //`新建${taskLabelInfo.label}`
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskPageType);

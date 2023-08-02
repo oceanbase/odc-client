@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Space, Timeline } from 'antd';
 import React from 'react';
@@ -35,13 +36,22 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
               >
                 <Space direction="vertical">
                   <Space>
-                    <span>审批节点 {index + 1}</span>
+                    <span>
+                      {formatMessage({ id: 'odc.component.AuthNode.ApprovalNode' }) /*审批节点*/}
+                      {index + 1}
+                    </span>
                     <Form.Item
                       name={[field.name, 'externalApproval']}
                       valuePropName="checked"
                       noStyle
                     >
-                      <Checkbox>外部审批</Checkbox>
+                      <Checkbox>
+                        {
+                          formatMessage({
+                            id: 'odc.component.AuthNode.ExternalApproval',
+                          }) /*外部审批*/
+                        }
+                      </Checkbox>
                     </Form.Item>
                   </Space>
                   <Space>
@@ -60,7 +70,9 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                             id: item.id,
                             name: item.name,
                           }));
-                        const title = isExternalApproval ? '外部集成' : '角色';
+                        const title = isExternalApproval
+                          ? formatMessage({ id: 'odc.component.AuthNode.ExternalIntegration' }) //外部集成
+                          : formatMessage({ id: 'odc.component.AuthNode.Role' }); //角色
                         return (
                           <NodeSelector
                             title={title}
@@ -81,7 +93,13 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                             valuePropName="checked"
                             noStyle
                           >
-                            <Checkbox disabled={isExternalApproval}>自动审批</Checkbox>
+                            <Checkbox disabled={isExternalApproval}>
+                              {
+                                formatMessage({
+                                  id: 'odc.component.AuthNode.AutomaticApproval',
+                                }) /*自动审批*/
+                              }
+                            </Checkbox>
                           </Form.Item>
                         );
                       }}
@@ -99,7 +117,11 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
             <Timeline.Item className={styles.opBtn}>
               <Space split={<span className={styles.desc}>|</span>}>
                 <Button type="link" onClick={() => add({ autoApproval: false })}>
-                  添加审批节点
+                  {
+                    formatMessage({
+                      id: 'odc.component.AuthNode.AddAnApprovalNode',
+                    }) /*添加审批节点*/
+                  }
                 </Button>
               </Space>
               <Form.ErrorList errors={errors} />

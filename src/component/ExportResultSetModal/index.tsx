@@ -3,10 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 // compatible
 import { exportResultSet } from '@/common/network/sql';
 import HelpDoc from '@/component/helpDoc';
-import MaskPolicySelecter from '@/component/MaskPolicySelecter';
 import { ConnectionMode, IExportResultSetFileType, IMPORT_ENCODING } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import { isClient } from '@/util/env';
 import { downloadFile } from '@/util/utils';
 import { AutoComplete, Button, Checkbox, Col, Form, Input, message, Row, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
@@ -54,15 +52,7 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
     try {
       const data = await form.validateFields();
       if (data) {
-        const {
-          fileEncoding,
-          fileFormat,
-          tableName,
-          fileName,
-          csvFormat,
-          saveSql,
-          maxRows,
-        } = data;
+        const { fileEncoding, fileFormat, tableName, fileName, csvFormat, saveSql, maxRows } = data;
         setLoading(true);
         const taskIns = await exportResultSet(
           sql,
@@ -423,6 +413,7 @@ const ExportResultSetModal: React.FC<IProps> = (props) => {
                     <div className={styles.inlineForm}>
                       <Row>
                         <Form.Item
+                          rules={[{ required: true }]}
                           label={
                             <HelpDoc isTip leftText doc="exportTableName">
                               {

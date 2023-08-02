@@ -1,22 +1,29 @@
 import { listDatabases } from '@/common/network/database';
+import { formatMessage } from '@/util/intl';
 import { Form, Select, Space, Tag, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface IProps {
   label?: string;
   name?: string;
   projectId?: number;
+  onChange?: (v: number) => void;
 }
 
 const { Text } = Typography;
 
 const DatabaseSelect: React.FC<IProps> = (props) => {
-  const { label = '数据库', name = 'databaseId', projectId } = props;
+  const {
+    label = formatMessage({ id: 'odc.component.DatabaseSelect.Database' }), //数据库
+    name = 'databaseId',
+    projectId,
+    onChange,
+  } = props;
   const [database, setDatabase] = useState([]);
-  const [project, setProject] = useState(null);
-
+  const form = Form.useFormInstance();
+  const databaseId = Form.useWatch(name, form);
   const databaseOptions = database
-    ?.filter((item) => !item?.project.builtin)
+    ?.filter((item) => !!item?.project?.id)
     ?.map(({ name, id, environment, dataSource }) => ({
       label: (
         <Space size={2} data-label={name}>
@@ -25,6 +32,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           <Text type="secondary">{dataSource.name}</Text>
         </Space>
       ),
+
       value: id,
     }));
 
@@ -34,9 +42,12 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   };
 
   const handleDatabaseChange = (value) => {
-    const project = database?.find((item) => item.id === value)?.project;
-    setProject(project);
+    onChange?.(value);
   };
+
+  const project = useMemo(() => {
+    return database?.find((item) => item.id === databaseId)?.project;
+  }, [database, databaseId]);
 
   useEffect(() => {
     loadDatabase(projectId);
@@ -47,11 +58,19 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       label={label}
       name={name}
       required
-      extra={project && `当前项目: ${project.name}`}
+      extra={
+        project &&
+        formatMessage(
+          {
+            id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
+          },
+          { projectName: project.name },
+        ) //`当前项目: ${project.name}`
+      }
       rules={[
         {
           required: true,
-          message: '请选择数据库',
+          message: formatMessage({ id: 'odc.component.DatabaseSelect.SelectADatabase' }), //请选择数据库
         },
       ]}
     >
@@ -60,6 +79,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         filterOption={(input, option) =>
           (option?.label?.props?.['data-label'] ?? '').toLowerCase().includes(input.toLowerCase())
         }
+        placeholder={formatMessage({ id: 'odc.component.DatabaseSelect.PleaseSelect' })} /*请选择*/
         style={{ width: '320px' }}
         options={databaseOptions}
         onChange={handleDatabaseChange}

@@ -1,5 +1,6 @@
 import { DbObjectType, IPackage, IProcedure } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { formatMessage } from '@/util/intl';
 
 import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
@@ -18,16 +19,17 @@ export function ProcedureTreeNodeData(
   packageName?: string,
   menuKey?: ResourceNodeType,
   pkg?: Partial<IPackage>,
+  index?: number,
 ): TreeDataNode {
-  const funcKey = `${
+  const funcKey = `${dbSession?.database?.databaseId}-${
     packageName ? '' : dbSession?.database?.procedureVersion
-  }-${packageName}-${dbName}-procedure-${proc.proName}`;
+  }-${packageName}-${dbName}-procedure-${proc.proName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let variableRoot: TreeDataNode;
 
   if (proc.params?.length) {
     paramRoot = {
-      title: '参数',
+      title: formatMessage({ id: 'odc.ResourceTree.Nodes.procedure.Parameter' }), //参数
       key: `${funcKey}-param`,
       type: ResourceNodeType.ProcedureParamRoot,
       icon: (
@@ -38,6 +40,7 @@ export function ProcedureTreeNodeData(
           }}
         />
       ),
+
       children: proc.params.map((p) => {
         return {
           title: p.paramName,
@@ -51,7 +54,7 @@ export function ProcedureTreeNodeData(
 
   if (proc.variables?.length) {
     variableRoot = {
-      title: '变量',
+      title: formatMessage({ id: 'odc.ResourceTree.Nodes.procedure.Variable' }), //变量
       key: `${funcKey}-variable`,
       icon: (
         <InfoOutlined
@@ -60,6 +63,7 @@ export function ProcedureTreeNodeData(
           }}
         />
       ),
+
       type: ResourceNodeType.ProcedureVariableRoot,
       children: proc.variables.map((p) => {
         return {
@@ -88,6 +92,7 @@ export function ProcedureTreeNodeData(
         }}
       />
     ),
+
     sessionId: dbSession?.sessionId,
     packageName: packageName,
     data: proc,
@@ -104,8 +109,8 @@ export function ProcedureTreeData(
   const dbName = database.name;
   const procedures = dbSession?.database?.procedures;
   const treeData: TreeDataNode = {
-    title: '存储过程',
-    key: `${packageName}-${dbName}-procedure`,
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.procedure.StoredProcedure' }), //存储过程
+    key: `${database.id}-${packageName}-${dbName}-procedure`,
     type: ResourceNodeType.ProcedureRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -113,8 +118,8 @@ export function ProcedureTreeData(
   };
 
   if (procedures?.length) {
-    treeData.children = procedures.map((proc) => {
-      return ProcedureTreeNodeData(proc, dbSession, dbName, packageName);
+    treeData.children = procedures.map((proc, index) => {
+      return ProcedureTreeNodeData(proc, dbSession, dbName, packageName, null, null, index);
     });
   }
   return treeData;

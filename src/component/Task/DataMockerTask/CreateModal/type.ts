@@ -98,6 +98,7 @@ export interface IMockFormData {
   whetherTruncate: boolean;
   strategy: MockStrategy;
   columns: IMockFormColumn[];
+  description?: string;
 }
 
 export enum MockStrategy {

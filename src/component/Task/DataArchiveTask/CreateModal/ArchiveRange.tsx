@@ -1,10 +1,14 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import { ITable } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, Select, Space } from 'antd';
+import { Button, Form, Input, Radio, Select, Space, Typography } from 'antd';
+import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import styles from './index.less';
+
+const { Text } = Typography;
 
 interface IProps {
   tables: ITable[];
@@ -18,10 +22,26 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   }));
   return (
     <>
-      <Form.Item label="归档范围" name="archiveRange" required>
+      <Form.Item
+        label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveScope' })}
+        /*归档范围*/ name="archiveRange"
+        required
+      >
         <Radio.Group>
-          <Radio.Button value={IArchiveRange.PORTION}>部分归档</Radio.Button>
-          <Radio.Button value={IArchiveRange.ALL}>整库归档</Radio.Button>
+          <Radio.Button value={IArchiveRange.PORTION}>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PartialArchive',
+              }) /*部分归档*/
+            }
+          </Radio.Button>
+          <Radio.Button value={IArchiveRange.ALL}>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
+              }) /*整库归档*/
+            }
+          </Radio.Button>
         </Radio.Group>
       </Form.Item>
       <Form.Item shouldUpdate noStyle>
@@ -34,10 +54,31 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             <FormItemPanel keepExpand>
               <Space direction="vertical">
                 <Space className={styles.infoLabel}>
-                  <div style={{ width: '220px' }}>表名</div>
-                  <div style={{ width: '400px' }}>
+                  <div style={{ width: '220px' }}>
+                    {
+                      formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.TableName',
+                      }) /*表名*/
+                    }
+                  </div>
+                  <div style={{ width: '460px' }}>
                     <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
-                      过滤条件
+                      <Space>
+                        <span>
+                          {
+                            formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
+                            }) /*过滤条件*/
+                          }
+                        </span>
+                        <Text type="secondary">
+                          {
+                            formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                            }) /*(可选)*/
+                          }
+                        </Text>
+                      </Space>
                     </HelpDoc>
                   </div>
                 </Space>
@@ -45,40 +86,52 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   {(fields, { add, remove }) => (
                     <div className={styles.infoBlock}>
                       {fields.map(({ key, name, ...restField }: any, index) => (
-                        <Space key={key} align="baseline">
+                        <div
+                          key={key}
+                          className={classNames(styles.tables, {
+                            [styles.delete]: fields?.length > 1,
+                          })}
+                        >
                           <Form.Item
                             {...restField}
-                            style={{ width: '220px' }}
                             name={[name, 'tableName']}
                             rules={[
                               {
                                 required: true,
-                                message: '请选择',
+                                message: formatMessage({
+                                  id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
+                                }), //请选择
                               },
                             ]}
                           >
                             <Select
                               showSearch
-                              placeholder="请选择"
+                              placeholder={formatMessage({
+                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
+                              })} /*请选择*/
                               options={tablesOptions}
                               filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                               }
                             />
                           </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            style={{ width: '400px' }}
-                            name={[name, 'conditionExpression']}
-                          >
-                            <Input placeholder="请输入过滤条件" />
+                          <Form.Item {...restField} name={[name, 'conditionExpression']}>
+                            <Input
+                              placeholder={formatMessage({
+                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
+                              })} /*请输入过滤条件*/
+                            />
                           </Form.Item>
                           {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
-                        </Space>
+                        </div>
                       ))}
                       <Form.Item style={{ marginBottom: 0 }}>
                         <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                          添加
+                          {
+                            formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
+                            }) /*添加*/
+                          }
                         </Button>
                       </Form.Item>
                     </div>

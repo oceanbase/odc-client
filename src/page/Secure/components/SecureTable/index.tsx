@@ -166,7 +166,14 @@ const CommonTable: <RecordType extends object = any>(
       setSelectedRowKeys([]);
     },
     resetPaganition: () => {
-      setPagination({...pagination, current: 1});
+      setPagination({ ...pagination, current: 1 });
+    },
+    reloadFirstPage: (args?: ITableLoadOptions) => {
+      const newArgs = {
+        ...args,
+        current: 1,
+      };
+      handleReload(newArgs);
     },
   }));
 
@@ -457,8 +464,8 @@ const CommonTable: <RecordType extends object = any>(
             pagination={
               showPagination
                 ? ({
-                    ...tableProps?.pagination,
                     ...pagination,
+                    ...tableProps?.pagination,
                     /**
                      * 这里需要给pageSize一个默认值
                      * 在pageSize为0的时候，会导致table渲染所有数据，从而引发性能问题，最好的处理是computeSize之后再渲染

@@ -193,6 +193,7 @@ export async function getConnectionList(params: {
   clusterName?: string[];
   tenantName?: string[];
   projectId?: number;
+  userId?: number;
   dialectType?: ConnectionMode | ConnectionMode[];
   type?: ConnectType[] | ConnectType;
   status?: ConnectionFilterStatus;
@@ -222,7 +223,7 @@ export async function getConnectionDetail(sid: number): Promise<IDatasource> {
 
 export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
   const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
-  return data?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
+  return data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
 }
 
 export async function newSessionByDataBase(
@@ -231,6 +232,8 @@ export async function newSessionByDataBase(
 ): Promise<{
   sessionId: string;
   dataTypeUnits: IDataType[];
+  charsets: string[];
+  collations: string[];
   supports: {
     support: boolean;
     supportType: string;
@@ -348,12 +351,23 @@ export async function syncDatasource(dsId: number): Promise<boolean> {
 }
 export async function getDataSourceManageDatabase(
   datasourceId: number,
+  name?: string,
 ): Promise<IResponseData<IDatabase>> {
-  const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`);
+  const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`, {
+    params: {
+      name,
+    },
+  });
   return res?.data;
 }
 
-export async function getDataSourceGroupByProject(): Promise<IResponseData<IDatasource>> {
-  const res = await request.get(`/api/v2/collaboration/projects/databases/stats`);
+export async function getDataSourceGroupByProject(
+  containsUnassigned: boolean = false,
+): Promise<IResponseData<IDatasource>> {
+  const res = await request.get(`/api/v2/collaboration/projects/databases/stats`, {
+    params: {
+      containsUnassigned,
+    },
+  });
   return res?.data;
 }

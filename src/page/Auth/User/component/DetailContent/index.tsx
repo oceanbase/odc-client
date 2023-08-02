@@ -1,4 +1,5 @@
-import { deleteUser, getPublicConnectionList, resetPassword } from '@/common/network/manager';
+import { getConnectionList } from '@/common/network/connection';
+import { deleteUser, resetPassword } from '@/common/network/manager';
 import { canAcess } from '@/component/Acess';
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import DisplayTable from '@/component/DisplayTable';
@@ -7,21 +8,36 @@ import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { actionTypes, IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getSourceAuthLabelString, getSourceAuthOptions, sourceAuthMap } from '@/util/manage';
 import { getFormatDateTime } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Modal, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';
+
+const authFilters = [
+  {
+    text: formatMessage({ id: 'odc.component.DetailContent.CanBeCreated' }), //可新建
+    value: ResourceManagementAction.can_create,
+  },
+  {
+    text: formatMessage({ id: 'odc.component.DetailContent.ViewOnly' }), //仅查看
+    value: ResourceManagementAction.can_read,
+  },
+  {
+    text: formatMessage({ id: 'odc.component.DetailContent.Editable' }), //可编辑
+    value: ResourceManagementAction.can_update,
+  },
+  {
+    text: formatMessage({ id: 'odc.component.DetailContent.Manageable' }), //可管理
+    value: ResourceManagementAction.can_manage,
+  },
+];
 
 const getColumns = () => {
-  const authFilters = getSourceAuthOptions().map(({ title: text, value }) => ({
-    text,
-    value,
-  }));
   return [
     {
       dataIndex: 'name',
-      title: '数据源',
+      title: formatMessage({ id: 'odc.component.DetailContent.DataSource' }), //数据源
       ellipsis: true,
     },
     {
@@ -34,9 +50,9 @@ const getColumns = () => {
       ellipsis: true,
       filters: authFilters,
       onFilter: (value, record) => {
-        return sourceAuthMap[value].hasSourceAuth(record?.permittedActions);
+        return resourceAuthMap[value].hasAuth(record?.permittedActions);
       },
-      render: (permittedActions) => getSourceAuthLabelString(permittedActions),
+      render: (permittedActions) => getAuthLabelString(permittedActions),
     },
   ];
 };
@@ -271,7 +287,7 @@ const UserResource: React.FC<{
   const { id } = data;
   const [resource, setResource] = useState([]);
   const loadResource = async () => {
-    const res = await getPublicConnectionList({
+    const res = await getConnectionList({
       userId: id,
     });
 

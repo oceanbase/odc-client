@@ -8,7 +8,7 @@ import type { FormInstance } from 'antd/lib/form';
 import type { DataNode } from 'antd/lib/tree';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { AuditEventActionMap } from '../RecordPage';
+import { AuditEventActionMap } from '../RecordPage/interface';
 import styles from './index.less';
 
 const { Option } = Select;

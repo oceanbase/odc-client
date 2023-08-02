@@ -45,25 +45,36 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
   };
 
   public componentDidMount() {
-    const {
-      session: {
-        params: { obVersion },
-      },
-    } = this.props;
-    if (obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1) {
-      this.getTraceData();
-    } else {
-      this.setState({
-        treeData: [],
-        startTimestamp: 0,
-        endTimestamp: 0,
-      });
-    }
     if (!this.state.tableHeight) {
       const tableHeight = window.innerHeight - 170;
       this.setState({
         tableHeight,
       });
+    }
+  }
+
+  public componentDidUpdate(
+    prevProps: Readonly<SQLExplainProps>,
+    prevState: Readonly<SQLExplainState>,
+    snapshot?: any,
+  ): void {
+    const {
+      session: {
+        params: { obVersion },
+      },
+    } = this.props;
+    if (this.state.tabName !== prevState.tabName) {
+      if (this.state.tabName === TAB_NAME.TRACE) {
+        if (obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1) {
+          this.getTraceData();
+        } else {
+          this.setState({
+            treeData: [],
+            startTimestamp: 0,
+            endTimestamp: 0,
+          });
+        }
+      }
     }
   }
 
@@ -83,6 +94,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           {filterContent}
         </div>
       ),
+
       maskClosable: true,
       okText: formatMessage({
         id: 'app.button.ok',
@@ -163,9 +175,12 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
             <Radio.Button value={TAB_NAME.SUMMARY}>
               <FormattedMessage id="workspace.window.sql.explain.tab.summary" />
             </Radio.Button>
-            <Radio.Button value={TAB_NAME.TRACE}>全链路 TRACE</Radio.Button>
+            <Radio.Button value={TAB_NAME.TRACE}>
+              {formatMessage({ id: 'odc.components.SQLExplain.FullLinkTrace' }) /*全链路 TRACE*/}
+            </Radio.Button>
           </Radio.Group>
         )}
+
         {showExplainText ? (
           <pre
             style={{
@@ -177,7 +192,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
               marginBottom: 0,
             }}
           >
-            {(explain as ISQLExplain).originalText}
+            {(explain as ISQLExplain)?.originalText}
           </pre>
         ) : (
           <>
@@ -202,7 +217,11 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                       });
                     }}
                   >
-                    仅查看文本格式
+                    {
+                      formatMessage({
+                        id: 'odc.components.SQLExplain.ViewOnlyTextFormats',
+                      }) /*仅查看文本格式*/
+                    }
                   </Checkbox>
                 </div>
               </div>

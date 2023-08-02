@@ -45,7 +45,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
     return (
       <Drawer
-        visible={modalStore.dataMockerVisible}
+        open={modalStore.dataMockerVisible}
         onClose={closeWithConfirm}
         destroyOnClose
         width={720}
@@ -88,8 +88,14 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     return;
                   }
                   setConfirmLoading(true);
-                  const { databaseName, databaseId, executionStrategy, executionTime, ...rest } =
-                    values;
+                  const {
+                    databaseName,
+                    databaseId,
+                    executionStrategy,
+                    executionTime,
+                    description,
+                    ...rest
+                  } = values;
                   const serverData = converFormToServerData(rest as any, dbMode, databaseName);
 
                   const isSuccess = await createTask({
@@ -102,6 +108,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     parameters: {
                       taskDetail: JSON.stringify(serverData),
                     },
+                    description,
                   });
 
                   setConfirmLoading(false);
@@ -132,6 +139,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       >
         <DataMockerForm
           tableName={modalStore.dataMockerData?.tableName}
+          dbId={modalStore.dataMockerData?.databaseId}
           projectId={projectId}
           onDbModeChange={handleDbModeChange}
           ref={formRef}

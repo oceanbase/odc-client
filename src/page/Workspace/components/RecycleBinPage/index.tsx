@@ -175,8 +175,21 @@ class RecycleBin extends Component<
       this.session?.sessionId,
       this.session?.database?.dbName,
     );
+    if (!result) {
+      return;
+    }
+    if (result?.invalid) {
+      this.setState({
+        showExecuteSQLModal: false,
+        showDeleteDrawer: false,
+        showRestoreDrawer: false,
+        updateDML: '',
+        selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
+      });
+      return;
+    }
 
-    if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
+    if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
       // 刷新
       await this.session.getRecycleObjectList();
       // if (updateDML.toUpperCase().indexOf('FLASHBACK DATABASE') > -1) {
@@ -197,7 +210,7 @@ class RecycleBin extends Component<
 
       message.success(formatMessage({ id: 'workspace.window.recyclebin.success' }));
     } else {
-      notification.error(result?.[0]);
+      notification.error(result?.executeResult?.[0]);
     }
   };
 

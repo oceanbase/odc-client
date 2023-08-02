@@ -52,72 +52,16 @@ export class PageStore {
     await this.updateActiveKey(() => {
       return activePageKey;
     });
-
-    // if (this.activePage) {
-    //   // 更新路由
-    //   history.push(this.activePage.path);
-    // } else {
-    //   history.push(this.generatePagePath(PageType.DATABASE));
-    // }
-  }
-
-  /** Page是否需要唯一 */
-  public isUnique(type: PageType, params: any = {}): boolean {
-    if (type === PageType.SQL) {
-      return params && params.scriptId;
-    }
-    if (type === PageType.PL) {
-      return params && params.scriptId;
-    } else if (type === PageType.TABLE) {
-      return params.tableName;
-    } else if (
-      type === PageType.CREATE_TABLE ||
-      type === PageType.CREATE_VIEW ||
-      type === PageType.CREATE_FUNCTION ||
-      type === PageType.CREATE_PROCEDURE ||
-      type === PageType.CREATE_SEQUENCE ||
-      type === PageType.CREATE_PACKAGE ||
-      type === PageType.CREATE_TRIGGER ||
-      type === PageType.CREATE_TRIGGER_SQL ||
-      type === PageType.CREATE_SYNONYM ||
-      type === PageType.CREATE_TYPE ||
-      type === PageType.BATCH_COMPILE_FUNCTION ||
-      type === PageType.BATCH_COMPILE_PACKAGE ||
-      type === PageType.BATCH_COMPILE_PROCEDURE ||
-      type === PageType.BATCH_COMPILE_TRIGGER ||
-      type === PageType.BATCH_COMPILE_TYPE
-    ) {
-      return false;
-    } else if (type === PageType.VIEW) {
-      return params.viewName;
-    } else if (type === PageType.FUNCTION) {
-      return params.funName;
-    } else if (type === PageType.PROCEDURE) {
-      return params.proName;
-    } else if (type === PageType.SEQUENCE) {
-      return params.sequenceName;
-    } else if (type === PageType.PACKAGE) {
-      return params.packageName;
-    } else if (type === PageType.TRIGGER) {
-      return params.triggerName;
-    } else if (type === PageType.SYNONYM) {
-      return params.synonymName;
-    } else if (type === PageType.TYPE) {
-      return params.typeName;
-    } else {
-      return true;
-    }
   }
 
   @action
   public async openPage(page: Page, insertHead?: boolean) {
     let { pageTitle, pageKey, pageParams, pageType } = page;
-    const isUnique = this.isUnique(pageType, pageParams);
     const existed = !!this.pages.find((p) => p.key === pageKey);
     switch (pageType) {
       case PageType.SQL:
       case PageType.PL: {
-        if (!existed && !isUnique) {
+        if (!existed) {
           const count = this.pages.filter((page) => {
             return page.type == pageType;
           }).length;
@@ -138,7 +82,7 @@ export class PageStore {
     }
 
     /** 未打开的page或者未保存的page，则push进pages。 */
-    if (!(isUnique && existed)) {
+    if (!existed) {
       const newPage = {
         key: pageKey,
         title: pageTitle,

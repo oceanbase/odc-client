@@ -66,7 +66,7 @@ export default function SideTabs(props: IProps) {
           {selectTab?.actions?.map((action) => {
             return (
               <Action.Link replaceLoading={true} key={action.key} onClick={action.onClick}>
-                <Icon onClick={action.onClick} className={styles.acion} component={action.icon} />
+                <Icon className={styles.acion} component={action.icon} />
               </Action.Link>
             );
           })}

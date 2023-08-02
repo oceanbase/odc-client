@@ -60,13 +60,16 @@ export const OperationContent: React.FC<IProps> = (props) => {
       {options
         .filter(({ visible = true }) => visible)
         .map((item, i) => {
-          const { tooltip = null, type, render } = item;
+          const { tooltip = null, type, render, otherContent } = item;
           return (
             <Tooltip title={tooltip} key={i}>
               {type === IOperationOptionType.custom ? (
                 render?.()
               ) : (
-                <OperationItem option={item} onClick={onClick} />
+                <Space>
+                  <OperationItem option={item} onClick={onClick} />
+                  <div style={{ color: 'var(--neutral-black45-color)' }}>{otherContent}</div>
+                </Space>
               )}
             </Tooltip>
           );

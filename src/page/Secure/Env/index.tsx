@@ -1,5 +1,5 @@
 import { listEnvironments } from '@/common/network/env';
-import { getRuleset, listRules, statsRules } from '@/common/network/ruleset';
+import { listRules, statsRules } from '@/common/network/ruleset';
 import { IEnvironment } from '@/d.ts/environment';
 import { IRule, RuleType } from '@/d.ts/rule';
 import React, { useEffect, useRef, useState } from 'react';
@@ -26,16 +26,17 @@ export function getEnvTypeList(env: IEnvironment): {
   };
 }
 
-const Environment: React.FC<{}> = ({ }) => {
+const Environment: React.FC<{}> = ({}) => {
   const [selectedItem, setSelectedItem] = useState<number>();
   const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
   const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
   const [siderLoading, setSiderLoading] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [subTypeFilters, setSubTypeFilters] = useState([]);
+  const [listParams, setListParams] = useState(null);
+  const loadParams = useRef(null);
   const [supportedDialectTypeFilters, setSupportedDialectTypeFilters] = useState([]);
   const [rules, setRules] = useState<IRule[]>([]);
-
   const [selectedRecord, setSelectedRecord] = useState<{
     value: number;
     label: string;
@@ -61,7 +62,7 @@ const Environment: React.FC<{}> = ({ }) => {
         value: d,
       })),
     );
-    setRules(rulesets || []);
+    setRules(rulesets?.contents);
     setTableLoading(false);
   };
 
@@ -81,8 +82,8 @@ const Environment: React.FC<{}> = ({ }) => {
   const initSiderData = async (envs?: IEnvironment[]) => {
     setSiderLoading(true);
     const resData = envs.map(getEnvTypeList).sort((a, b) => a?.envId - b?.envId);
-    handleItemClick(resData[0]);
-    setSiderItemList(resData);
+    resData?.length > 0 && handleItemClick(resData[0]);
+    resData?.length > 0 && setSiderItemList(resData);
     setSiderLoading(false);
   };
 
@@ -92,7 +93,7 @@ const Environment: React.FC<{}> = ({ }) => {
   };
   const exSearch = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { subTypes, supportedDialectTypes } = filters ?? {};
+    const { subTypes, supportedDialectTypes, level, name = [] } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const params = {
@@ -107,7 +108,8 @@ const Environment: React.FC<{}> = ({ }) => {
       types: ruleType,
       subTypes,
       supportedDialectTypes,
-      ...params
+      level,
+      ...params,
     });
     const rawData = await statsRules(selectedRecord.rulesetId, ruleType);
     setSubTypeFilters(
@@ -122,13 +124,33 @@ const Environment: React.FC<{}> = ({ }) => {
         value: d,
       })),
     );
-    setRules(rulesets || []);
+    if (Array.isArray(name) && name?.length === 1) {
+      setRules(
+        rulesets?.contents?.filter((content) =>
+          content?.metadata?.name?.toLowerCase()?.includes(name?.[0]?.toLowerCase()),
+        ),
+      );
+    } else {
+      setRules(rulesets?.contents);
+    }
     setTableLoading(false);
   };
+  const resetPartialFilterParams = () => {
+    // loadParams.current = null;
+    // setListParams(null);
+  };
   const exReload = async (args: ITableLoadOptions) => {
+    loadParams.current = args;
+    const filters = {
+      ...args?.filters,
+    };
+    setListParams({
+      ...args,
+      filters,
+    });
     if (selectedRecord && selectedRecord.value) {
       const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
-      const { subTypes, supportedDialectTypes } = filters ?? {};
+      const { subTypes, supportedDialectTypes, level } = filters ?? {};
       const { column, order } = sorter ?? {};
       const { current = 1 } = pagination ?? {};
       const params = {
@@ -136,16 +158,19 @@ const Environment: React.FC<{}> = ({ }) => {
         page: current,
         size: pageSize,
       };
-      params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
+      params.sort = column
+        ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}`
+        : undefined;
 
       setTableLoading(true);
       const rulesets = await listRules(selectedRecord?.value, {
         types: ruleType,
         subTypes,
         supportedDialectTypes,
-        ...params
+        level,
+        ...params,
       });
-      const rawData = await statsRules(selectedRecord?.value, RuleType.SQL_CHECK);
+      const rawData = await statsRules(selectedRecord?.value, ruleType);
       setSubTypeFilters(
         rawData?.subTypes?.distinct?.map((d) => ({
           text: d,
@@ -158,7 +183,7 @@ const Environment: React.FC<{}> = ({ }) => {
           value: d,
         })),
       );
-      setRules(rulesets || []);
+      setRules(rulesets?.contents);
       setTableLoading(false);
     }
   };
@@ -176,6 +201,8 @@ const Environment: React.FC<{}> = ({ }) => {
       <InnerEnvironment
         {...{
           rules,
+          listParams,
+          resetPartialFilterParams,
           selectedRecord,
           handleInitRules,
           tableLoading,

@@ -10,7 +10,8 @@ import { formatMessage } from '@/util/intl';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
-import { deleteTrigger, getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
+import { dropObject } from '@/common/network/database';
+import { getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
@@ -23,7 +24,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
   [ResourceNodeType.TriggerRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.trigger.BatchCompilation' }), //批量编译
+      ],
       icon: BatchCompileSvg,
       actionType: actionTypes.create,
       run(session, node) {
@@ -57,6 +60,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
   ],
+
   [ResourceNodeType.Trigger]: [
     {
       key: 'OVERVIEW_TRIGGER',
@@ -173,6 +177,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         modal.changeExportModal(true, {
           type: DbObjectType.trigger,
           name: trigger?.triggerName,
+          databaseId: session?.database.databaseId,
         });
       },
     },
@@ -222,11 +227,14 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteTrigger(
+            const isSuccess = await dropObject(
               trigger?.triggerName,
+              DbObjectType.trigger,
               session?.sessionId,
-              session?.database?.dbName,
             );
+            if (!isSuccess) {
+              return;
+            }
             await session.database.getTriggerList();
 
             message.success(

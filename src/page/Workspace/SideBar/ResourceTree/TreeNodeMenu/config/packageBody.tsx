@@ -1,7 +1,7 @@
-import { deletePackageBody } from '@/common/network';
+import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, IFunction, IPackage, IProcedure } from '@/d.ts';
+import { ConnectionMode, DbObjectType, IFunction, IPackage, IProcedure } from '@/d.ts';
 import { TopTab } from '@/page/Workspace/components/PackagePage';
 import {
   openFunctionOrProcedureFromPackage,
@@ -117,9 +117,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            if (
-              !(await deletePackageBody(packageName, session?.sessionId, session?.database?.dbName))
-            ) {
+            if (!(await dropObject(packageName, DbObjectType.package_body, session?.sessionId))) {
               return;
             }
             message.success(

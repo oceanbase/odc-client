@@ -1,6 +1,7 @@
 import Action from '@/component/Action';
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { formatMessage } from '@/util/intl';
 import { Input, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
@@ -44,12 +45,14 @@ const ResourceTree: React.FC<IProps> = function ({
   }, []);
 
   const treeData: TreeDataNode[] = (() => {
-    const root = databases?.map((database) => {
-      const dbName = database.name;
-      const dbSessionId = databaseSessions[dbName];
-      const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-      return DataBaseTreeData(dbSession, database, database?.id);
-    });
+    const root = databases
+      ?.filter((db) => db.existed)
+      ?.map((database) => {
+        const dbId = database.id;
+        const dbSessionId = databaseSessions[dbId];
+        const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+        return DataBaseTreeData(dbSession, database, database?.id);
+      });
     return root || [];
   })();
 
@@ -59,7 +62,20 @@ const ResourceTree: React.FC<IProps> = function ({
     }
     return treeData.filter((dbNode) => {
       let haveObj = false;
+      const isDBNameMatch = dbNode.title
+        ?.toString()
+        ?.toLowerCase()
+        ?.includes(searchValue?.toLowerCase());
+      if (isDBNameMatch) {
+        /**
+         * db 名字匹配的情况下，不做内部的过滤
+         */
+        return true;
+      }
       dbNode.children?.forEach((objRootNode: TreeDataNode) => {
+        /**
+         * 过滤数据库对象
+         */
         let filterChildren: any = objRootNode.children?.filter((objNode) => {
           return objNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase());
         });
@@ -68,12 +84,7 @@ const ResourceTree: React.FC<IProps> = function ({
           haveObj = true;
         }
       });
-      if (
-        haveObj ||
-        dbNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase())
-      ) {
-        return true;
-      }
+      return haveObj;
     });
   }, [treeData, searchValue]);
 
@@ -83,11 +94,11 @@ const ResourceTree: React.FC<IProps> = function ({
       const { type, data } = treeNode;
       switch (type) {
         case ResourceNodeType.Database: {
-          const dbName = (data as IDatabase).name;
+          const dbId = (data as IDatabase).id;
           const dbSession = await sessionManagerStore.createSession(null, data?.id);
           setDatabaseSessions({
             ...databaseSessions,
-            [dbName]: dbSession.sessionId,
+            [dbId]: dbSession.sessionId,
           });
           break;
         }
@@ -123,7 +134,11 @@ const ResourceTree: React.FC<IProps> = function ({
                 reloadDatabase();
               }}
             >
-              刷新数据库列表
+              {
+                formatMessage({
+                  id: 'odc.SideBar.ResourceTree.RefreshTheDatabaseList',
+                }) /*刷新数据库列表*/
+              }
             </Action.Link>
           </Action.Group>
         </span>
@@ -132,7 +147,9 @@ const ResourceTree: React.FC<IProps> = function ({
         <Input.Search
           onSearch={(v) => setSearchValue(v)}
           size="small"
-          placeholder="搜索已加载对象"
+          placeholder={formatMessage({
+            id: 'odc.SideBar.ResourceTree.SearchForLoadedObjects',
+          })} /*搜索已加载对象*/
         />
       </div>
       <div ref={treeWrapperRef} className={styles.tree}>

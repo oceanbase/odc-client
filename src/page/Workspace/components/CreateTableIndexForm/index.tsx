@@ -1,14 +1,12 @@
-import { IndexRange, ITableColumn, ITableIndex } from '@/d.ts';
-import { DeleteOutlined, EditOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
-import { Button, Divider } from 'antd';
-import React, { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
-// @ts-ignore
-import { actionTypes, WorkspaceAcess } from '@/component/Acess';
 import Toolbar from '@/component/Toolbar';
+import { IndexRange, ITableColumn, ITableIndex } from '@/d.ts';
 import { generateUniqKey } from '@/util/utils';
 import { RowsChangeData } from '@alipay/ob-react-data-grid/lib/types';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { Button, Divider } from 'antd';
 import memoizeOne from 'memoize-one';
+import React, { Component } from 'react';
+import { formatMessage, FormattedMessage } from 'umi';
 import EditableTable from '../EditableTable';
 import { WrapSelectEditor } from '../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
@@ -199,29 +197,23 @@ export default class CreateTableIndexForm extends Component<
           }}
         >
           <Toolbar>
-            <WorkspaceAcess action={actionTypes.create}>
-              <ToolbarButton
-                text={<FormattedMessage id="workspace.header.create" />}
-                icon={<PlusOutlined />}
-                onClick={this.handleAddColumn}
-              />
-            </WorkspaceAcess>
-            <WorkspaceAcess action={actionTypes.update}>
-              <ToolbarButton
-                disabled={!enableEdit || isEmpty}
-                text={<FormattedMessage id="workspace.window.session.button.edit" />}
-                icon={<EditOutlined />}
-                onClick={this.handleEditColumn}
-              />
-            </WorkspaceAcess>
-            <WorkspaceAcess action={actionTypes.delete}>
-              <ToolbarButton
-                text={formatMessage({ id: 'workspace.tree.table.delete' })}
-                disabled={isEmpty}
-                icon={<DeleteOutlined />}
-                onClick={this.handleDeleteColumn}
-              />
-            </WorkspaceAcess>
+            <ToolbarButton
+              text={<FormattedMessage id="workspace.header.create" />}
+              icon={<PlusOutlined />}
+              onClick={this.handleAddColumn}
+            />
+            <ToolbarButton
+              disabled={!enableEdit || isEmpty}
+              text={<FormattedMessage id="workspace.window.session.button.edit" />}
+              icon={<EditOutlined />}
+              onClick={this.handleEditColumn}
+            />
+            <ToolbarButton
+              text={formatMessage({ id: 'workspace.tree.table.delete' })}
+              disabled={isEmpty}
+              icon={<DeleteOutlined />}
+              onClick={this.handleDeleteColumn}
+            />
             {allowRefresh && (
               <ToolbarButton
                 text={<FormattedMessage id="workspace.window.session.button.refresh" />}

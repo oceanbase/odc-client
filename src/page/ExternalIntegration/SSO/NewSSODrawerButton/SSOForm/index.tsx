@@ -7,6 +7,8 @@ import {
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
+import Icon, { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Alert,
   Button,
@@ -22,7 +24,7 @@ import {
 } from 'antd';
 import md5 from 'blueimp-md5';
 import { inject, observer } from 'mobx-react';
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import HelpDoc from '@/component/helpDoc';
 import { encrypt } from '@/util/utils';
@@ -52,7 +54,7 @@ export default inject('userStore')(
     ) {
       const loginWindow = useRef<Window>();
       const testListener = useRef<(e) => void>();
-      const [showExtraConfig, setShowExtraConfig] = useState(false);
+      const [showExtraConfig, setShowExtraConfig] = useState(!!isEdit);
       const [registrationId, setRegistrationId] = useState('');
       const [testInfo, _setTestInfo] = useState<string>();
 
@@ -92,10 +94,16 @@ export default inject('userStore')(
           testListener.current = null;
         }
       }
+
+      useEffect(() => {
+        removeTestListener();
+      }, []);
       function addTestListener(testId: string) {
         removeTestListener();
         testListener.current = (e) => {
-          message.success('测试连接成功！');
+          message.success(
+            formatMessage({ id: 'odc.NewSSODrawerButton.SSOForm.TheTestConnectionIsSuccessful' }), //测试连接成功！
+          );
           fetchTestInfo(testId);
           loginWindow.current?.close();
           loginWindow.current = null;
@@ -121,7 +129,8 @@ export default inject('userStore')(
           ['ssoParameter', 'authorizationGrantType'],
           ['ssoParameter', 'userInfoAuthenticationMethod'],
           ['ssoParameter', 'issueUrl'],
-          'mappingRule',
+          ['mappingRule', 'userProfileViewType'],
+          ['mappingRule', 'nestedAttributeField'],
         ]);
         if (!value) {
           return;
@@ -169,7 +178,9 @@ export default inject('userStore')(
           },
         });
       }
-
+      const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
+        userStore?.organizationId
+      }:test`;
       return (
         <Form
           layout="vertical"
@@ -203,12 +214,26 @@ export default inject('userStore')(
           <Form.Item
             rules={[requiredRule]}
             name={'name'}
-            label="配置名称"
-            help="配置名称将会应用于自定义登录名"
+            label={formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.ConfigurationName',
+            })} /*配置名称*/
+            help={formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.TheConfigurationNameWillBe',
+            })} /*配置名称将会应用于自定义登录名*/
           >
-            <Input disabled={isEdit} style={{ width: '100%' }} placeholder="请输入" />
+            <Input
+              disabled={isEdit}
+              style={{ width: '100%' }}
+              placeholder={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+              })} /*请输入*/
+            />
           </Form.Item>
-          <Form.Item rules={[requiredRule]} name={'type'} label="类型">
+          <Form.Item
+            rules={[requiredRule]}
+            name={'type'}
+            label={formatMessage({ id: 'odc.NewSSODrawerButton.SSOForm.Type' })} /*类型*/
+          >
             <Radio.Group
               disabled={isEdit}
               optionType="button"
@@ -224,7 +249,13 @@ export default inject('userStore')(
               ]}
             />
           </Form.Item>
-          <Typography.Title level={5}>OAUTH 信息</Typography.Title>
+          <Typography.Title level={5}>
+            {
+              formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.OauthInformation',
+              }) /*OAUTH 信息*/
+            }
+          </Typography.Title>
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const type = getFieldValue(['type']);
@@ -236,7 +267,12 @@ export default inject('userStore')(
                       name={['ssoParameter', 'clientId']}
                       label="Client ID"
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       style={{ display: !isEdit ? 'block' : 'none' }}
@@ -244,40 +280,75 @@ export default inject('userStore')(
                       name={['ssoParameter', 'secret']}
                       label="Client Secret"
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
                       name={['ssoParameter', 'authUrl']}
                       label={
-                        <HelpDoc leftText title="授权服务器提供的获取 grant-code 地址">
+                        <HelpDoc
+                          leftText
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheGrantCodeAddress',
+                          })} /*授权服务器提供的获取 grant-code 地址*/
+                        >
                           Auth URL
                         </HelpDoc>
                       }
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
                       name={['ssoParameter', 'userInfoUrl']}
                       label={
-                        <HelpDoc leftText title="授权服务器提供的获取 user-info 地址">
+                        <HelpDoc
+                          leftText
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheUserInfoAddress',
+                          })} /*授权服务器提供的获取 user-info 地址*/
+                        >
                           User Info URL
                         </HelpDoc>
                       }
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
                       name={['ssoParameter', 'tokenUrl']}
                       label={
-                        <HelpDoc leftText title="授权服务器提供的获取 access-token 地址">
+                        <HelpDoc
+                          leftText
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheAccessTokenAddress',
+                          })} /*授权服务器提供的获取 access-token 地址*/
+                        >
                           Token URL
                         </HelpDoc>
                       }
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
@@ -285,7 +356,9 @@ export default inject('userStore')(
                       label={
                         <HelpDoc
                           leftText
-                          title="授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白"
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.AuthorizeTheServerToCall',
+                          })} /*授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白*/
                         >
                           Redirect URL
                         </HelpDoc>
@@ -295,22 +368,41 @@ export default inject('userStore')(
                         autoSize={{ minRows: 2, maxRows: 3 }}
                         disabled
                         style={{ width: '100%' }}
-                        placeholder="自动生成"
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.AutomaticGeneration',
+                        })} /*自动生成*/
                       />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
                       name={['ssoParameter', 'scope']}
                       label={
-                        <HelpDoc leftText title="应用授权作用域，多个空格隔开，建议为 profile">
+                        <HelpDoc
+                          leftText
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.TheScopeOfApplicationAuthorization',
+                          })} /*应用授权作用域，多个空格隔开，建议为 profile*/
+                        >
                           Scope
                         </HelpDoc>
                       }
                     >
-                      <Select mode="tags" style={{ width: '100%' }} placeholder="请输入" />
+                      <Select
+                        mode="tags"
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Space style={{ marginBottom: 12, marginTop: 10 }}>
-                      <span style={{ fontWeight: 'bold' }}>高级选项</span>
+                      <span style={{ fontWeight: 'bold' }}>
+                        {
+                          formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.AdvancedOptions',
+                          }) /*高级选项*/
+                        }
+                      </span>
                       <Switch
                         size="small"
                         checked={showExtraConfig}
@@ -321,22 +413,42 @@ export default inject('userStore')(
                       <Form.Item
                         name={['ssoParameter', 'jwkSetUri']}
                         label={
-                          <HelpDoc leftText title="授权服务器提供的公钥地址，使用公钥进行鉴权">
+                          <HelpDoc
+                            leftText
+                            title={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.ThePublicKeyAddressProvided',
+                            })} /*授权服务器提供的公钥地址，使用公钥进行鉴权*/
+                          >
                             jwkSet URL
                           </HelpDoc>
                         }
                       >
-                        <Input style={{ width: '100%' }} placeholder="请输入" />
+                        <Input
+                          style={{ width: '100%' }}
+                          placeholder={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                          })} /*请输入*/
+                        />
                       </Form.Item>
                       <Form.Item
                         name={['ssoParameter', 'userNameAttribute']}
                         label={
-                          <HelpDoc leftText title="用户名称字段">
+                          <HelpDoc
+                            leftText
+                            title={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.UserNameField',
+                            })} /*用户名称字段*/
+                          >
                             userNameAttribute
                           </HelpDoc>
                         }
                       >
-                        <Input style={{ width: '100%' }} placeholder="请输入" />
+                        <Input
+                          style={{ width: '100%' }}
+                          placeholder={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                          })} /*请输入*/
+                        />
                       </Form.Item>
                       <Form.Item
                         rules={[requiredRule]}
@@ -344,7 +456,9 @@ export default inject('userStore')(
                         label={
                           <HelpDoc
                             leftText
-                            title="使用授权服务器对客户端进行身份验证时使用的身份验证方法"
+                            title={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.TheAuthenticationMethodUsedTo',
+                            })} /*使用授权服务器对客户端进行身份验证时使用的身份验证方法*/
                           >
                             Client Authentication Method
                           </HelpDoc>
@@ -364,7 +478,12 @@ export default inject('userStore')(
                         rules={[requiredRule]}
                         name={['ssoParameter', 'authorizationGrantType']}
                         label={
-                          <HelpDoc leftText title="OAUTH2 的授权方式">
+                          <HelpDoc
+                            leftText
+                            title={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.AuthorizationMethodOfOauth',
+                            })} /*OAUTH2 的授权方式*/
+                          >
                             Authorization Grant Type
                           </HelpDoc>
                         }
@@ -385,7 +504,9 @@ export default inject('userStore')(
                         label={
                           <HelpDoc
                             leftText
-                            title="在向资源服务器发送资源请求中的承载访问令牌时使用的身份验证方法"
+                            title={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.AuthenticationMethodUsedWhenSending',
+                            })} /*在向资源服务器发送资源请求中的承载访问令牌时使用的身份验证方法*/
                           >
                             User Info Authentication Method
                           </HelpDoc>
@@ -412,7 +533,12 @@ export default inject('userStore')(
                       name={['ssoParameter', 'clientId']}
                       label="Client ID"
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       style={{ display: !isEdit ? 'block' : 'none' }}
@@ -420,25 +546,46 @@ export default inject('userStore')(
                       name={['ssoParameter', 'secret']}
                       label="Client Secret"
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
                       name={['ssoParameter', 'scope']}
                       label={
-                        <HelpDoc leftText title="应用授权作用域，多个空格隔开，建议为 profile">
+                        <HelpDoc
+                          leftText
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.TheScopeOfApplicationAuthorization',
+                          })} /*应用授权作用域，多个空格隔开，建议为 profile*/
+                        >
                           Scope
                         </HelpDoc>
                       }
                     >
-                      <Select mode="tags" style={{ width: '100%' }} placeholder="请输入" />
+                      <Select
+                        mode="tags"
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
                       name={['ssoParameter', 'issueUrl']}
                       label="Issue URL"
                     >
-                      <Input style={{ width: '100%' }} placeholder="请输入" />
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                        })} /*请输入*/
+                      />
                     </Form.Item>
                     <Form.Item
                       rules={[requiredRule]}
@@ -446,7 +593,9 @@ export default inject('userStore')(
                       label={
                         <HelpDoc
                           leftText
-                          title="授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白"
+                          title={formatMessage({
+                            id: 'odc.NewSSODrawerButton.SSOForm.AuthorizeTheServerToCall',
+                          })} /*授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白*/
                         >
                           Redirect URL
                         </HelpDoc>
@@ -456,7 +605,9 @@ export default inject('userStore')(
                         autoSize={{ minRows: 2, maxRows: 3 }}
                         disabled
                         style={{ width: '100%' }}
-                        placeholder="自动生成"
+                        placeholder={formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.AutomaticGeneration',
+                        })} /*自动生成*/
                       />
                     </Form.Item>
                   </>
@@ -464,49 +615,12 @@ export default inject('userStore')(
               }
             }}
           </Form.Item>
-          <Form.Item>
-            <HelpDoc
-              leftText
-              title={`测试连接需要单独的回调白名单，请手动添加 ${
-                window.ODCApiHost || location.origin
-              }/login/oauth2/code/${userStore?.organizationId}:test`}
-            >
-              <a onClick={test}>测试连接</a>
-            </HelpDoc>
-          </Form.Item>
-          {testInfo ? (
-            <Alert
-              type="success"
-              showIcon
-              message="测试连接成功"
-              description={<pre style={{ maxHeight: 250, overflow: 'auto' }}>{testInfo}</pre>}
-            />
-          ) : (
-            <Alert
-              type="info"
-              showIcon
-              message="请先进行测试连接，跳转完成登录后，成功获取测试信息即可保存该配置"
-            />
-          )}
-          <Typography.Title level={5}>用户字段映射</Typography.Title>
-          <Form.Item
-            rules={[requiredRule]}
-            name={['mappingRule', 'userAccountNameField']}
-            label="用户名字段"
-          >
-            <Input style={{ width: 200 }} placeholder="请输入" />
-          </Form.Item>
-          <Form.Item
-            rules={[requiredRule]}
-            name={['mappingRule', 'userNickNameField']}
-            label="用户昵称字段"
-          >
-            <Select mode="tags" style={{ width: 200 }} placeholder="请输入" />
-          </Form.Item>
           <Form.Item
             rules={[requiredRule]}
             name={['mappingRule', 'userProfileViewType']}
-            label="用户信息数据结构类型"
+            label={formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+            })} /*用户信息数据结构类型*/
           >
             <Select
               options={[
@@ -520,7 +634,9 @@ export default inject('userStore')(
                 },
               ]}
               style={{ width: 200 }}
-              placeholder="请输入"
+              placeholder={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+              })} /*请输入*/
             />
           </Form.Item>
           <Form.Item shouldUpdate noStyle>
@@ -529,22 +645,109 @@ export default inject('userStore')(
               if (userProfileViewType === 'NESTED') {
                 return (
                   <Form.Item
-                    label="获取嵌套用户数据"
-                    name={'nestedAttributeField'}
+                    label={formatMessage({
+                      id: 'odc.NewSSODrawerButton.SSOForm.ObtainNestedUserData',
+                    })} /*获取嵌套用户数据*/
+                    name={['mappingRule', 'nestedAttributeField']}
                     rules={[requiredRule]}
                   >
-                    <Input style={{ width: '100%' }} placeholder="请输入" />
+                    <Input
+                      style={{ width: '100%' }}
+                      placeholder={formatMessage({
+                        id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                      })} /*请输入*/
+                    />
                   </Form.Item>
                 );
               }
             }}
+          </Form.Item>
+          <Form.Item>
+            <HelpDoc
+              leftText
+              title={
+                formatMessage(
+                  {
+                    id: 'odc.NewSSODrawerButton.SSOForm.ASeparateCallbackWhitelistIs',
+                  },
+                  { redirectUrl: redirectUrl },
+                ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
+              }
+            >
+              <a onClick={test}>
+                {
+                  formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
+                  }) /*测试连接*/
+                }
+              </a>
+            </HelpDoc>
+          </Form.Item>
+          {testInfo ? (
+            <Alert
+              type="success"
+              showIcon
+              message={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.TestConnectionSuccessful',
+              })} /*测试连接成功*/
+              style={{ marginBottom: 12 }}
+              description={<pre style={{ maxHeight: 250, overflow: 'auto' }}>{testInfo}</pre>}
+            />
+          ) : (
+            <Alert
+              type="info"
+              showIcon
+              style={{ marginBottom: 12 }}
+              message={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.PleaseTestTheConnectionFirst',
+              })} /*请先进行测试连接，跳转完成登录后，成功获取测试信息即可保存该配置*/
+            />
+          )}
+
+          <Typography.Title level={5}>
+            {
+              formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.UserFieldMapping',
+              }) /*用户字段映射*/
+            }
+          </Typography.Title>
+          <Form.Item
+            rules={[requiredRule]}
+            name={['mappingRule', 'userAccountNameField']}
+            label={formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.UsernameField',
+            })} /*用户名字段*/
+          >
+            <Input
+              style={{ width: 200 }}
+              placeholder={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+              })} /*请输入*/
+            />
+          </Form.Item>
+          <Form.Item
+            rules={[requiredRule]}
+            name={['mappingRule', 'userNickNameField']}
+            label={formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.UserNicknameField',
+            })} /*用户昵称字段*/
+          >
+            <Select
+              mode="tags"
+              style={{ width: 200 }}
+              placeholder={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+              })} /*请输入*/
+            />
           </Form.Item>
           <Form.List name={['mappingRule', 'extraInfo']}>
             {(fields, operation) => {
               return (
                 <Form.Item
                   style={{ background: 'var(--background-tertraiy-color)', padding: 16 }}
-                  label="自定义字段"
+                  label={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.CustomFields',
+                  })} /*自定义字段*/
                 >
                   {fields?.map((field, index) => {
                     return (
@@ -554,17 +757,32 @@ export default inject('userStore')(
                           key="attributeName"
                           name={[field.name, 'attributeName']}
                         >
-                          <Input style={{ width: 180 }} placeholder="请输入字段" />
+                          <Input
+                            style={{ width: 180 }}
+                            placeholder={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.EnterAField',
+                            })} /*请输入字段*/
+                          />
                         </Form.Item>
                         <Form.Item {...field} key={'expression'} name={[field.name, 'expression']}>
-                          <Input style={{ width: 200 }} placeholder="请输入自定义字段映射规则" />
+                          <Input
+                            style={{ width: 200 }}
+                            placeholder={formatMessage({
+                              id: 'odc.NewSSODrawerButton.SSOForm.EnterACustomFieldMapping',
+                            })} /*请输入自定义字段映射规则*/
+                          />
                         </Form.Item>
-                        <a onClick={() => operation.remove(index)}>删除</a>
+                        <Icon
+                          style={{ cursor: 'pointer', paddingBottom: 10 }}
+                          component={DeleteOutlined}
+                          onClick={() => operation.remove(index)}
+                        />
                       </Space>
                     );
                   })}
                   <Button style={{ width: '100%' }} onClick={() => operation.add()} type="dashed">
-                    添加
+                    <Icon style={{ verticalAlign: 'text-bottom' }} component={PlusOutlined} />
+                    {formatMessage({ id: 'odc.NewSSODrawerButton.SSOForm.Add' }) /*添加*/}
                   </Button>
                 </Form.Item>
               );

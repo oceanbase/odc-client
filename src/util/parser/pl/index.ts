@@ -1,4 +1,4 @@
-import { PLLexer as OraclePLLexer } from '@alipay/ob-parser-js/lib/parser/oracle/PLLexer';
+import { PlSqlLexer as OraclePLLexer } from '@alipay/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { getPLTokens } from './core';
 
 export function getPLEntryName(sql: string) {
@@ -13,7 +13,7 @@ export function getPLEntryName(sql: string) {
         OraclePLLexer.FUNCTION,
         OraclePLLexer.TRIGGER,
         OraclePLLexer.TYPE,
-        OraclePLLexer.PACKAGE_P,
+        OraclePLLexer.PACKAGE,
       ].includes(tokenType)
     ) {
       break;
@@ -25,7 +25,7 @@ export function getPLEntryName(sql: string) {
      */
     return null;
   }
-  if (tokens[i].type === OraclePLLexer.PACKAGE_P && tokens[i + 1].type === OraclePLLexer.BODY) {
+  if (tokens[i].type === OraclePLLexer.PACKAGE && tokens[i + 1].type === OraclePLLexer.BODY) {
     i = i + 2;
   } else {
     i = i + 1;

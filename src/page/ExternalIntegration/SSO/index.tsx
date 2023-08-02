@@ -2,12 +2,14 @@ import { deleteIntegration, getIntegrationList, setIntegration } from '@/common/
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
+import StatusSwitch from '@/component/StatusSwitch';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IManagerIntegration, IntegrationType, IResponseData } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { message, Popconfirm, Switch } from 'antd';
+import { message, Popconfirm } from 'antd';
 import { ColumnType } from 'antd/es/table';
 import { useRef, useState } from 'react';
 import NewSSODrawerButton from './NewSSODrawerButton';
@@ -52,19 +54,38 @@ export default function SSO() {
     setList(null);
     loadData(paramsRef?.current?.current, paramsRef?.current?.pageSize);
   }
+  async function changeStatus(v: boolean, id: number) {
+    const isSuccess = await runSetIntegration({
+      id: id,
+      enabled: v,
+    });
+    if (isSuccess) {
+      message.success(
+        formatMessage({ id: 'odc.ExternalIntegration.SSO.OperationSucceeded' }), //操作成功
+      );
+      reload();
+    }
+  }
 
   const columns: ColumnType<IManagerIntegration>[] = [
     {
-      title: '名称',
+      title: formatMessage({ id: 'odc.ExternalIntegration.SSO.Name' }), //名称
       dataIndex: 'name',
     },
     {
-      title: '类型',
+      title: formatMessage({ id: 'odc.ExternalIntegration.SSO.Type' }), //类型
       dataIndex: 'type',
       width: 80,
+      render(value, record, index) {
+        try {
+          return JSON.parse(record.configuration)?.type || '-';
+        } catch (e) {
+          return '-';
+        }
+      },
     },
     {
-      title: '创建日期',
+      title: formatMessage({ id: 'odc.ExternalIntegration.SSO.CreationDate' }), //创建日期
       dataIndex: 'createTime',
       width: 200,
       render(v) {
@@ -72,42 +93,37 @@ export default function SSO() {
       },
     },
     {
-      title: '创建人',
+      title: formatMessage({ id: 'odc.ExternalIntegration.SSO.Founder' }), //创建人
       dataIndex: 'creatorName',
       width: 120,
     },
     {
-      title: '是否启用',
+      title: formatMessage({ id: 'odc.ExternalIntegration.SSO.WhetherToEnable' }), //是否启用
       dataIndex: 'enabled',
       width: 100,
       render(v, record) {
         return (
-          <Switch
-            loading={setEnabledLoading}
-            onChange={async (checked) => {
-              const isSuccess = await runSetIntegration({
-                id: record.id,
-                enabled: checked,
-              });
-              if (isSuccess) {
-                message.success('操作成功');
-                reload();
-              }
-            }}
+          <StatusSwitch
             checked={v}
+            onConfirm={async () => {
+              changeStatus(!v, record.id);
+            }}
+            onCancel={() => {
+              changeStatus(!v, record.id);
+            }}
           />
         );
       },
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'odc.ExternalIntegration.SSO.Operation' }), //操作
       dataIndex: '_action',
       width: 180,
       render(_, record: IManagerIntegration) {
         return (
           <Action.Group size={3}>
             <Action.Link onClick={() => setViewId(record?.id)} key={'view'}>
-              查看
+              {formatMessage({ id: 'odc.ExternalIntegration.SSO.View' }) /*查看*/}
             </Action.Link>
             <Action.Link
               onClick={() => {
@@ -115,19 +131,25 @@ export default function SSO() {
               }}
               key={'edit'}
             >
-              编辑
+              {formatMessage({ id: 'odc.ExternalIntegration.SSO.Edit' }) /*编辑*/}
             </Action.Link>
             <Popconfirm
-              title="是否确认删除？"
+              title={formatMessage({
+                id: 'odc.ExternalIntegration.SSO.AreYouSureYouWant',
+              })} /*是否确认删除？*/
               onConfirm={async () => {
                 const isSuccess = await deleteIntegration(record.id);
                 if (isSuccess) {
-                  message.success('操作成功');
+                  message.success(
+                    formatMessage({ id: 'odc.ExternalIntegration.SSO.OperationSucceeded' }), //操作成功
+                  );
                   reload();
                 }
               }}
             >
-              <Action.Link key={'deleted'}>删除</Action.Link>
+              <Action.Link key={'deleted'}>
+                {formatMessage({ id: 'odc.ExternalIntegration.SSO.Delete' }) /*删除*/}
+              </Action.Link>
             </Popconfirm>
           </Action.Group>
         );
@@ -157,6 +179,7 @@ export default function SSO() {
           loadData(page.current, page.pageSize);
         }}
       />
+
       <SSODetailDrawer close={() => setViewId(null)} id={viewId} visible={!!viewId} />
       <EditSSODrawer
         visible={!!editId}

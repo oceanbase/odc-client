@@ -26,13 +26,15 @@ interface IImportFormProps {
   onChangeCsvColumnMappings: (csvColumnMappings: CsvColumnMapping[]) => void;
   onFormValueChange: (values: any) => void;
   ref?: React.Ref<{ valid: (callback: (haveError, values) => void) => void }>;
-  resolveTableColumnsToCsv: (tableName: string, databaseName?: string) => Promise<void>;
+  resolveTableColumnsToCsv: (tableName: string) => Promise<void>;
+  onSessionChange: (value: { sessionId: string; databaseName: string }) => void;
 }
 
 const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const { modalStore, formData, formType, projectId, onFormValueChange } = props;
+      const { modalStore, formData, formType, projectId, onFormValueChange, onSessionChange } =
+        props;
       const [form] = useForm();
       const formConfigContext = useContext(FormConfigContext);
       const isSingleImport = !!modalStore.importModalData;
@@ -64,7 +66,12 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
           }
           case 'config': {
             return (
-              <ConfigPanel isSingleImport={isSingleImport} form={form} projectId={projectId} />
+              <ConfigPanel
+                onSessionChange={onSessionChange}
+                isSingleImport={isSingleImport}
+                form={form}
+                projectId={projectId}
+              />
             );
           }
           default: {
@@ -93,7 +100,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
               newValues.tableName = null;
               props.resolveTableColumnsToCsv(null);
             } else if ('tableName' in changedValues) {
-              props.resolveTableColumnsToCsv(changedValues.tableName, allValues.databaseName);
+              props.resolveTableColumnsToCsv(changedValues.tableName);
             }
             if (
               [

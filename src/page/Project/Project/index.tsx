@@ -1,10 +1,13 @@
 import { listProjects } from '@/common/network/project';
+import { Acess, createPermission } from '@/component/Acess';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
 import { Empty, List, Space, Spin } from 'antd';
 import VirtualList from 'rc-virtual-list';
@@ -15,11 +18,11 @@ import ListItem from './ListItem';
 
 const titleOptions: { label: string; value: 'all' | 'deleted' }[] = [
   {
-    label: '全部项目',
+    label: formatMessage({ id: 'odc.Project.Project.AllProjects' }), //全部项目
     value: 'all',
   },
   {
-    label: '归档项目',
+    label: formatMessage({ id: 'odc.Project.Project.ArchiveProject' }), //归档项目
     value: 'deleted',
   },
 ];
@@ -35,7 +38,7 @@ const Project = () => {
 
   const isProjectDeleted = projectType === 'deleted';
 
-  const appendData = async (currentPage, dataSource, projectType) => {
+  const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
     try {
       const isProjectDeleted = projectType === 'deleted';
@@ -57,19 +60,19 @@ const Project = () => {
     }
   };
 
-  function reload(newProjectType?: string) {
+  function reload(newProjectType?: string, projectSearchName?: string) {
     setCurrentPage(0);
     setDataSource([]);
-    appendData(0, [], newProjectType || projectType);
+    appendData(0, [], newProjectType || projectType, projectSearchName);
   }
 
   useEffect(() => {
-    appendData(currentPage, dataSource, projectType);
+    appendData(currentPage, dataSource, projectType, projectSearchName);
   }, []);
 
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
-      appendData(currentPage, dataSource, projectType);
+      appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
 
@@ -90,20 +93,26 @@ const Project = () => {
         className={styles.content}
         header={
           <div className={styles.header}>
-            {<CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />}
+            <Acess
+              fallback={<span></span>}
+              {...createPermission(IManagerResourceType.project, actionTypes.create)}
+            >
+              <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
+            </Acess>
             <Space size={12}>
               <Search
                 onSearch={(v) => {
                   setProjectSearchName(v);
-                  reload();
+                  reload(null, v);
                 }}
                 searchTypes={[
                   {
-                    label: '项目名称',
+                    label: formatMessage({ id: 'odc.Project.Project.ProjectName' }), //项目名称
                     value: 'projectName',
                   },
                 ]}
               />
+
               <FilterIcon onClick={() => reload()}>
                 <Reload />
               </FilterIcon>

@@ -1,11 +1,11 @@
 import { formatMessage } from '@/util/intl';
 import { FormattedMessage } from 'umi';
 
-const dataArchiveFilterDoc = `可通过 SQL where 语句配置过滤条件，如"create_time &gt '2023-01-01'";
-也可通过引用变量进行动态配置，如" create_time &lt '\${archive_date}'"`;
+const dataArchiveFilterDoc = formatMessage({ id: 'odc.component.helpDoc.doc.YouCanUseSqlWhere' });
 
-const dataArchiveVariablesDoc = `过滤条件，如 gmt_create  <= \${bizdate}`;
-
+const dataArchiveVariablesDoc = formatMessage({
+  id: 'odc.component.helpDoc.doc.FilterConditionsSuchAsGmt',
+}); //`过滤条件，如 gmt_create  <= \${bizdate}`
 export default {
   sysTransfer: () => (
     <p>
@@ -433,14 +433,70 @@ export default {
     </p>
   ),
 
-  projectOwner: <p>可管理项目所有数据库和成员</p>,
-  projectDBA: <p>可管理项目所有数据库</p>,
-  projectDev: <p>可访问项目所有数据库</p>,
+  projectOwner: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.ManageAllDatabasesAndMembers',
+        }) /*可管理项目所有数据库和成员*/
+      }
+    </p>
+  ),
+  projectDBA: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.ManageAllDatabasesOfA',
+        }) /*可管理项目所有数据库*/
+      }
+    </p>
+  ),
+  projectDev: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.AccessAllDatabasesOfThe',
+        }) /*可访问项目所有数据库*/
+      }
+    </p>
+  ),
 
-  dataArchiveTimeDoc: <p>以系统默认变量“archive_date”时间点为基准设置偏移信息</p>,
+  dataArchiveTimeDoc: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.SetOffsetInformationBasedOn',
+        }) /*以系统默认变量“archive_date”时间点为基准设置偏移信息*/
+      }
+    </p>
+  ),
   dataArchiveFilterDoc: <p>{dataArchiveFilterDoc}</p>,
   dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
-  schemaChangeSwapTable: <p>数据一致后将原表切换为目标表</p>,
-  schemaChangeSwapTableTimeout: <p>切换表过程会锁表，超时未切换完成可能导致执行失败</p>,
-  schemaChangeSwapTableRetryTimes: <p>超过锁表时间后，未切换完成可自动重试</p>,
+  schemaChangeSwapTable: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.SwitchTheOriginalTableTo',
+        }) /*数据一致后将原表切换为目标表*/
+      }
+    </p>
+  ),
+  schemaChangeSwapTableTimeout: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.TheTableSwitchingProcessLocks',
+        }) /*切换表过程会锁表，超时未切换完成可能导致执行失败*/
+      }
+    </p>
+  ),
+  schemaChangeSwapTableRetryTimes: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.component.helpDoc.doc.AfterTheTableLockTime',
+        }) /*超过锁表时间后，未切换完成可自动重试*/
+      }
+    </p>
+  ),
 };

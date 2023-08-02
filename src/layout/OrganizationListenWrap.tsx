@@ -21,13 +21,13 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
     const isPersonal =
       userStore.organizations?.find((item) => item.id === organizationId)?.type ===
       SpaceType.PRIVATE;
-    if (isPersonal && location.hash?.indexOf('sqlworkspace') === -1) {
+    if (isPersonal && location.pathname?.indexOf('sqlworkspace') === -1) {
       /**
        * 私人空间禁止
        */
       navigate('/sqlworkspace');
     }
-  }, [location.hash, organizationId, userStore.organizations]);
+  }, [location.pathname, organizationId, userStore.organizations]);
 
   return isSwitching ? (
     <PageLoading showError={false} />

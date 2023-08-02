@@ -5,6 +5,7 @@ import { Alert, Form, Input, InputNumber, Modal, Select } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import styles from './index.less';
 const { Option } = Select;
 interface IProps {
   model: Partial<IConnectionProperty>;
@@ -61,7 +62,7 @@ class PropertyModal extends Component<IProps> {
 
     const { valueType, valueEnums, value } = model;
     const isAutocommit = model.key?.toLowerCase?.() == 'autocommit';
-    const isShowAutocommitTip = isAutocommit && !settingStore.enableMultiSession;
+    const isShowAutocommitTip = false;
     const initialValues = {
       value,
     };
@@ -142,18 +143,13 @@ class PropertyModal extends Component<IProps> {
             <>
               <Form.Item {...formItemProps}>
                 <InputNumber
+                  className={styles.unit}
                   style={{
                     width: 180,
                   }}
+                  addonAfter={<span>{model.unit}</span>}
                 />
               </Form.Item>
-              <span
-                style={{
-                  marginLeft: 8,
-                }}
-              >
-                {model.unit}
-              </span>
             </>
           )}
 

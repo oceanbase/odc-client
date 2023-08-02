@@ -1,5 +1,6 @@
 import { IOrganization } from '@/d.ts';
 import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -39,8 +40,16 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
       wrapClassName={styles['space-modal']}
     >
       <div className={styles.header}>
-        <h2>选择你的工作空间</h2>
-        <p className={styles.desc}>可在个人设置中切换，此处的选择不影响正常使用</p>
+        <h2>
+          {formatMessage({ id: 'odc.page.SpaceIndex.SelectYourWorkspace' }) /*选择你的工作空间*/}
+        </h2>
+        <p className={styles.desc}>
+          {
+            formatMessage({
+              id: 'odc.page.SpaceIndex.YouCanSwitchBetweenPersonal',
+            }) /*可在个人设置中切换，此处的选择不影响正常使用*/
+          }
+        </p>
       </div>
       <div className={styles.footer}>
         {userStore.organizations?.map((ori) => {

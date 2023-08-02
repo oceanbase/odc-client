@@ -18,6 +18,7 @@ interface IProps {
 export default inject('userStore')(
   observer(function ScriptFile({ userStore, uploadFiles, setUploadFiles }: IProps) {
     const [loading, setLoading] = useState(false);
+    const [searchVaue, setSearchVaue] = useState('');
     const [editingScriptId, setEditingScriptId] = useState(null);
     const scriptEditorVisible = !!editingScriptId;
 
@@ -34,43 +35,60 @@ export default inject('userStore')(
     return (
       <div className={styles.script}>
         <div className={styles.search}>
-          <Input.Search placeholder="搜索脚本" size="small" />
+          <Input.Search
+            onSearch={(v) => setSearchVaue(v)}
+            placeholder={formatMessage({ id: 'odc.Script.ScriptFile.SearchScript' })}
+            /*搜索脚本*/ size="small"
+          />
         </div>
         <div className={styles.list}>
           <Spin spinning={loading}>
-            {uploadFiles?.map((file) => {
-              return (
-                <Item
-                  key={file.uid + '-uodcfile'}
-                  name={file.name}
-                  uploading={file.status === 'uploading'}
-                  errorMsg={
-                    file?.response?.errMsg ||
-                    formatMessage({
-                      id: 'odc.component.OSSDragger2.FileListItem.UploadFailed',
-                    })
-                  }
-                  removeUploadFile={() => {
-                    setUploadFiles(uploadFiles.filter((file) => file !== file));
-                  }}
-                />
-              );
-            })}
-            {userStore?.scriptStore?.scripts?.map((script) => {
-              return (
-                <Item
-                  key={script.id}
-                  name={script.objectName}
-                  script={script}
-                  onClick={() => {
-                    openSQLPageByScript(script.id, null);
-                  }}
-                  editFile={() => {
-                    setEditingScriptId(script.id);
-                  }}
-                />
-              );
-            })}
+            {uploadFiles
+              ?.map((file) => {
+                if (searchVaue && !file.name?.toUpperCase()?.includes(searchVaue?.toUpperCase())) {
+                  return null;
+                }
+                return (
+                  <Item
+                    key={file.uid + '-uodcfile'}
+                    name={file.name}
+                    uploading={file.status === 'uploading'}
+                    errorMsg={
+                      file?.response?.errMsg ||
+                      formatMessage({
+                        id: 'odc.component.OSSDragger2.FileListItem.UploadFailed',
+                      })
+                    }
+                    removeUploadFile={() => {
+                      setUploadFiles(uploadFiles.filter((file) => file !== file));
+                    }}
+                  />
+                );
+              })
+              .filter(Boolean)}
+            {userStore?.scriptStore?.scripts
+              ?.map((script) => {
+                if (
+                  searchVaue &&
+                  !script.objectName?.toUpperCase()?.includes(searchVaue?.toUpperCase())
+                ) {
+                  return null;
+                }
+                return (
+                  <Item
+                    key={script.id}
+                    name={script.objectName}
+                    script={script}
+                    onClick={() => {
+                      openSQLPageByScript(script.id, null);
+                    }}
+                    editFile={() => {
+                      setEditingScriptId(script.id);
+                    }}
+                  />
+                );
+              })
+              .filter(Boolean)}
           </Spin>
         </div>
         <ScriptEditorModal

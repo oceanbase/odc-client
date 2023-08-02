@@ -24,7 +24,9 @@ const ExtraMessage: React.FC<ExtraMessageProps> = (props: ExtraMessageProps) => 
     return (
       <>
         <div>
-          <strong>报错信息:</strong>
+          <strong>
+            {formatMessage({ id: 'odc.src.util.notification.ErrorMessage' }) /*报错信息:*/}
+          </strong>
         </div>
         {extraMessageParamsKeys.map(
           (key, index) =>
@@ -151,6 +153,7 @@ export default {
       description: (
         <Description description={description} requestId={requestId} {...extraMessage} />
       ),
+
       duration,
       key,
       onClose: () => {

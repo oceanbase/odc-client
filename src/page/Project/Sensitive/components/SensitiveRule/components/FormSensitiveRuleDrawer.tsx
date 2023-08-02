@@ -1,5 +1,6 @@
 import { createSensitiveRule, updateSensitiveRule } from '@/common/network/sensitiveRule';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
+import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Modal, Radio, Select, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
@@ -85,33 +86,55 @@ const FormSensitiveRuleDrawer = ({
         data as ISensitiveRule,
       );
       if (result) {
-        message.success('更新成功');
+        message.success(
+          formatMessage({
+            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdatedSuccessfully',
+          }), //更新成功
+        );
         handleFormDrawerClose(formRef.resetFields);
       } else {
-        message.error('更新失败');
+        message.error(
+          formatMessage({
+            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdateFailed',
+          }), //更新失败
+        );
       }
     } else {
       const result = await createSensitiveRule(context.projectId, data);
       if (result) {
-        message.success('新建成功');
+        message.success(
+          formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.New' }), //新建成功
+        );
         handleFormDrawerClose();
       } else {
-        message.error('新建失败');
+        message.error(
+          formatMessage({
+            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.FailedToCreate',
+          }), //新建失败
+        );
       }
     }
     setHasValidated(false);
   };
   const onCancel = () => {
     return Modal.confirm({
-      title: isEdit ? '确认要取消编辑吗？' : '确认要取消新建吗？',
+      title: isEdit
+        ? formatMessage({
+            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.AreYouSureYouWant',
+          }) //确认要取消编辑吗？
+        : formatMessage({
+            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.AreYouSureYouWant.1',
+          }), //确认要取消新建吗？
       onOk: () => {
         handleFormDrawerClose();
         formRef.resetFields();
         setHasValidated(false);
       },
       onCancel: () => {},
-      okText: '确定',
-      cancelText: '取消',
+      okText: formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Ok' }), //确定
+      cancelText: formatMessage({
+        id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Cancel',
+      }), //取消
     });
   };
   useEffect(() => {
@@ -144,22 +167,30 @@ const FormSensitiveRuleDrawer = ({
         groovyScript,
         regExp: {
           databaseRegexExpression: {
-            label: '库名',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.LibraryName',
+            }), //库名
             checked: hasDatabaseRegexExpression ? ['databaseRegexExpression'] : [],
             regExp: databaseRegexExpression,
           },
           tableRegexExpression: {
-            label: '表名',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.TableName',
+            }), //表名
             checked: hasTableRegexExpression ? ['tableRegexExpression'] : [],
             regExp: tableRegexExpression,
           },
           columnRegexExpression: {
-            label: '列名',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnName',
+            }), //列名
             checked: hasColumnRegexExpression ? ['columnRegexExpression'] : [],
             regExp: columnRegexExpression,
           },
           columnCommentRegexExpression: {
-            label: '列备注',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnRemarks',
+            }), //列备注
             checked: hasColumnCommentRegexExpression ? ['columnCommentRegexExpression'] : [],
             regExp: columnCommentRegexExpression,
           },
@@ -178,22 +209,30 @@ const FormSensitiveRuleDrawer = ({
         groovyScript: '',
         regExp: {
           databaseRegexExpression: {
-            label: '库名',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.LibraryName',
+            }), //库名
             checked: [],
             regExp: '',
           },
           tableRegexExpression: {
-            label: '表名',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.TableName',
+            }), //表名
             checked: [],
             regExp: '',
           },
           columnRegexExpression: {
-            label: '列名',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnName',
+            }), //列名
             checked: [],
             regExp: '',
           },
           columnCommentRegexExpression: {
-            label: '列备注',
+            label: formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnRemarks',
+            }), //列备注
             checked: [],
             regExp: '',
           },
@@ -206,7 +245,15 @@ const FormSensitiveRuleDrawer = ({
   return (
     <Drawer
       open={formDrawerVisible}
-      title={isEdit ? '编辑识别规则' : '新建识别规则'}
+      title={
+        isEdit
+          ? formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.EditIdentificationRules',
+            }) //编辑识别规则
+          : formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.CreateAnIdentificationRule',
+            }) //新建识别规则
+      }
       width={596}
       onClose={onCancel}
       destroyOnClose={true}
@@ -214,9 +261,23 @@ const FormSensitiveRuleDrawer = ({
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
-            <Button onClick={onCancel}>取消</Button>
+            <Button onClick={onCancel}>
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Cancel',
+                }) /*取消*/
+              }
+            </Button>
             <Button type="primary" onClick={handleSubmit}>
-              {isEdit ? '提交' : '新建'}
+              {
+                isEdit
+                  ? formatMessage({
+                      id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Submit',
+                    }) //提交
+                  : formatMessage({
+                      id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Create',
+                    }) //新建
+              }
             </Button>
           </Space>
         </div>
@@ -225,32 +286,56 @@ const FormSensitiveRuleDrawer = ({
     >
       <Form form={formRef} layout="vertical" requiredMark="optional">
         <Form.Item
-          label={'规则名称'}
+          label={
+            formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleName' }) //规则名称
+          }
           name={'name'}
           required
           rules={[
             {
               required: true,
-              message: '请输入规则名称',
+              message: formatMessage({
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.EnterARuleName',
+              }), //请输入规则名称
             },
           ]}
         >
-          <Input placeholder="请输入" />
+          <Input
+            placeholder={formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.PleaseEnter',
+            })} /*请输入*/
+          />
         </Form.Item>
         <Form.Item
-          label={'规则状态'}
+          label={
+            formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleStatus' }) //规则状态
+          }
           name={'enabled'}
           required
           rules={[
             {
               required: true,
-              message: '请选择规则状态',
+              message: formatMessage({
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectARuleStatus',
+              }), //请选择规则状态
             },
           ]}
         >
           <Radio.Group>
-            <Radio value={true}>启用</Radio>
-            <Radio value={false}>停用</Radio>
+            <Radio value={true}>
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Enable',
+                }) /*启用*/
+              }
+            </Radio>
+            <Radio value={false}>
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Disable',
+                }) /*停用*/
+              }
+            </Radio>
           </Radio.Group>
         </Form.Item>
         <DetectWay
@@ -263,27 +348,52 @@ const FormSensitiveRuleDrawer = ({
             originType: isEdit ? SensitiveRuleType[selectedRecord.type] : undefined,
           }}
         />
+
         <Form.Item
-          label={'脱敏算法'}
+          label={
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.DesensitizationAlgorithm',
+            }) //脱敏算法
+          }
           name={'maskingAlgorithmId'}
           required
           rules={[
             {
               required: true,
-              message: '请选择脱敏算法',
+              message: formatMessage({
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
+              }), //请选择脱敏算法
             },
           ]}
         >
           <Select
-            placeholder={'请选择'}
+            placeholder={
+              formatMessage({
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.PleaseSelect',
+              }) //请选择
+            }
             options={sensitiveContext.maskingAlgorithmOptions}
             style={{
               width: '262px',
             }}
           />
         </Form.Item>
-        <Form.Item label={'规则描述'} name={'description'}>
-          <Input.TextArea rows={4} placeholder={'请输入'} />
+        <Form.Item
+          label={
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleDescription',
+            }) //规则描述
+          }
+          name={'description'}
+        >
+          <Input.TextArea
+            rows={4}
+            placeholder={
+              formatMessage({
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.PleaseEnter',
+              }) //请输入
+            }
+          />
         </Form.Item>
       </Form>
     </Drawer>

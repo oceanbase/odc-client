@@ -1,4 +1,6 @@
+import { formatTimeTemplate } from '@/util/utils';
 import { Popover } from 'antd';
+import BigNumber from 'bignumber.js';
 import styles from './index.less';
 import PopoverContent from './PopoverContent';
 
@@ -27,7 +29,13 @@ const ProgressBar = ({ totalEndTimestamp, totalStartTimestamp, node }) => {
           }}
         ></div>
       </Popover>
-      <div>{node?.endTimestamp - node?.startTimestamp}us</div>
+      <div className={styles.time}>
+        {formatTimeTemplate(
+          BigNumber(node?.endTimestamp - node?.startTimestamp)
+            .div(1000000)
+            .toNumber(),
+        )}
+      </div>
     </div>
   );
 };

@@ -22,7 +22,7 @@ export async function listMaskingAlgorithm(
     size: number;
   }>,
 ): Promise<IResponseData<IMaskingAlgorithm>> {
-  const ret = await request.get(`/api/v2/datasecurity/maskingAlgorithms/`, {params});
+  const ret = await request.get(`/api/v2/datasecurity/maskingAlgorithms/`, { params });
   return ret?.data;
 }
 

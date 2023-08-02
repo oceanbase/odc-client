@@ -185,6 +185,7 @@ class TableData extends React.Component<
       editRows,
       session.sessionId,
       session?.database?.dbName,
+      resultSet.whereColumns,
     );
     if (!res) {
       return;
@@ -221,8 +222,20 @@ class TableData extends React.Component<
         session.sessionId,
         session.database.dbName,
       );
+      if (!result) {
+        return;
+      }
+      if (result?.invalid) {
+        this.setState({
+          showDataExecuteSQLModal: false,
+          isEditing: false,
+          updateDataDML: '',
+          tipToShow: '',
+        });
+        return;
+      }
 
-      if (result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
+      if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
         let msg;
 
         if (session.params.autoCommit) {
@@ -253,8 +266,8 @@ class TableData extends React.Component<
         this._resultSetKey = generateUniqKey();
         await this.reloadTableData(tableName);
         message.success(msg);
-      } else if (result?.[0]?.track) {
-        notification.error(result?.[0]);
+      } else if (result?.executeResult?.[0]?.track) {
+        notification.error(result?.executeResult?.[0]);
       }
     } catch (e) {
       //
@@ -299,7 +312,7 @@ class TableData extends React.Component<
             sqlId={resultSet.sqlId}
             useUniqueColumnName={true}
             rows={resultSet.rows}
-            resultHeight={`calc(100vh - ${TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 1}px)`}
+            resultHeight={`calc(100vh - ${TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 2 + 32}px)`}
             onRefresh={(limit) => this.reloadTableData(tableName, false, limit)}
             onExport={(limitToExport) =>
               this.setState({

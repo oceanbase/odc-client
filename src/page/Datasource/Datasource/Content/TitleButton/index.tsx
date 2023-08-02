@@ -1,7 +1,8 @@
 import { batchImportPrivateConnection } from '@/common/network/connection';
+import { Acess, createPermission } from '@/component/Acess';
 import BatchImportButton from '@/component/BatchImportButton';
 import ConnectionPopover from '@/component/ConnectionPopover';
-import { IConnection, IConnectionType } from '@/d.ts';
+import { actionTypes, IConnection, IConnectionType, IManagerResourceType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
 import ConIcon from '@/svgr/icon_connection.svg';
@@ -72,67 +73,71 @@ const TitleButton: React.FC<IProps> = function (props) {
   return (
     <>
       <Space>
-        <NewDatasourceButton
-          onSuccess={() => {
-            props.onReload();
-          }}
-        />
-        <BatchImportButton
-          ref={batchImportRef}
-          type="button"
-          action="/api/v2/datasource/datasources/previewBatchImport"
-          description={formatMessage({
-            id: 'odc.Content.TitleButton.TheFileMustContainConnection',
-          })} /*文件需包含连接类型、主机端口、租户名、数据库账号等相关连接信息，建议使用连接配置模版*/
-          templateName="connection_template.xlsx"
-          data={{
-            visibleScope: IConnectionType.PRIVATE,
-          }}
-          previewContent={(data: IConnection[]) => {
-            if (!data?.length) {
+        <Acess {...createPermission(IManagerResourceType.resource, actionTypes.create)}>
+          <NewDatasourceButton
+            onSuccess={() => {
+              props.onReload();
+            }}
+          />
+        </Acess>
+        <Acess {...createPermission(IManagerResourceType.resource, actionTypes.create)}>
+          <BatchImportButton
+            ref={batchImportRef}
+            type="button"
+            action="/api/v2/datasource/datasources/previewBatchImport"
+            description={formatMessage({
+              id: 'odc.Content.TitleButton.TheFileMustContainConnection',
+            })} /*文件需包含连接类型、主机端口、租户名、数据库账号等相关连接信息，建议使用连接配置模版*/
+            templateName="connection_template.xlsx"
+            data={{
+              visibleScope: IConnectionType.PRIVATE,
+            }}
+            previewContent={(data: IConnection[]) => {
+              if (!data?.length) {
+                return (
+                  <Empty
+                    description={formatMessage({
+                      id: 'odc.Content.TitleButton.NoValidConnectionInformationIs',
+                    })} /*暂无有效连接信息*/
+                  />
+                );
+              }
               return (
-                <Empty
-                  description={formatMessage({
-                    id: 'odc.Content.TitleButton.NoValidConnectionInformationIs',
-                  })} /*暂无有效连接信息*/
-                />
-              );
-            }
-            return (
-              <>
-                {data.map((item, index) => {
-                  const hasError = !!item.errorMessage;
-                  return (
-                    <div key={index} className={styles['pre-item']}>
-                      <ConIcon style={{ marginRight: '4px' }} />
-                      {hasError ? (
-                        <Tooltip title={item.errorMessage}>
-                          <Space size={4}>
+                <>
+                  {data.map((item, index) => {
+                    const hasError = !!item.errorMessage;
+                    return (
+                      <div key={index} className={styles['pre-item']}>
+                        <ConIcon style={{ marginRight: '4px' }} />
+                        {hasError ? (
+                          <Tooltip title={item.errorMessage}>
+                            <Space size={4}>
+                              <Typography.Text>{item.name}</Typography.Text>
+                              <ExclamationCircleFilled
+                                style={{ color: 'var(--icon-orange-color)' }}
+                              />
+                            </Space>
+                          </Tooltip>
+                        ) : (
+                          <Popover
+                            overlayClassName={styles.connectionPopover}
+                            placement="right"
+                            content={<ConnectionPopover connection={item} showType={false} />}
+                          >
                             <Typography.Text>{item.name}</Typography.Text>
-                            <ExclamationCircleFilled
-                              style={{ color: 'var(--icon-orange-color)' }}
-                            />
-                          </Space>
-                        </Tooltip>
-                      ) : (
-                        <Popover
-                          overlayClassName={styles.connectionPopover}
-                          placement="right"
-                          content={<ConnectionPopover connection={item} showType={false} />}
-                        >
-                          <Typography.Text>{item.name}</Typography.Text>
-                        </Popover>
-                      )}
-                    </div>
-                  );
-                })}
-              </>
-            );
-          }}
-          getResultByFiles={getResultByFiles}
-          onChange={handleFileChange}
-          onSubmit={handleBatchImportSubmit}
-        />
+                          </Popover>
+                        )}
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            }}
+            getResultByFiles={getResultByFiles}
+            onChange={handleFileChange}
+            onSubmit={handleBatchImportSubmit}
+          />
+        </Acess>
       </Space>
     </>
   );

@@ -2,6 +2,7 @@ import { getTableListByDatabaseName } from '@/common/network/table';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
 import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
@@ -20,9 +21,15 @@ interface IProps {
   form: FormInstance<any>;
   isSingleImport?: boolean;
   projectId: number;
+  onSessionChange: (value: { sessionId: string; databaseName: string }) => void;
 }
 
-const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport, projectId }) {
+const FileSelecterPanel: React.FC<IProps> = function ({
+  form,
+  isSingleImport,
+  projectId,
+  onSessionChange,
+}) {
   const [tables, setTables] = useState([]);
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
@@ -38,6 +45,10 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport, pr
     if (!databaseName) {
       return;
     }
+    onSessionChange({
+      sessionId: session?.sessionId,
+      databaseName,
+    });
     fetchTable(databaseName);
   }, [databaseName]);
 
@@ -135,6 +146,8 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport, pr
                         onChangeCsvColumnMappings={v.onChangeCsvColumnMappings}
                         tableName={getFieldValue('tableName')}
                         csvMappingErrors={v.csvMappingErrors}
+                        databaseName={databaseName}
+                        sessionId={session?.sessionId}
                       />
                     );
                   }}
@@ -211,6 +224,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ form, isSingleImport, pr
           form={form}
         />
       )}
+      <DescriptionInput />
     </>
   );
 };

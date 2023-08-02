@@ -4,18 +4,12 @@ import {
   stopDataArchiveSubTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
-import {
-  ICycleTaskRecord,
-  ITaskResult,
-  SubTaskStatus,
-  TaskDetail,
-  TaskRecord,
-  TaskRecordParameters,
-} from '@/d.ts';
+import { ITaskResult, SubTaskStatus, TaskDetail, TaskRecord, TaskRecordParameters } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
+import { formatMessage } from '@/util/intl';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -33,11 +27,6 @@ interface IProps {
   disabledSubmit?: boolean;
   result?: ITaskResult;
   onReloadList: () => void;
-  onApprovalVisible: (
-    task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
-    status: boolean,
-    visible: boolean,
-  ) => void;
   onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
 }
@@ -68,7 +57,9 @@ const ActionBar: React.FC<IProps> = inject(
       setActiveBtnKey('stop');
       const res = await stopDataArchiveSubTask(taskId, record.id);
       if (res) {
-        message.success('取消成功');
+        message.success(
+          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.CanceledSuccessfully' }), //取消成功
+        );
         props.onReloadList();
       }
     };
@@ -78,7 +69,9 @@ const ActionBar: React.FC<IProps> = inject(
       const res = await rollbackDataArchiveSubTask(taskId, record.id);
       if (res) {
         props.onReloadList();
-        message.success('回滚成功');
+        message.success(
+          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.RollbackSucceeded' }), //回滚成功
+        );
       }
     };
 
@@ -90,11 +83,13 @@ const ActionBar: React.FC<IProps> = inject(
 
     const handleRollback = async () => {
       Modal.confirm({
-        title: '确定回滚任务吗？',
+        title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.AreYouSureYouWant' }), //确定回滚任务吗？
         icon: <ExclamationCircleOutlined />,
-        content: '任务回滚后已执行的任务将重置',
-        okText: '确认',
-        cancelText: '取消',
+        content: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.TasksThatHaveBeenExecuted',
+        }), //任务回滚后已执行的任务将重置
+        okText: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Confirm' }), //确认
+        cancelText: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Cancel' }), //取消
         onOk: confirmRollback,
       });
     };
@@ -102,14 +97,18 @@ const ActionBar: React.FC<IProps> = inject(
     const handleExecute = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
-        message.success('执行成功');
+        message.success(
+          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.SuccessfulExecution' }), //执行成功
+        );
       }
     };
 
     const handleReTry = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
-        message.success('重试成功');
+        message.success(
+          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.RetrySucceeded' }), //重试成功
+        );
       }
     };
 
@@ -123,21 +122,21 @@ const ActionBar: React.FC<IProps> = inject(
 
       const rollbackBtn = {
         key: 'rollback',
-        text: '回滚',
+        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Rollback' }), //回滚
         action: handleRollback,
         type: 'button',
       };
 
       const stopBtn = {
         key: 'stop',
-        text: '终止',
+        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Termination' }), //终止
         action: _stopTask,
         type: 'button',
       };
 
       const executeBtn = {
         key: 'execute',
-        text: '执行',
+        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Execute' }), //执行
         type: 'button',
         action: handleExecute,
         isOpenBtn: true,
@@ -148,7 +147,7 @@ const ActionBar: React.FC<IProps> = inject(
 
       const reTryBtn = {
         key: 'reTry',
-        text: '重试',
+        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Retry' }), //重试
         type: 'button',
         action: handleReTry,
       };

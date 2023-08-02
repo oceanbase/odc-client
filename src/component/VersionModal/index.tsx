@@ -64,7 +64,7 @@ const VersionModal: React.FC<IProps> = (props) => {
 
   return (
     <Modal
-      visible={modalStore.versionModalVisible}
+      open={modalStore.versionModalVisible}
       onCancel={onCancel}
       footer={null}
       width={720}

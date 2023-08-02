@@ -1,5 +1,6 @@
 import { createIntegration } from '@/common/network/manager';
 import { EncryptionAlgorithm, IntegrationType, ISSOConfig } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { encrypt } from '@/util/utils';
 import { useUpdate } from 'ahooks';
 import { Button, Drawer, FormInstance, message, Space, Tooltip } from 'antd';
@@ -43,7 +44,9 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
       configuration: JSON.stringify(clone),
     });
     if (isSuccess) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({ id: 'odc.SSO.NewSSODrawerButton.New' }), //新建成功
+      );
       onSuccess();
       setOpen(false);
     }
@@ -58,15 +61,18 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
         }}
         type="primary"
       >
-        新建 SSO 集成
+        {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.CreateSsoIntegration' }) /*新建 SSO 集成*/}
       </Button>
       <Drawer
         width={520}
-        title="新建 SSO 集成"
-        visible={open}
+        title={formatMessage({
+          id: 'odc.SSO.NewSSODrawerButton.CreateSsoIntegration',
+        })} /*新建 SSO 集成*/
+        open={open}
         onClose={() => {
           setOpen(false);
         }}
+        destroyOnClose
         footer={
           <Space style={{ float: 'right' }}>
             <Button
@@ -74,16 +80,20 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
                 setOpen(false);
               }}
             >
-              取消
+              {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Cancel' }) /*取消*/}
             </Button>
             {formRef.current?.testInfo ? (
               <Button type="primary" onClick={submit}>
-                保存
+                {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Save' }) /*保存*/}
               </Button>
             ) : (
-              <Tooltip title="请先进行测试连接">
+              <Tooltip
+                title={formatMessage({
+                  id: 'odc.SSO.NewSSODrawerButton.PleaseTestTheConnectionFirst',
+                })} /*请先进行测试连接*/
+              >
                 <Button type="primary" disabled>
-                  保存
+                  {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Save' }) /*保存*/}
                 </Button>
               </Tooltip>
             )}

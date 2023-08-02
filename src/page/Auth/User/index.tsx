@@ -5,7 +5,7 @@ import {
   getUserList,
   setUserEnable,
 } from '@/common/network/manager';
-import { Acess, actionTypes, canAcess, systemUpdatePermissions } from '@/component/Acess';
+import { Acess, actionTypes, canAcess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import BatchImportButton from '@/component/BatchImportButton';
 import { EmptyLabel } from '@/component/CommonFilter';
@@ -141,7 +141,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '启用状态',
+        title: formatMessage({ id: 'odc.Auth.User.EnableStatus' }), //启用状态
         width: 80,
         ellipsis: true,
         key: 'enabled',
@@ -195,7 +195,9 @@ class UserPage extends React.PureComponent<IProps, IState> {
                   }) /* 查看 */
                 }
               </Action.Link>
-              <Acess {...systemUpdatePermissions[IManagerResourceType.user]}>
+              <Acess
+                {...createPermission(IManagerResourceType.user, actionTypes.update, record.id)}
+              >
                 <Action.Group>
                   <Action.Link
                     disabled={disabledOp}
@@ -378,7 +380,6 @@ class UserPage extends React.PureComponent<IProps, IState> {
       action: actionTypes.update,
     }).accessible;
 
-    console.log('roles :', roles);
     return (
       <>
         <CommonTable
@@ -478,6 +479,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                     id: 'odc.components.UserPage.Role.1',
                                                   }) /*角色：*/
                                                 }
+
                                                 {item.roleNames?.join(' | ') || '-'}
                                               </div>
                                             </>

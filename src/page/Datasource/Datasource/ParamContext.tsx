@@ -14,7 +14,7 @@ export const SearchTypeText = {
   [SearchType.ALL]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.All',
   }), //全部
-  [SearchType.NAME]: '数据源名',
+  [SearchType.NAME]: formatMessage({ id: 'odc.Datasource.Datasource.ParamContext.DataSourceName' }), //数据源名
   [SearchType.CLUSTER]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.Cluster',
   }), //集群

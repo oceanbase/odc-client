@@ -1,9 +1,10 @@
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
-import { Empty, Input, Popover, Spin, Tree, TreeDataNode } from 'antd';
+import { Dropdown, Empty, Input, message, Modal, Popover, Spin, Tree, TreeDataNode } from 'antd';
 import ResourceTree from '..';
 import ResourceLayout from '../Layout';
 
-import { getDataSourceGroupByProject } from '@/common/network/connection';
+import { deleteConnection, getDataSourceGroupByProject } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
@@ -11,13 +12,17 @@ import styles from './index.less';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
+import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import login from '@/store/login';
 import OBSvg from '@/svgr/source_ob.svg';
-import { toNumber } from 'lodash';
+import { toInteger, toNumber } from 'lodash';
 
 export default forwardRef(function DatasourceTree(props, ref) {
-  const { data, loading, run } = useRequest(getDataSourceGroupByProject);
-
+  const { data, loading, run } = useRequest(getDataSourceGroupByProject, {
+    defaultParams: [login.isPrivateSpace()],
+  });
+  const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [searchKey, setSearchKey] = useState('');
 
   const context = useContext(ResourceTreeContext);
@@ -33,7 +38,6 @@ export default forwardRef(function DatasourceTree(props, ref) {
       return {
         reload() {
           setSelectKeys([]);
-          context?.setSelectDatasourceId(null);
           return run();
         },
       };
@@ -99,7 +103,9 @@ export default forwardRef(function DatasourceTree(props, ref) {
               onSearch={(v) => {
                 setSearchKey(v);
               }}
-              placeholder="搜索数据源"
+              placeholder={formatMessage({
+                id: 'odc.ResourceTree.Datasource.SearchForDataSources',
+              })} /*搜索数据源*/
               style={{ width: '100%' }}
               size="small"
             />
@@ -110,16 +116,62 @@ export default forwardRef(function DatasourceTree(props, ref) {
                 <Tree
                   titleRender={(node) => {
                     return (
-                      <Popover
-                        showArrow={false}
-                        overlayClassName={styles.connectionPopover}
-                        placement="rightBottom"
-                        content={
-                          <ConnectionPopover connection={datasourceMap.get(toNumber(node.key))} />
-                        }
+                      <Dropdown
+                        trigger={login.isPrivateSpace() ? ['contextMenu'] : []}
+                        menu={{
+                          items: [
+                            {
+                              label: formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' }), //编辑
+                              key: 'edit',
+                              onClick: (e) => {
+                                e.domEvent?.stopPropagation();
+                                setEditDatasourceId(node.key);
+                              },
+                            },
+                            {
+                              label: formatMessage({ id: 'odc.ResourceTree.Datasource.Delete' }), //删除
+                              key: 'delete',
+                              onClick: (e) => {
+                                e.domEvent?.stopPropagation();
+                                const name = node.title;
+                                Modal.confirm({
+                                  title: formatMessage(
+                                    {
+                                      id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
+                                    },
+                                    { name: name },
+                                  ), //`确认删除数据源 ${name}?`
+                                  async onOk() {
+                                    const isSuccess = await deleteConnection(node.key as any);
+                                    if (isSuccess) {
+                                      message.success(
+                                        formatMessage({
+                                          id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
+                                        }), //删除成功
+                                      );
+                                      if (selectKeys.includes(toInteger(node.key))) {
+                                        setSelectKeys([]);
+                                      }
+                                      run();
+                                    }
+                                  },
+                                });
+                              },
+                            },
+                          ],
+                        }}
                       >
-                        {node.title}
-                      </Popover>
+                        <Popover
+                          showArrow={false}
+                          overlayClassName={styles.connectionPopover}
+                          placement="rightBottom"
+                          content={
+                            <ConnectionPopover connection={datasourceMap.get(toNumber(node.key))} />
+                          }
+                        >
+                          {node.title}
+                        </Popover>
+                      </Dropdown>
                     );
                   }}
                   selectedKeys={selectKeys}
@@ -136,6 +188,16 @@ export default forwardRef(function DatasourceTree(props, ref) {
               )}
             </Spin>
           </div>
+          <NewDatasourceDrawer
+            isEdit={true}
+            isPersonal={true}
+            visible={!!editDatasourceId}
+            id={editDatasourceId}
+            close={() => setEditDatasourceId(null)}
+            onSuccess={() => {
+              run();
+            }}
+          />
         </div>
       }
       bottomLoading={dbLoading}

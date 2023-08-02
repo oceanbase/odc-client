@@ -20,13 +20,13 @@ const Trace = ({ endTimestamp, startTimestamp, treeData }) => {
         {
           dataIndex: 'nodeWithHost',
           key: 'nodeWithHost',
-          title: '节点',
+          title: formatMessage({ id: 'odc.SQLExplain.Trace.Node' }), //节点
           width: 262,
         },
         {
           dataIndex: 'host',
           key: 'host',
-          title: '执行时间线',
+          title: formatMessage({ id: 'odc.SQLExplain.Trace.ExecutionTimeline' }), //执行时间线
           width: 711,
           render: (_, record) => (
             <ProgressBar
@@ -61,22 +61,22 @@ export const parseTraceTree = (data, k = [0]) => {
   const children =
     data?.subSpans?.map((subSpan, index) => parseTraceTree(subSpan, k.concat(index))) || [];
   return {
-    title: data.spanName,
+    title: data?.spanName,
     key: k.join('-'),
     children: children?.length > 0 ? children : null,
-    node: data.node,
-    host: data.host,
-    nodeWithHost: combineNodeAndHost(data.node, data.host),
-    parent: data.parent,
-    spanId: data.spanId,
-    traceId: data.traceId,
-    logTraceId: data.logTraceId,
+    node: data?.node,
+    host: data?.host,
+    nodeWithHost: combineNodeAndHost(data?.node, data?.host),
+    parent: data?.parent,
+    spanId: data?.spanId,
+    traceId: data?.traceId,
+    logTraceId: data?.logTraceId,
     isLeaf: children?.length === 0,
-    originStartTimestamp: data.startTimestamp,
-    originEndTimestamp: data.endTimestamp,
+    originStartTimestamp: data?.startTimestamp,
+    originEndTimestamp: data?.endTimestamp,
     startTimestamp:
-      Date.parse(data.startTimestamp) * 1000 + parseInt(data.startTimestamp?.slice(-3)),
-    endTimestamp: Date.parse(data.endTimestamp) * 1000 + parseInt(data.endTimestamp?.slice(-3)),
-    tags: data.tags,
+      Date.parse(data?.startTimestamp) * 1000 + parseInt(data?.startTimestamp?.slice(-3)),
+    endTimestamp: Date.parse(data?.endTimestamp) * 1000 + parseInt(data?.endTimestamp?.slice(-3)),
+    tags: data?.tags,
   };
 };

@@ -1,17 +1,21 @@
 import { createDataBase } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
+import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Button, Form, Input, message, Modal, Select, Space } from 'antd';
+import { Button, Form, Input, message, Modal, Space } from 'antd';
 import { toInteger } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
 
 interface IProps {
   dataSourceId: string;
   onSuccess: () => void;
+  mode: ConnectionMode;
 }
 
-export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
+export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [form] = Form.useForm<
     Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & { projectId: number }
@@ -28,6 +32,30 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
     setOpen(false);
     form.resetFields();
   }
+
+  useEffect(() => {
+    if (open) {
+      form.resetFields();
+    }
+    switch (mode) {
+      case ConnectionMode.OB_MYSQL:
+      case ConnectionMode.MYSQL: {
+        form.setFieldsValue({
+          collationName: 'utf8_general_ci',
+          charsetName: 'utf8',
+        });
+        return;
+      }
+      case ConnectionMode.OB_ORACLE:
+      case ConnectionMode.ORACLE: {
+        form.setFieldsValue({
+          collationName: 'BINARY',
+          charsetName: 'AL32UTF8',
+        });
+        return;
+      }
+    }
+  }, [mode, open]);
 
   async function submit() {
     const formData = await form.validateFields();
@@ -46,7 +74,9 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
       },
     });
     if (isSuccess) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({ id: 'odc.Info.NewDataBaseButton.New' }), //新建成功
+      );
       setOpen(false);
       onSuccess();
     }
@@ -55,34 +85,57 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess }: IProps) {
   return (
     <>
       <Button onClick={() => setOpen(true)} type="primary">
-        新建数据库
+        {formatMessage({ id: 'odc.Info.NewDataBaseButton.CreateADatabase' }) /*新建数据库*/}
       </Button>
-      <Modal visible={open} title="新建数据库" onOk={submit} onCancel={close}>
-        <Form
-          form={form}
-          initialValues={{
-            collationName: 'UTF-8',
-            charsetName: 'UTF-8',
-          }}
-          layout="vertical"
-        >
-          <Form.Item name={'name'} label="数据库名称">
-            <Input style={{ width: 320 }} placeholder="请输入" />
+      <Modal
+        open={open}
+        title={formatMessage({ id: 'odc.Info.NewDataBaseButton.CreateADatabase' })}
+        /*新建数据库*/ onOk={submit}
+        onCancel={close}
+      >
+        <Form form={form} initialValues={{}} layout="vertical">
+          <Form.Item
+            name={'name'}
+            label={formatMessage({ id: 'odc.Info.NewDataBaseButton.DatabaseName' })} /*数据库名称*/
+          >
+            <Input
+              style={{ width: 320 }}
+              placeholder={formatMessage({
+                id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+              })} /*请输入*/
+            />
           </Form.Item>
           <Space>
-            <Form.Item name={'charsetName'} label="字符编码">
-              <Input style={{ width: 200 }} placeholder="请输入" />
+            <Form.Item
+              name={'charsetName'}
+              label={formatMessage({
+                id: 'odc.Info.NewDataBaseButton.CharacterEncoding',
+              })} /*字符编码*/
+            >
+              <Input
+                style={{ width: 200 }}
+                placeholder={formatMessage({
+                  id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                })} /*请输入*/
+              />
             </Form.Item>
-            <Form.Item name={'collationName'} label="排序规则">
-              <Input style={{ width: 200 }} placeholder="请输入" />
+            <Form.Item
+              name={'collationName'}
+              label={formatMessage({ id: 'odc.Info.NewDataBaseButton.SortingRules' })} /*排序规则*/
+            >
+              <Input
+                style={{ width: 200 }}
+                placeholder={formatMessage({
+                  id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                })} /*请输入*/
+              />
             </Form.Item>
           </Space>
-          <Form.Item name={'projectId'} label="所属项目">
-            <Select style={{ width: 240 }} loading={projectListLoading}>
-              {project?.contents?.map((p) => {
-                return <Select.Option key={p.id}>{p.name}</Select.Option>;
-              })}
-            </Select>
+          <Form.Item
+            name={'projectId'}
+            label={formatMessage({ id: 'odc.Info.NewDataBaseButton.Project' })} /*所属项目*/
+          >
+            <ProjectSelect projects={project?.contents} currentDatabase={null} />
           </Form.Item>
         </Form>
       </Modal>

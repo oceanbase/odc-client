@@ -5,11 +5,18 @@ import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IProject, ProjectRole } from '@/d.ts/project';
+import { formatMessage } from '@/util/intl';
 import { Button, message, Popconfirm } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
+
+export const projectRoleTextMap = {
+  [ProjectRole.OWNER]: formatMessage({ id: 'odc.User.AddUserModal.Administrator' }),
+  [ProjectRole.DEVELOPER]: formatMessage({ id: 'odc.User.AddUserModal.CommonMember' }),
+  [ProjectRole.DBA]: 'DBA',
+};
 interface IProps {
   id: string;
 }
@@ -42,7 +49,9 @@ const User: React.FC<IProps> = ({ id }) => {
       userId: id,
     });
     if (isSuccess) {
-      message.success('删除成功');
+      message.success(
+        formatMessage({ id: 'odc.Project.User.DeletedSuccessfully' }), //删除成功
+      );
       context.reloadProject();
     }
   }
@@ -55,7 +64,7 @@ const User: React.FC<IProps> = ({ id }) => {
     <TableCard
       title={
         <Button type="primary" onClick={() => setAddUserModalVisiable(true)}>
-          添加成员
+          {formatMessage({ id: 'odc.Project.User.AddMembers' }) /*添加成员*/}
         </Button>
       }
       extra={
@@ -68,34 +77,39 @@ const User: React.FC<IProps> = ({ id }) => {
         rowKey={'id'}
         columns={[
           {
-            title: '用户名称',
+            title: formatMessage({ id: 'odc.Project.User.UserName' }), //用户名称
             dataIndex: 'name',
           },
           {
-            title: '账号',
+            title: formatMessage({ id: 'odc.Project.User.Account' }), //账号
             dataIndex: 'accountName',
             width: 370,
           },
           {
-            title: '项目角色',
+            title: formatMessage({ id: 'odc.Project.User.ProjectRole' }), //项目角色
             dataIndex: 'roles',
             width: 370,
             render(v) {
-              return v?.join(' | ');
+              return v?.map((item) => projectRoleTextMap[item] || item)?.join(' | ');
             },
           },
           {
-            title: '操作',
+            title: formatMessage({ id: 'odc.Project.User.Operation' }), //操作
             dataIndex: 'name',
             width: 135,
             render(_, record) {
               return (
                 <Action.Group size={3}>
                   <Action.Link onClick={() => updateUser(record.id)} key={'export'}>
-                    编辑
+                    {formatMessage({ id: 'odc.Project.User.Edit' }) /*编辑*/}
                   </Action.Link>
-                  <Popconfirm title="确定删除该成员吗？" onConfirm={() => deleteUser(record.id)}>
-                    <Action.Link key={'import'}>移除</Action.Link>
+                  <Popconfirm
+                    title={formatMessage({ id: 'odc.Project.User.AreYouSureYouWant' })}
+                    /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
+                  >
+                    <Action.Link key={'import'}>
+                      {formatMessage({ id: 'odc.Project.User.Remove' }) /*移除*/}
+                    </Action.Link>
                   </Popconfirm>
                 </Action.Group>
               );
@@ -108,6 +122,7 @@ const User: React.FC<IProps> = ({ id }) => {
         }}
         loadData={(page) => {}}
       />
+
       <AddUserModal
         visible={addUserModalVisiable}
         close={() => setAddUserModalVisiable(false)}
@@ -116,6 +131,7 @@ const User: React.FC<IProps> = ({ id }) => {
         }}
         project={context.project}
       />
+
       <UpdateUserModal
         visible={!!editUserId}
         userId={editUserId}

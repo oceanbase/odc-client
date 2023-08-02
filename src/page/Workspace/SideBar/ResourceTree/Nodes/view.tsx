@@ -6,6 +6,7 @@ import { openViewViewPage } from '@/store/helper/page';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import ViewSvg from '@/svgr/menuView.svg';
+import { formatMessage } from '@/util/intl';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import Icon, { FolderOpenFilled } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
@@ -14,8 +15,8 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
   const dbName = database.name;
   const views = dbSession?.database?.views;
   const treeData: TreeDataNode = {
-    title: '视图',
-    key: `${dbName}-view`,
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.View' }), //视图
+    key: `${database.id}-${dbName}-view`,
     type: ResourceNodeType.ViewRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -24,11 +25,11 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
   if (views) {
     const dataTypes = sessionManager.sessionMap.get(dbSession?.sessionId)?.dataTypes;
     treeData.children = views.map((view) => {
-      const viewKey = `${dbSession?.database?.viewVersion}-${dbName}-view-${view.viewName}`;
+      const viewKey = `${database.id}-${dbSession?.database?.viewVersion}-${dbName}-view-${view.viewName}`;
       let columnRoot: TreeDataNode;
       if (view.columns) {
         columnRoot = {
-          title: '列',
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.Column' }), //列
           type: ResourceNodeType.ViewColumnRoot,
           key: `${viewKey}-view`,
           sessionId: dbSession?.sessionId,
@@ -39,6 +40,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
               }}
             />
           ),
+
           children: view.columns?.map((c) => {
             return {
               title: c.columnName,
@@ -54,6 +56,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
                   }}
                 />
               ),
+
               isLeaf: true,
             };
           }),
@@ -86,6 +89,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: view.columns ? [columnRoot].filter(Boolean) : null,

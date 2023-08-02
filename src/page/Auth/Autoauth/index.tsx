@@ -4,7 +4,7 @@ import {
   getAutoRuleList,
   setAutoRuleEnable,
 } from '@/common/network/manager';
-import { actionTypes, canAcess } from '@/component/Acess';
+import { Acess, actionTypes, canAcess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
@@ -104,7 +104,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '启用状态',
+        title: formatMessage({ id: 'odc.Auth.Autoauth.EnableStatus' }), //启用状态
         width: 100,
         ellipsis: true,
         key: 'enabled',
@@ -120,6 +120,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
             value: false,
           },
         ],
+
         render: (enabled, record) => (
           <Switch
             size="small"
@@ -150,30 +151,34 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
               }
             </Action.Link>
             <Action.Group>
-              <Action.Link
-                disabled={record.builtIn}
-                onClick={async () => {
-                  this.openFormModal(record.id);
-                }}
-              >
-                {
-                  formatMessage({
-                    id: 'odc.components.AutoAuthPage.Edit',
-                  }) /*编辑*/
-                }
-              </Action.Link>
-              <Action.Link
-                disabled={record.builtIn}
-                onClick={async () => {
-                  this.handleDelete(record.id);
-                }}
-              >
-                {
-                  formatMessage({
-                    id: 'odc.components.AutoAuthPage.Delete',
-                  }) /*删除*/
-                }
-              </Action.Link>
+              <Acess {...createPermission(IManagerResourceType.auto_auth, actionTypes.update)}>
+                <Action.Link
+                  disabled={record.builtIn}
+                  onClick={async () => {
+                    this.openFormModal(record.id);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.components.AutoAuthPage.Edit',
+                    }) /*编辑*/
+                  }
+                </Action.Link>
+              </Acess>
+              <Acess {...createPermission(IManagerResourceType.auto_auth, actionTypes.delete)}>
+                <Action.Link
+                  disabled={record.builtIn}
+                  onClick={async () => {
+                    this.handleDelete(record.id);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.components.AutoAuthPage.Delete',
+                    }) /*删除*/
+                  }
+                </Action.Link>
+              </Acess>
             </Action.Group>
           </Action.Group>
         ),

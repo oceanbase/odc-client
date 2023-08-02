@@ -16,8 +16,8 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
   const dbName = database.name;
   const triggers = dbSession?.database?.triggers;
   const treeData: TreeDataNode = {
-    title: '触发器',
-    key: `${dbName}-trigger`,
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.trigger.Trigger' }), //触发器
+    key: `${database.id}-${dbName}-trigger`,
     type: ResourceNodeType.TriggerRoot,
     data: database,
     sessionId: dbSession?.sessionId,
@@ -42,7 +42,8 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
           />
         </Tooltip>
       );
-      const key = `${dbSession?.database?.triggerVersion}-${dbName}-trigger-${trigger.triggerName}`;
+
+      const key = `${database.id}-${dbSession?.database?.triggerVersion}-${dbName}-trigger-${trigger.triggerName}`;
       return {
         title: trigger.triggerName,
         key,

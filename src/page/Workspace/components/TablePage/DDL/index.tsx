@@ -29,7 +29,7 @@ const TableDDL: React.FC<IProps> = function ({}) {
   };
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Toolbar style={{ flex: 0 }}>
+      <Toolbar style={{ flexShrink: 0, flexGrow: 0 }}>
         <ToolbarButton
           text={
             formated

@@ -5,11 +5,11 @@ import { formatMessage } from '@/util/intl';
 
 import { getServerSystemInfo, getSystemConfig } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
-import { SQLSessionMode } from '@/d.ts';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
 
 import appConfig from '@/constant/appConfig';
+import { isClient } from '@/util/env';
 import request from '@/util/request';
 import { initTracert } from '@/util/tracert';
 
@@ -55,9 +55,6 @@ export class SettingStore {
   public theme: IThemeConfig =
     themeConfig[localStorage.getItem(themeKey)] || themeConfig[defaultTheme];
 
-  @observable
-  public enableMultiSession: boolean = false;
-
   /**
    * 是否支持数据的导出，包括下载与结果集导出
    */
@@ -75,6 +72,9 @@ export class SettingStore {
 
   @observable
   public enableDBExport: boolean = false;
+
+  @observable
+  public enableOSC: boolean = false;
 
   @observable
   public enableAll: boolean = false;
@@ -185,8 +185,6 @@ export class SettingStore {
         data[item.key] = item.value;
         return data;
       }, {});
-      this.enableMultiSession =
-        this.configurations['connect.sessionMode'] === SQLSessionMode.MultiSession;
     }
   }
 
@@ -202,7 +200,8 @@ export class SettingStore {
     this.enableOBClient = res?.['odc.features.obclient.enabled'] === 'true';
     this.maxResultSetRows = maxResultsetRows === -1 ? Number.MAX_SAFE_INTEGER : maxResultsetRows;
     this.maxSessionCount = maxSessionCount === -1 ? Number.MAX_SAFE_INTEGER : maxSessionCount;
-    this.enableVersionTip = res?.['odc.features.show-new-features.enabled'] === 'true';
+    this.enableVersionTip =
+      !isClient() && res?.['odc.features.show-new-features.enabled'] === 'true';
     this.enablePersonalRecord = res?.['odc.features.personal-audit.enabled'] === 'true';
     this.enableAsyncTask = res?.['odc.features.task.async.enabled'] === 'true';
     this.enableDBImport = res?.['odc.features.task.import.enabled'] === 'true';
@@ -210,6 +209,7 @@ export class SettingStore {
     this.enableDBExport =
       res?.['odc.features.task.export.enabled'] === 'true' && this.enableDataExport;
     this.enableMockdata = res?.['odc.features.task.mockdata.enabled'] === 'true';
+    this.enableOSC = res?.['odc.features.task.osc.enabled'] === 'true';
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
   }
 

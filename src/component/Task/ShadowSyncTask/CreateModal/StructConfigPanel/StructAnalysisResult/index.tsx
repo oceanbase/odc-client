@@ -159,7 +159,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
               position: 'relative',
             }}
           >
-            <MonacoEditor value={data?.allDDL} readOnly language={connectionMode} />
+            <MonacoEditor defaultValue={data?.allDDL} readOnly language={connectionMode} />
           </div>
         </Tabs.TabPane>
       </Tabs>

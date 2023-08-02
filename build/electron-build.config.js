@@ -35,7 +35,17 @@ const config = {
     warningsAsErrors: false,
   },
   linux: {
-    target: 'deb',
+    target: [
+      {
+       target: "deb"
+      },
+      {
+       target: "rpm"
+      },
+      {
+       target: "AppImage"
+      }
+    ],
     category: 'Development',
     maintainer: 'OceanBase'
   },

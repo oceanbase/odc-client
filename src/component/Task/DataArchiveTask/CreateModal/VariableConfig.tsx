@@ -1,9 +1,13 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
+import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
+import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
+
+const ENABLE_PATTERN_OPERATOR = false;
 
 const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => ({
   label: item,
@@ -12,27 +16,27 @@ const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => (
 const operatorOptions = ['+', '-'].map((item) => ({ label: item, value: item }));
 const timeUnitOptions = [
   {
-    label: '分',
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points' }), //分
     value: 's',
   },
   {
-    label: '小时',
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Hours' }), //小时
     value: 'h',
   },
   {
-    label: '日',
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Day' }), //日
     value: 'd',
   },
   {
-    label: '周',
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Zhou' }), //周
     value: 'w',
   },
   {
-    label: '月',
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Month' }), //月
     value: 'm',
   },
   {
-    label: '年',
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Year' }), //年
     value: 'y',
   },
 ];
@@ -46,10 +50,19 @@ const VariableConfig: React.FC<IProps> = (props) => {
       keepExpand
       label={
         <Space>
-          变量配置
+          {
+            formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableConfiguration',
+            }) /*变量配置*/
+          }
+
           <span className={styles.desc}>
             <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
-              变量可在归档配置的过滤条件中引用
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn.1',
+                }) /*变量可在归档配置的过滤条件中引用 (可选)*/
+              }
             </HelpDoc>
           </span>
         </Space>
@@ -57,11 +70,27 @@ const VariableConfig: React.FC<IProps> = (props) => {
     >
       <Space direction="vertical">
         <Space className={styles.infoLabel}>
-          <div style={{ width: '194px' }}>变量名</div>
-          <div style={{ width: '170px' }}>时间格式</div>
-          <div style={{ width: '250px' }}>
+          <div style={{ width: '194px' }}>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableName',
+              }) /*变量名*/
+            }
+          </div>
+          <div style={{ width: '170px' }}>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeFormat',
+              }) /*时间格式*/
+            }
+          </div>
+          <div style={{ width: '305px' }}>
             <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
-              时间运算
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeOperation',
+                }) /*时间运算*/
+              }
             </HelpDoc>
           </div>
         </Space>
@@ -69,12 +98,26 @@ const VariableConfig: React.FC<IProps> = (props) => {
           {(fields, { add, remove }) => (
             <div className={styles.infoBlock}>
               {fields.map(({ key, name, ...restField }) => (
-                <Space key={key} align="baseline">
-                  <Form.Item {...restField} style={{ width: '194px' }} name={[name, 'name']}>
-                    <Input placeholder="请输入" />
+                <div
+                  key={key}
+                  className={classNames(styles.variables, {
+                    [styles.delete]: fields?.length > 1,
+                  })}
+                >
+                  <Form.Item {...restField} name={[name, 'name']}>
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                      })} /*请输入*/
+                    />
                   </Form.Item>
-                  <Form.Item {...restField} style={{ width: '170px' }} name={[name, 'format']}>
-                    <Select placeholder="请选择" options={timeFormatOptions} />
+                  <Form.Item {...restField} name={[name, 'format']}>
+                    <Select
+                      placeholder={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                      })}
+                      /*请选择*/ options={timeFormatOptions}
+                    />
                   </Form.Item>
                   <Form.List name={[name, 'pattern']}>
                     {(subFields, { add: _add, remove: _remove }) => {
@@ -82,58 +125,81 @@ const VariableConfig: React.FC<IProps> = (props) => {
                       return (
                         <div className={styles.infoBlock}>
                           {subFields.map(({ key, name, ...restField }) => (
-                            <Space size={5} key={key} align="baseline">
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'operator']}
-                              >
+                            <div className={styles.pattern}>
+                              <Form.Item {...restField} name={[name, 'operator']}>
                                 <Select
-                                  placeholder="请选择"
-                                  style={{ width: 80 }}
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                  })} /*请选择*/
                                   options={operatorOptions}
                                 />
                               </Form.Item>
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'step']}
-                              >
-                                <InputNumber placeholder="请输入" min={1} style={{ width: 80 }} />
+                              <Form.Item {...restField} name={[name, 'step']}>
+                                <InputNumber
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                                  })}
+                                  /*请输入*/ min={1}
+                                />
                               </Form.Item>
-                              <Form.Item
-                                {...restField}
-                                style={{ width: '80px' }}
-                                name={[name, 'unit']}
-                              >
+                              <Form.Item {...restField} name={[name, 'unit']}>
                                 <Select
-                                  placeholder="请选择"
-                                  style={{ width: 80 }}
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                  })} /*请选择*/
                                   options={timeUnitOptions}
                                 />
                               </Form.Item>
-                              <Button type="text" disabled={disabledAdd}>
-                                <PlusOutlined onClick={() => _add()} />
-                              </Button>
-                              <Button type="text">
-                                <MinusOutlined
-                                  onClick={() => {
-                                    if (subFields?.length > 1) _remove(name);
-                                  }}
-                                />
-                              </Button>
-                            </Space>
+                              {ENABLE_PATTERN_OPERATOR && (
+                                <>
+                                  <Tooltip
+                                    title={formatMessage({
+                                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddTimeOperation',
+                                    })} /*添加时间运算*/
+                                  >
+                                    <Button type="text" disabled={disabledAdd}>
+                                      <PlusOutlined onClick={() => _add()} />
+                                    </Button>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title={formatMessage({
+                                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteTimeOperation',
+                                    })} /*删除时间运算*/
+                                  >
+                                    <Button type="text">
+                                      <MinusOutlined
+                                        onClick={() => {
+                                          if (subFields?.length > 1) _remove(name);
+                                        }}
+                                      />
+                                    </Button>
+                                  </Tooltip>
+                                </>
+                              )}
+                            </div>
                           ))}
                         </div>
                       );
                     }}
                   </Form.List>
-                  {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
-                </Space>
+                  {fields?.length > 1 && (
+                    <Tooltip
+                      title={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
+                      })} /*删除变量*/
+                    >
+                      <DeleteOutlined onClick={() => remove(name)} />
+                    </Tooltip>
+                  )}
+                </div>
               ))}
               <Form.Item style={{ marginBottom: 0, width: '100%' }}>
                 <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
-                  添加变量
+                  {
+                    formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddVariables',
+                    }) /*添加变量*/
+                  }
                 </Button>
               </Form.Item>
             </div>

@@ -17,15 +17,35 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
       const { pathIncludes = [], pathExcludes = [] } = params;
       return (
         <>
-          <Descriptions.Item label={'路径识别表达式'}>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
+              }) //路径识别表达式
+            }
+          >
             <span
               style={{
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              <div>匹配：{pathIncludes.join(',')}</div>
-              <div>排除：{pathExcludes.join(',') || '-'}</div>
+              <div>
+                {
+                  formatMessage({
+                    id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.Match',
+                  }) /*匹配：*/
+                }
+                {pathIncludes.join(',')}
+              </div>
+              <div>
+                {
+                  formatMessage({
+                    id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.Exclude',
+                  }) /*排除：*/
+                }
+                {pathExcludes.join(',') || '-'}
+              </div>
             </span>
           </Descriptions.Item>
         </>
@@ -41,31 +61,47 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
       const dataSource = [];
       if (databaseRegexExpression !== '') {
         dataSource.push({
-          name: '库名',
+          name: formatMessage({
+            id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.LibraryName',
+          }), //库名
           content: databaseRegexExpression,
         });
       }
       if (tableRegexExpression !== '') {
         dataSource.push({
-          name: '表名',
+          name: formatMessage({
+            id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.TableName',
+          }), //表名
           content: tableRegexExpression,
         });
       }
       if (columnRegexExpression !== '') {
         dataSource.push({
-          name: '列名',
+          name: formatMessage({
+            id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.ColumnName',
+          }), //列名
           content: columnRegexExpression,
         });
       }
       if (columnCommentRegexExpression !== '') {
         dataSource.push({
-          name: '列备注',
+          name: formatMessage({
+            id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.ColumnRemarks',
+          }), //列备注
           content: columnCommentRegexExpression,
         });
       }
       return (
         <>
-          <Descriptions.Item label={'识别规则'}>&nbsp;</Descriptions.Item>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.IdentificationRules',
+              }) //识别规则
+            }
+          >
+            &nbsp;
+          </Descriptions.Item>
           <div
             style={{
               width: '500px',
@@ -90,20 +126,25 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
               tableProps={{
                 columns: [
                   {
-                    title: '规则名称',
+                    title: formatMessage({
+                      id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.RuleName',
+                    }), //规则名称
                     width: 170,
                     dataIndex: 'name',
                     key: 'name',
                     render: (text) => text || '-',
                   },
                   {
-                    title: '正则表达式',
+                    title: formatMessage({
+                      id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.RegularExpression',
+                    }), //正则表达式
                     width: 170,
                     dataIndex: 'content',
                     key: 'content',
                     render: (text) => text || '-',
                   },
                 ],
+
                 dataSource: dataSource,
                 rowKey: 'id',
                 pagination: false,
@@ -120,7 +161,15 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
       const { groovyScript = '' } = params;
       return (
         <>
-          <Descriptions.Item label={'识别规则'}>&nbsp;</Descriptions.Item>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.IdentificationRules',
+              }) //识别规则
+            }
+          >
+            &nbsp;
+          </Descriptions.Item>
           <div
             style={{
               position: 'relative',
@@ -183,7 +232,11 @@ const ViewSensitiveRuleDrawer = ({
   return (
     <Drawer
       width={596}
-      title={'查看识别规则'}
+      title={
+        formatMessage({
+          id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.ViewIdentificationRules',
+        }) //查看识别规则
+      }
       open={viewDrawerVisible}
       onClose={handleViewDrawerClose}
       destroyOnClose={true}
@@ -194,34 +247,93 @@ const ViewSensitiveRuleDrawer = ({
             justifyContent: 'flex-end',
           }}
         >
-          <Button onClick={handleViewDrawerClose}>关闭</Button>
+          <Button onClick={handleViewDrawerClose}>
+            {
+              formatMessage({
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.Close',
+              }) /*关闭*/
+            }
+          </Button>
         </div>
       }
       className={styles.drawer}
     >
       <Descriptions column={1}>
-        <Descriptions.Item label={'规则名称'}>{record?.name}</Descriptions.Item>
-        <Descriptions.Item label={'规则状态'}>
-          {record?.enabled ? '启用' : '未启用'}
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.RuleName' }) //规则名称
+          }
+        >
+          {record?.name}
         </Descriptions.Item>
-        <Descriptions.Item label={'识别方式'}>{DetectRuleTypeMap[record?.type]}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.RuleStatus' }) //规则状态
+          }
+        >
+          {
+            record?.enabled
+              ? formatMessage({ id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.Enable' }) //启用
+              : formatMessage({
+                  id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.NotEnabled',
+                }) //未启用
+          }
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.IdentificationMethod',
+            }) //识别方式
+          }
+        >
+          {DetectRuleTypeMap[record?.type]}
+        </Descriptions.Item>
         <Divider />
         {renderByType(record?.type, record)}
-        <Descriptions.Item label={'脱敏算法'}>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.DesensitizationAlgorithm',
+            }) //脱敏算法
+          }
+        >
           {maskingAlgorithmIdMap[record?.maskingAlgorithmId]}
         </Descriptions.Item>
-        <Descriptions.Item label={'规则描述'}>{record?.description || '-'}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.RuleDescription',
+            }) //规则描述
+          }
+        >
+          {record?.description || '-'}
+        </Descriptions.Item>
         <Divider />
-        <Descriptions.Item label={'创建人'}>{record?.creator?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label={'创建时间'}>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.Founder' }) //创建人
+          }
+        >
+          {record?.creator?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.CreationTime',
+            }) //创建时间
+          }
+        >
           {getLocalFormatDateTime(record?.createTime)}
         </Descriptions.Item>
-        <Descriptions.Item label={'更新时间'}>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.UpdateTime' }) //更新时间
+          }
+        >
           {getLocalFormatDateTime(record?.updateTime)}
         </Descriptions.Item>
       </Descriptions>
     </Drawer>
   );
 };
-
 export default ViewSensitiveRuleDrawer;

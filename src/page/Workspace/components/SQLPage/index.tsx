@@ -209,6 +209,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlStore.clear(pageKey);
     if (session) {
       executeTaskManager.stopTask(session.sessionId);
+      if (sqlStore.runningPageKey[pageKey]) {
+        sqlStore.stopExec(pageKey, session?.sessionId);
+      }
     }
   }
 
@@ -227,14 +230,31 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleEditorCreated = (editor: IEditor) => {
     this.editor = editor; // 快捷键绑定
-    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD, () => {
-      this.handleDownload();
+
+    this.editor.addAction({
+      id: 'sql_download',
+      label: 'download',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD],
+      run: () => this.handleDownload(),
     });
-    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      this.saveScript();
+    this.editor.addAction({
+      id: 'sql_save',
+      label: 'save',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+      run: () => this.saveScript(),
     });
-    this.editor.addCommand(monaco.KeyCode.F8, this.handleExecuteSQL);
-    this.editor.addCommand(monaco.KeyCode.F9, this.handleExecuteSelectedSQL);
+    this.editor.addAction({
+      id: 'sql_executeSql',
+      label: 'execute',
+      keybindings: [monaco.KeyCode.F8],
+      run: () => this.handleExecuteSQL(),
+    });
+    this.editor.addAction({
+      id: 'sql_executeSelectedSql',
+      label: 'executeSelected',
+      keybindings: [monaco.KeyCode.F9],
+      run: () => this.handleExecuteSelectedSQL(),
+    });
     this.debounceHighlightSelectionLine();
     this.editor.onDidChangeCursorPosition(() => {
       this.debounceHighlightSelectionLine();
@@ -583,6 +603,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         editRows,
         this.getSession()?.sessionId,
         this.getSession()?.database?.dbName,
+        resultSet.whereColumns,
       );
 
       if (!res) {
@@ -624,11 +645,30 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         this.getSession()?.sessionId,
         this.getSession()?.database?.dbName,
       );
+      if (!result) {
+        return;
+      }
       /**
        * 这里只需要第一个错误的节点，因为一个报错，后面的都会取消执行，没必要把取消执行的错误也抛出去
        */
-      const errorResult = result?.find((item) => item.status !== ISqlExecuteResultStatus.SUCCESS);
-
+      const errorResult = result?.executeResult?.find(
+        (item) => item.status !== ISqlExecuteResultStatus.SUCCESS,
+      );
+      if (!result) {
+        return;
+      }
+      if (result?.invalid) {
+        this.setState({
+          showDataExecuteSQLModal: false,
+          updateDataDML: '',
+          tipToShow: '',
+          editingMap: {
+            ...this.state.editingMap,
+            [sqlStore.resultSets?.get(pageKey)?.[resultSetIndex]?.uniqKey]: false,
+          },
+        });
+        return;
+      }
       if (!errorResult) {
         let msg;
 
@@ -968,13 +1008,17 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.sessionId,
       this.getSession()?.database?.dbName,
     );
-
-    this.getSession()?.initSessionStatus();
-    if (!results) {
+    if (results?.invalid || !results) {
       return;
     }
-    if (results?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)) {
-      this.showFirrstErrorStmt(results, sectionRange);
+    this.getSession()?.initSessionStatus();
+    if (!results?.executeResult) {
+      return;
+    }
+    if (
+      results?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
+    ) {
+      this.showFirrstErrorStmt(results?.executeResult, sectionRange);
     }
     /**
      * 装填一下额外数据,详细的列名

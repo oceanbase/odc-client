@@ -11,6 +11,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useRef, useState } from 'react';
 import DropMenu from '../DropMenu';
 
+import { ModalStore } from '@/store/modal';
 import styles from './index.less';
 import Locale from './Locale';
 import Theme from './Theme';
@@ -18,11 +19,11 @@ import Theme from './Theme';
 interface IProps {
   userStore?: UserStore;
   settingStore?: SettingStore;
+  modalStore?: ModalStore;
 }
 
-const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore }) {
+const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore, modalStore }) {
   const { user } = userStore;
-  const [userConfigModalVisible, setUserConfigModalVisible] = useState(false);
   const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const [changeLockPwdModalVisible, setChangeLockPwdModalVisible] = useState(false);
   const [changePasswordLoading, setChangePasswordLoading] = useState(false);
@@ -38,7 +39,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
   const userName = `${user?.name}(${user?.accountName})`;
 
   function onConfigClick() {
-    setUserConfigModalVisible(true);
+    modalStore.changeUserConfigModal(true);
   }
 
   const onChangePassword = async (data: { currentPassword: string; newPassword: string }) => {
@@ -150,9 +151,9 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         {children}
       </DropMenu>
       <UserConfig
-        visible={userConfigModalVisible}
+        visible={modalStore?.userConfigModalVisible}
         onCloseModal={() => {
-          setUserConfigModalVisible(false);
+          modalStore.changeUserConfigModal(false);
         }}
       />
 
@@ -179,4 +180,4 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
   );
 };
 
-export default inject('userStore', 'settingStore')(observer(MineItem));
+export default inject('userStore', 'settingStore', 'modalStore')(observer(MineItem));

@@ -1,5 +1,5 @@
 import { getRoleDetail, setRoleEnable } from '@/common/network/manager';
-import { Acess, actionTypes, canAcess, systemUpdatePermissions } from '@/component/Acess';
+import { Acess, actionTypes, canAcess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import { EmptyLabel } from '@/component/CommonFilter';
 import CommonTable from '@/component/CommonTable';
@@ -107,7 +107,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: '启用状态',
+        title: formatMessage({ id: 'odc.Auth.Role.EnableStatus' }), //启用状态
         width: 80,
         ellipsis: true,
         key: 'enabled',
@@ -160,7 +160,9 @@ class RolePage extends React.PureComponent<IProps, IState> {
                   /* 查看 */
                 }
               </Action.Link>
-              <Acess {...systemUpdatePermissions[IManagerResourceType.role]}>
+              <Acess
+                {...createPermission(IManagerResourceType.role, actionTypes.update, record.id)}
+              >
                 <Action.Group>
                   <Action.Link
                     disabled={isBuiltIn}
@@ -257,7 +259,6 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private handleRoleEnable = async (data: { role: IManagerRole; enabled: boolean }) => {
-    const { updateRoleById } = this.context;
     const { role, enabled } = data;
     const res = await setRoleEnable({
       id: role.id,
@@ -270,7 +271,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
           ? formatMessage({ id: 'odc.components.RolePage.Enabled' }) // 启用成功
           : formatMessage({ id: 'odc.components.RolePage.Disabled' }), // 停用成功
       );
-      updateRoleById({ ...role, enabled });
+      this.context.loadRoles();
     } else {
       message.error(
         enabled
@@ -468,6 +469,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             rowKey: 'id',
           }}
         />
+
         <FormModal
           editId={editId}
           copyId={copyId}
@@ -482,6 +484,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
             this.context.loadRoles();
           }}
         />
+
         <CommonDetailModal
           width={720}
           visible={detailModalVisible}

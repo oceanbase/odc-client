@@ -90,8 +90,14 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
       PageType.CREATE_TRIGGER_SQL,
     ].includes(type);
     const result = await executeSQL({ sql, split }, this.props?.session?.sessionId, dbName);
-    isSuccess = result?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
-    errMsg = result?.[0]?.track;
+    if (result?.invalid || !result) {
+      return {
+        isSuccess: false,
+        errMsg: '',
+      };
+    }
+    isSuccess = result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
+    errMsg = result?.executeResult?.[0]?.track;
     return {
       isSuccess,
       errMsg,

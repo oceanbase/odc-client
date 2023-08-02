@@ -1,5 +1,6 @@
 import { getTaskFile } from '@/common/network/task';
 import Action from '@/component/Action';
+import { formatMessage } from '@/util/intl';
 import { downloadFile } from '@/util/utils';
 
 interface IProps {
@@ -17,5 +18,13 @@ export const DownloadFileAction: React.FC<IProps> = (props) => {
     });
   };
 
-  return objectId ? <Action.Link onClick={handleDownloadFile}>下载备份回滚方案</Action.Link> : null;
+  return objectId ? (
+    <Action.Link onClick={handleDownloadFile}>
+      {
+        formatMessage({
+          id: 'odc.component.DownloadFileAction.DownloadBackupRollbackSolution',
+        }) /*下载备份回滚方案*/
+      }
+    </Action.Link>
+  ) : null;
 };

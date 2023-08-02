@@ -267,7 +267,10 @@ const List: React.FC<IProps> = forwardRef(function (
           }
           env={
             <Tag color={connection?.environmentStyle?.toLowerCase()}>
-              {connection?.environmentName || '无环境'}
+              {
+                connection?.environmentName ||
+                  formatMessage({ id: 'odc.Content.List.NoEnvironment' }) //无环境
+              }
             </Tag>
           }
         />
@@ -321,7 +324,7 @@ const List: React.FC<IProps> = forwardRef(function (
               </span>
             }
             icon={<img src={window.publicPath + 'img/graphic_empty.png'} style={{ height: 132 }} />}
-            extra={[<TitleButton key="titleButton" />]}
+            extra={[<TitleButton onReload={() => context.reloadTable()} key="titleButton" />]}
           />
         )}
       </div>

@@ -1,11 +1,10 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
-import MaskPolicySelecter from '@/component/MaskPolicySelecter';
 import SysFormItem from '@/component/SysFormItem';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import appConfig from '@/constant/appConfig';
 import { EXPORT_CONTENT, EXPORT_TYPE, IConnection, IMPORT_ENCODING } from '@/d.ts';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
@@ -520,6 +519,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
           }}
         </FormItem>
       )}
+      <DescriptionInput />
     </>
   );
 };

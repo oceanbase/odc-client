@@ -1,7 +1,8 @@
+import { IDatasource } from '@/d.ts/datasource';
 import OBClient from '@/page/Workspace/components/OBClientPage';
 import { toInteger } from 'lodash';
 
-export default function OBClientPage({ id }: { id: string }) {
+export default function OBClientPage({ id }: { id: string; datasource: IDatasource }) {
   if (!id) {
     return null;
   }

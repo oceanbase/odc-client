@@ -1,4 +1,5 @@
-import { deleteType, getType } from '@/common/network/type';
+import { dropObject } from '@/common/network/database';
+import { getType } from '@/common/network/type';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { DbObjectType, IType, PageType, TypePropsTab } from '@/d.ts';
@@ -17,7 +18,9 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
   [ResourceNodeType.TypeRoot]: [
     {
       key: 'BATCH_COMPILE',
-      text: ['批量编译'],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.type.BatchCompilation' }), //批量编译
+      ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       run(session, node) {
@@ -55,6 +58,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       },
     },
   ],
+
   [ResourceNodeType.Type]: [
     {
       key: 'OVERVIEW',
@@ -119,7 +123,14 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            await deleteType(type?.typeName, session?.sessionId, session?.database?.dbName);
+            const isSuccess = await dropObject(
+              type?.typeName,
+              DbObjectType.type,
+              session?.sessionId,
+            );
+            if (!isSuccess) {
+              return;
+            }
             await session?.database?.getTypeList();
 
             message.success(

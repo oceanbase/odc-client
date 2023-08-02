@@ -78,7 +78,7 @@ export function getItems(
   if (!task) {
     return [];
   }
-  const maxRiskLevel = task?.maxRiskLevel;
+  const riskLevel = task?.riskLevel;
   const connectionMode = task?.connection?.dbMode;
   const riskItem: [string, string] = [
     formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
@@ -87,7 +87,7 @@ export function getItems(
         id: 'odc.component.DetailModal.dataMocker.Maxrisklevel',
       },
 
-      { maxRiskLevel: maxRiskLevel },
+      { maxRiskLevel: riskLevel },
     ),
 
     //风险等级
@@ -151,7 +151,7 @@ export function getItems(
         ],
 
         [
-          formatMessage({ id: 'odc.component.DetailModal.shadowSync.Remarks' }), //备注
+          formatMessage({ id: 'odc.ShadowSyncTask.DetailContent.Description' }), //描述
           task?.description,
           2,
         ],

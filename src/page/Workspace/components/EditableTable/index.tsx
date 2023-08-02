@@ -1,7 +1,14 @@
 import DataGrid, { DataGridRef, SelectColumn } from '@alipay/ob-react-data-grid';
 import type { DataGridProps, Position, RowsChangeData } from '@alipay/ob-react-data-grid/lib/types';
 import { useControllableValue } from 'ahooks';
-import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { SettingStore } from '@/store/setting';
 import { generateUniqKey } from '@/util/utils';
@@ -86,6 +93,7 @@ export default inject('settingStore')(
         getContextMenuConfig,
         onSelectChange,
       } = props;
+      const innerGridRef = useRef<DataGridRef>(null);
 
       const [innerColumns, setInnerColumns] = useState([]);
 
@@ -132,9 +140,9 @@ export default inject('settingStore')(
             onSelectChange?.([]);
           } else {
             onSelectChange?.(
-              rows
+              innerGridRef?.current?.rows
                 ?.slice(Math.min(rowIdx, endRowIdx), Math.max(rowIdx, endRowIdx) + 1)
-                .map((row) => rowKeyGetter(row)),
+                .map((row) => rowKeyGetter(row)) || [],
               innerColumns
                 ?.slice(Math.min(idx, endIdx), Math.max(idx, endIdx) + 1)
                 .map((column) => column.key),
@@ -257,7 +265,11 @@ export default inject('settingStore')(
             height: minHeight,
           }}
           className={classNames(styles.fillGrid, !bordered ? styles.removeBordered : '')}
-          ref={gridRef}
+          ref={(ref) => {
+            innerGridRef.current = ref;
+            //@ts-ignore
+            gridRef ? (gridRef.current = ref) : null;
+          }}
           columns={innerColumns}
           rows={rows}
           rowHeight={24}

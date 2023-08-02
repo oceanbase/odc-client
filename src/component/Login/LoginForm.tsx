@@ -5,7 +5,7 @@ import {
   SyncOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Alert, Button, Form, Input, Space } from 'antd';
+import { Alert, Button, Divider, Form, Input, Space } from 'antd';
 import type { FormProps } from 'antd/lib/form';
 import classNames from 'classnames';
 import React, { useState } from 'react';
@@ -154,16 +154,26 @@ const Login: React.FC<ILoginFormProps> = ({
         {formatMessage({ id: 'odc.component.Login.LoginForm.Login' }) /*登录*/}
       </Button>
       {showOtherLoginButton && (
-        <Button
-          htmlType="button"
-          loading={otherLoginProps.loading}
-          type="primary"
-          block={true}
-          onClick={otherLoginProps.onFinish}
-          className={`${prefix}-submit-btn`}
-        >
-          {formatMessage({ id: 'odc.component.Login.LoginForm.ThirdPartyLogin' }) /*第三方登录*/}
-        </Button>
+        <>
+          <Divider style={{ color: 'var(--text-color-hint)' }} plain>
+            {
+              formatMessage({
+                id: 'odc.component.Login.LoginForm.OtherLogonMethods',
+              }) /*其他登录方式*/
+            }
+          </Divider>
+          <Button
+            htmlType="button"
+            loading={otherLoginProps.loading}
+            type="primary"
+            style={{ marginTop: 0 }}
+            block={true}
+            onClick={otherLoginProps.onFinish}
+            className={`${prefix}-submit-btn`}
+          >
+            {formatMessage({ id: 'odc.component.Login.LoginForm.ThirdPartyLogin' }) /*第三方登录*/}
+          </Button>
+        </>
       )}
 
       {errorMessage && (

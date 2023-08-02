@@ -40,19 +40,3 @@ export async function getSynonym(
   });
   return ret?.data;
 }
-
-export async function deleteSynonym(
-  synonymName: string,
-  synonymType: SynonymType,
-  sessionId: string,
-  dbName: string,
-) {
-  const sid = generateSynonymSid(synonymName, sessionId, dbName);
-  const res = await request.delete(`/api/v1/synonym/${sid}`, {
-    params: {
-      synonymType: synonymType,
-    },
-  });
-
-  return !!res?.data;
-}

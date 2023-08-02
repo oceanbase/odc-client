@@ -1,4 +1,5 @@
-import { deleteSynonym, getSynonym } from '@/common/network/synonym';
+import { dropObject } from '@/common/network/database';
+import { getSynonym } from '@/common/network/synonym';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { DbObjectType, ISynonym, ResourceTreeNodeMenuKeys, SynonymType } from '@/d.ts';
@@ -59,12 +60,14 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
-            const isSuccess = await deleteSynonym(
-              synonym?.synonymName,
-              synonymType,
-              session?.sessionId,
-              session?.database?.dbName,
-            );
+            const isSuccess =
+              synonymType === SynonymType.COMMON
+                ? await dropObject(synonym?.synonymName, DbObjectType.synonym, session?.sessionId)
+                : await dropObject(
+                    synonym?.synonymName,
+                    DbObjectType.public_synonym,
+                    session?.sessionId,
+                  );
             if (!isSuccess) {
               return;
             }
@@ -102,6 +105,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
           type:
             synonymType === SynonymType.PUBLIC ? DbObjectType.public_synonym : DbObjectType.synonym,
           name: synonym?.synonymName,
+          databaseId: session?.database.databaseId,
         });
       },
     },

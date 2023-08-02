@@ -1,10 +1,8 @@
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
-import openNewVersionTip from '@/component/VersionModal/NewVersion';
 import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import appConfig from '@/constant/appConfig';
 import type { IPage } from '@/d.ts';
-import localLoginHistoy from '@/service/localLoginHistoy';
 import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -13,7 +11,6 @@ import type { SessionManagerStore } from '@/store/sessionManager';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import task from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { history, useLocation, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
@@ -118,10 +115,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
         // 操作执行中，关闭窗口将终止窗口操作，确认关闭吗？
         onOk: async () => {
-          await sqlStore.stopExec(
-            targetPageKey,
-            pageStore.pages.find((page) => page.key === targetPageKey)?.params?.sessionId,
-          );
           pageStore.close(targetPageKey);
         },
       });
@@ -212,10 +205,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       appConfig.workspace.preMount();
       await pageStore.initStore();
-      if (localLoginHistoy.isNewVersion()) {
-        localLoginHistoy.updateVersion();
-        settingStore.enableVersionTip && openNewVersionTip();
-      }
+      // if (localLoginHistoy.isNewVersion()) {
+      //   localLoginHistoy.updateVersion();
+      //   settingStore.enableVersionTip && openNewVersionTip();
+      // }
       setIsReady(true);
       /**
        * TODO
@@ -229,7 +222,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       modalStore.clear();
       taskStore.clear();
       executeTaskManager.stopAllTask();
-      task.setTaskCreateEnabled();
       sessionManagerStore.destoryStore(true);
     };
   }, []);

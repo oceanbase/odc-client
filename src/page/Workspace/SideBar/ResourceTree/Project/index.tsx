@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Empty, Input, Spin, Tree, TreeDataNode } from 'antd';
 import ResourceTree from '..';
@@ -14,7 +15,7 @@ import ProjectSvg from '@/svgr/project_space.svg';
 
 export default forwardRef(function ProjectTree(props, ref) {
   const { data, loading, run } = useRequest(listProjects, {
-    defaultParams: [null, 1, 9999, null],
+    defaultParams: [null, 1, 9999, false],
   });
 
   const [searchKey, setSearchKey] = useState('');
@@ -32,7 +33,7 @@ export default forwardRef(function ProjectTree(props, ref) {
         reload() {
           setSelectKeys([]);
           context?.setSelectProjectId(null);
-          return run(null, 1, 9999, null);
+          return run(null, 1, 9999, false);
         },
       };
     },
@@ -89,7 +90,9 @@ export default forwardRef(function ProjectTree(props, ref) {
               onSearch={(v) => {
                 setSearchKey(v);
               }}
-              placeholder="搜索项目名称"
+              placeholder={formatMessage({
+                id: 'odc.ResourceTree.Project.SearchForProjectName',
+              })} /*搜索项目名称*/
               style={{ width: '100%' }}
               size="small"
             />
