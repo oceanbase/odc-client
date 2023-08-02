@@ -33,6 +33,9 @@ const sqlActions: ToolBarActions = {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Plan' }),
     icon: 'EXPAIN',
     isVisible(ctx: SQLPage) {
+      if (!ctx.getSession?.()) {
+        return false;
+      }
       return ctx.getSession()?.supportFeature.enableSQLExplain;
     },
     async action(ctx: any) {
@@ -48,6 +51,9 @@ const sqlActions: ToolBarActions = {
     icon: 'SQL_RUN',
     statusFunc: (ctx: SQLPage) => {
       const { pageKey, sqlStore } = ctx.props;
+      if (!ctx.getSession?.()) {
+        return IConStatus.DISABLE;
+      }
       const {
         runningPageKey,
         rollbackPageKey,
@@ -78,8 +84,11 @@ const sqlActions: ToolBarActions = {
     }),
 
     icon: 'SQL_RUN_SECTION',
-    statusFunc: (ctx) => {
+    statusFunc: (ctx: SQLPage) => {
       const { pageKey, sqlStore } = ctx.props;
+      if (!ctx.getSession?.()) {
+        return IConStatus.DISABLE;
+      }
       const {
         runningPageKey,
         rollbackPageKey,
@@ -99,7 +108,7 @@ const sqlActions: ToolBarActions = {
       return IConStatus.INIT;
     },
 
-    async action(ctx: any) {
+    async action(ctx: SQLPage) {
       await ctx.handleExecuteSelectedSQL();
     },
   },
@@ -113,6 +122,9 @@ const sqlActions: ToolBarActions = {
     },
 
     statusFunc: (ctx: SQLPage) => {
+      if (!ctx.getSession?.()) {
+        return IConStatus.DISABLE;
+      }
       const { pageKey, sqlStore } = ctx.props;
       const { runningPageKey, rollbackPageKey, stopingPageKey, commitingPageKey } = sqlStore;
       const transaction = ctx.getSession()?.transState;
@@ -153,6 +165,9 @@ const sqlActions: ToolBarActions = {
       return null;
     },
     statusFunc: (ctx: SQLPage) => {
+      if (!ctx.getSession?.()) {
+        return IConStatus.DISABLE;
+      }
       const { pageKey, sqlStore } = ctx.props;
       const { runningPageKey, rollbackPageKey, stopingPageKey, commitingPageKey } = sqlStore;
       const sessionId = ctx.getSession()?.sessionId;
@@ -243,6 +258,9 @@ const sqlActions: ToolBarActions = {
     name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.SqlCheck' }), //SQL 检查
     icon: 'LINT',
     isVisible(ctx: SQLPage) {
+      if (!ctx.getSession?.()) {
+        return false;
+      }
       return (
         login.organizations?.find((o) => o.id === login.organizationId)?.type !== SpaceType.PRIVATE
       );
