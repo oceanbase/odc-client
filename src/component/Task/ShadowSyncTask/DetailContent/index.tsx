@@ -10,7 +10,7 @@ import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
-import { TaskExecStrategyMap } from '../..';
+import { getTaskExecStrategyMap } from '../..';
 
 interface IShadowSyncParamters {
   errorStrategy: ErrorStrategy;
@@ -80,6 +80,7 @@ export function getItems(
   }
   const riskLevel = task?.riskLevel;
   const connectionMode = task?.connection?.dbMode;
+  const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const riskItem: [string, string] = [
     formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
     formatMessage(
@@ -138,7 +139,7 @@ export function getItems(
           }),
 
           //执行方式
-          TaskExecStrategyMap[task?.executionStrategy],
+          taskExecStrategyMap[task?.executionStrategy],
         ],
 
         isTimerExecution ? timerExecutionItem : null,

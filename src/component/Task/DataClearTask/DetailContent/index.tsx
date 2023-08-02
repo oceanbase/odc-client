@@ -1,4 +1,4 @@
-import { TaskExecStrategyMap } from '@/component/Task';
+import { getTaskExecStrategyMap } from '@/component/Task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
@@ -22,6 +22,7 @@ interface IProps {
 const DataClearTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow } = props;
   const { triggerConfig, jobParameters } = task ?? {};
+  const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
 
   return (
     <>
@@ -81,7 +82,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             id: 'odc.DataClearTask.DetailContent.ExecutionMethod',
           })} /*执行方式*/
         >
-          {TaskExecStrategyMap[triggerConfig.triggerStrategy]}
+          {taskExecStrategyMap[triggerConfig.triggerStrategy]}
         </Descriptions.Item>
         {isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
           <Descriptions.Item>
