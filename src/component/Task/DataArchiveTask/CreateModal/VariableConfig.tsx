@@ -7,14 +7,7 @@ import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
 
-const ENABLE_PATTERN_OPERATOR = false;
-
-const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => ({
-  label: item,
-  value: item,
-}));
-const operatorOptions = ['+', '-'].map((item) => ({ label: item, value: item }));
-const timeUnitOptions = [
+export const timeUnitOptions = [
   {
     label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points' }), //分
     value: 's',
@@ -41,6 +34,12 @@ const timeUnitOptions = [
   },
 ];
 
+const ENABLE_PATTERN_OPERATOR = false;
+const timeFormatOptions = ['yyyy-MM-dd', 'HH:mm:ss', 'yyyyMMdd'].map((item) => ({
+  label: item,
+  value: item,
+}));
+const operatorOptions = ['+', '-'].map((item) => ({ label: item, value: item }));
 interface IProps {}
 
 const VariableConfig: React.FC<IProps> = (props) => {

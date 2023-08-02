@@ -1,5 +1,5 @@
 import { SQLContent } from '@/component/SQLContent';
-import { TaskExecStrategyMap } from '@/component/Task';
+import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -69,6 +69,7 @@ export function getItems(
   }
   const riskLevel = task?.riskLevel;
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
+  const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const riskItem: [string, string] = [
     formatMessage({ id: 'odc.AlterDdlTask.DetailContent.RiskLevel' }), //风险等级
     formatMessage(
@@ -104,7 +105,7 @@ export function getItems(
         hasFlow ? riskItem : null,
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ChangeDefinition' }), //变更定义
-          TaskExecStrategyMap[task?.executionStrategy],
+          taskExecStrategyMap[task?.executionStrategy],
           hasFlow ? 2 : 1,
         ],
 
@@ -126,7 +127,7 @@ export function getItems(
 
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ExecutionMethod' }), //执行方式
-          TaskExecStrategyMap[task?.executionStrategy],
+          taskExecStrategyMap[task?.executionStrategy],
         ],
 
         isTimerExecution ? timerExecutionItem : null,
