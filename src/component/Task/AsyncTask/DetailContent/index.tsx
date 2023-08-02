@@ -1,5 +1,5 @@
 import { SQLContent } from '@/component/SQLContent';
-import { TaskExecStrategyMap } from '@/component/Task';
+import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -26,6 +26,7 @@ export const getItems = (
     return [];
   }
   const isMySQL = _task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
+  const taskExecStrategyMap = getTaskExecStrategyMap(_task?.type);
 
   const res: {
     sectionName?: string;
@@ -185,7 +186,7 @@ export const getItems = (
                 id: 'odc.component.AsyncTaskModal.ExecutionMethod',
               })}
               /*执行方式*/
-              content={TaskExecStrategyMap[task?.executionStrategy]}
+              content={taskExecStrategyMap[task?.executionStrategy]}
             />
 
             {task?.executionStrategy === TaskExecStrategy.TIMER && (
