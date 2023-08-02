@@ -19,6 +19,7 @@ interface IProps {
   reloadDatabase: () => void;
   title: string;
   databaseFrom: 'datasource' | 'project';
+  showTip?: boolean;
 }
 
 const ResourceTree: React.FC<IProps> = function ({
@@ -27,6 +28,7 @@ const ResourceTree: React.FC<IProps> = function ({
   title,
   databaseFrom,
   reloadDatabase,
+  showTip = false,
 }) {
   const [databaseSessions, setDatabaseSessions] = useState<Record<string, string>>({});
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -116,7 +118,13 @@ const ResourceTree: React.FC<IProps> = function ({
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
 
       return (
-        <TreeNodeMenu node={node} dbSession={dbSession} type={type} databaseFrom={databaseFrom} />
+        <TreeNodeMenu
+          showTip={showTip}
+          node={node}
+          dbSession={dbSession}
+          type={type}
+          databaseFrom={databaseFrom}
+        />
       );
     },
     [databaseSessions],
