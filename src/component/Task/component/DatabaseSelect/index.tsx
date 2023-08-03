@@ -44,6 +44,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       null,
       null,
       !!login.isPrivateSpace(),
+      true,
     );
     setDatabase(res?.contents);
   };
