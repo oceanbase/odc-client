@@ -68,13 +68,13 @@
     "compare-versions": "^3.6.0",
     "cron-parser": "^4.6.0",
     "detect-port": "~1.3.0",
-    "electron-builder-notarize": "^1.5.1",
     "electron-log": "~4.2.4",
     "qs": "^6.10.1",
     "request": "^2.88.0",
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
+    "electron-builder-notarize": "^1.5.1",
     "@ali/parrot-tool-must": "^2.3.5",
     "@alipay/monaco-plugin-ob": "0.0.18",
     "@alipay/ob-parser-js": "2.0.3",
