@@ -2,11 +2,13 @@ import { getTableListByDatabaseName } from '@/common/network/table';
 import { createTask } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   CreateTaskRecord,
   ICycleTaskTriggerConfig,
   ITable,
+  MigrationInsertAction,
   TaskExecStrategy,
   TaskOperationType,
   TaskPageScope,
@@ -32,6 +34,17 @@ export enum IArchiveRange {
   ALL = 'all',
 }
 
+export const InsertActionOptions = [
+  {
+    label: '重复时忽略',
+    value: MigrationInsertAction.INSERT_NORMAL,
+  },
+  {
+    label: '重复时更新',
+    value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
+  },
+];
+
 export const variable = {
   name: '',
   format: '',
@@ -43,6 +56,7 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   variables: [variable],
   tables: [null],
+  migrationInsertAction: MigrationInsertAction.INSERT_NORMAL,
 };
 
 interface IProps {
@@ -184,6 +198,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           tables: _tables,
           deleteAfterMigration,
           triggerStrategy,
+          migrationInsertAction,
           archiveRange,
           description,
         } = values;
@@ -205,6 +220,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   })
                 : _tables,
             deleteAfterMigration,
+            migrationInsertAction,
           },
           triggerConfig: {
             triggerStrategy,
@@ -399,6 +415,20 @@ const CreateModal: React.FC<IProps> = (props) => {
             return null;
           }}
         </Form.Item>
+        <FormItemPanel label="任务设置" keepExpand>
+          <Form.Item
+            label="插入策略"
+            name="migrationInsertAction"
+            rules={[
+              {
+                required: true,
+                message: '请选择插入策略',
+              },
+            ]}
+          >
+            <Radio.Group options={InsertActionOptions} />
+          </Form.Item>
+        </FormItemPanel>
         <DescriptionInput />
       </Form>
     </Drawer>

@@ -8,6 +8,7 @@ import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space, Typography } from 'antd';
 import React from 'react';
 import styles from '../../index.less';
+import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import VariableConfig from './VariableConfig';
 
@@ -24,6 +25,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow } = props;
   const { triggerConfig, jobParameters } = task ?? {};
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
+  const isCycleStrategy = isCycleTriggerStrategy(triggerConfig?.triggerStrategy);
+  const insertActionLabel = InsertActionOptions?.find(
+    (item) => item.value === jobParameters?.migrationInsertAction,
+  )?.label;
 
   return (
     <>
@@ -117,7 +122,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {taskExecStrategyMap[triggerConfig.triggerStrategy]}
         </Descriptions.Item>
-        {isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
+        {isCycleStrategy && (
           <Descriptions.Item>
             <Collapse
               ghost
@@ -147,6 +152,9 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
+        <Descriptions.Item label="插入策略" span={isCycleStrategy ? 2 : 1}>
+          {insertActionLabel || '-'}
+        </Descriptions.Item>
 
         <Descriptions.Item
           label={formatMessage({ id: 'odc.DataArchiveTask.DetailContent.Remarks' })}
@@ -155,6 +163,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>
+
       <Divider style={{ marginTop: 4 }} />
       <Descriptions column={2}>
         <Descriptions.Item
