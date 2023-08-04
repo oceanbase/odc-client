@@ -1,4 +1,5 @@
 import { listDatabases } from '@/common/network/database';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { Form, Select, Space, Tag, Typography } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -22,22 +23,29 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const [database, setDatabase] = useState([]);
   const form = Form.useFormInstance();
   const databaseId = Form.useWatch(name, form);
-  const databaseOptions = database
-    ?.filter((item) => !!item?.project?.id)
-    ?.map(({ name, id, environment, dataSource }) => ({
-      label: (
-        <Space size={2} data-label={name}>
-          <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
-          <span>{name}</span>
-          <Text type="secondary">{dataSource.name}</Text>
-        </Space>
-      ),
+  const databaseOptions = database?.map(({ name, id, environment, dataSource }) => ({
+    label: (
+      <Space size={2} data-label={name}>
+        <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+        <span>{name}</span>
+        <Text type="secondary">{dataSource.name}</Text>
+      </Space>
+    ),
 
-      value: id,
-    }));
+    value: id,
+  }));
 
   const loadDatabase = async (projectId: number) => {
-    const res = await listDatabases(projectId);
+    const res = await listDatabases(
+      projectId,
+      null,
+      null,
+      null,
+      null,
+      null,
+      !!login.isPrivateSpace(),
+      true,
+    );
     setDatabase(res?.contents);
   };
 
