@@ -34,11 +34,6 @@
     "pack-client:linux_x86": "node ./scripts/client/build.js linux_x86",
     "pack-client:linux_aarch64": "node ./scripts/client/build.js linux_aarch64",
     "pack-client:windows": "node ./scripts/client/build.js win",
-    "copy:workers": "run-p copy:workers:*",
-    "copy:workers:mysql": "cpx \" ./node_modules/@alipay/ob-language-sql-oceanbase-mysql/dist/min/*\" ./src/workers/",
-    "copy:workers:mysql-pl": "cpx \" ./node_modules/@alipay/ob-language-sql-oceanbase-mysql-pl/dist/min/*\" ./src/workers/",
-    "copy:workers:oracle": "cpx \" ./node_modules/@alipay/ob-language-sql-oceanbase-oracle/dist/min/*\" ./src/workers/",
-    "copy:workers:oracle-pl": "cpx \" ./node_modules/@alipay/ob-language-sql-oceanbase-oracle-pl/dist/min/*\" ./src/workers/",
     "updateDoc": "node ./scripts/pulldoc.js",
     "postinstall": "max setup"
   },
