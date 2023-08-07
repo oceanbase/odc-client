@@ -1,6 +1,6 @@
 import CommonIDE from '@/component/CommonIDE';
 import { SensitiveRuleType } from '@/d.ts/sensitiveRule';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Form, Input, Radio, RadioChangeEvent, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
@@ -182,7 +182,16 @@ const DetectWay = ({
                     }) /*Groovy脚本*/
                   }
                 </div>
-                {/* <a onClick={() => message.error('文档未就位')}>查看文档</a> */}
+                <a
+                  href={getLocalDocs('1.data-desensitization.html')}
+                  target={'_blank'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  rel="noreferrer"
+                >
+                  查看文档
+                </a>
               </Space>
               <div
                 style={{

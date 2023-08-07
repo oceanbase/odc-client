@@ -45,6 +45,7 @@ export function DataBaseTreeData(
     type: ResourceNodeType.Database,
     sessionId: dbSession?.sessionId,
     data: database,
+    tip: database?.dataSource?.name,
     cid,
     icon: <Icon component={DatabaseSvg} style={{ color: '#3FA3FF', fontSize: 14 }} />,
     children: dbSession

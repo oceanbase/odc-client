@@ -93,6 +93,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
         form={form}
         initialValues={data}
         layout="vertical"
+        requiredMark="optional"
         onValuesChange={(_, values) => {
           setData({
             ...data,

@@ -76,6 +76,7 @@ interface ExtraData {
   cid?: number;
   dbObjectType?: DbObjectType;
   warning?: string;
+  tip?: string;
   doubleClick?: (
     session: SessionStore,
     node: TreeDataNode,

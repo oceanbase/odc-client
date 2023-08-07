@@ -125,6 +125,7 @@ export default forwardRef(function ProjectTree(props, ref) {
             databaseFrom="project"
             title={selectProject?.name}
             databases={db?.contents}
+            showTip
           />
         ) : null
       }

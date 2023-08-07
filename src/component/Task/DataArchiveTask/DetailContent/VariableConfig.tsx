@@ -1,6 +1,9 @@
 import DisplayTable from '@/component/DisplayTable';
 import { formatMessage } from '@/util/intl';
 import React from 'react';
+import { timeUnitOptions } from '../CreateModal/VariableConfig';
+
+const oprationReg = /^[-+]\d+[shdwmy]$/;
 
 const columns = [
   {
@@ -21,7 +24,17 @@ const columns = [
     dataIndex: 'opration',
     title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeOperation' }), //时间运算
     width: 160,
-    render: (name) => name || '-',
+    render: (opration) => {
+      let oprationLabel = opration;
+      if (oprationLabel?.match(oprationReg)) {
+        const unit = oprationLabel?.slice(-1);
+        const unitLabel = timeUnitOptions?.find((item) => item?.value === unit)?.label;
+        oprationLabel = oprationLabel.replace(unit, unitLabel);
+      } else {
+        oprationLabel = '-';
+      }
+      return oprationLabel;
+    },
   },
 ];
 

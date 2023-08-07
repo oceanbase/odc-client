@@ -17,9 +17,8 @@ interface EditRuleDrawerProps {
   handleUpdateEnvironment: (rule: IRule, fn?: () => void) => void;
 }
 // 外部审批集成的标识 key
-const ExternalApprovalKey =
-  '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.name}';
-
+export const SqlInterceptorKey =
+  '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.metadata.name}';
 const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
   editRuleDrawerVisible,
   ruleType,
@@ -30,7 +29,6 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
 }) => {
   const [formRef] = useForm();
   const [initData, setInitData] = useState();
-  const [isExternalApproval, setIsExternalApproval] = useState(false);
   const options = integrations?.map(({ id, name }) => {
     return {
       value: id,
@@ -69,6 +67,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
     };
     handleUpdateEnvironment(editedRule as IRule, formRef.resetFields);
   };
+
   useEffect(() => {
     if (editRuleDrawerVisible) {
       const {
@@ -81,15 +80,9 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         appliedDialectTypes,
         level,
       };
-      const isExternalApproval = propertyMetadatas?.some(
-        (item) => item.name === ExternalApprovalKey,
-      );
       propertyMetadatas.forEach((pm, index) => {
         newInitData[`activeKey${index}`] = properties[pm.name];
-        if (
-          pm?.name ===
-          '${com.oceanbase.odc.builtin-resource.regulation.rule.sql-console.external-sql-interceptor.metadata.name}'
-        ) {
+        if (pm?.name === SqlInterceptorKey) {
           newInitData[`options${index}`] = options;
         } else {
           if (pm?.candidates) {
@@ -102,7 +95,6 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           }
         }
       });
-      setIsExternalApproval(isExternalApproval);
       setInitData(newInitData as any);
       formRef.setFieldsValue(newInitData);
     }

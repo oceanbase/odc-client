@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Input } from 'antd';
+import { Checkbox, Input } from 'antd';
 import classnames from 'classnames';
 import React, { ReactNode, useState } from 'react';
 
@@ -9,10 +9,24 @@ interface IProps {
   title: ReactNode;
   extra?: ReactNode;
   disabled?: boolean;
+  enableSelectAll?: boolean;
+  indeterminate?: boolean;
+  checked?: boolean;
   onSearch: (searchValue: string) => void;
+  onSelectAll?: (e) => void;
 }
 
-const Card: React.FC<IProps> = function ({ title, extra, disabled, children, onSearch }) {
+const Card: React.FC<IProps> = function ({
+  title,
+  extra,
+  disabled,
+  checked,
+  enableSelectAll = false,
+  indeterminate,
+  children,
+  onSearch,
+  onSelectAll,
+}) {
   const [searchValue, _setSearchValue] = useState('');
   function setSearchValue(v) {
     onSearch?.(v);
@@ -25,6 +39,14 @@ const Card: React.FC<IProps> = function ({ title, extra, disabled, children, onS
         <div>{extra}</div>
       </div>
       <div className={styles.search}>
+        {enableSelectAll && (
+          <Checkbox
+            checked={checked}
+            indeterminate={indeterminate}
+            onChange={onSelectAll}
+            style={{ marginRight: '8px' }}
+          />
+        )}
         <Input.Search
           placeholder={formatMessage({
             id: 'odc.ExportSelecter.ExportCard.SearchKeywords',

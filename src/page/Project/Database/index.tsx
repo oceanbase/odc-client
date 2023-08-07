@@ -105,6 +105,8 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: formatMessage({ id: 'odc.Project.Database.DatabaseName' }), //数据库名称
             dataIndex: 'name',
+            fixed: 'left',
+            ellipsis: true,
             render: (name, record) => {
               if (!record.existed) {
                 return (
@@ -121,16 +123,6 @@ const Database: React.FC<IProps> = ({ id }) => {
               }
               return <a onClick={() => gotoSQLWorkspace(toInteger(id), null, record.id)}>{name}</a>;
             },
-          },
-          {
-            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
-            dataIndex: 'charsetName',
-            width: 120,
-          },
-          {
-            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
-            dataIndex: 'collationName',
-            width: 120,
           },
           {
             title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
@@ -155,6 +147,16 @@ const Database: React.FC<IProps> = ({ id }) => {
                 </Tag>
               );
             },
+          },
+          {
+            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
+            dataIndex: 'charsetName',
+            width: 120,
+          },
+          {
+            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
+            dataIndex: 'collationName',
+            width: 120,
           },
           {
             title: formatMessage({ id: 'odc.Project.Database.LastSynchronizationTime' }), //上一次同步时间
