@@ -1,11 +1,10 @@
 // TODO: 现在需要手动安装 react-intl，但可能与 umi 内置的版本冲突。因此后续需要等 umi 支持导出 createIntl，再从 umi 中引入，这样能避免版本冲突的问题。
 // 已给 umi 提 issue: https://github.com/umijs/plugins/issues/400
-import { createIntl } from 'react-intl';
-
-import appConfig from '@/constant/appConfig';
 import en_US from '@/locales/en-US';
 import zh_CN from '@/locales/zh-CN';
 import zh_TW from '@/locales/zh-TW';
+import odc from '@/plugins/odc';
+import { createIntl } from 'react-intl';
 export const defaultLocale = 'en-us';
 
 const messages = {
@@ -42,8 +41,8 @@ function getLocale() {
 }
 
 function getEnvLocale() {
-  if (appConfig.locale.getLocale) {
-    return appConfig.locale.getLocale();
+  if (odc.appConfig.locale.getLocale) {
+    return odc.appConfig.locale.getLocale();
   }
 
   return getLocale();

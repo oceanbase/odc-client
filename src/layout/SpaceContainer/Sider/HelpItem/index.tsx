@@ -1,13 +1,12 @@
 import ModalHelpAbout from '@/component/HelpMenus/components/ModalHelpAbout';
 import ModalHelpFeedBack from '@/component/HelpMenus/components/ModalHelpFeedBack';
 import VersionModal from '@/component/VersionModal';
+import odc from '@/plugins/odc';
 import modal from '@/store/modal';
+import { isClient } from '@/util/env';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Menu } from 'antd';
 import React, { useState } from 'react';
-
-import appConfig from '@/constant/appConfig';
-import { isClient } from '@/util/env';
 import DropMenu from '../DropMenu';
 
 interface IProps {}
@@ -29,7 +28,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
       title: formatMessage({ id: 'odc.Sider.HelpItem.HelpDocument' }), //帮助文档
       key: 'pdf',
       action() {
-        window.open(appConfig.docs.url || getLocalDocs());
+        window.open(odc.appConfig.docs.url || getLocalDocs());
       },
     },
 

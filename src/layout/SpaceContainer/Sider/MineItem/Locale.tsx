@@ -1,5 +1,5 @@
 import { localeList } from '@/constant';
-import appConfig from '@/constant/appConfig';
+import odc from '@/plugins/odc';
 import { defaultLocale, formatMessage } from '@/util/intl';
 import { Menu } from 'antd';
 import React from 'react';
@@ -14,7 +14,7 @@ const Locale: React.FC<IProps> = function () {
   const localeObj =
     localeList.find((item) => item.value.toLowerCase() === locale?.toLowerCase()) ||
     localeList.find((item) => item.value?.toLowerCase() === defaultLocale?.toLowerCase());
-  if (!appConfig.locale.menu) {
+  if (!odc.appConfig.locale.menu) {
     return null;
   }
   return (
