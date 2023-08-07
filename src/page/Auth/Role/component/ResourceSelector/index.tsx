@@ -1,8 +1,8 @@
 import HelpDoc from '@/component/helpDoc';
 import { IResourceOption, ResourceSelector } from '@/component/Manage/ResourceSelector';
 import { EnableRoleSystemPermission } from '@/constant';
-import appConfig from '@/constant/appConfig';
 import { IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Checkbox, Form, Space, Tabs, Tooltip, Typography } from 'antd';
@@ -175,7 +175,7 @@ const FormResourceSelector: React.FC<{
                   >
                     <Checkbox.Group
                       options={createAbleResourceOptions?.filter((item) =>
-                        appConfig.manage.user.create
+                        odc.appConfig.manage.user.create
                           ? true
                           : item.value !== IManagerResourceType.user,
                       )}

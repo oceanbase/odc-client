@@ -1,12 +1,12 @@
 import { getShadowSyncAnalysisRecordResult } from '@/common/network/task';
 import MonacoEditor from '@/component/MonacoEditor';
 import SimpleTextItem from '@/component/SimpleTextItem';
+import { ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Drawer, Row, Space, Spin } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { IShadowSyncAnalysisResult } from '../../interface';
-import { ConnectionMode } from '@/d.ts';
 
 export interface IViewRef {
   open: (record: IShadowSyncAnalysisResult['tables'][number]) => void;
