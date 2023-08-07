@@ -1,4 +1,4 @@
-import appConfig from '@/constant/appConfig';
+import odc from '@/plugins/odc';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import Alert from 'antd/lib/alert';
@@ -6,7 +6,7 @@ import Alert from 'antd/lib/alert';
 export default function RAMAuthAlertInfo() {
   return (
     <>
-      {appConfig.manage.showRAMAlert?.(setting) && (
+      {odc.appConfig.manage.showRAMAlert?.(setting) && (
         <Alert
           type="info"
           style={{ margin: '12px 0px' }}

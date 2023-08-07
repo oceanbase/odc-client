@@ -5,13 +5,12 @@ import { formatMessage } from '@/util/intl';
 
 import { getServerSystemInfo, getSystemConfig } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
-import { message } from 'antd';
-import { action, observable } from 'mobx';
-
-import appConfig from '@/constant/appConfig';
+import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
 import { initTracert } from '@/util/tracert';
+import { message } from 'antd';
+import { action, observable } from 'mobx';
 
 export const themeKey = 'odc-theme';
 
@@ -234,7 +233,7 @@ export class SettingStore {
   @action
   public async initSetting() {
     // todo
-    if (appConfig.systemConfig.default) {
+    if (odc.appConfig.systemConfig.default) {
       this.serverSystemInfo = {
         buildTime: 11,
         startTime: 22,
@@ -244,7 +243,7 @@ export class SettingStore {
     try {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
-      if (this.serverSystemInfo?.spmEnabled && appConfig.spm.enable) {
+      if (this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
         initTracert();
       }
       this.settingLoadStatus = 'done';

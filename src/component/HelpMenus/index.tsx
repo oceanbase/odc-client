@@ -1,13 +1,12 @@
 import DropdownMenu from '@/component/DropdownMenu';
-import { formatMessage, getLocalDocs } from '@/util/intl';
-import { Menu } from 'antd';
-import classnames from 'classnames';
-import React from 'react';
-
-import appConfig from '@/constant/appConfig';
+import odc from '@/plugins/odc';
 import modal from '@/store/modal';
 import { isClient } from '@/util/env';
+import { formatMessage, getLocalDocs } from '@/util/intl';
+import { Menu } from 'antd';
 import type { DropDownProps } from 'antd/lib/dropdown';
+import classnames from 'classnames';
+import React from 'react';
 import VersionModal from '../VersionModal';
 import ModalHelpAbout from './components/ModalHelpAbout';
 import ModalHelpFeedBack from './components/ModalHelpFeedBack';
@@ -48,7 +47,7 @@ export default class HelpMenus extends React.Component<
 
       key: 'pdf',
       action() {
-        window.open(appConfig.docs.url || getLocalDocs());
+        window.open(odc.appConfig.docs.url || getLocalDocs());
       },
     },
 

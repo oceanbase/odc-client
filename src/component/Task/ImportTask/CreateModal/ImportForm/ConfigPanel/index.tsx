@@ -4,8 +4,8 @@ import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import appConfig from '@/constant/appConfig';
 import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Form, FormInstance, Radio, Select } from 'antd';
@@ -202,7 +202,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
           );
         }}
       </FormItem>
-      {appConfig.connection.sys && appConfig.task.sys && (
+      {odc.appConfig.connection.sys && odc.appConfig.task.sys && (
         <SysFormItem
           tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
             if (!useSys) {

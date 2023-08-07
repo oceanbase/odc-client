@@ -1,6 +1,5 @@
-import notification from '@/util/notification';
-import { message } from 'antd';
 import { RequestOptionsInit } from 'umi-request';
+import defaultConfig from './defaultConfig';
 
 interface IODCErrorHandle {
   (
@@ -32,11 +31,6 @@ export class ODC {
     delete(url: string, data?: Record<string, any>, params?: Record<string, any>): Promise<any>;
   } = null;
 
-  public utils = {
-    notification,
-    message,
-  };
-
   public requestParamsResolver: IRequestParamsResolver;
 
   public responseJsonResolver: IResponseJsonResolver;
@@ -52,6 +46,7 @@ export class ODC {
   public setResponseJsonResolve(handle: IResponseJsonResolver) {
     this.responseJsonResolver = handle;
   }
+  public appConfig: any = defaultConfig;
 }
 
 export default new ODC();

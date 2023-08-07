@@ -6,8 +6,8 @@ import {
   getPromptExpression,
   updateAutoRule,
 } from '@/common/network/manager';
-import appConfig from '@/constant/appConfig';
 import type { IAutoAuthRule, VariableExpression } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -337,7 +337,7 @@ const FormModal: React.FC<IProps> = (props) => {
   };
 
   const helpDocUrl =
-    appConfig.docs.url || getLocalDocs('5.web-odc-manage-automatic-authorization-rules.html');
+    odc.appConfig.docs.url || getLocalDocs('5.web-odc-manage-automatic-authorization-rules.html');
 
   return (
     <>

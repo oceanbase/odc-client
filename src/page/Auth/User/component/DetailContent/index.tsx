@@ -4,9 +4,9 @@ import { canAcess } from '@/component/Acess';
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import DisplayTable from '@/component/DisplayTable';
 import RoleList, { useRoleListByIds } from '@/component/Manage/RoleList';
-import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { actionTypes, IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
@@ -171,7 +171,7 @@ const UserDetail: React.FC<{
         >
           <Space size={5}>
             <span>******</span>
-            {appConfig.manage.user.resetPwd && isUserAdmin() && (
+            {odc.appConfig.manage.user.resetPwd && isUserAdmin() && (
               <Button
                 type="link"
                 onClick={() => {
@@ -241,7 +241,7 @@ const UserDetail: React.FC<{
         </Descriptions.Item>
       </Descriptions>
       <Divider />
-      {appConfig.manage.user.delete && (
+      {odc.appConfig.manage.user.delete && (
         <Space size={5}>
           <span>
             {
@@ -262,7 +262,7 @@ const UserDetail: React.FC<{
         </Space>
       )}
 
-      {appConfig.manage.user.resetPwd && (
+      {odc.appConfig.manage.user.resetPwd && (
         <ChangePasswordModal
           title={formatMessage({
             id: 'odc.components.UserPage.component.ResetPassword',

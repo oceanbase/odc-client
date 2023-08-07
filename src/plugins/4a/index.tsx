@@ -1,4 +1,6 @@
 import { formatMessage } from '@/util/intl';
+import notification from '@/util/notification';
+import { message } from 'antd';
 import { ODC } from '../odc';
 
 enum I4AErrorCode {
@@ -14,7 +16,7 @@ export function apply(ODC: ODC) {
         /**
          * 不允许执行
          */
-        ODC.utils.notification.error({
+        notification.error({
           track: errMsg || formatMessage({ id: 'odc.plugins.4a.CurrentSqlExecutionIsNot' }), //不允许执行当前 SQL
           requestId: requestId,
         });
@@ -24,7 +26,7 @@ export function apply(ODC: ODC) {
         /**
          * 需要审批，sql默认从data.sql取，目前只有tableModify和execute
          */
-        ODC.utils.message.warning(
+        message.warning(
           errMsg || formatMessage({ id: 'odc.plugins.4a.TheCurrentSqlCannotBe' }), //当前 SQL 无法直接执行，请提交审批
         );
         return true;
@@ -33,7 +35,7 @@ export function apply(ODC: ODC) {
         /**
          * 4a 故障
          */
-        ODC.utils.notification.error({
+        notification.error({
           track:
             errMsg ||
             formatMessage({

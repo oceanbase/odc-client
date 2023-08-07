@@ -23,3 +23,7 @@ libraries/obclient/*
 public/help-doc/*
 .devcontainer.Dockerfile
 .devcontainer.yml
+src/plugins/udp
+src/plugins/pluginList.ts
+.env
+config/config.odcPlugin.js

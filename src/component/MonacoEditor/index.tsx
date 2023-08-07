@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import * as monaco from 'monaco-editor';
 
-import appConfig from '@/constant/appConfig';
+import odc from '@/plugins/odc';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
@@ -181,7 +181,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     if (domRef.current && !editorRef.current) {
       window.MonacoEnvironment = {
         getWorkerUrl(workerId: string, label: string) {
-          if (!appConfig.worker.needOrigin) {
+          if (!odc.appConfig.worker.needOrigin) {
             return `data:text/javascript;charset=utf-8,${encodeURIComponent(
               `importScripts('${window.publicPath}editor.worker.js')`,
             )}`;
