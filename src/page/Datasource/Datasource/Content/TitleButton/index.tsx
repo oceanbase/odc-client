@@ -85,22 +85,14 @@ const TitleButton: React.FC<IProps> = function (props) {
             ref={batchImportRef}
             type="button"
             action="/api/v2/datasource/datasources/previewBatchImport"
-            description={formatMessage({
-              id: 'odc.Content.TitleButton.TheFileMustContainConnection',
-            })} /*文件需包含连接类型、主机端口、租户名、数据库账号等相关连接信息，建议使用连接配置模版*/
-            templateName="connection_template.xlsx"
+            description="文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版"
+            templateName="datasource_template.xlsx"
             data={{
               visibleScope: IConnectionType.PRIVATE,
             }}
             previewContent={(data: IConnection[]) => {
               if (!data?.length) {
-                return (
-                  <Empty
-                    description={formatMessage({
-                      id: 'odc.Content.TitleButton.NoValidConnectionInformationIs',
-                    })} /*暂无有效连接信息*/
-                  />
-                );
+                return <Empty description="暂无有效数据源信息" />;
               }
               return (
                 <>

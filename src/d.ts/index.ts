@@ -2117,6 +2117,11 @@ export interface ITaskResult {
   };
 }
 
+export enum MigrationInsertAction {
+  INSERT_NORMAL = 'INSERT_NORMAL',
+  INSERT_DUPLICATE_UPDATE = 'INSERT_DUPLICATE_UPDATE',
+}
+
 export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
   name: string;
@@ -2126,6 +2131,7 @@ export interface IDataArchiveJobParameters {
   targetDataBaseId: number;
   targetDatabaseName?: string;
   targetDataSourceName?: string;
+  migrationInsertAction?: MigrationInsertAction;
   tables: {
     conditionExpression: string;
     tableName: string;
@@ -2773,6 +2779,7 @@ export interface ServerSystemInfo {
    * 是否有三方登录
    */
   ssoLoginEnabled?: boolean;
+  ssoLoginName?: string;
 }
 
 export enum ODCErrorsCode {

@@ -1,7 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Tree, TreeProps } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Card from './Card';
 
 import Delete from '../Button/Delete';
@@ -17,8 +17,8 @@ export default function SelectTransfer(props: IProps) {
   });
 
   const [sourceSearch, setSourceSearch] = useState(null);
-
   const [targetSearch, setTargetSearch] = useState(null);
+  const [indeterminate, setIndeterminate] = useState<boolean>(false);
 
   const checkedData = useMemo(() => {
     const data = [];
@@ -56,6 +56,22 @@ export default function SelectTransfer(props: IProps) {
     });
   }, [targetSearch, checkedData]);
   const count = checkedKeys?.length || 0;
+  const sourceCount = sourceDisplayTreeData?.length || 0;
+  const isSelectAll = count > 1 && count === sourceCount;
+
+  const handleSelectAll = (event) => {
+    const checked = event.target.checked;
+    let checkedKeys = [];
+    if (checked) {
+      checkedKeys = sourceDisplayTreeData?.map((item) => item?.key);
+    }
+    setCheckedKeys(checkedKeys);
+  };
+
+  useEffect(() => {
+    setIndeterminate(count > 0 && !isSelectAll);
+  }, [count, isSelectAll]);
+
   return (
     <div style={{ height: 370, display: 'flex', border: '1px solid var(--odc-border-color)' }}>
       <div
@@ -68,10 +84,14 @@ export default function SelectTransfer(props: IProps) {
         }}
       >
         <Card
+          enableSelectAll
+          checked={isSelectAll}
+          indeterminate={indeterminate}
           title={formatMessage({ id: 'odc.component.SelectTransfer.SelectUser' })} /*选择用户*/
           onSearch={(v) => {
             setSourceSearch(v);
           }}
+          onSelectAll={handleSelectAll}
         >
           <Tree
             {...props}

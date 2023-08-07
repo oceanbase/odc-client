@@ -1,5 +1,5 @@
 import { downloadTaskFlow } from '@/common/network/task';
-import { TaskExecStrategyMap } from '@/component/Task';
+import { getTaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -441,6 +441,7 @@ class TaskContent extends React.Component<any, any> {
     const transferData = !!taskConfig?.transferData;
     const haveMask = !!taskConfig?.maskingPolicy?.name;
     const riskLevel = task?.riskLevel;
+    const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
     return (
       <div>
         {haveMask && (
@@ -524,7 +525,7 @@ class TaskContent extends React.Component<any, any> {
                 id: 'odc.component.DataTransferModal.ExecutionMethod',
               })}
               /*执行方式*/
-              content={TaskExecStrategyMap[task?.executionStrategy]}
+              content={taskExecStrategyMap[task?.executionStrategy]}
             />
           </Col>
           {task?.executionStrategy === TaskExecStrategy.TIMER && (

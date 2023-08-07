@@ -19,6 +19,7 @@ class MainServer {
   public process: ChildProcess;
   public jarPath: string;
   public pluginPath: string;
+  public starterPath: string;
   public status: 'ready' | 'loading' = 'loading';
   public isKilled: boolean = false;
   static getInstance() {
@@ -61,6 +62,22 @@ class MainServer {
     }
     this.pluginPath = pluginPath;
     return pluginPath;
+  }
+
+  private getStartersPath() {
+    let _path: string;
+    // tslint:disable-next-line:prefer-conditional-expression
+    if (process.env.ODC_SERVER_STARTERS_PATH) {
+      _path = process.env.ODC_SERVER_STARTERS_PATH;
+    } else if (process.env.NODE_ENV === 'development') {
+      _path = path.join(process.cwd(), 'libraries', 'java', 'starters');
+    } else {
+      // @see https://electronjs.org/docs/all#processresourcespath
+      log.info('resourcesPath: ', process.resourcesPath);
+      _path = path.join(process.resourcesPath || '', 'libraries', 'java', 'starters');
+    }
+    this.starterPath = _path;
+    return _path;
   }
 
   private getOBClientPath() {
@@ -160,6 +177,7 @@ class MainServer {
     await this.getAvailablePort();
     this.getJarPath();
     this.getPluginsPath();
+    this.getStartersPath();
     const dbPath = getJavaDBPath();
     if (!dbPath) {
       log.error('元数据库路径获取失败！');
@@ -196,6 +214,7 @@ class MainServer {
       PATH: process.env.PATH,
       JAVA_HOME: process.env.JAVA_HOME,
       ODC_PLUGIN_DIR: this.pluginPath,
+      ODC_STARTER_DIR: this.starterPath,
       'server.port': `${this.port}`,
       // obClient 文件上传目录
       'obclient.work.dir': path.join(app.getPath('userData'), 'data'),

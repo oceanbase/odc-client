@@ -1,4 +1,4 @@
-import { TaskExecStrategyMap } from '@/component/Task';
+import { getTaskExecStrategyMap } from '@/component/Task';
 import RuleConfigTable from '@/component/Task/DataMockerTask/CreateModal/RuleConfigTable';
 import { convertServerColumnsToFormColumns } from '@/component/Task/DataMockerTask/CreateModal/RuleContent';
 import { MockStrategyTextMap } from '@/component/Task/DataMockerTask/CreateModal/type';
@@ -26,6 +26,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   const taskDetailObj: {
     tables: IServerMockTable;
   } = JSON.parse(taskDetail);
+  const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const taskDbMode = connection?.dbMode;
   let taskDetailItems;
   let columnsItems;
@@ -195,7 +196,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
           }),
 
           //执行方式
-          TaskExecStrategyMap[task?.executionStrategy],
+          taskExecStrategyMap[task?.executionStrategy],
         ],
       ],
     },
