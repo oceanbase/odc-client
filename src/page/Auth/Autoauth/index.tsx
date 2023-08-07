@@ -28,9 +28,7 @@ interface IProps {}
 
 export const actionLabelMap = {
   BindRole: formatMessage({ id: 'odc.components.AutoAuthPage.GrantRoles' }), //授予角色
-  BindPermission: formatMessage({
-    id: 'odc.components.AutoAuthPage.GrantAccessToConnections',
-  }), //授予连接访问权限
+  BindProjectRole: '授予项目角色',
 };
 
 interface IState {
@@ -322,6 +320,9 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
 
   componentDidMount() {
     this.context.loadConnections();
+    this.context.loadRoles();
+    this.context.loadProjectRoles();
+    this.context.loadProjects();
   }
 
   render() {

@@ -4,12 +4,10 @@ import {
   getAutoRuleEventList,
   geteAutoRuleExists,
   getPromptExpression,
-  getRoleList,
   updateAutoRule,
 } from '@/common/network/manager';
 import appConfig from '@/constant/appConfig';
 import type { IAutoAuthRule, VariableExpression } from '@/d.ts';
-import { IManagerRole } from '@/d.ts';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -28,9 +26,11 @@ import {
   Tooltip,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { ResourceContext } from '../../../context';
 import ConditionSelect from './conditionSelect';
 import styles from './index.less';
+import ProjectRoleSelect from './projectRoleSelect';
 
 interface IProps {
   visible: boolean;
@@ -53,16 +53,20 @@ export interface IOption {
 
 const FormModal: React.FC<IProps> = (props) => {
   const { visible, editId } = props;
+  const { roles, projectRoles, projects } = useContext(ResourceContext);
   const [hasChange, setHasChange] = useState(false);
-  const [roles, setRoles] = useState<IManagerRole[]>([]);
   const [data, setData] = useState<Partial<IAutoAuthRuleFormData>>(null);
   const [events, setEvents] = useState([]);
   const [variableExpression, setVariableExpression] = useState<VariableExpression>({});
+  const projectRoleOptions = projectRoles?.map((item) => ({
+    label: item.roleName,
+    value: item.id,
+  }));
 
-  const loadRoles = async () => {
-    const roles = await getRoleList();
-    setRoles(roles?.contents);
-  };
+  const projectOptions = projects?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
 
   const initialValue = {};
   const [form] = useForm();
@@ -116,10 +120,24 @@ const FormModal: React.FC<IProps> = (props) => {
       const { actions, eventName } = res;
       loadVariableExpression(eventName);
       const _actions = [];
-      const hasRole = actions?.some((item) => item.action === 'BindRole');
-      const roles = actions
-        ?.filter((item) => item.action === 'BindRole')
-        ?.map((item) => item?.arguments?.roleId);
+      const roles = [];
+      const projectRoles = [];
+      actions?.forEach((item) => {
+        if (item?.action === 'BindRole') {
+          if (!_actions?.includes('BindRole')) {
+            _actions.push('BindRole');
+          }
+          roles.push(item?.arguments?.roleId);
+        } else {
+          if (!_actions?.includes('BindProjectRole')) {
+            _actions.push('BindProjectRole');
+          }
+          projectRoles.push({
+            projectId: item?.arguments?.projectId,
+            roles: item?.arguments?.roles,
+          });
+        }
+      });
       const conditions = res?.conditions?.map(({ expression, object, operation, value }) => {
         return {
           expression,
@@ -128,13 +146,12 @@ const FormModal: React.FC<IProps> = (props) => {
           value,
         };
       });
-      if (hasRole) {
-        _actions.push('BindRole');
-      }
+
       const formData = {
         ...res,
         actions: _actions,
         roles,
+        projectRoles,
         conditions,
       };
       setData(formData);
@@ -147,7 +164,6 @@ const FormModal: React.FC<IProps> = (props) => {
       loadDetailData(editId);
     }
     loadEventList();
-    loadRoles();
   }, [editId, visible]);
 
   const handleClose = () => {
@@ -204,13 +220,23 @@ const FormModal: React.FC<IProps> = (props) => {
   };
 
   const getFormData = (values: Record<string, any>) => {
-    const { name, enabled, eventId, description, conditions = [], roles } = values;
+    const { name, enabled, eventId, description, conditions = [], roles, projectRoles } = values;
     const actions = [];
     roles?.forEach((id) => {
       actions.push({
         action: 'BindRole',
         arguments: {
           roleId: id,
+        },
+      });
+    });
+
+    projectRoles?.forEach(({ roles, projectId }) => {
+      actions.push({
+        action: 'BindProjectRole',
+        arguments: {
+          roles,
+          projectId,
         },
       });
     });
@@ -358,6 +384,7 @@ const FormModal: React.FC<IProps> = (props) => {
           initialValues={{
             enabled: true,
             condition: [null],
+            projectRoles: [null],
           }}
           onFieldsChange={handleEditStatus}
         >
@@ -521,6 +548,10 @@ const FormModal: React.FC<IProps> = (props) => {
 
                   value: 'BindRole',
                 },
+                {
+                  label: '授予项目角色',
+                  value: 'BindProjectRole',
+                },
               ]}
             />
           </Form.Item>
@@ -529,6 +560,7 @@ const FormModal: React.FC<IProps> = (props) => {
             {({ getFieldValue }) => {
               const action = getFieldValue('actions');
               const isBindRole = action?.includes('BindRole');
+              const isBindProjectRole = action?.includes('BindProjectRole');
               const items = [];
               if (isBindRole) {
                 items.push(
@@ -558,6 +590,16 @@ const FormModal: React.FC<IProps> = (props) => {
                       filterOption={(value, option) => {
                         return option?.label?.toLowerCase()?.indexOf(value?.toLowerCase()) >= 0;
                       }}
+                    />
+                  </Form.Item>,
+                );
+              }
+              if (isBindProjectRole) {
+                items.push(
+                  <Form.Item required label="项目角色">
+                    <ProjectRoleSelect
+                      projectOptions={projectOptions}
+                      roleOptions={projectRoleOptions}
                     />
                   </Form.Item>,
                 );
