@@ -105,6 +105,8 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: formatMessage({ id: 'odc.Project.Database.DatabaseName' }), //数据库名称
             dataIndex: 'name',
+            fixed: 'left',
+            ellipsis: true,
             render: (name, record) => {
               if (!record.existed) {
                 return (
