@@ -3,7 +3,7 @@ import LocalMenus from '@/component/LocalMenus';
 import LoginMenus from '@/component/LoginMenus';
 import RecordPopover from '@/component/RecordPopover';
 import TaskPopover from '@/component/TaskPopover';
-import appConfig from '@/constant/appConfig';
+import odc from '@/plugins/odc';
 import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
@@ -46,8 +46,8 @@ export default class GlobalHeader extends PureComponent<{
           <div className={styles.divider} />
           <HelpMenus />
           <ThemeBtn />
-          {appConfig.locale.menu ? <LocalMenus /> : null}
-          {appConfig.login.menu ? (
+          {odc.appConfig.locale.menu ? <LocalMenus /> : null}
+          {odc.appConfig.login.menu ? (
             <>
               <div className={styles.divider} />
               <LoginMenus />

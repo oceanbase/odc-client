@@ -15,9 +15,9 @@ import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import RoleList, { useRoleListByIds } from '@/component/Manage/RoleList';
 import StatusSwitch from '@/component/StatusSwitch';
-import appConfig from '@/constant/appConfig';
 import type { IManagerRole, IManagerUser, IResponseData } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
+import odc from '@/plugins/odc';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { encrypt, getFormatDateTime } from '@/util/utils';
@@ -320,8 +320,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
     const {
       userStore: { user: me },
     } = this.props;
-    const isAdmin = appConfig.manage.user.isAdmin
-      ? appConfig.manage.user.isAdmin(user)
+    const isAdmin = odc.appConfig.manage.user.isAdmin
+      ? odc.appConfig.manage.user.isAdmin(user)
       : user?.builtIn && user?.accountName === 'admin';
     const isMeUser = user?.id === me?.id;
     return isAdmin || isMeUser;
@@ -407,7 +407,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                       ),
 
                       isPrimary: true,
-                      disabled: !appConfig.manage.user.create,
+                      disabled: !odc.appConfig.manage.user.create,
                       onClick: this.handleCreate,
                     },
                     {

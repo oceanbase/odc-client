@@ -3,8 +3,8 @@ import HelpDoc from '@/component/helpDoc';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import appConfig from '@/constant/appConfig';
 import { EXPORT_CONTENT, EXPORT_TYPE, IConnection, IMPORT_ENCODING } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
@@ -485,7 +485,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
       >
         <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
       </FormItemPanel>
-      {appConfig.connection.sys && appConfig.task.sys && (
+      {odc.appConfig.connection.sys && odc.appConfig.task.sys && (
         <FormItem noStyle shouldUpdate>
           {({ getFieldValue }) => {
             const exportDbObjects = getFieldValue('exportDbObjects');

@@ -1,8 +1,10 @@
 import * as _4a from './4a';
-import * as _cloud from './cloud';
 import odc from './odc';
+import plugins from './pluginList';
 
 export default function () {
   _4a.apply(odc);
-  _cloud.apply(odc);
+  plugins?.forEach((plugin) => {
+    plugin.apply(odc);
+  });
 }
