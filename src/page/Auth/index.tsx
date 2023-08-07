@@ -1,8 +1,10 @@
 import { getConnectionList } from '@/common/network/connection';
-import { getRoleList, getUserList } from '@/common/network/manager';
+import { getResourceRoles, getRoleList, getUserList } from '@/common/network/manager';
+import { listProjects } from '@/common/network/project';
 import { canAcess, createPermission } from '@/component/Acess';
 import PageContainer, { TitleType } from '@/component/PageContainer';
-import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { actionTypes, IManagerResourceType, IResourceRole } from '@/d.ts';
+import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
 import React, { useState } from 'react';
@@ -11,6 +13,24 @@ import Autoauth from './Autoauth';
 import { ResourceContext } from './context';
 import Role from './Role';
 import User from './User';
+
+export const getProjectRoleNameByIds = (roles: IResourceRole[], roleIds: number[]) => {
+  const names = [];
+  if (roles?.length && roleIds?.length) {
+    roleIds?.forEach((id) => {
+      const name = roles?.find((item) => item?.id === id)?.roleName;
+      if (name) {
+        names?.push(name);
+      }
+    });
+  }
+  return names;
+};
+
+export const getProjectName = (projects: IProject[], projectId: number) => {
+  return projects?.find((item) => item?.id === projectId)?.name;
+};
+
 interface IProps {}
 
 const Pages = {
@@ -46,6 +66,8 @@ const Index: React.FC<IProps> = function () {
   const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
   const [resource, setPublicConnections] = useState([]);
+  const [projectRoles, setProjectRoles] = useState([]);
+  const [projects, setProjects] = useState([]);
   const { id, page } = params;
   const Component = Pages[page].component;
 
@@ -66,6 +88,16 @@ const Index: React.FC<IProps> = function () {
   const loadConnections = async () => {
     const res = await getConnectionList({});
     setPublicConnections(res?.contents);
+  };
+
+  const loadProjectRoles = async () => {
+    const res = await getResourceRoles({});
+    setProjectRoles(res?.contents);
+  };
+
+  const loadProjects = async () => {
+    const res = await listProjects(null, null, null);
+    setProjects(res?.contents);
   };
 
   const displayTabs = tabs.filter((tab) => {
@@ -90,9 +122,13 @@ const Index: React.FC<IProps> = function () {
           roles,
           users,
           resource,
+          projectRoles,
+          projects,
           loadRoles,
           loadUsers,
           loadConnections,
+          loadProjectRoles,
+          loadProjects,
         }}
       >
         <Component id={id} />

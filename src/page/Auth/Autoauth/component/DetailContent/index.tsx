@@ -1,3 +1,4 @@
+import DisplayTable from '@/component/DisplayTable';
 import { useRoleListByIds } from '@/component/Manage/RoleList';
 import Status from '@/component/Manage/Status';
 import type { IAutoAuthRule } from '@/d.ts';
@@ -7,8 +8,30 @@ import { Descriptions, Divider, Space } from 'antd';
 import React, { useContext } from 'react';
 import { actionLabelMap } from '../..';
 import { ResourceContext } from '../../../context';
+import { getProjectName, getProjectRoleNameByIds } from '../../../index';
 import styles from '../../index.less';
 import { operationOptions } from '../FormModal/conditionSelect';
+
+const getResourceColumns = () => {
+  return [
+    {
+      dataIndex: 'project',
+      title: '项目',
+      ellipsis: true,
+      width: 160,
+    },
+
+    {
+      dataIndex: 'roles',
+      title: '角色',
+      ellipsis: true,
+      width: 108,
+      render: (roles) => {
+        return roles?.join(', ');
+      },
+    },
+  ];
+};
 
 const DetailContent: React.FC<{
   data: IAutoAuthRule;
@@ -24,20 +47,26 @@ const DetailContent: React.FC<{
     conditions,
     description,
   } = data;
-  const { roles: _roles, resource: _resource } = useContext(ResourceContext);
+  const { roles: _roles, projectRoles, projects } = useContext(ResourceContext);
 
   const roleIds = actions
     ?.filter((item) => item.action === 'BindRole')
     ?.map((item) => item?.arguments?.roleId);
   const roles = useRoleListByIds(_roles, roleIds);
+  const resource = actions
+    ?.filter((item) => item.action === 'BindProjectRole')
+    ?.map((item) => ({
+      project: getProjectName(projects, item.arguments.projectId),
+      roles: getProjectRoleNameByIds(projectRoles, item.arguments.roles),
+    }));
   const actionsLabel = [];
   const hasRole = actions?.some((item) => item.action === 'BindRole');
-  const hasPermission = actions?.some((item) => item.action === 'BindPermission');
+  const hasProjectRole = actions?.some((item) => item.action === 'BindProjectRole');
   if (hasRole) {
     actionsLabel.push(actionLabelMap.BindRole);
   }
-  if (hasPermission) {
-    actionsLabel.push(actionLabelMap.BindPermission);
+  if (hasProjectRole) {
+    actionsLabel.push(actionLabelMap.BindProjectRole);
   }
 
   return (
@@ -91,7 +120,26 @@ const DetailContent: React.FC<{
         >
           {roles?.map((item) => item?.name)?.join(', ') || '-'}
         </Descriptions.Item>
+      </Descriptions>
+      {hasProjectRole && (
+        <Descriptions column={2}>
+          <Descriptions.Item span={2} style={{ paddingTop: '12px' }}>
+            授予项目角色
+          </Descriptions.Item>
+          <Descriptions.Item span={2}>
+            <DisplayTable
+              rowKey="id"
+              columns={getResourceColumns()}
+              dataSource={resource || []}
+              disablePagination
+              scroll={null}
+            />
+          </Descriptions.Item>
+        </Descriptions>
+      )}
+      <Descriptions column={1}>
         <Descriptions.Item
+          style={{ paddingTop: '12px' }}
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.Remarks',
           })} /*备注*/
