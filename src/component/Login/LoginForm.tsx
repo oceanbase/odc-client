@@ -1,3 +1,4 @@
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import {
   LockOutlined,
@@ -171,7 +172,12 @@ const Login: React.FC<ILoginFormProps> = ({
             onClick={otherLoginProps.onFinish}
             className={`${prefix}-submit-btn`}
           >
-            {formatMessage({ id: 'odc.component.Login.LoginForm.ThirdPartyLogin' }) /*第三方登录*/}
+            {
+              setting.serverSystemInfo?.ssoLoginName ||
+                formatMessage({
+                  id: 'odc.component.Login.LoginForm.ThirdPartyLogin',
+                }) /*第三方登录*/
+            }
           </Button>
         </>
       )}
