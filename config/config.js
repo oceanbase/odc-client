@@ -6,7 +6,6 @@ import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 const version = getVersion();
 console.log('git last commit: ', version);
-const umiEnv = process.env.UMI_ENV;
 /**
  * 关闭浏览器的版本提示，避免出现第三方cdn加载（阿里专有云安全需求）
  */

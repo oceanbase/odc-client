@@ -1,10 +1,3 @@
-const crypto = require('crypto');
-const path = require('path');
-const fs = require('fs');
-const md5 = crypto.createHash('md5');
-
-
-
 
 module.exports = function (type) {
   const base = {
