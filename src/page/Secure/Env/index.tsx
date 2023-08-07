@@ -1,222 +1,87 @@
 import { listEnvironments } from '@/common/network/env';
-import { listRules, statsRules } from '@/common/network/ruleset';
+import { getIntegrationList } from '@/common/network/manager';
+import { IManagerIntegration, IntegrationType } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
-import { IRule, RuleType } from '@/d.ts/rule';
-import React, { useEffect, useRef, useState } from 'react';
+import { RuleType } from '@/d.ts/rule';
+import { useLayoutEffect, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
-import { ITableLoadOptions } from '../components/SecureTable/interface';
 import InnerEnvironment from './components/InnerEnvironment';
+import { EnvironmentContext } from './EnvironmentContext';
 
-export function getEnvTypeList(env: IEnvironment): {
+// 从Environment数组中生成Sider中的Item数据
+function genEnv(env: IEnvironment): {
   value: number;
+  origin: IEnvironment;
   label: string;
-  envId: number;
-  rulesetId: number;
-  style: string;
-  description: string;
 } {
   return {
     value: env.id,
+    origin: env,
     label: env.name,
-    envId: env.id,
-    rulesetId: env.rulesetId,
-    style: env.style,
-    description: env.description,
   };
 }
 
-const Environment: React.FC<{}> = ({}) => {
+const Environment = () => {
   const [selectedItem, setSelectedItem] = useState<number>();
   const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(false);
   const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
-  const [siderLoading, setSiderLoading] = useState<boolean>(false);
-  const [tableLoading, setTableLoading] = useState<boolean>(false);
-  const [subTypeFilters, setSubTypeFilters] = useState([]);
-  const [listParams, setListParams] = useState(null);
-  const loadParams = useRef(null);
-  const [supportedDialectTypeFilters, setSupportedDialectTypeFilters] = useState([]);
-  const [rules, setRules] = useState<IRule[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<{
-    value: number;
-    label: string;
-    envId: number;
-    rulesetId: number;
-    style: string;
-    description: string;
-  }>();
+  const [currentEnvironment, setCurrentEnviroment] = useState<IEnvironment>();
+  const [integrations, setIntegrations] = useState<IManagerIntegration[]>([]);
+  const [integrationsIdMap, setIntegrationsIdMap] = useState<{ [key in string]: string }>();
 
-  const handleInitRules = async (id: number, ruleType: RuleType) => {
-    setTableLoading(true);
-    const rulesets = await listRules(id, { types: ruleType });
-    const rawData = await statsRules(id, ruleType);
-    setSubTypeFilters(
-      rawData?.subTypes?.distinct?.map((d) => ({
-        text: d,
-        value: d,
-      })),
-    );
-    setSupportedDialectTypeFilters(
-      rawData?.supportedDialectTypes?.distinct?.map((d) => ({
-        text: d,
-        value: d,
-      })),
-    );
-    setRules(rulesets?.contents);
-    setTableLoading(false);
-  };
-
-  const handleItemClick = (item: {
-    value: number;
-    label: string;
-    envId: number;
-    rulesetId: number;
-    style: string;
-    description: string;
-  }) => {
-    setSelectedItem(item?.envId);
-    setSelectedRecord(item);
+  const handleItemClick = (item: { value: number; origin: IEnvironment; label: string }) => {
+    setSelectedItem(item?.value);
+    setCurrentEnviroment(item?.origin);
     setRuleType(RuleType.SQL_CHECK);
   };
 
-  const initSiderData = async (envs?: IEnvironment[]) => {
-    setSiderLoading(true);
-    const resData = envs.map(getEnvTypeList).sort((a, b) => a?.envId - b?.envId);
-    resData?.length > 0 && handleItemClick(resData[0]);
-    resData?.length > 0 && setSiderItemList(resData);
-    setSiderLoading(false);
-  };
-
-  const onLoad = async (args?: ITableLoadOptions) => {
+  const initEnvironment = async () => {
+    setLoading(true);
     const envs = await listEnvironments();
-    initSiderData(envs);
+    const resData = envs.map(genEnv).sort((a, b) => a?.value - b?.value);
+    resData?.length > 0 && setSiderItemList(resData);
+    resData?.length > 0 && handleItemClick(resData?.[0]);
+    setLoading(false);
   };
-  const exSearch = async (args: ITableLoadOptions) => {
-    const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { subTypes, supportedDialectTypes, level, name = [] } = filters ?? {};
-    const { column, order } = sorter ?? {};
-    const { current = 1 } = pagination ?? {};
-    const params = {
-      sort: column?.dataIndex,
-      page: current,
-      size: pageSize,
-    };
-    params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
 
-    setTableLoading(true);
-    const rulesets = await listRules(selectedRecord.rulesetId, {
-      types: ruleType,
-      subTypes,
-      supportedDialectTypes,
-      level,
-      ...params,
+  const loadIntegrations = async () => {
+    const integrations = await getIntegrationList({
+      type: IntegrationType.SQL_INTERCEPTOR,
     });
-    const rawData = await statsRules(selectedRecord.rulesetId, ruleType);
-    setSubTypeFilters(
-      rawData?.subTypes?.distinct?.map((d) => ({
-        text: d,
-        value: d,
-      })),
-    );
-    setSupportedDialectTypeFilters(
-      rawData?.supportedDialectTypes?.distinct?.map((d) => ({
-        text: d,
-        value: d,
-      })),
-    );
-    if (Array.isArray(name) && name?.length === 1) {
-      setRules(
-        rulesets?.contents?.filter((content) =>
-          content?.metadata?.name?.toLowerCase()?.includes(name?.[0]?.toLowerCase()),
-        ),
-      );
-    } else {
-      setRules(rulesets?.contents);
-    }
-    setTableLoading(false);
-  };
-  const resetPartialFilterParams = () => {
-    // loadParams.current = null;
-    // setListParams(null);
-  };
-  const exReload = async (args: ITableLoadOptions) => {
-    loadParams.current = args;
-    const filters = {
-      ...args?.filters,
-    };
-    setListParams({
-      ...args,
-      filters,
+    const map = {};
+    integrations?.contents?.forEach((content) => {
+      map[content?.id] = content?.name;
     });
-    if (selectedRecord && selectedRecord.value) {
-      const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
-      const { subTypes, supportedDialectTypes, level } = filters ?? {};
-      const { column, order } = sorter ?? {};
-      const { current = 1 } = pagination ?? {};
-      const params = {
-        sort: column?.dataIndex,
-        page: current,
-        size: pageSize,
-      };
-      params.sort = column
-        ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}`
-        : undefined;
+    setIntegrationsIdMap(map);
+    setIntegrations(integrations?.contents?.filter((content) => content?.enabled));
+  };
 
-      setTableLoading(true);
-      const rulesets = await listRules(selectedRecord?.value, {
-        types: ruleType,
-        subTypes,
-        supportedDialectTypes,
-        level,
-        ...params,
-      });
-      const rawData = await statsRules(selectedRecord?.value, ruleType);
-      setSubTypeFilters(
-        rawData?.subTypes?.distinct?.map((d) => ({
-          text: d,
-          value: d,
-        })),
-      );
-      setSupportedDialectTypeFilters(
-        rawData?.supportedDialectTypes?.distinct?.map((d) => ({
-          text: d,
-          value: d,
-        })),
-      );
-      setRules(rulesets?.contents);
-      setTableLoading(false);
-    }
-  };
-  useEffect(() => {
-    onLoad();
+  useLayoutEffect(() => {
+    initEnvironment();
+    loadIntegrations();
   }, []);
+
   return (
     <SecureLayout>
       <SecureSider
-        loading={siderLoading}
+        loading={loading}
         siderItemList={siderItemList}
         selectedItem={selectedItem}
         handleItemClick={handleItemClick}
       />
-      <InnerEnvironment
-        {...{
-          rules,
-          listParams,
-          resetPartialFilterParams,
-          selectedRecord,
-          handleInitRules,
-          tableLoading,
-          onLoad,
-          exSearch,
-          ruleType,
-          setRuleType,
-          exReload,
-          subTypeFilters,
-          supportedDialectTypeFilters,
+      <EnvironmentContext.Provider
+        value={{
+          currentEnvironment,
+          integrations,
+          integrationsIdMap,
         }}
-      />
+      >
+        <InnerEnvironment ruleType={ruleType} setRuleType={setRuleType} />
+      </EnvironmentContext.Provider>
     </SecureLayout>
   );
 };
-
 export default Environment;
