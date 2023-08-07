@@ -2779,6 +2779,7 @@ export interface ServerSystemInfo {
    * 是否有三方登录
    */
   ssoLoginEnabled?: boolean;
+  ssoLoginName?: string;
 }
 
 export enum ODCErrorsCode {

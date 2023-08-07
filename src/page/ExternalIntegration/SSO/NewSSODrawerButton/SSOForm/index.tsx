@@ -170,7 +170,7 @@ export default inject('userStore')(
 
       function updateRegistrationId(name) {
         var md5Hex = md5(`${name || ''}`);
-        const id = `${userStore?.organizationId}:${md5Hex}`;
+        const id = `${userStore?.organizationId}-${md5Hex}`;
         setRegistrationId(id);
         form.setFieldsValue({
           ssoParameter: {
@@ -180,7 +180,7 @@ export default inject('userStore')(
       }
       const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
         userStore?.organizationId
-      }:test`;
+      }-test`;
       return (
         <Form
           layout="vertical"
