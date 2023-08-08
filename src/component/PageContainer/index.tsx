@@ -74,7 +74,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
           />
         )}
       </div>
-      {tabList?.length && (
+      {tabList?.length > 0 && (
         <Tabs
           activeKey={tabActiveKey}
           tabBarExtraContent={tabBarExtraContent}
