@@ -6,7 +6,7 @@ import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import { Button, Divider } from 'antd';
 import memoizeOne from 'memoize-one';
 import React, { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 import EditableTable from '../EditableTable';
 import { WrapSelectEditor } from '../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';

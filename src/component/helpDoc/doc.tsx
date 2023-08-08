@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 
 const dataArchiveFilterDoc = formatMessage({ id: 'odc.component.helpDoc.doc.YouCanUseSqlWhere' });
 

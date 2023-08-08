@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 // compatible

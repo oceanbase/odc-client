@@ -2,7 +2,7 @@ import { formatMessage, getLocalImg } from '@/util/intl';
 import { LoadingOutlined, LoginOutlined } from '@ant-design/icons';
 import { Input, message, Modal } from 'antd';
 import React, { useState } from 'react';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 import LogoOB from '@/svgr/LogoOB.svg';
 

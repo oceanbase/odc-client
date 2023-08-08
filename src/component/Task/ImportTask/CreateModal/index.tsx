@@ -19,7 +19,7 @@ import { formatBytes, safeParseJson } from '@/util/utils';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 import ImportForm from './ImportForm';
 import CsvProvider from './ImportForm/CsvProvider';
 import FormConfigContext from './ImportForm/FormConfigContext';

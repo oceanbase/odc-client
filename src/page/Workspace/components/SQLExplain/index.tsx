@@ -7,7 +7,7 @@ import { Checkbox, Empty, Modal, Radio, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 import { getSqlExplainColumns } from './column';
 import styles from './index.less';
 import { SQLExplainProps, SQLExplainState, TAB_NAME } from './interface';

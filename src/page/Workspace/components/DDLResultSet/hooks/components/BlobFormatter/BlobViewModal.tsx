@@ -12,7 +12,7 @@ import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { getLocale } from 'umi';
+import { getLocale } from '@umijs/max';
 import ResultContext from '../../../ResultContext';
 import HexEditor from '../HexEditor';
 import styles from './index.less';
@@ -37,7 +37,9 @@ const maxTextSize = 1024 * 200;
 const maxReadyonlyTextSize = 1024 * 1024 * 2;
 const len = 500;
 
-type Request = (offset: number) => Promise<{
+type Request = (
+  offset: number,
+) => Promise<{
   content: string;
   size: number;
 }>;

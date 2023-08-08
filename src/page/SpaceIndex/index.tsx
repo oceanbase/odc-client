@@ -5,7 +5,7 @@ import Icon from '@ant-design/icons';
 import { Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 import styles from './index.less';
 
 import { SpaceType } from '@/d.ts/_index';

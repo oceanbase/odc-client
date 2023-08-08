@@ -2,7 +2,7 @@ import { getTaskDetail } from '@/common/network/task';
 import { TaskPageType } from '@/d.ts';
 import taskStore from '@/store/task';
 import { isNil } from 'lodash';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 export interface ITaskAction {
   action: 'openTask';

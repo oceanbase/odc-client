@@ -14,7 +14,7 @@ import { checkImportFile, getFileTypeWithImportType, getSizeLimitTip } from '../
 import { DbObjectTypeTextMap } from '@/constant/label';
 import login from '@/store/login';
 import { isClient } from '@/util/env';
-import { getLocale } from 'umi';
+import { getLocale } from '@umijs/max';
 import FormContext from '../FormContext';
 import styles from './index.less';
 
@@ -282,9 +282,9 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       </FormItem>
       <FormItem noStyle shouldUpdate>
         {({ getFieldValue }) => {
-          const importObjects = (
-            getFieldValue('importFileName') as ImportFormData['importFileName']
-          )?.[0]?.response?.data?.importObjects;
+          const importObjects = (getFieldValue(
+            'importFileName',
+          ) as ImportFormData['importFileName'])?.[0]?.response?.data?.importObjects;
           if (importObjects) {
             const data = Object.entries(importObjects).map(([dataType, list]) => {
               const ObjIcon = DbObjsIcon[dataType];

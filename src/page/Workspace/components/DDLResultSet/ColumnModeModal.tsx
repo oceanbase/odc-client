@@ -1,7 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { Button, Modal } from 'antd';
 import React, { useContext, useMemo } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 
 import type { ResultSetColumn } from '@/d.ts';
 import { LeftSquareOutlined, RightSquareOutlined } from '@ant-design/icons';

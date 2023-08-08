@@ -2,7 +2,7 @@ import type { ODCErrorsCode } from '@/d.ts';
 import loginStore from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { Modal } from 'antd';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 const lockStore = {
   PermissionChanged: null,

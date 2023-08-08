@@ -13,7 +13,7 @@ import {
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';

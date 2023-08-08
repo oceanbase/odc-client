@@ -8,7 +8,7 @@ import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
 import React, { useState } from 'react';
-import { history, useParams } from 'umi';
+import { history, useParams } from '@umijs/max';
 import Autoauth from './Autoauth';
 import { ResourceContext } from './context';
 import Role from './Role';

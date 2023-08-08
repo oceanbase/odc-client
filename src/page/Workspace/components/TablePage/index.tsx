@@ -8,7 +8,7 @@ import { Layout, Radio, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 import { ITableModel } from '../CreateTable/interface';
 import TableColumns from './Columns';
 import TableConstraints from './Constraints';

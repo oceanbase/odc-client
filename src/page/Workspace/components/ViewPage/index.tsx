@@ -20,7 +20,7 @@ import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Layout, message, Radio, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 import DDLResultSet from '../DDLResultSet';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
@@ -346,8 +346,15 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
       session,
       sessionManagerStore,
     } = this.props;
-    const { topTab, propsTab, view, dataLoading, resultSet, showExportResuleSetModal, formated } =
-      this.state;
+    const {
+      topTab,
+      propsTab,
+      view,
+      dataLoading,
+      resultSet,
+      showExportResuleSetModal,
+      formated,
+    } = this.state;
     const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return (

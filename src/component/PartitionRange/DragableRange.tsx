@@ -1,7 +1,7 @@
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Col, Input, Row } from 'antd';
 import React from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import classNames from 'classnames';
 import { ISinglePartitionRule } from '.';

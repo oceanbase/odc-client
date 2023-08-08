@@ -14,7 +14,7 @@ import {
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';

@@ -11,7 +11,7 @@ import { useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 const Login: React.FC<{
   userStore: UserStore;

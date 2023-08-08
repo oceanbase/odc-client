@@ -7,7 +7,7 @@ import { generateUniqKey } from '@/util/utils';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
 import moment from 'moment';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 export interface ICustomConnectAction {
   action: 'newTempSession';
   data: IRemoteCustomConnectionData | string;

@@ -16,7 +16,7 @@ import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Component } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 

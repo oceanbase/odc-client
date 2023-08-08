@@ -4,7 +4,7 @@ import { SyncOutlined } from '@ant-design/icons';
 import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid';
 import memoizeOne from 'memoize-one';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 import EditableTable, { RowType } from '../EditableTable';
 import { WrapAutoCompleteEditor } from '../EditableTable/Editors/AutoComplete';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';

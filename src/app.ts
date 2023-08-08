@@ -1,5 +1,5 @@
 import React from 'react';
-import { setLocale } from 'umi';
+import { setLocale } from '@umijs/max';
 import { initMetaStore } from './common/metaStore';
 import DndHTML5Provider from './component/DndHTML5Provider';
 import registerPlugins from './plugins/register';

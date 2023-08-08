@@ -15,7 +15,7 @@ import { Button, Collapse, Layout, message, Tabs } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import { PropsTab, TopTab } from '../ViewPage';

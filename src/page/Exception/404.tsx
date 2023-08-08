@@ -1,4 +1,4 @@
-import { getLocale, Link } from 'umi';
+import { getLocale, Link } from '@umijs/max';
 
 import Exception from '@/component/Exception/index';
 import { formatMessage } from '@/util/intl';
