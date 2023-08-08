@@ -1,4 +1,5 @@
 import { getShadowSyncAnalysisResult } from '@/common/network/task';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import {
   ErrorStrategy,
   IShadowSyncAnalysisResult,
@@ -81,17 +82,9 @@ export function getItems(
   const riskLevel = task?.riskLevel;
   const connectionMode = task?.connection?.dbMode;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
-  const riskItem: [string, string] = [
+  const riskItem = [
     formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
-    formatMessage(
-      {
-        id: 'odc.component.DetailModal.dataMocker.Maxrisklevel',
-      },
-
-      { maxRiskLevel: riskLevel },
-    ),
-
-    //风险等级
+    <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
   ];
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
   const timerExecutionItem: [string, string] = [

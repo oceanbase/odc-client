@@ -1,4 +1,5 @@
 import { downloadTaskFlow } from '@/common/network/task';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
@@ -503,15 +504,7 @@ class TaskContent extends React.Component<any, any> {
                   id: 'odc.component.DataTransferModal.RiskLevel',
                 })}
                 /*风险等级*/ content={
-                  formatMessage(
-                    {
-                      id: 'odc.component.DataTransferModal.Maxrisklevel',
-                    },
-
-                    { maxRiskLevel: riskLevel },
-                  )
-
-                  //`${maxRiskLevel}级`
+                  <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
                 }
               />
             )}

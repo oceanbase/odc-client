@@ -1,10 +1,10 @@
 import { createRiskDetectRules, updateRiskDetectRule } from '@/common/network/riskDetectRule';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
-import RiskLevelLabel from '../../components/RiskLevelLabel';
 import { SelectItemProps } from '../interface';
 import ConditionGroup from './ConditionGroup';
 

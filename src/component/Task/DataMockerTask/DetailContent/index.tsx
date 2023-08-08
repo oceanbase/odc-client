@@ -1,3 +1,4 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import RuleConfigTable from '@/component/Task/DataMockerTask/CreateModal/RuleConfigTable';
 import { convertServerColumnsToFormColumns } from '@/component/Task/DataMockerTask/CreateModal/RuleContent';
@@ -155,7 +156,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   }
   const res: {
     sectionName?: string;
-    textItems: [string, string | number, number?][];
+    textItems: any[];
     /**
      * 自定义渲染逻辑
      */
@@ -229,17 +230,10 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
 
   if (hasFlow) {
     const riskLevel = task?.riskLevel;
-    const flowInfo: [string, string | number, number?][] = [
+    const flowInfo = [
       [
         formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
-        formatMessage(
-          {
-            id: 'odc.component.DetailModal.dataMocker.Maxrisklevel',
-          },
-
-          { maxRiskLevel: riskLevel },
-        ),
-        //风险等级
+        <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
       ],
     ];
 
