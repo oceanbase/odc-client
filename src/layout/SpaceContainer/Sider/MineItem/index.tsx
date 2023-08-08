@@ -20,9 +20,16 @@ interface IProps {
   userStore?: UserStore;
   settingStore?: SettingStore;
   modalStore?: ModalStore;
+  enableTheme?: boolean;
 }
 
-const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore, modalStore }) {
+const MineItem: React.FC<IProps> = function ({
+  children,
+  userStore,
+  settingStore,
+  modalStore,
+  enableTheme,
+}) {
   const { user } = userStore;
   const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const [changeLockPwdModalVisible, setChangeLockPwdModalVisible] = useState(false);
@@ -116,7 +123,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
               </Menu.Item>
             ) : null}
             <Locale />
-            <Theme />
+            {enableTheme ? <Theme /> : null}
             <Menu.Item key={'config'} onClick={onConfigClick}>
               {
                 formatMessage({

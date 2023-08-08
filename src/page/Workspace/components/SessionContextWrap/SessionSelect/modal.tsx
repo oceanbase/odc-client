@@ -78,10 +78,10 @@ export default inject('userStore')(
         }
         if (context?.from === 'datasource') {
           fetchDatasource(login.isPrivateSpace());
-          fetchDatabase(null, sessionDatabase?.dataSource?.id, 1, 9999);
+          fetchDatabase(null, sessionDatabase?.dataSource?.id, 1, 9999, null, null, null, true);
         } else {
           fetchProjects(null, 1, 9999);
-          fetchDatabase(sessionDatabase?.project?.id, null, 1, 9999);
+          fetchDatabase(sessionDatabase?.project?.id, null, 1, 9999, null, null, null, true);
         }
       }
     }, [visible]);
@@ -110,7 +110,7 @@ export default inject('userStore')(
                 loading={allDatasourceLoading}
                 showSearch
                 onChange={(value) => {
-                  fetchDatabase(null, value, 1, 9999);
+                  fetchDatabase(null, value, 1, 9999, null, null, null, true);
                   form.setFieldsValue({
                     database: null,
                   });
@@ -149,11 +149,29 @@ export default inject('userStore')(
                     fetchProjects(null, 1, 9999, false);
 
                     form.getFieldValue('project') &&
-                      fetchDatabase(form.getFieldValue('project'), null, 1, 9999);
+                      fetchDatabase(
+                        form.getFieldValue('project'),
+                        null,
+                        1,
+                        9999,
+                        null,
+                        null,
+                        null,
+                        true,
+                      );
                   } else {
                     fetchDatasource(login.isPrivateSpace());
                     form.getFieldValue('datasource') &&
-                      fetchDatabase(null, form.getFieldValue('datasource'), 1, 9999);
+                      fetchDatabase(
+                        null,
+                        form.getFieldValue('datasource'),
+                        1,
+                        9999,
+                        null,
+                        null,
+                        null,
+                        true,
+                      );
                   }
                 }}
                 optionType="button"
@@ -192,7 +210,7 @@ export default inject('userStore')(
                           showSearch
                           loading={projectLoading}
                           onChange={(value) => {
-                            fetchDatabase(value, null, 1, 9999);
+                            fetchDatabase(value, null, 1, 9999, null, null, null, true);
                             form.setFieldsValue({
                               database: null,
                             });
@@ -249,7 +267,7 @@ export default inject('userStore')(
                               loading={datasourceLoading}
                               showSearch
                               onChange={(value) => {
-                                fetchDatabase(null, value, 1, 9999);
+                                fetchDatabase(null, value, 1, 9999, null, null, null, true);
                                 form.setFieldsValue({
                                   database: null,
                                 });

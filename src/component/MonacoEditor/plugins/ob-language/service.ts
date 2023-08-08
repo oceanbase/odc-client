@@ -49,9 +49,25 @@ export function getModelService(
          */
         await sessionFunc()?.queryIdentities();
         const isTable = db?.tables?.includes(realTableName);
+        /**
+         * 虚表，需要单独识别处理
+         */
+        const isVirtualTable = realTableName?.includes('__all_virtual_');
         const isView = db?.views?.includes(realTableName);
         if (isTable) {
           const tableInfo = await getTableInfo(realTableName, dbName, sessionFunc()?.sessionId);
+          // 表
+          return tableInfo?.columns?.map((column: TableColumn) => ({
+            columnName: column.name,
+            columnType: column.type,
+          }));
+        }
+        if (isVirtualTable) {
+          const tableInfo = await getTableInfo(
+            realTableName,
+            'oceanbase',
+            sessionFunc()?.sessionId,
+          );
           // 表
           return tableInfo?.columns?.map((column: TableColumn) => ({
             columnName: column.name,
