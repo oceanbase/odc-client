@@ -7,6 +7,7 @@ fs.writeFileSync(
     pluginInfoFilePath,
     `export default [];`
 )
+fs.writeFileSync(path.join(process.cwd(), '.env'), '');
 if (!pluginPath) {
     return;
 }
