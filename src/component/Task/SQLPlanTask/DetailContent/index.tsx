@@ -1,3 +1,4 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { operationTypeMap } from '@/component/Task/component/CommonDetailModal/TaskOperationRecord';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
@@ -69,7 +70,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
             })}
             /*风险等级*/
           >
-            {task?.riskLevel}
+            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
           </Descriptions.Item>
         )}
 

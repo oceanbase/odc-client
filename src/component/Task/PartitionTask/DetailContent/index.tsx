@@ -1,3 +1,4 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import {
   enabledInspectTriggerStrategy,
@@ -90,7 +91,9 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
           label={formatMessage({
             id: 'odc.component.DetailModal.partition.RiskLevel',
           })}
-          /*风险等级*/ content={task?.riskLevel}
+          /*风险等级*/ content={
+            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
+          }
         />
       )}
       <SimpleTextItem

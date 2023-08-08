@@ -1,3 +1,4 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
@@ -73,7 +74,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
               id: 'odc.DataArchiveTask.DetailContent.RiskLevel',
             })} /*风险等级*/
           >
-            {task?.riskLevel}
+            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
           </Descriptions.Item>
         )}
       </Descriptions>
