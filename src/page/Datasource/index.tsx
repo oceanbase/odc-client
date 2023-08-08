@@ -17,6 +17,7 @@ import {
 import { actionTypes } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
+import setting from '@/store/setting';
 import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
@@ -104,6 +105,9 @@ const tabs = [
   {
     tab: formatMessage({ id: 'odc.page.Datasource.CommandLineWindow' }), //命令行窗口
     key: IPageType.Datasource_obclient,
+    isHide() {
+      return !setting.enableOBClient;
+    },
   },
 ];
 
@@ -178,7 +182,7 @@ const Index: React.FC<IProps> = function () {
         onChange: handleSelectChange,
       }}
       icon={OBSvg}
-      tabList={tabs}
+      tabList={tabs?.filter((tab) => !tab.isHide?.())}
       tabActiveKey={page}
       tabBarExtraContent={
         <ExtraContent

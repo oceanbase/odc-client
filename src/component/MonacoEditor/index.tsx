@@ -178,6 +178,16 @@ const MonacoEditor: React.FC<IProps> = function (props) {
   }
 
   useEffect(() => {
+    if (
+      editorRef.current &&
+      language &&
+      language !== editorRef.current?.getModel().getLanguageId()
+    ) {
+      monaco.editor.setModelLanguage(editorRef.current?.getModel(), language || 'sql');
+    }
+  }, [language]);
+
+  useEffect(() => {
     if (domRef.current && !editorRef.current) {
       window.MonacoEnvironment = {
         getWorkerUrl(workerId: string, label: string) {

@@ -106,7 +106,7 @@ function EditPLParamasModal({
     ];
   }
   const columns = getColumns();
-  const dataSource = params.filter(
+  const dataSource = params?.filter(
     (param) => param.paramMode && /IN/.test(param.paramMode.toUpperCase()),
   );
 

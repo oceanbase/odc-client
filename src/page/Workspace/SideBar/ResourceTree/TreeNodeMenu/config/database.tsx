@@ -1,6 +1,8 @@
 import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
+import login from '@/store/login';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -38,6 +40,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({ id: 'odc.TreeNodeMenu.config.database.OpenTheCommandLineWindow' }), //打开命令行窗口
       ],
+      isHide(_, node) {
+        return !login.isPrivateSpace() || !setting.enableOBClient;
+      },
       ellipsis: true,
       run(session, node) {
         const database: IDatabase = node.data;
