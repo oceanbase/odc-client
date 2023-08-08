@@ -331,7 +331,7 @@ export class SQLStore {
     if (plSchema.plType === PLType.PROCEDURE) {
       res = await request.put(`/api/v1/pl/callProcedure/${sid}`, {
         data: {
-          procedure: plSchema?.procedure,
+          procedure: { ...plSchema?.procedure, params: plSchema?.params },
           anonymousBlockDdl,
         },
         params: {
@@ -341,7 +341,7 @@ export class SQLStore {
     } else if (plSchema.plType === PLType.FUNCTION) {
       res = await request.put(`/api/v1/pl/callFunction/${sid}`, {
         data: {
-          function: plSchema?.function,
+          function: { ...plSchema?.function, params: plSchema?.params },
           anonymousBlockDdl,
         },
         params: {
