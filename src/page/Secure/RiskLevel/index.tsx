@@ -1,5 +1,6 @@
 import { listRiskLevels } from '@/common/network/riskLevel';
 import { Acess, createPermission } from '@/component/Acess';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { formatMessage } from '@/util/intl';
@@ -7,7 +8,6 @@ import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { inject, observer } from 'mobx-react';
 import { useRef, useState } from 'react';
-import RiskLevelLabel from '../components/RiskLevelLabel';
 import SecureTable from '../components/SecureTable';
 import {
   CommonTableBodyMode,

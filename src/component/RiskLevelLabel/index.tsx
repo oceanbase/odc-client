@@ -1,5 +1,5 @@
 import { Tag } from 'antd';
-import { RiskLevelMap } from '../../interface';
+import { RiskLevelMap } from '../../page/Secure/interface';
 import styles from './index.less';
 
 const RiskLevelLabel: React.FC<{ level?: number; color: string; content?: string }> = ({

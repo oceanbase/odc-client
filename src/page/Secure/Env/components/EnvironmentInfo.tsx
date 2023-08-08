@@ -1,6 +1,6 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { Descriptions, Space } from 'antd';
-import RiskLevelLabel from '../../components/RiskLevelLabel';
 import styles from './index.less';
 
 const EnvironmentInfo = ({ label, style, description }) => {
