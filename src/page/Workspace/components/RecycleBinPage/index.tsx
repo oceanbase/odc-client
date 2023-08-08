@@ -419,7 +419,7 @@ class RecycleBin extends Component<
                     id: 'workspace.window.session.button.search',
                   })}
                   onSearch={this.handleSearch}
-                  onChange={(e) => this.handleSearch(e.target.value)}
+                  // onChange={(e) => this.handleSearch(e.target.value)}
                   size="small"
                   style={{
                     height: 24,
