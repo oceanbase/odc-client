@@ -4,7 +4,7 @@ import { ODCErrorsCode } from '@/d.ts';
 import odc from '@/plugins/odc';
 import loginStore from '@/store/login';
 import { message } from 'antd';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 import { formatMessage } from '../intl';
 import notification from '../notification';
 

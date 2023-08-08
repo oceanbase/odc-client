@@ -2,7 +2,7 @@ import { isObject } from 'lodash';
 import { join } from 'path';
 import pathToRegexp from 'path-to-regexp';
 import { parse } from 'query-string';
-import { IRoute } from 'umi';
+import { IRoute } from '@umijs/max';
 
 interface TracertRoutePath {
   title: string;

@@ -1,6 +1,6 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Component } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import styles from './index.less';
 

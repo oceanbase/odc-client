@@ -5,7 +5,7 @@ import { Button, Upload } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { getLocale } from 'umi';
+import { getLocale } from '@umijs/max';
 
 interface IProps {
   label?: string;

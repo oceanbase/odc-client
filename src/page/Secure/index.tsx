@@ -13,7 +13,7 @@ import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { history, useParams } from 'umi';
+import { history, useParams } from '@umijs/max';
 import Approval from './Approval';
 import { ManageContext } from './context';
 import Env from './Env';

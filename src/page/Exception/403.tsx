@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { getLocale } from 'umi';
+import { getLocale } from '@umijs/max';
 
 import Exception from '@/component/Exception/index';
 import login from '@/store/login';

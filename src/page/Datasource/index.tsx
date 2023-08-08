@@ -4,7 +4,7 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from '@umijs/max';
 import { Button, Dropdown, message, Modal, Space } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { history, useParams } from 'umi';
+import { history, useParams } from '@umijs/max';
 import Info from './Info';
 import Recycle from './Recycle';
 import Session from './Session';

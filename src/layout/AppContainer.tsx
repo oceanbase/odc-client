@@ -18,7 +18,7 @@ import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { ContainerQuery } from 'react-container-query';
-import { Helmet, history, Outlet } from 'umi';
+import { Helmet, history, Outlet } from '@umijs/max';
 import Context from './MenuContext';
 import StoreProvider from './StoreProvider';
 

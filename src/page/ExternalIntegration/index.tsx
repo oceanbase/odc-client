@@ -2,7 +2,7 @@ import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
 import React from 'react';
-import { history, useParams } from 'umi';
+import { history, useParams } from '@umijs/max';
 import SqlInterceptor from './SqlInterceptor';
 import SSO from './SSO';
 

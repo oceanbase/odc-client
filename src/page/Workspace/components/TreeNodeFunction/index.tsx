@@ -3,7 +3,7 @@ import Icon from '@ant-design/icons';
 import { Menu } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { PureComponent } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import FunctionSvg from '@/svgr/Function.svg';
 

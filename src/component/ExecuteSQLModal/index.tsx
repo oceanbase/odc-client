@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 // compatible
 import { runSQLLint } from '@/common/network/sql';
 import { ConnectionMode } from '@/d.ts';

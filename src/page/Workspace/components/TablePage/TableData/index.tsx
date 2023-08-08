@@ -16,7 +16,7 @@ import { message, Spin } from 'antd';
 import { isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { formatMessage } from 'umi';
+import { formatMessage } from '@umijs/max';
 import DDLResultSet from '../../DDLResultSet';
 import { wrapRow } from '../../DDLResultSet/util';
 const GLOBAL_HEADER_HEIGHT = 40;

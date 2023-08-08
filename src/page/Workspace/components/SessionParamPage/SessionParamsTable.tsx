@@ -18,7 +18,7 @@ import { Alert, Input, Layout, message, Spin } from 'antd';
 import { debounce } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from '@umijs/max';
 import EditableTable, { RowType } from '../EditableTable';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
@@ -39,8 +39,14 @@ function SessionParamsTable(props: {
   sessionManagerStore?: SessionManagerStore;
   showDatasource?: boolean;
 }) {
-  const { sessionManagerStore, connectionPropertyType, sessionId, tip, bordered, showDatasource } =
-    props;
+  const {
+    sessionManagerStore,
+    connectionPropertyType,
+    sessionId,
+    tip,
+    bordered,
+    showDatasource,
+  } = props;
   const [listLoading, setListLoading] = useState(false);
   const [showExecuteSQLModal, setShowExecuteSQLModal] = useState(false);
   const [updateDML, setupdateDML] = useState('');

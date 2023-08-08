@@ -4,7 +4,7 @@ import { defaultLocale } from '@/util/intl';
 import { GlobalOutlined } from '@ant-design/icons';
 import { Menu, Space } from 'antd';
 import React from 'react';
-import { getLocale, setLocale } from 'umi';
+import { getLocale, setLocale } from '@umijs/max';
 
 interface IProos {
   showIcon?: boolean;

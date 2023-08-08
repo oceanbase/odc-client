@@ -20,7 +20,7 @@ import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'umi';
+import { Link, useLocation } from '@umijs/max';
 import HelpItem from './HelpItem';
 import styles from './index.less';
 import Logo from './Logo';

@@ -3,7 +3,7 @@
  */
 import { Layout, Spin, Tag } from 'antd'; // @ts-ignore
 import React, { useEffect, useState } from 'react';
-import { formatMessage, history } from 'umi';
+import { formatMessage, history } from '@umijs/max';
 
 import { decrypt } from '@/common/network/other';
 import { UserStore } from '@/store/login';

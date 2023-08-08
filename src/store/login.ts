@@ -9,7 +9,7 @@ import tracert from '@/util/tracert';
 import { encrypt } from '@/util/utils';
 import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 import authStore from './auth';
 import setting from './setting';
 

@@ -1,7 +1,7 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from 'umi';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 // compatible
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import { IUser } from '@/d.ts';
@@ -67,8 +67,12 @@ class LoginModal extends Component<
 
   public render() {
     const { errMsg } = this.props;
-    const { showChangePasswordModal, showRegisterModal, registerLoading, changePasswordLoading } =
-      this.state;
+    const {
+      showChangePasswordModal,
+      showRegisterModal,
+      registerLoading,
+      changePasswordLoading,
+    } = this.state;
 
     return (
       <Form onFinish={this.handleSubmit} className={styles.form} name="loginForm">

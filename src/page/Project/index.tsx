@@ -2,7 +2,7 @@ import PageContainer, { TitleType } from '@/component/PageContainer';
 import { formatMessage } from '@/util/intl';
 import { Button, Menu, Space } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { history, useParams } from 'umi';
+import { history, useParams } from '@umijs/max';
 import Database from './Database';
 import Setting from './Setting';
 import Task from './Task';

@@ -39,7 +39,7 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { getLocale } from 'umi';
+import { getLocale } from '@umijs/max';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 
