@@ -149,10 +149,10 @@
     kitx "^1.2.1"
     xml2js "^0.5.0"
 
-"@alipay/monaco-plugin-ob@0.0.18":
-  version "0.0.18"
-  resolved "https://registry.antgroup-inc.cn/@alipay/monaco-plugin-ob/-/monaco-plugin-ob-0.0.18.tgz#3ae31d9dd71fbc7923145504e7d888098a1961c6"
-  integrity sha512-QPzz8UIVTSE7sHpxmf8vOAHQDlzDSBx0TQ7JnYEFszpjIhl/9O7JX3Q0jff1Qa9X09YnngsaM+lYKGQy3NhkiA==
+"@alipay/monaco-plugin-ob@0.0.19":
+  version "0.0.19"
+  resolved "https://registry.antgroup-inc.cn/@alipay/monaco-plugin-ob/-/monaco-plugin-ob-0.0.19.tgz#58218e35a3fb7b5459ce420721f06785b573a988"
+  integrity sha512-cwr/MEC3NgMuqHS4A4H6gYNHQVFhPnFfsh9dq3mLLGql8w0V7NRYuTfUf9DeKfwKzEn96ORmaISaCuJDn+vaUA==
   dependencies:
     "@alipay/ob-parser-js" "^2.0.4"
     antlr4 "~4.8.0"

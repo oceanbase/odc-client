@@ -25,3 +25,39 @@
     }
   }
 }
+
+.tree {
+  :global {
+    .ant-tree-list {
+      .ant-tree-treenode {
+        .ant-tree-node-content-wrapper {
+          &:hover {
+            :local(.actions) {
+              display: block;
+            }
+          }
+          :local(.actions) {
+            display: none;
+            flex: 0;
+            flex-basis: 20px;
+          }
+          display: flex;
+          .ant-tree-iconEle {
+            flex-grow: 0;
+            flex-shrink: 0;
+          }
+          .ant-tree-title {
+            position: relative;
+            display: flex;
+            flex: 1;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+}

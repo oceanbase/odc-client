@@ -937,7 +937,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
             <ExecPlan
               session={this.getSession()}
-              key="execPlan"
+              key={'execPlan' + this.getSession()?.sessionId}
               visible={showExplainDrawer}
               selectedSQL={selectedSQL}
               onClose={() => {
@@ -949,7 +949,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
             />,
 
             <ExecDetail
-              key="execDetail"
+              key={'execDetail' + this.getSession()?.sessionId}
               visible={showExecuteDetailDrawer}
               sql={execDetailSql}
               session={this.getSession()}

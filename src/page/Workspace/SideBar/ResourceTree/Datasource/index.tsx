@@ -10,6 +10,7 @@ import { useRequest } from 'ahooks';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 
+import Action from '@/component/Action';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
@@ -93,7 +94,30 @@ export default forwardRef(function DatasourceTree(props, ref) {
       reset();
     }
   }, [selectKeys?.[0]]);
-
+  function deleteDataSource(name: string, key: string) {
+    Modal.confirm({
+      title: formatMessage(
+        {
+          id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
+        },
+        { name: name },
+      ), //`确认删除数据源 ${name}?`
+      async onOk() {
+        const isSuccess = await deleteConnection(key as any);
+        if (isSuccess) {
+          message.success(
+            formatMessage({
+              id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
+            }), //删除成功
+          );
+          if (selectKeys.includes(toInteger(key))) {
+            setSelectKeys([]);
+          }
+          run();
+        }
+      },
+    });
+  }
   return (
     <ResourceLayout
       top={
@@ -114,64 +138,68 @@ export default forwardRef(function DatasourceTree(props, ref) {
             <Spin spinning={loading || dbLoading}>
               {datasource?.length ? (
                 <Tree
+                  className={styles.tree}
                   titleRender={(node) => {
                     return (
-                      <Dropdown
-                        trigger={login.isPrivateSpace() ? ['contextMenu'] : []}
-                        menu={{
-                          items: [
-                            {
-                              label: formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' }), //编辑
-                              key: 'edit',
-                              onClick: (e) => {
-                                e.domEvent?.stopPropagation();
-                                setEditDatasourceId(node.key);
+                      <>
+                        <Dropdown
+                          trigger={login.isPrivateSpace() ? ['contextMenu'] : []}
+                          menu={{
+                            items: [
+                              {
+                                label: formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' }), //编辑
+                                key: 'edit',
+                                onClick: (e) => {
+                                  e.domEvent?.stopPropagation();
+                                  setEditDatasourceId(node.key);
+                                },
                               },
-                            },
-                            {
-                              label: formatMessage({ id: 'odc.ResourceTree.Datasource.Delete' }), //删除
-                              key: 'delete',
-                              onClick: (e) => {
-                                e.domEvent?.stopPropagation();
-                                const name = node.title;
-                                Modal.confirm({
-                                  title: formatMessage(
-                                    {
-                                      id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
-                                    },
-                                    { name: name },
-                                  ), //`确认删除数据源 ${name}?`
-                                  async onOk() {
-                                    const isSuccess = await deleteConnection(node.key as any);
-                                    if (isSuccess) {
-                                      message.success(
-                                        formatMessage({
-                                          id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
-                                        }), //删除成功
-                                      );
-                                      if (selectKeys.includes(toInteger(node.key))) {
-                                        setSelectKeys([]);
-                                      }
-                                      run();
-                                    }
-                                  },
-                                });
+                              {
+                                label: formatMessage({ id: 'odc.ResourceTree.Datasource.Delete' }), //删除
+                                key: 'delete',
+                                onClick: (e) => {
+                                  e.domEvent?.stopPropagation();
+                                  const name = node.title;
+                                  deleteDataSource(name as string, node.key as string);
+                                },
                               },
-                            },
-                          ],
-                        }}
-                      >
-                        <Popover
-                          showArrow={false}
-                          overlayClassName={styles.connectionPopover}
-                          placement="rightBottom"
-                          content={
-                            <ConnectionPopover connection={datasourceMap.get(toNumber(node.key))} />
-                          }
+                            ],
+                          }}
                         >
-                          {node.title}
-                        </Popover>
-                      </Dropdown>
+                          <Popover
+                            showArrow={false}
+                            overlayClassName={styles.connectionPopover}
+                            placement="rightBottom"
+                            content={
+                              <ConnectionPopover
+                                connection={datasourceMap.get(toNumber(node.key))}
+                              />
+                            }
+                          >
+                            {node.title}
+                          </Popover>
+                        </Dropdown>
+                        {login.isPrivateSpace() && (
+                          <div className={styles.actions}>
+                            <Action.Group ellipsisIcon="vertical" size={0}>
+                              <Action.Link
+                                onClick={() => setEditDatasourceId(node.key)}
+                                key={'edit'}
+                              >
+                                {formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' })}
+                              </Action.Link>
+                              <Action.Link
+                                onClick={() =>
+                                  deleteDataSource(node.title as string, node.key as string)
+                                }
+                                key={'delete'}
+                              >
+                                {formatMessage({ id: 'odc.ResourceTree.Datasource.Delete' })}
+                              </Action.Link>
+                            </Action.Group>
+                          </div>
+                        )}
+                      </>
                     );
                   }}
                   selectedKeys={selectKeys}

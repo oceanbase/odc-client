@@ -361,10 +361,10 @@ export class SQLStore {
       ) {
         return {
           status: 'FAIL',
-          errorMessage: data?.[0]?.track,
+          errorMessage: data?.executeResult?.[0]?.track,
         };
       } else {
-        dbms = { line: data?.[0]?.dbmsOutput };
+        dbms = { line: data?.executeResult?.[0]?.dbmsOutput };
         res = {
           data: { data: true },
         };
