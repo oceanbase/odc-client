@@ -1,8 +1,9 @@
 import { listDatabases } from '@/common/network/database';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Form, Select, Space, Tag, Typography } from 'antd';
+import { Form, Popover, Select, Space, Tag, Typography } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
+import styles from './index.less';
 
 interface IProps {
   label?: string;
@@ -25,11 +26,27 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch(name, form);
   const databaseOptions = database?.map(({ name, id, environment, dataSource }) => ({
     label: (
-      <Space size={2} data-label={name}>
-        <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
-        <span>{name}</span>
-        <Text type="secondary">{dataSource.name}</Text>
-      </Space>
+      <Popover
+        overlayClassName={styles.popover}
+        data-label={name}
+        placement="right"
+        arrowPointAtCenter={false}
+        content={
+          <Space direction="vertical">
+            <Space>
+              <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+              <Text strong>{name}</Text>
+            </Space>
+            <Text type="secondary">所属数据源: {dataSource?.name ?? '-'}</Text>
+            <Text type="secondary">所属项目: {project?.name ?? '-'}</Text>
+          </Space>
+        }
+      >
+        <Space size={2} data-label={name} style={{ display: 'flex' }}>
+          <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+          <span>{name}</span>
+        </Space>
+      </Popover>
     ),
 
     value: id,
