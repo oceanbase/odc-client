@@ -1,10 +1,10 @@
 import { detailRiskDetectRule } from '@/common/network/riskDetectRule';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
 import { formatMessage } from '@/util/intl';
 import { Descriptions, Drawer } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useEffect, useRef, useState } from 'react';
-import RiskLevelLabel from '../../components/RiskLevelLabel';
 import SecureTable from '../../components/SecureTable';
 import { CommonTableBodyMode, CommonTableMode } from '../../components/SecureTable/interface';
 import { RiskLevelMapProps } from '../interface';

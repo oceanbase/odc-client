@@ -1,5 +1,6 @@
 import { getTaskFlowList } from '@/common/network/manager';
 import { updateRiskLevel } from '@/common/network/riskLevel';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
@@ -18,7 +19,6 @@ import {
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect, useState } from 'react';
-import RiskLevelLabel from '../../components/RiskLevelLabel';
 import CreateApproval from './CreateApproval';
 import styles from './index.less';
 

@@ -1,3 +1,4 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
@@ -72,14 +73,7 @@ export const getItems = (
                   id: 'odc.component.AsyncTaskModal.RiskLevel',
                 })}
                 /*风险等级*/ content={
-                  formatMessage(
-                    {
-                      id: 'odc.component.AsyncTaskModal.Maxrisklevel',
-                    },
-
-                    { maxRiskLevel: riskLevel },
-                  )
-                  //`${maxRiskLevel}级`
+                  <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
                 }
               />
             )}

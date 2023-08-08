@@ -1,4 +1,5 @@
 import { PLType } from '@/constant/plType';
+import { IRiskLevel } from '@/d.ts/riskLevel';
 import { formatMessage } from '@/util/intl';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
@@ -2051,7 +2052,7 @@ export interface TaskRecord<P> {
   createTime: number;
   completeTime: number;
   status: TaskStatus;
-  riskLevel?: number;
+  riskLevel?: IRiskLevel;
   parameters?: P;
   executionStrategy?: TaskExecStrategy;
   executionTime?: number;
@@ -2194,7 +2195,7 @@ export interface ICycleTaskRecord<T> {
     name: string;
     dbMode: ConnectionMode;
   };
-  riskLevel?: number;
+  riskLevel?: IRiskLevel;
   description?: string;
 }
 
@@ -2219,7 +2220,7 @@ export interface IDataArchiveTaskRecord {
   executionStrategy: TaskExecStrategy;
   executionTime: number;
   id: number;
-  riskLevel: number;
+  riskLevel: IRiskLevel;
   nodeList: ITaskFlowNode[];
   parameters: {
     progressPercentage: number;

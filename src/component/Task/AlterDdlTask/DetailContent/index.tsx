@@ -1,3 +1,4 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
@@ -70,14 +71,9 @@ export function getItems(
   const riskLevel = task?.riskLevel;
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
-  const riskItem: [string, string] = [
+  const riskItem = [
     formatMessage({ id: 'odc.AlterDdlTask.DetailContent.RiskLevel' }), //风险等级
-    formatMessage(
-      {
-        id: 'odc.AlterDdlTask.DetailContent.MaxrisklevelLevel',
-      },
-      { maxRiskLevel: riskLevel },
-    ), //`${maxRiskLevel}级`
+    <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
   ];
   const timerExecutionItem: [string, string] = [
     formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ExecutionTime' }), //执行时间

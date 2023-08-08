@@ -1,7 +1,7 @@
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { RuleType } from '@/d.ts/rule';
 import { Tabs } from 'antd';
 import { memo, useCallback, useContext } from 'react';
-import RiskLevelLabel from '../../components/RiskLevelLabel';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import { EnvironmentContext, IEnvironmentContext } from '../EnvironmentContext';
 import EnvironmentInfo from './EnvironmentInfo';
