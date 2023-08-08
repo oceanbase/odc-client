@@ -48,9 +48,7 @@ const ExtraContent = ({
                     },
                     { name: name },
                   ), //`是否确认删除 ${name}`
-                  content: formatMessage({
-                    id: 'odc.page.Datasource.TheConnectionCannotBeAccessed',
-                  }), //删除后将无法访问该连接
+                  content: '删除后将无法访问该数据源',
                   async onOk() {
                     const isSuccess = await deleteConnection(cid?.toString());
                     if (isSuccess) {

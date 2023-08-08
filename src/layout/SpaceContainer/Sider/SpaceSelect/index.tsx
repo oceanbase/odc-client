@@ -65,6 +65,7 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       handleOk(ori);
     }
   };
+  const isSpaceInArray = !!userStore.organizations?.find((o) => o.id === userStore?.organizationId);
 
   return (
     <Select
@@ -78,27 +79,29 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       bordered={false}
       menuItemSelectedIcon={<CheckOutlined />}
       onChange={handleChange}
-      options={userStore.organizations?.map((item) => {
-        return {
-          value: item.id,
-          label:
-            item.type === SpaceType.PRIVATE ? (
-              <Space>
-                <div className={styles.private}>
-                  <Icon component={PersonalSvg} />
-                </div>
-                <span>{item.displayName || '-'}</span>
-              </Space>
-            ) : (
-              <Space>
-                <div className={styles.synergy}>
-                  <Icon component={GroupSvg} />
-                </div>
-                <span>{item.displayName || '-'}</span>
-              </Space>
-            ),
-        };
-      })}
+      options={userStore.organizations
+        ?.map((item) => {
+          return {
+            value: item.id,
+            label:
+              item.type === SpaceType.PRIVATE ? (
+                <Space>
+                  <div className={styles.private}>
+                    <Icon component={PersonalSvg} />
+                  </div>
+                  <span>{item.displayName || '-'}</span>
+                </Space>
+              ) : (
+                <Space>
+                  <div className={styles.synergy}>
+                    <Icon component={GroupSvg} />
+                  </div>
+                  <span>{item.displayName || '-'}</span>
+                </Space>
+              ),
+          };
+        })
+        .concat(isSpaceInArray ? [] : { value: userStore?.organizationId, label: <span>-</span> })}
     />
   );
 };
