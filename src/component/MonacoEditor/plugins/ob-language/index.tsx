@@ -1,4 +1,4 @@
-import Plugin from '@alipay/monaco-plugin-ob';
+import Plugin from '@oceanbase-odc/monaco-plugin-ob';
 
 let plugin = null;
 

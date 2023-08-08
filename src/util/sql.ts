@@ -239,7 +239,7 @@ export async function splitSql(
   isOracle: boolean = false,
   delimiter,
 ): Promise<number[]> {
-  const { SQLDocument } = await import('@alipay/ob-parser-js');
+  const { SQLDocument } = await import('@oceanbase-odc/ob-parser-js');
   const doc = new SQLDocument({
     text: sql,
     delimiter: delimiter,

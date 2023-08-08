@@ -1,5 +1,9 @@
-import DataGrid, { DataGridRef, SelectColumn } from '@alipay/ob-react-data-grid';
-import type { DataGridProps, Position, RowsChangeData } from '@alipay/ob-react-data-grid/lib/types';
+import DataGrid, { DataGridRef, SelectColumn } from '@oceanbase-odc/ob-react-data-grid';
+import type {
+  DataGridProps,
+  Position,
+  RowsChangeData,
+} from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import { useControllableValue } from 'ahooks';
 import React, {
   useCallback,

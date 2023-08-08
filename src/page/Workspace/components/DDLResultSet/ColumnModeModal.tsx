@@ -4,8 +4,8 @@ import React, { useContext, useMemo } from 'react';
 import { FormattedMessage } from 'umi';
 
 import type { ResultSetColumn } from '@/d.ts';
-import type { FormatterProps } from '@alipay/ob-react-data-grid';
 import { LeftSquareOutlined, RightSquareOutlined } from '@ant-design/icons';
+import type { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import TextFormatter from './hooks/components/TextFormatter';

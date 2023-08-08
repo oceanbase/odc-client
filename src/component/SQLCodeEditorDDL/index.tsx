@@ -17,7 +17,7 @@ export class SQLCodeEditorDDL extends React.PureComponent<IProps> {
             this.props.onEditorCreated?.(
               Object.assign(newEditor, {
                 doFormat() {
-                  import('@alipay/ob-parser-js').then((module) => {
+                  import('@oceanbase-odc/ob-parser-js').then((module) => {
                     const doc = new module.SQLDocument({
                       text: editor.getValue(),
                     });

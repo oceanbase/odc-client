@@ -12,7 +12,7 @@ import {
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
 } from '@/d.ts/table';
-import { DataGridRef } from '@alipay/ob-react-data-grid';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { useRequest } from 'ahooks';
 import { clone } from 'lodash';
 import EditableTable from '../../../EditableTable';

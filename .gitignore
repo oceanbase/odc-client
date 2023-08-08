@@ -27,3 +27,4 @@ src/plugins/udp
 src/plugins/pluginList.ts
 .env
 config/config.odcPlugin.js
+yarn-error.log

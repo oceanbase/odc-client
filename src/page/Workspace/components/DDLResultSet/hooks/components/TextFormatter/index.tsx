@@ -1,5 +1,5 @@
-import { FormatterProps } from '@alipay/ob-react-data-grid';
 import { FullscreenOutlined } from '@ant-design/icons';
+import { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
 import React, { useState } from 'react';
 
 import { Input, Modal } from 'antd';

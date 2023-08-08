@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
-import type { EditorProps } from '@alipay/ob-react-data-grid';
 import { EditOutlined } from '@ant-design/icons';
+import type { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
 import { Input, Modal } from 'antd';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';

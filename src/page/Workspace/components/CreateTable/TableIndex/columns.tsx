@@ -1,6 +1,6 @@
 import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
-import { Column } from '@alipay/ob-react-data-grid';
+import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { uniq } from 'lodash';
 import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';

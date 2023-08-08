@@ -1,8 +1,8 @@
 import Toolbar from '@/component/Toolbar';
 import { IndexRange, ITableColumn, ITableIndex } from '@/d.ts';
 import { generateUniqKey } from '@/util/utils';
-import { RowsChangeData } from '@alipay/ob-react-data-grid/lib/types';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import { Button, Divider } from 'antd';
 import memoizeOne from 'memoize-one';
 import React, { Component } from 'react';

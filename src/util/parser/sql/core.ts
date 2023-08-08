@@ -1,5 +1,5 @@
-import { PLLexer as MySQLLexer } from '@alipay/ob-parser-js/lib/parser/mysql/PLLexer';
-import { PlSqlLexer as OracleLexer } from '@alipay/ob-parser-js/lib/parser/oracle/PlSqlLexer';
+import { PLLexer as MySQLLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/mysql/PLLexer';
+import { PlSqlLexer as OracleLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { CommonTokenStream, Token } from 'antlr4';
 import { CaseInsensitiveStream } from '../common';
 

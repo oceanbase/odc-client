@@ -1,4 +1,4 @@
-const must = require('@ali/parrot-tool-must');
+const must = require('@oceanbase-odc/ob-intl-cli');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
@@ -16,7 +16,7 @@ const exclude = 'src/main';
 const languages = ['en-US', 'zh-CN'];
 
 function matchText(text, path) {
-  const isConsoleLog = /^console\.log\(/gi.test(path.parentPath.toString());
+  const isConsoleLog = /^console\.log\(/gi.test(path?.parentPath?.toString());
   let isFormattedMessage = false;
   // 识别 <FormatMessage> 标签的文字层级
   try {
@@ -24,20 +24,21 @@ function matchText(text, path) {
       path.parentPath.parentPath.parentPath.parentPath.parentPath.toString(),
     );
   } catch (e) {}
-  return /[^\x00-\xff]/.test(text) && !isConsoleLog && !isFormattedMessage; // ^\x00-\xff 表示匹配中文字符
+  return /[^\x00-\xff]/.test(text) 
+  // && !isConsoleLog && !isFormattedMessage; // ^\x00-\xff 表示匹配中文字符
 }
 
 const config = {
   cwd: baseDir,
   name: pkg.name,
-  sourcePath: 'src',
+  entry: 'src',
   fileType: 'ts',
   sourceLang: 'zh-CN',
   prettier: true,
   exclude: (path) => {
     return (
       path.includes('src/.umi') ||
-      path.includes('src/locale') ||
+      path.includes('src/locales') ||
       (!!exclude && path.includes(exclude))
     ); // 不处理 .umi 下的文件
   },
@@ -72,16 +73,16 @@ const config = {
 const mode = process.argv[2];
 
 async function run() {
-  await must.extract.run(config, true);
+  await must.run(config, true);
   // languages.forEach((language) => {
   //   const jsonPath = path.join(outputPath, 'strings', language + '.json');
   //   if (fs.existsSync(jsonPath)) {
   //     cpx(jsonPath, localePath);
   //   }
   // });
-  fs.unlinkSync(path.join(outputPath, 'index.ts'));
-  fs.unlinkSync(path.join(outputPath, 'strings/index.d.ts'));
-  fs.unlinkSync(path.join(outputPath, 'strings/index.js'));
+  // fs.unlinkSync(path.join(outputPath, 'index.ts'));
+  // fs.unlinkSync(path.join(outputPath, 'strings/index.d.ts'));
+  // fs.unlinkSync(path.join(outputPath, 'strings/index.js'));
 }
 
 async function online() {

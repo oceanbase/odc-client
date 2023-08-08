@@ -10,13 +10,13 @@ import SessionStore from '@/store/sessionManager/session';
 import { mergeDataType } from '@/util/dataType';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
-import type { Column, DataGridRef } from '@alipay/ob-react-data-grid';
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
   DeleteOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
+import type { Column, DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { useUpdate } from 'ahooks';
 import { Row } from 'antd';
 import React, {

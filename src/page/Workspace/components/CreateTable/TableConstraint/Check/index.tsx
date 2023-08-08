@@ -1,8 +1,8 @@
 import Toolbar from '@/component/Toolbar';
 import { TableConstraintDefer } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
-import { DataGridRef } from '@alipay/ob-react-data-grid';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
 import React, { useContext, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../../EditableTable';

@@ -1,6 +1,6 @@
 import { ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Column } from '@alipay/ob-react-data-grid';
+import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { TextEditor } from '../../../EditableTable/Editors/TextEditor';
 import { TableCheckConstraint } from '../../interface';
 import { useDeferColumn, useEnableColumn } from '../baseColumn';
