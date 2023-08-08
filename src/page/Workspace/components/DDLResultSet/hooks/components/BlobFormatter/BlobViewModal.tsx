@@ -6,7 +6,7 @@ import login from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { formatBytes, getBlobValueKey } from '@/util/utils';
-import type { FormatterProps } from '@alipay/ob-react-data-grid';
+import type { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
 import { Alert, Button, Image, Input, Modal, Radio, Row, Space, Spin } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';

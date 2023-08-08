@@ -1,7 +1,7 @@
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
-import { DataGridRef } from '@alipay/ob-react-data-grid';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../EditableTable';
 import TableContext from '../TableContext';

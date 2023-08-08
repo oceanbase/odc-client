@@ -1,4 +1,4 @@
-import { EditorProps } from '@alipay/ob-react-data-grid';
+import { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
 import { DatePicker, TimePicker } from 'antd';
 import moment from 'moment';
 import { useCallback, useContext, useEffect, useRef } from 'react';

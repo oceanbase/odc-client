@@ -6,7 +6,7 @@ import {
   TableForeignConstraintOnUpdateType,
 } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
-import { Column } from '@alipay/ob-react-data-grid';
+import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { useRequest } from 'ahooks';
 import { uniq } from 'lodash';
 import { useContext, useEffect, useMemo, useState } from 'react';

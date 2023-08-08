@@ -1,4 +1,4 @@
-import { EditorProps } from '@alipay/ob-react-data-grid';
+import { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
 import { InputRef } from 'antd';
 import { useCallback, useEffect, useRef } from 'react';
 

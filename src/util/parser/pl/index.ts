@@ -1,4 +1,4 @@
-import { PlSqlLexer as OraclePLLexer } from '@alipay/ob-parser-js/lib/parser/oracle/PlSqlLexer';
+import { PlSqlLexer as OraclePLLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { getPLTokens } from './core';
 
 export function getPLEntryName(sql: string) {

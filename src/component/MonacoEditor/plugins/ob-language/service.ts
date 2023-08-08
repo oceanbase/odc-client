@@ -4,7 +4,7 @@ import { ConnectionMode, ITableColumn } from '@/d.ts';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import SessionStore from '@/store/sessionManager/session';
 import { getRealNameInDatabase } from '@/util/sql';
-import type { IModelOptions } from '@alipay/monaco-plugin-ob/dist/type';
+import type { IModelOptions } from '@oceanbase-odc/monaco-plugin-ob/dist/type';
 
 function hasConnect(session: SessionStore) {
   return session?.sessionId && session?.database?.dbName;

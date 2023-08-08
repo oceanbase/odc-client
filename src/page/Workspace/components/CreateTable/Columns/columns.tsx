@@ -2,7 +2,7 @@ import { ConnectionMode, IDataType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { dataTypesIns } from '@/util/dataType';
 import { formatMessage } from '@/util/intl';
-import { Column } from '@alipay/ob-react-data-grid';
+import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { isNil } from 'lodash';
 import { useContext, useMemo } from 'react';
 import { InputNumberEditor } from '../../EditableTable/Editors/NumberEditor';

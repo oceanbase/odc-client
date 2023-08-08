@@ -1,7 +1,7 @@
 import Toolbar from '@/component/Toolbar';
 import { IDataType, ITableColumn } from '@/d.ts';
-import { RowsChangeData } from '@alipay/ob-react-data-grid';
 import { SyncOutlined } from '@ant-design/icons';
+import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid';
 import memoizeOne from 'memoize-one';
 import { Component } from 'react';
 import { formatMessage, FormattedMessage } from 'umi';

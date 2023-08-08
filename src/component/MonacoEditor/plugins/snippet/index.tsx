@@ -1,5 +1,5 @@
 import { ISnippet } from '@/store/snippet';
-import { LanguageType } from '@alipay/monaco-plugin-ob/dist/type';
+import { LanguageType } from '@oceanbase-odc/monaco-plugin-ob/dist/type';
 
 import * as monaco from 'monaco-editor';
 
