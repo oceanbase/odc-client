@@ -1,4 +1,4 @@
-import { getTableInfo } from '@/common/network/table';
+import { getTableColumnList } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { ConnectionMode, ITableColumn } from '@/d.ts';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
@@ -55,21 +55,21 @@ export function getModelService(
         const isVirtualTable = realTableName?.includes('__all_virtual_');
         const isView = db?.views?.includes(realTableName);
         if (isTable) {
-          const tableInfo = await getTableInfo(realTableName, dbName, sessionFunc()?.sessionId);
+          const columns = await getTableColumnList(realTableName, dbName, sessionFunc()?.sessionId);
           // 表
-          return tableInfo?.columns?.map((column: TableColumn) => ({
+          return columns?.map((column: TableColumn) => ({
             columnName: column.name,
             columnType: column.type,
           }));
         }
         if (isVirtualTable) {
-          const tableInfo = await getTableInfo(
+          const columns = await getTableColumnList(
             realTableName,
             'oceanbase',
             sessionFunc()?.sessionId,
           );
           // 表
-          return tableInfo?.columns?.map((column: TableColumn) => ({
+          return columns?.map((column: TableColumn) => ({
             columnName: column.name,
             columnType: column.type,
           }));
