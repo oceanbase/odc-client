@@ -274,7 +274,7 @@ function SessionManagementPage(props: IProps) {
                   id: 'workspace.window.session.button.search',
                 })}
                 onSearch={handleSearch}
-                onChange={(e) => handleSearch(e.target.value)}
+                // onChange={(e) => handleSearch(e.target.value)}
                 size="small"
                 className={styles.search}
               />

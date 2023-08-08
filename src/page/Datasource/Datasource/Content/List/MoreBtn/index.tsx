@@ -100,7 +100,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       : null,
     connection.permittedActions?.includes(actionTypes.delete)
       ? {
-          label: formatMessage({ id: 'odc.List.MoreBtn.Remove' }) /*移除*/,
+          label: '删除',
           key: Actions.REMOVE,
           icon: <DeleteOutlined />,
         }
