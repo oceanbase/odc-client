@@ -35,7 +35,7 @@
     "pack-client:linux_aarch64": "node ./scripts/client/build.js linux_aarch64",
     "pack-client:windows": "node ./scripts/client/build.js win",
     "updateDoc": "node ./scripts/pulldoc.js",
-    "postinstall": "max setup"
+    "postinstall": "node scripts/initPlugins.js && max setup"
   },
   "lint-staged": {
     "*.{js,jsx,less,md,json}": [
