@@ -1,11 +1,12 @@
 import RuleResult from '@/component/SQLLintResult/RuleResult';
-import { ISqlExecuteResultStatus, type ISqlExecuteResult } from '@/d.ts';
+import { ISqlExecuteResultStatus } from '@/d.ts';
+import type { ISqlExecuteResult } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 
 export interface IExecuteSQLParams {
@@ -31,6 +32,7 @@ export interface ISQLExecuteTask {
   requestId: string;
   sqls: ISQLExecuteTaskSQL[];
   violatedRules: IRule[];
+  unauthorizedDatabaseNames: string[];
 }
 
 /**
@@ -153,9 +155,23 @@ export default async function executeSQL(
   });
   const taskInfo: ISQLExecuteTask = res?.data;
   const rootViolatedRules = taskInfo?.violatedRules || [];
+  const unauthorizedDatabaseNames = taskInfo?.unauthorizedDatabaseNames;
   const violatedRules = taskInfo?.sqls?.reduce((prev, current) => {
     return prev.concat(current?.violatedRules || []);
   }, rootViolatedRules);
+  if (unauthorizedDatabaseNames?.length) {
+    /**
+     * 无权限库
+     */
+    const dbNames = unauthorizedDatabaseNames.join(', ');
+    message.error(`无权限访问 ${dbNames} 数据库`);
+    return {
+      invalid: true,
+      executeSuccess: false,
+      executeResult: [],
+      violatedRules: [],
+    };
+  }
   if (violatedRules?.length) {
     /**
      * 拦截
