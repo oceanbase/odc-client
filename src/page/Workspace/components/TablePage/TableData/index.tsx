@@ -1,10 +1,10 @@
 import { executeSQL } from '@/common/network/sql';
 import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
-import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { TAB_HEADER_HEIGHT } from '@/constant';
 import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
+import { ModalStore } from '@/store/modal';
 import { PageStore } from '@/store/page';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
@@ -12,11 +12,11 @@ import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
 import { generateSelectSql } from '@/util/sql';
 import { generateUniqKey } from '@/util/utils';
+import { formatMessage } from '@umijs/max';
 import { message, Spin } from 'antd';
 import { isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { formatMessage } from '@umijs/max';
 import DDLResultSet from '../../DDLResultSet';
 import { wrapRow } from '../../DDLResultSet/util';
 const GLOBAL_HEADER_HEIGHT = 40;
@@ -25,13 +25,14 @@ interface ITableDataProps {
   sqlStore?: SQLStore;
   pageStore?: PageStore;
   settingStore?: SettingStore;
+  modalStore?: ModalStore;
   table: Partial<ITable>;
   tableName: string;
   pageKey: string;
   session: SessionStore;
 }
 
-@inject('sqlStore', 'pageStore', 'settingStore')
+@inject('sqlStore', 'pageStore', 'settingStore', 'modalStore')
 @observer
 class TableData extends React.Component<
   ITableDataProps,
@@ -47,7 +48,6 @@ class TableData extends React.Component<
     isEditing: boolean;
     resultSet: IResultSet;
     limitToExport: number;
-    showExportResuleSetModal: boolean;
     showDataExecuteSQLModal: boolean;
     updateDataDML: string;
     tipToShow: string;
@@ -58,7 +58,6 @@ class TableData extends React.Component<
     this.state = {
       dataLoading: false,
       isEditing: false,
-      showExportResuleSetModal: false,
       showDataExecuteSQLModal: false,
       limitToExport: 0,
       updateDataDML: '',
@@ -274,19 +273,20 @@ class TableData extends React.Component<
     }
   };
 
+  showExportResuleSetModal = () => {
+    const { modalStore, session, tableName } = this.props;
+    const isOracle = session.connection?.dialectType === ConnectionMode.OB_ORACLE;
+    const sql = generateSelectSql(false, isOracle, tableName);
+    modalStore.changeCreateResultSetExportTaskModal(true, {
+      sql,
+      databaseId: session?.database.databaseId,
+    });
+  };
+
   render() {
     const { tableName, pageKey, table, settingStore, session } = this.props;
-    const {
-      dataLoading,
-      resultSet,
-      showExportResuleSetModal,
-      showDataExecuteSQLModal,
-      updateDataDML,
-      isEditing,
-    } = this.state;
-
-    const isOracle = session.connection?.dialectType === ConnectionMode.OB_ORACLE;
-    const exportSQL = generateSelectSql(false, isOracle, tableName);
+    const { dataLoading, resultSet, showDataExecuteSQLModal, updateDataDML, isEditing } =
+      this.state;
 
     return (
       <Spin spinning={dataLoading || !resultSet}>
@@ -314,27 +314,14 @@ class TableData extends React.Component<
             rows={resultSet.rows}
             resultHeight={`calc(100vh - ${TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 2 + 32}px)`}
             onRefresh={(limit) => this.reloadTableData(tableName, false, limit)}
-            onExport={(limitToExport) =>
+            onExport={(limitToExport) => {
               this.setState({
                 limitToExport,
-                showExportResuleSetModal: true,
-              })
-            }
+              });
+              this.showExportResuleSetModal();
+            }}
           />
         )}
-
-        <ExportResultSetModal
-          visible={showExportResuleSetModal}
-          session={session}
-          sql={exportSQL}
-          tableName={resultSet?.resultSetMetaData?.table?.tableName}
-          onClose={() =>
-            this.setState({
-              showExportResuleSetModal: false,
-            })
-          }
-        />
-
         <ExecuteSQLModal
           sessionStore={session}
           tip={this.state.tipToShow}

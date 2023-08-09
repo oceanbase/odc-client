@@ -24,6 +24,7 @@ import ExportTaskCreateModal from './ExportTask';
 import { isCycleTaskPage } from './helper';
 import ImportTaskCreateModal from './ImportTask';
 import PartitionTaskCreateModal from './PartitionTask';
+import ResultSetExportTask from './ResultSetExportTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
 
@@ -220,6 +221,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.ONLINE_SCHEMA_CHANGE:
         modalStore.changeCreateDDLAlterTaskModal(true);
         break;
+      case TaskPageType.RESULT_SET_EXPORT:
+        modalStore.changeCreateResultSetExportTaskModal(true);
+        break;
       default:
     }
   };
@@ -262,6 +266,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         <DataArchiveTaskCreateModal projectId={projectId} />
         <DataClearTaskCreateModal projectId={projectId} />
         <AlterDDLTaskCreateModal projectId={projectId} />
+        <ResultSetExportTask projectId={projectId} />
       </>
     );
   }
