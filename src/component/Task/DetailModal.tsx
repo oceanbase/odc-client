@@ -40,6 +40,7 @@ import { getItems as getDataMockerItems } from './DataMockerTask';
 import { isCycleTask } from './helper';
 import { TaskDetailType } from './interface';
 import { PartitionTaskContent } from './PartitionTask';
+import { getItems as getResultSetExportTaskContentItems } from './ResultSetExportTask/DetailContent';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 
@@ -81,6 +82,10 @@ const taskContentMap = {
 
   [TaskType.ONLINE_SCHEMA_CHANGE]: {
     getItems: getDDLAlterItems,
+  },
+
+  [TaskType.RESULT_SET_EXPORT]: {
+    getItems: getResultSetExportTaskContentItems,
   },
 };
 
@@ -358,7 +363,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     detailType,
     logType,
     isLoading: loading,
-    isSplit: ![TaskType.ASYNC].includes(task?.type),
+    isSplit: ![TaskType.ASYNC, TaskType.RESULT_SET_EXPORT].includes(task?.type),
     taskTools: (
       <TaskTools
         isDetailModal

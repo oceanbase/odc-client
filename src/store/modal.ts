@@ -34,6 +34,11 @@ interface AsyncData {
   rules?: IRule[];
 }
 
+interface ResultSetExportData {
+  sql?: string;
+  databaseId?: number;
+}
+
 interface ApplyPermissionData {}
 interface IExportModalData {
   type?: DbObjectType;
@@ -76,6 +81,9 @@ export class ModalStore {
   public createAsyncTaskVisible: boolean = false;
 
   @observable
+  public createResultSetExportTaskVisible: boolean = false;
+
+  @observable
   public addShadowSyncVisible: boolean = false;
 
   @observable
@@ -107,6 +115,9 @@ export class ModalStore {
 
   @observable
   public asyncTaskData: AsyncData = null;
+
+  @observable
+  public resultSetExportData: ResultSetExportData = null;
 
   @observable
   public SQLPlanEditId: number = null;
@@ -274,6 +285,12 @@ export class ModalStore {
   }
 
   @action
+  public changeCreateResultSetExportTaskModal(isShow: boolean = true, data?: ResultSetExportData) {
+    this.createResultSetExportTaskVisible = isShow;
+    this.resultSetExportData = isShow ? data : null;
+  }
+
+  @action
   public changeApplyPermissionModal(isShow: boolean = true, data?: any) {
     this.applyPermissionVisible = isShow;
     this.applyPermissionData = isShow ? data : null;
@@ -333,6 +350,7 @@ export class ModalStore {
     this.addConnectionVisible = false;
     this.dataMockerVisible = false;
     this.createAsyncTaskVisible = false;
+    this.createResultSetExportTaskVisible = false;
     this.createSQLPlanVisible = false;
     this.userConfigModalVisible = false;
     this.applyPermissionVisible = false;
