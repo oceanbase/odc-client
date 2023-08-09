@@ -1,6 +1,5 @@
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
 import { getView } from '@/common/network/view';
-import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
@@ -9,6 +8,7 @@ import type { IResultSet, IView } from '@/d.ts';
 import { ConnectionMode } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import { ViewPage as ViewPageModel } from '@/store/helper/page/pages';
+import { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -17,10 +17,10 @@ import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { generateUniqKey } from '@/util/utils';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 import { Layout, message, Radio, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 import DDLResultSet from '../DDLResultSet';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
@@ -50,6 +50,7 @@ export enum PropsTab {
 interface IProps {
   sqlStore: SQLStore;
   pageStore: PageStore;
+  modalStore?: ModalStore;
   pageKey: string;
   sessionManagerStore: SessionManagerStore;
   params: ViewPageModel['pageParams'];
@@ -76,14 +77,13 @@ interface IViewPageState {
   updateDataDML: string;
 
   // 导出数据
-  showExportResuleSetModal: boolean;
   resultSetIndexToExport: number;
   limitToExport: number;
 
   formated: boolean;
 }
 
-@inject('sqlStore', 'pageStore', 'sessionManagerStore')
+@inject('sqlStore', 'pageStore', 'sessionManagerStore', 'modalStore')
 @observer
 class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageState> {
   public editor: IEditor;
@@ -112,7 +112,6 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     updateDataDML: '',
 
     // 导出
-    showExportResuleSetModal: false,
     resultSetIndexToExport: -1,
     limitToExport: 0,
 
@@ -339,6 +338,16 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     });
   };
 
+  showExportResuleSetModal = () => {
+    const { modalStore, session } = this.props;
+    const { resultSet } = this.state;
+    const sql = resultSet?.originSql;
+    modalStore.changeCreateResultSetExportTaskModal(true, {
+      sql,
+      databaseId: session?.database.databaseId,
+    });
+  };
+
   public render() {
     const {
       pageKey,
@@ -346,15 +355,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
       session,
       sessionManagerStore,
     } = this.props;
-    const {
-      topTab,
-      propsTab,
-      view,
-      dataLoading,
-      resultSet,
-      showExportResuleSetModal,
-      formated,
-    } = this.state;
+    const { topTab, propsTab, view, dataLoading, resultSet, formated } = this.state;
     const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
 
     return (
@@ -490,25 +491,18 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                         GLOBAL_HEADER_HEIGHT + TABBAR_HEIGHT + 46 + 1
                       }px)`}
                       onRefresh={(limit) => this.reloadViewData(viewName, false, limit)}
-                      onExport={(limitToExport) =>
+                      onExport={(limitToExport) => {
                         this.setState({
                           limitToExport,
-                          showExportResuleSetModal: true,
-                        })
-                      }
+                        });
+                        this.showExportResuleSetModal();
+                      }}
                     />
                   )}
                 </Spin>
               </TabPane>
             </Tabs>
           </Content>
-          <ExportResultSetModal
-            session={session}
-            visible={showExportResuleSetModal}
-            sql={resultSet?.originSql}
-            tableName={resultSet?.resultSetMetaData?.table?.tableName}
-            onClose={() => this.setState({ showExportResuleSetModal: false })}
-          />
         </>
       )
     );
