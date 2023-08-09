@@ -76,6 +76,11 @@ export function getTaskTypeList(
           label: formatMessage({ id: 'odc.components.TaskManagePage.Export' }), // 导出
           enabled: settingStore.enableDBExport,
         },
+        {
+          value: TaskPageType.RESULT_SET_EXPORT,
+          label: '导出结果集',
+          enabled: settingStore.enableDBExport,
+        },
       ],
     },
 

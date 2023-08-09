@@ -1699,6 +1699,7 @@ export enum TaskPageType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
   DATA_DELETE = 'DATA_DELETE',
+  RESULT_SET_EXPORT = 'RESULT_SET_EXPORT',
 }
 
 export enum TaskType {
@@ -1716,6 +1717,7 @@ export enum TaskType {
   MIGRATION = 'DATA_ARCHIVE',
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
   DATA_DELETE = 'DATA_DELETE',
+  RESULT_SET_EXPORT = 'RESULT_SET_EXPORT',
 }
 
 export enum TaskJobType {
@@ -2095,7 +2097,8 @@ export type TaskRecordParameters =
   | IPermissionTaskParams
   | IPartitionPlanParams
   | ISQLPlanTaskParams
-  | IAlterScheduleTaskParams;
+  | IAlterScheduleTaskParams
+  | IResultSetExportTaskParams;
 
 export interface ITaskResult {
   containQuery: boolean;
@@ -2304,6 +2307,21 @@ export interface IAsyncTaskParams {
   rollbackSqlObjectNames: string[];
   generateRollbackPlan: boolean;
   parentFlowInstanceId?: number;
+}
+
+export interface IResultSetExportTaskParams {
+  sql: string;
+  fileFormat: EXPORT_TYPE;
+  fileEncoding: IMPORT_ENCODING;
+  csvFormat: {
+    isContainColumnHeader: boolean;
+    isTransferEmptyString: boolean;
+    columnSeparator: string;
+    columnDelimiter: string;
+    lineSeparator: string;
+  };
+  fileName: string;
+  maxRows: string;
 }
 
 export enum RollbackType {

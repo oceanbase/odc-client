@@ -3,7 +3,6 @@ import { executeSQL, runSQLLint } from '@/common/network/sql';
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
 import { batchGetDataModifySQL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
-import ExportResultSetModal from '@/component/ExportResultSetModal';
 import { IEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
@@ -23,6 +22,7 @@ import {
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
+import { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
@@ -48,7 +48,6 @@ interface ISQLPageState {
   initialSQL: string;
   showSaveSQLModal: boolean;
   resultSetTabActiveKey: string;
-  showExportResuleSetModal: boolean;
   resultSetIndexToExport: number;
   // SQL 计划
   showExplainDrawer: boolean;
@@ -79,6 +78,7 @@ interface IProps {
   userStore?: UserStore;
   pageStore?: PageStore;
   sessionManagerStore?: SessionManagerStore;
+  modalStore?: ModalStore;
   sessionId?: string;
   pageKey?: string;
   isSaved?: boolean;
@@ -91,7 +91,7 @@ interface IProps {
   onSetUnsavedModalContent?: (title: string) => void;
 }
 
-@inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore')
+@inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore', 'modalStore')
 @observer
 export class SQLPage extends Component<IProps, ISQLPageState> {
   public readonly state: ISQLPageState = {
@@ -99,7 +99,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     initialSQL: this.props.params?.scriptText || '',
     showSaveSQLModal: false,
     resultSetTabActiveKey: recordsTabKey,
-    showExportResuleSetModal: false,
     resultSetIndexToExport: -1,
     showExplainDrawer: false,
     showExecuteDetailDrawer: false,
@@ -714,9 +713,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleStartExportResultSet = (resultSetIndex: number, limit: number) => {
     this.setState({
-      showExportResuleSetModal: true,
       resultSetIndexToExport: resultSetIndex,
     });
+    this.showExportResuleSetModal();
   };
 
   public handleExplain = async () => {
@@ -836,11 +835,26 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   //   }
   // };
 
+  showExportResuleSetModal = () => {
+    const {
+      modalStore,
+      pageKey,
+      sqlStore: { resultSets },
+    } = this.props;
+    const { resultSetIndexToExport } = this.state;
+    const session = this.getSession();
+    const sql = resultSets.get(pageKey)?.[resultSetIndexToExport]?.originSql;
+    modalStore.changeCreateResultSetExportTaskModal(true, {
+      sql,
+      databaseId: session?.database.databaseId,
+    });
+  };
+
   public render() {
     const {
       pageKey,
       pageStore,
-      sqlStore: { resultSets, runningPageKey },
+      sqlStore: { runningPageKey },
       params,
     } = this.props;
     const session = this.getSession();
@@ -849,8 +863,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       initialSQL,
       showSaveSQLModal,
       resultSetTabActiveKey,
-      showExportResuleSetModal,
-      resultSetIndexToExport,
       showExplainDrawer,
       showExecuteDetailDrawer,
       execDetailSql,
@@ -921,18 +933,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 this.setState({ showSaveSQLModal: false });
               }}
               onSave={this.handleCreateSQL}
-            />,
-
-            <ExportResultSetModal
-              key="exportResultSetModal"
-              visible={showExportResuleSetModal}
-              sql={resultSets.get(pageKey)?.[resultSetIndexToExport]?.originSql}
-              tableName={
-                resultSets.get(pageKey)?.[resultSetIndexToExport]?.resultSetMetaData?.table
-                  ?.tableName
-              }
-              onClose={() => this.setState({ showExportResuleSetModal: false })}
-              session={session}
             />,
 
             <ExecPlan

@@ -79,6 +79,7 @@ export const TaskTypeMap = {
   [TaskType.ALTER_SCHEDULE]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
   }), //计划变更
+  [TaskType.RESULT_SET_EXPORT]: '导出结果集',
 
   [TaskType.SQL_PLAN]: formatMessage({ id: 'odc.component.TaskTable.SqlPlan' }), //SQL 计划
   [TaskType.DATA_ARCHIVE]: formatMessage({ id: 'odc.component.TaskTable.DataArchiving' }), //数据归档
