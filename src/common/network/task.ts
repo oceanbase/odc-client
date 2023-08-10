@@ -383,7 +383,7 @@ export async function setShadowSyncRecordStatus(
 
 export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
   const res = await request.get(`/api/v2/flow/flowInstances/${flowId}/tasks/${nodeId}/result`);
-  return res?.data?.contents?.[0]?.results;
+  return res?.data?.contents?.[0]?.sqlCheckResult?.results;
 }
 
 /**
