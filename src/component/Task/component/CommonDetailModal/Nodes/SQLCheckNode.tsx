@@ -22,6 +22,9 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<ISQLLintReuslt[]>([]);
+  const showCount = typeof issueCount === 'number';
+  const showUnauthorized = unauthorizedDatabaseNames?.length > 0;
+  const showReslut = showCount || showUnauthorized;
   async function viewLintResult() {
     if (isLoading) {
       return;
@@ -47,40 +50,42 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         >
           <NodeStatus node={node} />
         </Descriptions.Item>
-        <Descriptions.Item>
-          <Descriptions column={1} title="处理结果:" className={styles['result-desc']}>
-            {typeof issueCount === 'number' ? (
-              <Descriptions.Item label="SQL 检查结果">
-                {
-                  formatMessage({
-                    id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
-                  }) /*存在*/
-                }
-                {issueCount}
-                {
-                  formatMessage({
-                    id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
-                  }) /*个问题*/
-                }
-                {issueCount > 0 && (
-                  <a style={{ marginLeft: 5 }} onClick={viewLintResult}>
-                    {
-                      formatMessage({
-                        id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
-                      }) /*查看*/
-                    }
-                  </a>
-                )}
-              </Descriptions.Item>
-            ) : null}
-            {!!unauthorizedDatabaseNames?.length && (
-              <Descriptions.Item label="权限检查结果">
-                无权限访问数据库：
-                {unauthorizedDatabaseNames?.join(', ')}
-              </Descriptions.Item>
-            )}
-          </Descriptions>
-        </Descriptions.Item>
+        {showReslut && (
+          <Descriptions.Item>
+            <Descriptions column={1} title="处理结果:" className={styles['result-desc']}>
+              {showCount ? (
+                <Descriptions.Item label="SQL 检查结果">
+                  {
+                    formatMessage({
+                      id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
+                    }) /*存在*/
+                  }
+                  {issueCount}
+                  {
+                    formatMessage({
+                      id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
+                    }) /*个问题*/
+                  }
+                  {issueCount > 0 && (
+                    <a style={{ marginLeft: 5 }} onClick={viewLintResult}>
+                      {
+                        formatMessage({
+                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
+                        }) /*查看*/
+                      }
+                    </a>
+                  )}
+                </Descriptions.Item>
+              ) : null}
+              {showUnauthorized ? (
+                <Descriptions.Item label="权限检查结果">
+                  无权限访问数据库：
+                  {unauthorizedDatabaseNames?.join(', ')}
+                </Descriptions.Item>
+              ) : null}
+            </Descriptions>
+          </Descriptions.Item>
+        )}
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingTime',
