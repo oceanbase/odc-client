@@ -2442,7 +2442,7 @@ export enum TaskFlowNodeType {
   APPROVAL_TASK = 'APPROVAL_TASK',
   GATEWAY = 'GATEWAY',
   SERVICE_TASK = 'SERVICE_TASK',
-  SQL_CHECK = 'SQL_CHECK',
+  PRE_CHECK = 'PRE_CHECK',
 }
 
 export enum TaskOperationType {
@@ -2454,7 +2454,7 @@ export enum TaskOperationType {
 }
 
 export enum IFlowTaskType {
-  SQL_CHECK = 'SQL_CHECK',
+  PRE_CHECK = 'PRE_CHECK',
   GENERATE_ROLLBACK = 'GENERATE_ROLLBACK',
 }
 
@@ -2467,6 +2467,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
+  unauthorizedDatabaseNames: string[];
   id?: number;
   candidates: {
     id: number;
@@ -2525,6 +2526,7 @@ export enum TaskStatus {
   ENABLED = 'ENABLED',
   TERMINATION = 'TERMINATION',
   TIMEOUT = 'TIMEOUT',
+  PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
 }
 
 export enum SubTaskStatus {
@@ -2550,6 +2552,7 @@ export enum TaskNodeStatus {
   EXPIRED = 'EXPIRED',
   FAILED = 'FAILED',
   WAIT_FOR_CONFIRM = 'WAIT_FOR_CONFIRM',
+  PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
 }
 
 export enum SQLContentType {

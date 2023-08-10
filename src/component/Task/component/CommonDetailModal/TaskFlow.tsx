@@ -171,7 +171,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
     let _node = node;
     if (
       node.nodeType === TaskFlowNodeType.SERVICE_TASK &&
-      ![IFlowTaskType.SQL_CHECK, IFlowTaskType.GENERATE_ROLLBACK].includes(node.taskType)
+      ![IFlowTaskType.PRE_CHECK, IFlowTaskType.GENERATE_ROLLBACK].includes(node.taskType)
     ) {
       const { deadlineTime, completeTime, operator, status, taskType } = node;
       let title = formatMessage({
@@ -384,7 +384,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
           /**
            * 新版逻辑 Node 封装
            */
-          case IFlowTaskType.SQL_CHECK: {
+          case IFlowTaskType.PRE_CHECK: {
             const statusContent = getStatusDisplayInfo(nodeType, item.status);
             return (
               <Step

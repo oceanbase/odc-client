@@ -1,19 +1,19 @@
-import ExportCard from '@/component/ExportCard';
-import HelpDoc from '@/component/helpDoc';
-import { formatMessage } from '@/util/intl';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Checkbox, Col, Form, Input, message, Radio, Row, Select, Space } from 'antd';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { List as VirtualList } from 'react-virtualized';
-import { IContentProps, IShaodwSyncData } from '../interface';
-
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { getShadowSyncAnalysisResult, startShadowSyncAnalysis } from '@/common/network/task';
+import ExportCard from '@/component/ExportCard';
+import HelpDoc from '@/component/helpDoc';
 import { DbObjsIcon } from '@/constant';
+import { TaskType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
+import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { useUnmountedRef } from 'ahooks';
+import { Checkbox, Col, Form, Input, message, Radio, Row, Select, Space } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { clone, cloneDeep } from 'lodash';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { List as VirtualList } from 'react-virtualized';
 import DatabaseSelect from '../../../component/DatabaseSelect';
+import { IContentProps, IShaodwSyncData } from '../interface';
 import styles from './index.less';
 
 const Option = Select.Option;
@@ -200,7 +200,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
         });
       }}
     >
-      <DatabaseSelect projectId={projectId} />
+      <DatabaseSelect projectId={projectId} type={TaskType.SHADOW} />
       <Form.Item
         extra={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyTheStructureOfThe',
