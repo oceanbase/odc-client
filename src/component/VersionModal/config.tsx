@@ -42,7 +42,7 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'index.jpg',
+    img: 'developer.jpg',
   },
 
   {
@@ -75,7 +75,7 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'connection.jpg',
+    img: 'flow.jpg',
   },
 
   {
@@ -108,7 +108,7 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'tools.jpg',
+    img: 'safe.jpg',
   },
 
   {
@@ -147,7 +147,7 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'sqlconsole.jpg',
+    img: 'archive.jpg',
   },
 
   {
@@ -192,7 +192,7 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'resultset.jpg',
+    img: 'inject.jpg',
   },
 
   {
@@ -232,7 +232,7 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'pldebug.jpg',
+    img: 'user.jpg',
   },
 ].filter(Boolean);
 
