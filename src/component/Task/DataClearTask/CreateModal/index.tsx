@@ -310,6 +310,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       >
         <Space align="start">
           <DatabaseSelect
+            type={TaskType.DATA_DELETE}
             label={formatMessage({ id: 'odc.DataClearTask.CreateModal.SourceDatabase' })}
             /*源端数据库*/ projectId={projectId}
           />

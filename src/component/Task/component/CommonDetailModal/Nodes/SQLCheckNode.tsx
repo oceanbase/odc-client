@@ -18,7 +18,7 @@ interface IProps {
 }
 
 const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
-  const { status, nodeType, issueCount, id } = node;
+  const { status, nodeType, issueCount, unauthorizedDatabaseNames, id } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<ISQLLintReuslt[]>([]);
@@ -47,34 +47,40 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         >
           <NodeStatus node={node} />
         </Descriptions.Item>
-        {typeof issueCount === 'number' ? (
-          <Descriptions.Item
-            label={formatMessage({
-              id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.ProcessingResult',
-            })} /*处理结果*/
-          >
-            {
-              formatMessage({
-                id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
-              }) /*存在*/
-            }
-            {issueCount}
-            {
-              formatMessage({
-                id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
-              }) /*个问题*/
-            }
-            {issueCount > 0 && (
-              <a style={{ marginLeft: 5 }} onClick={viewLintResult}>
+        <Descriptions.Item>
+          <Descriptions column={1} title="处理结果:" className={styles['result-desc']}>
+            {typeof issueCount === 'number' ? (
+              <Descriptions.Item label="SQL 检查结果">
                 {
                   formatMessage({
-                    id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
-                  }) /*查看*/
+                    id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
+                  }) /*存在*/
                 }
-              </a>
+                {issueCount}
+                {
+                  formatMessage({
+                    id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
+                  }) /*个问题*/
+                }
+                {issueCount > 0 && (
+                  <a style={{ marginLeft: 5 }} onClick={viewLintResult}>
+                    {
+                      formatMessage({
+                        id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
+                      }) /*查看*/
+                    }
+                  </a>
+                )}
+              </Descriptions.Item>
+            ) : null}
+            {!!unauthorizedDatabaseNames?.length && (
+              <Descriptions.Item label="权限检查结果">
+                无权限访问数据库：
+                {unauthorizedDatabaseNames?.join(', ')}
+              </Descriptions.Item>
             )}
-          </Descriptions.Item>
-        ) : null}
+          </Descriptions>
+        </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingTime',
