@@ -3,17 +3,15 @@ import {
   listSensitiveRules,
   setEnabled,
 } from '@/common/network/sensitiveRule';
-import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
+import {
+  IOperationOptionType,
+  ITableInstance,
+  ITableLoadOptions,
+} from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
 import { IResponseData } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
-import SecureTable from '@/page/Secure/components/SecureTable';
-import {
-  CommonTableBodyMode,
-  ITableInstance,
-  ITableLoadOptions,
-} from '@/page/Secure/components/SecureTable/interface';
 import { formatMessage } from '@/util/intl';
 import { message, Modal, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -22,6 +20,7 @@ import { DetectRuleTypeMap, FilterItemProps } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
+import CommonTable from '@/component/CommonTable';
 
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
@@ -56,13 +55,6 @@ const getColumns: (columnsFunction: {
       },
       render: (text) => <TooltipContent content={text} />,
     },
-    // {
-    //   title: '规则描述',
-    //   width: 170,
-    //   dataIndex: 'description',
-    //   key: 'description',
-    //   render: (text) => text || '-',
-    // },
     {
       title: formatMessage({ id: 'odc.components.SensitiveRule.IdentificationMethod' }), //识别方式
       width: 170,
@@ -115,13 +107,6 @@ const getColumns: (columnsFunction: {
         <TooltipContent content={maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'} />
       ),
     },
-    // {
-    //   title: '规则详情',
-    //   width: 184,
-    //   dataIndex: 'columnCommentRegexExpression',
-    //   key: 'columnCommentRegexExpression',
-    //   render: (text) => text || '-',
-    // },
     {
       title: formatMessage({ id: 'odc.components.SensitiveRule.EnableStatus' }), //启用状态
       width: 80,
@@ -254,7 +239,7 @@ const SensitiveRule = ({ projectId }) => {
             formatMessage({ id: 'odc.components.SensitiveRule.FailedToDelete' }), //删除失败
           );
         }
-        tableRef.current?.reloadFirstPage?.();
+        tableRef.current?.reload?.();
       },
       onCancel: () => {},
       okText: formatMessage({ id: 'odc.components.SensitiveRule.Ok' }), //确定
@@ -302,13 +287,10 @@ const SensitiveRule = ({ projectId }) => {
 
   return (
     <>
-      <SecureTable
+      <CommonTable
         ref={tableRef}
-        mode={CommonTableMode.SMALL}
-        body={CommonTableBodyMode.BIG}
         titleContent={null}
         showToolbar={true}
-        showPagination={true}
         filterContent={{
           searchPlaceholder: formatMessage({ id: 'odc.components.SensitiveRule.EnterARuleName' }), //请输入规则名称
         }}

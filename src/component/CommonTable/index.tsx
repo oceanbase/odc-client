@@ -49,12 +49,16 @@ interface IProps<RecordType> {
   titleContent: ITitleContent;
   // 表头操作栏 筛选区配置
   filterContent?: IFilterContent;
+  // 是否展示表头 刷新按钮
+  enabledReload?: boolean;
   // 表头操作栏 自定义操作区配置
   operationContent?: IOperationContent;
   // 是否展示 操作连 筛选区&自定义操作区 分割标记
   isSplit?: boolean;
   // 行选择 相关配置
   rowSelecter?: IRowSelecter<RecordType>;
+  // 行选择状态回调
+  rowSelectedCallback?: (selectedRowKeys: any[]) => void;
   // 是否启用 列宽可拖拽
   enableResize?: boolean;
   // 表格 Change 回调（包含 toolbar区的操作，表格区的操作均会触发）
@@ -73,6 +77,7 @@ const CommonTable: <RecordType extends object = any>(
   const {
     mode = CommonTableMode.BIG,
     showToolbar = true,
+    enabledReload = true,
     subTableTotalHeight = 0,
     alertInfoContent,
     titleContent,
@@ -80,6 +85,7 @@ const CommonTable: <RecordType extends object = any>(
     operationContent,
     isSplit = false,
     rowSelecter,
+    rowSelectedCallback = (selectedRowKeys: any[]) => {},
     rowHeight = mode === CommonTableMode.BIG ? DEFAULT_BIG_ROW_HEIGHT : DEFAULT_SMALL_ROW_HEIGHT,
     tableProps,
     enableResize = false,
@@ -133,6 +139,10 @@ const CommonTable: <RecordType extends object = any>(
       });
     }
   }, [pageSize]);
+
+  useEffect(() => {
+    rowSelectedCallback(selectedRowKeys);
+  }, [selectedRowKeys]);
 
   useImperativeHandle(ref, () => ({
     reload: (args?: ITableLoadOptions) => {
@@ -332,6 +342,7 @@ const CommonTable: <RecordType extends object = any>(
             sorter,
             pageSize,
           }}
+          enabledReload={enabledReload}
           onFilterChange={handleFilterChange}
           onSearchChange={handleSearch}
           onTabChange={handleTabChange}

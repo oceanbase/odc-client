@@ -257,7 +257,6 @@ const FormSensitiveRuleDrawer = ({
       width={596}
       onClose={onCancel}
       destroyOnClose={true}
-      maskClosable={false}
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
@@ -361,7 +360,8 @@ const FormSensitiveRuleDrawer = ({
             {
               required: true,
               message: formatMessage({
-                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
+                id:
+                  'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
               }), //请选择脱敏算法
             },
           ]}

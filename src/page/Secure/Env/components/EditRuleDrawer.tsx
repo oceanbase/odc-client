@@ -49,11 +49,12 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.componentType ===
         ComponentType.INPUT_STRING
       ) {
-        activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
-          rawData[activeKey] ? rawData[activeKey] : null;
+        activeProperties[
+          `${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`
+        ] = rawData[activeKey] ? rawData[activeKey] : null;
       } else {
         activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
-          rawData[activeKey];
+          rawData[activeKey] !== -1 ? rawData[activeKey] : null;
       }
     });
     const editedRule: Partial<IRule> = {
@@ -83,6 +84,10 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
       propertyMetadatas.forEach((pm, index) => {
         newInitData[`activeKey${index}`] = properties[pm.name];
         if (pm?.name === SqlInterceptorKey) {
+          options.unshift({
+            label: '空',
+            value: -1,
+          });
           newInitData[`options${index}`] = options;
         } else {
           if (pm?.candidates) {
