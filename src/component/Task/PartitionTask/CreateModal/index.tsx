@@ -218,7 +218,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             inspectTriggerStrategy: IPartitionPlanInspectTriggerStrategy.NONE,
           }}
         >
-          <DatabaseSelect projectId={projectId} />
+          <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
           {enabledInspectTriggerStrategy && (
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {

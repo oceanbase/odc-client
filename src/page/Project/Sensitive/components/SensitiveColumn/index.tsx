@@ -3,21 +3,17 @@ import {
   listSensitiveColumns,
   setEnabled,
 } from '@/common/network/sensitiveColumn';
+import CommonTable from '@/component/CommonTable';
 import {
-  CommonTableMode,
+  IRowSelecter,
   IOperationOptionType,
+  ITableInstance,
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
 import { IResponseData } from '@/d.ts';
 import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
-import SecureTable from '@/page/Secure/components/SecureTable';
-import {
-  CommonTableBodyMode,
-  IRowSelecter,
-  ITableInstance,
-} from '@/page/Secure/components/SecureTable/interface';
 import { formatMessage } from '@/util/intl';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Menu, message, Modal, Space } from 'antd';
@@ -143,7 +139,7 @@ const getColumns: ({
     },
     {
       title: formatMessage({ id: 'odc.components.SensitiveColumn.EnableStatus' }), //启用状态
-      width: 80,
+      width: 120,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [
@@ -207,8 +203,12 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
-  const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
-    sensitiveContext;
+  const {
+    dataSourceIdMap,
+    maskingAlgorithms,
+    maskingAlgorithmIdMap,
+    maskingAlgorithmOptions,
+  } = sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
@@ -265,8 +265,8 @@ const SensitiveColumn = ({
     initSensitiveColumn();
   };
 
-  const rowSelectedCallback = (v: boolean) => {
-    setHasRowSelected(v);
+  const rowSelectedCallback = (selectedRowKeys: any[]) => {
+    setHasRowSelected(selectedRowKeys?.length > 0);
   };
 
   const onClose = (fn) => {
@@ -340,8 +340,7 @@ const SensitiveColumn = ({
               formatMessage({ id: 'odc.components.SensitiveColumn.FailedToDelete' }), //删除失败
             );
           }
-          tableRef.current?.reloadFirstPage?.();
-          tableRef.current?.resetSelectedRows();
+          tableRef.current?.reload?.();
           setSubmiting(false);
         }
       }),
@@ -409,13 +408,11 @@ const SensitiveColumn = ({
   });
   return (
     <>
-      <SecureTable
+      <CommonTable
         ref={tableRef}
-        mode={CommonTableMode.SMALL}
-        body={CommonTableBodyMode.BIG}
+        // mode={CommonTableMode.SMALL}
         titleContent={null}
         showToolbar={true}
-        showPagination={true}
         filterContent={{
           searchPlaceholder: formatMessage({
             id: 'odc.components.SensitiveColumn.EnterATableNameColumn',

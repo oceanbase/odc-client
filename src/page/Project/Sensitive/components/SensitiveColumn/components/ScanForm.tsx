@@ -1,6 +1,5 @@
+import CommonTable from '@/component/CommonTable';
 import { CommonTableMode } from '@/component/CommonTable/interface';
-import SecureTable from '@/page/Secure/components/SecureTable';
-import { CommonTableBodyMode } from '@/page/Secure/components/SecureTable/interface';
 import { formatMessage } from '@/util/intl';
 import { CheckCircleFilled, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -204,12 +203,10 @@ const ScanForm = ({
                     }
                     key={index}
                   >
-                    <SecureTable
+                    <CommonTable
                       mode={CommonTableMode.SMALL}
-                      body={CommonTableBodyMode.BIG}
                       titleContent={null}
                       showToolbar={false}
-                      showPagination={false}
                       filterContent={{}}
                       operationContent={null}
                       onLoad={null}
@@ -234,7 +231,8 @@ const ScanForm = ({
                           },
                           {
                             title: formatMessage({
-                              id: 'odc.SensitiveColumn.components.ScanForm.DesensitizationAlgorithm',
+                              id:
+                                'odc.SensitiveColumn.components.ScanForm.DesensitizationAlgorithm',
                             }), //脱敏算法
                             width: 180,
                             dataIndex: 'maskingAlgorithmId',
@@ -250,6 +248,13 @@ const ScanForm = ({
                                     (record as ScanTableDataItem)?.columnName,
                                     v,
                                   )
+                                }
+                                showSearch
+                                filterOption={(input, option) =>
+                                  (option?.label ?? '')
+                                    ?.toString()
+                                    ?.toLowerCase()
+                                    .includes(input.toLowerCase())
                                 }
                                 options={sensitiveContext.maskingAlgorithmOptions}
                               />

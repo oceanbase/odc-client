@@ -1,4 +1,5 @@
 import { listDatabases } from '@/common/network/database';
+import { TaskType } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { Form, Popover, Select, Space, Tag, Typography } from 'antd';
@@ -6,6 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
 interface IProps {
+  type?: TaskType;
   label?: string;
   name?: string;
   projectId?: number;
@@ -16,6 +18,7 @@ const { Text } = Typography;
 
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
+    type,
     label = formatMessage({ id: 'odc.component.DatabaseSelect.Database' }), //数据库
     name = 'databaseId',
     projectId,
@@ -24,33 +27,41 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const [database, setDatabase] = useState([]);
   const form = Form.useFormInstance();
   const databaseId = Form.useWatch(name, form);
-  const databaseOptions = database?.map(({ name, id, environment, dataSource }) => ({
-    label: (
-      <Popover
-        overlayClassName={styles.popover}
-        data-label={name}
-        placement="right"
-        arrowPointAtCenter={false}
-        content={
-          <Space direction="vertical">
-            <Space>
-              <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
-              <Text strong>{name}</Text>
+  const databaseOptions = database
+    ?.filter((item) =>
+      [TaskType.SHADOW, TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(
+        type,
+      )
+        ? item?.dataSource?.dialectType === 'OB_MYSQL'
+        : true,
+    )
+    ?.map(({ name, id, environment, dataSource }) => ({
+      label: (
+        <Popover
+          overlayClassName={styles.popover}
+          data-label={name}
+          placement="right"
+          arrowPointAtCenter={false}
+          content={
+            <Space direction="vertical">
+              <Space>
+                <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+                <Text strong>{name}</Text>
+              </Space>
+              <Text type="secondary">所属数据源: {dataSource?.name ?? '-'}</Text>
+              <Text type="secondary">所属项目: {project?.name ?? '-'}</Text>
             </Space>
-            <Text type="secondary">所属数据源: {dataSource?.name ?? '-'}</Text>
-            <Text type="secondary">所属项目: {project?.name ?? '-'}</Text>
+          }
+        >
+          <Space size={2} data-label={name} style={{ display: 'flex' }}>
+            <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+            <span>{name}</span>
           </Space>
-        }
-      >
-        <Space size={2} data-label={name} style={{ display: 'flex' }}>
-          <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
-          <span>{name}</span>
-        </Space>
-      </Popover>
-    ),
+        </Popover>
+      ),
 
-    value: id,
-  }));
+      value: id,
+    }));
 
   const loadDatabase = async (projectId: number) => {
     const res = await listDatabases(

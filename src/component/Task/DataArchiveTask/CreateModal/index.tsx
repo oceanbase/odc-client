@@ -329,11 +329,13 @@ const CreateModal: React.FC<IProps> = (props) => {
       >
         <Space align="start">
           <DatabaseSelect
+            type={TaskType.DATA_ARCHIVE}
             label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.SourceDatabase' })}
             /*源端数据库*/ projectId={projectId}
           />
 
           <DatabaseSelect
+            type={TaskType.DATA_ARCHIVE}
             label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.TargetDatabase' })}
             /*目标数据库*/ name="targetDatabase"
             projectId={projectId}
