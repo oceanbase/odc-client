@@ -1,10 +1,8 @@
 import { detailSensitiveRule } from '@/common/network/sensitiveRule';
-import { CommonTableMode } from '@/component/CommonTable/interface';
+import CommonTable from '@/component/CommonTable';
 import MonacoEditor from '@/component/MonacoEditor';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { DetectRuleTypeMap } from '@/page/Project/Sensitive/interface';
-import SecureTable from '@/page/Secure/components/SecureTable';
-import { CommonTableBodyMode } from '@/page/Secure/components/SecureTable/interface';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { Button, Descriptions, Divider, Drawer } from 'antd';
@@ -20,7 +18,8 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
           <Descriptions.Item
             label={
               formatMessage({
-                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
+                id:
+                  'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
               }) //路径识别表达式
             }
           >
@@ -107,12 +106,9 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
               width: '500px',
             }}
           >
-            <SecureTable
-              mode={CommonTableMode.SMALL}
-              body={CommonTableBodyMode.SMALL}
+            <CommonTable
               titleContent={null}
               showToolbar={false}
-              showPagination={false}
               filterContent={{
                 searchPlaceholder: formatMessage({
                   id: 'odc.components.UserPage.EnterAUserOrAccount',

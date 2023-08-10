@@ -24,7 +24,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     case ComponentType.INPUT_STRING: {
       return (
         <Form.Item label={label} name={name} tooltip={description}>
-          <Input />
+          <Input placeholder="请输入" />
         </Form.Item>
       );
     }
@@ -46,7 +46,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           ]}
           tooltip={description}
         >
-          <InputNumber defaultValue={defaultValue} min={0} />
+          <InputNumber defaultValue={defaultValue} min={0} placeholder="请输入" />
         </Form.Item>
       );
     }
@@ -83,7 +83,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     case ComponentType.SELECT_SINGLE: {
       return (
         <Form.Item label={label} name={name} tooltip={description}>
-          <Select options={initData?.[option] || []} />
+          <Select options={initData?.[option] || []} placeholder="请选择" />
         </Form.Item>
       );
     }
@@ -95,6 +95,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             maxTagCount="responsive"
             options={initData?.[option] || []}
             defaultValue={defaultValue}
+            placeholder="请选择"
           />
         </Form.Item>
       );
@@ -107,6 +108,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             maxTagCount="responsive"
             options={initData?.[option] || []}
             defaultValue={defaultValue}
+            placeholder="请选择"
           />
         </Form.Item>
       );

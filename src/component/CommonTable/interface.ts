@@ -51,6 +51,7 @@ export enum IOperationOptionType {
 }
 export interface IOperationOption {
   tooltip?: string;
+  otherContent?: string;
   type: IOperationOptionType;
   icon?: React.ReactNode;
   content?: React.ReactNode;
