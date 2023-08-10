@@ -7,13 +7,9 @@ import { formatMessage } from '@/util/intl';
 import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useRef, useState } from 'react';
-import SecureTable from '../components/SecureTable';
-import {
-  CommonTableBodyMode,
-  CommonTableMode,
-  ITableLoadOptions,
-} from '../components/SecureTable/interface';
 import ViewMaskingAlgorithmDrawer from './components/ViewMaskingAlgorithmDrawer';
+import CommonTable from '@/component/CommonTable';
+import { ITableLoadOptions } from '@/component/CommonTable/interface';
 
 interface MaskingAlgorithmProps {}
 const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
@@ -119,13 +115,10 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
 
   return (
     <>
-      <SecureTable
+      <CommonTable
         ref={tableRef}
-        mode={CommonTableMode.SMALL}
-        body={CommonTableBodyMode.BIG}
         titleContent={null}
         showToolbar={false}
-        showPagination={true}
         filterContent={{}}
         operationContent={{
           options: [],

@@ -260,6 +260,10 @@ const ManualRule = ({
           }
           style={{ width: '132px' }}
           onSelect={handleDataSourceSelect}
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
           options={dataSourceOptions}
         />
       </Form.Item>
@@ -285,6 +289,10 @@ const ManualRule = ({
           }
           style={{ width: '132px' }}
           onSelect={handleDatabaseSelect}
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
           options={databaseOptions}
           disabled={dataSourceOptions?.length === 0 || dataSourceId === 0}
         />
@@ -313,6 +321,10 @@ const ManualRule = ({
           options={tableOptions}
           value={tableName}
           onSelect={handleTableSelect}
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
           disabled={databaseOptions?.length === 0 || databaseId === 0}
         />
       </Form.Item>
@@ -344,6 +356,8 @@ const ManualRule = ({
           style={{ width: '132px' }}
           value={columnName}
           onSelect={hanleColumnSelect}
+          showSearch
+          onChange={(e) => setColumnName(e)}
           onDropdownVisibleChange={async (visible: boolean) => {
             if (visible) {
               const { manual = [] } = await formRef.getFieldsValue();
@@ -352,13 +366,15 @@ const ManualRule = ({
           }}
           disabled={tableOptions?.length === 0 || tableName === ''}
         >
-          {columnOptions?.map(
-            ({ label = undefined, value = undefined, disabled = false }, index) => (
+          {columnOptions
+            ?.filter((option) =>
+              (option?.label ?? '').toLowerCase().includes(columnName.toLowerCase()),
+            )
+            ?.map(({ label = undefined, value = undefined, disabled = false }, index) => (
               <Select.Option value={value} key={index} disabled={disabled}>
                 {label}
               </Select.Option>
-            ),
-          )}
+            ))}
         </Select>
       </Form.Item>
       <Form.Item
@@ -379,6 +395,10 @@ const ManualRule = ({
             formatMessage({ id: 'odc.SensitiveColumn.components.ManualRule.PleaseSelect' }) //请选择
           }
           style={{ width: '184px' }}
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
           options={maskingAlgorithmOptions}
           disabled={columnOptions?.length === 0 || columnName === ''}
         />

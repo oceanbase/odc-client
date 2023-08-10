@@ -106,7 +106,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [approvalStatus, setApprovalStatus] = useState(false);
   const hasFlow = !!task?.nodeList?.find(
     (node) =>
-      node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.SQL_CHECK,
+      node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.PRE_CHECK,
   );
   const hasLog = true;
   const hasResult =

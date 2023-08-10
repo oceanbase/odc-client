@@ -35,7 +35,6 @@ const EditModal = ({
       );
       setModalVisible(false);
       tableRef.current?.reload();
-      tableRef.current?.resetSelectedRows();
       initSensitiveColumn();
     } else {
       message.success(
@@ -62,7 +61,8 @@ const EditModal = ({
           required
           label={
             formatMessage({
-              id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.DesensitizationAlgorithm',
+              id:
+                'odc.SensitiveColumn.components.EditSensitiveColumnModal.DesensitizationAlgorithm',
             }) //脱敏算法
           }
           name="maskingAlgorithmId"
@@ -70,7 +70,8 @@ const EditModal = ({
             {
               required: true,
               message: formatMessage({
-                id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.SelectADesensitizationAlgorithm',
+                id:
+                  'odc.SensitiveColumn.components.EditSensitiveColumnModal.SelectADesensitizationAlgorithm',
               }), //请选择脱敏算法
             },
           ]}

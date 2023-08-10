@@ -143,6 +143,12 @@ export const status = {
     icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.Failed.2' }), //执行失败
   },
+
+  [TaskStatus.PRE_CHECK_FAILED]: {
+    icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
+    text: '预检查失败',
+  },
+
   [TaskStatus.ROLLBACK_FAILED]: {
     icon: <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({ id: 'odc.component.TaskStatus.RollbackFailed' }), //回滚失败
