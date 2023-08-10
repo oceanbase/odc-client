@@ -12,6 +12,7 @@ import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { history } from '@umijs/max';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 
 const Login: React.FC<{
   userStore: UserStore;
@@ -83,7 +84,7 @@ const Login: React.FC<{
         if (query.has('redirectTo')) {
           history.push(decodeURIComponent(query.get('redirectTo')));
         } else {
-          history.push('/project');
+          toDefaultProjectPage();
         }
       } else if (errCode === 'UserNotActive') {
         const { username, password } = params;

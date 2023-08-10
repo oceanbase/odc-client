@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
+import { setDefaultProject } from '@/service/projectHistory';
 
 const titleOptions: { label: string; value: 'all' | 'deleted' }[] = [
   {
@@ -135,6 +136,7 @@ const Project = () => {
                     if (isProjectDeleted) {
                       return;
                     }
+                    setDefaultProject(p.id);
                     navigate(`/project/${p.id}/${IPageType.Project_Database}`);
                   }}
                   data={item}
