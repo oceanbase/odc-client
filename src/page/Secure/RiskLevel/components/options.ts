@@ -1,6 +1,7 @@
-import { listEnvironments } from "@/common/network/env";
-import { TaskType } from "@/d.ts";
-import { RiskLevelTextMap, RiskLevelEnum } from "../../interface";
+import { listEnvironments } from '@/common/network/env';
+import { TaskType } from '@/d.ts';
+import { RiskLevelTextMap, RiskLevelEnum } from '../../interface';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable';
 
 export const getEnvironmentOptions = async () => {
   const rawData = (await listEnvironments()) || [];
@@ -15,39 +16,39 @@ export const getEnvironmentOptions = async () => {
 export const getTaskTypeOptions = () => {
   const newTaskTypeOptions = [
     {
-      label: TaskType.IMPORT,
+      label: TaskTypeMap[TaskType.IMPORT],
       value: TaskType.IMPORT,
     },
     {
-      label: TaskType.EXPORT,
+      label: TaskTypeMap[TaskType.EXPORT],
       value: TaskType.EXPORT,
     },
     {
-      label: TaskType.DATAMOCK,
+      label: TaskTypeMap[TaskType.DATAMOCK],
       value: TaskType.DATAMOCK,
     },
     {
-      label: TaskType.ASYNC,
+      label: TaskTypeMap[TaskType.ASYNC],
       value: TaskType.ASYNC,
     },
     {
-      label: TaskType.PARTITION_PLAN,
+      label: TaskTypeMap[TaskType.PARTITION_PLAN],
       value: TaskType.PARTITION_PLAN,
     },
     {
-      label: TaskType.SQL_PLAN,
+      label: TaskTypeMap[TaskType.SQL_PLAN],
       value: TaskType.SQL_PLAN,
     },
     {
-      label: TaskType.ALTER_SCHEDULE,
+      label: TaskTypeMap[TaskType.ALTER_SCHEDULE],
       value: TaskType.ALTER_SCHEDULE,
     },
     {
-      label: TaskType.SHADOW,
+      label: TaskTypeMap[TaskType.SHADOW],
       value: TaskType.SHADOW,
     },
     {
-      label: TaskType.DATA_SAVE,
+      label: TaskTypeMap[TaskType.DATA_SAVE],
       value: TaskType.DATA_SAVE,
     },
   ];
