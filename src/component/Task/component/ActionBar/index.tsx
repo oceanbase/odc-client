@@ -475,7 +475,7 @@ const ActionBar: React.FC<IProps> = inject(
                 }
               } else if (task.type === TaskType.DATAMOCK && settingStore.enableDataExport) {
                 tools.push(downloadBtn);
-              } else if (task.type === TaskType.RESULT_SET_EXPORT) {
+              } else if (task.type === TaskType.EXPORT_RESULT_SET) {
                 tools.push(downloadBtn);
               } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
                 tools.push(rollbackBtn);

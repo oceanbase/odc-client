@@ -77,7 +77,7 @@ export function getTaskTypeList(
           enabled: settingStore.enableDBExport,
         },
         {
-          value: TaskPageType.RESULT_SET_EXPORT,
+          value: TaskPageType.EXPORT_RESULT_SET,
           label: '导出结果集',
           enabled: settingStore.enableDBExport,
         },

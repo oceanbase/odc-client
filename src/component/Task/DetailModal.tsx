@@ -84,7 +84,7 @@ const taskContentMap = {
     getItems: getDDLAlterItems,
   },
 
-  [TaskType.RESULT_SET_EXPORT]: {
+  [TaskType.EXPORT_RESULT_SET]: {
     getItems: getResultSetExportTaskContentItems,
   },
 };
@@ -363,7 +363,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     detailType,
     logType,
     isLoading: loading,
-    isSplit: ![TaskType.ASYNC, TaskType.RESULT_SET_EXPORT].includes(task?.type),
+    isSplit: ![TaskType.ASYNC, TaskType.EXPORT_RESULT_SET].includes(task?.type),
     taskTools: (
       <TaskTools
         isDetailModal
