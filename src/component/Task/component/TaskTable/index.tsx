@@ -11,8 +11,17 @@ import SearchFilter from '@/component/SearchFilter';
 import StatusLabel, { cycleStatus, status } from '@/component/Task/component/Status';
 import { TimeOptions } from '@/component/TimeSelect';
 import UserPopover from '@/component/UserPopover';
-import type { ICycleTaskTriggerConfig, TaskRecord, TaskRecordParameters } from '@/d.ts';
+import type {
+  ICycleTaskRecord,
+  ICycleTaskTriggerConfig,
+  IDataArchiveJobParameters,
+  IResponseData,
+  ISqlPlayJobParameters,
+  TaskRecord,
+  TaskRecordParameters,
+} from '@/d.ts';
 import { TaskExecStrategy, TaskPageType, TaskStatus, TaskType } from '@/d.ts';
+import type { PageStore } from '@/store/page';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
 import task from '@/store/task';
@@ -111,6 +120,13 @@ interface IProps {
   tableRef: React.RefObject<ITableInstance>;
   taskStore?: TaskStore;
   settingStore?: SettingStore;
+  pageStore?: PageStore;
+  taskTabType?: TaskPageType;
+  taskList: IResponseData<
+    | TaskRecord<TaskRecordParameters>
+    | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
+  >;
+  isMultiPage?: boolean;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -121,14 +137,14 @@ interface IProps {
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
   'settingStore',
+  'pageStore',
 )(
   observer((props) => {
-    const { taskStore, settingStore, tableRef } = props;
-    const { tasks, cycleTasks, taskPageScope, taskPageType } = taskStore;
-    const taskStatusFilters = getStatusFilters(
-      isCycleTaskPage(taskPageType) ? cycleStatus : status,
-    );
-    const currentTask = isCycleTaskPage(taskPageType) ? cycleTasks : tasks;
+    const { taskStore, settingStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } =
+      props;
+    const { taskPageScope } = taskStore;
+    const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
+    const currentTask = taskList;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
     });
@@ -139,6 +155,7 @@ const TaskTable: React.FC<IProps> = inject(
     const [loading, setLoading] = useState(false);
     const [listParams, setListParams] = useState(null);
     const loadParams = useRef(null);
+    const { activePageKey } = pageStore;
     const fileExpireHours = settingStore?.serverSystemInfo?.fileExpireHours ?? null;
     const alertMessage = fileExpireHours
       ? formatMessage(
@@ -158,14 +175,18 @@ const TaskTable: React.FC<IProps> = inject(
         return a.group || [];
       }),
     );
-    const taskLabelInfo = taskTypes.find((item) => item.value === taskPageType);
+    const taskLabelInfo = taskTypes.find((item) => item.value === taskTabType);
 
     const columns = initColumns(listParams);
 
-    const loadData = useLoop((count) => {
+    const { loop: loadData, destory } = useLoop((count) => {
       return async (args: ITableLoadOptions) => {
         const _executeTime = args?.filters?.executeTime ?? executeTime;
         loadParams.current = args;
+        if (isMultiPage && activePageKey !== taskTabType) {
+          destory();
+          return;
+        }
         setExecuteTime(_executeTime);
         const filters = {
           ...args?.filters,
@@ -202,7 +223,7 @@ const TaskTable: React.FC<IProps> = inject(
           },
         });
       }
-    }, [taskPageScope, taskPageType]);
+    }, [taskPageScope, taskTabType, activePageKey]);
 
     useEffect(() => {
       if (executeTime) {
@@ -395,7 +416,7 @@ const TaskTable: React.FC<IProps> = inject(
     const isAll = [
       TaskPageType.APPROVE_BY_CURRENT_USER,
       TaskPageType.CREATED_BY_CURRENT_USER,
-    ].includes(taskPageType);
+    ].includes(taskTabType);
     const menus = taskTypeList?.filter((item) => item.groupName);
     return (
       <CommonTable
@@ -445,7 +466,7 @@ const TaskTable: React.FC<IProps> = inject(
                   ), //`新建${taskLabelInfo.label}`
                   isPrimary: true,
                   onClick: () => {
-                    props.onMenuClick(taskPageType);
+                    props.onMenuClick(taskTabType);
                   },
                 },
           ],

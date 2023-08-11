@@ -142,14 +142,8 @@ export class TaskStore {
     page?: number;
     size?: number;
   }) => {
-    const { taskType, createdByCurrentUser, approveByCurrentUser } = params;
-    const tasks = await getTaskList<TaskRecordParameters>(params);
-    if (
-      (!taskType && (createdByCurrentUser || approveByCurrentUser)) ||
-      taskType === this.taskPageType
-    ) {
-      this.tasks = tasks;
-    }
+    const res = await getTaskList<TaskRecordParameters>(params);
+    return res;
   };
 
   @action
@@ -169,11 +163,8 @@ export class TaskStore {
     page?: number;
     size?: number;
   }) => {
-    const { type, createdByCurrentUser, approveByCurrentUser } = params;
-    const tasks = await getCycleTaskList<ISqlPlayJobParameters | IDataArchiveJobParameters>(params);
-    if ((!type && (createdByCurrentUser || approveByCurrentUser)) || type === this.taskPageType) {
-      this.cycleTasks = tasks;
-    }
+    const res = await getCycleTaskList<ISqlPlayJobParameters | IDataArchiveJobParameters>(params);
+    return res;
   };
 
   @action
