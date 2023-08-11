@@ -1,153 +1,76 @@
 import { listRiskLevels } from '@/common/network/riskLevel';
-import { Acess, createPermission } from '@/component/Acess';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRiskLevel } from '@/d.ts/riskLevel';
-import { formatMessage } from '@/util/intl';
-import { Space } from 'antd';
-import { ColumnsType } from 'antd/es/table';
 import { inject, observer } from 'mobx-react';
-import { useRef, useState } from 'react';
-import SecureTable from '../components/SecureTable';
-import {
-  CommonTableBodyMode,
-  CommonTableMode,
-  ITableLoadOptions,
-} from '../components/SecureTable/interface';
-import FormRiskLevelDrawer from './components/FormRiskLevelDrawer';
-import ViewRiskLevelDrawer from './components/ViewRiskLevelDrawer';
-import styles from './index.less';
+import { useEffect, useState, useRef } from 'react';
+import SecureLayout from '../components/SecureLayout';
+import SecureSider, { SiderItem } from '../components/SecureSider';
+import { RiskLevelMap } from '../interface';
+import InnerRiskLevel from './components/InnerRiskLevel';
+import { Spin } from 'antd';
 
-const ApprovalProcess = ({ nodes = [] }) => {
-  return (
-    <>
-      {nodes
-        ?.map((node) => {
-          let label = '';
-          const externalApprovalName = node?.externalApprovalName;
-          if (node.autoApproval) {
-            label = formatMessage({ id: 'odc.Secure.RiskLevel.AutomaticApproval' }); //自动审批
-          } else if (externalApprovalName) {
-            label = formatMessage(
-              {
-                id: 'odc.Secure.RiskLevel.ExternalApprovalExternalapprovalname',
-              },
-              { externalApprovalName: externalApprovalName },
-            ); //`外部审批(${externalApprovalName})`
-          } else {
-            label = node?.resourceRoleName || '-';
-          }
-          return label;
-        })
-        .join(' - ')}
-    </>
-  );
-};
+function genRiskLevel(
+  riskLevel: IRiskLevel,
+): {
+  label: string;
+  value: number;
+  origin: IRiskLevel;
+} {
+  return {
+    label: RiskLevelMap[riskLevel?.level],
+    value: riskLevel?.level,
+    origin: riskLevel,
+  };
+}
 
 const RiskLevel = ({ userStore }) => {
-  const tableRef = useRef(null);
-  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  const [editDrawerVisiable, setEditDrawerVisible] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<IRiskLevel[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<IRiskLevel>(null);
-  const loadData = async (args: ITableLoadOptions) => {
-    const rawData = await listRiskLevels();
-    setDataSource(rawData);
-  };
-  const handleView = (record: IRiskLevel) => {
-    setSelectedRecord(record);
-    setDrawerVisible(true);
-  };
-  const handleEdit = (record: IRiskLevel) => {
-    setSelectedRecord(record);
-    setEditDrawerVisible(true);
-  };
-  const handleDrawerClose = () => {
-    setDrawerVisible(false);
-  };
-  const columns: ColumnsType<IRiskLevel> = [
-    {
-      key: 'level',
-      title: formatMessage({ id: 'odc.Secure.RiskLevel.RiskLevel' }), //风险等级 // width: 200,
-      dataIndex: 'riskLevel',
-      render: (_, { level, style }) => <RiskLevelLabel level={level} color={style} />,
-    },
-    {
-      key: 'nodes',
-      title: formatMessage({ id: 'odc.Secure.RiskLevel.ApprovalProcess' }), //审批流程 // width: 832,
-      dataIndex: 'nodes',
-      render: (_, { approvalFlowConfig: { nodes = [] } }) => <ApprovalProcess nodes={nodes} />,
-    },
-    {
-      key: 'action',
-      title: formatMessage({ id: 'odc.Secure.RiskLevel.Operation' }), //操作
-      width: 120,
-      render: (_, record) => {
-        return (
-          <Space>
-            <a onClick={() => handleView(record)}>
-              {formatMessage({ id: 'odc.Secure.RiskLevel.View' }) /*查看*/}
-            </a>
-            <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
-              <a onClick={() => handleEdit(record)}>
-                {formatMessage({ id: 'odc.Secure.RiskLevel.Edit' }) /*编辑*/}
-              </a>
-            </Acess>
-          </Space>
-        );
-      },
-    },
-  ];
+  const currentSiderItemRef = useRef<{ value: number; origin: IRiskLevel; label: string }>(null);
+  const [selectedItem, setSelectedItem] = useState<number>();
+  const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currentRiskLevel, setCurrentRiskLevel] = useState<IRiskLevel>();
 
-  const handleEditRiskLevelDrawerClose = () => {
-    setEditDrawerVisible(false);
+  const initRiskLevel = async () => {
+    const riskLevels = await listRiskLevels();
+    const newSiderItemList = riskLevels?.map(genRiskLevel)?.sort((a, b) => b?.value - a?.value);
+    newSiderItemList?.length > 0 && setSiderItemList(newSiderItemList);
+    newSiderItemList?.length > 0 && handleItemClick(newSiderItemList?.[0]);
   };
-  const reload = () => {
-    tableRef.current.reload();
+
+  const handleItemClick = (item: { value: number; origin: IRiskLevel; label: string }) => {
+    setSelectedItem(item?.value);
+    setCurrentRiskLevel(item?.origin);
+    currentSiderItemRef.current = item;
   };
+  const memoryReload = async () => {
+    const riskLevels = await listRiskLevels();
+    const newSiderItemList = riskLevels?.map(genRiskLevel)?.sort((a, b) => b?.value - a?.value);
+    newSiderItemList?.length > 0 && setSiderItemList(newSiderItemList);
+    newSiderItemList?.length > 0 && setSelectedItem(currentSiderItemRef.current?.value);
+    const newCrrentRiskLevel = riskLevels?.find(
+      (riskLevel) => riskLevel?.id === currentSiderItemRef.current?.origin?.id,
+    );
+    newCrrentRiskLevel && setCurrentRiskLevel(newCrrentRiskLevel);
+  };
+  useEffect(() => {
+    setLoading(true);
+    initRiskLevel();
+    setLoading(false);
+  }, []);
   return (
-    <div className={styles.riskLevel}>
-      <SecureTable
-        ref={tableRef}
-        mode={CommonTableMode.SMALL}
-        body={CommonTableBodyMode.BIG}
-        titleContent={null}
-        showToolbar={false}
-        showPagination={false}
-        filterContent={{}}
-        operationContent={{
-          options: [],
-        }}
-        onLoad={loadData}
-        tableProps={{
-          columns: columns,
-          dataSource: dataSource,
-          pagination: false,
-          rowKey: 'id',
-          scroll: {
-            // x: 1240,
-          },
-        }}
+    <SecureLayout>
+      <SecureSider
+        siderItemList={siderItemList}
+        selectedItem={selectedItem}
+        handleItemClick={handleItemClick}
       />
-
-      <ViewRiskLevelDrawer
-        {...{
-          drawerVisible,
-          handleDrawerClose,
-          selectedRecord,
-        }}
-      />
-
-      <FormRiskLevelDrawer
-        {...{
-          reload,
-          userStore,
-          visible: editDrawerVisiable,
-          handleEditRiskLevelDrawerClose,
-          selectedRecord,
-        }}
-      />
-    </div>
+      <Spin spinning={loading}>
+        <InnerRiskLevel
+          key={currentRiskLevel?.id}
+          currentRiskLevel={currentRiskLevel}
+          memoryReload={memoryReload}
+        />
+      </Spin>
+    </SecureLayout>
   );
 };
 

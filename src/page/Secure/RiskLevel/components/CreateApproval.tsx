@@ -2,7 +2,7 @@ import { getIntegrationList, getResourceRoles } from '@/common/network/manager';
 import { useEffect, useState } from 'react';
 import FormModal from '../../Approval/component/FormModal';
 
-const CreateApproval = ({ createApprovalDrawerOpen, setCreateApprovalDrawerOpen, reloadData }) => {
+const CreateApproval = ({ editId, formModalVisible, setFormModalVisible, reloadData }) => {
   const [roles, setRoles] = useState([]);
   const [integrations, setIntegrations] = useState([]);
 
@@ -20,21 +20,21 @@ const CreateApproval = ({ createApprovalDrawerOpen, setCreateApprovalDrawerOpen,
   };
 
   useEffect(() => {
-    if (createApprovalDrawerOpen) {
+    if (formModalVisible) {
       loadRoles();
       loadIntegrations();
     }
-  }, [createApprovalDrawerOpen]);
+  }, [formModalVisible]);
   return (
     <>
       <FormModal
         roles={roles}
         integrations={integrations}
-        editId={null}
-        visible={createApprovalDrawerOpen}
+        editId={editId}
+        visible={formModalVisible}
         reloadData={reloadData}
         onClose={() => {
-          setCreateApprovalDrawerOpen(false);
+          setFormModalVisible(false);
         }}
       />
     </>

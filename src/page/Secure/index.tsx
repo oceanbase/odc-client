@@ -11,15 +11,14 @@ import {
 import { IPageType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import { history, useParams } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { history, useParams } from '@umijs/max';
 import Approval from './Approval';
 import { ManageContext } from './context';
 import Env from './Env';
 import MaskingAlgorithm from './MaskingAlgorithm';
 import Record from './Record';
-import RiskDetectRules from './RiskDetectRules';
 import RiskLevel from './RiskLevel';
 
 interface IProps {
@@ -33,11 +32,8 @@ const Pages = {
   [IPageType.Secure_Record]: {
     component: Record, // 操作记录
   },
-  [IPageType.RiskDetectRules]: {
-    component: RiskDetectRules, // 风险识别规则
-  },
   [IPageType.MaskingAlgorithm]: {
-    component: MaskingAlgorithm,
+    component: MaskingAlgorithm, // 脱敏算法
   },
   [IPageType.Secure_Approval]: {
     component: Approval, // 审批流程
@@ -55,10 +51,6 @@ const tabs = [
   {
     tab: formatMessage({ id: 'odc.page.Secure.RiskLevel' }), //风险等级
     key: IPageType.RiskLevel,
-  },
-  {
-    tab: formatMessage({ id: 'odc.page.Secure.RiskIdentificationRules' }), //风险识别规则
-    key: IPageType.RiskDetectRules,
   },
   {
     tab: formatMessage({ id: 'odc.page.Secure.ApprovalProcess' }), //审批流程
@@ -99,7 +91,7 @@ const Index: React.FC<IProps> = function ({ userStore }) {
         title: formatMessage({ id: 'odc.page.Secure.SafetySpecifications' }), //安全规范
       }}
       containerWrapStyle={
-        [IPageType.Secure_Env, IPageType.RiskDetectRules, IPageType.RiskLevel].includes(page)
+        [IPageType.Secure_Env, IPageType.RiskLevel].includes(page)
           ? {
               padding: '0px 12px',
             }
@@ -121,4 +113,3 @@ const Index: React.FC<IProps> = function ({ userStore }) {
   );
 };
 export default inject('userStore', 'settingStore', 'taskStore', 'modalStore')(observer(Index));
-// export default Index;

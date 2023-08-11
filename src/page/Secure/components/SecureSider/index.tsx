@@ -32,21 +32,21 @@ const SecureSider: React.FC<ISecureSiderProps> = ({
     return (
       <Spin spinning={loading}>
         <div className={styles.siderItemList}>
-          {siderItemList.map((item) => {
+          {siderItemList?.map((item) => {
             return (
               <div
                 className={classNames(
                   {
-                    [styles.selected]: handleSelected(item.value),
+                    [styles.selected]: handleSelected(item?.value),
                   },
                   styles.item,
                 )}
-                key={item.value}
+                key={item?.value}
                 onClick={() => {
                   handleItemClick(item);
                 }}
               >
-                {item.label}
+                {item?.label}
               </div>
             );
           })}

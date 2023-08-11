@@ -1,15 +1,19 @@
-import { IRiskDetectRule, RiskDetectRuleCondition } from '@/d.ts/riskDetectRule';
+import { IRiskDetectRule, RiskDetectRuleCondition, RootNode } from '@/d.ts/riskDetectRule';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import request from '@/util/request';
 
 export async function updateRiskDetectRule(
   id: number,
-  riskDetectRule: IRiskDetectRule,
+  data: {
+  riskLevelId: number,
+  riskLevel: IRiskLevel,
+  rootNode: RootNode
+  },
 ): Promise<boolean> {
-  const ret = await request.put(`/api/v2/regulation/riskDetectRules/${id}`, {
-    data: riskDetectRule,
+  const res = await request.put(`/api/v2/regulation/riskDetectRules/${id}`, {
+    data,
   });
-  return ret?.successful;
+  return res?.successful || false;
 }
 
 export async function listRiskDetectRules(
@@ -17,11 +21,11 @@ export async function listRiskDetectRules(
     riskLevelId: number;
     name: string;
   }>,
-): Promise<IRiskDetectRule[]> {
+): Promise<IRiskDetectRule> {
   const ret = await request.get(`/api/v2/regulation/riskDetectRules/`, {
     params,
   });
-  return ret?.data?.contents;
+  return ret?.data?.contents?.[0];
 }
 
 export async function detailRiskDetectRule(id: number): Promise<IRiskDetectRule> {
@@ -35,19 +39,14 @@ export async function deleteRiskDetectRule(id: number): Promise<boolean> {
 }
 
 export async function createRiskDetectRules(
-  params: Partial<{
-    name: string;
-    organizationId: number;
-    conditions: RiskDetectRuleCondition[];
+  data: Partial<{
     riskLevelId: number;
-    risklLevel: IRiskLevel;
-    buitin: boolean;
+    riskLevel: IRiskLevel;
+    rootNode: RootNode;
   }>,
 ): Promise<boolean> {
-  const ret = await request.post(`/api/v2/regulation/riskDetectRules`, {
-    data: {
-      ...params,
-    },
+  const res = await request.post(`/api/v2/regulation/riskDetectRules`, {
+    data,
   });
-  return ret?.successful;
+  return res?.successful || false;
 }
