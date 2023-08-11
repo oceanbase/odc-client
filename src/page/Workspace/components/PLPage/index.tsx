@@ -557,6 +557,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const isExec = plAction === 'EXEC';
     const isDebug = plAction === 'DEBUG';
     const isDebugRecover = isDebug && !!this.state.debug;
+    const isOracle = this.getSession()?.connection?.dialectType === ConnectionMode.OB_ORACLE;
     const result: ISQLPageState['result'] = {
       type: plAction,
       data: {},
@@ -589,7 +590,8 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       });
       sqlStore.runningPageKey.add(pageKey);
       const resExec = await sqlStore.execPL(
-        { ...plFormatSchema, params: plParams },
+        // oracle plSchema.params为空，需要取原值
+        { ...plFormatSchema, params: isOracle ? plFormatSchema?.params : plParams },
         anonymousBlockDdl,
         true,
         this.getSession()?.sessionId,
@@ -990,8 +992,14 @@ export class PLPage extends Component<IProps, ISQLPageState> {
 
   // 保存 SQL
   public handleSaveNewScript = async (script: ISQLScript) => {
-    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
-      this.props;
+    const {
+      userStore,
+      pageStore,
+      pageKey,
+      onSetUnsavedModalContent,
+      onChangeSaved,
+      params,
+    } = this.props;
     const files = await newScript(
       [new File([params.scriptText], script.objectName)],
       'UploadScript',
