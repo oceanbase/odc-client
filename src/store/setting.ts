@@ -11,6 +11,7 @@ import request from '@/util/request';
 import { initTracert } from '@/util/tracert';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
+import { isLinux, isWin64 } from '@/util/utils';
 
 export const themeKey = 'odc-theme';
 
@@ -190,13 +191,14 @@ export class SettingStore {
   @action
   public async getSystemConfig() {
     const res = await getSystemConfig();
+    const isMacClient = isClient() && !isWin64() && !isLinux();
     const maxResultsetRows =
       parseInt(res?.['odc.session.sql-execute.max-result-set-rows']) || Number.MAX_SAFE_INTEGER;
     const maxSessionCount =
       parseInt(res?.['odc.session.sql-execute.max-single-session-count']) ||
       Number.MAX_SAFE_INTEGER;
     this.enableDataExport = res?.['odc.data.export.enabled'] === 'true' ?? false;
-    this.enableOBClient = res?.['odc.features.obclient.enabled'] === 'true';
+    this.enableOBClient = res?.['odc.features.obclient.enabled'] === 'true' && !isMacClient;
     this.maxResultSetRows = maxResultsetRows === -1 ? Number.MAX_SAFE_INTEGER : maxResultsetRows;
     this.maxSessionCount = maxSessionCount === -1 ? Number.MAX_SAFE_INTEGER : maxSessionCount;
     this.enableVersionTip =
