@@ -37,7 +37,7 @@ export enum IArchiveRange {
 export const InsertActionOptions = [
   {
     label: '重复时忽略',
-    value: MigrationInsertAction.INSERT_NORMAL,
+    value: MigrationInsertAction.INSERT_IGNORE,
   },
   {
     label: '重复时更新',
@@ -56,7 +56,7 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   variables: [variable],
   tables: [null],
-  migrationInsertAction: MigrationInsertAction.INSERT_NORMAL,
+  migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
 };
 
 interface IProps {

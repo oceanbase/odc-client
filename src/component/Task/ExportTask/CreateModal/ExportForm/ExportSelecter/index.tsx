@@ -118,6 +118,7 @@ const ExportSelecter: React.FC<IProps> = function ({
   useEffect(() => {
     if (databaseName) {
       loadExportObjects();
+      _setCheckedKeys([]);
     }
   }, [databaseName]);
 

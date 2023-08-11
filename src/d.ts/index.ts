@@ -2122,7 +2122,7 @@ export interface ITaskResult {
 }
 
 export enum MigrationInsertAction {
-  INSERT_NORMAL = 'INSERT_NORMAL',
+  INSERT_IGNORE = 'INSERT_IGNORE',
   INSERT_DUPLICATE_UPDATE = 'INSERT_DUPLICATE_UPDATE',
 }
 
