@@ -1,4 +1,4 @@
-import { isConnectTypeBeShardingType } from '@/util/connection';
+import { isConnectTypeBeCloudType, isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { checkNumberRange, validTrimEmptyWithWarn } from '@/util/valid';
@@ -156,7 +156,8 @@ const AddressItems: React.FC<IProps> = function (props) {
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const connectType = getFieldValue('type');
-              return isConnectTypeBeShardingType(connectType) ? null : (
+              return isConnectTypeBeCloudType(connectType) ||
+                isConnectTypeBeShardingType(connectType) ? null : (
                 <Row gutter={12}>{baseFormItem}</Row>
               );
             }}
