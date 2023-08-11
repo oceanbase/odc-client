@@ -57,6 +57,7 @@ const FormModal: React.FC<IProps> = (props) => {
     };
     form.setFieldsValue(formData);
     setBuiltIn(formData.builtIn);
+    setOriginName(formData.name);
   }
 
   async function handleSubmit() {
