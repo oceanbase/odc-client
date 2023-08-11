@@ -37,7 +37,7 @@ const EditModal = ({
       tableRef.current?.reload();
       initSensitiveColumn();
     } else {
-      message.success(
+      message.error(
         formatMessage({
           id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.UpdateFailed',
         }), //更新失败
