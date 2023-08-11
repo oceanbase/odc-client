@@ -2,6 +2,9 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import type {
   IAlterScheduleTaskParams,
   IConnectionPartitionPlan,
+  IDataArchiveJobParameters,
+  IResponseData,
+  ISqlPlayJobParameters,
   TaskRecordParameters,
   TaskStatus,
 } from '@/d.ts';
@@ -34,8 +37,10 @@ interface IProps {
   taskStore?: TaskStore;
   userStore?: UserStore;
   modalStore?: ModalStore;
+  pageKey?: TaskPageType;
   tabHeight?: number;
   projectId?: number;
+  isMultiPage?: boolean;
 }
 
 interface IState {
@@ -44,6 +49,8 @@ interface IState {
   detailVisible: boolean;
   partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
+  tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
+  cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
 
 @inject('userStore', 'taskStore', 'modalStore')
@@ -56,6 +63,8 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailType: props.taskStore?.defauleOpenTaskType,
       detailVisible: !!props.taskStore?.defaultOpenTaskId,
       partitionPlan: null,
+      tasks: null,
+      cycleTasks: null,
       status: null,
     };
   }
@@ -63,17 +72,21 @@ class TaskManaerContent extends React.Component<IProps, IState> {
   private tableRef = React.createRef<ITableInstance>();
 
   public loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
-    const { taskPageType } = this.props.taskStore;
-    if (isCycleTaskPage(taskPageType)) {
-      await this.loadCycleTaskList(args, executeDate);
+    const { pageKey, taskStore } = this.props;
+    const taskTabType = pageKey || taskStore?.taskPageType;
+    if (isCycleTaskPage(taskTabType)) {
+      await this.loadCycleTaskList(taskTabType, args, executeDate);
     } else {
-      await this.loadTaskList(args, executeDate);
+      await this.loadTaskList(taskTabType, args, executeDate);
     }
   };
 
-  public loadTaskList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
-    const { projectId, taskStore } = this.props;
-    const { taskPageType } = taskStore;
+  public loadTaskList = async (
+    taskTabType,
+    args: ITableLoadOptions,
+    executeDate: [Moment, Moment],
+  ) => {
+    const { projectId } = this.props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { status, executeTime, candidateApprovers, creator, connection, id } = filters ?? {};
     const { column, order } = sorter ?? {};
@@ -84,14 +97,14 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const isAllScope = ![
       TaskPageType.CREATED_BY_CURRENT_USER,
       TaskPageType.APPROVE_BY_CURRENT_USER,
-    ].includes(taskPageType);
+    ].includes(taskTabType);
 
     if (!pageSize) {
       return;
     }
     const params = {
       fuzzySearchKeyword: id ? id : undefined,
-      taskType: isAllScope ? taskPageType : undefined,
+      taskType: isAllScope ? taskTabType : undefined,
       projectId,
       status,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
@@ -104,10 +117,10 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       size: pageSize,
       createdByCurrentUser: isAllScope
         ? true
-        : taskPageType === TaskPageType.CREATED_BY_CURRENT_USER,
+        : taskTabType === TaskPageType.CREATED_BY_CURRENT_USER,
       approveByCurrentUser: isAllScope
         ? true
-        : taskPageType === TaskPageType.APPROVE_BY_CURRENT_USER,
+        : taskTabType === TaskPageType.APPROVE_BY_CURRENT_USER,
     };
 
     if (executeTime !== 'custom' && typeof executeTime === 'number') {
@@ -116,12 +129,18 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
-    await this.props.taskStore.getTaskList(params);
+    const tasks = await this.props.taskStore.getTaskList(params);
+    this.setState({
+      tasks,
+    });
   };
 
-  public loadCycleTaskList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
-    const { projectId, taskStore } = this.props;
-    const { taskPageType } = taskStore;
+  public loadCycleTaskList = async (
+    taskTabType,
+    args: ITableLoadOptions,
+    executeDate: [Moment, Moment],
+  ) => {
+    const { projectId } = this.props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { status, executeTime, candidateApprovers, creator, id } = filters ?? {};
     const { column, order } = sorter ?? {};
@@ -129,22 +148,22 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const isAllScope = ![
       TaskPageType.CREATED_BY_CURRENT_USER,
       TaskPageType.APPROVE_BY_CURRENT_USER,
-    ].includes(taskPageType);
+    ].includes(taskTabType);
 
     if (!pageSize) {
       return;
     }
     const params = {
       id: id ? id : undefined,
-      type: isAllScope ? taskPageType : undefined,
+      type: isAllScope ? taskTabType : undefined,
       projectId,
       status,
       candidateApprovers,
       creator,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
-      createdByCurrentUser: taskPageType === TaskPageType.CREATED_BY_CURRENT_USER,
-      approveByCurrentUser: taskPageType === TaskPageType.APPROVE_BY_CURRENT_USER,
+      createdByCurrentUser: taskTabType === TaskPageType.CREATED_BY_CURRENT_USER,
+      approveByCurrentUser: taskTabType === TaskPageType.APPROVE_BY_CURRENT_USER,
       sort: column?.dataIndex,
       page: current,
       size: pageSize,
@@ -156,7 +175,10 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
-    await this.props.taskStore.getCycleTaskList(params);
+    const cycleTasks = await this.props.taskStore.getCycleTaskList(params);
+    this.setState({
+      cycleTasks,
+    });
   };
 
   private handlePartitionPlanChange = (value: IConnectionPartitionPlan) => {
@@ -234,13 +256,18 @@ class TaskManaerContent extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { projectId } = this.props;
-    const { detailId, detailType, detailVisible, partitionPlan } = this.state;
+    const { projectId, pageKey, taskStore, isMultiPage = false } = this.props;
+    const { detailId, detailType, detailVisible, partitionPlan, cycleTasks, tasks } = this.state;
+    const taskTabType = pageKey || taskStore?.taskPageType;
+    const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
     return (
       <>
         <div className={styles.content}>
           <TaskTable
             tableRef={this.tableRef}
+            taskTabType={taskTabType}
+            taskList={taskList}
+            isMultiPage={isMultiPage}
             getTaskList={this.loadList}
             onDetailVisible={this.handleDetailVisible}
             onReloadList={this.reloadList}

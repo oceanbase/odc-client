@@ -149,7 +149,7 @@ export async function openNewDefaultPLPage(
 
 export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageScope) {
   taskStore.changeTaskManageVisible(true, taskType, taskPageScope);
-  page.openPage(new TaskPage());
+  page.openPage(new TaskPage(taskType));
 }
 
 /** 会话管理 */

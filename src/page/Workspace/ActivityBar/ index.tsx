@@ -1,9 +1,11 @@
 import { BulbOutlined, UserOutlined } from '@ant-design/icons';
 import React, { useContext } from 'react';
 
+import { TaskPageType } from '@/d.ts';
 import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
 import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
 import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
+import { openTasksPage } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
 import { Divider, Space } from 'antd';
 import ActivityBarButton from './ActivityBarButton';
@@ -81,6 +83,9 @@ const ActivityBar: React.FC<IProps> = function () {
                     if (item.key === context.activeKey) {
                       context.setActiveKey(null);
                       return;
+                    }
+                    if (item.key === ActivityBarItemType.Task) {
+                      openTasksPage(TaskPageType.CREATED_BY_CURRENT_USER);
                     }
                     context?.setActiveKey(item.key);
                   }}
