@@ -1,4 +1,5 @@
 import { IPage, PageType } from '@/d.ts';
+import { getTitleByParams } from '@/page/Workspace/components/TaskPage';
 import { BatchCompilePage, OBClientPage, SQLPage } from '@/store/helper/page/pages';
 import { SQLConfirmPage } from '@/store/helper/page/pages/create';
 import { AnonymousPage } from '@/store/helper/page/pages/pl';
@@ -34,9 +35,6 @@ const titleText = {
     id: 'workspace.window.createSequence.modal.title',
   }),
   [PageType.CREATE_SYNONYM]: formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym' }),
-  [PageType.TASKS]: formatMessage({
-    id: 'odc.component.TaskPopover.TaskCenter',
-  }),
 };
 
 export function getPageTitleText(page: IPage) {
@@ -67,6 +65,9 @@ export function getPageTitleText(page: IPage) {
     case PageType.BATCH_COMPILE_TRIGGER:
     case PageType.BATCH_COMPILE_TYPE: {
       return BatchCompilePage.getTitleByParams(params);
+    }
+    case PageType.TASKS: {
+      return getTitleByParams(params);
     }
     default: {
       return title;
