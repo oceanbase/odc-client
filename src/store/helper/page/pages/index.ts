@@ -8,6 +8,7 @@ import {
   ScriptId,
   SynonymPropsTab,
   SynonymType,
+  TaskPageType,
   TriggerPropsTab,
   TriggerState,
   TypePropsTab,
@@ -148,12 +149,14 @@ export class TutorialPage extends Page {
 }
 
 export class TaskPage extends Page {
-  constructor() {
+  constructor(type: TaskPageType) {
     super();
-    this.pageKey = 'taskpage';
+    this.pageKey = type;
     this.pageType = PageType.TASKS;
-    this.pageTitle = formatMessage({ id: 'odc.page.pages.Ticket' }); //工单
-    this.pageParams = {};
+    this.pageTitle = '工单';
+    this.pageParams = {
+      type,
+    };
   }
 }
 
