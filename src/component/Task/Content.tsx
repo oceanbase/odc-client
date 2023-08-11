@@ -243,7 +243,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.ONLINE_SCHEMA_CHANGE:
         modalStore.changeCreateDDLAlterTaskModal(true);
         break;
-      case TaskPageType.RESULT_SET_EXPORT:
+      case TaskPageType.EXPORT_RESULT_SET:
         modalStore.changeCreateResultSetExportTaskModal(true);
         break;
       default:

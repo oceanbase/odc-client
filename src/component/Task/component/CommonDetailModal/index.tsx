@@ -108,7 +108,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.DATA_ARCHIVE,
     TaskType.ONLINE_SCHEMA_CHANGE,
     TaskType.DATA_DELETE,
-    TaskType.RESULT_SET_EXPORT,
+    TaskType.EXPORT_RESULT_SET,
   ].includes(task?.type);
   const hasLog = [
     TaskType.ASYNC,
@@ -119,7 +119,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.SHADOW,
     TaskType.ALTER_SCHEDULE,
     TaskType.ONLINE_SCHEMA_CHANGE,
-    TaskType.RESULT_SET_EXPORT,
+    TaskType.EXPORT_RESULT_SET,
   ].includes(task?.type);
   return (
     <Drawer

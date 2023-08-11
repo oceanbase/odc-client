@@ -106,7 +106,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           projectId,
           databaseId,
           executionStrategy,
-          taskType: TaskType.RESULT_SET_EXPORT,
+          taskType: TaskType.EXPORT_RESULT_SET,
           parameters,
           executionTime,
           description,
@@ -123,7 +123,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          openTasksPage(TaskPageType.RESULT_SET_EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.EXPORT_RESULT_SET, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
       .catch((errorInfo) => {
