@@ -1,0 +1,20 @@
+name: copyright
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  do:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v2
+     - name: Fix License Header
+       uses: apache/skywalking-eyes/header@main
+       with:
+        mode: fix
+     - name: Apply Changes
+       uses: peter-evans/create-pull-request@v3
+       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
