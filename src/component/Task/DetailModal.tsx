@@ -6,12 +6,12 @@ import {
   getTaskLog,
   getTaskResult,
 } from '@/common/network/task';
-import { getItems as getAsyncTaskContentItems } from '@/component/Task/AsyncTask/DetailContent';
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
 import type {
   CycleTaskDetail,
+  IAsyncTaskParams,
   IConnectionPartitionPlan,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
@@ -32,6 +32,7 @@ import {
 } from '@/d.ts';
 import React, { useEffect, useRef, useState } from 'react';
 import { getItems as getDDLAlterItems } from './AlterDdlTask';
+import { AsyncTaskContent } from './AsyncTask';
 import TaskTools from './component/ActionBar';
 import ApprovalModal from './component/ApprovalModal';
 import { DataArchiveTaskContent } from './DataArchiveTask';
@@ -70,10 +71,6 @@ interface IModalContent {
 const taskContentMap = {
   [TaskType.DATAMOCK]: {
     getItems: getDataMockerItems,
-  },
-
-  [TaskType.ASYNC]: {
-    getItems: getAsyncTaskContentItems,
   },
 
   [TaskType.SHADOW]: {
@@ -134,6 +131,14 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         hasFlow={hasFlow}
         partitionPlans={partitionPlan?.tablePartitionPlans}
         onPartitionPlansChange={handlePartitionPlansChange}
+      />
+    );
+  } else if (task?.type === TaskType.ASYNC) {
+    taskContent = (
+      <AsyncTaskContent
+        task={task as TaskDetail<IAsyncTaskParams>}
+        result={result}
+        hasFlow={hasFlow}
       />
     );
   } else if (task?.type === TaskType.DATA_ARCHIVE) {
