@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, INlsObject, ISqlExecuteResultStatus } from '@/d.ts';
+import { ConnectionMode, INlsObject, IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import { getNlsValueKey, isNlsColumn } from '@/util/column';
 import { generateUniqKey } from '@/util/utils';
 
-export function generateResultSetColumns(record, dbMode: ConnectionMode, oldKey?: string) {
+export function generateResultSetColumns(
+  record,
+  dbMode: ConnectionMode,
+  oldKey?: string,
+): IResultSet[] {
   if (!record) {
     return null;
   }
@@ -35,6 +39,7 @@ export function generateResultSetColumns(record, dbMode: ConnectionMode, oldKey?
           columnComment: field.columnComment,
           internal: field.internal,
           readonly: field.editable === false,
+          masked: field.masked,
           tableName: field.tableName,
         };
       });

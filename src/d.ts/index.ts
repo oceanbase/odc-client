@@ -888,6 +888,10 @@ export interface ResultSetColumn {
   columnComment: string;
   internal: boolean;
   readonly: boolean;
+  /**
+   * 是否脱敏
+   */
+  masked?: boolean;
 }
 
 // @ts-ignore
