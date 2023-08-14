@@ -18,3 +18,5 @@ jobs:
        uses: peter-evans/create-pull-request@v3
        with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        title: Copyright OceanBase
+        commit-message: Copyright
