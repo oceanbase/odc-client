@@ -31,10 +31,11 @@ export default React.memo(
     const columnKey = resultContext?.isColumnMode ? row.columnKey : column.key;
     const value = row[columnKey];
     const isOriginValueBeNil = row._originRow && isNil(row._originRow[columnKey]);
+    const isMasked = resultContext.originColumns?.find((c) => c.key === columnKey)?.masked;
     /**
      * 是否支持查看详情
      */
-    const supportModal = !isOriginValueBeNil && !isNil(value);
+    const supportModal = !isOriginValueBeNil && !isNil(value) && !isMasked;
     return (
       <div className={styles.textFormatter}>
         {isNil(value) ? (

@@ -476,6 +476,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       const column: Partial<ResultSetColumn> = columns?.find((column) => {
         return column?.key === columnKey;
       });
+      const isMasked = column.masked;
       const isSelectedRow = !!gridRef.current?.selectedRows?.size;
       const clipMenu = {
         key: 'clip',
@@ -533,7 +534,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       }
       const showUpload = isObjectColumn(column.columnType) && isEditing && !column.readonly;
       const showDownload =
-        isObjectColumn(column.columnType) && isSingleSelected && settingStore.enableDataExport;
+        isObjectColumn(column.columnType) &&
+        isSingleSelected &&
+        settingStore.enableDataExport &&
+        !isMasked;
 
       return [
         {
