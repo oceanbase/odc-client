@@ -1,2 +1,2 @@
 export { default } from './CreateModal';
-export { getItems } from './DetailContent';
+export { default as AsyncTaskContent } from './DetailContent';

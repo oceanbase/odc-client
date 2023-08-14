@@ -17,10 +17,10 @@ import { selectFolder } from '@/util/client';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
+import { FormattedMessage } from '@umijs/max';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { FormattedMessage } from '@umijs/max';
 import ExportForm, { FormType } from './ExportForm';
 import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
@@ -100,7 +100,6 @@ class CreateModal extends React.Component<IProps, IState> {
       this.props.modalStore.changeExportModal(false);
       return;
     }
-    this.resetFormData();
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ExportDrawer.AreYouSureYouWant',
@@ -109,6 +108,7 @@ class CreateModal extends React.Component<IProps, IState> {
       centered: true,
       onOk: () => {
         this.props.modalStore.changeExportModal(false);
+        this.resetFormData();
       },
     });
   };
