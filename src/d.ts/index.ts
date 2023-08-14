@@ -145,6 +145,7 @@ export enum IManagerResourceType {
   ruleset = 'ODC_RULESET',
   integration = 'ODC_INTEGRATION',
   environment = 'ODC_ENVIRONMENT',
+  individual_organization = 'ODC_INDIVIDUAL_ORGANIZATION',
 }
 
 export enum actionTypes {

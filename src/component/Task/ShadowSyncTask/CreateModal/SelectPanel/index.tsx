@@ -37,7 +37,7 @@ const Option = Select.Option;
 interface IProps extends IContentProps {}
 
 const SelectPanel = forwardRef<any, IProps>(function (
-  { schemaName, connectionId, sessionId, projectId, data, setData },
+  { databaseId, schemaName, connectionId, sessionId, projectId, data, setData },
   ref,
 ) {
   const [tables, setTables] = useState([]);
@@ -109,7 +109,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             return values.prefix ? `${values.name}${name}` : `${name}${values.name}`;
           });
           const taskId = await startShadowSyncAnalysis(
-            schemaName,
+            databaseId,
             connectionId,
             originTableNames,
             destTableNames,

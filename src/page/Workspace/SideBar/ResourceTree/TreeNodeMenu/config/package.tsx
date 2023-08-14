@@ -141,7 +141,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
         const pkgBodyList = await getExportObjects(
-          session?.database?.dbName,
+          session?.database?.databaseId,
           DbObjectType.package_body,
           session?.connection?.id,
         );

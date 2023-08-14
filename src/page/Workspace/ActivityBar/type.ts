@@ -24,7 +24,7 @@ export enum ActivityBarItemType {
 
 export const ActivityBarItemTypeText = {
   [ActivityBarItemType.Database]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Database' }), //数据库
-  [ActivityBarItemType.Task]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Task' }), //任务
+  [ActivityBarItemType.Task]: '工单',
   [ActivityBarItemType.Script]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Script' }), //脚本
   [ActivityBarItemType.Manager]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.OMManagement',

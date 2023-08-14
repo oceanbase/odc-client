@@ -139,6 +139,10 @@ export const systemTypeOptions: {
     label: formatMessage({ id: 'odc.component.ResourceSelector.const.SystemIntegration' }), //系统集成
     value: IManagerResourceType.integration,
   },
+  {
+    label: '个人空间',
+    value: IManagerResourceType.individual_organization,
+  },
 ];
 
 export enum SystemAction {
@@ -163,7 +167,7 @@ export const systemActionOptions = [
       id: 'odc.components.FormResourceSelector.const.Operational',
     }), //可操作
     value: SystemAction.action_update_read,
-    enableKeys: [],
+    enableKeys: [IManagerResourceType.individual_organization],
   },
   {
     label: formatMessage({

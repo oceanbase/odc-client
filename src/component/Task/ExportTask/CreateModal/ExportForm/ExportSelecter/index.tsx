@@ -31,7 +31,7 @@ import styles from './index.less';
 
 const SPLITKEY = '$#$odc_split$#$';
 interface IProps {
-  databaseName: string;
+  databaseId: number;
   connectionId: number;
   onlyTable?: boolean;
   value?: any[];
@@ -43,7 +43,7 @@ type IObjs = {
 };
 
 const ExportSelecter: React.FC<IProps> = function ({
-  databaseName,
+  databaseId,
   connectionId,
   onlyTable,
   value,
@@ -113,7 +113,7 @@ const ExportSelecter: React.FC<IProps> = function ({
     setObjsLoading(true);
 
     try {
-      const obj = await getExportObjects(databaseName, null, connectionId);
+      const obj = await getExportObjects(databaseId, null, connectionId);
 
       if (obj) {
         const objList = getObjTypeList();
@@ -132,10 +132,10 @@ const ExportSelecter: React.FC<IProps> = function ({
     }
   };
   useEffect(() => {
-    if (databaseName) {
+    if (databaseId) {
       loadExportObjects();
     }
-  }, [databaseName]);
+  }, [databaseId]);
 
   function getObjKey(name, type) {
     return type + SPLITKEY + name;

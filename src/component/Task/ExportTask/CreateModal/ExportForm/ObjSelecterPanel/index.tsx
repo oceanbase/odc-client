@@ -34,7 +34,6 @@ interface IProps {
 const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnectionChange }) {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
-  const databaseName = database?.name;
   const connection = database?.dataSource;
   const connectionId = connection?.id;
 
@@ -141,7 +140,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnec
               >
                 <ExportSelecter
                   onlyTable={exportContent === EXPORT_CONTENT.DATA}
-                  databaseName={databaseName}
+                  databaseId={databaseId}
                   connectionId={connectionId}
                 />
               </FormItem>

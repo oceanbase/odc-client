@@ -229,6 +229,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       }
     >
       <Content
+        databaseId={data?.databaseId}
         schemaName={schemaName}
         connectionId={connectionId}
         isReadonlyPublicConn={isReadonlyPublicConn}
