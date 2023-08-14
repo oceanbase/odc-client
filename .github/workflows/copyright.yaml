@@ -20,3 +20,4 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         title: Copyright OceanBase
         commit-message: Copyright
+        delete-branch: true
