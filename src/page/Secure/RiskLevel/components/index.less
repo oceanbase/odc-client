@@ -67,11 +67,8 @@
 }
 
 .title {
-  // border: 1px solid red;
-  // border-top-left-radius: 20px;
   position: relative;
   display: flex;
-  // flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -80,12 +77,17 @@
   height: calc(100% - 8px);
   width: 10px;
   margin-left: 10px;
-  border-left: 1.5px solid black;
-  border-radius: 20px;
+  border: 2px solid var(--default-border-color);
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-right: none;
   position: absolute;
-  &:hover {
-    border-color: blue;
-  }
+}
+.leftAnd {
+  border-color: var(--blue-color);
+}
+.leftOr {
+  border-color: var(--green-color);
 }
 
 .bo {
@@ -95,84 +97,77 @@
   line-height: 30px;
   background-color: white;
   border-radius: 50%;
-  // border: 1px solid red;
   text-align: center;
   margin: auto;
   &:hover {
-    border-color: green;
-    color: green;
+    cursor: pointer;
   }
   user-select: none;
 }
-.boHover {
-  &:hover {
-    cursor: pointer;
-  }
+.boAnd {
+  color: white;
+  background-color: var(--blue-color);
 }
-
-.gl {
-  margin-left: 15px;
-  position: relative;
-  // border-right: 1px solid red;
-  :global {
-    .ant-form-item {
-      margin-bottom: 0px;
-    }
-  }
-  // :hover {
-  //   cursor: pointer;
-  // }
+.boOr {
+  color: white;
+  background-color: var(--green-color);
 }
-
-.gl::before {
-  content: '';
-  // background-color: blue;
-  // color: blue;
-  width: 45px;
-  height: 1px;
-
-  position: absolute;
-  transform: translate(-45px, 0px);
-}
-
-.rr {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  // margin-left: 20px;
-}
-
-.rr::before {
-  content: '';
-  // background-color: pink;
-  // color: blue;
-  width: 40px;
-  height: 1px;
-  top: 50%;
-
-  position: absolute;
-  transform: translate(-55px, -10px);
-}
-
 .tag {
   height: 20px;
   .tagLabel {
     color: var(--text-color-primary);
   }
 }
+// InnerRiskLevel
+.innerRiskLevel {
+  height: 100%;
+  padding: 12px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ruleContent {
+  .ruleDetail {
+    margin-bottom: 8px;
+    color: var(--text-color-primary);
+  }
+}
+.conditions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+.treeEmpty {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+.conditionGroupContent {
+  display: flex;
+  flex-direction: column;
+}
+.tree {
+  display: flex;
+  position: relative;
+}
+.conditionItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
 // RootNodeContent
 .rootNodeContent {
   min-height: 240px;
   padding: 16px 8px;
-  background-color: rgba(245, 247, 250, 1);
+  background-color: var(--neutral-grey2-color);
   width: 100%;
 
   &Empty {
     min-height: 240px;
     padding: 16px 8px;
-    background-color: rgba(245, 247, 250, 1);
+    background-color: var(--neutral-grey2-color);
     width: 100%;
     display: flex;
     align-items: center;
@@ -191,12 +186,22 @@
 
     &Border {
       position: absolute;
-      width: 10.5px;
+      width: 10px;
       height: 100%;
       top: 0px;
       left: 12px;
-      border-left: 1.5px solid black;
-      border-radius: 20px;
+      border: 2px solid transparent;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      border-right: none;
+      &And {
+        color: white;
+        border-color: var(--blue-color);
+      }
+      &Or {
+        color: white;
+        border-color: var(--green-color);
+      }
     }
 
     &Title {
@@ -207,8 +212,16 @@
       user-select: none;
       border: none;
       border-radius: 12px;
-      background-color: rgb(245, 247, 250);
+      background-color: var(--neutral-grey2-color);
       z-index: 2;
+      &And {
+        color: white;
+        background-color: var(--blue-color);
+      }
+      &Or {
+        color: white;
+        background-color: var(--green-color);
+      }
     }
 
     &Node {

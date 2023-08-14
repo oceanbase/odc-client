@@ -89,3 +89,29 @@ export const getSqlCheckResultOptions = () => {
 
   return sqlCheckResultOptions;
 };
+export const initOptions = async ({
+  setEnvironmentIdMap,
+  setEnvironmentOptions,
+  setTaskTypeIdMap,
+  setTaskTypeOptions,
+  setSqlCheckResultIdMap,
+  setSqlCheckResultOptions,
+}) => {
+  const envOptions = await getEnvironmentOptions();
+  const envIdMap = {};
+  envOptions?.forEach(({ value, label }) => (envIdMap[value] = label));
+  setEnvironmentIdMap(envIdMap);
+  setEnvironmentOptions(envOptions);
+
+  const taskTypeOptions = await getTaskTypeOptions();
+  const taskTypeIdMap = {};
+  taskTypeOptions?.forEach(({ label, value }) => (taskTypeIdMap[value] = label));
+  setTaskTypeIdMap(taskTypeIdMap);
+  setTaskTypeOptions(taskTypeOptions);
+
+  const sqlCheckResultOptions = await getSqlCheckResultOptions();
+  const sqlChekcResultMap = {};
+  sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap['' + value] = label));
+  setSqlCheckResultIdMap(sqlChekcResultMap);
+  setSqlCheckResultOptions(sqlCheckResultOptions);
+};
