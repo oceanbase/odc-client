@@ -46,9 +46,11 @@ const TreeTitle = ({ formRef, booleanOperator, index, fieldName, updateFields })
         className={
           isHover
             ? localBooleanOperator === EBooleanOperator.AND
-              ? classnames(styles.bo, styles.boAnd)
-              : classnames(styles.bo, styles.boOr)
-            : styles.bo
+              ? classnames(styles.bo, styles.boAndHover)
+              : classnames(styles.bo, styles.boOrHover)
+            : localBooleanOperator === EBooleanOperator.AND
+            ? classnames(styles.bo, styles.boAnd)
+            : classnames(styles.bo, styles.boOr)
         }
         onClick={async () => {
           let rawData = await formRef.getFieldsValue();

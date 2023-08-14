@@ -74,7 +74,7 @@
 }
 
 .left {
-  height: calc(100% - 8px);
+  height: calc(100% - 24px);
   width: 10px;
   margin-left: 10px;
   border: 2px solid var(--default-border-color);
@@ -83,41 +83,60 @@
   border-right: none;
   position: absolute;
 }
+
 .leftAnd {
   border-color: var(--blue-color);
 }
+
 .leftOr {
   border-color: var(--green-color);
 }
 
 .bo {
   z-index: 10;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
   background-color: white;
-  border-radius: 50%;
+  border: 1px solid white;
   text-align: center;
   margin: auto;
+
   &:hover {
     cursor: pointer;
   }
+
   user-select: none;
 }
+.gl {
+  margin-left: 11px;
+}
 .boAnd {
+  color: var(--blue-color);
+  background-color: #e6eeff;
+}
+.boAndHover {
   color: white;
   background-color: var(--blue-color);
 }
+
 .boOr {
+  color: var(--green-color);
+  background-color: #e2faee;
+}
+.boOrHover {
   color: white;
   background-color: var(--green-color);
 }
+
 .tag {
   height: 20px;
+
   .tagLabel {
     color: var(--text-color-primary);
   }
 }
+
 // InnerRiskLevel
 .innerRiskLevel {
   height: 100%;
@@ -126,35 +145,63 @@
   flex-direction: column;
   gap: 12px;
 }
+
 .ruleContent {
   .ruleDetail {
     margin-bottom: 8px;
     color: var(--text-color-primary);
   }
 }
+
 .conditions {
   display: flex;
   flex-direction: column;
   gap: 8px;
   justify-content: center;
+
+  :global {
+    .ant-space-item {
+      .ant-form-item {
+        margin-bottom: 0px;
+      }
+    }
+  }
 }
+
 .treeEmpty {
   display: flex;
   position: relative;
   align-items: center;
 }
+
 .conditionGroupContent {
   display: flex;
   flex-direction: column;
 }
+
 .tree {
   display: flex;
   position: relative;
+  margin-left: 11px;
 }
+
 .conditionItem {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+.btnGroup {
+  padding: 0px 0px 0px 11px;
+  :global {
+    .ant-space-item {
+      .ant-form-item {
+        margin-bottom: 0px;
+      }
+      .ant-btn.ant-btn-link {
+        padding: 0px;
+      }
+    }
+  }
 }
 
 // RootNodeContent
@@ -191,13 +238,16 @@
       top: 0px;
       left: 12px;
       border: 2px solid transparent;
+      border-color: #d9d9d9;
       border-top-left-radius: 6px;
       border-bottom-left-radius: 6px;
       border-right: none;
+
       &And {
         color: white;
         border-color: var(--blue-color);
       }
+
       &Or {
         color: white;
         border-color: var(--green-color);
@@ -214,10 +264,12 @@
       border-radius: 12px;
       background-color: var(--neutral-grey2-color);
       z-index: 2;
+
       &And {
         color: white;
         background-color: var(--blue-color);
       }
+
       &Or {
         color: white;
         background-color: var(--green-color);
@@ -225,7 +277,7 @@
     }
 
     &Node {
-      margin-left: 15px;
+      margin-left: 11px;
       padding: 6px 0px;
       display: flex;
       flex-direction: column;
@@ -238,8 +290,8 @@
     height: 28px;
 
     padding: 0px 11px;
-    color: rgba(0, 0, 0, 0.85);
-    background-color: #ffffff;
+    color: var(--mask-color);
+    background-color: #f5f5f5;
 
     border: 1px solid #d9d9d9;
     border-radius: 2px;
@@ -248,5 +300,6 @@
     align-items: center;
 
     user-select: none;
+    cursor: not-allowed;
   }
 }
