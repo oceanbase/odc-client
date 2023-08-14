@@ -89,20 +89,8 @@ const RootNodeContent = ({
             onMouseOver={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
           >
-            <div
-              className={
-                node?.booleanOperator === EBooleanOperator.AND
-                  ? classNames(styles.treeScopeBorder, styles.treeScopeBorderAnd)
-                  : classNames(styles.treeScopeBorder, styles.treeScopeBorderOr)
-              }
-            />
-            <div
-              className={
-                node?.booleanOperator === EBooleanOperator.AND
-                  ? classNames(styles.treeScopeTitle, styles.treeScopeTitleAnd)
-                  : classNames(styles.treeScopeTitle, styles.treeScopeTitleOr)
-              }
-            >
+            <div className={styles.treeScopeBorder} />
+            <div className={styles.treeScopeTitle}>
               {BooleanOperatorMap?.[node?.booleanOperator]}
             </div>
           </div>
