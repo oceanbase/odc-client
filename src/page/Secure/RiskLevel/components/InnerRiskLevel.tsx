@@ -40,7 +40,7 @@ export enum EBooleanOperator {
   OR = 'OR',
 }
 export const BooleanOperatorMap = {
-  [EBooleanOperator.AND]: '和',
+  [EBooleanOperator.AND]: '且',
   [EBooleanOperator.OR]: '或',
 };
 export enum EConditionType {
@@ -206,6 +206,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       message.success('删除成功');
       memoryReload();
       initRootNode();
+      formRef.resetFields();
+      setRootNode(null);
+      setOriginRootNode(null);
+      setRootBoolOperator(EBooleanOperator.AND);
+      setCurrentRiskDetectRuleId(null);
     } else {
       message.error('删除失败');
     }
@@ -252,9 +257,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                         className={
                           isHover
                             ? rootBoolOperator === EBooleanOperator.AND
-                              ? classnames(styles.bo, styles.boAnd)
-                              : classnames(styles.bo, styles.boOr)
-                            : styles.bo
+                              ? classnames(styles.bo, styles.boAndHover)
+                              : classnames(styles.bo, styles.boOrHover)
+                            : rootBoolOperator === EBooleanOperator.AND
+                            ? classnames(styles.bo, styles.boAnd)
+                            : classnames(styles.bo, styles.boOr)
                         }
                         onClick={() => {
                           if (rootBoolOperator === EBooleanOperator.AND) {
@@ -386,7 +393,15 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                 );
                               }
                             })}
-                            <Space>
+                            <Space
+                              size={12}
+                              className={styles.btnGroup}
+                              style={
+                                fields?.length === 0 && {
+                                  padding: 0,
+                                }
+                              }
+                            >
                               <Button
                                 type="link"
                                 onClick={async () => {
@@ -452,9 +467,9 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       </div>
       <div>
         {isEdit ? (
-          <Space>
+          <Space size={12}>
             <Button type="primary" onClick={handleSubmit}>
-              {empty ? '确认新建' : '确认修改'}
+              {empty ? '确认' : '确认'}
             </Button>
             <Button
               onClick={() => {
@@ -464,11 +479,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                 setRootBoolOperator(originRootNode?.booleanOperator || EBooleanOperator.AND);
               }}
             >
-              {empty ? '取消新建' : '取消修改'}
+              {empty ? '取消' : '取消'}
             </Button>
           </Space>
         ) : (
-          <Space>
+          <Space size={12}>
             <Button
               onClick={() => {
                 setIsEdit(true);
@@ -480,7 +495,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
 
             {currentRiskDetectRuleId && (
               <Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
-                删除规则
+                清空规则
               </Button>
             )}
           </Space>
