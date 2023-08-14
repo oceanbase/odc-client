@@ -180,13 +180,13 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       result = rawData?.[0];
     }
     let reqFlag;
-    if (empty) {
+    if (empty && !currentRiskDetectRuleId) {
       reqFlag = await handleCreateRiskDetectRule(result);
     } else {
       reqFlag = await handleUpdateRiskDetectRule(currentRiskDetectRuleId, result);
     }
     if (reqFlag) {
-      message.success(empty ? '新建成功' : '更新成功');
+      message.success(empty ? '新建成功' : '新建失败');
       await initRootNode();
       setIsEdit(false);
       formRef.resetFields();
@@ -353,7 +353,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                       });
                                                     }}
                                                   >
-                                                    添加规则
+                                                    添加条件
                                                   </Button>
                                                 </div>
                                               </div>
@@ -418,7 +418,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                   }
                                 }}
                               >
-                                添加规则
+                                添加条件
                               </Button>
                               <Button
                                 type="link"
@@ -444,7 +444,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                   }
                                 }}
                               >
-                                添加规则组
+                                添加条件组
                               </Button>
                             </Space>
                           </>
