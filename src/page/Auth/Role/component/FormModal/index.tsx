@@ -85,6 +85,10 @@ const defaultData = {
       resourceType: IManagerResourceType.integration,
       actions: SystemAction.action_create_delete_update_read,
     },
+    {
+      resourceType: IManagerResourceType.individual_organization,
+      actions: SystemAction.action_update_read,
+    },
   ],
   createAbleResource: [
     IManagerResourceType.resource,

@@ -342,7 +342,7 @@ export async function checkConnectionPartitionPlan(id: number): Promise<boolean>
  * 发起结构分析任务
  */
 export async function startShadowSyncAnalysis(
-  schemaName: string,
+  databaseId: number,
   connectionId: number,
   originTableNames: string[],
   destTableNames: string[],
@@ -350,7 +350,7 @@ export async function startShadowSyncAnalysis(
   const result = await request.post('/api/v2/schema-sync/shadowTableSyncs', {
     data: {
       connectionId,
-      schemaName,
+      databaseId,
       originTableNames,
       destTableNames,
     },

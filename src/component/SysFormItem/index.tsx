@@ -98,6 +98,13 @@ const SysFormItem: React.FC<IProps> = function (props) {
 
   async function testSys() {
     if (!connection) {
+      form.setFields([
+        {
+          name: ['databaseId'],
+          errors: ['请选择数据库'],
+        },
+      ]);
+      form?.scrollToField('databaseId');
       return;
     }
     const values = await form.validateFields(['sysUser', 'sysUserPassword', 'sid']);

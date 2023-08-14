@@ -50,6 +50,7 @@ export interface IShadowSyncAnalysisResult {
 
 export interface IContentProps {
   schemaName: string;
+  databaseId: number;
   sessionId: string;
   connectionId: number;
   projectId: number;

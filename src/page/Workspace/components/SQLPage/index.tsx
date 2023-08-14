@@ -728,10 +728,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
 
   public handleStartExportResultSet = (resultSetIndex: number, limit: number) => {
-    this.setState({
-      resultSetIndexToExport: resultSetIndex,
-    });
-    this.showExportResuleSetModal();
+    this.setState(
+      {
+        resultSetIndexToExport: resultSetIndex,
+      },
+      () => {
+        this.showExportResuleSetModal();
+      },
+    );
   };
 
   public handleExplain = async () => {

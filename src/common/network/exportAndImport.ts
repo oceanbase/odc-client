@@ -32,7 +32,7 @@ import { encrypt } from '@/util/utils';
 import { isNil } from 'lodash';
 
 export async function getExportObjects(
-  databaseName: string,
+  databaseId: number,
   type?: DbObjectType,
   cid?: number,
 ): Promise<{
@@ -41,7 +41,7 @@ export async function getExportObjects(
   const result = await request.get(`/api/v2/dataTransfer/getExportObjects`, {
     params: {
       connectionId: cid,
-      schema: databaseName,
+      databaseId,
       objectType: type,
     },
   });
