@@ -476,7 +476,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       const column: Partial<ResultSetColumn> = columns?.find((column) => {
         return column?.key === columnKey;
       });
-      const isMasked = column.masked;
+      const isMasked = column?.masked;
       const isSelectedRow = !!gridRef.current?.selectedRows?.size;
       const clipMenu = {
         key: 'clip',
