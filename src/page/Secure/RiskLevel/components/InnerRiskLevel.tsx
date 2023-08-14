@@ -26,13 +26,14 @@ import { SelectItemProps } from '../interface';
 import TreeTitle from './TreeTitle';
 import {
   createRiskDetectRules,
+  deleteRiskDetectRule,
   listRiskDetectRules,
   updateRiskDetectRule,
 } from '@/common/network/riskDetectRule';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import RootNodeContent from './RootNodeContent';
-import { getEnvironmentOptions, getSqlCheckResultOptions, getTaskTypeOptions } from './options';
-import { IConditionGroup, RootNode } from '@/d.ts/riskDetectRule';
+import { initOptions } from './options';
+import { IConditionGroup } from '@/d.ts/riskDetectRule';
 export type Operator = string;
 export enum EBooleanOperator {
   AND = 'AND',
@@ -46,11 +47,6 @@ export enum EConditionType {
   CONDITION = 'CONDITION',
   CONDITION_GROUP = 'CONDITION_GROUP',
 }
-export const data: RootNode = {
-  booleanOperator: EBooleanOperator.AND,
-  children: [],
-  type: EConditionType.CONDITION_GROUP,
-};
 interface InnerRiskLevelProps {
   currentRiskLevel: IRiskLevel;
   memoryReload: () => void;
@@ -61,7 +57,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [isHover, setIsHover] = useState<boolean>(false);
   const [rootNode, setRootNode] = useState<any>(null);
   const [rootBoolOperator, setRootBoolOperator] = useState<EBooleanOperator>(
-    rootNode?.booleanOperator,
+    rootNode?.booleanOperator || EBooleanOperator.AND,
   );
   const [originRootNode, setOriginRootNode] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -87,25 +83,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [showConditionGroup, setShowConditionGroup] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [currentRiskDetectRuleId, setCurrentRiskDetectRuleId] = useState<number>(null);
-  const initOptions = async () => {
-    const envOptions = await getEnvironmentOptions();
-    const envIdMap = {};
-    envOptions?.forEach(({ value, label }) => (envIdMap[value] = label));
-    setEnvironmentIdMap(envIdMap);
-    setEnvironmentOptions(envOptions);
 
-    const taskTypeOptions = await getTaskTypeOptions();
-    const taskTypeIdMap = {};
-    taskTypeOptions?.forEach(({ label, value }) => (taskTypeIdMap[value] = label));
-    setTaskTypeIdMap(taskTypeIdMap);
-    setTaskTypeOptions(taskTypeOptions);
-
-    const sqlCheckResultOptions = await getSqlCheckResultOptions();
-    const sqlChekcResultMap = {};
-    sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap['' + value] = label));
-    setSqlCheckResultIdMap(sqlChekcResultMap);
-    setSqlCheckResultOptions(sqlCheckResultOptions);
-  };
   const handleCreateRiskDetectRule = async (rootNode): Promise<boolean> => {
     const res = await createRiskDetectRules({
       riskLevelId: currentRiskLevel?.id,
@@ -127,12 +105,12 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     if (!rootNode) {
       return [];
     }
+    setRootBoolOperator(rootNode?.booleanOperator || EBooleanOperator.AND);
     if (rootNode?.type === EConditionType.CONDITION) {
       setShowConditionGroup(false);
       return [rootNode];
     } else {
       // all ConditionGroup => { type: CG, children : (CG | C) [] }
-      setRootBoolOperator(rootNode?.booleanOpretor || EBooleanOperator.AND);
       if (rootNode?.children?.length > 1) {
         // CG : { children: [CG | C, CG | C]}
         setShowConditionGroup(true);
@@ -145,9 +123,8 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   };
   const parseRootNode = async (rootNode) => {
     const conditions = genRootNode(rootNode);
-    console.log(conditions);
     await formRef.setFieldsValue({
-      conditionGroup1: conditions,
+      conditions: conditions,
     });
   };
   const initRootNode = async () => {
@@ -161,9 +138,10 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
         setEmpty(true);
       }
       rd?.rootNode && setRootNode(rd?.rootNode);
-      setRootBoolOperator(
-        (rd?.rootNode as IConditionGroup)?.booleanOperator || EBooleanOperator.AND,
-      );
+      rd?.rootNode &&
+        setRootBoolOperator(
+          (rd?.rootNode as IConditionGroup)?.booleanOperator || EBooleanOperator.AND,
+        );
       rd?.rootNode && setOriginRootNode(rd?.rootNode);
       setCurrentRiskDetectRuleId(rd?.id);
       return rd?.rootNode;
@@ -172,7 +150,14 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
 
   const initInnerRiskLevel = async () => {
     setLoading(true);
-    await initOptions();
+    await initOptions({
+      setEnvironmentIdMap,
+      setEnvironmentOptions,
+      setTaskTypeIdMap,
+      setTaskTypeOptions,
+      setSqlCheckResultIdMap,
+      setSqlCheckResultOptions,
+    });
     const rootNode = await initRootNode();
     parseRootNode(rootNode);
     formRef.resetFields();
@@ -181,7 +166,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
 
   const handleSubmit = async () => {
     const formData = await formRef.validateFields()?.catch();
-    const rawData = formData?.conditionGroup1;
+    const rawData = formData?.conditions;
     if (empty && Array.isArray(rawData) && rawData?.length === 0) {
       return;
     }
@@ -202,16 +187,29 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       reqFlag = await handleUpdateRiskDetectRule(currentRiskDetectRuleId, result);
     }
     if (reqFlag) {
-      message.success(empty ? '新建成功' : '新建失败');
+      message.success(empty ? '新建成功' : '更新成功');
+      memoryReload();
+      setOriginRootNode(null);
+      setRootNode(null);
       await initRootNode();
       setIsEdit(false);
       formRef.resetFields();
     } else {
-      message.error(empty ? '更新失败' : '更新失败');
+      message.error(empty ? '新建失败' : '更新失败');
     }
     setRootBoolOperator(EBooleanOperator.AND);
   };
 
+  const handleDelete = async (id: number) => {
+    const result: boolean = await deleteRiskDetectRule(id);
+    if (result) {
+      message.success('删除成功');
+      memoryReload();
+      initRootNode();
+    } else {
+      message.error('删除失败');
+    }
+  };
   useEffect(() => {
     initInnerRiskLevel();
   }, []);
@@ -222,24 +220,10 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   }, [isEdit]);
 
   return (
-    <div
-      style={{
-        height: '100%',
-        padding: '12px 0px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-      }}
-      key={currentRiskLevel?.id}
-    >
+    <div className={styles.innerRiskLevel} key={currentRiskLevel?.id}>
       <RiskLevelInfo currentRiskLevel={currentRiskLevel} memoryReload={memoryReload} />
-      <div>
-        <div
-          style={{
-            marginBottom: '8px',
-            color: 'var(--text-color-primary)',
-          }}
-        >
+      <div className={styles.ruleContent}>
+        <div className={styles.ruleDetail}>
           风险识别规则
           <span> :</span>
         </div>
@@ -256,13 +240,22 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                       onMouseLeave={() => setIsHover(false)}
                     >
                       <div
-                        className={styles.left}
-                        style={{
-                          borderColor: isHover ? 'green' : 'black',
-                        }}
+                        className={
+                          isHover
+                            ? rootBoolOperator === EBooleanOperator.AND
+                              ? classnames(styles.left, styles.leftAnd)
+                              : classnames(styles.left, styles.leftOr)
+                            : styles.left
+                        }
                       />
                       <div
-                        className={classnames(styles.bo, styles.boHover)}
+                        className={
+                          isHover
+                            ? rootBoolOperator === EBooleanOperator.AND
+                              ? classnames(styles.bo, styles.boAnd)
+                              : classnames(styles.bo, styles.boOr)
+                            : styles.bo
+                        }
                         onClick={() => {
                           if (rootBoolOperator === EBooleanOperator.AND) {
                             setRootBoolOperator(EBooleanOperator.OR);
@@ -275,68 +268,35 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                       </div>
                     </div>
                   )}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Form.List name={'conditionGroup1'}>
+                  <div className={styles.conditions}>
+                    <Form.List name={'conditions'}>
                       {(fields, { add, remove }) => {
                         return (
                           <>
                             {fields?.map((field, index) => {
                               const data = formRef.getFieldsValue();
                               if (
-                                data?.conditionGroup1?.[index]?.type ===
-                                EConditionType.CONDITION_GROUP
+                                data?.conditions?.[index]?.type === EConditionType.CONDITION_GROUP
                               ) {
-                                let booleanOperator =
-                                  data?.conditionGroup1?.[index]?.booleanOperator;
-                                const empty =
-                                  data?.conditionGroup1?.[index]?.children?.length === 0;
+                                let booleanOperator = data?.conditions?.[index]?.booleanOperator;
+                                const empty = data?.conditions?.[index]?.children?.length === 0;
                                 return (
-                                  <div
-                                    style={{ display: 'flex', flexDirection: 'column' }}
-                                    key={index}
-                                  >
-                                    <div
-                                      style={
-                                        empty
-                                          ? {
-                                              display: 'flex',
-                                              position: 'relative',
-                                              alignItems: 'center',
-                                            }
-                                          : { display: 'flex', position: 'relative' }
-                                      }
-                                    >
-                                      <div className={styles.title}>
-                                        <div className={styles.left} />
-                                        <TreeTitle
-                                          index={index}
-                                          formRef={formRef}
-                                          booleanOperator={booleanOperator}
-                                          updateFields={(vdata) => {
-                                            formRef.setFieldsValue(vdata);
-                                          }}
-                                          fieldName={[field.name, 'booleanOperator']}
-                                        />
-                                      </div>
+                                  <div className={styles.conditionGroupContent} key={index}>
+                                    <div className={empty ? styles.treeEmpty : styles.tree}>
+                                      <TreeTitle
+                                        index={index}
+                                        formRef={formRef}
+                                        booleanOperator={booleanOperator}
+                                        updateFields={(vdata) => {
+                                          formRef.setFieldsValue(vdata);
+                                        }}
+                                        fieldName={[field.name, 'booleanOperator']}
+                                      />
                                       <div>
                                         <Form.List name={[field.name, 'children']}>
                                           {(inFields, { add: inAdd, remove: inRemove }) => {
                                             return (
-                                              <div
-                                                style={{
-                                                  display: 'flex',
-                                                  flexDirection: 'column',
-                                                  gap: '8px',
-                                                }}
-                                                key={index}
-                                              >
+                                              <div className={styles.conditionItem} key={index}>
                                                 {inFields?.map((inField, inIndex) => (
                                                   <Condition
                                                     key={inIndex}
@@ -356,7 +316,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                     sqlCheckResultOptions={sqlCheckResultOptions}
                                                   />
                                                 ))}
-
                                                 <div>
                                                   <Button
                                                     type="link"
@@ -370,6 +329,30 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                     }}
                                                   >
                                                     添加条件
+                                                  </Button>
+                                                  <Button
+                                                    type="link"
+                                                    onClick={async () => {
+                                                      inAdd({
+                                                        type: EConditionType.CONDITION_GROUP,
+                                                        children: [
+                                                          {
+                                                            type: EConditionType.CONDITION,
+                                                            expression: undefined,
+                                                            operator: undefined,
+                                                            value: undefined,
+                                                          },
+                                                        ],
+                                                        booleanOperator: EBooleanOperator.AND,
+                                                      });
+                                                      const raw = await formRef.getFieldsValue()
+                                                        ?.conditions;
+                                                      if (raw?.length >= 2) {
+                                                        setShowConditionGroup(true);
+                                                      }
+                                                    }}
+                                                  >
+                                                    添加条件组
                                                   </Button>
                                                 </div>
                                               </div>
@@ -413,24 +396,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                     operator: undefined,
                                     value: undefined,
                                   });
-                                  const raw = await formRef.getFieldsValue()?.conditionGroup1;
-                                  if (raw?.length === 2) {
-                                    if (raw.every((d) => d?.type === EConditionType.CONDITION)) {
-                                      formRef.setFieldsValue({
-                                        conditionGroup1: [
-                                          {
-                                            type: EConditionType.CONDITION_GROUP,
-                                            children: raw,
-                                            booleanOperator: EBooleanOperator.AND,
-                                          },
-                                        ],
-                                      });
-                                    } else {
-                                      if (!showConditionGroup) {
-                                        setShowConditionGroup(true);
-                                        setRootBoolOperator(EBooleanOperator.AND);
-                                      }
-                                    }
+                                  const raw = await formRef.getFieldsValue()?.conditions;
+                                  if (raw?.length >= 2) {
+                                    setShowConditionGroup(true);
+                                  } else {
+                                    console.log(raw);
                                   }
                                 }}
                               >
@@ -451,12 +421,9 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                     ],
                                     booleanOperator: EBooleanOperator.AND,
                                   });
-                                  const raw = await formRef.getFieldsValue()?.conditionGroup1;
+                                  const raw = await formRef.getFieldsValue()?.conditions;
                                   if (raw?.length >= 2) {
-                                    if (!showConditionGroup) {
-                                      setShowConditionGroup(true);
-                                      setRootBoolOperator(EBooleanOperator.AND);
-                                    }
+                                    setShowConditionGroup(true);
                                   }
                                 }}
                               >
@@ -493,19 +460,30 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
               onClick={() => {
                 setIsEdit(false);
                 formRef.resetFields();
+                setShowConditionGroup(false);
+                setRootBoolOperator(originRootNode?.booleanOperator || EBooleanOperator.AND);
               }}
             >
               {empty ? '取消新建' : '取消修改'}
             </Button>
           </Space>
         ) : (
-          <Button
-            onClick={() => {
-              setIsEdit(true);
-            }}
-          >
-            {empty ? '新建规则' : '编辑规则'}
-          </Button>
+          <Space>
+            <Button
+              onClick={() => {
+                setIsEdit(true);
+                setShowConditionGroup(false);
+              }}
+            >
+              {empty ? '新建规则' : '编辑规则'}
+            </Button>
+
+            {currentRiskDetectRuleId && (
+              <Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
+                删除规则
+              </Button>
+            )}
+          </Space>
         )}
       </div>
     </div>

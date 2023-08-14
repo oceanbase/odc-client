@@ -14,42 +14,60 @@
  * limitations under the License.
  */
 
-import classnames from "classnames";
+import classnames from 'classnames';
 import styles from './index.less';
-import { useState } from "react";
-import _ from "lodash";
-import { Form, Input } from "antd";
-import { BooleanOperatorMap, EBooleanOperator } from "./InnerRiskLevel";
+import { useState } from 'react';
+import _ from 'lodash';
+import { Form, Input } from 'antd';
+import { BooleanOperatorMap, EBooleanOperator } from './InnerRiskLevel';
 
-const TreeTitle = ({
-  formRef,
-  booleanOperator,
-  index,
-  fieldName,
-  updateFields,
-}
-) => {
-  const [localBooleanOperator, setlocalBooleanOperator] = useState<EBooleanOperator>(booleanOperator);
+const TreeTitle = ({ formRef, booleanOperator, index, fieldName, updateFields }) => {
+  const [isHover, setIsHover] = useState<boolean>(false);
+  const [localBooleanOperator, setlocalBooleanOperator] = useState<EBooleanOperator>(
+    booleanOperator,
+  );
+
   return (
-
-    <div className={classnames(styles.bo, styles.boHover)} onClick={async () => {
-      let rawData = await formRef.getFieldsValue();
-      if (localBooleanOperator === EBooleanOperator.AND) {
-        rawData.conditionGroup1[index].booleanOperator = EBooleanOperator.OR;
-        setlocalBooleanOperator(EBooleanOperator.OR);
-      } else {
-        rawData.conditionGroup1[index].booleanOperator = EBooleanOperator.AND;
-        setlocalBooleanOperator(EBooleanOperator.AND);
-      }
-      updateFields(rawData);
-    }}>
-
-      {BooleanOperatorMap?.[localBooleanOperator]}
-      <Form.Item name={fieldName} shouldUpdate>
-        <Input type="hidden" value={localBooleanOperator}
-        />
-      </Form.Item>
+    <div
+      className={styles.title}
+      onMouseOver={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      <div
+        className={
+          isHover
+            ? localBooleanOperator === EBooleanOperator.AND
+              ? classnames(styles.left, styles.leftAnd)
+              : classnames(styles.left, styles.leftOr)
+            : styles.left
+        }
+      />
+      <div
+        className={
+          isHover
+            ? localBooleanOperator === EBooleanOperator.AND
+              ? classnames(styles.bo, styles.boAnd)
+              : classnames(styles.bo, styles.boOr)
+            : styles.bo
+        }
+        onClick={async () => {
+          let rawData = await formRef.getFieldsValue();
+          if (localBooleanOperator === EBooleanOperator.AND) {
+            rawData.conditions[index].booleanOperator = EBooleanOperator.OR;
+            setlocalBooleanOperator(EBooleanOperator.OR);
+          } else {
+            rawData.conditions[index].booleanOperator = EBooleanOperator.AND;
+            setlocalBooleanOperator(EBooleanOperator.AND);
+          }
+          updateFields(rawData);
+        }}
+      >
+        {BooleanOperatorMap?.[localBooleanOperator]}
+        <Form.Item name={fieldName} shouldUpdate>
+          <Input type="hidden" value={localBooleanOperator} />
+        </Form.Item>
+      </div>
     </div>
-  )
-}
+  );
+};
 export default TreeTitle;

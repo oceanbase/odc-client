@@ -55,8 +55,8 @@ const Condition = ({
 }) => {
   const [condition, setCondition] = useState<any>(
     parentIsRoot
-      ? formRef.getFieldsValue()?.conditionGroup1?.[indexChan?.[0]]
-      : formRef.getFieldsValue()?.conditionGroup1?.[indexChan?.[0]]?.children?.[indexChan?.[1]],
+      ? formRef.getFieldsValue()?.conditions?.[indexChan?.[0]]
+      : formRef.getFieldsValue()?.conditions?.[indexChan?.[0]]?.children?.[indexChan?.[1]],
   );
   const firstTimeLoadRef = useRef<boolean>(true);
   const [expression, setExpression] = useState<Expression>(condition?.expression);
@@ -118,7 +118,7 @@ const Condition = ({
         console.log(99, value);
       } else {
         console.log(101, value);
-        const data = formRef.getFieldsValue()?.conditionGroup1;
+        const data = formRef.getFieldsValue()?.conditions;
         if (parentIsRoot && !firstTimeLoadRef.current) {
           if (!firstTimeLoadRef.current) {
             data[indexChan[0]].value = undefined;
@@ -129,7 +129,7 @@ const Condition = ({
           }
         }
         formRef.setFieldsValue({
-          conditionGroup1: data,
+          conditions: data,
         });
       }
     } else {
@@ -140,7 +140,7 @@ const Condition = ({
         console.log(105, value);
       } else {
         setIsInputComponent(false);
-        const data = formRef.getFieldsValue()?.conditionGroup1;
+        const data = formRef.getFieldsValue()?.conditions;
         if (parentIsRoot && !firstTimeLoadRef.current) {
           if (!firstTimeLoadRef.current) {
             data[indexChan[0]].value = undefined;
@@ -151,7 +151,7 @@ const Condition = ({
           }
         }
         formRef.setFieldsValue({
-          conditionGroup1: data,
+          conditions: data,
         });
       }
     }
@@ -161,9 +161,9 @@ const Condition = ({
   useLayoutEffect(() => {
     let condition;
     if (parentIsRoot) {
-      condition = formRef.getFieldsValue()?.conditionGroup1?.[indexChan[0]];
+      condition = formRef.getFieldsValue()?.conditions?.[indexChan[0]];
     } else {
-      condition = formRef.getFieldsValue()?.conditionGroup1?.[indexChan[0]]?.children[indexChan[1]];
+      condition = formRef.getFieldsValue()?.conditions?.[indexChan[0]]?.children[indexChan[1]];
     }
     setCondition(condition);
     setIsMultiple(checkMultipleOrTags(condition?.operator));
@@ -229,12 +229,12 @@ const Condition = ({
           onSelect={(_, { value }) => {
             const data = formRef.getFieldsValue();
             if (parentIsRoot) {
-              data.conditionGroup1[indexChan[0]].expression = value;
-              data.conditionGroup1[indexChan[0]].value = undefined;
+              data.conditions[indexChan[0]].expression = value;
+              data.conditions[indexChan[0]].value = undefined;
               formRef.setFieldsValue({ ...data });
             } else {
-              data.conditionGroup1[indexChan[0]].children[indexChan[1]].expression = value;
-              data.conditionGroup1[indexChan[0]].children[indexChan[1]].value = undefined;
+              data.conditions[indexChan[0]].children[indexChan[1]].expression = value;
+              data.conditions[indexChan[0]].children[indexChan[1]].value = undefined;
               formRef.setFieldsValue({ ...data });
             }
             if (checkIsProNameOrDBName(value)) {

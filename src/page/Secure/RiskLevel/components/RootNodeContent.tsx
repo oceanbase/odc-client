@@ -17,7 +17,9 @@
 import { Empty, Space } from 'antd';
 import styles from './index.less';
 import { Expression, ExpressionMap, OperatorMap } from '../interface';
-import { BooleanOperatorMap, EConditionType } from './InnerRiskLevel';
+import { BooleanOperatorMap, EBooleanOperator, EConditionType } from './InnerRiskLevel';
+import classNames from 'classnames';
+import { useState } from 'react';
 
 const RootNodeContent = ({
   empty,
@@ -26,6 +28,7 @@ const RootNodeContent = ({
   taskTypeIdMap,
   sqlCheckResultIdMap,
 }) => {
+  const [isHover, setIsHover] = useState<boolean>(false);
   const getValueMapByExpression = (expression: Expression): { [key in string]: string } => {
     let valueMap;
     switch (expression) {
@@ -61,9 +64,13 @@ const RootNodeContent = ({
     const valueMap = getValueMapByExpression(node?.expression);
     return (
       <Space size={12}>
-        <div className={styles.treeInputBorder}>{ExpressionMap?.[node?.expression]}</div>
-        <div className={styles.treeInputBorder}>{OperatorMap?.[node?.operator]}</div>
-        <div className={styles.treeInputBorder}>
+        <div className={styles.treeInputBorder} key={1}>
+          {ExpressionMap?.[node?.expression]}
+        </div>
+        <div className={styles.treeInputBorder} key={2}>
+          {OperatorMap?.[node?.operator]}
+        </div>
+        <div className={styles.treeInputBorder} key={3}>
           {Array.isArray(node?.value)
             ? node?.value?.map((v) => valueMap?.[v] || v)?.join(', ')
             : valueMap?.[node?.value] || node?.value}
@@ -77,9 +84,25 @@ const RootNodeContent = ({
     } else {
       return (
         <div className={styles.treeScopeContainer}>
-          <div className={styles.treeScope}>
-            <div className={styles.treeScopeBorder} />
-            <div className={styles.treeScopeTitle}>
+          <div
+            className={styles.treeScope}
+            onMouseOver={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+          >
+            <div
+              className={
+                node?.booleanOperator === EBooleanOperator.AND
+                  ? classNames(styles.treeScopeBorder, styles.treeScopeBorderAnd)
+                  : classNames(styles.treeScopeBorder, styles.treeScopeBorderOr)
+              }
+            />
+            <div
+              className={
+                node?.booleanOperator === EBooleanOperator.AND
+                  ? classNames(styles.treeScopeTitle, styles.treeScopeTitleAnd)
+                  : classNames(styles.treeScopeTitle, styles.treeScopeTitleOr)
+              }
+            >
               {BooleanOperatorMap?.[node?.booleanOperator]}
             </div>
           </div>
