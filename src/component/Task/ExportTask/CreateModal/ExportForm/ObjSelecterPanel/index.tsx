@@ -44,6 +44,12 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnec
     }
   }, [connection]);
 
+  const handleChange = () => {
+    form.setFieldsValue({
+      exportDbObjects: [],
+    });
+  };
+
   return (
     <>
       <FormItem
@@ -89,7 +95,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnec
           </Radio.Button>
         </Radio.Group>
       </FormItem>
-      <DatabaseSelect projectId={projectId} />
+      <DatabaseSelect projectId={projectId} onChange={handleChange} />
       <FormItem
         label={
           formatMessage({ id: 'odc.ExportForm.ObjSelecterPanel.ExportRange' }) //导出范围

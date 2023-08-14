@@ -83,9 +83,9 @@ export const getItems = (
             <SimpleTextItem label="文件名" content={parameters?.fileName} />
             <SimpleTextItem label="文件编码" content={parameters?.fileEncoding} />
             <SimpleTextItem label="CSV 文件设置" content={csvFormat?.join('、')} />
-            <SimpleTextItem label="字段分隔符" content={parameters?.csvFormat.columnSeparator} />
-            <SimpleTextItem label="文本识别符" content={parameters?.csvFormat.columnDelimiter} />
-            <SimpleTextItem label="换行符号" content={parameters?.csvFormat.lineSeparator} />
+            <SimpleTextItem label="字段分隔符" content={parameters?.csvFormat?.columnSeparator} />
+            <SimpleTextItem label="文本识别符" content={parameters?.csvFormat?.columnDelimiter} />
+            <SimpleTextItem label="换行符号" content={parameters?.csvFormat?.lineSeparator} />
             <SimpleTextItem
               label="执行方式"
               content={taskExecStrategyMap[task?.executionStrategy]}
@@ -95,12 +95,12 @@ export const getItems = (
               <SimpleTextItem label="执行时间" content={getFormatDateTime(task?.executionTime)} />
             )}
 
-            <SimpleTextItem label="任务描述" content={task.description} direction="column" />
+            <SimpleTextItem label="任务描述" content={task?.description} direction="column" />
 
             <Divider style={{ marginTop: 4 }} />
             <SimpleTextItem label="创建人" content={task?.creator?.name || '-'} />
 
-            <SimpleTextItem label="创建时间" content={getFormatDateTime(task.createTime)} />
+            <SimpleTextItem label="创建时间" content={getFormatDateTime(task?.createTime)} />
           </>
         );
       },

@@ -272,7 +272,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
   static getDerivedStateFromProps(props, state) {
     const nextModalData = props.modalStore?.exportModalData;
-    if (nextModalData) {
+    if (nextModalData && !state.formData.exportDbObjects?.length) {
       const { databaseId, name, type, exportPkgBody } = nextModalData;
       const formData = {
         ...state.formData,
