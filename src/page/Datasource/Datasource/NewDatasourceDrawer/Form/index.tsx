@@ -83,6 +83,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'tenantName',
         'username',
         'password',
+        'sslConfig',
       ]);
     } catch (e) {}
     if (!values) {

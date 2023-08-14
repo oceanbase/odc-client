@@ -56,6 +56,7 @@ export default (props: IProps) => {
         'tenantName',
         'sysTenantUsername',
         'sysTenantPassword',
+        'sslConfig',
       ]);
     } catch (e) {}
     if (!values) {
