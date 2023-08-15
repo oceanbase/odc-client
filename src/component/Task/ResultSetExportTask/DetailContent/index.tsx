@@ -81,6 +81,7 @@ export const getItems = (
 
             <SimpleTextItem label="查询结果限制" content={parameters?.maxRows} />
             <SimpleTextItem label="文件名" content={parameters?.fileName} />
+            <SimpleTextItem label="文件格式" content={parameters?.fileFormat} />
             {parameters?.fileFormat === IExportResultSetFileType.CSV && (
               <>
                 <SimpleTextItem label="CSV 文件设置" content={csvFormat?.join('、')} />
