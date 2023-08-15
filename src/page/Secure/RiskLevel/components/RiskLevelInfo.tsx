@@ -209,30 +209,42 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
         width={720}
         onClose={() => setManageApprovalProcessDrawerOpen(false)}
       >
-        <Button
+        <div
           style={{
-            marginBottom: '16px',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
           }}
-          type="primary"
-          onClick={() => setFormModalVisible(true)}
         >
-          新建审批流程
-        </Button>
-        <CommonTable
-          key={'riskLevelInfo'}
-          showToolbar={false}
-          titleContent={null}
-          operationContent={null}
-          onLoad={null}
-          onChange={null}
-          tableProps={{
-            columns: columns,
-            dataSource: approvalProcesses,
-            rowKey: 'id',
-            pagination: false,
-            loading: loading,
-          }}
-        />
+          <div>
+            <Button
+              style={{
+                marginBottom: '16px',
+              }}
+              type="primary"
+              onClick={() => setFormModalVisible(true)}
+            >
+              新建审批流程
+            </Button>
+          </div>
+          <div style={{ flexGrow: 1, flexShrink: 1 }}>
+            <CommonTable
+              key={'riskLevelInfo'}
+              showToolbar={false}
+              titleContent={null}
+              operationContent={null}
+              onLoad={null}
+              onChange={null}
+              tableProps={{
+                columns: columns,
+                dataSource: approvalProcesses,
+                rowKey: 'id',
+                pagination: false,
+                loading: loading,
+              }}
+            />
+          </div>
+        </div>
       </Drawer>
       <CreateApproval
         editId={editId}
