@@ -182,7 +182,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
               <>
                 <Option value={ConnectType.CLOUD_OB_MYSQL}>OceanBase MySQL Cloud</Option>
                 <Option value={ConnectType.CLOUD_OB_ORACLE}>OceanBase Oracle Cloud</Option>
-                <Option value={ConnectType.ODP_SHARDING_OB_MYSQL}>OceanBase MySQL Sharding</Option>
+                {/* <Option value={ConnectType.ODP_SHARDING_OB_MYSQL}>OceanBase MySQL Sharding</Option> */}
               </>
             )}
           </Select>

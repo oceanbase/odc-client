@@ -22,7 +22,7 @@ import { SpaceType } from '@/d.ts/_index';
 import logger from '@/util/logger';
 import request from '@/util/request';
 import tracert from '@/util/tracert';
-import { encrypt } from '@/util/utils';
+import { encrypt, safeParseJson } from '@/util/utils';
 import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
 import { history } from '@umijs/max';
@@ -56,7 +56,7 @@ export class UserStore {
   public organizations: IOrganization[] = [];
 
   @observable
-  public organizationId: number = parseInt(sessionStorage.getItem(sessionKey)) || null;
+  public organizationId: number = null;
 
   @observable
   public scriptStore: ScriptStore = new ScriptStore();
@@ -236,8 +236,11 @@ export class UserStore {
 
   public getDefaultOrganization() {
     const sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
-    if (sessionOrganizationId) {
-      return this.organizations?.find((item) => item.id === sessionOrganizationId);
+    const sessionOrganization = this.organizations?.find(
+      (item) => item.id === sessionOrganizationId,
+    );
+    if (sessionOrganization) {
+      return sessionOrganization;
     }
     let personalOrganization: IOrganization = this.organizations?.find(
       (item) => item.type === SpaceType.PRIVATE,
