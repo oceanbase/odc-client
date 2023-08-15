@@ -17,7 +17,7 @@
 import { deleteTaskFlow, getTaskFlowList } from '@/common/network/manager';
 import { updateRiskLevel } from '@/common/network/riskLevel';
 import { IRiskLevel } from '@/d.ts/riskLevel';
-import { canAcess } from '@/component/Acess';
+import { Acess, canAcess, createPermission } from '@/component/Acess';
 import CommonTable from '@/component/CommonTable';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -31,6 +31,7 @@ import { useEffect, useState } from 'react';
 import { getColumns } from './column';
 import CreateApproval from './CreateApproval';
 import styles from './index.less';
+import Action from '@/component/Action';
 
 const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
   const [formRef] = useForm();
@@ -137,20 +138,15 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
           <div className={styles.tagLabel}>
             审批流程<span>:</span>
           </div>
-          <div>
+          <div style={{ display: 'flex', gap: '8px' }}>
             {currentRiskLevel?.approvalFlowConfig?.name}
-            <Button
-              type="link"
-              onClick={onpenEditModal}
-              style={{
-                padding: '0px 0px 0px 8px',
-                border: 'none',
-                height: '12px',
-                lineHeight: '20px',
-              }}
-            >
-              编辑
-            </Button>
+            <Action.Group>
+              <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
+                <Action.Link disabled={currentRiskLevel?.builtIn} onClick={onpenEditModal}>
+                  编辑
+                </Action.Link>
+              </Acess>
+            </Action.Group>
           </div>
         </Space>
       </Space>

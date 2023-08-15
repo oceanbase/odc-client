@@ -34,6 +34,9 @@ import { IRiskLevel } from '@/d.ts/riskLevel';
 import RootNodeContent from './RootNodeContent';
 import { initOptions } from './options';
 import { IConditionGroup } from '@/d.ts/riskDetectRule';
+import { Acess, createPermission } from '@/component/Acess';
+import Action from '@/component/Action';
+import { IManagerResourceType, actionTypes } from '@/d.ts';
 export type Operator = string;
 export enum EBooleanOperator {
   AND = 'AND',
@@ -483,22 +486,25 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             </Button>
           </Space>
         ) : (
-          <Space size={12}>
-            <Button
-              onClick={() => {
-                setIsEdit(true);
-                setShowConditionGroup(false);
-              }}
-            >
-              {empty ? '新建规则' : '编辑规则'}
-            </Button>
-
+          <Action.Group>
+            <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
+              <Action.Button
+                onClick={async () => {
+                  setIsEdit(true);
+                  setShowConditionGroup(false);
+                }}
+              >
+                {empty ? '新建规则' : '编辑规则'}
+              </Action.Button>
+            </Acess>
             {currentRiskDetectRuleId && (
-              <Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
-                清空规则
-              </Button>
+              <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
+                <Action.Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
+                  清空规则
+                </Action.Button>
+              </Acess>
             )}
-          </Space>
+          </Action.Group>
         )}
       </div>
     </div>
