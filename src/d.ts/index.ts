@@ -2332,8 +2332,10 @@ export interface IAsyncTaskParams {
 
 export interface IResultSetExportTaskParams {
   sql: string;
-  fileFormat: EXPORT_TYPE;
+  fileFormat: IExportResultSetFileType;
   fileEncoding: IMPORT_ENCODING;
+  tableName: string;
+  saveSql: boolean;
   csvFormat: {
     isContainColumnHeader: boolean;
     isTransferEmptyString: boolean;

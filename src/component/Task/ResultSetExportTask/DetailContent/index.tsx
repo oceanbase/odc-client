@@ -18,7 +18,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IResultSetExportTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
-import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
+import { ConnectionMode, IExportResultSetFileType, TaskExecStrategy } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Divider } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
@@ -81,11 +81,36 @@ export const getItems = (
 
             <SimpleTextItem label="查询结果限制" content={parameters?.maxRows} />
             <SimpleTextItem label="文件名" content={parameters?.fileName} />
+            {parameters?.fileFormat === IExportResultSetFileType.CSV && (
+              <>
+                <SimpleTextItem label="CSV 文件设置" content={csvFormat?.join('、')} />
+                <SimpleTextItem
+                  label="字段分隔符"
+                  content={parameters?.csvFormat?.columnSeparator}
+                />
+                <SimpleTextItem
+                  label="文本识别符"
+                  content={parameters?.csvFormat?.columnDelimiter}
+                />
+                <SimpleTextItem label="换行符号" content={parameters?.csvFormat?.lineSeparator} />
+              </>
+            )}
+            {parameters?.fileFormat === IExportResultSetFileType.SQL && (
+              <SimpleTextItem label="指定表名" content={parameters?.tableName ?? '-'} />
+            )}
+            {parameters?.fileFormat === IExportResultSetFileType.EXCEL && (
+              <>
+                <SimpleTextItem
+                  label="包含列头"
+                  content={parameters?.csvFormat?.isContainColumnHeader ? '是' : '否'}
+                />
+                <SimpleTextItem
+                  label="导出 SQL 到另一个 Sheet"
+                  content={parameters?.saveSql ? '是' : '否'}
+                />
+              </>
+            )}
             <SimpleTextItem label="文件编码" content={parameters?.fileEncoding} />
-            <SimpleTextItem label="CSV 文件设置" content={csvFormat?.join('、')} />
-            <SimpleTextItem label="字段分隔符" content={parameters?.csvFormat?.columnSeparator} />
-            <SimpleTextItem label="文本识别符" content={parameters?.csvFormat?.columnDelimiter} />
-            <SimpleTextItem label="换行符号" content={parameters?.csvFormat?.lineSeparator} />
             <SimpleTextItem
               label="执行方式"
               content={taskExecStrategyMap[task?.executionStrategy]}
