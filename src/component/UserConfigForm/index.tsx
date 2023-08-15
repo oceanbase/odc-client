@@ -60,48 +60,6 @@ const UserConfigForm: React.FC<IProps> = (props) => {
       className={styles.userConfigForm}
     >
       <Form.Item
-        name="connect.sessionMode"
-        label={
-          <ConfigItem
-            title={
-              formatMessage({
-                id: 'odc.component.UserConfigForm.SqlWindowSessionMode',
-              })
-              //SQL 窗口 Session 模式
-            }
-            desc={
-              formatMessage({
-                id: 'odc.component.UserConfigForm.SetTheSessionModeOf',
-              })
-              //设置 SQL 窗口的 Session 模式
-            }
-          />
-        }
-        rules={[
-          {
-            required: true,
-            message: formatMessage({
-              id: 'odc.component.UserConfigForm.SelectSessionMode',
-            }),
-            //请选择 Session 模式
-          },
-        ]}
-      >
-        <Radio.Group
-          options={[
-            {
-              label: SQLSessionModeText[SQLSessionMode.SingleSession],
-              value: SQLSessionMode.SingleSession,
-            },
-
-            {
-              label: SQLSessionModeText[SQLSessionMode.MultiSession],
-              value: SQLSessionMode.MultiSession,
-            },
-          ]}
-        />
-      </Form.Item>
-      <Form.Item
         name="sqlexecute.defaultDelimiter"
         label={
           <ConfigItem
