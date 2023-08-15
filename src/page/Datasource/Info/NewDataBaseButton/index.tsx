@@ -39,6 +39,7 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
   const { run, loading } = useRequest(createDataBase, {
     manual: true,
   });
+  const haveCharset = ![ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(mode);
 
   const { data: project, loading: projectListLoading } = useRequest(listProjects, {
     defaultParams: [null, 1, 99999],
@@ -64,10 +65,6 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
       }
       case ConnectionMode.OB_ORACLE:
       case ConnectionMode.ORACLE: {
-        form.setFieldsValue({
-          collationName: 'BINARY',
-          charsetName: 'AL32UTF8',
-        });
         return;
       }
     }
@@ -121,32 +118,36 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
               })} /*请输入*/
             />
           </Form.Item>
-          <Space>
-            <Form.Item
-              name={'charsetName'}
-              label={formatMessage({
-                id: 'odc.Info.NewDataBaseButton.CharacterEncoding',
-              })} /*字符编码*/
-            >
-              <Input
-                style={{ width: 200 }}
-                placeholder={formatMessage({
-                  id: 'odc.Info.NewDataBaseButton.PleaseEnter',
-                })} /*请输入*/
-              />
-            </Form.Item>
-            <Form.Item
-              name={'collationName'}
-              label={formatMessage({ id: 'odc.Info.NewDataBaseButton.SortingRules' })} /*排序规则*/
-            >
-              <Input
-                style={{ width: 200 }}
-                placeholder={formatMessage({
-                  id: 'odc.Info.NewDataBaseButton.PleaseEnter',
-                })} /*请输入*/
-              />
-            </Form.Item>
-          </Space>
+          {haveCharset && (
+            <Space>
+              <Form.Item
+                name={'charsetName'}
+                label={formatMessage({
+                  id: 'odc.Info.NewDataBaseButton.CharacterEncoding',
+                })} /*字符编码*/
+              >
+                <Input
+                  style={{ width: 200 }}
+                  placeholder={formatMessage({
+                    id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                  })} /*请输入*/
+                />
+              </Form.Item>
+              <Form.Item
+                name={'collationName'}
+                label={formatMessage({
+                  id: 'odc.Info.NewDataBaseButton.SortingRules',
+                })} /*排序规则*/
+              >
+                <Input
+                  style={{ width: 200 }}
+                  placeholder={formatMessage({
+                    id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                  })} /*请输入*/
+                />
+              </Form.Item>
+            </Space>
+          )}
           <Form.Item
             name={'projectId'}
             label={formatMessage({ id: 'odc.Info.NewDataBaseButton.Project' })} /*所属项目*/
