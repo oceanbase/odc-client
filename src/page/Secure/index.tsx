@@ -51,9 +51,9 @@ const Pages = {
   [IPageType.MaskingAlgorithm]: {
     component: MaskingAlgorithm, // 脱敏算法
   },
-  [IPageType.Secure_Approval]: {
-    component: Approval, // 审批流程
-  },
+  // [IPageType.Secure_Approval]: {
+  //   component: Approval, // 审批流程
+  // },
   [IPageType.RiskLevel]: {
     component: RiskLevel, // 风险等级
   },
@@ -68,10 +68,10 @@ const tabs = [
     tab: formatMessage({ id: 'odc.page.Secure.RiskLevel' }), //风险等级
     key: IPageType.RiskLevel,
   },
-  {
-    tab: formatMessage({ id: 'odc.page.Secure.ApprovalProcess' }), //审批流程
-    key: IPageType.Secure_Approval,
-  },
+  // {
+  //   tab: formatMessage({ id: 'odc.page.Secure.ApprovalProcess' }), //审批流程
+  //   key: IPageType.Secure_Approval,
+  // },
   {
     tab: formatMessage({ id: 'odc.page.Secure.DesensitizationAlgorithm' }), //脱敏算法
     key: IPageType.MaskingAlgorithm,
