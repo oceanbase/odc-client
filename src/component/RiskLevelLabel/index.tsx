@@ -22,10 +22,14 @@ const RiskLevelLabel: React.FC<{ level?: number; color: string; content?: string
   level = -1,
   color = 'grey',
   content = '',
-}) => (
-  <div className={styles.tag}>
-    <Tag color={color.toLowerCase()}>{level !== -1 ? RiskLevelMap[level] : content}</Tag>
-  </div>
-);
+}) => {
+  return level === -1 && !content?.length ? (
+    <span>-</span>
+  ) : (
+    <div className={styles.tag}>
+      <Tag color={color.toLowerCase()}>{level !== -1 ? RiskLevelMap[level] : content}</Tag>
+    </div>
+  );
+};
 
 export default RiskLevelLabel;

@@ -51,7 +51,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         ? item?.dataSource?.dialectType === 'OB_MYSQL'
         : true,
     )
-    ?.map(({ name, id, environment, dataSource }) => ({
+    ?.map(({ name, id, environment, dataSource, project }) => ({
       label: (
         <Popover
           overlayClassName={styles.popover}
