@@ -179,7 +179,7 @@ export const getColumns = ({
           <RuleSwitch
             key={index}
             checked={record?.enabled}
-            onChange={() => handleSwtichRuleStatus(record?.id, record)}
+            onChange={() => handleSwtichRuleStatus(record?.rulesetId, record)}
           />
         );
       },
