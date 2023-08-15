@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "noImplicitReturns": false,
-    "suppressImplicitAnyIndexErrors": true,
+    "ignoreDeprecations": "5.0",
     "noUnusedLocals": false,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
