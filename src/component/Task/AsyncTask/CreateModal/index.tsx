@@ -38,6 +38,7 @@ import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
+import { getLocale } from '@umijs/max';
 import {
   AutoComplete,
   Button,
@@ -55,7 +56,6 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { getLocale } from '@umijs/max';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 
@@ -414,6 +414,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       handleSqlChange('sqlContent', initSqlContent);
     }
   }, [initSqlContent]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      databaseId: asyncTaskData?.databaseId,
+    });
+  }, [asyncTaskData?.databaseId]);
 
   return (
     <Drawer

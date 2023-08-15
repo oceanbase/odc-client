@@ -325,7 +325,7 @@ const TaskTable: React.FC<IProps> = inject(
           filteredValue: filters?.candidateApprovers || null,
           filters: [],
           render: (candidateApprovers) =>
-            candidateApprovers?.map((item) => item.accountName)?.join(', ') || '-',
+            candidateApprovers?.map((item) => item.name)?.join(', ') || '-',
         },
 
         {
