@@ -15,11 +15,13 @@
  */
 
 import { formatMessage, getLocalImg } from '@/util/intl';
-import { Modal } from 'antd';
+import { Modal, Space } from 'antd';
 import moment from 'moment';
 import { PureComponent } from 'react';
+import { GithubFilled } from '@ant-design/icons';
 import pkg from '../../../../../package.json';
 import styles from './index.less';
+import setting from '@/store/setting';
 console.log(RELEASE_DATE);
 export default class ModalHelp extends PureComponent<{
   showModal: boolean;
@@ -48,6 +50,8 @@ export default class ModalHelp extends PureComponent<{
               { pkgVersion: pkg.version },
             )}
           </p>
+          <span>Server: {setting?.serverSystemInfo?.version}</span>
+          <br />
           <span>Release Date: {RELEASE_DATE ? moment(RELEASE_DATE).format('y-MM-DD') : ''}</span>
         </div>
         <div className={styles.copyright}>
@@ -57,9 +61,12 @@ export default class ModalHelp extends PureComponent<{
             </a>
             <div className="grey-color">{pkg.copyright}</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <img style={{ height: 12 }} src={window.publicPath + 'img/logov2.png'} />
-          </div>
+          <Space size={18}>
+            <img style={{ height: 16 }} src={window.publicPath + 'img/ob_logo.svg'} />
+            <a href="https://github.com/oceanbase/odc" className={styles.github} target="_blank">
+              <GithubFilled />
+            </a>
+          </Space>
         </div>
       </Modal>
     );
