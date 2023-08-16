@@ -21,7 +21,6 @@ import { formatMessage } from '@/util/intl';
 import { Form, Popover, Select, Space, Tag, Typography } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
-
 interface IProps {
   type?: TaskType;
   label?: string;
@@ -29,13 +28,14 @@ interface IProps {
   projectId?: number;
   onChange?: (v: number) => void;
 }
-
 const { Text } = Typography;
-
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
     type,
-    label = formatMessage({ id: 'odc.component.DatabaseSelect.Database' }), //数据库
+    label = formatMessage({
+      id: 'odc.component.DatabaseSelect.Database',
+    }),
+    //数据库
     name = 'databaseId',
     projectId,
     onChange,
@@ -64,21 +64,39 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
                 <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
                 <Text strong>{name}</Text>
               </Space>
-              <Text type="secondary">所属数据源: {dataSource?.name ?? '-'}</Text>
-              <Text type="secondary">所属项目: {project?.name ?? '-'}</Text>
+              <Text type="secondary">
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.DatabaseSelect.DataSource',
+                  }) /* 所属数据源:  */
+                }
+                {dataSource?.name ?? '-'}
+              </Text>
+              <Text type="secondary">
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.DatabaseSelect.ItSNotPlayed',
+                  }) /* 所属项目:  */
+                }
+                {project?.name ?? '-'}
+              </Text>
             </Space>
           }
         >
-          <Space size={2} data-label={name} style={{ display: 'flex' }}>
+          <Space
+            size={2}
+            data-label={name}
+            style={{
+              display: 'flex',
+            }}
+          >
             <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
             <span>{name}</span>
           </Space>
         </Popover>
       ),
-
       value: id,
     }));
-
   const loadDatabase = async (projectId: number) => {
     const res = await listDatabases(
       projectId,
@@ -92,19 +110,15 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     );
     setDatabase(res?.contents);
   };
-
   const handleDatabaseChange = (value) => {
     onChange?.(value);
   };
-
   const project = useMemo(() => {
     return database?.find((item) => item.id === databaseId)?.project;
   }, [database, databaseId]);
-
   useEffect(() => {
     loadDatabase(projectId);
   }, []);
-
   return (
     <Form.Item
       label={label}
@@ -116,13 +130,17 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           {
             id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
           },
-          { projectName: project.name },
+          {
+            projectName: project.name,
+          },
         ) //`当前项目: ${project.name}`
       }
       rules={[
         {
           required: true,
-          message: formatMessage({ id: 'odc.component.DatabaseSelect.SelectADatabase' }), //请选择数据库
+          message: formatMessage({
+            id: 'odc.component.DatabaseSelect.SelectADatabase',
+          }), //请选择数据库
         },
       ]}
     >
@@ -131,13 +149,16 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         filterOption={(input, option) =>
           (option?.label?.props?.['data-label'] ?? '').toLowerCase().includes(input.toLowerCase())
         }
-        placeholder={formatMessage({ id: 'odc.component.DatabaseSelect.PleaseSelect' })} /*请选择*/
-        style={{ width: '320px' }}
+        placeholder={formatMessage({
+          id: 'odc.component.DatabaseSelect.PleaseSelect',
+        })}
+        /*请选择*/ style={{
+          width: '320px',
+        }}
         options={databaseOptions}
         onChange={handleDatabaseChange}
       />
     </Form.Item>
   );
 };
-
 export default DatabaseSelect;

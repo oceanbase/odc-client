@@ -52,7 +52,6 @@ import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import { PLPageMap } from '../../pageKeyGenerate';
 import { Page } from './base';
-
 export class PackageViewPage extends Page {
   public pageParams: {
     packageName: string;
@@ -78,7 +77,6 @@ export class PackageViewPage extends Page {
     this.pageTitle = packageName;
   }
 }
-
 export class SQLPage extends Page {
   public pageParams: {
     scriptText: string;
@@ -88,12 +86,13 @@ export class SQLPage extends Page {
     databaseFrom: 'datasource' | 'project';
     pageIndex?: number;
   } & Partial<IScriptMeta>;
-
   static getTitleByParams(params: SQLPage['pageParams']) {
     if (params?.scriptId) {
       return params?.objectName;
     }
-    return `${formatMessage({ id: 'workspace.header.create.sql' })}_${params?.pageIndex}`;
+    return `${formatMessage({
+      id: 'workspace.header.create.sql',
+    })}_${params?.pageIndex}`;
   }
   public findCurrentNum() {
     const indexList = page.pages
@@ -141,7 +140,6 @@ export class SQLPage extends Page {
     }
   }
 }
-
 export class TutorialPage extends Page {
   public pageParams: {
     docId: string;
@@ -149,7 +147,6 @@ export class TutorialPage extends Page {
     cid: number;
     databaseFrom: 'datasource';
   };
-
   constructor(docId: string, databaseId: number) {
     super();
     this.pageKey = `tutorialpage-new-${generateUniqKey()}`;
@@ -163,19 +160,19 @@ export class TutorialPage extends Page {
     };
   }
 }
-
 export class TaskPage extends Page {
   constructor(type: TaskPageType) {
     super();
     this.pageKey = type;
     this.pageType = PageType.TASKS;
-    this.pageTitle = '工单';
+    this.pageTitle = formatMessage({
+      id: 'odc.src.store.helper.page.pages.WorkOrder',
+    }); //'工单'
     this.pageParams = {
       type,
     };
   }
 }
-
 export class SessionManagePage extends Page {
   public pageParams: {
     cid: number;
@@ -192,7 +189,6 @@ export class SessionManagePage extends Page {
     };
   }
 }
-
 export class SessionParamsPage extends Page {
   public pageParams: {
     cid: number;
@@ -223,7 +219,6 @@ export class RecycleBinPage extends Page {
     };
   }
 }
-
 export class TablePage extends Page {
   public pageParams: {
     databaseId: number;
@@ -251,7 +246,6 @@ export class TablePage extends Page {
     };
   }
 }
-
 export class ViewPage extends Page {
   public pageParams: {
     databaseId: number;
@@ -277,7 +271,6 @@ export class ViewPage extends Page {
     };
   }
 }
-
 export class FunctionPage extends Page {
   public pageParams: {
     databaseId: number;
@@ -303,7 +296,6 @@ export class FunctionPage extends Page {
     };
   }
 }
-
 export class ProcedurePage extends Page {
   public pageParams: {
     databaseId: number;
@@ -329,7 +321,6 @@ export class ProcedurePage extends Page {
     };
   }
 }
-
 export class SequencePage extends Page {
   public pageParams: {
     databaseId: number;
@@ -352,7 +343,6 @@ export class SequencePage extends Page {
     };
   }
 }
-
 export class TriggerPage extends Page {
   public pageParams: {
     databaseId: number;
@@ -381,7 +371,6 @@ export class TriggerPage extends Page {
     };
   }
 }
-
 export class SynonymPage extends Page {
   public pageParams: {
     databaseId: number;
@@ -402,7 +391,6 @@ export class SynonymPage extends Page {
     };
   }
 }
-
 export class TypePage extends Page {
   public pageParams: {
     databaseId: number;
@@ -421,7 +409,6 @@ export class TypePage extends Page {
     };
   }
 }
-
 export class BatchCompilePage extends Page {
   public pageParams: {
     type: PageType;
@@ -433,7 +420,9 @@ export class BatchCompilePage extends Page {
       {
         id: 'odc.helper.page.openPage.BatchCompilationLabel',
       },
-      { label: PLPageMap?.[params?.type]?.label ?? '' },
+      {
+        label: PLPageMap?.[params?.type]?.label ?? '',
+      },
     )}`;
   }
   constructor(pageType: PageType, dbObjectType: DbObjectType, databaseId: number) {
@@ -448,7 +437,6 @@ export class BatchCompilePage extends Page {
     };
   }
 }
-
 export class SQLResultSetPage extends Page {
   public pageParams: {
     resultSets: IResultSet[];
@@ -473,14 +461,17 @@ export class OBClientPage extends Page {
     databaseId: number;
   };
   static getTitleByParams(params: OBClientPage['pageParams']) {
-    return formatMessage({ id: 'odc.helper.page.openPage.CommandLineWindow' }) + params?.index;
+    return (
+      formatMessage({
+        id: 'odc.helper.page.openPage.CommandLineWindow',
+      }) + params?.index
+    );
   }
   constructor(dataSourceId: number, currentNum: number, databaseId?: number) {
     super();
     this.pageKey = 'obclientPage-' + generateUniqKey();
     this.pageTitle = '--';
     this.pageType = PageType.OB_CLIENT;
-
     this.pageParams = {
       time: Date.now(),
       index: currentNum,

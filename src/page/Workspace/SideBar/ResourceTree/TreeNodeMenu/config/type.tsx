@@ -33,23 +33,6 @@ import { IMenuItemConfig } from '../type';
 export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TypeRoot]: [
     {
-      key: 'BATCH_COMPILE',
-      text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.type.BatchCompilation' }), //批量编译
-      ],
-      actionType: actionTypes.create,
-      icon: BatchCompileSvg,
-      run(session, node) {
-        openBatchCompilePLPage(
-          PageType.BATCH_COMPILE_TYPE,
-          DbObjectType.type,
-          formatMessage({ id: 'odc.components.ResourceTree.Type' }), //类型
-          session?.odcDatabase?.id,
-          session?.database?.dbName,
-        );
-      },
-    },
-    {
       key: 'CREATE',
       text: [formatMessage({ id: 'odc.ResourceTree.actions.NewType' })],
       actionType: actionTypes.create,

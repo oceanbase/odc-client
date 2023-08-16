@@ -21,7 +21,6 @@ import { Form, Input, Radio, RadioChangeEvent, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
 import styles from './index.less';
-
 const DetectWay = ({
   key,
   script,
@@ -45,7 +44,11 @@ const DetectWay = ({
   }, [type]);
   return (
     <>
-      <div style={{ marginBottom: '4px' }}>
+      <div
+        style={{
+          marginBottom: '4px',
+        }}
+      >
         {
           formatMessage({
             id: 'odc.SensitiveRule.components.DetectWay.IdentificationMethod',
@@ -56,13 +59,25 @@ const DetectWay = ({
         <Form.Item name="type" label="" required>
           <Radio.Group onChange={handleTypeChange}>
             <Radio.Button value={SensitiveRuleType.PATH}>
-              {formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.Path' }) /*路径*/}
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.Path',
+                }) /*路径*/
+              }
             </Radio.Button>
             <Radio.Button value={SensitiveRuleType.REGEX}>
-              {formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.Regular' }) /*正则*/}
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.Regular',
+                }) /*正则*/
+              }
             </Radio.Button>
             <Radio.Button value={SensitiveRuleType.GROOVY}>
-              {formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.Script' }) /*脚本*/}
+              {
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.DetectWay.Script',
+                }) /*脚本*/
+              }
             </Radio.Button>
           </Radio.Group>
         </Form.Item>
@@ -78,8 +93,8 @@ const DetectWay = ({
             <Form.Item
               label={formatMessage({
                 id: 'odc.SensitiveRule.components.DetectWay.MatchingRules',
-              })} /*匹配的规则*/
-              name="pathIncludes"
+              })}
+              /*匹配的规则*/ name="pathIncludes"
               required
               rules={[
                 {
@@ -98,7 +113,9 @@ const DetectWay = ({
               ></Input.TextArea>
             </Form.Item>
             <Form.Item
-              label={formatMessage({ id: 'odc.SensitiveRule.components.DetectWay.ExcludedRules' })}
+              label={formatMessage({
+                id: 'odc.SensitiveRule.components.DetectWay.ExcludedRules',
+              })}
               /*排除的规则*/ name="pathExcludes"
               required
             >
@@ -190,7 +207,12 @@ const DetectWay = ({
         {type === SensitiveRuleType.GROOVY && (
           <>
             <div className={styles.editor}>
-              <Space size={4} style={{ marginBottom: '5px' }}>
+              <Space
+                size={4}
+                style={{
+                  marginBottom: '5px',
+                }}
+              >
                 <div>
                   {
                     formatMessage({
@@ -206,7 +228,14 @@ const DetectWay = ({
                   }}
                   rel="noreferrer"
                 >
+                  {
+                    formatMessage({
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveRule.components.LookAtTheDocumentation',
+                    }) /* 
                   查看文档
+                 */
+                  }
                 </a>
               </Space>
               <div

@@ -31,9 +31,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useRef } from 'react';
 import NewDatasourceButton from '../../NewDatasourceDrawer/NewButton';
 import styles from '../index.less';
-
 const enableBatchImport = true;
-
 const getResultByFiles = (files: UploadFile[]) => {
   const res = [];
   files
@@ -45,36 +43,37 @@ const getResultByFiles = (files: UploadFile[]) => {
     });
   return res;
 };
-
 interface IProps {
   settingStore?: SettingStore;
   modalStore?: ModalStore;
   onReload?: () => void;
 }
-
 const TitleButton: React.FC<IProps> = function (props) {
   const batchImportRef = useRef<{
     closeModal: () => void;
   }>();
-
   const handleBatchImportSubmit = async (files: UploadFile[]) => {
     const connections: IConnection[] = getResultByFiles(files);
     const data = connections?.map((item) => encryptConnection<IConnection>(item));
     const res = await batchImportPrivateConnection(data);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.Content.TitleButton.BatchImportSucceeded' }), //批量导入成功
+        formatMessage({
+          id: 'odc.Content.TitleButton.BatchImportSucceeded',
+        }), //批量导入成功
       );
+
       batchImportRef.current.closeModal();
       props?.onReload();
     }
   };
-
   const handleFileChange = (files: UploadFile[]) => {
     return files.map((item) => {
       const res = item.response;
       if (res) {
-        const result = { ...item };
+        const result = {
+          ...item,
+        };
         const errorMessage = res?.data?.errorMessage;
         if (errorMessage) {
           result.status = 'error';
@@ -85,7 +84,6 @@ const TitleButton: React.FC<IProps> = function (props) {
       return item;
     });
   };
-
   return (
     <>
       <Space>
@@ -101,14 +99,27 @@ const TitleButton: React.FC<IProps> = function (props) {
             ref={batchImportRef}
             type="button"
             action="/api/v2/datasource/datasources/previewBatchImport"
-            description="文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版"
+            description={
+              formatMessage({
+                id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.TheFileNeedsToInclude',
+              }) /* 文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版 */
+            }
             templateName="datasource_template.xlsx"
             data={{
               visibleScope: IConnectionType.PRIVATE,
             }}
             previewContent={(data: IConnection[]) => {
               if (!data?.length) {
-                return <Empty description="暂无有效数据源信息" />;
+                return (
+                  <Empty
+                    description={
+                      formatMessage({
+                        id:
+                          'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
+                      }) /* 暂无有效数据源信息 */
+                    }
+                  />
+                );
               }
               return (
                 <>
@@ -116,13 +127,19 @@ const TitleButton: React.FC<IProps> = function (props) {
                     const hasError = !!item.errorMessage;
                     return (
                       <div key={index} className={styles['pre-item']}>
-                        <ConIcon style={{ marginRight: '4px' }} />
+                        <ConIcon
+                          style={{
+                            marginRight: '4px',
+                          }}
+                        />
                         {hasError ? (
                           <Tooltip title={item.errorMessage}>
                             <Space size={4}>
                               <Typography.Text>{item.name}</Typography.Text>
                               <ExclamationCircleFilled
-                                style={{ color: 'var(--icon-orange-color)' }}
+                                style={{
+                                  color: 'var(--icon-orange-color)',
+                                }}
                               />
                             </Space>
                           </Tooltip>
@@ -150,5 +167,4 @@ const TitleButton: React.FC<IProps> = function (props) {
     </>
   );
 };
-
 export default inject('settingStore', 'modalStore')(observer(TitleButton));

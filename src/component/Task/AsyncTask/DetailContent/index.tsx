@@ -24,9 +24,11 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-
 export const ErrorStrategy = {
-  ABORT: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.StopATask' }), // 停止任务
+  ABORT: formatMessage({
+    id: 'odc.TaskManagePage.AsyncTask.StopATask',
+  }),
+  // 停止任务
   CONTINUE: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.IgnoreErrorsContinueTasks',
   }),
@@ -39,7 +41,6 @@ interface IProps {
   result: ITaskResult;
   hasFlow: boolean;
 }
-
 const AsyncTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow, result } = props;
   const parameters = task?.parameters;
@@ -47,21 +48,53 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
   const riskLevel = task?.riskLevel;
   const isMySQL = task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
-
   return (
     <>
       <Descriptions column={2}>
-        <Descriptions.Item span={2} label="任务编号">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.TaskNumber',
+            }) /* 任务编号 */
+          }
+        >
           {task?.id}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="所属数据库">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.Database',
+            }) /* 所属数据库 */
+          }
+        >
           {task?.databaseName || '-'}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="任务类型">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.Type',
+            }) /* 任务类型 */
+          }
+        >
+          {
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
+            }) /* 
           数据库变更
+         */
+          }
         </Descriptions.Item>
         {hasFlow && (
-          <Descriptions.Item label="风险等级">
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.AsyncTask.DetailContent.RiskLevel',
+              }) /* 风险等级 */
+            }
+          >
             <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
           </Descriptions.Item>
         )}
@@ -70,9 +103,12 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         label={formatMessage({
           id: 'odc.TaskManagePage.AsyncTask.SqlContent',
         })}
-        /* SQL 内容 */
-        content={
-          <div style={{ marginTop: '8px' }}>
+        /* SQL 内容 */ content={
+          <div
+            style={{
+              marginTop: '8px',
+            }}
+          >
             <SQLContent
               sqlContent={task?.parameters?.sqlContent}
               sqlObjectIds={task?.parameters?.sqlObjectIds}
@@ -98,7 +134,11 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           </Space>
         }
         content={
-          <div style={{ marginTop: '8px' }}>
+          <div
+            style={{
+              marginTop: '8px',
+            }}
+          >
             <SQLContent
               sqlContent={task?.parameters?.rollbackSqlContent}
               sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
@@ -110,48 +150,120 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
-      <Descriptions column={2} style={{ marginTop: '8px' }}>
-        <Descriptions.Item span={2} label="分隔符">
+      <Descriptions
+        column={2}
+        style={{
+          marginTop: '8px',
+        }}
+      >
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.Separatist',
+            }) /* 分隔符 */
+          }
+        >
           {parameters?.delimiter}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="查询结果限制">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.QueryResultsLimit',
+            }) /* 查询结果限制 */
+          }
+        >
           {parameters?.queryLimit}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="任务错误处理">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.MissionErrorTreatment',
+            }) /* 任务错误处理 */
+          }
+        >
           {ErrorStrategy[parameters?.errorStrategy]}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="执行超时时间">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecuteTimeoutTime',
+            }) /* 执行超时时间 */
+          }
+        >
           {formatMessage(
             {
               id: 'odc.TaskManagePage.AsyncTask.ExecutiontimeoutHours',
             },
-
-            { executionTimeout },
+            {
+              executionTimeout,
+            },
           )}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="执行方式">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.ImplementationModalities',
+            }) /* 执行方式 */
+          }
+        >
           {taskExecStrategyMap[task?.executionStrategy]}
         </Descriptions.Item>
         {task?.executionStrategy === TaskExecStrategy.TIMER && (
-          <Descriptions.Item span={2} label="执行时间">
+          <Descriptions.Item
+            span={2}
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecutionTime',
+              }) /* 执行时间 */
+            }
+          >
             {getFormatDateTime(task?.executionTime)}
           </Descriptions.Item>
         )}
-        <Descriptions.Item span={2} label="任务描述">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.MissionDetails',
+            }) /* 任务描述 */
+          }
+        >
           {task?.description}
         </Descriptions.Item>
       </Descriptions>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider
+        style={{
+          marginTop: 4,
+        }}
+      />
       <Descriptions column={2}>
-        <Descriptions.Item span={2} label="创建人">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.Founder',
+            }) /* 创建人 */
+          }
+        >
           {task?.creator?.name || '-'}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="创建时间">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.CreationTime',
+            }) /* 创建时间 */
+          }
+        >
           {getFormatDateTime(task?.createTime)}
         </Descriptions.Item>
       </Descriptions>
     </>
   );
 };
-
 export default AsyncTaskContent;

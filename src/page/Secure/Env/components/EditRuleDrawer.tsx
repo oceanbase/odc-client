@@ -51,7 +51,6 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
       label: name,
     };
   });
-
   const onClose = () => {
     handleCloseModal(formRef.resetFields);
   };
@@ -84,7 +83,6 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
     };
     handleUpdateEnvironment(editedRule as IRule, formRef.resetFields);
   };
-
   useEffect(() => {
     if (editRuleDrawerVisible) {
       const {
@@ -101,7 +99,9 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         newInitData[`activeKey${index}`] = properties[pm.name];
         if (pm?.name === SqlInterceptorKey) {
           options.unshift({
-            label: '空',
+            label: formatMessage({
+              id: 'odc.src.page.Secure.Env.components.Null',
+            }), //'空'
             value: -1,
           });
           newInitData[`options${index}`] = options;
@@ -124,19 +124,35 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
     <Drawer
       open={editRuleDrawerVisible}
       title={
-        formatMessage({ id: 'odc.Env.components.EditRuleDrawer.Edit' }) //编辑
+        formatMessage({
+          id: 'odc.Env.components.EditRuleDrawer.Edit',
+        }) //编辑
       }
       width={480}
       className={styles.modal}
       onClose={onClose}
       destroyOnClose={true}
       footer={
-        <div style={{ display: 'flex', justifyContent: 'flex-end', columnGap: '8px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            columnGap: '8px',
+          }}
+        >
           <Button onClick={onClose}>
-            {formatMessage({ id: 'odc.Env.components.EditRuleDrawer.Cancel' }) /*取消*/}
+            {
+              formatMessage({
+                id: 'odc.Env.components.EditRuleDrawer.Cancel',
+              }) /*取消*/
+            }
           </Button>
           <Button type="primary" onClick={onOk}>
-            {formatMessage({ id: 'odc.Env.components.EditRuleDrawer.Submit' }) /*提交*/}
+            {
+              formatMessage({
+                id: 'odc.Env.components.EditRuleDrawer.Submit',
+              }) /*提交*/
+            }
           </Button>
         </div>
       }
@@ -144,21 +160,27 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
       <Descriptions column={1}>
         <Descriptions.Item
           label={
-            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.RuleName' }) //规则名称
+            formatMessage({
+              id: 'odc.Env.components.EditRuleDrawer.RuleName',
+            }) //规则名称
           }
         >
           {rule?.metadata?.name}
         </Descriptions.Item>
         <Descriptions.Item
           label={
-            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.RuleDescription' }) //规则描述
+            formatMessage({
+              id: 'odc.Env.components.EditRuleDrawer.RuleDescription',
+            }) //规则描述
           }
         >
           {rule?.metadata?.description}
         </Descriptions.Item>
         <Descriptions.Item
           label={
-            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.RuleType' }) //规则类型
+            formatMessage({
+              id: 'odc.Env.components.EditRuleDrawer.RuleType',
+            }) //规则类型
           }
         >
           {rule?.metadata?.subTypes?.join(',') || '-'}
@@ -177,7 +199,9 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         <Form.Item
           key={'appliedDialectTypes'}
           label={
-            formatMessage({ id: 'odc.Env.components.EditRuleDrawer.SupportsDataSources' }) //支持数据源
+            formatMessage({
+              id: 'odc.Env.components.EditRuleDrawer.SupportsDataSources',
+            }) //支持数据源
           }
           name={'appliedDialectTypes'}
         >
@@ -204,7 +228,9 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         {ruleType === RuleType.SQL_CHECK && (
           <Form.Item
             label={
-              formatMessage({ id: 'odc.Env.components.EditRuleDrawer.ImprovementLevel' }) //改进等级
+              formatMessage({
+                id: 'odc.Env.components.EditRuleDrawer.ImprovementLevel',
+              }) //改进等级
             }
             name={'level'}
             rules={[
@@ -254,5 +280,4 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
     </Drawer>
   );
 };
-
 export default EditRuleDrawer;

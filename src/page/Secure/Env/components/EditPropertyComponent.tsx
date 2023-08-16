@@ -17,7 +17,6 @@
 import { ComponentType, PropertyMetadata } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, InputNumber, Radio, Select } from 'antd';
-
 interface EditPropertyComponentMapProps {
   propertyMetadata: PropertyMetadata;
   label: string;
@@ -25,7 +24,6 @@ interface EditPropertyComponentMapProps {
   initData: any;
   description: string;
 }
-
 const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
   propertyMetadata,
   index,
@@ -40,7 +38,11 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     case ComponentType.INPUT_STRING: {
       return (
         <Form.Item label={label} name={name} tooltip={description}>
-          <Input placeholder="请输入" />
+          <Input
+            placeholder={
+              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseEnter' }) /* 请输入 */
+            }
+          />
         </Form.Item>
       );
     }
@@ -56,13 +58,21 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
                 {
                   id: 'odc.Env.components.EditPropertyComponent.EnterLabel',
                 },
-                { label: label },
+                {
+                  label: label,
+                },
               ), //`请输入${label}`
             },
           ]}
           tooltip={description}
         >
-          <InputNumber defaultValue={defaultValue} min={0} placeholder="请输入" />
+          <InputNumber
+            defaultValue={defaultValue}
+            min={0}
+            placeholder={
+              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseEnter.1' }) /* 请输入 */
+            }
+          />
         </Form.Item>
       );
     }
@@ -78,7 +88,9 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
                 {
                   id: 'odc.Env.components.EditPropertyComponent.SelectLabel',
                 },
-                { label: label },
+                {
+                  label: label,
+                },
               ), //`请选择${label}`
             },
           ]}
@@ -99,7 +111,12 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     case ComponentType.SELECT_SINGLE: {
       return (
         <Form.Item label={label} name={name} tooltip={description}>
-          <Select options={initData?.[option] || []} placeholder="请选择" />
+          <Select
+            options={initData?.[option] || []}
+            placeholder={
+              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseChoose' }) /* 请选择 */
+            }
+          />
         </Form.Item>
       );
     }
@@ -111,7 +128,11 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             maxTagCount="responsive"
             options={initData?.[option] || []}
             defaultValue={defaultValue}
-            placeholder="请选择"
+            placeholder={
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseChoose.1',
+              }) /* 请选择 */
+            }
           />
         </Form.Item>
       );
@@ -124,7 +145,11 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             maxTagCount="responsive"
             options={initData?.[option] || []}
             defaultValue={defaultValue}
-            placeholder="请选择"
+            placeholder={
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseChoose.2',
+              }) /* 请选择 */
+            }
           />
         </Form.Item>
       );
@@ -134,5 +159,4 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
     }
   }
 };
-
 export default EditPropertyComponentMap;

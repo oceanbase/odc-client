@@ -28,16 +28,13 @@ import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import VariableConfig from './VariableConfig';
-
 const { Text } = Typography;
 const { Panel } = Collapse;
-
 interface IProps {
   task: CycleTaskDetail<IDataArchiveJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
 }
-
 const DataArchiveTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow } = props;
   const { triggerConfig, jobParameters } = task ?? {};
@@ -46,21 +43,28 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
   const insertActionLabel = InsertActionOptions?.find(
     (item) => item.value === jobParameters?.migrationInsertAction,
   )?.label;
-
   return (
     <>
       <Descriptions column={2}>
         <Descriptions.Item
           span={2}
-          label={formatMessage({ id: 'odc.DataArchiveTask.DetailContent.TaskNumber' })} /*任务编号*/
+          label={formatMessage({
+            id: 'odc.DataArchiveTask.DetailContent.TaskNumber',
+          })} /*任务编号*/
         >
           {task?.id}
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
-          label={formatMessage({ id: 'odc.DataArchiveTask.DetailContent.TaskType' })} /*任务类型*/
+          label={formatMessage({
+            id: 'odc.DataArchiveTask.DetailContent.TaskType',
+          })} /*任务类型*/
         >
-          {formatMessage({ id: 'odc.DataArchiveTask.DetailContent.DataArchiving' }) /*数据归档*/}
+          {
+            formatMessage({
+              id: 'odc.DataArchiveTask.DetailContent.DataArchiving',
+            }) /*数据归档*/
+          }
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -98,9 +102,13 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataArchiveTask.DetailContent.VariableConfiguration',
-        })} /*变量配置*/
-        content={
-          <div style={{ margin: '8px 0 12px' }}>
+        })}
+        /*变量配置*/ content={
+          <div
+            style={{
+              margin: '8px 0 12px',
+            }}
+          >
             <VariableConfig variables={jobParameters?.variables} />
           </div>
         }
@@ -108,9 +116,15 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       />
 
       <SimpleTextItem
-        label={formatMessage({ id: 'odc.DataArchiveTask.DetailContent.ArchiveScope' })} /*归档范围*/
-        content={
-          <div style={{ margin: '8px 0 12px' }}>
+        label={formatMessage({
+          id: 'odc.DataArchiveTask.DetailContent.ArchiveScope',
+        })}
+        /*归档范围*/ content={
+          <div
+            style={{
+              margin: '8px 0 12px',
+            }}
+          >
             <ArchiveRange tables={jobParameters?.tables} />
           </div>
         }
@@ -126,8 +140,12 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {
             jobParameters?.deleteAfterMigration
-              ? formatMessage({ id: 'odc.DataArchiveTask.DetailContent.Yes' }) //是
-              : formatMessage({ id: 'odc.DataArchiveTask.DetailContent.No' }) //否
+              ? formatMessage({
+                  id: 'odc.DataArchiveTask.DetailContent.Yes',
+                }) //是
+              : formatMessage({
+                  id: 'odc.DataArchiveTask.DetailContent.No',
+                }) //否
           }
         </Descriptions.Item>
       </Descriptions>
@@ -149,8 +167,8 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
                 <SimpleTextItem
                   label={formatMessage({
                     id: 'odc.DataArchiveTask.DetailContent.NextExecutionTime',
-                  })} /*下一次执行时间*/
-                  content={
+                  })}
+                  /*下一次执行时间*/ content={
                     <Space>
                       {getFormatDateTime(task.nextFireTimes?.[0])}
                       {isActive ? <UpOutlined /> : <DownOutlined />}
@@ -169,22 +187,37 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
-        <Descriptions.Item label="插入策略" span={isCycleStrategy ? 2 : 1}>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.DataArchiveTask.DetailContent.InsertionStrategy',
+            }) /* 插入策略 */
+          }
+          span={isCycleStrategy ? 2 : 1}
+        >
           {insertActionLabel || '-'}
         </Descriptions.Item>
 
         <Descriptions.Item
-          label={formatMessage({ id: 'odc.DataArchiveTask.DetailContent.Remarks' })}
+          label={formatMessage({
+            id: 'odc.DataArchiveTask.DetailContent.Remarks',
+          })}
           /*备注*/ span={2}
         >
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>
 
-      <Divider style={{ marginTop: 4 }} />
+      <Divider
+        style={{
+          marginTop: 4,
+        }}
+      />
       <Descriptions column={2}>
         <Descriptions.Item
-          label={formatMessage({ id: 'odc.DataArchiveTask.DetailContent.Founder' })} /*创建人*/
+          label={formatMessage({
+            id: 'odc.DataArchiveTask.DetailContent.Founder',
+          })} /*创建人*/
         >
           {task?.creator?.name || '-'}
         </Descriptions.Item>
@@ -199,5 +232,4 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
     </>
   );
 };
-
 export default DataArchiveTaskContent;

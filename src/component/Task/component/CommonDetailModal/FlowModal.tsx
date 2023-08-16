@@ -25,7 +25,6 @@ import ApprovalModal from '../ApprovalModal';
 import styles from './index.less';
 import TaskFlow from './TaskFlow';
 import { operationTypeMap } from './TaskOperationRecord';
-
 interface IProps {
   userStore?: UserStore;
   id: number;
@@ -33,7 +32,6 @@ interface IProps {
   visible: boolean;
   onClose: () => void;
 }
-
 const FlowModal: React.FC<IProps> = function (props) {
   const {
     userStore: { user },
@@ -48,25 +46,21 @@ const FlowModal: React.FC<IProps> = function (props) {
   const [approvalStatus, setApprovalStatus] = useState(false);
   const isOwner = user?.id === task?.creator?.id;
   const isApprovable = task?.approvable;
-
   const getTask = async function (id) {
     setLoading(true);
     const data = await getTaskDetail(id);
     setLoading(false);
     setTask(data);
   };
-
   useEffect(() => {
     if (id) {
       getTask(id);
     }
   }, [id]);
-
   const handleApprovalVisible = (approvalStatus: boolean = false, visible: boolean = false) => {
     setApprovalVisible(visible);
     setApprovalStatus(approvalStatus);
   };
-
   return (
     <Drawer
       visible={visible}
@@ -74,8 +68,8 @@ const FlowModal: React.FC<IProps> = function (props) {
       onClose={onClose}
       title={formatMessage({
         id: 'odc.component.CommonTaskDetailModal.FlowModal.ApprovalRecord',
-      })} /*审批记录*/
-      destroyOnClose
+      })}
+      /*审批记录*/ destroyOnClose
       className={styles.flowDrawer}
       footer={
         isOwner &&
@@ -87,14 +81,26 @@ const FlowModal: React.FC<IProps> = function (props) {
                 handleApprovalVisible(true, true);
               }}
             >
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.CommonDetailModal.Pass',
+                }) /* 
               通过
+             */
+              }
             </Button>
             <Button
               onClick={() => {
                 handleApprovalVisible(false, true);
               }}
             >
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.CommonDetailModal.Reject',
+                }) /* 
               拒绝
+             */
+              }
             </Button>
           </Space>
         )
@@ -125,5 +131,4 @@ const FlowModal: React.FC<IProps> = function (props) {
     </Drawer>
   );
 };
-
 export default inject('userStore')(observer(FlowModal));

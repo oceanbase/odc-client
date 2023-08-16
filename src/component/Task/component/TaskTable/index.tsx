@@ -56,9 +56,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTaskTypeList, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
-
 const { RangePicker } = DatePicker;
-
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
   return triggerStrategy !== TaskExecStrategy.CRON
@@ -69,26 +67,23 @@ export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
       })
     : translator.parse(cronExpression).toLocaleString();
 };
-
 export const TaskTypeMap = {
   [TaskType.IMPORT]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.Import',
   }),
-
   //导入
   [TaskType.EXPORT]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.Export',
   }),
-
   //导出
   [TaskType.DATAMOCK]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.AnalogData',
   }),
-
   //模拟数据
   [TaskType.ASYNC]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.DatabaseChanges',
-  }), // 数据库变更
+  }),
+  // 数据库变更
 
   [TaskType.PARTITION_PLAN]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
@@ -102,15 +97,26 @@ export const TaskTypeMap = {
 
   [TaskType.ALTER_SCHEDULE]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
-  }), //计划变更
-  [TaskType.EXPORT_RESULT_SET]: '导出结果集',
-
-  [TaskType.SQL_PLAN]: formatMessage({ id: 'odc.component.TaskTable.SqlPlan' }), //SQL 计划
-  [TaskType.DATA_ARCHIVE]: formatMessage({ id: 'odc.component.TaskTable.DataArchiving' }), //数据归档
+  }),
+  //计划变更
+  [TaskType.EXPORT_RESULT_SET]: formatMessage({
+    id: 'odc.src.component.Task.component.TaskTable.ExportResultSet',
+  }), //'导出结果集'
+  [TaskType.SQL_PLAN]: formatMessage({
+    id: 'odc.component.TaskTable.SqlPlan',
+  }),
+  //SQL 计划
+  [TaskType.DATA_ARCHIVE]: formatMessage({
+    id: 'odc.component.TaskTable.DataArchiving',
+  }),
+  //数据归档
   [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
     id: 'odc.component.TaskTable.LockFreeStructureChange',
-  }), //无锁结构变更
-  [TaskType.DATA_DELETE]: formatMessage({ id: 'odc.component.TaskTable.DataCleansing' }), //数据清理
+  }),
+  //无锁结构变更
+  [TaskType.DATA_DELETE]: formatMessage({
+    id: 'odc.component.TaskTable.DataCleansing',
+  }), //数据清理
 };
 
 export const getStatusFilters = (status: {
@@ -127,10 +133,8 @@ export const getStatusFilters = (status: {
       };
     });
 };
-
 export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
 export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
-
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
   taskStore?: TaskStore;
@@ -148,7 +152,6 @@ interface IProps {
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
 }
-
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
   'settingStore',
@@ -184,23 +187,20 @@ const TaskTable: React.FC<IProps> = inject(
           {
             id: 'odc.TaskManagePage.component.TaskTable.TheAttachmentUploadedByThe',
           },
-
-          { fileMaxRetainHours: fileExpireHours },
+          {
+            fileMaxRetainHours: fileExpireHours,
+          },
         )
       : //`创建任务上传的附件保留时间为 ${fileMaxRetainHours}小时`
         null;
-
     const taskTypeList = getTaskTypeList(settingStore, task);
-
     const taskTypes = flatten(
       taskTypeList?.map((a) => {
         return a.group || [];
       }),
     );
     const taskLabelInfo = taskTypes.find((item) => item.value === taskTabType);
-
     const columns = initColumns(listParams);
-
     const { loop: loadData, destory } = useLoop((count) => {
       return async (args: ITableLoadOptions) => {
         const _executeTime = args?.filters?.executeTime ?? executeTime;
@@ -228,11 +228,9 @@ const TaskTable: React.FC<IProps> = inject(
         setLoading(false);
       };
     }, 6000);
-
     useEffect(() => {
       loadData(loadParams.current);
     }, [executeDate]);
-
     useEffect(() => {
       if (loadParams.current) {
         setLoading(true);
@@ -246,19 +244,20 @@ const TaskTable: React.FC<IProps> = inject(
         });
       }
     }, [taskPageScope, taskTabType, activePageKey]);
-
     useEffect(() => {
       if (executeTime) {
         localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
       }
     }, [executeTime]);
-
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
       const columns = [
         {
           dataIndex: 'id',
-          title: formatMessage({ id: 'odc.component.TaskTable.No' }), //编号
+          title: formatMessage({
+            id: 'odc.component.TaskTable.No',
+          }),
+          //编号
           filterDropdown: (props) => {
             return (
               <SearchFilter
@@ -272,6 +271,7 @@ const TaskTable: React.FC<IProps> = inject(
               />
             );
           },
+
           filterIcon: (filtered) => (
             <SearchOutlined
               style={{
@@ -279,34 +279,39 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
-
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
           width: 80,
           fixed: 'left' as FixedType,
         },
-
         {
           dataIndex: 'type',
-          title: formatMessage({ id: 'odc.component.TaskTable.Type' }), //类型
+          title: formatMessage({
+            id: 'odc.component.TaskTable.Type',
+          }),
+          //类型
           ellipsis: true,
           width: 100,
           render: (type, record) => {
             return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
           },
         },
-
         {
           dataIndex: 'description',
-          title: formatMessage({ id: 'odc.component.TaskTable.TicketDescription' }), //工单描述
+          title: formatMessage({
+            id: 'odc.component.TaskTable.TicketDescription',
+          }),
+          //工单描述
           ellipsis: true,
           render: (description) => description || '-',
         },
-
         {
           dataIndex: 'candidateApprovers',
-          title: formatMessage({ id: 'odc.component.TaskTable.CurrentHandler' }), //当前处理人
+          title: formatMessage({
+            id: 'odc.component.TaskTable.CurrentHandler',
+          }),
+          //当前处理人
           ellipsis: true,
           width: 115,
           filterDropdown: (props) => {
@@ -320,6 +325,7 @@ const TaskTable: React.FC<IProps> = inject(
               />
             );
           },
+
           filterIcon: (filtered) => (
             <SearchOutlined
               style={{
@@ -327,25 +333,21 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
-
           filteredValue: filters?.candidateApprovers || null,
           filters: [],
           render: (candidateApprovers) =>
             candidateApprovers?.map((item) => item.name)?.join(', ') || '-',
         },
-
         {
           dataIndex: 'creator',
           title: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.Created',
           }),
-
           //创建人
           width: 80,
           ellipsis: {
             showTitle: false,
           },
-
           filterDropdown: (props) => {
             return (
               <SearchFilter
@@ -359,6 +361,7 @@ const TaskTable: React.FC<IProps> = inject(
               />
             );
           },
+
           filterIcon: (filtered) => (
             <SearchOutlined
               style={{
@@ -366,7 +369,6 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
-
           filteredValue: filters?.creator || null,
           filters: [],
           render: (creator) => {
@@ -379,23 +381,23 @@ const TaskTable: React.FC<IProps> = inject(
             );
           },
         },
-
         {
           dataIndex: 'createTime',
           key: 'createTime',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.CreationTime',
           }),
-
           render: (time: number) => getLocalFormatDateTime(time),
           sorter: true,
           sortOrder: sorter?.columnKey === 'createTime' && sorter?.order,
           width: 180,
         },
-
         {
           dataIndex: 'status',
-          title: formatMessage({ id: 'odc.component.TaskTable.Status' }), //状态
+          title: formatMessage({
+            id: 'odc.component.TaskTable.Status',
+          }),
+          //状态
           width: 120,
           filters: taskStatusFilters,
           filteredValue: filters?.status || null,
@@ -407,7 +409,6 @@ const TaskTable: React.FC<IProps> = inject(
             />
           ),
         },
-
         {
           dataIndex: 'deal',
           title: formatMessage({
@@ -423,18 +424,14 @@ const TaskTable: React.FC<IProps> = inject(
           ),
         },
       ];
-
       return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
     }
-
     const handleChange = (params: ITableLoadOptions) => {
       loadData(params);
     };
-
     const handleReload = () => {
       loadData(listParams);
     };
-
     const isAll = [
       TaskPageType.APPROVE_BY_CURRENT_USER,
       TaskPageType.CREATED_BY_CURRENT_USER,
@@ -452,12 +449,15 @@ const TaskTable: React.FC<IProps> = inject(
                   type: IOperationOptionType.dropdown,
                   content: (
                     <Button type="primary">
-                      {formatMessage({ id: 'odc.component.TaskTable.NewWorkOrder' }) /*新建工单*/}
+                      {
+                        formatMessage({
+                          id: 'odc.component.TaskTable.NewWorkOrder',
+                        }) /*新建工单*/
+                      }
 
                       <DownOutlined />
                     </Button>
                   ),
-
                   overlay: (
                     <Menu
                       onClick={({ key }) => {
@@ -471,7 +471,13 @@ const TaskTable: React.FC<IProps> = inject(
                             {tasks?.map((item) => (
                               <Menu.Item key={item.value}>{item.label}</Menu.Item>
                             ))}
-                            {index !== menus?.length - 1 && <Divider style={{ margin: 0 }} />}
+                            {index !== menus?.length - 1 && (
+                              <Divider
+                                style={{
+                                  margin: 0,
+                                }}
+                              />
+                            )}
                           </>
                         );
                       })}
@@ -484,8 +490,11 @@ const TaskTable: React.FC<IProps> = inject(
                     {
                       id: 'odc.component.TaskTable.CreateTasklabelinfolabel',
                     },
-                    { taskLabelInfoLabel: taskLabelInfo.label },
-                  ), //`新建${taskLabelInfo.label}`
+                    {
+                      taskLabelInfoLabel: taskLabelInfo.label,
+                    },
+                  ),
+                  //`新建${taskLabelInfo.label}`
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskTabType);
@@ -502,18 +511,21 @@ const TaskTable: React.FC<IProps> = inject(
               dropdownWidth: 160,
               options: TimeOptions,
             },
-
             {
               render: (params: ITableLoadOptions) => {
                 const content = executeTime === 'custom' && (
                   <RangePicker
                     className={styles.rangePicker}
-                    style={{ width: '250px' }}
+                    style={{
+                      width: '250px',
+                    }}
                     size="small"
                     bordered={false}
                     suffixIcon={null}
                     defaultValue={executeDate}
-                    showTime={{ format: 'HH:mm:ss' }}
+                    showTime={{
+                      format: 'HH:mm:ss',
+                    }}
                     format="YYYY-MM-DD HH:mm:ss"
                     onChange={(value) => {
                       setExecuteDate(value);
@@ -521,7 +533,6 @@ const TaskTable: React.FC<IProps> = inject(
                     }}
                   />
                 );
-
                 return content;
               },
             },
@@ -548,5 +559,4 @@ const TaskTable: React.FC<IProps> = inject(
     );
   }),
 );
-
 export default TaskTable;
