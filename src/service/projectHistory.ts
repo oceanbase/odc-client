@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getProject } from '@/common/network/project';
 import login from '@/store/login';
 import logger from '@/util/logger';
 import { safeParseJson } from '@/util/utils';
@@ -48,11 +49,13 @@ export function setDefaultProject(projectId: number) {
   window.localStorage.setItem(key, projectId?.toString());
 }
 
-export function toDefaultProjectPage() {
+export async function toDefaultProjectPage() {
   const projectId = getDefaultProject();
   if (!projectId) {
     history.push('/project');
   } else {
-    history.push(`/project/${projectId}/database`);
+    const project = await getProject(projectId);
+    const isProjectAvailable = project && !project?.archived;
+    isProjectAvailable ? history.push(`/project/${projectId}/database`) : history.push('/project');
   }
 }
