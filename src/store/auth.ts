@@ -57,8 +57,9 @@ export class AuthStore {
         if (!resourceId) {
           item.all = item.all.concat((actions as actionTypes[]) || []);
         } else {
-          const data = item.resourceIds.get(resourceId) || [];
-          item.resourceIds.set(resourceId, data.concat(actions as actionTypes[]));
+          const rid = resourceId?.toString();
+          const data = item.resourceIds.get(rid) || [];
+          item.resourceIds.set(rid, data.concat(actions as actionTypes[]));
         }
       });
       this.permissions = newPermissions;
@@ -72,7 +73,9 @@ export class AuthStore {
     return new Set(
       this.permissions
         .get(resourceType)
-        ?.all?.concat(this.permissions.get(resourceType).resourceIds.get(resourceId) || []) || [],
+        ?.all?.concat(
+          this.permissions.get(resourceType).resourceIds.get(resourceId?.toString()) || [],
+        ) || [],
     );
   }
 
