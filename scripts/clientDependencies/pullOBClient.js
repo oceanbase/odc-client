@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { oss } = require('./util');
+const { download } = require('./util');
 const tar = require('tar');
 const fs = require('fs');
 const path = require('path');
@@ -25,6 +25,8 @@ const urlMap = {
   'linux_aarch64': `library/obclient/1_2_8/aarch/obclient.tar.gz`,
 }
 
+const baseUrl = "https://obodc-front.oss-cn-beijing.aliyuncs.com/";
+
 exports.run = async function () {
   const uri = urlMap[process.env.platform];
   if (!uri) {
@@ -32,8 +34,8 @@ exports.run = async function () {
     return;
   }
   console.log('开始下载 OBClient');
-  const isSuccess = await oss.download(
-    uri,
+  const isSuccess = await download(
+    baseUrl + uri,
     'libraries',
     'obclient.tar.gz',
   );

@@ -20,8 +20,12 @@ const jarUrl = `odc-build/${pkg.version}/jar/odc-slim.jar`;
 const pluginUrl = `odc-build/${pkg.version}/plugins`;
 const startersUrl = `odc-build/${pkg.version}/starters`;
 const { oss } = require('./util');
+const isSkipJar = process.env.ODC_BUILD_SKIP_JAR;
 
 exports.run = async function () {
+  if (isSkipJar) {
+    return true;
+  }
   const plugins = await oss.getOSSFolderFiles(pluginUrl)
   for (let plugin of plugins) {
     const pluginFileName = path.relative(pluginUrl, plugin.name);
