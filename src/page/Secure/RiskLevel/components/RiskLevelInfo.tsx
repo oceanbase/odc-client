@@ -296,9 +296,15 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
           >
             <Action.Group>
               <Acess
-                {...createPermission(IManagerResourceType.flow_config, actionTypes.create)}
+                {...createPermission(IManagerResourceType.approval_flow, actionTypes.create)}
                 fallback={
-                  <Action.Button disabled type="primary" onClick={() => setFormModalVisible(true)}>
+                  <Action.Button
+                    disabled
+                    type="primary"
+                    onClick={async () => {
+                      await setFormModalVisible(true);
+                    }}
+                  >
                     {
                       formatMessage({
                         id: 'odc.src.page.Secure.RiskLevel.components.NewApprovalProcess',
@@ -309,7 +315,12 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
                   </Action.Button>
                 }
               >
-                <Action.Button type="primary" onClick={() => setFormModalVisible(true)}>
+                <Action.Button
+                  type="primary"
+                  onClick={async () => {
+                    await setFormModalVisible(true);
+                  }}
+                >
                   {
                     formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.NewApprovalProcess',
