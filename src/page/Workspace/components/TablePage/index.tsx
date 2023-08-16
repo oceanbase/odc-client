@@ -20,7 +20,7 @@ import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ExportOutlined } from '@ant-design/icons';
-import { Layout, Radio, Spin, Tabs } from 'antd';
+import { Layout, Radio, Space, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -72,7 +72,7 @@ export enum PropsTab {
   PARTITION = 'PARTITION',
 }
 
-const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
+const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, settingStore }) {
   const [table, setTable] = useState<Partial<ITableModel>>(null);
   const [version, setVersion] = useState(0);
   const [topTab, setTopTab] = useState(TopTab.PROPS);
@@ -179,20 +179,24 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey }) {
               <FormattedMessage id="workspace.window.table.toptab.data" />
             </Radio.Button>
           </Radio.Group>
-          <Toolbar.Button
-            text={
-              formatMessage({ id: 'odc.components.TablePage.Export' }) //导出
-            }
-            icon={ExportOutlined}
-            isShowText
-            onClick={() => {
-              modal.changeExportModal(true, {
-                type: DbObjectType.table,
-                name: table?.info?.tableName,
-                databaseId: session?.database.databaseId,
-              });
-            }}
-          />
+          <Space>
+            {settingStore.enableDBExport ? (
+              <Toolbar.Button
+                text={
+                  formatMessage({ id: 'odc.components.TablePage.Export' }) //导出
+                }
+                icon={ExportOutlined}
+                isShowText
+                onClick={() => {
+                  modal.changeExportModal(true, {
+                    type: DbObjectType.table,
+                    name: table?.info?.tableName,
+                    databaseId: session?.database.databaseId,
+                  });
+                }}
+              />
+            ) : null}
+          </Space>
         </div>
         <TablePageContext.Provider
           value={{
