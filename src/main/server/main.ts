@@ -98,10 +98,22 @@ class MainServer {
 
   private getOBClientPath() {
     let obPath;
+    let base;
     if (process.env.NODE_ENV === 'development') {
-      obPath = path.join(process.cwd(), 'libraries', 'obclient', 'obclient.exe');
+      base = process.cwd();
     } else {
-      obPath = path.join(process.resourcesPath || '', 'libraries', 'obclient', 'obclient.exe');
+      base = process.resourcesPath;
+    }
+    switch (process.platform) {
+      case 'linux':
+      case 'darwin': {
+        obPath = path.join(base, 'libraries', 'obclient/bin/obclient');
+        break;
+      }
+      default: {
+        obPath = path.join(base, 'libraries', 'obclient', 'obclient.exe');
+        break;
+      }
     }
     log.info('obPath: ', obPath);
     return obPath;
