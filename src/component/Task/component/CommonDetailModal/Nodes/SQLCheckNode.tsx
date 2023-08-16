@@ -22,17 +22,13 @@ import { Descriptions, Steps } from 'antd';
 import React, { useState } from 'react';
 import NodeCompleteTime from './Items/NodeCompleteTime';
 import NodeStatus from './Items/NodeStatus';
-
 import { formatMessage } from '@/util/intl';
 import styles from '../index.less';
-
 const Step = Steps.Step;
-
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;
 }
-
 const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   const { status, nodeType, issueCount, unauthorizedDatabaseNames, id } = node;
   const [isLoading, setIsLoading] = useState(false);
@@ -68,9 +64,24 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         </Descriptions.Item>
         {showReslut && (
           <Descriptions.Item>
-            <Descriptions column={1} title="处理结果:" className={styles['result-desc']}>
+            <Descriptions
+              column={1}
+              title={
+                formatMessage({
+                  id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.ProcessResult',
+                }) /* 处理结果: */
+              }
+              className={styles['result-desc']}
+            >
               {showCount ? (
-                <Descriptions.Item label="SQL 检查结果">
+                <Descriptions.Item
+                  label={
+                    formatMessage({
+                      id:
+                        'odc.src.component.Task.component.CommonDetailModal.Nodes.SQLExaminationResults',
+                    }) /* SQL 检查结果 */
+                  }
+                >
                   {
                     formatMessage({
                       id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
@@ -83,7 +94,12 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                     }) /*个问题*/
                   }
                   {issueCount > 0 && (
-                    <a style={{ marginLeft: 5 }} onClick={viewLintResult}>
+                    <a
+                      style={{
+                        marginLeft: 5,
+                      }}
+                      onClick={viewLintResult}
+                    >
                       {
                         formatMessage({
                           id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
@@ -94,8 +110,22 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                 </Descriptions.Item>
               ) : null}
               {showUnauthorized ? (
-                <Descriptions.Item label="权限检查结果">
+                <Descriptions.Item
+                  label={
+                    formatMessage({
+                      id:
+                        'odc.src.component.Task.component.CommonDetailModal.Nodes.PermissionsInspectionResults',
+                    }) /* 权限检查结果 */
+                  }
+                >
+                  {
+                    formatMessage({
+                      id:
+                        'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
+                    }) /* 
                   无权限访问数据库：
+                   */
+                  }
                   {unauthorizedDatabaseNames?.join(', ')}
                 </Descriptions.Item>
               ) : null}
@@ -114,5 +144,4 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
     </>
   );
 };
-
 export default SQLCheckNode;

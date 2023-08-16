@@ -47,7 +47,6 @@ import { ResourceContext } from '../../../context';
 import ConditionSelect from './conditionSelect';
 import styles from './index.less';
 import ProjectRoleSelect from './projectRoleSelect';
-
 interface IProps {
   visible: boolean;
   editId?: number;
@@ -59,14 +58,11 @@ interface IProps {
   ) => void;
   reloadData?: () => void;
 }
-
 type IAutoAuthRuleFormData = IAutoAuthRule;
-
 export interface IOption {
   label: string;
   value: string | number;
 }
-
 const FormModal: React.FC<IProps> = (props) => {
   const { visible, editId } = props;
   const { roles, projectRoles, projects } = useContext(ResourceContext);
@@ -78,26 +74,21 @@ const FormModal: React.FC<IProps> = (props) => {
     label: item.roleName,
     value: item.id,
   }));
-
   const projectOptions = projects?.map((item) => ({
     label: item.name,
     value: item.id,
   }));
-
   const initialValue = {};
   const [form] = useForm();
   const isEdit = !!editId;
-
   const eventOtions = events?.map(({ name, id }) => ({
     label: name,
     value: id,
   }));
-
   const roleOptions = roles?.map((item) => ({
     label: item.name,
     value: item.id,
   }));
-
   const loadEventList = async () => {
     const res = await getAutoRuleEventList();
     if (res) {
@@ -114,7 +105,6 @@ const FormModal: React.FC<IProps> = (props) => {
               value: undefined,
             },
           ],
-
           permissions: [
             {
               actions: 'readonlyconnect',
@@ -129,7 +119,6 @@ const FormModal: React.FC<IProps> = (props) => {
       }
     }
   };
-
   const loadDetailData = async (id: number) => {
     const res = await getAutoRule(id);
     if (res) {
@@ -162,7 +151,6 @@ const FormModal: React.FC<IProps> = (props) => {
           value,
         };
       });
-
       const formData = {
         ...res,
         actions: _actions,
@@ -174,25 +162,21 @@ const FormModal: React.FC<IProps> = (props) => {
       form.setFieldsValue(formData);
     }
   };
-
   useEffect(() => {
     if (editId) {
       loadDetailData(editId);
     }
     loadEventList();
   }, [editId, visible]);
-
   const handleClose = () => {
     form?.resetFields();
     setData(null);
     props.onClose();
   };
-
   const loadVariableExpression = async (eventName: string) => {
     const prompt = await getPromptExpression(eventName);
     setVariableExpression(prompt.variableExpression);
   };
-
   const handleCreate = async (values: Partial<IAutoAuthRule>) => {
     const res = await createAutoRule(values);
     if (res) {
@@ -201,6 +185,7 @@ const FormModal: React.FC<IProps> = (props) => {
           id: 'odc.components.FormAutoAuthModal.RuleCreatedSuccessfully',
         }), //规则创建成功
       );
+
       props.reloadData();
       handleClose();
     } else {
@@ -217,13 +202,13 @@ const FormModal: React.FC<IProps> = (props) => {
       ...values,
       id: editId,
     });
-
     if (res) {
       message.success(
         formatMessage({
           id: 'odc.components.FormAutoAuthModal.TheRuleIsSavedSuccessfully',
         }), //规则保存成功
       );
+
       props.reloadData();
       handleClose();
     } else {
@@ -246,7 +231,6 @@ const FormModal: React.FC<IProps> = (props) => {
         },
       });
     });
-
     projectRoles?.forEach(({ roles, projectId }) => {
       actions.push({
         action: 'BindProjectRole',
@@ -256,7 +240,6 @@ const FormModal: React.FC<IProps> = (props) => {
         },
       });
     });
-
     const formData = {
       name,
       enabled,
@@ -267,7 +250,6 @@ const FormModal: React.FC<IProps> = (props) => {
     };
     return formData;
   };
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -283,7 +265,6 @@ const FormModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(error));
       });
   };
-
   const handleCancel = () => {
     if (hasChange) {
       Modal.confirm({
@@ -293,11 +274,16 @@ const FormModal: React.FC<IProps> = (props) => {
             }) //确定要取消编辑吗？取消保存后，所编辑的内容将不生效
           : formatMessage({
               id: 'odc.components.FormAutoAuthModal.AreYouSureYouWant.1',
-            }), //确定要取消新建吗?
+            }),
+        //确定要取消新建吗?
         cancelText: formatMessage({
           id: 'odc.components.FormAutoAuthModal.Cancel',
-        }), //取消
-        okText: formatMessage({ id: 'odc.components.FormAutoAuthModal.Ok' }), //确定
+        }),
+        //取消
+        okText: formatMessage({
+          id: 'odc.components.FormAutoAuthModal.Ok',
+        }),
+        //确定
         centered: true,
         onOk: () => {
           setHasChange(false);
@@ -308,11 +294,9 @@ const FormModal: React.FC<IProps> = (props) => {
       handleClose();
     }
   };
-
   const handleEditStatus = () => {
     setHasChange(true);
   };
-
   const handleStatusChange = (e: RadioChangeEvent) => {
     if (!e.target.value && isEdit) {
       props.handleStatusChange(e.target.value, null, () => {
@@ -322,7 +306,6 @@ const FormModal: React.FC<IProps> = (props) => {
       });
     }
   };
-
   const checkNameRepeat = async (ruler, value) => {
     const name = value?.trim();
     if (!name || (isEdit && data?.name === name)) {
@@ -333,7 +316,6 @@ const FormModal: React.FC<IProps> = (props) => {
       throw new Error();
     }
   };
-
   const handleEventChange = async (id: string) => {
     loadVariableExpression(events?.find((e) => e.id === id)['name']);
     form.setFieldsValue({
@@ -347,21 +329,20 @@ const FormModal: React.FC<IProps> = (props) => {
       ],
     });
   };
-
   const iconStyle = {
     color: 'var(--text-color-hint)',
   };
-
   const helpDocUrl =
     odc.appConfig.docs.url || getLocalDocs('5.web-odc-manage-automatic-authorization-rules.html');
-
   return (
     <>
       <Drawer
         width={720}
         title={
           isEdit
-            ? formatMessage({ id: 'odc.components.FormAutoAuthModal.EditRule' }) //编辑规则
+            ? formatMessage({
+                id: 'odc.components.FormAutoAuthModal.EditRule',
+              }) //编辑规则
             : formatMessage({
                 id: 'odc.components.FormAutoAuthModal.CreateARule',
               }) //新建规则
@@ -407,8 +388,8 @@ const FormModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormAutoAuthModal.RuleName',
-            })} /*规则名称*/
-            name="name"
+            })}
+            /*规则名称*/ name="name"
             validateTrigger="onBlur"
             rules={[
               {
@@ -433,7 +414,8 @@ const FormModal: React.FC<IProps> = (props) => {
               {
                 message: formatMessage({
                   id: 'odc.components.FormAutoAuthModal.TheRuleNameAlreadyExists',
-                }), //规则名称已存在
+                }),
+                //规则名称已存在
                 validator: checkNameRepeat,
               },
             ]}
@@ -447,8 +429,8 @@ const FormModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormAutoAuthModal.Status',
-            })} /*状态*/
-            name="enabled"
+            })}
+            /*状态*/ name="enabled"
             rules={[
               {
                 required: true,
@@ -478,8 +460,8 @@ const FormModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormAutoAuthModal.TriggerEvent',
-            })} /*触发事件*/
-            name="eventId"
+            })}
+            /*触发事件*/ name="eventId"
             rules={[
               {
                 required: true,
@@ -495,7 +477,9 @@ const FormModal: React.FC<IProps> = (props) => {
               })}
               /*请选择触发事件*/ options={eventOtions}
               onChange={handleEventChange}
-              style={{ width: '240px' }}
+              style={{
+                width: '240px',
+              }}
             />
           </Form.Item>
           <Form.Item
@@ -561,11 +545,12 @@ const FormModal: React.FC<IProps> = (props) => {
                       </Tooltip>
                     </Space>
                   ),
-
                   value: 'BindRole',
                 },
                 {
-                  label: '授予项目角色',
+                  label: formatMessage({
+                    id: 'odc.src.page.Auth.Autoauth.component.FormModal.AwardedProjectRole',
+                  }), //'授予项目角色'
                   value: 'BindProjectRole',
                 },
               ]}
@@ -583,8 +568,8 @@ const FormModal: React.FC<IProps> = (props) => {
                   <Form.Item
                     label={formatMessage({
                       id: 'odc.components.FormAutoAuthModal.Role',
-                    })} /*角色*/
-                    name="roles"
+                    })}
+                    /*角色*/ name="roles"
                     rules={[
                       {
                         required: true,
@@ -599,8 +584,10 @@ const FormModal: React.FC<IProps> = (props) => {
                       mode="multiple"
                       placeholder={formatMessage({
                         id: 'odc.components.FormAutoAuthModal.SelectARole',
-                      })} /*请选择角色*/
-                      style={{ width: '420px' }}
+                      })}
+                      /*请选择角色*/ style={{
+                        width: '420px',
+                      }}
                       options={roleOptions}
                       showSearch={true}
                       filterOption={(value, option) => {
@@ -612,7 +599,14 @@ const FormModal: React.FC<IProps> = (props) => {
               }
               if (isBindProjectRole) {
                 items.push(
-                  <Form.Item required label="项目角色">
+                  <Form.Item
+                    required
+                    label={
+                      formatMessage({
+                        id: 'odc.src.page.Auth.Autoauth.component.FormModal.ProjectRole',
+                      }) /* 项目角色 */
+                    }
+                  >
                     <ProjectRoleSelect
                       projectOptions={projectOptions}
                       roleOptions={projectRoleOptions}
@@ -626,8 +620,8 @@ const FormModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormAutoAuthModal.Remarks',
-            })} /*备注*/
-            name="description"
+            })}
+            /*备注*/ name="description"
             rules={[
               {
                 max: 140,
@@ -637,7 +631,12 @@ const FormModal: React.FC<IProps> = (props) => {
               },
             ]}
           >
-            <Input.TextArea autoSize={{ minRows: 4, maxRows: 4 }} />
+            <Input.TextArea
+              autoSize={{
+                minRows: 4,
+                maxRows: 4,
+              }}
+            />
           </Form.Item>
         </Form>
       </Drawer>

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -18,12 +19,10 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Select, Space } from 'antd';
 import React, { useState } from 'react';
 import type { IOption } from './index';
-
 interface IProps {
   projectOptions: IOption[];
   roleOptions: IOption[];
 }
-
 const ProjectRoleSelect: React.FC<IProps> = (props) => {
   const { projectOptions, roleOptions } = props;
   const [isRequired, setIsRequired] = useState(true);
@@ -46,14 +45,12 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
       // 包含空值 && 不是所有筛选项为空
       return _values?.some((value) => !value) && !_values?.every((value) => !value);
     });
-
     if (!validValues.length || invalidValues.length) {
       itemRequired = true;
     }
     setIsRequired(itemRequired);
     return itemRequired ? Promise.reject(new Error()) : Promise.resolve();
   };
-
   return (
     <Form.List
       name="projectRoles"
@@ -70,27 +67,50 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
               <Space key={key} align="baseline">
                 <Form.Item
                   name={[name, 'projectId']}
-                  style={{ width: '210px' }}
+                  style={{
+                    width: '210px',
+                  }}
                   rules={[
                     {
                       required: isRequired,
-                      message: '请选择',
+                      message: formatMessage({
+                        id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseChoose',
+                      }), //'请选择'
                     },
                   ]}
                 >
-                  <Select placeholder="请选择项目" options={projectOptions} />
+                  <Select
+                    placeholder={
+                      formatMessage({
+                        id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseSelectTheProject',
+                      }) /* 请选择项目 */
+                    }
+                    options={projectOptions}
+                  />
                 </Form.Item>
                 <Form.Item
                   name={[name, 'roles']}
-                  style={{ width: '210px' }}
+                  style={{
+                    width: '210px',
+                  }}
                   rules={[
                     {
                       required: isRequired,
-                      message: '请选择',
+                      message: formatMessage({
+                        id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseChoose.1',
+                      }), //'请选择'
                     },
                   ]}
                 >
-                  <Select placeholder="请选择角色" mode="multiple" options={roleOptions} />
+                  <Select
+                    placeholder={
+                      formatMessage({
+                        id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseSelectTheRole',
+                      }) /* 请选择角色 */
+                    }
+                    mode="multiple"
+                    options={roleOptions}
+                  />
                 </Form.Item>
                 <DeleteOutlined
                   onClick={() => {
@@ -100,7 +120,12 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
               </Space>
             ))}
 
-            <Form.Item style={{ marginBottom: 0, width: '428px' }}>
+            <Form.Item
+              style={{
+                marginBottom: 0,
+                width: '428px',
+              }}
+            >
               <Button
                 type="dashed"
                 onClick={() =>
@@ -112,7 +137,13 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
                 block
                 icon={<PlusOutlined />}
               >
+                {
+                  formatMessage({
+                    id: 'odc.src.page.Auth.Autoauth.component.FormModal.AddTo',
+                  }) /* 
                 添加
+               */
+                }
               </Button>
             </Form.Item>
           </>
@@ -121,5 +152,4 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
     </Form.List>
   );
 };
-
 export default ProjectRoleSelect;

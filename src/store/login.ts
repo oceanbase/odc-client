@@ -213,7 +213,7 @@ export class UserStore {
     window.addEventListener('storage', (e) => {
       const { key } = e;
       if (key === this.LogoutEventKey) {
-        location.reload();
+        window.close();
       }
     });
     this._logoutListenerExist = true;

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -22,7 +23,6 @@ import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { EOperator, Expression, ExpressionMap, OperatorMap } from '../interface';
 import { ICondition } from '@/d.ts/riskDetectRule';
 import { Operator } from './InnerRiskLevel';
-
 const checkIsTags = (condition: ICondition): boolean => {
   return checkMultipleOrTags(condition?.operator) && checkIsProNameOrDBName(condition?.expression);
 };
@@ -32,20 +32,16 @@ const checkMultipleOrTags = (operator: Operator): boolean => {
 const checkIsProNameOrDBName = (expression: Expression): boolean => {
   return [Expression.PROJECT_NAME, Expression.DATABASE_NAME].includes(expression);
 };
-
 const Condition = ({
   formRef,
   indexChan,
   parentField,
   siblingSum,
-
   prevSiblingSum,
   parentIsRoot = false,
   remove,
   removeGroup,
-
   setShowConditionGroup,
-
   environmentIdMap,
   taskTypeIdMap,
   sqlCheckResultIdMap,
@@ -168,7 +164,6 @@ const Condition = ({
     setCondition(condition);
     setIsMultiple(checkMultipleOrTags(condition?.operator));
     setIsTags(checkIsTags(condition));
-
     if (
       checkIsProNameOrDBName(condition?.expression) &&
       !checkMultipleOrTags(condition?.operator)
@@ -179,11 +174,9 @@ const Condition = ({
     }
     setValue(condition?.value);
   }, []);
-
   useEffect(() => {
     initCondition();
   }, [expression]);
-
   return (
     <Space key={indexChan?.at(-1)} className={styles.gl} align="baseline">
       <Form.Item
@@ -197,13 +190,21 @@ const Condition = ({
         rules={[
           {
             required: true,
-            message: '表达式不能为空',
+            message: formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.TheExpressionCannotBeEmpty',
+            }), //'表达式不能为空'
           },
         ]}
       >
         <Select
-          style={{ width: '200px' }}
-          placeholder={'请选择'}
+          style={{
+            width: '200px',
+          }}
+          placeholder={
+            formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.PleaseChoose',
+            }) //'请选择'
+          }
           options={[
             {
               label: ExpressionMap[Expression.ENVIRONMENT_ID],
@@ -231,11 +232,15 @@ const Condition = ({
             if (parentIsRoot) {
               data.conditions[indexChan[0]].expression = value;
               data.conditions[indexChan[0]].value = undefined;
-              formRef.setFieldsValue({ ...data });
+              formRef.setFieldsValue({
+                ...data,
+              });
             } else {
               data.conditions[indexChan[0]].children[indexChan[1]].expression = value;
               data.conditions[indexChan[0]].children[indexChan[1]].value = undefined;
-              formRef.setFieldsValue({ ...data });
+              formRef.setFieldsValue({
+                ...data,
+              });
             }
             if (checkIsProNameOrDBName(value)) {
               if (checkMultipleOrTags(operator)) {
@@ -257,13 +262,21 @@ const Condition = ({
         rules={[
           {
             required: true,
-            message: '操作符不能为空',
+            message: formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.TheOperatingSymbolCannotBe',
+            }), //'操作符不能为空'
           },
         ]}
       >
         <Select
-          style={{ width: '200px' }}
-          placeholder={'请选择'}
+          style={{
+            width: '200px',
+          }}
+          placeholder={
+            formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.PleaseChoose.1',
+            }) //'请选择'
+          }
           options={[
             {
               label: OperatorMap[EOperator.EQUALS],
@@ -300,16 +313,30 @@ const Condition = ({
         rules={[
           {
             required: true,
-            message: '值不能为空',
+            message: formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.TheValueCannotBeEmpty',
+            }), //'值不能为空'
           },
           {
             pattern: /^[^\s]*$/,
-            message: '禁止输入空格',
+            message: formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.ForbiddenInputSpace',
+            }), //'禁止输入空格'
           },
         ]}
       >
         {isInputComponent ? (
-          <Input style={{ width: '240px' }} value={value} placeholder={'请输入'} />
+          <Input
+            style={{
+              width: '240px',
+            }}
+            value={value}
+            placeholder={
+              formatMessage({
+                id: 'odc.src.page.Secure.RiskLevel.components.PleaseEnter',
+              }) //'请输入'
+            }
+          />
         ) : (
           <Select
             {...(isMultiple
@@ -323,9 +350,15 @@ const Condition = ({
                     maxTagCount: 1,
                   }
               : {})}
-            style={{ width: '240px' }}
+            style={{
+              width: '240px',
+            }}
             value={value}
-            placeholder={'请选择'}
+            placeholder={
+              formatMessage({
+                id: 'odc.src.page.Secure.RiskLevel.components.PleaseChoose.2',
+              }) //'请选择'
+            }
             options={valueOptions}
           />
         )}

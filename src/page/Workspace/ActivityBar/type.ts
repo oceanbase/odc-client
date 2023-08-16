@@ -21,11 +21,18 @@ export enum ActivityBarItemType {
   Task = 'Task',
   Manager = 'manager',
 }
-
 export const ActivityBarItemTypeText = {
-  [ActivityBarItemType.Database]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Database' }), //数据库
-  [ActivityBarItemType.Task]: '工单',
-  [ActivityBarItemType.Script]: formatMessage({ id: 'odc.Workspace.ActivityBar.type.Script' }), //脚本
+  [ActivityBarItemType.Database]: formatMessage({
+    id: 'odc.Workspace.ActivityBar.type.Database',
+  }),
+  //数据库
+  [ActivityBarItemType.Task]: formatMessage({
+    id: 'odc.src.page.Workspace.ActivityBar.WorkOrder',
+  }), //'工单'
+  [ActivityBarItemType.Script]: formatMessage({
+    id: 'odc.Workspace.ActivityBar.type.Script',
+  }),
+  //脚本
   [ActivityBarItemType.Manager]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.OMManagement',
   }), //运维管理

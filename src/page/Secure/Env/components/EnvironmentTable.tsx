@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -29,14 +30,11 @@ import { EnvironmentContext } from '../EnvironmentContext';
 import { getColumns } from './column';
 import EditRuleDrawer from './EditRuleDrawer';
 import styles from './index.less';
-
 const EnvironmentTable = ({ ruleType }) => {
   const environmentContext = useContext(EnvironmentContext);
-
   const tableRef = useRef<ITableInstance>();
   const argsRef = useRef<ITableFilter>();
   const originRules = useRef<IRule[]>(null);
-
   const [subTypeFilters, setSubTypeFilters] = useState<
     {
       text: string;
@@ -49,7 +47,6 @@ const EnvironmentTable = ({ ruleType }) => {
   const [pagination, setPagination] = useState<ITablePagination>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
-
   const handleStatsRule = async () => {
     const rawData = await statsRules(environmentContext?.currentEnvironment?.id, ruleType);
     setSubTypeFilters(
@@ -69,7 +66,6 @@ const EnvironmentTable = ({ ruleType }) => {
     setLoading(true);
     const { pageSize = 0, pagination = null, filters = null } = args;
     const { subTypes, supportedDialectTypes, level, name } = filters ?? {};
-
     handleStatsRule();
     const rulesets = await listRules(environmentContext?.currentEnvironment?.id, {
       types: ruleType,
@@ -106,10 +102,10 @@ const EnvironmentTable = ({ ruleType }) => {
     setLoading(true);
     const { pageSize = 0, pagination = null, filters = null } = args;
     const { subTypes, supportedDialectTypes, level, name } = filters ?? {};
-
     let filteredRules: IRule[] = originRules.current;
-    argsRef.current = { filters };
-
+    argsRef.current = {
+      filters,
+    };
     if (name && name?.length === 1) {
       filteredRules = filteredRules?.filter((item) =>
         item?.metadata?.name?.toLowerCase()?.includes(name?.[0]?.toLowerCase()),
@@ -136,7 +132,6 @@ const EnvironmentTable = ({ ruleType }) => {
     }
     setLoading(false);
   };
-
   const handleOpenEditModal = async (record: IRule) => {
     setSelectedRule(record);
     setEditRuleDrawerVisible(true);
@@ -151,11 +146,19 @@ const EnvironmentTable = ({ ruleType }) => {
       rule,
     );
     if (flag) {
-      message.success('提交成功');
+      message.success(
+        formatMessage({
+          id: 'odc.src.page.Secure.Env.components.SubmittedSuccessfully',
+        }), //'提交成功'
+      );
       setEditRuleDrawerVisible(false);
       tableRef.current?.reload?.(argsRef.current || {});
     } else {
-      message.error('提交失败');
+      message.error(
+        formatMessage({
+          id: 'odc.src.page.Secure.Env.components.SubmissionFailed',
+        }), //'提交失败'
+      );
     }
   };
   const handleSwtichRuleStatus = async (rulesetId: number, rule: IRule) => {
@@ -165,10 +168,18 @@ const EnvironmentTable = ({ ruleType }) => {
         enabled: !rule.enabled,
       })) || false;
     if (updateResult) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({
+          id: 'odc.src.page.Secure.Env.components.UpdateCompleted',
+        }), //'更新成功'
+      );
       tableRef.current?.reload(argsRef.current || {});
     } else {
-      message.error('更新失败');
+      message.error(
+        formatMessage({
+          id: 'odc.src.page.Secure.Env.components.UpdateFailure',
+        }), //'更新失败'
+      );
     }
   };
   const rawColumns = getColumns({
@@ -213,5 +224,4 @@ const EnvironmentTable = ({ ruleType }) => {
     </>
   );
 };
-
 export default EnvironmentTable;

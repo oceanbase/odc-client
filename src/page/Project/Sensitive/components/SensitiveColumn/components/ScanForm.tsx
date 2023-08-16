@@ -33,7 +33,6 @@ import { ScanTableDataItem } from '../../../interface';
 import styles from './index.less';
 import ScanRule from './SacnRule';
 import classnames from 'classnames';
-
 const ScanForm = ({
   formRef,
   _formRef,
@@ -67,14 +66,24 @@ const ScanForm = ({
       >
         {scanLoading ? (
           <div>
-            <div style={{ marginLeft: '16px' }}>
+            <div
+              style={{
+                marginLeft: '16px',
+              }}
+            >
               {
                 formatMessage({
                   id: 'odc.SensitiveColumn.components.ScanForm.ScanningTheScanningTimeMay',
                 }) /*正在扫描中。扫描时间可能较长请耐心等待…*/
               }
             </div>
-            <Progress percent={percent} style={{ maxWidth: '628px', margin: '0px 16px' }} />
+            <Progress
+              percent={percent}
+              style={{
+                maxWidth: '628px',
+                margin: '0px 16px',
+              }}
+            />
           </div>
         ) : hasScan && successful ? (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -87,7 +96,13 @@ const ScanForm = ({
   return (
     <>
       <Form form={formRef} layout="vertical" requiredMark="optional">
-        <ScanRule {...{ formRef, resetScanTableData, reset }} />
+        <ScanRule
+          {...{
+            formRef,
+            resetScanTableData,
+            reset,
+          }}
+        />
         <Space>
           <Button
             onClick={handleStartScan}
@@ -96,13 +111,21 @@ const ScanForm = ({
           >
             {
               scanLoading
-                ? formatMessage({ id: 'odc.SensitiveColumn.components.ScanForm.Scanning' }) //正在扫描
-                : formatMessage({ id: 'odc.SensitiveColumn.components.ScanForm.StartScanning' }) //开始扫描
+                ? formatMessage({
+                    id: 'odc.SensitiveColumn.components.ScanForm.Scanning',
+                  }) //正在扫描
+                : formatMessage({
+                    id: 'odc.SensitiveColumn.components.ScanForm.StartScanning',
+                  }) //开始扫描
             }
           </Button>
           {successful && (
             <Space>
-              <CheckCircleFilled style={{ color: '#52c41a' }} />
+              <CheckCircleFilled
+                style={{
+                  color: '#52c41a',
+                }}
+              />
               <div>
                 {
                   formatMessage({
@@ -128,13 +151,22 @@ const ScanForm = ({
               value={searchText}
               placeholder={formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.EnterAColumnName',
-              })} /*请输入列名*/
-              width={240}
-              style={{ width: '240px' }}
+              })}
+              /*请输入列名*/ width={240}
+              style={{
+                width: '240px',
+              }}
               onChange={handleSearchChange}
               onSearch={onSearch}
             />
-            <Button onClick={resetSearch}>重置</Button>
+            <Button onClick={resetSearch}>
+              {
+                formatMessage({
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Repossess',
+                }) /* 重置 */
+              }
+            </Button>
           </Space>
         ) : (
           scanTableData?.length > 0 && (
@@ -142,9 +174,11 @@ const ScanForm = ({
               value={searchText}
               placeholder={formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.EnterAColumnName',
-              })} /*请输入列名*/
-              width={240}
-              style={{ width: '240px' }}
+              })}
+              /*请输入列名*/ width={240}
+              style={{
+                width: '240px',
+              }}
               onChange={handleSearchChange}
               onSearch={onSearch}
             />
@@ -173,14 +207,18 @@ const ScanForm = ({
                   <Descriptions column={2} layout="horizontal" className={styles.descriptions}>
                     <Descriptions.Item
                       label={
-                        formatMessage({ id: 'odc.SensitiveColumn.components.ScanForm.Database' }) //数据库
+                        formatMessage({
+                          id: 'odc.SensitiveColumn.components.ScanForm.Database',
+                        }) //数据库
                       }
                     >
                       {''}
                     </Descriptions.Item>
                     <Descriptions.Item
                       label={
-                        formatMessage({ id: 'odc.SensitiveColumn.components.ScanForm.Table' }) //表
+                        formatMessage({
+                          id: 'odc.SensitiveColumn.components.ScanForm.Table',
+                        }) //表
                       }
                     >
                       {''}
@@ -219,7 +257,9 @@ const ScanForm = ({
                           </Descriptions.Item>
                           <Descriptions.Item
                             label={
-                              formatMessage({ id: 'odc.SensitiveColumn.components.ScanForm.Table' }) //表
+                              formatMessage({
+                                id: 'odc.SensitiveColumn.components.ScanForm.Table',
+                              }) //表
                             }
                           >
                             <div
@@ -260,7 +300,8 @@ const ScanForm = ({
                           {
                             title: formatMessage({
                               id: 'odc.SensitiveColumn.components.ScanForm.Column',
-                            }), //列
+                            }),
+                            //列
                             width: 146,
                             dataIndex: 'columnName',
                             key: 'columnName',
@@ -268,7 +309,8 @@ const ScanForm = ({
                           {
                             title: formatMessage({
                               id: 'odc.SensitiveColumn.components.ScanForm.IdentificationRules',
-                            }), //识别规则
+                            }),
+                            //识别规则
                             width: 126,
                             dataIndex: 'sensitiveRuleId',
                             key: 'sensitiveRuleId',
@@ -278,14 +320,17 @@ const ScanForm = ({
                             title: formatMessage({
                               id:
                                 'odc.SensitiveColumn.components.ScanForm.DesensitizationAlgorithm',
-                            }), //脱敏算法
+                            }),
+                            //脱敏算法
                             width: 180,
                             dataIndex: 'maskingAlgorithmId',
                             key: 'maskingAlgorithmId',
                             render: (text, record, _index) => (
                               <Select
                                 key={index}
-                                style={{ width: '144px' }}
+                                style={{
+                                  width: '144px',
+                                }}
                                 defaultValue={dataSource[_index].maskingAlgorithmId}
                                 onChange={(v) =>
                                   handleScanTableDataChange(
@@ -308,7 +353,8 @@ const ScanForm = ({
                           {
                             title: formatMessage({
                               id: 'odc.SensitiveColumn.components.ScanForm.Operation',
-                            }), //操作
+                            }),
+                            //操作
                             width: 88,
                             key: 'action',
                             render: (_, record) => (
@@ -348,5 +394,4 @@ const ScanForm = ({
     </>
   );
 };
-
 export default ScanForm;

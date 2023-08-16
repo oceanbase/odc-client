@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -40,16 +41,13 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
-
 const { Text } = Typography;
 const { Option } = Select;
-
 interface IProps {
   taskStore?: TaskStore;
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
   const [form] = Form.useForm();
@@ -61,26 +59,24 @@ const CreateModal: React.FC<IProps> = (props) => {
   const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
   const { resultSetExportData } = modalStore;
   const initSql = resultSetExportData?.sql;
-
   const handleSqlChange = (sql: string) => {
     form?.setFieldsValue({
       sql,
     });
     setHasEdit(true);
   };
-
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
-
   const hadleReset = () => {
     form.resetFields(null);
   };
-
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消导出结果集吗？',
+        title: formatMessage({
+          id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.DoYouConfirmTheCancellation',
+        }), //'确认取消导出结果集吗？'
         centered: true,
         onOk: () => {
           modalStore.changeCreateResultSetExportTaskModal(false);
@@ -92,7 +88,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       hadleReset();
     }
   };
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -119,7 +114,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           maxRows,
           tableName,
         };
-
         const data = {
           projectId,
           databaseId,
@@ -129,13 +123,11 @@ const CreateModal: React.FC<IProps> = (props) => {
           executionTime,
           description,
         };
-
         if (executionStrategy === TaskExecStrategy.TIMER) {
           data.executionTime = executionTime?.valueOf();
         } else {
           data.executionTime = undefined;
         }
-
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
@@ -148,19 +140,21 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
-
   useEffect(() => {
     if (initSql) {
       handleSqlChange(initSql);
     }
   }, [initSql]);
-
   return (
     <Drawer
       destroyOnClose
       className={styles.drawer}
       width={520}
-      title="新建导出结果集"
+      title={
+        formatMessage({
+          id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.NewExportResultSet',
+        }) /* 新建导出结果集 */
+      }
       footer={
         <Space>
           <Button
@@ -168,10 +162,22 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
+            {
+              formatMessage({
+                id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Cancel',
+              }) /* 
             取消
+           */
+            }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+            {
+              formatMessage({
+                id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.NewlyBuilt',
+              }) /* 
             新建
+           */
+            }
           </Button>
         </Space>
       }
@@ -205,8 +211,21 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Form.Item
           label={
             <Space>
-              <span>查询 SQL</span>
-              <Text type="secondary">仅支持输入单条 SQL</Text>
+              <span>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.QuerySQL',
+                  }) /* 查询 SQL */
+                }
+              </span>
+              <Text type="secondary">
+                {
+                  formatMessage({
+                    id:
+                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                  }) /* 仅支持输入单条 SQL */
+                }
+              </Text>
             </Space>
           }
           name="sql"
@@ -214,10 +233,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           rules={[
             {
               required: true,
-              message: '请填写 SQL 内容',
+              message: formatMessage({
+                id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInSQLContent',
+              }), //'请填写 SQL 内容'
             },
           ]}
-          style={{ height: '280px' }}
+          style={{
+            height: '280px',
+          }}
         >
           <CommonIDE
             initialSQL={initSql}
@@ -229,30 +252,64 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="maxRows"
-          label="查询结果条数限制"
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.QueryResultNumberLimit',
+            }) /* 查询结果条数限制 */
+          }
           rules={[
             {
               required: true,
-              message: '请填写条数限制',
+              message: formatMessage({
+                id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheNumber',
+              }), //'请填写条数限制'
             },
           ]}
         >
-          <InputBigNumber isInt min="1" style={{ width: 200 }} />
+          <InputBigNumber
+            isInt
+            min="1"
+            style={{
+              width: 200,
+            }}
+          />
         </Form.Item>
         <Form.Item
           name="fileName"
-          label="文件名称"
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FileName',
+            }) /* 文件名称 */
+          }
           rules={[
             {
               required: true,
-              message: '请填写文件名称',
+              message: formatMessage({
+                id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheFile',
+              }), //'请填写文件名称'
             },
           ]}
         >
-          <Input style={{ width: 320 }} />
+          <Input
+            style={{
+              width: 320,
+            }}
+          />
         </Form.Item>
-        <Form.Item required name="fileFormat" label="文件格式">
-          <Select style={{ width: 200 }}>
+        <Form.Item
+          required
+          name="fileFormat"
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FileFormat',
+            }) /* 文件格式 */
+          }
+        >
+          <Select
+            style={{
+              width: 200,
+            }}
+          >
             <Option value={IExportResultSetFileType.CSV}>{IExportResultSetFileType.CSV}</Option>
             <Option value={IExportResultSetFileType.SQL}>{IExportResultSetFileType.SQL}</Option>
             <Option value={IExportResultSetFileType.EXCEL}>{IExportResultSetFileType.EXCEL}</Option>
@@ -260,8 +317,20 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Row>
           <Col span={11}>
-            <Form.Item required name="fileEncoding" label="文件编码">
-              <Select style={{ width: 200 }}>
+            <Form.Item
+              required
+              name="fileEncoding"
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FileEncoding',
+                }) /* 文件编码 */
+              }
+            >
+              <Select
+                style={{
+                  width: 200,
+                }}
+              >
                 <Option value={IMPORT_ENCODING.UTF8}>{IMPORT_ENCODING.UTF8}</Option>
                 <Option value={IMPORT_ENCODING.UTF16}>{IMPORT_ENCODING.UTF16}</Option>
                 <Option value={IMPORT_ENCODING.GBK}>{IMPORT_ENCODING.GBK}</Option>
@@ -272,7 +341,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Col>
         </Row>
         <CsvFormItemPanel />
-        <FormItemPanel label="任务设置" keepExpand>
+        <FormItemPanel
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.TaskSetting',
+            }) /* 任务设置 */
+          }
+          keepExpand
+        >
           <TaskTimer isReadonlyPublicConn={false} />
         </FormItemPanel>
         <DescriptionInput />
@@ -280,5 +356,4 @@ const CreateModal: React.FC<IProps> = (props) => {
     </Drawer>
   );
 };
-
 export default inject('taskStore', 'modalStore')(observer(CreateModal));

@@ -24,7 +24,6 @@ import { history, useParams } from '@umijs/max';
 import Info from './Info';
 import Recycle from './Recycle';
 import Session from './Session';
-
 import {
   deleteConnection,
   getConnectionDetail,
@@ -54,7 +53,10 @@ const ExtraContent = ({
         menu={{
           items: [
             {
-              label: formatMessage({ id: 'odc.page.Datasource.Delete' }), //删除
+              label: formatMessage({
+                id: 'odc.page.Datasource.Delete',
+              }),
+              //删除
               key: 'delete',
               async onClick() {
                 Modal.confirm({
@@ -62,15 +64,23 @@ const ExtraContent = ({
                     {
                       id: 'odc.page.Datasource.ConfirmToDeleteName',
                     },
-                    { name: name },
-                  ), //`是否确认删除 ${name}`
-                  content: '删除后将无法访问该数据源',
+                    {
+                      name: name,
+                    },
+                  ),
+                  //`是否确认删除 ${name}`
+                  content: formatMessage({
+                    id: 'odc.src.page.Datasource.AfterDeletingYouWill',
+                  }), //'删除后将无法访问该数据源'
                   async onOk() {
                     const isSuccess = await deleteConnection(cid?.toString());
                     if (isSuccess) {
                       message.success(
-                        formatMessage({ id: 'odc.page.Datasource.DeletedSuccessfully' }), //删除成功
+                        formatMessage({
+                          id: 'odc.page.Datasource.DeletedSuccessfully',
+                        }), //删除成功
                       );
+
                       nav('/datasource');
                     }
                   },
@@ -85,9 +95,7 @@ const ExtraContent = ({
     </Space>
   );
 };
-
 interface IProps {}
-
 const Pages = {
   [IPageType.Datasource_info]: {
     component: Info,
@@ -102,47 +110,55 @@ const Pages = {
     component: OBClientPage,
   },
 };
-
 const tabs = [
   {
-    tab: formatMessage({ id: 'odc.page.Datasource.Database' }), //数据库
+    tab: formatMessage({
+      id: 'odc.page.Datasource.Database',
+    }),
+    //数据库
     key: IPageType.Datasource_info,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Datasource.Session' }), //会话
+    tab: formatMessage({
+      id: 'odc.page.Datasource.Session',
+    }),
+    //会话
     key: IPageType.Datasource_session,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Datasource.RecycleBin' }), //回收站
+    tab: formatMessage({
+      id: 'odc.page.Datasource.RecycleBin',
+    }),
+    //回收站
     key: IPageType.Datasource_recycle,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Datasource.CommandLineWindow' }), //命令行窗口
+    tab: formatMessage({
+      id: 'odc.page.Datasource.CommandLineWindow',
+    }),
+    //命令行窗口
     key: IPageType.Datasource_obclient,
     isHide() {
       return !setting.enableOBClient;
     },
   },
 ];
-
 const Index: React.FC<IProps> = function () {
-  const params = useParams<{ id: string; page: IPageType }>();
+  const params = useParams<{
+    id: string;
+    page: IPageType;
+  }>();
   const { id, page } = params;
   const cid = parseInt(id);
-
   const activeKeys = useRef<Set<string>>(new Set());
   activeKeys.current.add(page);
-
   const handleChange = (key: string) => {
     history.push(`/datasource/${id}/${key}`);
   };
-
   const handleSelectChange = (value: string) => {
     history.push(`/datasource/${value}/${page}`);
   };
-
   const [connection, setConnection] = useState<IDatasource>(null);
-
   async function fetchDatasource(cid: number) {
     const data = await getConnectionDetail(cid);
     if (data) {
@@ -152,13 +168,11 @@ const Index: React.FC<IProps> = function () {
   const reloadDatasource = useCallback(() => {
     fetchDatasource(cid);
   }, [cid]);
-
   useEffect(() => {
     if (isNumber(cid)) {
       fetchDatasource(cid);
     }
   }, [cid]);
-
   const { data } = useRequest(getConnectionList, {
     defaultParams: [
       {
@@ -167,7 +181,6 @@ const Index: React.FC<IProps> = function () {
       },
     ],
   });
-
   const options = [
     {
       label: connection?.name,
@@ -186,7 +199,6 @@ const Index: React.FC<IProps> = function () {
       })
       ?.filter(Boolean) || [],
   );
-
   return (
     <PageContainer
       titleProps={{
@@ -208,7 +220,11 @@ const Index: React.FC<IProps> = function () {
       onTabChange={handleChange}
       bigSelectBottom={
         <Link to={'/datasource'}>
-          {formatMessage({ id: 'odc.page.Datasource.ViewAllDataSources' }) /*查看所有数据源*/}
+          {
+            formatMessage({
+              id: 'odc.page.Datasource.ViewAllDataSources',
+            }) /*查看所有数据源*/
+          }
         </Link>
       }
     >
@@ -238,5 +254,4 @@ const Index: React.FC<IProps> = function () {
     </PageContainer>
   );
 };
-
 export default Index;

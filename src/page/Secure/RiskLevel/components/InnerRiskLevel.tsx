@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -43,8 +44,12 @@ export enum EBooleanOperator {
   OR = 'OR',
 }
 export const BooleanOperatorMap = {
-  [EBooleanOperator.AND]: '且',
-  [EBooleanOperator.OR]: '或',
+  [EBooleanOperator.AND]: formatMessage({
+    id: 'odc.src.page.Secure.RiskLevel.components.And',
+  }), //'且'
+  [EBooleanOperator.OR]: formatMessage({
+    id: 'odc.src.page.Secure.RiskLevel.components.Or',
+  }), //'或'
 };
 export enum EConditionType {
   CONDITION = 'CONDITION',
@@ -65,20 +70,12 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [originRootNode, setOriginRootNode] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [empty, setEmpty] = useState<boolean>(true);
-  const [environmentIdMap, setEnvironmentIdMap] = useState<
-    {
-      [key in string | number]: string;
-    }
-  >({});
-  const [taskTypeIdMap, setTaskTypeIdMap] = useState<
-    {
-      [key in string | number]: string;
-    }
-  >({});
+  const [environmentIdMap, setEnvironmentIdMap] = useState<{ [key in string | number]: string }>(
+    {},
+  );
+  const [taskTypeIdMap, setTaskTypeIdMap] = useState<{ [key in string | number]: string }>({});
   const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<
-    {
-      [key in string | number]: string;
-    }
+    { [key in string | number]: string }
   >({});
   const [environmentOptions, setEnvironmentOptions] = useState<SelectItemProps[]>([]);
   const [taskTypeOptions, setTaskTypeOptions] = useState<SelectItemProps[]>([]);
@@ -86,7 +83,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [showConditionGroup, setShowConditionGroup] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [currentRiskDetectRuleId, setCurrentRiskDetectRuleId] = useState<number>(null);
-
   const handleCreateRiskDetectRule = async (rootNode): Promise<boolean> => {
     const res = await createRiskDetectRules({
       riskLevelId: currentRiskLevel?.id,
@@ -95,7 +91,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     });
     return res;
   };
-
   const handleUpdateRiskDetectRule = async (id, rootNode): Promise<boolean> => {
     const res = await updateRiskDetectRule(id, {
       riskLevelId: currentRiskLevel?.id,
@@ -150,7 +145,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       return rd?.rootNode;
     }
   };
-
   const initInnerRiskLevel = async () => {
     setLoading(true);
     await initOptions({
@@ -166,7 +160,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     formRef.resetFields();
     setLoading(false);
   };
-
   const handleSubmit = async () => {
     const formData = await formRef.validateFields()?.catch();
     const rawData = formData?.conditions;
@@ -190,7 +183,15 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       reqFlag = await handleUpdateRiskDetectRule(currentRiskDetectRuleId, result);
     }
     if (reqFlag) {
-      message.success(empty ? '新建成功' : '更新成功');
+      message.success(
+        empty
+          ? formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.NewAchievement',
+            }) //'新建成功'
+          : formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.UpdateCompleted',
+            }), //'更新成功'
+      );
       memoryReload();
       setOriginRootNode(null);
       setRootNode(null);
@@ -198,15 +199,26 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       setIsEdit(false);
       formRef.resetFields();
     } else {
-      message.error(empty ? '新建失败' : '更新失败');
+      message.error(
+        empty
+          ? formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.NewFailure',
+            }) //'新建失败'
+          : formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.UpdateFailure',
+            }), //'更新失败'
+      );
     }
     setRootBoolOperator(EBooleanOperator.AND);
   };
-
   const handleDelete = async (id: number) => {
     const result: boolean = await deleteRiskDetectRule(id);
     if (result) {
-      message.success('删除成功');
+      message.success(
+        formatMessage({
+          id: 'odc.src.page.Secure.RiskLevel.components.SuccessfullyDeleted',
+        }), //'删除成功'
+      );
       memoryReload();
       initRootNode();
       formRef.resetFields();
@@ -215,7 +227,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       setRootBoolOperator(EBooleanOperator.AND);
       setCurrentRiskDetectRuleId(null);
     } else {
-      message.error('删除失败');
+      message.error(
+        formatMessage({
+          id: 'odc.src.page.Secure.RiskLevel.components.FailedToDelete',
+        }), //'删除失败'
+      );
     }
   };
   useEffect(() => {
@@ -226,20 +242,30 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       parseRootNode(rootNode);
     }
   }, [isEdit]);
-
   return (
     <div className={styles.innerRiskLevel} key={currentRiskLevel?.id}>
       <RiskLevelInfo currentRiskLevel={currentRiskLevel} memoryReload={memoryReload} />
       <div className={styles.ruleContent}>
         <div className={styles.ruleDetail}>
+          {
+            formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.RiskRecognitionRules',
+            }) /* 
           风险识别规则
+           */
+          }
           <span> :</span>
         </div>
         {isEdit ? (
           <div>
             <Form form={formRef}>
               <div>
-                <div style={{ position: 'relative', display: 'flex' }}>
+                <div
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                  }}
+                >
                   {showConditionGroup && (
                     <div
                       className={styles.title}
@@ -338,7 +364,14 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                       });
                                                     }}
                                                   >
+                                                    {
+                                                      formatMessage({
+                                                        id:
+                                                          'odc.src.page.Secure.RiskLevel.components.AddConditions',
+                                                      }) /* 
                                                     添加条件
+                                                   */
+                                                    }
                                                   </Button>
                                                 </div>
                                               </div>
@@ -398,7 +431,13 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                   }
                                 }}
                               >
+                                {
+                                  formatMessage({
+                                    id: 'odc.src.page.Secure.RiskLevel.components.AddConditions.1',
+                                  }) /* 
                                 添加条件
+                               */
+                                }
                               </Button>
                               <Button
                                 type="link"
@@ -421,7 +460,14 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                   }
                                 }}
                               >
+                                {
+                                  formatMessage({
+                                    id:
+                                      'odc.src.page.Secure.RiskLevel.components.AddConditionGroup',
+                                  }) /* 
                                 添加条件组
+                               */
+                                }
                               </Button>
                             </Space>
                           </>
@@ -448,7 +494,15 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
         {isEdit ? (
           <Space size={12}>
             <Button type="primary" onClick={handleSubmit}>
-              {empty ? '确认' : '确认'}
+              {
+                empty
+                  ? formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.Confirm',
+                    }) //'确认'
+                  : formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.Confirm.1',
+                    }) //'确认'
+              }
             </Button>
             <Button
               onClick={() => {
@@ -458,7 +512,15 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                 setRootBoolOperator(originRootNode?.booleanOperator || EBooleanOperator.AND);
               }}
             >
-              {empty ? '取消' : '取消'}
+              {
+                empty
+                  ? formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.Cancel',
+                    }) //'取消'
+                  : formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.Cancel.1',
+                    }) //'取消'
+              }
             </Button>
           </Space>
         ) : (
@@ -470,13 +532,27 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                   setShowConditionGroup(false);
                 }}
               >
-                {empty ? '新建规则' : '编辑规则'}
+                {
+                  empty
+                    ? formatMessage({
+                        id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
+                      }) //'新建规则'
+                    : formatMessage({
+                        id: 'odc.src.page.Secure.RiskLevel.components.EditRules',
+                      }) //'编辑规则'
+                }
               </Action.Button>
             </Acess>
             {currentRiskDetectRuleId && (
               <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
                 <Action.Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
+                  {
+                    formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.EmptyRules',
+                    }) /* 
                   清空规则
+                 */
+                  }
                 </Action.Button>
               </Acess>
             )}
@@ -486,5 +562,4 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     </div>
   );
 };
-
 export default InnerRiskLevel;

@@ -20,12 +20,9 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, Input, Row, Select } from 'antd';
 import React from 'react';
 import styles from './index.less';
-
 const { Option } = Select;
 const FormItem = Form.Item;
-
 interface IProps {}
-
 export const CsvFormItemPanel: React.FC<IProps> = (props) => {
   return (
     <Form.Item noStyle shouldUpdate>
@@ -34,15 +31,31 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
         switch (fileFormat) {
           case IExportResultSetFileType.CSV: {
             return (
-              <Form.Item label="CSV 文件设置" shouldUpdate>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.CSVFileSettings',
+                  }) /* CSV 文件设置 */
+                }
+                shouldUpdate
+              >
                 <div className={styles.inlineForm}>
                   <Row>
                     <FormItem
-                      style={{ display: 'inline-block', marginBottom: 8 }}
+                      style={{
+                        display: 'inline-block',
+                        marginBottom: 8,
+                      }}
                       name={['csvFormat', 'isContainColumnHeader']}
                       valuePropName="checked"
                     >
-                      <Checkbox>包含列头</Checkbox>
+                      <Checkbox>
+                        {
+                          formatMessage({
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Contain',
+                          }) /* 包含列头 */
+                        }
+                      </Checkbox>
                     </FormItem>
                     <FormItem
                       style={{
@@ -53,45 +66,76 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                       name={['csvFormat', 'isTransferEmptyString']}
                       valuePropName="checked"
                     >
-                      <Checkbox>空字符串转为空值</Checkbox>
+                      <Checkbox>
+                        {
+                          formatMessage({
+                            id:
+                              'odc.src.component.Task.ResultSetExportTask.CreateModal.EmptyStringTurnsToEmpty',
+                          }) /* 空字符串转为空值 */
+                        }
+                      </Checkbox>
                     </FormItem>
                   </Row>
                   <Row gutter={16}>
                     <Col span={8}>
                       <FormItem
-                        style={{ marginBottom: 8 }}
-                        label="字段分隔符"
+                        style={{
+                          marginBottom: 8,
+                        }}
+                        label={
+                          formatMessage({
+                            id:
+                              'odc.src.component.Task.ResultSetExportTask.CreateModal.FieldSeparator',
+                          }) /* 字段分隔符 */
+                        }
                         name={['csvFormat', 'columnSeparator']}
                         rules={[
                           {
                             required: true,
                             message: formatMessage({
-                              id: '请填写字段分隔符',
+                              id: formatMessage({
+                                id:
+                                  'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
+                              }), //'请填写字段分隔符'
                             }),
                           },
-
                           {
                             max: 1,
-                            message: '只能输入一个字符',
+                            message: formatMessage({
+                              id:
+                                'odc.src.component.Task.ResultSetExportTask.CreateModal.YouCanOnlyEnterOne',
+                            }), //'只能输入一个字符'
                           },
                         ]}
                       >
                         <AutoComplete
                           options={[';', ':', ','].map((value) => {
-                            return { value };
+                            return {
+                              value,
+                            };
                           })}
                         />
                       </FormItem>
                     </Col>
                     <Col span={8}>
                       <FormItem
-                        style={{ marginBottom: 8 }}
-                        label="文本识别符"
+                        style={{
+                          marginBottom: 8,
+                        }}
+                        label={
+                          formatMessage({
+                            id:
+                              'odc.src.component.Task.ResultSetExportTask.CreateModal.TextRecognitionSymbol',
+                          }) /* 文本识别符 */
+                        }
                         name={['csvFormat', 'columnDelimiter']}
                         rules={[
                           {
                             required: true,
-                            message: '请填写文本识别符',
+                            message: formatMessage({
+                              id:
+                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheText',
+                            }), //'请填写文本识别符'
                           },
                         ]}
                       >
@@ -107,13 +151,23 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                     </Col>
                     <Col span={8}>
                       <FormItem
-                        style={{ marginBottom: 8 }}
-                        label="换行符号"
+                        style={{
+                          marginBottom: 8,
+                        }}
+                        label={
+                          formatMessage({
+                            id:
+                              'odc.src.component.Task.ResultSetExportTask.CreateModal.ReplacementSymbol',
+                          }) /* 换行符号 */
+                        }
                         name={['csvFormat', 'lineSeparator']}
                         rules={[
                           {
                             required: true,
-                            message: '请填写换行符号',
+                            message: formatMessage({
+                              id:
+                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheChange',
+                            }), //'请填写换行符号'
                           },
                         ]}
                       >
@@ -137,19 +191,41 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
           }
           case IExportResultSetFileType.SQL: {
             return (
-              <Form.Item label="SQL 文件设置" shouldUpdate>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.SQLFileSettings',
+                  }) /* SQL 文件设置 */
+                }
+                shouldUpdate
+              >
                 <div className={styles.inlineForm}>
                   <Row>
                     <Form.Item
-                      rules={[{ required: true }]}
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
                       label={
                         <HelpDoc isTip leftText doc="exportTableName">
+                          {
+                            formatMessage({
+                              id:
+                                'odc.src.component.Task.ResultSetExportTask.CreateModal.SpecifiedTableName',
+                            }) /* 
                           指定表名
+                         */
+                          }
                         </HelpDoc>
                       }
                       name="tableName"
                     >
-                      <Input style={{ width: 320 }} />
+                      <Input
+                        style={{
+                          width: 320,
+                        }}
+                      />
                     </Form.Item>
                   </Row>
                 </div>
@@ -158,22 +234,48 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
           }
           case IExportResultSetFileType.EXCEL: {
             return (
-              <Form.Item label="Excel 文件设置" shouldUpdate>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.ExcelFileSettings',
+                  }) /* Excel 文件设置 */
+                }
+                shouldUpdate
+              >
                 <div className={styles.inlineForm}>
                   <Row>
                     <FormItem
-                      style={{ display: 'inline-block', marginBottom: 8 }}
+                      style={{
+                        display: 'inline-block',
+                        marginBottom: 8,
+                      }}
                       name={['csvFormat', 'isContainColumnHeader']}
                       valuePropName="checked"
                     >
-                      <Checkbox>包含列头</Checkbox>
+                      <Checkbox>
+                        {
+                          formatMessage({
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Contain.1',
+                          }) /* 包含列头 */
+                        }
+                      </Checkbox>
                     </FormItem>
                     <Form.Item
-                      style={{ display: 'inline-block', marginBottom: 8 }}
+                      style={{
+                        display: 'inline-block',
+                        marginBottom: 8,
+                      }}
                       name="saveSql"
                       valuePropName="checked"
                     >
-                      <Checkbox>导出 SQL 到另一个 Sheet</Checkbox>
+                      <Checkbox>
+                        {
+                          formatMessage({
+                            id:
+                              'odc.src.component.Task.ResultSetExportTask.CreateModal.ExportSQLToAnotherSheet',
+                          }) /* 导出 SQL 到另一个 Sheet */
+                        }
+                      </Checkbox>
                     </Form.Item>
                   </Row>
                 </div>

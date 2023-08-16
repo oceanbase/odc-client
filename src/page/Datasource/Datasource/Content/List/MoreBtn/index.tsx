@@ -27,29 +27,24 @@ import {
 import { Dropdown, message, Modal } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext from '../../../ParamContext';
-
 import { ModalStore } from '@/store/modal';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
-
 interface IProps {
   connection: IConnection;
   modalStore?: ModalStore;
 }
-
 enum Actions {
   EDIT = 'edit',
   COPY = 'copy',
   REMOVE = 'remove',
 }
-
 const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   const context = useContext(ParamContext);
   async function edit() {
     context.editDatasource?.(connection?.id);
   }
-
   async function copy() {
     const newConnection = {
       ...connection,
@@ -58,38 +53,31 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       })}`,
       copyFromSid: connection?.id,
     };
-
     modalStore.changeAddConnectionModal(true, {
       data: newConnection,
       isEdit: false,
       isCopy: true,
     });
   }
-
   async function remove() {
     Modal.confirm({
       title: formatMessage(
         {
           id: 'portal.connection.delete.modal.title',
         },
-
         {
           name: connection.name,
         },
       ),
-
       content: formatMessage({
         id: 'portal.connection.delete.modal.content',
       }),
-
       okText: formatMessage({
         id: 'app.button.ok',
       }),
-
       cancelText: formatMessage({
         id: 'app.button.cancel',
       }),
-
       centered: true,
       icon: <QuestionCircleFilled />,
       onOk: async () => {
@@ -105,18 +93,21 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       },
     });
   }
-
   const items: ItemType[] = [
     connection.permittedActions?.includes(actionTypes.update)
       ? {
-          label: formatMessage({ id: 'odc.List.MoreBtn.Edit' }),
+          label: formatMessage({
+            id: 'odc.List.MoreBtn.Edit',
+          }),
           key: Actions.EDIT,
           icon: <EditOutlined />,
         }
       : null,
     connection.permittedActions?.includes(actionTypes.delete)
       ? {
-          label: '删除',
+          label: formatMessage({
+            id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Delete',
+          }), //'删除'
           key: Actions.REMOVE,
           icon: <DeleteOutlined />,
         }
@@ -126,14 +117,16 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
     },
     {
       label:
-        formatMessage({ id: 'odc.List.MoreBtn.UpdatedOn' }) +
-        getFormatDateTime(connection?.updateTime),
+        formatMessage({
+          id: 'odc.List.MoreBtn.UpdatedOn',
+        }) + getFormatDateTime(connection?.updateTime),
       key: 'updateTime',
       disabled: true,
-      style: { color: 'var(--text-color-hint)' },
+      style: {
+        color: 'var(--text-color-hint)',
+      },
     },
   ];
-
   return (
     <Dropdown
       menu={{
@@ -158,10 +151,13 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       }}
     >
       <EllipsisOutlined
-        style={{ cursor: 'default', fontSize: 14, color: 'var(--icon-color-normal)' }}
+        style={{
+          cursor: 'default',
+          fontSize: 14,
+          color: 'var(--icon-color-normal)',
+        }}
       />
     </Dropdown>
   );
 };
-
 export default inject('modalStore')(observer(MoreBtn));

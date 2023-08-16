@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -20,7 +21,6 @@ import { Expression, ExpressionMap, OperatorMap } from '../interface';
 import { BooleanOperatorMap, EBooleanOperator, EConditionType } from './InnerRiskLevel';
 import classNames from 'classnames';
 import { useState } from 'react';
-
 const RootNodeContent = ({
   empty,
   rootNode,
@@ -59,7 +59,6 @@ const RootNodeContent = ({
     }
     return valueMap;
   };
-
   const renderNode = (node) => {
     const valueMap = getValueMapByExpression(node?.expression);
     return (
@@ -107,9 +106,13 @@ const RootNodeContent = ({
     <div className={empty ? styles.rootNodeContentEmpty : styles.rootNodeContent}>
       {empty ? (
         <Empty
-          description="暂无规则"
+          description={
+            formatMessage({ id: 'odc.src.page.Secure.RiskLevel.components.NoRule' }) /* 暂无规则 */
+          }
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{ flexGrow: 1 }}
+          style={{
+            flexGrow: 1,
+          }}
         />
       ) : (
         <>{renderRootNodeTree(rootNode)}</>

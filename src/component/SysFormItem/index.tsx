@@ -27,9 +27,7 @@ import { FormInstance } from 'antd/es/form';
 import { ValidateStatus } from 'antd/es/form/FormItem';
 import React, { useCallback, useEffect, useState } from 'react';
 import FormItemPanel from '../FormItemPanel';
-
 const { Text } = Typography;
-
 interface IProps {
   form: FormInstance<any>;
   connection?: IConnection;
@@ -43,7 +41,6 @@ interface IProps {
   randomKey?: any;
   tip?: (useSys: boolean, existSys: boolean, enforce: boolean) => string;
 }
-
 const SysFormItem: React.FC<IProps> = function (props) {
   const { connection, form, enforce, tip } = props;
   const [existSys, setExistSys] = useState(null);
@@ -61,7 +58,6 @@ const SysFormItem: React.FC<IProps> = function (props) {
       }
     });
   }, []);
-
   useEffect(() => {
     /**
      * 已存在 sysUser 的处理逻辑
@@ -71,13 +67,11 @@ const SysFormItem: React.FC<IProps> = function (props) {
       sid,
       useSys: !!sysUser,
     });
-
     setExistSys(sysUser);
     if (!sysUser) {
       setPwdEdit(true);
     }
   }, [sysUser]);
-
   useEffect(() => {
     /**
      * 强制必填，则勾选
@@ -88,20 +82,22 @@ const SysFormItem: React.FC<IProps> = function (props) {
       });
     }
   }, [enforce]);
-
   useEffect(() => {
     /**
      * useSys 改变的时候，用户名没填，就自动展开
      */
     form.resetFields(['overwriteSysConfig']);
   }, [useSys]);
-
   async function testSys() {
     if (!connection) {
       form.setFields([
         {
           name: ['databaseId'],
-          errors: ['请选择数据库'],
+          errors: [
+            formatMessage({
+              id: 'odc.src.component.SysFormItem.PleaseSelectTheDatabase',
+            }), //'请选择数据库'
+          ],
         },
       ]);
       form?.scrollToField('databaseId');
@@ -132,26 +128,34 @@ const SysFormItem: React.FC<IProps> = function (props) {
     } else {
       setStatus('success');
       message.success(
-        formatMessage({ id: 'odc.component.SysFormItem.ConnectionSucceeded' }), // 连接成功
+        formatMessage({
+          id: 'odc.component.SysFormItem.ConnectionSucceeded',
+        }), // 连接成功
       );
     }
   }
+
   function resetStatus() {
     setStatus('');
   }
-
   return (
     <FormItemPanel
       label={formatMessage({
         id: 'odc.component.SysFormItem.SysTenantAccountSettings',
-      })} /* sys 租户账号设置 */
-      expandText={formatMessage({
+      })}
+      /* sys 租户账号设置 */ expandText={formatMessage({
         id: 'odc.component.SysFormItem.Configuration',
-      })} /* 配置 */
-      keepExpand
+      })}
+      /* 配置 */ keepExpand
       overview={
         <>
-          <Form.Item name="useSys" valuePropName="checked" style={{ marginBottom: 0 }}>
+          <Form.Item
+            name="useSys"
+            valuePropName="checked"
+            style={{
+              marginBottom: 0,
+            }}
+          >
             <Checkbox disabled={enforce} onChange={forceUpdate}>
               <Tooltip
                 title={
@@ -196,8 +200,8 @@ const SysFormItem: React.FC<IProps> = function (props) {
                     validateStatus={status}
                     label={formatMessage({
                       id: 'odc.component.SysFormItem.Account',
-                    })} /* 账号 */
-                    name="sysUser"
+                    })}
+                    /* 账号 */ name="sysUser"
                     rules={[
                       {
                         required: !!useSys,
@@ -223,8 +227,8 @@ const SysFormItem: React.FC<IProps> = function (props) {
                       validateStatus={status}
                       label={formatMessage({
                         id: 'odc.component.SysFormItem.Password',
-                      })} /* 密码 */
-                      name="sysUserPassword"
+                      })}
+                      /* 密码 */ name="sysUserPassword"
                       initialValue={''}
                     >
                       <Input.Password
@@ -240,15 +244,20 @@ const SysFormItem: React.FC<IProps> = function (props) {
                     <Form.Item
                       label={formatMessage({
                         id: 'odc.component.SysFormItem.Password',
-                      })} /* 密码 */
-                      hasFeedback
+                      })}
+                      /* 密码 */ hasFeedback
                       validateStatus={status}
                     >
                       <Input disabled value="******" />
                     </Form.Item>
                   )}
                   {!pwdEdit ? (
-                    <Form.Item name="sid" style={{ display: 'none' }}>
+                    <Form.Item
+                      name="sid"
+                      style={{
+                        display: 'none',
+                      }}
+                    >
                       <Input />
                     </Form.Item>
                   ) : null}
@@ -322,5 +331,4 @@ const SysFormItem: React.FC<IProps> = function (props) {
     </FormItemPanel>
   );
 };
-
 export default SysFormItem;

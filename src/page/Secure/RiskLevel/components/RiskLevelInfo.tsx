@@ -32,7 +32,6 @@ import { getColumns } from './column';
 import CreateApproval from './CreateApproval';
 import styles from './index.less';
 import Action from '@/component/Action';
-
 const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
   const [formRef] = useForm();
   const [approvalProcesses, setApprovalProcesses] = useState<ITaskFlow[]>();
@@ -50,12 +49,10 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
       value: number;
     }[]
   >([]);
-
   const canAcessCreate = canAcess({
     resourceIdentifier: IManagerResourceType.approval_flow,
     action: actionTypes.create,
   }).accessible;
-
   const onpenEditModal = () => {
     formRef.setFieldsValue({
       approvalFlowConfigId: currentRiskLevel?.approvalFlowConfigId,
@@ -68,10 +65,25 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
   };
   const handleDelete = (param: React.Key | React.Key[]) => {
     Modal.confirm({
-      title: formatMessage({ id: 'odc.Secure.Approval.AreYouSureYouWant' }), //确认要删除审批流程吗？
-      icon: <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />,
-      cancelText: formatMessage({ id: 'odc.Secure.Approval.Cancel' }), //取消
-      okText: formatMessage({ id: 'odc.Secure.Approval.Ok' }), //确定
+      title: formatMessage({
+        id: 'odc.Secure.Approval.AreYouSureYouWant',
+      }),
+      //确认要删除审批流程吗？
+      icon: (
+        <ExclamationCircleFilled
+          style={{
+            color: 'var(--icon-orange-color)',
+          }}
+        />
+      ),
+      cancelText: formatMessage({
+        id: 'odc.Secure.Approval.Cancel',
+      }),
+      //取消
+      okText: formatMessage({
+        id: 'odc.Secure.Approval.Ok',
+      }),
+      //确定
       centered: true,
       onOk: () => {
         handleConfirmDelete(param as number);
@@ -82,8 +94,11 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
     const res = await deleteTaskFlow(id);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.Secure.Approval.DeletedSuccessfully' }), //删除成功
+        formatMessage({
+          id: 'odc.Secure.Approval.DeletedSuccessfully',
+        }), //删除成功
       );
+
       reloadData();
     }
   };
@@ -106,12 +121,20 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
     const formData = await formRef.validateFields().catch();
     const successFlag = await updateRiskLevel(currentRiskLevel?.id, formData);
     if (successFlag) {
-      message.success('更新成功');
+      message.success(
+        formatMessage({
+          id: 'odc.src.page.Secure.RiskLevel.components.UpdateCompleted.1',
+        }), //'更新成功'
+      );
       await formRef.resetFields();
       setEditModalOpen(false);
       memoryReload();
     } else {
-      message.error('更新失败');
+      message.error(
+        formatMessage({
+          id: 'odc.src.page.Secure.RiskLevel.components.UpdateFailure.1',
+        }), //'更新失败'
+      );
     }
   };
   const columns = getColumns({
@@ -123,27 +146,49 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
       initEditRiskLevelDrawer();
     }
   }, [editModalOpen]);
-
   return (
     <>
       <Space direction="vertical" size={12}>
         <Space className={styles.tag}>
           <div className={styles.tagLabel}>
-            风险等级<span>:</span>
+            {
+              formatMessage({
+                id: 'odc.src.page.Secure.RiskLevel.components.RiskLevel',
+              }) /* 
+            风险等级 */
+            }
+            <span>:</span>
           </div>
           <RiskLevelLabel level={currentRiskLevel?.level} color={currentRiskLevel?.style} />
         </Space>
 
         <Space className={styles.tag}>
           <div className={styles.tagLabel}>
-            审批流程<span>:</span>
+            {
+              formatMessage({
+                id: 'odc.src.page.Secure.RiskLevel.components.ApprovalProcess.1',
+              }) /* 
+            审批流程 */
+            }
+            <span>:</span>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+            }}
+          >
             {currentRiskLevel?.approvalFlowConfig?.name}
             <Action.Group>
               <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
                 <Action.Link disabled={currentRiskLevel?.builtIn} onClick={onpenEditModal}>
+                  {
+                    formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.Edit',
+                    }) /* 
                   编辑
+                 */
+                  }
                 </Action.Link>
               </Acess>
             </Action.Group>
@@ -152,34 +197,56 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
       </Space>
       <Modal
         open={editModalOpen}
-        title={'编辑审批流程'}
+        title={
+          formatMessage({
+            id: 'odc.src.page.Secure.RiskLevel.components.EditApprovalProcess',
+          }) //'编辑审批流程'
+        }
         width={480}
-        bodyStyle={{ padding: '40px' }}
+        bodyStyle={{
+          padding: '40px',
+        }}
         closable
         onCancel={() => setEditModalOpen(false)}
         onOk={() => handleModalSubmit()}
       >
         <Form form={formRef} layout="vertical" requiredMark={'optional'}>
           <Form.Item
-            label={'选择审批流程'}
+            label={
+              formatMessage({
+                id: 'odc.src.page.Secure.RiskLevel.components.ChooseTheApprovalProcess',
+              }) //'选择审批流程'
+            }
             name="approvalFlowConfigId"
             rules={[
               {
                 required: true,
-                message: '请选择审批流程',
+                message: formatMessage({
+                  id: 'odc.src.page.Secure.RiskLevel.components.PleaseSelectTheApprovalProcess',
+                }), //'请选择审批流程'
               },
             ]}
           >
             <Select
               options={approvalProcessOptions}
-              placeholder={'请选择审批流程'}
-              style={{ width: '320px' }}
+              placeholder={
+                formatMessage({
+                  id: 'odc.src.page.Secure.RiskLevel.components.PleaseSelectTheApprovalProcess.1',
+                }) //'请选择审批流程'
+              }
+              style={{
+                width: '320px',
+              }}
               open={selectOpen}
               onDropdownVisibleChange={(visible) => setSelectOpen(visible)}
               dropdownRender={(menu) => (
                 <>
                   {menu}
-                  <Divider style={{ margin: '0px 0' }} />
+                  <Divider
+                    style={{
+                      margin: '0px 0',
+                    }}
+                  />
                   <Button
                     type="link"
                     block
@@ -191,7 +258,13 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
                       setManageApprovalProcessDrawerOpen(true);
                     }}
                   >
+                    {
+                      formatMessage({
+                        id: 'odc.src.page.Secure.RiskLevel.components.ManagementApprovalProcess',
+                      }) /* 
                     管理审批流程
+                   */
+                    }
                   </Button>
                 </>
               )}
@@ -201,7 +274,11 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
       </Modal>
       <Drawer
         open={manageApprovalProcessDrawerOpen}
-        title={'管理审批流程'}
+        title={
+          formatMessage({
+            id: 'odc.src.page.Secure.RiskLevel.components.ManagementApprovalProcess.1',
+          }) //'管理审批流程'
+        }
         width={720}
         onClose={() => setManageApprovalProcessDrawerOpen(false)}
       >
@@ -220,10 +297,21 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
               type="primary"
               onClick={() => setFormModalVisible(true)}
             >
+              {
+                formatMessage({
+                  id: 'odc.src.page.Secure.RiskLevel.components.NewApprovalProcess',
+                }) /* 
               新建审批流程
+             */
+              }
             </Button>
           </div>
-          <div style={{ flexGrow: 1, flexShrink: 1 }}>
+          <div
+            style={{
+              flexGrow: 1,
+              flexShrink: 1,
+            }}
+          >
             <CommonTable
               key={'riskLevelInfo'}
               showToolbar={false}

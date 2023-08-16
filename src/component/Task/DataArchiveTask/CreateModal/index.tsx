@@ -44,29 +44,29 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
-
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
 }
-
 export const InsertActionOptions = [
   {
-    label: '重复时忽略',
+    label: formatMessage({
+      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.IgnoreWhenRepeated',
+    }), //'重复时忽略'
     value: MigrationInsertAction.INSERT_IGNORE,
   },
   {
-    label: '重复时更新',
+    label: formatMessage({
+      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.UpdateWhenRepeated',
+    }), //'重复时更新'
     value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   },
 ];
-
 export const variable = {
   name: '',
   format: '',
   pattern: [null],
 };
-
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
@@ -74,12 +74,10 @@ const defaultValue = {
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
 };
-
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 const getVariables = (
   value: {
     name: string;
@@ -106,7 +104,6 @@ const getVariables = (
     };
   });
 };
-
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
   const [formData, setFormData] = useState(null);
@@ -118,20 +115,16 @@ const CreateModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
   const databaseName = database?.name;
-
   const loadTables = async () => {
     const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
     setTables(tables);
   };
-
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-
   const { dataArchiveVisible, SQLPlanEditId } = modalStore;
   const isEdit = !!SQLPlanEditId;
-
   const setFormStatus = (fieldName: string, errorMessage: string) => {
     form.setFields([
       {
@@ -140,11 +133,13 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     ]);
   };
-
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.AreYouSureYouWant' }), //确认取消此 数据归档吗？
+        title: formatMessage({
+          id: 'odc.DataArchiveTask.CreateModal.AreYouSureYouWant',
+        }),
+        //确认取消此 数据归档吗？
         centered: true,
         onOk: () => {
           props.modalStore.changeDataArchiveModal(false);
@@ -154,11 +149,9 @@ const CreateModal: React.FC<IProps> = (props) => {
       props.modalStore.changeDataArchiveModal(false);
     }
   };
-
   const handleCrontabChange = (crontab) => {
     setCrontab(crontab);
   };
-
   const handleCreate = async (data: Partial<CreateTaskRecord>) => {
     const res = await createTask(data);
     handleCancel(false);
@@ -167,10 +160,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       openTasksPage(TaskPageType.DATA_ARCHIVE, TaskPageScope.CREATED_BY_CURRENT_USER);
     }
   };
-
   const handleEditAndConfirm = async (data: Partial<CreateTaskRecord>) => {
     Modal.confirm({
-      title: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.AreYouSureYouWant.1' }), //确认要修改此 数据归档吗？
+      title: formatMessage({
+        id: 'odc.DataArchiveTask.CreateModal.AreYouSureYouWant.1',
+      }),
+      //确认要修改此 数据归档吗？
       content: (
         <>
           <div>
@@ -189,9 +184,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
-
-      cancelText: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Cancel' }), //取消
-      okText: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Ok' }), //确定
+      cancelText: formatMessage({
+        id: 'odc.DataArchiveTask.CreateModal.Cancel',
+      }),
+      //取消
+      okText: formatMessage({
+        id: 'odc.DataArchiveTask.CreateModal.Ok',
+      }),
+      //确定
       centered: true,
       onOk: () => {
         handleCreate(data);
@@ -201,7 +201,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     });
   };
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -242,7 +241,6 @@ const CreateModal: React.FC<IProps> = (props) => {
             triggerStrategy,
           } as ICycleTaskTriggerConfig,
         };
-
         if (triggerStrategy === TaskExecStrategy.TIMER) {
           const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
           parameters.triggerConfig = {
@@ -263,7 +261,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           parameters,
           description,
         };
-
         setConfirmLoading(true);
         if (!isEdit) {
           delete parameters.taskId;
@@ -278,30 +275,25 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
-
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
-
   const handleReset = () => {
     setFormData(null);
     form?.resetFields();
     crontabRef.current?.resetFields();
   };
-
   useEffect(() => {
     if (!dataArchiveVisible) {
       handleReset();
     }
   }, [dataArchiveVisible]);
-
   useEffect(() => {
     if (database?.id) {
       loadTables();
       form.setFieldValue('tables', [null]);
     }
   }, [database?.id]);
-
   return (
     <Drawer
       destroyOnClose
@@ -309,8 +301,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       width={760}
       title={
         isEdit
-          ? formatMessage({ id: 'odc.DataArchiveTask.CreateModal.EditDataArchive' }) //编辑数据归档
-          : formatMessage({ id: 'odc.DataArchiveTask.CreateModal.CreateADataArchive' }) //新建数据归档
+          ? formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.EditDataArchive',
+            }) //编辑数据归档
+          : formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.CreateADataArchive',
+            }) //新建数据归档
       }
       footer={
         <Space>
@@ -319,13 +315,21 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
-            {formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Cancel' }) /*取消*/}
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.Cancel',
+              }) /*取消*/
+            }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
             {
               isEdit
-                ? formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Save' }) //保存
-                : formatMessage({ id: 'odc.DataArchiveTask.CreateModal.Create' }) //新建
+                ? formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.Save',
+                  }) //保存
+                : formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.Create',
+                  }) //新建
             }
           </Button>
         </Space>
@@ -346,13 +350,17 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Space align="start">
           <DatabaseSelect
             type={TaskType.DATA_ARCHIVE}
-            label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.SourceDatabase' })}
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
+            })}
             /*源端数据库*/ projectId={projectId}
           />
 
           <DatabaseSelect
             type={TaskType.DATA_ARCHIVE}
-            label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.TargetDatabase' })}
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
+            })}
             /*目标数据库*/ name="targetDatabase"
             projectId={projectId}
           />
@@ -379,13 +387,19 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Checkbox>
         </Form.Item>
         <Form.Item
-          label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod' })}
+          label={formatMessage({
+            id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod',
+          })}
           /*执行方式*/ name="triggerStrategy"
           required
         >
           <Radio.Group>
             <Radio.Button value={TaskExecStrategy.START_NOW}>
-              {formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ExecuteNow' }) /*立即执行*/}
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.ExecuteNow',
+                }) /*立即执行*/
+              }
             </Radio.Button>
             {!isClient() ? (
               <Radio.Button value={TaskExecStrategy.START_AT}>
@@ -412,7 +426,9 @@ const CreateModal: React.FC<IProps> = (props) => {
               return (
                 <Form.Item
                   name="startAt"
-                  label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ExecutionTime' })}
+                  label={formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
+                  })}
                   /*执行时间*/ required
                 >
                   <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
@@ -433,14 +449,28 @@ const CreateModal: React.FC<IProps> = (props) => {
             return null;
           }}
         </Form.Item>
-        <FormItemPanel label="任务设置" keepExpand>
+        <FormItemPanel
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.DataArchiveTask.CreateModal.TaskSetting',
+            }) /* 任务设置 */
+          }
+          keepExpand
+        >
           <Form.Item
-            label="插入策略"
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.DataArchiveTask.CreateModal.InsertionStrategy',
+              }) /* 插入策略 */
+            }
             name="migrationInsertAction"
             rules={[
               {
                 required: true,
-                message: '请选择插入策略',
+                message: formatMessage({
+                  id:
+                    'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
+                }), //'请选择插入策略'
               },
             ]}
           >
@@ -452,5 +482,4 @@ const CreateModal: React.FC<IProps> = (props) => {
     </Drawer>
   );
 };
-
 export default inject('modalStore')(observer(CreateModal));
