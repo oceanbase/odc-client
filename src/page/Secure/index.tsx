@@ -98,7 +98,9 @@ const Index: React.FC<IProps> = function ({ userStore }) {
     setUsers(users);
   };
 
-  const displayTabs = tabs?.filter((tab) => (tab.permission ? canAcess(tab.permission) : true));
+  const displayTabs = tabs?.filter((tab) =>
+    tab.permission ? canAcess(tab.permission)?.accessible : true,
+  );
 
   return (
     <PageContainer
