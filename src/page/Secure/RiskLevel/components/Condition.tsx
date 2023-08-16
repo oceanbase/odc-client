@@ -302,6 +302,10 @@ const Condition = ({
             required: true,
             message: '值不能为空',
           },
+          {
+            pattern: /^[^\s]*$/,
+            message: '禁止输入空格',
+          },
         ]}
       >
         {isInputComponent ? (
