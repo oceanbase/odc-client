@@ -48,15 +48,7 @@ export const getTaskTypeOptions = () => {
       value: TaskType.ASYNC,
     },
     {
-      label: TaskTypeMap[TaskType.PARTITION_PLAN],
-      value: TaskType.PARTITION_PLAN,
-    },
-    {
-      label: TaskTypeMap[TaskType.SQL_PLAN],
-      value: TaskType.SQL_PLAN,
-    },
-    {
-      label: TaskTypeMap[TaskType.ALTER_SCHEDULE],
+      label: '自动运行',
       value: TaskType.ALTER_SCHEDULE,
     },
     {
@@ -64,8 +56,8 @@ export const getTaskTypeOptions = () => {
       value: TaskType.SHADOW,
     },
     {
-      label: TaskTypeMap[TaskType.DATA_SAVE],
-      value: TaskType.DATA_SAVE,
+      label: TaskTypeMap[TaskType.EXPORT_RESULT_SET],
+      value: TaskType.EXPORT_RESULT_SET,
     },
   ];
 

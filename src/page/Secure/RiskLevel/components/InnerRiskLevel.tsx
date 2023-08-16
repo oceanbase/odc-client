@@ -340,30 +340,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                   >
                                                     添加条件
                                                   </Button>
-                                                  <Button
-                                                    type="link"
-                                                    onClick={async () => {
-                                                      inAdd({
-                                                        type: EConditionType.CONDITION_GROUP,
-                                                        children: [
-                                                          {
-                                                            type: EConditionType.CONDITION,
-                                                            expression: undefined,
-                                                            operator: undefined,
-                                                            value: undefined,
-                                                          },
-                                                        ],
-                                                        booleanOperator: EBooleanOperator.AND,
-                                                      });
-                                                      const raw = await formRef.getFieldsValue()
-                                                        ?.conditions;
-                                                      if (raw?.length >= 2) {
-                                                        setShowConditionGroup(true);
-                                                      }
-                                                    }}
-                                                  >
-                                                    添加条件组
-                                                  </Button>
                                                 </div>
                                               </div>
                                             );
