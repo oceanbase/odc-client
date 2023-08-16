@@ -148,9 +148,9 @@ function medusaCheck() {
         );
       }
       baselineKeys.forEach((baselineKey) => {
-        const { params, value } = baselineData[baselineKey];
+        const { params, value } = baselineData[baselineKey] || {};
         const { params: targetParams, value: targetValue } = targetData[baselineKey] || {};
-        if (!_.isEqual(params.sort(), targetParams.sort())) {
+        if (!_.isEqual(params?.sort(), targetParams?.sort())) {
           console.error(
             `[error] ${targetPath} \n词条参数不一致 ${baselineKey} \n src: ${targetValue} \n zh-CN: ${value}`,
           );
