@@ -426,15 +426,6 @@ const FormModal: React.FC<IProps> = (props) => {
 
   const handleFieldChange = (label: string, value: any) => {
     const newData = set({ ...data }, label, value);
-    if (label === 'permissionType') {
-      if (!value.includes('systemOperationPermissions')) {
-        set(newData, 'systemOperationPermissions', null);
-        formRef.current.setFieldsValue({
-          systemOperationPermissions: [],
-        });
-      }
-    }
-
     formRef.current.setFieldsValue({
       [label]: value,
     });
