@@ -51,14 +51,14 @@ async function buildClient(target) {
       {
         ENV: 'jre',
         ARCH: '',
-        targets: electronBuilder.Platform.LINUX.createTarget(['deb', 'rpm', 'AppImage'], electronBuilder.Arch.x64),
+        targets: electronBuilder.Platform.LINUX.createTarget(['deb', 'AppImage'], electronBuilder.Arch.x64),
       },
     ],
     'linux_aarch64': [
       {
         ENV: 'jre',
         ARCH: '',
-        targets: electronBuilder.Platform.LINUX.createTarget(['deb', 'rpm', 'AppImage'], electronBuilder.Arch.arm64),
+        targets: electronBuilder.Platform.LINUX.createTarget(['deb', 'AppImage'], electronBuilder.Arch.arm64),
       },
     ],
     win: [
