@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { oss } = require('./util');
+const { download } = require('./util');
 const AdmZip = require('adm-zip');
 const execSync = require('child_process').execSync
 const fs = require('fs');
@@ -22,14 +22,16 @@ const path = require('path');
 
 const platform = process.env.platform || 'mac';
 
+const baseUrl = "https://obodc-front.oss-cn-beijing.aliyuncs.com/";
+
 exports.run = async function () {
   console.log('开始下载 Jre');
   const jrePath = path.resolve(process.cwd(), 'libraries/jre');
   if (fs.existsSync(jrePath)) {
     fs.rmSync(jrePath, { recursive: true, force: true });
   }
-  const isSuccess = await oss.download(
-    `library/jre/${platform}/jre.zip`,
+  const isSuccess = await download(
+    baseUrl + `library/jre/${platform}/jre.zip`,
     'libraries/jre',
     'jre.zip',
   );
