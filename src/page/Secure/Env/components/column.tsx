@@ -176,11 +176,16 @@ export const getColumns = ({
       key: 'status',
       render: (_, record, index) => {
         return (
-          <RuleSwitch
-            key={index}
-            checked={record?.enabled}
-            onChange={() => handleSwtichRuleStatus(record?.rulesetId, record)}
-          />
+          <Acess
+            fallback={<Switch size="small" checked={record?.enabled} disabled />}
+            {...createPermission(IManagerResourceType.ruleset, actionTypes.update)}
+          >
+            <RuleSwitch
+              key={index}
+              checked={record?.enabled}
+              onChange={() => handleSwtichRuleStatus(record?.rulesetId, record)}
+            />
+          </Acess>
         );
       },
     },
@@ -193,7 +198,7 @@ export const getColumns = ({
           <Space>
             <Acess
               fallback={<span>-</span>}
-              {...createPermission(IManagerResourceType.environment, actionTypes.update)}
+              {...createPermission(IManagerResourceType.ruleset, actionTypes.update)}
             >
               <a onClick={() => handleOpenEditModal(record)}>
                 {formatMessage({ id: 'odc.Env.components.InnerEnvironment.Edit' }) /*编辑*/}
