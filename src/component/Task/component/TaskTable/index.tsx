@@ -88,9 +88,8 @@ export const TaskTypeMap = {
   //模拟数据
   [TaskType.ASYNC]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.DatabaseChanges',
-  }),
+  }), // 数据库变更
 
-  //申请连接权限
   [TaskType.PARTITION_PLAN]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
   }),
@@ -156,8 +155,15 @@ const TaskTable: React.FC<IProps> = inject(
   'pageStore',
 )(
   observer((props) => {
-    const { taskStore, settingStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } =
-      props;
+    const {
+      taskStore,
+      settingStore,
+      pageStore,
+      taskTabType,
+      tableRef,
+      taskList,
+      isMultiPage,
+    } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
     const currentTask = taskList;
