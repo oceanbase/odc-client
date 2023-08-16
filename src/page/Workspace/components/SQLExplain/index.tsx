@@ -45,19 +45,21 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
     };
   }
   public getTraceData = async () => {
-    const { session } = this.props;
-    const rawData = await getFullLinkTrace(session?.sessionId, session?.database?.dbName, {
-      sql: this.props?.sql,
-      tag: this.props?.traceId,
-    });
-    const resData = parseTraceTree(rawData?.data);
-    // @ts-ignore
-    resData.isRoot = true;
-    this.setState({
-      treeData: [resData],
-      startTimestamp: resData.startTimestamp,
-      endTimestamp: resData.endTimestamp,
-    });
+    const { session, traceId, sql } = this.props;
+    if (traceId) {
+      const rawData = await getFullLinkTrace(session?.sessionId, session?.database?.dbName, {
+        sql: sql,
+        tag: traceId,
+      });
+      const resData = parseTraceTree(rawData?.data);
+      // @ts-ignore
+      resData.isRoot = true;
+      this.setState({
+        treeData: [resData],
+        startTimestamp: resData.startTimestamp,
+        endTimestamp: resData.endTimestamp,
+      });
+    }
   };
 
   public componentDidMount() {
@@ -119,7 +121,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
   };
 
   public render() {
-    const { explain, sql, haveText, session } = this.props;
+    const { explain, sql, haveText, session, traceId } = this.props;
     const {
       tabName,
       onlyText,
@@ -191,9 +193,11 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
             <Radio.Button value={TAB_NAME.SUMMARY}>
               <FormattedMessage id="workspace.window.sql.explain.tab.summary" />
             </Radio.Button>
-            <Radio.Button value={TAB_NAME.TRACE}>
-              {formatMessage({ id: 'odc.components.SQLExplain.FullLinkTrace' }) /*全链路 TRACE*/}
-            </Radio.Button>
+            {traceId && (
+              <Radio.Button value={TAB_NAME.TRACE}>
+                {formatMessage({ id: 'odc.components.SQLExplain.FullLinkTrace' }) /*全链路 TRACE*/}
+              </Radio.Button>
+            )}
           </Radio.Group>
         )}
 
