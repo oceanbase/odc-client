@@ -17,6 +17,7 @@
 import { getIntegrationList, getResourceRoles } from '@/common/network/manager';
 import { useEffect, useState } from 'react';
 import FormModal from '../../Approval/component/FormModal';
+import { IntegrationType } from '@/d.ts';
 
 const CreateApproval = ({ editId, formModalVisible, setFormModalVisible, reloadData }) => {
   const [roles, setRoles] = useState([]);
@@ -31,7 +32,9 @@ const CreateApproval = ({ editId, formModalVisible, setFormModalVisible, reloadD
     setRoles(roles);
   };
   const loadIntegrations = async () => {
-    const integrations = await getIntegrationList();
+    const integrations = await getIntegrationList({
+      type: IntegrationType.APPROVAL,
+    });
     setIntegrations(integrations?.contents);
   };
 
