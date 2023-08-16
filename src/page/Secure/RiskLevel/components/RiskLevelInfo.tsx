@@ -289,29 +289,51 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
             flexDirection: 'column',
           }}
         >
-          <div>
-            <Button
-              style={{
-                marginBottom: '16px',
-              }}
-              type="primary"
-              onClick={() => setFormModalVisible(true)}
-            >
-              {
-                formatMessage({
-                  id: 'odc.src.page.Secure.RiskLevel.components.NewApprovalProcess',
-                }) /* 
-              新建审批流程
-             */
-              }
-            </Button>
-          </div>
           <div
             style={{
-              flexGrow: 1,
-              flexShrink: 1,
+              marginBottom: '16px',
             }}
           >
+            <Action.Group>
+              <Acess
+                {...createPermission(IManagerResourceType.approval_flow, actionTypes.create)}
+                fallback={
+                  <Action.Button
+                    disabled
+                    type="primary"
+                    onClick={async () => {
+                      await setFormModalVisible(true);
+                    }}
+                  >
+                    {
+                      formatMessage({
+                        id: 'odc.src.page.Secure.RiskLevel.components.NewApprovalProcess',
+                      }) /* 
+                新建审批流程
+               */
+                    }
+                  </Action.Button>
+                }
+              >
+                <Action.Button
+                  type="primary"
+                  onClick={async () => {
+                    await setFormModalVisible(true);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.NewApprovalProcess',
+                    }) /* 
+                  新建审批流程
+                 */
+                  }
+                </Action.Button>
+              </Acess>
+            </Action.Group>
+          </div>
+
+          <div style={{ flexGrow: 1, flexShrink: 1 }}>
             <CommonTable
               key={'riskLevelInfo'}
               showToolbar={false}
