@@ -558,7 +558,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             )}
 
             {currentRiskDetectRuleId && (
-              <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.delete)}>
+              <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.delete)}>
                 <Action.Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
                   {
                     formatMessage({
