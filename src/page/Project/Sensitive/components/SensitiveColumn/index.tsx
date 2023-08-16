@@ -320,6 +320,7 @@ const SensitiveColumn = ({
     setMaskingAlgorithmId(maskingAlgorithmId);
     setSensitiveColumnIds(ids);
     setModalVisible(true);
+    tableRef.current?.resetSelectedRows();
   };
 
   const handleStatusSwitch = async (id: number, enabled: boolean) => {
@@ -357,6 +358,7 @@ const SensitiveColumn = ({
             );
           }
           tableRef.current?.reload?.();
+          tableRef.current?.resetSelectedRows();
           setSubmiting(false);
         }
       }),

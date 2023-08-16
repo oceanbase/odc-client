@@ -525,26 +525,40 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
           </Space>
         ) : (
           <Action.Group>
-            <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
-              <Action.Button
-                onClick={async () => {
-                  setIsEdit(true);
-                  setShowConditionGroup(false);
-                }}
-              >
-                {
-                  empty
-                    ? formatMessage({
-                        id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
-                      }) //'新建规则'
-                    : formatMessage({
-                        id: 'odc.src.page.Secure.RiskLevel.components.EditRules',
-                      }) //'编辑规则'
-                }
-              </Action.Button>
-            </Acess>
+            {empty ? (
+              <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
+                <Action.Button
+                  onClick={async () => {
+                    setIsEdit(true);
+                    setShowConditionGroup(false);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
+                    }) //'新建规则'})
+                  }
+                </Action.Button>
+              </Acess>
+            ) : (
+              <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
+                <Action.Button
+                  onClick={async () => {
+                    setIsEdit(true);
+                    setShowConditionGroup(false);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.src.page.Secure.RiskLevel.components.EditRules',
+                    }) //'编辑规则'
+                  }
+                </Action.Button>
+              </Acess>
+            )}
+
             {currentRiskDetectRuleId && (
-              <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.update)}>
+              <Acess {...createPermission(IManagerResourceType.risk_level, actionTypes.delete)}>
                 <Action.Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
                   {
                     formatMessage({
