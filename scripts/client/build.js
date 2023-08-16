@@ -111,6 +111,7 @@ async function run() {
           platform: 'mac',
         },
       });
+      await buildWeb();
       await buildClient('mac-jre');
       return;
     }
