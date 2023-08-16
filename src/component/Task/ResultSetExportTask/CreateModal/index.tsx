@@ -107,6 +107,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           fileEncoding,
           csvFormat,
           fileName,
+          tableName,
           maxRows,
         } = values;
         const parameters = {
@@ -116,6 +117,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           csvFormat,
           fileName,
           maxRows,
+          tableName,
         };
 
         const data = {
