@@ -75,7 +75,7 @@ const TaskManaerPage = (props) => {
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content projectId={projectId} />
+        <Content projectId={projectId} theme="white" />
       </div>
     </>
   );

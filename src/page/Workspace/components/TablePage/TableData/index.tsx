@@ -296,6 +296,7 @@ class TableData extends React.Component<
     modalStore.changeCreateResultSetExportTaskModal(true, {
       sql,
       databaseId: session?.database.databaseId,
+      tableName,
     });
   };
 

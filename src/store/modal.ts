@@ -53,6 +53,7 @@ interface AsyncData {
 interface ResultSetExportData {
   sql?: string;
   databaseId?: number;
+  tableName?: string;
 }
 
 interface ApplyPermissionData {}

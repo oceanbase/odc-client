@@ -47,9 +47,10 @@ interface IProps {
   taskStore?: TaskStore;
   modalStore?: ModalStore;
   projectId?: number;
+  theme?: string;
 }
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, theme } = props;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -191,6 +192,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
           databaseId: resultSetExportData?.databaseId,
+          tableName: resultSetExportData?.tableName,
           fileFormat: EXPORT_TYPE.CSV,
           fileEncoding: IMPORT_ENCODING.UTF8,
           maxRows: 1000,
@@ -221,8 +223,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Text type="secondary">
                 {
                   formatMessage({
-                    id:
-                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>
@@ -245,6 +246,9 @@ const CreateModal: React.FC<IProps> = (props) => {
           <CommonIDE
             initialSQL={initSql}
             language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            editorProps={{
+              theme,
+            }}
             onSQLChange={(sql) => {
               handleSqlChange(sql);
             }}

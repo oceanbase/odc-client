@@ -123,7 +123,9 @@ const FlowModal: React.FC<IProps> = function (props) {
         visible={approvalVisible}
         status={task?.status}
         approvalStatus={approvalStatus}
-        onReload={() => {}}
+        onReload={() => {
+          getTask(id);
+        }}
         onCancel={() => {
           handleApprovalVisible(false);
         }}

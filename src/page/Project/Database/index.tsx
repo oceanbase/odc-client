@@ -262,7 +262,7 @@ const Database: React.FC<IProps> = ({ id }) => {
 
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
-      <AsyncTaskCreateModal />
+      <AsyncTaskCreateModal theme="white" />
     </TableCard>
   );
 };
