@@ -57,6 +57,7 @@ interface IProps {
   tabHeight?: number;
   projectId?: number;
   isMultiPage?: boolean;
+  theme?: string;
 }
 
 interface IState {
@@ -272,7 +273,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { projectId, pageKey, taskStore, isMultiPage = false } = this.props;
+    const { projectId, pageKey, taskStore, isMultiPage = false, theme = '' } = this.props;
     const { detailId, detailType, detailVisible, partitionPlan, cycleTasks, tasks } = this.state;
     const taskTabType = pageKey || taskStore?.taskPageType;
     const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
@@ -299,17 +300,17 @@ class TaskManaerContent extends React.Component<IProps, IState> {
           onDetailVisible={this.handleDetailVisible}
           onReloadList={this.reloadList}
         />
-        <AsyncTaskCreateModal projectId={projectId} />
+        <AsyncTaskCreateModal projectId={projectId} theme={theme} />
         <DataMockerTaskCreateModal projectId={projectId} />
         <ExportTaskCreateModal projectId={projectId} />
         <ImportTaskCreateModal projectId={projectId} />
         <PartitionTaskCreateModal projectId={projectId} />
-        <SQLPlanTaskCreateModal projectId={projectId} />
+        <SQLPlanTaskCreateModal projectId={projectId} theme={theme} />
         <ShadowSyncTaskCreateModal projectId={projectId} />
         <DataArchiveTaskCreateModal projectId={projectId} />
         <DataClearTaskCreateModal projectId={projectId} />
         <AlterDDLTaskCreateModal projectId={projectId} />
-        <ResultSetExportTask projectId={projectId} />
+        <ResultSetExportTask projectId={projectId} theme={theme} />
       </>
     );
   }
