@@ -88,7 +88,7 @@ const getConnectionColumns = (params: {
       filterIcon: <FilterOutlined />,
       filters: jobFilter,
       onFilter: (value: string, record) => {
-        return value === record.jobGroup;
+        return isSqlPlan ? value === SubTaskType.ASYNC : value === record.jobGroup;
       },
       render: (jobGroup) => {
         return TaskLabelMap[taskType][isSqlPlan ? SubTaskType.ASYNC : jobGroup];

@@ -376,6 +376,7 @@ const ManualRule = ({
           onChange={(e) => setColumnName(e)}
           onDropdownVisibleChange={async (visible: boolean) => {
             if (visible) {
+              setColumnName('');
               const { manual = [] } = await formRef.getFieldsValue();
               await initColumn(tableName, manual, false);
             }
@@ -384,7 +385,7 @@ const ManualRule = ({
         >
           {columnOptions
             ?.filter((option) =>
-              (option?.label ?? '').toLowerCase().includes(columnName.toLowerCase()),
+              (option?.label ?? '')?.toLowerCase()?.includes(columnName?.toLowerCase()),
             )
             ?.map(({ label = undefined, value = undefined, disabled = false }, index) => (
               <Select.Option value={value} key={index} disabled={disabled}>

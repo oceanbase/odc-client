@@ -165,13 +165,14 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, databaseId, executionStrategy, executionTime, parameters } = task;
+      const { type, databaseId, executionStrategy, executionTime, parameters, description } = task;
       const res = await createTask({
         taskType: type,
         databaseId,
         executionStrategy,
         executionTime,
         parameters,
+        description,
       });
 
       if (res) {
