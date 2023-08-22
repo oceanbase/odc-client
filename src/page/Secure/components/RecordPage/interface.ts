@@ -133,6 +133,8 @@ export const AuditEventMetaMap = {
   [AuditEventType.PROJECT_MANAGEMENT]: formatMessage({
     id: 'odc.components.RecordPage.interface.ProjectManagement',
   }), //项目管理
+  // 审计事件
+  [AuditEventType.EXPORT_RESULT_SET]: '导出结果集',
 };
 
 export const AuditEventActionMap = {
@@ -580,6 +582,12 @@ export const AuditEventActionMap = {
   [AuditEventActionType.CREATE_PROJECT]: formatMessage({
     id: 'odc.components.RecordPage.interface.CreateAProject',
   }), //创建项目
+  // 审计事件操作
+  [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: '创建导出结果集任务',
+  [AuditEventActionType.APPROVE_EXPORT_RESULT_SET_TASK]: '同意导出结果集任务',
+  [AuditEventActionType.REJECT_EXPORT_RESULT_SET_TASK]: '拒绝导出结果集任务',
+  [AuditEventActionType.EXECUTE_EXPORT_RESULT_SET_TASK]: '执行结果集任务',
+  [AuditEventActionType.STOP_EXPORT_RESULT_SET_TASK]: '停止导出结果集任务',
 };
 
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
