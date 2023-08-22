@@ -27,7 +27,7 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
       fileName: file.name,
     },
   });
-  if (!uploadMeta) {
+  if (!uploadMeta?.data) {
     return null;
   }
   const {
