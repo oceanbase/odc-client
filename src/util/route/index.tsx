@@ -16,13 +16,24 @@
 
 import login from '@/store/login';
 
-export function gotoSQLWorkspace(projectId?: number, datasourceId?: number, databaseId?: number) {
-  window.open(
+export function gotoSQLWorkspace(
+  projectId?: number,
+  datasourceId?: number,
+  databaseId?: number,
+  currentPage?: boolean,
+) {
+  const url =
     location.origin +
-      location.pathname +
-      `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${datasourceId || ''}&databaseId=${
-        databaseId || ''
-      }`,
-    'sqlworkspace' + '%' + login.organizationId,
-  );
+    location.pathname +
+    `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${datasourceId || ''}&databaseId=${
+      databaseId || ''
+    }`;
+
+  const name = 'sqlworkspace' + '%' + login.organizationId;
+  if (currentPage) {
+    location.href = url;
+    window.name = name;
+    return;
+  }
+  window.open(url, name);
 }
