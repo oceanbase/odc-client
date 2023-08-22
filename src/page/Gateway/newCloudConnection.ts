@@ -181,5 +181,5 @@ export const action = async (config: INewCloudConnection) => {
     passwordSaved: true,
     password: password,
   });
-  gotoSQLWorkspace(null, targetConnection?.id, null);
+  gotoSQLWorkspace(null, targetConnection?.id, null, true);
 };
