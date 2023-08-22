@@ -16,12 +16,12 @@
     "dev:client": "concurrently \"UMI_ENV=client npm run dev\" \"npm run build-main-dev\"",
     "start-electron": "electron --inspect=5858 -w ./dist/main/main.js",
     "analyze": "ANALYZE=1 max build",
-    "dev": "node scripts/initPlugins.js && cross-env NODE_OPTIONS=--max_old_space_size=6096 max dev",
+    "dev": "node scripts/plugin/initPlugins.js && cross-env NODE_OPTIONS=--max_old_space_size=6096 max dev",
     "test": "max test",
     "cov": "max test --coverage",
-    "build:odc": "node scripts/initPlugins.js && npm run updateDoc && cross-env NODE_OPTIONS=--max_old_space_size=6096 max build",
-    "build:client": "node scripts/initPlugins.js && cross-env NODE_OPTIONS=--max_old_space_size=6096 UMI_ENV=client npm run build:odc && npm run build-main-prod",
-    "buildNoDoc": "node scripts/initPlugins.js && cross-env NODE_OPTIONS=--max_old_space_size=6096 max build",
+    "build:odc": "node scripts/plugin/initPlugins.js && npm run updateDoc && cross-env NODE_OPTIONS=--max_old_space_size=6096 max build",
+    "build:client": "node scripts/plugin/initPlugins.js && cross-env NODE_OPTIONS=--max_old_space_size=6096 UMI_ENV=client npm run build:odc && npm run build-main-prod",
+    "buildNoDoc": "node scripts/plugin/initPlugins.js && cross-env NODE_OPTIONS=--max_old_space_size=6096 max build",
     "prettier": "prettier --write 'src/**/*.{js,jsx,tsx,ts,less,md,json}'",
     "type-check": "tsc --noEmit",
     "must": "node --max-old-space-size=8192 ./scripts/must.js",
@@ -35,7 +35,7 @@
     "pack-client:linux_aarch64": "node ./scripts/client/build.js linux_aarch64",
     "pack-client:windows": "node ./scripts/client/build.js win",
     "updateDoc": "node ./scripts/pulldoc.js",
-    "postinstall": "node scripts/initPlugins.js && max setup"
+    "postinstall": "node scripts/plugin/initPlugins.js && max setup"
   },
   "lint-staged": {
     "*.{js,jsx,less,md,json}": [

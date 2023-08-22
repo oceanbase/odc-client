@@ -27,6 +27,7 @@ import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
 import { useEffect, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
+import { haveOCP } from '@/util/env';
 
 interface IProps {
   visible: boolean;
@@ -168,7 +169,7 @@ export default function NewDatasourceDrawer({
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          {isEdit ? (
+          {isEdit && !haveOCP() ? (
             <Button onClick={copyUri}>
               {
                 formatMessage({
