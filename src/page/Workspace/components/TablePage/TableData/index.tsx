@@ -125,6 +125,7 @@ class TableData extends React.Component<
       );
       let resultSet = generateResultSetColumns([data], session?.connection?.dialectType)?.[0];
       if (resultSet) {
+        this._resultSetKey = generateUniqKey();
         this.setState({
           resultSet,
         });
@@ -302,8 +303,13 @@ class TableData extends React.Component<
 
   render() {
     const { tableName, pageKey, table, settingStore, session } = this.props;
-    const { dataLoading, resultSet, showDataExecuteSQLModal, updateDataDML, isEditing } =
-      this.state;
+    const {
+      dataLoading,
+      resultSet,
+      showDataExecuteSQLModal,
+      updateDataDML,
+      isEditing,
+    } = this.state;
 
     return (
       <Spin spinning={dataLoading || !resultSet}>

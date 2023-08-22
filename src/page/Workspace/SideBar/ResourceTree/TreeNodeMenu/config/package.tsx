@@ -201,7 +201,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
             );
 
             const openedPages = pageStore.pages.filter(
-              (p) => p.params.packageName === pkg.packageName,
+              (p) =>
+                p.params.packageName === pkg.packageName &&
+                session?.database?.databaseId === p.params.databaseId,
             );
             if (openedPages.length) {
               for (let p of openedPages) {

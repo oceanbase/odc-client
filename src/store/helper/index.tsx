@@ -67,9 +67,13 @@ export function generateResultSetColumns(
         rows: r.rows?.map((row, i) => {
           return row.reduce(
             (newRowMap, value, rowIdx) => {
-              const columnKey = columns[rowIdx].key;
+              const column = columns[rowIdx];
+              const columnKey = column.key;
               const isNlsColumnType = isNlsColumn(columns[rowIdx]?.columnType, dbMode);
-              if (isNlsColumnType) {
+              if (isNlsColumnType && !column.masked) {
+                /**
+                 * 脱敏之后的当字符串处理
+                 */
                 newRowMap[getNlsValueKey(columnKey)] = value;
                 newRowMap[columnKey] = (value as INlsObject)?.formattedContent;
               } else {

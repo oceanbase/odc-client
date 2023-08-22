@@ -70,8 +70,8 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
         },
       ),
       content: formatMessage({
-        id: 'portal.connection.delete.modal.content',
-      }),
+        id: 'odc.src.page.Datasource.AfterDeletingYouWill',
+      }), //'删除后将无法访问该数据源'
       okText: formatMessage({
         id: 'app.button.ok',
       }),
