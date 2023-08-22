@@ -23,7 +23,8 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@@/*": ["src/.umi/*"]
+      "@@/*": ["src/.umi/*"],
+      "@@node_modules/*": ["node_modules/*"]
     }
   },
   "include": ["src"],

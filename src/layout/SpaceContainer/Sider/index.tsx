@@ -43,6 +43,7 @@ import Logo from './Logo';
 import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
+import odc from '@/plugins/odc';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -152,21 +153,23 @@ const Sider: React.FC<IProps> = function (props) {
               })} /*安全规范*/
             />
           </Link>
-          <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
-            <Link
-              to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}
-            >
-              <MenuItem
-                key={IPageType.ExternalIntegration}
-                selected={selected === IPageType.ExternalIntegration}
-                icon={ForkOutlined}
-                collapsed={collapsed}
-                label={formatMessage({
-                  id: 'odc.SpaceContainer.Sider.ExternalIntegration',
-                })} /*外部集成*/
-              />
-            </Link>
-          </Acess>
+          {odc.appConfig?.manage?.integration?.enable ? (
+            <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
+              <Link
+                to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}
+              >
+                <MenuItem
+                  key={IPageType.ExternalIntegration}
+                  selected={selected === IPageType.ExternalIntegration}
+                  icon={ForkOutlined}
+                  collapsed={collapsed}
+                  label={formatMessage({
+                    id: 'odc.SpaceContainer.Sider.ExternalIntegration',
+                  })} /*外部集成*/
+                />
+              </Link>
+            </Acess>
+          ) : null}
         </Space>
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>

@@ -3,6 +3,7 @@ import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+import path from 'path';
 
 const version = getVersion();
 console.log('git last commit: ', version);
@@ -91,6 +92,9 @@ const config = {
   },
   svgr: false,
   svgo: false,
+  alias: {
+    "@@node_modules": path.resolve(process.cwd(), 'node_modules')
+  },
   chainWebpack(config) {
     config.performance.hints('warning');
     config.module.rules.delete('svg');

@@ -53,6 +53,9 @@ export default {
     showRAMAlert: (setting) => {
       return false;
     },
+    integration: {
+      enable: true,
+    },
   },
   connection: {
     sys: true,
