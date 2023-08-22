@@ -439,7 +439,6 @@ export async function getAuditList(params?: {
   page?: number;
   size?: number;
 }): Promise<IResponseData<IAudit>> {
-  console.log({ params });
   const result = await request.get('/api/v2/audit/events', {
     params,
   });
