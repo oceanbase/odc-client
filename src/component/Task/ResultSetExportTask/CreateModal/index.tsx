@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -14,7 +13,7 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { formatMessage } from '@/util/intl';
 import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -41,6 +40,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
+import { ChineseAndEnglishAndNumberAndUnderline } from '@/util/validRule';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -223,7 +223,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Text type="secondary">
                 {
                   formatMessage({
-                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    id:
+                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>
@@ -292,6 +293,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheFile',
               }), //'请填写文件名称'
             },
+            ChineseAndEnglishAndNumberAndUnderline,
           ]}
         >
           <Input

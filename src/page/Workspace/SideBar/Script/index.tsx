@@ -26,6 +26,7 @@ import React, { useRef, useState } from 'react';
 import SideTabs from '../components/SideTabs';
 import ScriptFile from './ScriptFile';
 import Snippet from './Snippet';
+import OSSUpload from '@/component/OSSDragger/Upload';
 
 const Script: React.FC<{}> = function () {
   const snippetRef = useRef(null);
@@ -53,7 +54,7 @@ const Script: React.FC<{}> = function () {
   return (
     <>
       <div style={{ display: 'none', pointerEvents: 'none' }}>
-        <Upload
+        <OSSUpload
           showUploadList={false}
           name="file"
           multiple={true}
@@ -74,9 +75,10 @@ const Script: React.FC<{}> = function () {
             }
             setUploadFiles(info.fileList.filter((file) => file.status !== 'done'));
           }}
+          uploadFileOpenAPIName="UploadScript"
         >
           <span ref={uploadRef}>a</span>
-        </Upload>
+        </OSSUpload>
       </div>
       <SideTabs
         tabs={[
