@@ -41,21 +41,19 @@ export default inject('userStore')(
     const isPersonal =
       userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
       SpaceType.PRIVATE;
-    const {
-      data: project,
-      loading: projectLoading,
-      run: fetchProjects,
-    } = useRequest(listProjects, {
-      manual: true,
-    });
+    const { data: project, loading: projectLoading, run: fetchProjects } = useRequest(
+      listProjects,
+      {
+        manual: true,
+      },
+    );
 
-    const {
-      data: datasourceList,
-      loading: datasourceLoading,
-      run: fetchDatasource,
-    } = useRequest(getDataSourceGroupByProject, {
-      manual: true,
-    });
+    const { data: datasourceList, loading: datasourceLoading, run: fetchDatasource } = useRequest(
+      getDataSourceGroupByProject,
+      {
+        manual: true,
+      },
+    );
 
     const {
       data: allDatasourceList,
@@ -65,14 +63,12 @@ export default inject('userStore')(
       manual: true,
     });
 
-    const {
-      data: databases,
-      loading: databaseLoading,
-      run: fetchDatabase,
-      reset,
-    } = useRequest(listDatabases, {
-      manual: true,
-    });
+    const { data: databases, loading: databaseLoading, run: fetchDatabase, reset } = useRequest(
+      listDatabases,
+      {
+        manual: true,
+      },
+    );
 
     useEffect(() => {
       if (visible) {
@@ -260,6 +256,11 @@ export default inject('userStore')(
                             return (
                               <Select.Option value={item.id} key={item.id}>
                                 {item.name}
+                                <span
+                                  style={{ color: 'var(--text-color-placeholder)', marginLeft: 5 }}
+                                >
+                                  {item.dataSource?.name}
+                                </span>
                               </Select.Option>
                             );
                           })}

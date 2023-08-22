@@ -54,6 +54,9 @@ export default function useColumns(
   });
   return useMemo(() => {
     return columns?.map((column) => {
+      const isNls = isNlsColumn(column.columnType, dbMode);
+      const isMasked = column.masked;
+      const isNlsAndMasked = isNls && isMasked;
       return {
         key: column.key,
         name: column.name,
@@ -62,7 +65,10 @@ export default function useColumns(
         resizable: true,
         sortable: isNlsColumn(column.columnType, dbMode) ? false : true,
         filterable: isNlsColumn(column.columnType, dbMode) ? false : true,
-        editable: !column.readonly && isColumnEditable(column.columnType),
+        /**
+         * 时间列脱敏之后不允许编辑，避免数据结构对不上
+         */
+        editable: !column.readonly && isColumnEditable(column.columnType) && !isNlsAndMasked,
         editor: getEditor(column.columnType, dbMode),
         formatter: getCellFormatter(column.columnType, enableEdit, supportBlob, dbMode),
       };

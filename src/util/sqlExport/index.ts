@@ -18,6 +18,7 @@ import { ConnectionMode, ResultSetColumn } from '@/d.ts';
 import { generateAndDownloadFile, getQuoteTableName } from '../utils';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
+import { isNlsColumn } from '../column';
 
 export default function exportToSQL(
   selectData: any[][],
@@ -46,6 +47,10 @@ export default function exportToSQL(
         .map((item, i: number) => {
           const columnName = headerColumnNames[i];
           const column = columnMap[columnName];
+          const isMasked = column.masked;
+          if (isMasked) {
+            return item || 'NULL';
+          }
           return isMySQL
             ? mysqlConvertValueToSQLString(item, column.columnType)
             : oracleConvertValueToSQLString(item, column.columnType);

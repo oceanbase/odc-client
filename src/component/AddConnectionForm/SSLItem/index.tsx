@@ -35,7 +35,7 @@ const SSLItem: React.FC<IProps> = function () {
             }
 
             <a
-              href={getLocalDocs('1.web-odc-create-private-connection.html')}
+              href={getLocalDocs('100.create-a-personal-connection.html')}
               target={'_blank'}
               onClick={(e) => {
                 e.stopPropagation();
