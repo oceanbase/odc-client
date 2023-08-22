@@ -175,7 +175,10 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           name={'type'}
           noStyle={haveOCP() ? true : false}
         >
-          <Select disabled={isEdit} style={{ width: 208, display: haveOCP() ? 'none' : 'unset' }}>
+          <Select
+            disabled={isEdit}
+            style={{ width: 208, display: haveOCP() ? 'none' : 'inline-block' }}
+          >
             <Option value={ConnectType.OB_MYSQL}>OceanBase MySQL</Option>
             <Option value={ConnectType.OB_ORACLE}>OceanBase Oracle</Option>
             {!haveOCP() && (
