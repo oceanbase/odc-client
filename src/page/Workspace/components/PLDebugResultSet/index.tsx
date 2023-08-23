@@ -199,11 +199,12 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
                 return (
                   <div className={styles.textFormatter}>
                     {text}
-                    {record?.dataType?.toLowerCase() === 'sys_refcursor' && (
-                      <div className={styles.more}>
-                        <CursorCell session={session} record={record} />
-                      </div>
-                    )}
+                    {record?.dataType?.toLowerCase() === 'sys_refcursor' &&
+                      !!record?.cursorResultSet && (
+                        <div className={styles.more}>
+                          <CursorCell session={session} record={record} />
+                        </div>
+                      )}
                   </div>
                 );
               },

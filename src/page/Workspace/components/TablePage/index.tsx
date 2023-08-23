@@ -74,7 +74,7 @@ export enum PropsTab {
 
 const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, settingStore }) {
   const [table, setTable] = useState<Partial<ITableModel>>(null);
-  const [version, setVersion] = useState(0);
+  const version = useRef(0);
   const [topTab, setTopTab] = useState(TopTab.PROPS);
   const [propsTab, setPropsTab] = useState(PropsTab.INFO);
   const executeRef = useRef<{
@@ -91,8 +91,8 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
     }
     const newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
     if (newTable) {
+      version.current++;
       setTable(newTable);
-      setVersion(version + 1);
       /**
        * 加一个校验的逻辑，避免名字不同步
        */
@@ -284,13 +284,13 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
               </Tabs>
             </TabPane>
             <TabPane key={TopTab.DATA} tab="">
-              {version > 0 ? (
+              {version.current > 0 ? (
                 <TableData
                   table={oldTable}
                   session={session}
                   tableName={table?.info.tableName}
                   pageKey={pageKey}
-                  key={version}
+                  key={version.current}
                 />
               ) : null}
             </TabPane>

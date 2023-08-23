@@ -28,7 +28,7 @@ interface IProps extends Omit<InputProps, 'onChange'> {
 }
 
 function isUnfinishedDecimal(v: string) {
-  return /^\-?[\d]+\.[0]*$/.test(v);
+  return /^\-?[\d]+\.(\d*?[0]+)?$/.test(v);
 }
 
 const InputBigNumber: React.FC<IProps> = React.forwardRef(function (props, ref) {
