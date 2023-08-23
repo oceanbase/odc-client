@@ -15,7 +15,6 @@
  */
 
 import PageLoading from '@/component/PageLoading';
-import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
 import { Outlet, useLocation, useNavigate } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
@@ -34,9 +33,7 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isPersonal =
-      userStore.organizations?.find((item) => item.id === organizationId)?.type ===
-      SpaceType.PRIVATE;
+    const isPersonal = userStore.isPrivateSpace();
     if (isPersonal && location.pathname?.indexOf('sqlworkspace') === -1) {
       /**
        * 私人空间禁止

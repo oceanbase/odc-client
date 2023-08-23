@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-import { BulbOutlined, UserOutlined } from '@ant-design/icons';
-import React, { useContext } from 'react';
-
-import { TaskPageType } from '@/d.ts';
+import { getFirstEnabledTask } from '@/component/Task/helper';
 import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
 import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
 import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
-import { openTasksPage } from '@/store/helper/page';
-import { formatMessage } from '@/util/intl';
-import { Divider, Space } from 'antd';
-import ActivityBarButton from './ActivityBarButton';
-import styles from './index.less';
-import Logo from './Logo';
-import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
-
 import SpaceSelect from '@/layout/SpaceContainer/Sider/SpaceSelect';
+import { openTasksPage } from '@/store/helper/page';
 import DBSvg from '@/svgr/database_outline.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
 import ManagerSvg from '@/svgr/operate.svg';
 import CodeSvg from '@/svgr/Snippet.svg';
 import { isClient } from '@/util/env';
+import { formatMessage } from '@/util/intl';
+import { BulbOutlined, UserOutlined } from '@ant-design/icons';
+import { Divider, Space } from 'antd';
+import React, { useContext } from 'react';
 import ActivityBarContext from '../context/ActivityBarContext';
+import ActivityBarButton from './ActivityBarButton';
+import styles from './index.less';
+import Logo from './Logo';
+import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
 
 interface IProps {}
 
@@ -101,7 +99,10 @@ const ActivityBar: React.FC<IProps> = function () {
                       return;
                     }
                     if (item.key === ActivityBarItemType.Task) {
-                      openTasksPage(TaskPageType.CREATED_BY_CURRENT_USER);
+                      const firstEnabledTask = getFirstEnabledTask();
+                      if (firstEnabledTask) {
+                        openTasksPage(firstEnabledTask?.value);
+                      }
                     }
                     context?.setActiveKey(item.key);
                   }}

@@ -17,6 +17,7 @@
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
+import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -26,7 +27,6 @@ import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
-import VariableConfig from './VariableConfig';
 
 const { Panel } = Collapse;
 
@@ -77,7 +77,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         })} /*变量配置*/
         content={
           <div style={{ margin: '8px 0 12px' }}>
-            <VariableConfig variables={jobParameters?.variables} />
+            <VariableConfigTable variables={jobParameters?.variables} />
           </div>
         }
         direction="column"

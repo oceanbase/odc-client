@@ -38,22 +38,19 @@ import type {
 } from '@/d.ts';
 import { TaskExecStrategy, TaskPageType, TaskStatus, TaskType } from '@/d.ts';
 import type { PageStore } from '@/store/page';
-import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
-import task from '@/store/task';
 import { isClient } from '@/util/env';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Divider, Menu } from 'antd';
-import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { FixedType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
-import { getTaskTypeList, isCycleTaskPage } from '../../helper';
+import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
 const { RangePicker } = DatePicker;
@@ -138,7 +135,6 @@ export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
   taskStore?: TaskStore;
-  settingStore?: SettingStore;
   pageStore?: PageStore;
   taskTabType?: TaskPageType;
   taskList: IResponseData<
@@ -154,19 +150,10 @@ interface IProps {
 }
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
-  'settingStore',
   'pageStore',
 )(
   observer((props) => {
-    const {
-      taskStore,
-      settingStore,
-      pageStore,
-      taskTabType,
-      tableRef,
-      taskList,
-      isMultiPage,
-    } = props;
+    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
     const currentTask = taskList;
@@ -181,25 +168,6 @@ const TaskTable: React.FC<IProps> = inject(
     const [listParams, setListParams] = useState(null);
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
-    const fileExpireHours = settingStore?.serverSystemInfo?.fileExpireHours ?? null;
-    const alertMessage = fileExpireHours
-      ? formatMessage(
-          {
-            id: 'odc.TaskManagePage.component.TaskTable.TheAttachmentUploadedByThe',
-          },
-          {
-            fileMaxRetainHours: fileExpireHours,
-          },
-        )
-      : //`创建任务上传的附件保留时间为 ${fileMaxRetainHours}小时`
-        null;
-    const taskTypeList = getTaskTypeList(settingStore, task);
-    const taskTypes = flatten(
-      taskTypeList?.map((a) => {
-        return a.group || [];
-      }),
-    );
-    const taskLabelInfo = taskTypes.find((item) => item.value === taskTabType);
     const columns = initColumns(listParams);
     const { loop: loadData, destory } = useLoop((count) => {
       return async (args: ITableLoadOptions) => {
@@ -436,7 +404,9 @@ const TaskTable: React.FC<IProps> = inject(
       TaskPageType.APPROVE_BY_CURRENT_USER,
       TaskPageType.CREATED_BY_CURRENT_USER,
     ].includes(taskTabType);
-    const menus = taskTypeList?.filter((item) => item.groupName);
+    const menus = getTaskGroupLabels()?.filter((item) => !!item.groupName);
+    const activeTaskLabel = getTaskLabelByType(taskTabType);
+
     return (
       <CommonTable
         ref={tableRef}
@@ -486,15 +456,7 @@ const TaskTable: React.FC<IProps> = inject(
                 }
               : {
                   type: IOperationOptionType.button,
-                  content: formatMessage(
-                    {
-                      id: 'odc.component.TaskTable.CreateTasklabelinfolabel',
-                    },
-                    {
-                      taskLabelInfoLabel: taskLabelInfo.label,
-                    },
-                  ),
-                  //`新建${taskLabelInfo.label}`
+                  content: `新建${activeTaskLabel}`,
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskTabType);

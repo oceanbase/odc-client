@@ -82,7 +82,7 @@ export class TaskStore {
    * task page 的 tab
    */
   @observable
-  public taskPageType: TaskPageType = TaskPageType.EXPORT;
+  public taskPageType: TaskPageType;
 
   /**
    * 任务一级筛选范围

@@ -303,13 +303,8 @@ class TableData extends React.Component<
 
   render() {
     const { tableName, pageKey, table, settingStore, session } = this.props;
-    const {
-      dataLoading,
-      resultSet,
-      showDataExecuteSQLModal,
-      updateDataDML,
-      isEditing,
-    } = this.state;
+    const { dataLoading, resultSet, showDataExecuteSQLModal, updateDataDML, isEditing } =
+      this.state;
 
     return (
       <Spin spinning={dataLoading || !resultSet}>

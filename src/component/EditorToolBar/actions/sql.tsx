@@ -18,7 +18,6 @@ import DelimiterSelect from '@/component/DelimiterSelect';
 import SQLConfig from '@/component/SQLConfig';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
-import { SpaceType } from '@/d.ts/_index';
 import { SQLPage } from '@/page/Workspace/components/SQLPage';
 import login from '@/store/login';
 import sqlStore from '@/store/sql';
@@ -277,9 +276,7 @@ const sqlActions: ToolBarActions = {
       if (!ctx.getSession?.()) {
         return false;
       }
-      return (
-        login.organizations?.find((o) => o.id === login.organizationId)?.type !== SpaceType.PRIVATE
-      );
+      return !login.isPrivateSpace();
     },
     async action(ctx: any) {
       await ctx.doSQLLint();

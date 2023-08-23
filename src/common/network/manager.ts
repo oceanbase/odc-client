@@ -39,7 +39,6 @@ import {
   IResourceRole,
   IResponseData,
   ISSOConfig,
-  IUserConfig,
 } from '@/d.ts';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';

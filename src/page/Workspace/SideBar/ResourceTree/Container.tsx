@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { SpaceType } from '@/d.ts/_index';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
@@ -32,9 +31,7 @@ export default inject('userStore')(
     const projectRef = useRef<any>();
     const [addVisible, setAddVisible] = useState(false);
     const resourcetreeContext = useContext(ResourceTreeContext);
-    const isPersonal =
-      userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
-      SpaceType.PRIVATE;
+    const isPersonal = userStore?.isPrivateSpace();
     const datasource: ITab = {
       title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.DataSource' }), //数据源
       key: ResourceTreeTab.datasource,
