@@ -17,6 +17,7 @@
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
+import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -27,7 +28,7 @@ import React from 'react';
 import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
-import VariableConfig from './VariableConfig';
+
 const { Text } = Typography;
 const { Panel } = Collapse;
 interface IProps {
@@ -109,7 +110,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
               margin: '8px 0 12px',
             }}
           >
-            <VariableConfig variables={jobParameters?.variables} />
+            <VariableConfigTable variables={jobParameters?.variables} />
           </div>
         }
         direction="column"

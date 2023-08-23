@@ -18,7 +18,6 @@ import { ConnectionMode, ResultSetColumn } from '@/d.ts';
 import { generateAndDownloadFile, getQuoteTableName } from '../utils';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
-import { isNlsColumn } from '../column';
 
 export default function exportToSQL(
   selectData: any[][],

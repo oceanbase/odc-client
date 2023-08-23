@@ -15,10 +15,11 @@
  */
 
 import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
-import { SettingStore } from '@/store/setting';
-import { TaskStore } from '@/store/task';
+import login from '@/store/login';
+import settingStore from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import { flatten } from 'lodash';
 export const isCycleTask = (type: TaskType) => {
   return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
 };
@@ -43,10 +44,8 @@ export const isCycleTaskPage = (type: TaskPageType) => {
     type,
   );
 };
-export function getTaskTypeList(
-  settingStore: SettingStore,
-  task?: TaskStore,
-): {
+
+interface ITaskGroupLabel {
   groupName: string;
   icon?: React.ReactNode;
   group: {
@@ -54,7 +53,10 @@ export function getTaskTypeList(
     label: string;
     enabled: boolean;
   }[];
-}[] {
+}
+
+export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
+  const isPersonal = login?.isPrivateSpace();
   return [
     {
       groupName: '',
@@ -71,7 +73,7 @@ export function getTaskTypeList(
             id: 'odc.component.TaskPopover.PendingMyApproval',
           }),
           value: TaskPageType.APPROVE_BY_CURRENT_USER,
-          enabled: !isClient(),
+          enabled: !isClient() && !isPersonal,
         },
       ],
     },
@@ -198,4 +200,16 @@ export function getTaskTypeList(
     //   ],
     // },
   ];
+};
+
+export function getTaskLabels() {
+  return flatten(getTaskGroupLabels()?.map((item) => item?.group));
+}
+
+export function getFirstEnabledTask() {
+  return getTaskLabels()?.find((item) => item?.enabled);
+}
+
+export function getTaskLabelByType(type: TaskPageType) {
+  return getTaskLabels()?.find((item) => item.value === type)?.label;
 }

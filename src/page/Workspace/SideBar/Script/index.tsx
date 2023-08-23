@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import OSSUpload from '@/component/OSSDragger/Upload';
 import login from '@/store/login';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons';
 import { getLocale } from '@umijs/max';
-import { message, Upload } from 'antd';
+import { message } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
 import React, { useRef, useState } from 'react';
 import SideTabs from '../components/SideTabs';
 import ScriptFile from './ScriptFile';
 import Snippet from './Snippet';
-import OSSUpload from '@/component/OSSDragger/Upload';
 
 const Script: React.FC<{}> = function () {
   const snippetRef = useRef(null);

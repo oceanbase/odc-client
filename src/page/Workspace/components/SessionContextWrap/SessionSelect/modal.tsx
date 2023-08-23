@@ -18,7 +18,6 @@ import { getConnectionList, getDataSourceGroupByProject } from '@/common/network
 import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
-import { SpaceType } from '@/d.ts/_index';
 import login, { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -38,22 +37,22 @@ export default inject('userStore')(
   observer(function SelectModal({ visible, dialectTypes, userStore, close }: IProps) {
     const context = useContext(SessionContext);
     const [form] = Form.useForm();
-    const isPersonal =
-      userStore?.organizations?.find((i) => i.id === userStore?.organizationId)?.type ===
-      SpaceType.PRIVATE;
-    const { data: project, loading: projectLoading, run: fetchProjects } = useRequest(
-      listProjects,
-      {
-        manual: true,
-      },
-    );
+    const isPersonal = userStore?.isPrivateSpace();
+    const {
+      data: project,
+      loading: projectLoading,
+      run: fetchProjects,
+    } = useRequest(listProjects, {
+      manual: true,
+    });
 
-    const { data: datasourceList, loading: datasourceLoading, run: fetchDatasource } = useRequest(
-      getDataSourceGroupByProject,
-      {
-        manual: true,
-      },
-    );
+    const {
+      data: datasourceList,
+      loading: datasourceLoading,
+      run: fetchDatasource,
+    } = useRequest(getDataSourceGroupByProject, {
+      manual: true,
+    });
 
     const {
       data: allDatasourceList,
@@ -63,12 +62,14 @@ export default inject('userStore')(
       manual: true,
     });
 
-    const { data: databases, loading: databaseLoading, run: fetchDatabase, reset } = useRequest(
-      listDatabases,
-      {
-        manual: true,
-      },
-    );
+    const {
+      data: databases,
+      loading: databaseLoading,
+      run: fetchDatabase,
+      reset,
+    } = useRequest(listDatabases, {
+      manual: true,
+    });
 
     useEffect(() => {
       if (visible) {

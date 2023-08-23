@@ -17,6 +17,7 @@
 import { AccessResourceTypePermission, Acess, createPermission } from '@/component/Acess';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
+import odc from '@/plugins/odc';
 import { TaskStore } from '@/store/task';
 import LinkOutlined from '@/svgr/icon_connection.svg';
 import TaskSvg from '@/svgr/icon_task.svg';
@@ -32,18 +33,17 @@ import Icon, {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { Link, useLocation } from '@umijs/max';
 import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from '@umijs/max';
 import HelpItem from './HelpItem';
 import styles from './index.less';
 import Logo from './Logo';
 import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
-import odc from '@/plugins/odc';
 
 interface IProps {
   taskStore?: TaskStore;

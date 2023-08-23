@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { formatMessage } from '@/util/intl';
 import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -34,13 +33,14 @@ import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { TaskStore } from '@/store/task';
+import { formatMessage } from '@/util/intl';
+import { ChineseAndEnglishAndNumberAndUnderline } from '@/util/validRule';
 import { Button, Col, Drawer, Form, Input, Modal, Row, Select, Space, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
-import { ChineseAndEnglishAndNumberAndUnderline } from '@/util/validRule';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -142,10 +142,16 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
   useEffect(() => {
-    if (initSql) {
-      handleSqlChange(initSql);
+    if (resultSetExportData) {
+      const { sql, tableName, databaseId } = resultSetExportData;
+      handleSqlChange(sql);
+      form.setFieldsValue({
+        tableName,
+        databaseId,
+      });
     }
-  }, [initSql]);
+  }, [resultSetExportData]);
+
   return (
     <Drawer
       destroyOnClose
@@ -223,8 +229,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Text type="secondary">
                 {
                   formatMessage({
-                    id:
-                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>

@@ -14,41 +14,28 @@
  * limitations under the License.
  */
 
-import { TaskPageScope, TaskPageType } from '@/d.ts';
+import { TaskPageType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { PageStore } from '@/store/page';
-import { SettingStore } from '@/store/setting';
 import { TaskStore } from '@/store/task';
 import Icon from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
-import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect } from 'react';
-import { getTaskTypeList } from './helper';
+import { getFirstEnabledTask, getTaskGroupLabels } from './helper';
 
 import styles from './index.less';
 
 interface IProps {
-  settingStore?: SettingStore;
   taskStore?: TaskStore;
   pageStore?: PageStore;
   className?: string;
   isPage?: boolean;
 }
 
-const Sider: React.FC<IProps> = function ({
-  settingStore,
-  taskStore,
-  pageStore,
-  className,
-  isPage,
-}) {
-  const { taskPageScope } = taskStore;
-  const taskTypeList = getTaskTypeList(settingStore, taskStore);
-  const firstEnabledTask = flatten(taskTypeList?.map((taskGroup) => taskGroup?.group))?.find(
-    (item) => item?.enabled,
-  );
+const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isPage }) {
+  const firstEnabledTask = getFirstEnabledTask();
   const pageKey = isPage ? pageStore?.activePageKey : taskStore?.taskPageType;
 
   const handleClick = (value: TaskPageType) => {
@@ -59,7 +46,7 @@ const Sider: React.FC<IProps> = function ({
   };
 
   function renderTaskTypeList() {
-    return taskTypeList
+    return getTaskGroupLabels()
       ?.map((taskGroup) => {
         const { groupName, icon, group } = taskGroup;
         const tasks = group?.filter((task) => task.enabled);
@@ -98,11 +85,9 @@ const Sider: React.FC<IProps> = function ({
   }
 
   useEffect(() => {
-    if (taskPageScope !== TaskPageScope.CREATED_BY_CURRENT_USER) {
-      taskStore.changeTaskPageType(firstEnabledTask.value);
-    }
+    taskStore.changeTaskPageType(firstEnabledTask?.value);
     return () => {
-      taskStore.changeTaskPageType(firstEnabledTask.value);
+      taskStore.changeTaskPageType(firstEnabledTask?.value);
       taskStore.changeTaskPageScope(null);
     };
   }, []);
@@ -110,4 +95,4 @@ const Sider: React.FC<IProps> = function ({
   return <div className={`${styles.taskSider} ${className}`}>{renderTaskTypeList()}</div>;
 };
 
-export default inject('settingStore', 'taskStore', 'pageStore')(observer(Sider));
+export default inject('taskStore', 'pageStore')(observer(Sider));
