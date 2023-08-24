@@ -310,9 +310,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
 
   if (
     (task?.type === TaskType.ASYNC && task.status === TaskStatus.COMPLETED) ||
-    (task?.type === TaskType.ASYNC &&
-      task.status === TaskStatus.EXECUTION_SUCCEEDED &&
-      !task?.rollbackable) ||
+    (task?.type === TaskType.ASYNC && task.status === TaskStatus.EXECUTION_SUCCEEDED) ||
     (task?.type !== TaskType.ASYNC && task.status === TaskStatus.EXECUTION_SUCCEEDED)
   ) {
     currentNodeIndex = taskFlow.length + 1;
