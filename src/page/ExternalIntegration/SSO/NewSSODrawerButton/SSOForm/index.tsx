@@ -228,12 +228,18 @@ export default inject('userStore')(
           }}
         >
           <Form.Item
-            rules={[requiredRule]}
+            rules={[
+              requiredRule,
+              {
+                max: 64,
+                message: '配置名称不超过 64 个字符',
+              },
+            ]}
             name={'name'}
             label={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.ConfigurationName',
             })} /*配置名称*/
-            help={formatMessage({
+            extra={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.TheConfigurationNameWillBe',
             })} /*配置名称将会应用于自定义登录名*/
           >
