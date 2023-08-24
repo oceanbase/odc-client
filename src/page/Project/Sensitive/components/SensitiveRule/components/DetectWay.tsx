@@ -21,6 +21,7 @@ import { Form, Input, Radio, RadioChangeEvent, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 const DetectWay = ({
   key,
   script,
@@ -221,7 +222,7 @@ const DetectWay = ({
                   }
                 </div>
                 <a
-                  href={getLocalDocs('1.data-desensitization.html')}
+                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
                   target={'_blank'}
                   onClick={(e) => {
                     e.stopPropagation();
