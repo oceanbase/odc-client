@@ -264,7 +264,6 @@ const Crontab = (props, ref) => {
               onChange={(value) => {
                 handleValueChange({
                   hour: value,
-                  dayOfWeek: [],
                   dayOfMonth: [],
                 });
               }}
