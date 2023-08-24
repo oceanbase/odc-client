@@ -19,6 +19,7 @@ import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Checkbox, Form, Space } from 'antd';
 import React from 'react';
 import SingleUpload from './SingleUploadFile';
+import odc from '@/plugins/odc';
 
 interface IProps {}
 
@@ -35,7 +36,9 @@ const SSLItem: React.FC<IProps> = function () {
             }
 
             <a
-              href={getLocalDocs('100.create-a-personal-connection.html')}
+              href={
+                odc.appConfig?.docs?.url || getLocalDocs('100.create-a-personal-connection.html')
+              }
               target={'_blank'}
               onClick={(e) => {
                 e.stopPropagation();

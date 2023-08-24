@@ -38,7 +38,9 @@ export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
  * @example sid:1000002-1:d:ZJCG:var:session
  */
 
-export function extractResourceId(id: string): {
+export function extractResourceId(
+  id: string,
+): {
   [key: string]: string;
 } {
   const r = {};
@@ -436,7 +438,7 @@ export function downloadFile(downloadUrl: string) {
    */
   window._forceRefresh = true;
   const aDom = document.createElement('a');
-  aDom.setAttribute('download', 'true');
+  aDom.setAttribute('download', '');
   aDom.setAttribute('href', downloadUrl);
   document.body.appendChild(aDom);
   aDom.click();

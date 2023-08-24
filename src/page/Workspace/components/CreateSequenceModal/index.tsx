@@ -58,7 +58,6 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
     const maxValue = getFieldValue('maxValue');
     const startValue = getFieldValue('startValue');
     const increament = getFieldValue('increament');
-    const positiveIncrement = Number(increament) > 0;
 
     if (isNil(maxValue) && isNil(value)) {
       return Promise.resolve();
@@ -73,7 +72,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
         );
       }
 
-      if (startValue !== null && !positiveIncrement && compareNumber(value, startValue) === 1) {
+      if (startValue !== null && compareNumber(value, startValue) === 1) {
         return Promise.reject(
           formatMessage({
             id: 'workspace.window.createSequence.params.minValue.validation2',
@@ -90,7 +89,6 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
     const minValue = getFieldValue('minValue');
     const startValue = getFieldValue('startValue');
     const increament = getFieldValue('increament');
-    const positiveIncrement = Number(increament) > 0;
 
     if (isNil(minValue) && isNil(value)) {
       return Promise.resolve();
@@ -105,7 +103,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
         );
       }
 
-      if (startValue !== null && positiveIncrement && compareNumber(value, startValue) === -1) {
+      if (startValue !== null && compareNumber(value, startValue) === -1) {
         return Promise.reject(
           formatMessage({
             id: 'workspace.window.createSequence.params.maxValue.validation2',
@@ -315,7 +313,8 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                             ? {
                                 required: true,
                                 message: formatMessage({
-                                  id: 'workspace.window.createSequence.params.minValue.validation.required',
+                                  id:
+                                    'workspace.window.createSequence.params.minValue.validation.required',
                                 }),
                               }
                             : null,
@@ -353,7 +352,8 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                             ? {
                                 required: true,
                                 message: formatMessage({
-                                  id: 'workspace.window.createSequence.params.maxValue.validation.required',
+                                  id:
+                                    'workspace.window.createSequence.params.maxValue.validation.required',
                                 }),
                               }
                             : null,
