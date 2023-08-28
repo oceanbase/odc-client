@@ -21,11 +21,12 @@ import { IDatabase } from '@/d.ts/database';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import SensitiveContext from '@/page/Project/Sensitive/SensitiveContext';
+import DatabaseStore from '@/store/sessionManager/database';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Select, Space } from 'antd';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import styles from './index.less';
 
 const ManualRule = ({
@@ -127,7 +128,6 @@ const ManualRule = ({
     if (!init) {
       existHomologyColumnNames = existHomologyColumnNames?.filter((cm) => cm !== columnName);
     }
-    init && setColumnName('');
     setColumnOptions(
       res?.map((r) => ({
         label: r.columnName,
@@ -141,6 +141,9 @@ const ManualRule = ({
     const { manual = [] } = await formRef.getFieldsValue();
     if (dataSourceId !== value) {
       setDataSourceId(value);
+      setDatabaseId(0);
+      setTableName('');
+      setColumnName('');
 
       manual[index] = {
         dataSource: value,
@@ -159,7 +162,8 @@ const ManualRule = ({
     const { manual = [] } = await formRef.getFieldsValue();
     if (databaseId !== value) {
       setDatabaseId(value);
-
+      setTableName('');
+      setColumnName('');
       manual[index] = {
         ...manual[index],
         database: value,
@@ -177,6 +181,7 @@ const ManualRule = ({
     const { manual = [] } = await formRef.getFieldsValue();
     if (value !== tableName) {
       setTableName(value);
+      setColumnName('');
 
       manual[index] = {
         ...manual[index],
@@ -223,6 +228,20 @@ const ManualRule = ({
     }
   };
 
+  const getTables = async (database: DatabaseStore) => {
+    if (database) {
+      await handleLoad();
+      const newTableOptions = database?.tables?.map((table) => ({
+        label: table.info.tableName,
+        value: table.info.tableName,
+      }));
+      setTableOptions(newTableOptions);
+    }
+  };
+  const handleDelete = async (index: number) => {
+    remove(index);
+  };
+
   useEffect(() => {
     initDataSources();
   }, []);
@@ -232,26 +251,12 @@ const ManualRule = ({
     }
   }, [dataSourceId]);
 
-  useEffect(() => {
-    let timer;
+  useLayoutEffect(() => {
     if (session?.database) {
-      handleLoad();
-      timer = setTimeout(() => {
-        const newTableOptions = session?.database?.tables?.map((table) => ({
-          label: table.info.tableName,
-          value: table.info.tableName,
-        }));
-        setTableOptions(newTableOptions);
-        clearTimeout(timer);
-      }, 300);
+      getTables(session?.database);
     }
-    return () => {
-      clearTimeout(timer);
-    };
   }, [session?.database]);
-  const handleDelete = async (index: number) => {
-    remove(index);
-  };
+
   return (
     <Space key={fieldKey} className={styles.formItem} align="baseline">
       <Form.Item
@@ -376,23 +381,17 @@ const ManualRule = ({
           onChange={(e) => setColumnName(e)}
           onDropdownVisibleChange={async (visible: boolean) => {
             if (visible) {
-              setColumnName('');
               const { manual = [] } = await formRef.getFieldsValue();
               await initColumn(tableName, manual, false);
             }
           }}
+          filterOption={(input, option) =>
+            // @ts-ignore
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+          options={columnOptions}
           disabled={tableOptions?.length === 0 || tableName === ''}
-        >
-          {columnOptions
-            ?.filter((option) =>
-              (option?.label ?? '')?.toLowerCase()?.includes(columnName?.toLowerCase()),
-            )
-            ?.map(({ label = undefined, value = undefined, disabled = false }, index) => (
-              <Select.Option value={value} key={index} disabled={disabled}>
-                {label}
-              </Select.Option>
-            ))}
-        </Select>
+        />
       </Form.Item>
       <Form.Item
         key={[fieldName, 'maskingAlgorithmId'].join('_')}
