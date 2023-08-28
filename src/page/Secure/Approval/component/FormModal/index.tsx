@@ -276,7 +276,7 @@ const FormModal: React.FC<IProps> = (props) => {
                     },
                   ]}
                 >
-                  <InputNumber max={240} min={0} />
+                  <InputNumber max={240} min={0} precision={1} />
                 </Form.Item>
                 <span>{formatMessage({ id: 'odc.component.FormModal.Hours' }) /*小时*/}</span>
               </Space>
@@ -295,7 +295,7 @@ const FormModal: React.FC<IProps> = (props) => {
             >
               <Space>
                 <Form.Item name="waitExecutionExpirationIntervalSeconds">
-                  <InputNumber max={240} min={0} />
+                  <InputNumber max={240} min={0} precision={1} />
                 </Form.Item>
                 <span>{formatMessage({ id: 'odc.component.FormModal.Hours' }) /*小时*/}</span>
               </Space>
@@ -322,7 +322,7 @@ const FormModal: React.FC<IProps> = (props) => {
                     },
                   ]}
                 >
-                  <InputNumber max={240} min={0} />
+                  <InputNumber max={240} min={0} precision={1} />
                 </Form.Item>
                 <span>{formatMessage({ id: 'odc.component.FormModal.Hours' }) /*小时*/}</span>
               </Space>
