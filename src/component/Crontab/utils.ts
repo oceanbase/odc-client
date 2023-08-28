@@ -274,9 +274,12 @@ export const getCronExecuteCycle = (cronString: string, fieldStrs: string[]) => 
   let cycleValue = [];
   if ([dayOfMonth, month, dayOfWeek].every((item) => reg?.test(item))) {
     // 每天
-    cycleValue = [cronSpeedLabelMap[CRON_SPEED.daily], hourStr, minuteStr, secondStr].filter(
-      Boolean,
-    );
+    cycleValue = [
+      reg?.test(hour) ? '' : cronSpeedLabelMap[CRON_SPEED.daily],
+      hourStr,
+      minuteStr,
+      secondStr,
+    ].filter(Boolean);
   } else if ([dayOfMonth, month].every((item) => reg?.test(item)) && dayOfWeek !== '*') {
     if (!charsReg.test(dayOfWeek)) {
       // 每周

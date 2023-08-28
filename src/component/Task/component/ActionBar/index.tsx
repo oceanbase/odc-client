@@ -232,6 +232,7 @@ const ActionBar: React.FC<IProps> = inject(
               operationType: 'PAUSE',
             },
           });
+          props?.onReload?.();
         },
       });
     };
@@ -277,6 +278,7 @@ const ActionBar: React.FC<IProps> = inject(
               operationType: 'RESUME',
             },
           });
+          props?.onReload?.();
         },
       });
     };
@@ -291,6 +293,7 @@ const ActionBar: React.FC<IProps> = inject(
           operationType: 'TERMINATION',
         },
       });
+      props?.onReload?.();
     };
 
     const getTaskTools = (_task) => {

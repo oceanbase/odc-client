@@ -71,19 +71,6 @@ interface IProps {
   onPartitionPlanChange?: (value: IConnectionPartitionPlan) => void;
 }
 
-interface IModalContent {
-  taskContent?: React.ReactNode;
-  getItems?: (
-    task: TaskDetail<TaskRecordParameters>,
-    result: ITaskResult,
-    hasFlow: boolean,
-  ) => {
-    sectionName?: string;
-    textItems: [string, string | number, number?][];
-    sectionRender?: (task: TaskDetail<TaskRecordParameters>) => void;
-  }[];
-}
-
 const taskContentMap = {
   [TaskType.DATAMOCK]: {
     getItems: getDataMockerItems,
@@ -125,7 +112,14 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const hasResult =
     ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE].includes(type) &&
     detailType !== TaskDetailType.FLOW;
-  const isLoop = task?.status === TaskStatus.EXECUTING;
+  const isLoop = [
+    TaskStatus.APPROVING,
+    TaskStatus.WAIT_FOR_EXECUTION,
+    TaskStatus.EXECUTING,
+    TaskStatus.WAIT_FOR_CONFIRM,
+    TaskStatus.CREATED,
+    TaskStatus.APPROVED,
+  ].includes(task?.status);
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
