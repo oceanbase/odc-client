@@ -18,7 +18,6 @@ import { checkConnectionPartitionPlan, createTask, getPartitionPlan } from '@/co
 import { IPartitionPlanRecord, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
-import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, Modal, Select, Space, Tooltip } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
@@ -88,14 +87,13 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
     const [form] = Form.useForm();
     const databaseId = Form.useWatch('databaseId', form);
-    const { database } = useDBSession(databaseId);
-    const connectionId = database?.dataSource?.id;
+
     const loadData = async () => {
-      if (!connectionId) {
+      if (!databaseId) {
         return;
       }
       const res = await getPartitionPlan({
-        connectionId,
+        databaseId,
       });
 
       setPartitionPlans(
@@ -109,6 +107,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const onClose = useCallback(() => {
       form.resetFields();
       setDisabledSubmit(true);
+      setHasPartitionPlan(false);
+      setPartitionPlans([]);
       modalStore.changePartitionModal(false);
     }, [modalStore]);
 
@@ -166,15 +166,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     };
 
     const checkPartitionPlanExist = async () => {
-      const isExist = await checkConnectionPartitionPlan(connectionId);
+      const isExist = await checkConnectionPartitionPlan(databaseId);
       setHasPartitionPlan(isExist);
     };
 
     useEffect(() => {
-      if (partitionVisible && connectionId) {
+      if (partitionVisible && databaseId) {
         checkPartitionPlanExist();
       }
-    }, [partitionVisible]);
+    }, [partitionVisible, databaseId]);
 
     useEffect(() => {
       if (partitionPlans?.length) {
@@ -182,6 +182,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         setDisabledSubmit(disabledSubmit);
       }
     }, [partitionPlans]);
+
+    useEffect(() => {
+      loadData();
+    }, [databaseId]);
 
     return (
       <Drawer
@@ -234,7 +238,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             inspectTriggerStrategy: IPartitionPlanInspectTriggerStrategy.NONE,
           }}
         >
-          <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
+          <DatabaseSelect
+            projectId={projectId}
+            type={TaskType.PARTITION_PLAN}
+            extra={
+              hasPartitionPlan
+                ? '当前数据库已存在一个分区计划，任务审批通过后，原分区计划将终止'
+                : null
+            }
+          />
           {enabledInspectTriggerStrategy && (
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {
