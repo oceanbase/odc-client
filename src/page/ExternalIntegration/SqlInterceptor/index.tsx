@@ -37,11 +37,12 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { FixedType } from 'rc-table/lib/interface';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import { APPROVAL_TEMPLATE, SQL_INTERCEPTOR_TEMPLATE } from './constant';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 const pageMeta = {
   [IPageType.ExternalIntegration_Sql]: {
@@ -71,7 +72,30 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
   const tableRef = useRef<ITableInstance>();
   const { title, type, template } = pageMeta[pageKey];
 
+  useEffect(() => {
+    switch (type) {
+      case IntegrationType.APPROVAL: {
+        tracert.expo('a3112.b64009.c330925');
+        break;
+      }
+      case IntegrationType.SQL_INTERCEPTOR: {
+        tracert.expo('a3112.b64009.c330926');
+        break;
+      }
+    }
+  }, [type]);
+
   const openFormModal = (id: number = null) => {
+    switch (type) {
+      case IntegrationType.APPROVAL: {
+        tracert.click('a3112.b64009.c330925.d367480');
+        break;
+      }
+      case IntegrationType.SQL_INTERCEPTOR: {
+        tracert.click('a3112.b64009.c330926.d367482');
+        break;
+      }
+    }
     setFormModalVisible(true);
     setEditId(id);
   };

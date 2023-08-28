@@ -19,11 +19,12 @@ import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { inject, observer } from 'mobx-react';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import ResourceTreeContext, { ResourceTreeTab } from '../../context/ResourceTreeContext';
 import SideTabs, { ITab } from '../components/SideTabs';
 import DatasourceTree from './Datasource';
 import ProjectTree from './Project';
+import tracert from '@/util/tracert';
 
 export default inject('userStore')(
   observer(function ResourceTreeContainer({ userStore }: { userStore: UserStore }) {
@@ -76,6 +77,9 @@ export default inject('userStore')(
         },
       ],
     };
+    useEffect(() => {
+      tracert.expo('a3112.b41896.c330988');
+    }, []);
     return (
       <>
         <SideTabs

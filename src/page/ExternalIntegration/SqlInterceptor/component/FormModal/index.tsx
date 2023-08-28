@@ -21,7 +21,7 @@ import {
   updateIntegration,
 } from '@/common/network/manager';
 import YamlEditor from '@/component/YamlEditor';
-import type { IManagerIntegration, IntegrationType } from '@/d.ts';
+import { IManagerIntegration, IntegrationType } from '@/d.ts';
 import { EncryptionAlgorithm } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { decrypt, encrypt } from '@/util/utils';
@@ -42,6 +42,7 @@ import {
 import type { FormInstance } from 'antd/lib/form';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 interface IProps {
   type: IntegrationType;
@@ -138,6 +139,16 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
         };
         if (secret) {
           formData.encryption.secret = encrypt(secret);
+        }
+        switch (type) {
+          case IntegrationType.APPROVAL: {
+            tracert.click('a3112.b64009.c330925.d367481');
+            break;
+          }
+          case IntegrationType.SQL_INTERCEPTOR: {
+            tracert.click('a3112.b64009.c330926.d367483');
+            break;
+          }
         }
         if (editId) {
           handleEdit(formData);

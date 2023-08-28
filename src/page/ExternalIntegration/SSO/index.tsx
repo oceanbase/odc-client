@@ -27,10 +27,11 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import { message, Popconfirm } from 'antd';
 import { ColumnType } from 'antd/es/table';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import NewSSODrawerButton from './NewSSODrawerButton';
 import EditSSODrawer from './NewSSODrawerButton/Edit';
 import SSODetailDrawer from './SSODetailDrawer';
+import tracert from '@/util/tracert';
 
 export default function SSO() {
   const [list, setList] = useState<IResponseData<IManagerIntegration>>();
@@ -50,6 +51,9 @@ export default function SSO() {
     current: number;
     pageSize: number;
   }>();
+  useEffect(() => {
+    tracert.expo('a3112.b64009.c330927');
+  }, []);
 
   const loadData = async (current, pageSize) => {
     paramsRef.current = {

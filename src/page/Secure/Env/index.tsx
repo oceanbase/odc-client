@@ -24,9 +24,12 @@ import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import InnerEnvironment from './components/InnerEnvironment';
 import { EnvironmentContext } from './EnvironmentContext';
+import tracert from '@/util/tracert';
 
 // 从Environment数组中生成Sider中的Item数据
-function genEnv(env: IEnvironment): {
+function genEnv(
+  env: IEnvironment,
+): {
   value: number;
   origin: IEnvironment;
   label: string;
@@ -78,6 +81,7 @@ const Environment = () => {
   useLayoutEffect(() => {
     initEnvironment();
     loadIntegrations();
+    tracert.expo('a3112.b64008.c330923');
   }, []);
 
   return (

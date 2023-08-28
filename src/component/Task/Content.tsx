@@ -48,6 +48,7 @@ import ShadowSyncTaskCreateModal from './ShadowSyncTask';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
 
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -229,6 +230,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
 
   private handleMenuClick = (type: TaskPageType) => {
     const { modalStore } = this.props;
+    tracert.click('a3112.b64006.c330917.d367464', { type });
     switch (type) {
       case TaskPageType.IMPORT:
         modalStore.changeImportModal(true);

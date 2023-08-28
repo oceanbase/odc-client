@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
@@ -28,6 +28,7 @@ import PjSvg from '@/svgr/project_space.svg';
 import OBSvg from '@/svgr/source_ob.svg';
 import classNames from 'classnames';
 import SelectModal from './modal';
+import tracert from '@/util/tracert';
 
 export default function SessionSelect({
   readonly,
@@ -38,6 +39,9 @@ export default function SessionSelect({
 }) {
   const context = useContext(SessionContext);
   const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    tracert.expo('a3112.b41896.c330994');
+  }, []);
 
   function renderProject() {
     return (
@@ -106,7 +110,13 @@ export default function SessionSelect({
     return (
       <>
         {renderEnv()}
-        <div onClick={() => setVisible(true)} className={styles.dataSource}>
+        <div
+          onClick={() => {
+            tracert.click('a3112.b41896.c330994.d367631');
+            setVisible(true);
+          }}
+          className={styles.dataSource}
+        >
           {context?.from === 'datasource' || context.datasourceMode
             ? renderDatasource()
             : renderProject()}
@@ -114,7 +124,13 @@ export default function SessionSelect({
         {!context.datasourceMode && (
           <>
             <span>/</span>
-            <div onClick={() => setVisible(true)} className={styles.database}>
+            <div
+              onClick={() => {
+                tracert.click('a3112.b41896.c330994.d367631');
+                setVisible(true);
+              }}
+              className={styles.database}
+            >
               {context?.session?.odcDatabase?.name} <DownOutlined />
             </div>
           </>
@@ -127,7 +143,12 @@ export default function SessionSelect({
     <>
       {!context?.databaseId && !context?.datasourceId ? (
         <div className={styles.line}>
-          <a onClick={() => setVisible(true)}>
+          <a
+            onClick={() => {
+              tracert.click('a3112.b41896.c330994.d367630');
+              setVisible(true);
+            }}
+          >
             {
               formatMessage({
                 id: 'odc.SessionContextWrap.SessionSelect.SelectADatabase',

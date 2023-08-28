@@ -31,6 +31,7 @@ import { ModalStore } from '@/store/modal';
 import styles from './index.less';
 import Locale from './Locale';
 import Theme from './Theme';
+import tracert from '@/util/tracert';
 
 interface IProps {
   userStore?: UserStore;
@@ -62,6 +63,7 @@ const MineItem: React.FC<IProps> = function ({
   const userName = `${user?.name}(${user?.accountName})`;
 
   function onConfigClick() {
+    tracert.click('a3112.b46782.c330850.d367365');
     modalStore.changeUserConfigModal(true);
   }
 
@@ -92,6 +94,11 @@ const MineItem: React.FC<IProps> = function ({
   return (
     <>
       <DropMenu
+        onOpenChange={(v) => {
+          if (v) {
+            tracert.expo('a3112.b46782.c330850');
+          }
+        }}
         menu={
           <Menu selectedKeys={null} key="user" className={!isClient() ? styles.userMenu : ''}>
             {hasUserInfo && (
@@ -150,6 +157,7 @@ const MineItem: React.FC<IProps> = function ({
             {settingStore.enablePersonalRecord && (
               <Menu.Item
                 onClick={() => {
+                  tracert.click('a3112.b46782.c330850.d367366');
                   recordRef.current?.handleOpenDrawer();
                 }}
                 key={'record'}

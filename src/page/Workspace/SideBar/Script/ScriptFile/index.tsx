@@ -24,6 +24,7 @@ import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import styles from './index.less';
 import Item from './Item';
+import tracert from '@/util/tracert';
 
 interface IProps {
   userStore?: UserStore;
@@ -46,6 +47,7 @@ export default inject('userStore')(
 
     useEffect(() => {
       getScriptList();
+      tracert.click('a3112.b41896.c330989.d367623');
     }, []);
 
     return (

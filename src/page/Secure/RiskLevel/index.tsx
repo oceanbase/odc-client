@@ -23,6 +23,7 @@ import SecureSider, { SiderItem } from '../components/SecureSider';
 import { RiskLevelMap } from '../interface';
 import InnerRiskLevel from './components/InnerRiskLevel';
 import { Spin } from 'antd';
+import tracert from '@/util/tracert';
 
 function genRiskLevel(
   riskLevel: IRiskLevel,
@@ -71,6 +72,7 @@ const RiskLevel = ({ userStore }) => {
     setLoading(true);
     initRiskLevel();
     setLoading(false);
+    tracert.expo('a3112.b64008.c330924');
   }, []);
   return (
     <SecureLayout>

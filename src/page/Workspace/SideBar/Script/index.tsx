@@ -23,10 +23,11 @@ import { getLocale } from '@umijs/max';
 import { message } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SideTabs from '../components/SideTabs';
 import ScriptFile from './ScriptFile';
 import Snippet from './Snippet';
+import tracert from '@/util/tracert';
 
 const Script: React.FC<{}> = function () {
   const snippetRef = useRef(null);
@@ -51,6 +52,9 @@ const Script: React.FC<{}> = function () {
     );
     return false;
   }
+  useEffect(() => {
+    tracert.expo('a3112.b41896.c330989');
+  }, []);
   return (
     <>
       <div style={{ display: 'none', pointerEvents: 'none' }}>
@@ -90,7 +94,7 @@ const Script: React.FC<{}> = function () {
                 title: formatMessage({ id: 'odc.SideBar.Script.UploadScript' }), //上传脚本
                 key: 'upload',
                 onClick() {
-                  console.log('click');
+                  tracert.click('a3112.b41896.c330989.d367625');
                   uploadRef.current?.click();
                 },
                 icon: UploadOutlined,
@@ -117,6 +121,7 @@ const Script: React.FC<{}> = function () {
                 title: formatMessage({ id: 'odc.SideBar.Script.CreateACodeSnippet' }), //新建代码片段
                 key: 'add',
                 onClick() {
+                  tracert.click('a3112.b41896.c330989.d367626');
                   snippetRef.current?.newSnippet();
                 },
                 icon: PlusOutlined,

@@ -38,6 +38,7 @@ import { IConditionGroup } from '@/d.ts/riskDetectRule';
 import { Acess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import { IManagerResourceType, actionTypes } from '@/d.ts';
+import tracert from '@/util/tracert';
 export type Operator = string;
 export enum EBooleanOperator {
   AND = 'AND',
@@ -177,6 +178,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       result = rawData?.[0];
     }
     let reqFlag;
+    tracert.click('a3112.b64008.c330924.d367479');
     if (empty && !currentRiskDetectRuleId) {
       reqFlag = await handleCreateRiskDetectRule(result);
     } else {
@@ -531,6 +533,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                   onClick={async () => {
                     setIsEdit(true);
                     setShowConditionGroup(false);
+                    tracert.click('a3112.b64008.c330924.d367478');
                   }}
                 >
                   {
@@ -546,6 +549,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                   onClick={async () => {
                     setIsEdit(true);
                     setShowConditionGroup(false);
+                    tracert.click('a3112.b64008.c330924.d367478');
                   }}
                 >
                   {

@@ -39,6 +39,7 @@ import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 interface IProps {}
 export const actionLabelMap = {
   BindRole: formatMessage({
@@ -363,12 +364,14 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
   };
   private handleCreate = () => {
     this.openFormModal();
+    tracert.click('a3112.b64007.c330920.d367470');
   };
   componentDidMount() {
     this.context.loadConnections();
     this.context.loadRoles();
     this.context.loadProjectRoles();
     this.context.loadProjects();
+    tracert.expo('a3112.b64007.c330920');
   }
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, maskingRules } = this.state;

@@ -22,6 +22,7 @@ import { useRequest, useUpdate } from 'ahooks';
 import { Button, Drawer, message, Space, Spin } from 'antd';
 import { useEffect, useMemo, useRef } from 'react';
 import SSOForm, { IFormRef } from './SSOForm';
+import tracert from '@/util/tracert';
 
 interface IProps {
   visible: boolean;
@@ -63,6 +64,7 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
         }
       })
       .filter(Boolean);
+    tracert.click('a3112.b64009.c330927.d367485');
     const isSuccess = await updateIntegration({
       ...data,
       encryption: {

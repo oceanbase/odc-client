@@ -15,11 +15,15 @@
  */
 
 import TaskManage from '@/component/Task';
-import React from 'react';
+import tracert from '@/util/tracert';
+import React, { useEffect } from 'react';
 interface IProps {
   id: string;
 }
 const Task: React.FC<IProps> = (props) => {
+  useEffect(() => {
+    tracert.expo('a3112.b64002.c330859');
+  }, []);
   return <TaskManage projectId={Number(props.id)} />;
 };
 

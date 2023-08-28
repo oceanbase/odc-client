@@ -28,6 +28,7 @@ import styles from './index.less';
 import { DataBaseTreeData } from './Nodes/database';
 import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
+import tracert from '@/util/tracert';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -50,7 +51,9 @@ const ResourceTree: React.FC<IProps> = function ({
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [searchValue, setSearchValue] = useState<string>('');
   const treeWrapperRef = useRef<HTMLDivElement>();
-
+  useEffect(() => {
+    tracert.expo('a3112.b41896.c330992');
+  }, []);
   useEffect(() => {
     const resizeHeight = throttle(() => {
       setWrapperHeight(treeWrapperRef?.current?.offsetHeight);
@@ -180,6 +183,9 @@ const ResourceTree: React.FC<IProps> = function ({
         <Tree
           expandAction="click"
           showIcon
+          onExpand={(_, info) => {
+            tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
+          }}
           filterTreeNode={(node) =>
             node.title.toString().toLowerCase().includes(searchValue?.toLowerCase())
           }

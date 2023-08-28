@@ -32,6 +32,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
 import ManualForm from './ManualForm';
 import ScanForm from './ScanForm';
+import tracert from '@/util/tracert';
 
 const defaultScanTableData: Array<ScanTableData> = [];
 
@@ -290,6 +291,7 @@ const FormSensitiveColumnDrawer = ({
     setSubmiting(true);
     const res = await batchCreateSensitiveColumns(context.projectId, data);
     if (res) {
+      tracert.click('a3112.b64002.c330861.d367391');
       message.success(
         formatMessage({ id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New' }), //新建成功
       );
@@ -320,6 +322,7 @@ const FormSensitiveColumnDrawer = ({
     });
     const res = await batchCreateSensitiveColumns(context.projectId, data?.manual);
     if (res) {
+      tracert.click('a3112.b64002.c330861.d367390');
       message.success(
         formatMessage({ id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New' }), //新建成功
       );

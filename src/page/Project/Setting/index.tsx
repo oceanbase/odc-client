@@ -15,12 +15,13 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Menu } from 'antd';
 import styles from './index.less';
 import Info from './Info';
 import Notifacation from './Notifacation';
+import tracert from '@/util/tracert';
 
 enum MenuKey {
   INFO = 'info',
@@ -38,6 +39,9 @@ const Components = {
 const Setting: React.FC<IProps> = (props) => {
   const [menuKey, setmenuKey] = useState<MenuKey>(MenuKey.INFO);
   const Component = Components[menuKey];
+  useEffect(() => {
+    tracert.expo('a3112.b64002.c330862');
+  }, []);
   return (
     <div className={styles.setting}>
       <div className={styles.menu}>

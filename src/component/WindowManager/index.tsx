@@ -31,6 +31,7 @@ import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 const { TabPane } = Tabs;
 
@@ -94,6 +95,7 @@ class WindowManager extends PureComponent<
     const { onOpenPage } = this.props;
 
     if (action === 'add') {
+      tracert.click('a3112.b41896.c330993.d367629');
       onOpenPage();
     }
   };

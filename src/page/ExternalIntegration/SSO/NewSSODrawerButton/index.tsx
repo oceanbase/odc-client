@@ -22,6 +22,7 @@ import { useUpdate } from 'ahooks';
 import { Button, Drawer, FormInstance, message, Space, Tooltip } from 'antd';
 import { useRef, useState } from 'react';
 import SSOForm from './SSOForm';
+import tracert from '@/util/tracert';
 
 interface IProps {
   onSuccess: () => void;
@@ -48,6 +49,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
         }
       })
       .filter(Boolean);
+    tracert.click('a3112.b64009.c330927.d367485');
     const isSuccess = await createIntegration({
       type: IntegrationType.SSO,
       name: clone?.name,
@@ -73,6 +75,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
     <>
       <Button
         onClick={() => {
+          tracert.click('a3112.b64009.c330927.d367484');
           setOpen(true);
         }}
         type="primary"

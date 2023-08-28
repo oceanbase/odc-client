@@ -18,11 +18,20 @@ import { useState } from 'react';
 import { ActivityBarItemType } from '../ActivityBar/type';
 import ActivityBarContext from './ActivityBarContext';
 import ResourceTreeContext, { ResourceTreeTab } from './ResourceTreeContext';
+import tracert from '@/util/tracert';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
 
-  const [selectTabKey, setSelectTabKey] = useState<ResourceTreeTab>(ResourceTreeTab.datasource);
+  const [selectTabKey, _setSelectTabKey] = useState<ResourceTreeTab>(ResourceTreeTab.datasource);
+  function setSelectTabKey(v: ResourceTreeTab) {
+    tracert.click(
+      v === ResourceTreeTab.datasource
+        ? 'a3112.b41896.c330988.d367622'
+        : 'a3112.b41896.c330988.d367621',
+    );
+    _setSelectTabKey(v);
+  }
 
   const [selectProjectId, setSelectProjectId] = useState<number>(null);
   const [selectDatasourceId, setSelectDatasourceId] = useState<number>(null);

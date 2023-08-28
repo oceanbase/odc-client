@@ -23,10 +23,11 @@ import TableCard from '@/component/Table/TableCard';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { Button, message, Popconfirm } from 'antd';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
+import tracert from '@/util/tracert';
 
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({ id: 'odc.User.AddUserModal.Administrator' }),
@@ -58,6 +59,10 @@ const User: React.FC<IProps> = ({ id }) => {
     });
     return [...userMap.values()];
   }, [context?.project?.members]);
+
+  useEffect(() => {
+    tracert.expo('a3112.b64002.c330860');
+  }, []);
 
   async function deleteUser(id: number) {
     const isSuccess = await deleteProjectMember({

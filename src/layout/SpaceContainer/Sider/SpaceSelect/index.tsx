@@ -26,6 +26,7 @@ import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { history } from '@umijs/max';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 const ORGANIZATION_TIP_VSIBLE_KEY = 'odc_organization_tip_visible';
 interface ISpaceSelect {
@@ -41,7 +42,10 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       return;
     }
     if (ori?.type === SpaceType.SYNERGY) {
+      tracert.click('a3112.b46782.c330848.d367359');
       history.push('/project');
+    } else {
+      tracert.click('a3112.b46782.c330848.d367360');
     }
   };
 
@@ -88,6 +92,11 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       className={classNames(styles['space-switch'], {
         [styles.collapsed]: collapsed,
       })}
+      onDropdownVisibleChange={(v) => {
+        if (v) {
+          tracert.expo('a3112.b46782.c330848');
+        }
+      }}
       value={userStore?.organizationId}
       suffixIcon={<SwapOutlined />}
       dropdownMatchSelectWidth={144}

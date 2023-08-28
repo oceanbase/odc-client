@@ -35,8 +35,9 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import { Input, Space, Tag } from 'antd';
 import { toInteger } from 'lodash';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
+import tracert from '@/util/tracert';
 interface IProps {
   id: string;
 }
@@ -56,6 +57,10 @@ const Database: React.FC<IProps> = ({ id }) => {
   });
 
   const { data: envList } = useRequest(listEnvironments);
+
+  useEffect(() => {
+    tracert.expo('a3112.b64002.c330858');
+  }, []);
 
   const loadData = async (pageSize, current, environmentId, name: string = searchValue) => {
     params.current.pageSize = pageSize;
@@ -137,7 +142,16 @@ const Database: React.FC<IProps> = ({ id }) => {
                   </HelpDoc>
                 );
               }
-              return <a onClick={() => gotoSQLWorkspace(toInteger(id), null, record.id)}>{name}</a>;
+              return (
+                <a
+                  onClick={() => {
+                    tracert.click('a3112.b64002.c330858.d367382');
+                    gotoSQLWorkspace(toInteger(id), null, record.id);
+                  }}
+                >
+                  {name}
+                </a>
+              );
             },
           },
           {
@@ -195,6 +209,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link
                     key={'export'}
                     onClick={() => {
+                      tracert.click('a3112.b64002.c330858.d367383');
                       handleMenuClick(TaskPageType.EXPORT, record.id);
                     }}
                   >
@@ -203,6 +218,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link
                     key={'import'}
                     onClick={() => {
+                      tracert.click('a3112.b64002.c330858.d367384');
                       handleMenuClick(TaskPageType.IMPORT, record.id);
                     }}
                   >
@@ -211,6 +227,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link
                     key={'ddl'}
                     onClick={() => {
+                      tracert.click('a3112.b64002.c330858.d367385');
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                   >
@@ -219,6 +236,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link
                     key={'login'}
                     onClick={() => {
+                      tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
                   >
@@ -231,6 +249,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link
                     key={'transfer'}
                     onClick={() => {
+                      tracert.click('a3112.b64002.c330858.d367387');
                       setVisible(true);
                       setDatabase(record);
                     }}
