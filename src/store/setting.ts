@@ -261,7 +261,7 @@ export class SettingStore {
     try {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
-      if (!this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
+      if (this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
         initTracert();
       }
       this.settingLoadStatus = 'done';
