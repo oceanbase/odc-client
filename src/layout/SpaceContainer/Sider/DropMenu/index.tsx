@@ -22,9 +22,10 @@ import styles from './index.less';
 interface IProps {
   menu?: JSX.Element;
   small?: boolean;
+  onOpenChange?: (v: boolean) => void;
 }
 
-const DropMenu: React.FC<IProps> = function ({ children, menu, small }) {
+const DropMenu: React.FC<IProps> = function ({ children, menu, small, onOpenChange }) {
   return (
     <Popover
       overlayClassName={classNames(styles.dropmenu, { [styles.small]: small })}
@@ -32,6 +33,7 @@ const DropMenu: React.FC<IProps> = function ({ children, menu, small }) {
       trigger={['hover']}
       zIndex={1000}
       placement="right"
+      onOpenChange={onOpenChange}
     >
       {children}
     </Popover>

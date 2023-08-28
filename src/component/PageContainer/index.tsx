@@ -37,6 +37,7 @@ interface IPageContainerProps {
     defaultValue?: string | number;
     showDivider?: boolean;
     onChange?: (value: string) => void;
+    onDropdownVisibleChange?: (v: boolean) => void;
   };
   containerWrapStyle?: CSSProperties;
   tabList?: { key: string; tab: ReactNode }[];
@@ -58,7 +59,15 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
     onTabChange,
     containerWrapStyle,
   } = props;
-  const { title, type, options, defaultValue, showDivider, onChange } = titleProps;
+  const {
+    title,
+    type,
+    options,
+    defaultValue,
+    showDivider,
+    onChange,
+    onDropdownVisibleChange,
+  } = titleProps;
 
   return (
     <div className={styles['page-container']}>
@@ -87,6 +96,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
             options={options}
             icon={icon}
             onChange={onChange}
+            onDropdownVisibleChange={onDropdownVisibleChange}
           />
         )}
       </div>

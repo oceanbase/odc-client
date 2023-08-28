@@ -52,12 +52,11 @@ class SnippetFormDrawer extends PureComponent<IProps> {
   onClose = async () => {
     const self = this;
     const { action } = this.props;
-    const data = await this.formRef.current.getFieldsValue();
+    const data = await this.formRef?.current?.getFieldsValue();
     // 用户有输入，加二次确认
     if (data.description || data.body || data.prefix) {
-      const actionName = SNIPPET_ACTIONS.find(
-        (snippetAction) => snippetAction.key === action,
-      )?.name;
+      const actionName = SNIPPET_ACTIONS.find((snippetAction) => snippetAction.key === action)
+        ?.name;
       this.modal = Modal.confirm({
         title: formatMessage(
           {

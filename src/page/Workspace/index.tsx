@@ -39,6 +39,7 @@ import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
+import tracert from '@/util/tracert';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -217,6 +218,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   };
 
   useEffect(() => {
+    tracert.expo('a3112.b41896.c330993');
     async function asyncEffect() {
       // settingStore.hideHeader(); // 隐藏阿里云导航头
       odc.appConfig.workspace.preMount();

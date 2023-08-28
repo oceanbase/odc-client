@@ -37,6 +37,7 @@ import { ResourceContext } from '../context';
 import DetailContent, { PermissionTypes } from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 interface IProps {}
 interface IState {
@@ -328,6 +329,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
 
   async componentDidMount() {
     this.loadDependentData();
+    tracert.expo('a3112.b64007.c330919');
     this.context.loadRoles();
   }
 
@@ -434,6 +436,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private handleCreate = () => {
+    tracert.click('a3112.b64007.c330919.d367467');
     this.openFormModal();
   };
 

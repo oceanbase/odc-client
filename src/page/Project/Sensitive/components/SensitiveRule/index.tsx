@@ -37,6 +37,7 @@ import SensitiveContext from '../../SensitiveContext';
 import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
 import CommonTable from '@/component/CommonTable';
+import tracert from '@/util/tracert';
 
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
@@ -179,6 +180,10 @@ const SensitiveRule = ({ projectId }) => {
   const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
   const [sensitiveRules, setSensitiveRules] = useState<IResponseData<ISensitiveRule>>(null);
   const [maskingAlgorithmFilters, setMaskingAlgorithmFilters] = useState<FilterItemProps[]>();
+
+  useEffect(() => {
+    tracert.expo('a3112.b64002.c330864');
+  }, []);
 
   const initSensitiveRule = () => {
     setMaskingAlgorithmFilters(

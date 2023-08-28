@@ -16,13 +16,17 @@
 
 import Sider from '@/component/Task/Sider';
 import { formatMessage } from '@/util/intl';
-import React from 'react';
+import React, { useEffect } from 'react';
 import SideTabs from '../components/SideTabs';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 
 interface IProps {}
 
 const Task: React.FC<IProps> = () => {
+  useEffect(() => {
+    tracert.expo('a3112.b41896.c330990');
+  }, []);
   return (
     <SideTabs
       tabs={[

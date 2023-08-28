@@ -29,16 +29,26 @@ import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
 import { openNewDefaultPLPage, openNewSQLPage } from '@/store/helper/page';
 import setting from '@/store/setting';
 import ConsolePLSvg from '@/svgr/Console-PL.svg';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
+import tracert from '@/util/tracert';
 
 export default function DefaultPage() {
+  useEffect(() => {
+    tracert.expo('a3112.b41896.c330987');
+  }, []);
   const context = useContext(ActivityBarContext);
   return (
     <div style={{ marginLeft: '50%', marginTop: 100, transform: 'translateX(-50%)', width: 360 }}>
       <Typography.Title level={4}>
         {formatMessage({ id: 'odc.component.WindowManager.DefaultPage.QuickStart' }) /*快速开始*/}
       </Typography.Title>
-      <div onClick={() => openNewSQLPage(null, 'datasource')} className={styles.item}>
+      <div
+        onClick={() => {
+          openNewSQLPage(null, 'datasource');
+          tracert.click('a3112.b41896.c330987.d367617');
+        }}
+        className={styles.item}
+      >
         <div className={styles.icon}>
           <Icon component={ConsoleSQLSvg} />
         </div>
@@ -51,7 +61,10 @@ export default function DefaultPage() {
         </div>
       </div>
       <div
-        onClick={() => openNewDefaultPLPage(null, null, null, 'datasource')}
+        onClick={() => {
+          tracert.click('a3112.b41896.c330987.d367618');
+          openNewDefaultPLPage(null, null, null, 'datasource');
+        }}
         className={styles.item}
       >
         <div className={styles.icon}>
@@ -65,7 +78,13 @@ export default function DefaultPage() {
           }
         </div>
       </div>
-      <div onClick={() => context?.setActiveKey(ActivityBarItemType.Task)} className={styles.item}>
+      <div
+        onClick={() => {
+          tracert.click('a3112.b41896.c330987.d367619');
+          context?.setActiveKey(ActivityBarItemType.Task);
+        }}
+        className={styles.item}
+      >
         <div className={styles.icon}>
           <Icon component={TaskSvg} />
         </div>
@@ -78,9 +97,10 @@ export default function DefaultPage() {
         </div>
       </div>
       <div
-        onClick={() =>
-          setting.setTheme(setting.theme?.key === 'odc-white' ? 'odc-dark' : 'odc-white')
-        }
+        onClick={() => {
+          tracert.click('a3112.b41896.c330987.d367620');
+          setting.setTheme(setting.theme?.key === 'odc-white' ? 'odc-dark' : 'odc-white');
+        }}
         className={styles.item}
       >
         <div className={styles.icon}>

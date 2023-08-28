@@ -71,10 +71,16 @@ const tracert = {
       roleId: id,
     });
   },
-  expo(id) {
+  expo(id, data?: Record<any, any>) {
     const ins = getTracert();
     if (ins) {
-      ins.expo(id, 'up', {}, { force: true });
+      ins.expo(id, 'up', data || {}, { force: true });
+    }
+  },
+  click(id, data?: Record<any, any>) {
+    const ins = getTracert();
+    if (ins) {
+      ins.click(id, data || {});
     }
   },
   expoPage(pageType) {

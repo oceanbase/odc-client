@@ -131,11 +131,17 @@ export class TaskStore {
 
   @action
   public changeTaskPageType = (taskType: TaskPageType) => {
+    if (taskType) {
+      tracert.expo('a3112.b64006.c330917', { type: taskType });
+    }
     this.taskPageType = taskType;
   };
 
   @action
   public changeTaskPageScope = (taskPageScope: TaskPageScope) => {
+    if (taskPageScope) {
+      tracert.expo('a3112.b64006.c330917', { type: taskPageScope });
+    }
     this.taskPageScope = taskPageScope;
   };
 

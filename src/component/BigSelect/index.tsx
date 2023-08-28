@@ -29,10 +29,11 @@ interface IBigSelectProps {
     label: string;
   }[];
   onChange?: (value: string | number) => void;
+  onDropdownVisibleChange?: (v: boolean) => void;
   bottom?: React.ReactNode;
 }
 const BigSelect: React.FC<IBigSelectProps> = (props) => {
-  const { defaultValue, options, bottom, icon, onChange } = props;
+  const { defaultValue, options, bottom, icon, onChange, onDropdownVisibleChange } = props;
   return (
     <Space size={12} className={styles['select-wrapper']}>
       <div className={styles.logo}>
@@ -41,6 +42,7 @@ const BigSelect: React.FC<IBigSelectProps> = (props) => {
       <Select
         className={styles.select}
         defaultValue={defaultValue}
+        onDropdownVisibleChange={onDropdownVisibleChange}
         bordered={false}
         options={options}
         dropdownMatchSelectWidth={280}

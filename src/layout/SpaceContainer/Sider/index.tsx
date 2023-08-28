@@ -44,6 +44,7 @@ import Logo from './Logo';
 import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
+import tracert from '@/util/tracert';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -51,15 +52,21 @@ interface IProps {
 
 const Sider: React.FC<IProps> = function (props) {
   const { taskStore } = props;
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, _setCollapsed] = useState(false);
   const location = useLocation();
   const selected = location?.pathname?.split('/')[1];
   const mentItemGap = collapsed ? 12 : 12;
   const _count = taskStore.pendingApprovalInstanceIds?.length ?? 0;
   const count = !isClient() ? _count : 0;
 
+  function setCollapsed(v: boolean) {
+    tracert.click(v ? 'a3112.b46782.c330851.d367368' : 'a3112.b46782.c330851.d367367');
+    _setCollapsed(v);
+  }
+
   useEffect(() => {
     props.taskStore?.getTaskMetaInfo();
+    tracert.expo('a3112.b46782.c330851');
   }, []);
 
   return (

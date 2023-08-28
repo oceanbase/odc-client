@@ -30,6 +30,7 @@ import { EnvironmentContext } from '../EnvironmentContext';
 import { getColumns } from './column';
 import EditRuleDrawer from './EditRuleDrawer';
 import styles from './index.less';
+import tracert from '@/util/tracert';
 const EnvironmentTable = ({ ruleType }) => {
   const environmentContext = useContext(EnvironmentContext);
   const tableRef = useRef<ITableInstance>();
@@ -162,6 +163,9 @@ const EnvironmentTable = ({ ruleType }) => {
     }
   };
   const handleSwtichRuleStatus = async (rulesetId: number, rule: IRule) => {
+    tracert.click(!rule.enabled ? 'a3112.b64008.c330923.d367476' : 'a3112.b64008.c330923.d367477', {
+      ruleId: rule.id,
+    });
     const updateResult =
       (await updateRule(rulesetId, rule.id, {
         ...rule,

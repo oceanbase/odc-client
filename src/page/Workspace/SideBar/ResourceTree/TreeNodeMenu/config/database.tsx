@@ -22,6 +22,7 @@ import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import tracert from '@/util/tracert';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [
@@ -33,6 +34,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       run(session, node, databaseFrom) {
         const database: IDatabase = node.data;
+        tracert.click('a3112.b41896.c330992.d367627');
         openNewSQLPage(node.cid, databaseFrom);
       },
     },

@@ -24,6 +24,7 @@ import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Menu } from 'antd';
 import React, { useState } from 'react';
 import DropMenu from '../DropMenu';
+import tracert from '@/util/tracert';
 
 interface IProps {}
 
@@ -36,6 +37,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
       title: formatMessage({ id: 'odc.Sider.HelpItem.Features' }), //功能介绍
       key: 'versionInfo',
       action() {
+        tracert.click('a3112.b46782.c330849.d367361');
         modal.changeVersionModalVisible(true);
       },
     },
@@ -44,6 +46,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
       title: formatMessage({ id: 'odc.Sider.HelpItem.HelpDocument' }), //帮助文档
       key: 'pdf',
       action() {
+        tracert.click('a3112.b46782.c330849.d367362');
         window.open(odc.appConfig.docs.url || getLocalDocs());
       },
     },
@@ -55,6 +58,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
 
       key: 'about',
       action() {
+        tracert.click('a3112.b46782.c330849.d367363');
         setShowModalAbout(true);
       },
     },
@@ -63,6 +67,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
       title: formatMessage({ id: 'odc.component.GlobalHeader.Feedback' }),
       key: 'feedback',
       action() {
+        tracert.click('a3112.b46782.c330849.d367364');
         setShowModalFeedback(true);
       },
     },
@@ -82,7 +87,16 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
 
   return (
     <>
-      <DropMenu menu={getHelpMenus()}>{children}</DropMenu>
+      <DropMenu
+        onOpenChange={(v: boolean) => {
+          if (v) {
+            tracert.expo('a3112.b46782.c330849');
+          }
+        }}
+        menu={getHelpMenus()}
+      >
+        {children}
+      </DropMenu>
 
       <ModalHelpAbout
         showModal={showModalAbout}

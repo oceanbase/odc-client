@@ -47,6 +47,7 @@ import { ResourceContext } from '../../../context';
 import ConditionSelect from './conditionSelect';
 import styles from './index.less';
 import ProjectRoleSelect from './projectRoleSelect';
+import tracert from '@/util/tracert';
 interface IProps {
   visible: boolean;
   editId?: number;
@@ -255,6 +256,7 @@ const FormModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(({ precisionSlider, ...values }) => {
         const formData = getFormData(values);
+        tracert.click('a3112.b64007.c330920.d367472');
         if (editId) {
           handleEdit(formData);
         } else {
@@ -497,6 +499,7 @@ const FormModal: React.FC<IProps> = (props) => {
                   target={'_blank'}
                   onClick={(e) => {
                     e.stopPropagation();
+                    tracert.click('a3112.b64007.c330920.d367471');
                   }}
                   rel="noreferrer"
                 >

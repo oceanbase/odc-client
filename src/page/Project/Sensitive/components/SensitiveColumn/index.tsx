@@ -35,11 +35,12 @@ import { DownOutlined } from '@ant-design/icons';
 import { Button, Menu, message, Modal, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { debounce } from 'lodash';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { AddSensitiveColumnType } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import EditModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
+import tracert from '@/util/tracert';
 
 const getColumns: ({
   handleStatusSwitch,
@@ -237,6 +238,10 @@ const SensitiveColumn = ({
   const [maskingAlgorithmId, setMaskingAlgorithmId] = useState<number>();
   const [hasRowSelected, setHasRowSelected] = useState<boolean>(false);
 
+  useEffect(() => {
+    tracert.expo('a3112.b64002.c330863');
+  }, []);
+
   const rowSelector: IRowSelecter<ISensitiveColumn> = {
     options: [
       {
@@ -406,6 +411,7 @@ const SensitiveColumn = ({
           onClick={() => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Manual);
             handleOpenEditSensitiveColumnDrawer();
+            tracert.click('a3112.b64002.c330861.d367388');
           }}
         >
           {formatMessage({ id: 'odc.components.SensitiveColumn.ManuallyAdd' }) /*手动添加*/}
@@ -415,6 +421,7 @@ const SensitiveColumn = ({
           onClick={() => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Scan);
             handleOpenEditSensitiveColumnDrawer();
+            tracert.click('a3112.b64002.c330861.d367389');
           }}
         >
           {formatMessage({ id: 'odc.components.SensitiveColumn.ScanAdd' }) /*扫描添加*/}

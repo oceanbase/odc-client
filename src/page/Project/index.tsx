@@ -33,6 +33,7 @@ import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
+import tracert from '@/util/tracert';
 
 const menu = (
   <Menu>
@@ -44,7 +45,13 @@ const menu = (
 const ExtraContent = ({ projectId }) => {
   return (
     <Space size={12}>
-      <Button onClick={() => gotoSQLWorkspace(projectId)} type="primary">
+      <Button
+        onClick={() => {
+          tracert.click('a3112.b64002.c330858.d367386');
+          gotoSQLWorkspace(projectId);
+        }}
+        type="primary"
+      >
         {formatMessage({ id: 'odc.page.Project.LogOnToTheDatabase' }) /*登录数据库*/}
       </Button>
       {/* <Dropdown.Button
@@ -109,6 +116,7 @@ const Index: React.FC<IProps> = function () {
   };
 
   const handleProjectChange = (value: string) => {
+    tracert.click('a3112.b64002.c330857.d367379');
     history.push(`/project/${value}/${page}`);
   };
 
@@ -189,6 +197,9 @@ const Index: React.FC<IProps> = function () {
         defaultValue: projectId,
         options: options,
         onChange: handleProjectChange,
+        onDropdownVisibleChange(v) {
+          v && tracert.expo('a3112.b64002.c330857');
+        },
       }}
       containerWrapStyle={
         [IPageType.Sensitive].includes(page)
@@ -203,7 +214,7 @@ const Index: React.FC<IProps> = function () {
       tabBarExtraContent={<ExtraContent projectId={projectId} />}
       onTabChange={handleChange}
       bigSelectBottom={
-        <Link to={'/project'}>
+        <Link onClick={() => tracert.click('a3112.b64002.c330857.d367380')} to={'/project'}>
           {formatMessage({ id: 'odc.page.Project.ViewAllProjects' }) /*查看所有项目*/}
         </Link>
       }
