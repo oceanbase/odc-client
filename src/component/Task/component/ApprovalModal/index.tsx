@@ -39,13 +39,13 @@ interface IProps {
 
 const ApprovalModal: React.FC<IProps> = inject('taskStore')(
   observer((props) => {
-    const { taskStore, type, visible, status, approvalStatus, partitionPlan, onCancel } = props;
+    const { taskStore, type, id, visible, status, approvalStatus, partitionPlan, onCancel } = props;
     const formRef = useRef(null);
 
     const handleApprove = async (value: string) => {
       let res = null;
       if (type === TaskType.PARTITION_PLAN && status === TaskStatus.WAIT_FOR_CONFIRM) {
-        res = await updatePartitionPlan(partitionPlan);
+        res = await updatePartitionPlan(id, partitionPlan);
       } else {
         res = await approveTask(props.id, value);
       }

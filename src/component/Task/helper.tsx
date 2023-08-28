@@ -167,9 +167,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           label: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
           }),
-          //分区计划
-          // 说明：和后端沟通后，适配方案待定，暂不放开
-          enabled: false,
+          enabled: true,
         },
         {
           value: TaskPageType.DATA_ARCHIVE,
