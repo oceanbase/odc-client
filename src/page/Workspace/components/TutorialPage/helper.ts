@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { Base64 } from 'js-base64';
-import * as MarkdownIt from 'markdown-it';
+import MarkdownIt from 'markdown-it';
 
 import styles from './index.less';
 
