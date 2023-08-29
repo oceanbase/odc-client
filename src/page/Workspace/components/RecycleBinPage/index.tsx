@@ -236,6 +236,7 @@ class RecycleBin extends Component<
   public handleEditPropertyInCell = (newRows) => {
     this.session.updateRecycleObjectName(newRows);
     this.triggerTableLayout();
+    this.forceUpdate();
   };
 
   /**

@@ -363,6 +363,9 @@ export async function openProcedureEditPageByProName(
   databaseId: number,
 ) {
   const plSchema = await getProcedureByProName(proName, false, sessionId, dbName);
+  if (!plSchema) {
+    return { plPage: null, isNew: false };
+  }
   const plPage = new PLEditPage(PLType.PROCEDURE, databaseId, proName, plSchema);
   const isNew = !page.pages.find((p) => p.key === plPage.pageKey);
   await page.openPage(plPage);
