@@ -199,7 +199,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           session?.database?.dbName,
           session?.odcDatabase?.id,
         );
-
+        if (!plPage) {
+          return;
+        }
         triggerActionAfterPLPageCreated(plPage, 'run', isNew);
       },
     },

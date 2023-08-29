@@ -62,12 +62,12 @@ export const dataTypes: IDataTypes = {
   float: {
     params: [IDataTypeParamType.DISPLAY_WIDTH, IDataTypeParamType.SCALE],
     isNumber: true,
-    defaultValues: [10],
+    defaultValues: [10, 0],
   },
   double: {
     params: [IDataTypeParamType.DISPLAY_WIDTH, IDataTypeParamType.SCALE],
     isNumber: true,
-    defaultValues: [10],
+    defaultValues: [10, 0],
   },
   varchar: {
     params: [IDataTypeParamType.DISPLAY_WIDTH],
