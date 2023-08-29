@@ -25,7 +25,7 @@ import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { Button, Col, Drawer, Form, InputNumber, Modal, Radio, Row, Space } from 'antd';
+import { Alert, Button, Col, Drawer, Form, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
@@ -155,6 +155,14 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         handleCancel(hasEdit);
       }}
     >
+      <Alert
+        style={{
+          marginBottom: 12,
+        }}
+        type="info"
+        showIcon
+        message="由于低版本 OB rename 过程不能保障原子的，对于 OB MySQL 版本 <  4.3 及 OB Oracle  版本 < 4.0， 表名切换之前会锁定数据库账号，并 kill session，表名切换期间，应用可能无法访问数据库，请务在业务高峰期执行无锁结构变更工单，磁盘空间充足的情况下，创建工单时建议保留原表！"
+      />
       <Form
         name="basic"
         initialValues={{
@@ -245,7 +253,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                       message: formatMessage({ id: 'odc.AlterDdlTask.CreateModal.UpToSeconds' }), //最大不超过 3600 秒
                     },
                   ]}
-                  initialValue={48}
+                  initialValue={5}
                   noStyle
                 >
                   <InputNumber min={0} max={3600} />

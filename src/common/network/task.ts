@@ -308,10 +308,10 @@ export async function getCycleTaskFile(taskId: number, objectId: string[]): Prom
  * 查询分区详情
  */
 export async function getPartitionPlan(params: {
-  connectionId?: number;
+  databaseId?: number;
   isFilterManagedTable?: boolean;
 }): Promise<IPartitionPlan> {
-  const res = await request.get('/api/v2/patitionplan/ConnectionPartitionPlan/', {
+  const res = await request.get('/api/v2/partitionPlan/partitionPlans', {
     params,
   });
   return res?.data;
@@ -320,8 +320,8 @@ export async function getPartitionPlan(params: {
 /**
  * 更新分区计划
  */
-export async function updatePartitionPlan(data: Partial<CreateTaskRecord>): Promise<boolean> {
-  const res = await request.put('/api/v2/partitionplan/ConnectionPartitionPlan/batchUpdate', {
+export async function updatePartitionPlan(id, data: Partial<CreateTaskRecord>): Promise<boolean> {
+  const res = await request.put(`/api/v2/partitionPlan/partitionPlans/${id}`, {
     data,
   });
   return !!res?.data;
@@ -331,9 +331,9 @@ export async function updatePartitionPlan(data: Partial<CreateTaskRecord>): Prom
  * 检查当前连接下是否已存在分区计划
  */
 export async function checkConnectionPartitionPlan(id: number): Promise<boolean> {
-  const res = await request.get('/api/v2/partitionplan/ConnectionPartitionPlan/exist', {
+  const res = await request.get('/api/v2/partitionPlan/partitionPlans/exists', {
     params: {
-      connectionId: id,
+      databaseId: id,
     },
   });
   return res?.data;

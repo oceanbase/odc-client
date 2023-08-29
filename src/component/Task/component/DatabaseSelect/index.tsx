@@ -26,6 +26,7 @@ interface IProps {
   label?: string;
   name?: string;
   projectId?: number;
+  extra?: string;
   onChange?: (v: number) => void;
 }
 const { Text } = Typography;
@@ -38,6 +39,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     //数据库
     name = 'databaseId',
     projectId,
+    extra = '',
     onChange,
   } = props;
   const [database, setDatabase] = useState([]);
@@ -125,15 +127,20 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       name={name}
       required
       extra={
-        project &&
-        formatMessage(
+        <Space direction="vertical" size={2}>
           {
-            id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
-          },
-          {
-            projectName: project.name,
-          },
-        ) //`当前项目: ${project.name}`
+            project &&
+              formatMessage(
+                {
+                  id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
+                },
+                {
+                  projectName: project.name,
+                },
+              ) //`当前项目: ${project.name}`
+          }
+          {extra && <span>{extra}</span>}
+        </Space>
       }
       rules={[
         {
