@@ -30,11 +30,11 @@ import {
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import userStore from '@/store/login';
-import { isConnectTypeBeCloudType } from '@/util/connection';
 import request from '@/util/request';
 import { decrypt, encrypt } from '@/util/utils';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
+import dataSourceConfig from '@/page/Datasource/Datasource/NewDatasourceDrawer/Form/config';
 
 function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -56,25 +56,27 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
     passwordSaved: formData.passwordSaved,
     environmentId: formData.environmentId,
   };
-
-  if (isConnectTypeBeCloudType(formData.type)) {
-    /**
-     * 共有云
-     */
-    params.host = formData.host;
-    params.port = formData.port;
-  } else {
-    /**
-     * 私有云
-     */
-    params.clusterName = formData.clusterName;
-    params.tenantName = formData.tenantName;
-    /**
-     * host:port 连接
-     */
-    params.host = formData.host;
-    params.port = formData.port;
-  }
+  const config = dataSourceConfig[formData.type];
+  config?.address?.items?.forEach((item) => {
+    switch (item) {
+      case 'cluster': {
+        params.clusterName = formData.clusterName;
+        break;
+      }
+      case 'ip': {
+        params.host = formData.host;
+        break;
+      }
+      case 'port': {
+        params.port = formData.port;
+        break;
+      }
+      case 'tenant': {
+        params.tenantName = formData.tenantName;
+        break;
+      }
+    }
+  });
 
   // 取消数据订正，详见clearReviseV2Field
   return params;
@@ -187,7 +189,9 @@ export async function testExsitConnection(formData: Partial<IConnection>, testSy
   return ret;
 }
 
-export async function batchTest(cids: number[]): Promise<
+export async function batchTest(
+  cids: number[],
+): Promise<
   {
     active: boolean;
     sid: number;
@@ -282,7 +286,9 @@ export async function newSessionByDataSource(
   return data;
 }
 
-export async function getSessionStatus(sessionId?: string): Promise<{
+export async function getSessionStatus(
+  sessionId?: string,
+): Promise<{
   settings: {
     autocommit: boolean;
     delimiter: string;
@@ -328,7 +334,9 @@ export async function getConnectionExists(params: { name: string }): Promise<boo
 /**
  * 获取集群 & 租户列表
  */
-export async function getClusterAndTenantList(visibleScope: IConnectionType): Promise<{
+export async function getClusterAndTenantList(
+  visibleScope: IConnectionType,
+): Promise<{
   tenantName: Record<string, string[]>;
   clusterName: Record<string, string[]>;
 }> {

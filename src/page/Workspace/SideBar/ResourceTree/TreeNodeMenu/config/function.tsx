@@ -35,6 +35,7 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.FunctionRoot]: [
@@ -46,7 +47,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+        const isMySQL = isConnectionModeBeMySQLType(session.connection.dialectType);
         return isMySQL;
       },
       run(session, node) {
@@ -133,7 +134,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       ellipsis: true,
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+        const isMySQL = isConnectionModeBeMySQLType(session.connection.dialectType);
         return isMySQL;
       },
       async run(session, node) {

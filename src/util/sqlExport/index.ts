@@ -29,7 +29,7 @@ export default function exportToSQL(
   if (!headerColumnNames) {
     return;
   }
-  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = [ConnectionMode.MYSQL, ConnectionMode.OB_MYSQL].includes(dbMode);
   const columnMap: {
     [key: string]: ResultSetColumn;
   } = {};

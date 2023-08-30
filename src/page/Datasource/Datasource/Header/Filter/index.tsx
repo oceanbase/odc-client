@@ -97,6 +97,7 @@ const Filter: React.FC<IProps> = function ({}) {
                   ConnectType.CLOUD_OB_ORACLE,
                   ConnectType.CLOUD_OB_MYSQL,
                   ConnectType.ODP_SHARDING_OB_MYSQL,
+                  ConnectType.MYSQL,
                 ].map((v) => ({ label: ConnectTypeText[v], value: v }))}
                 onChange={(v) => {
                   context.setConnectType(v as ConnectType[]);

@@ -30,6 +30,7 @@ import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
+import { isConnectionModeBeMySQLType } from './connection';
 
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
@@ -511,7 +512,7 @@ export function fixedEncodeURIComponent(str) {
  * 将后端回显的tableName添加正确的双引号
  */
 export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
-  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(dbMode);
   tableName = encodeIdentifiers(tableName, isMySQL);
   return isMySQL ? '`' + tableName + '`' : `"${tableName}"`;
 }

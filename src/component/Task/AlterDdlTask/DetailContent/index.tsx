@@ -24,6 +24,7 @@ import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { ClearStrategy } from '../CreateModal';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 interface IDDLAlterParamters {
   errorStrategy: TaskExecStrategy;
@@ -52,7 +53,7 @@ const ClearStrategyMap = {
 };
 
 const SQLContentSection = ({ task }) => {
-  const isMySQL = task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(task?.connection?.dbMode);
   return (
     <SimpleTextItem
       label={formatMessage({ id: 'odc.AlterDdlTask.DetailContent.SqlContent' })} /*SQL 内容*/

@@ -32,11 +32,12 @@ import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const { confirm } = Modal;
 
 export const getStatus = (ctx: PLPage) => {
-  const isMySQL = ctx.getSession?.()?.connection.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(ctx.getSession?.()?.connection.dialectType);
   const plSchema = ctx.getFormatPLSchema && ctx.getFormatPLSchema();
   return [plType.PROCEDURE, plType.FUNCTION].includes(plSchema?.plType) && isMySQL
     ? IConStatus.DISABLE
@@ -93,7 +94,7 @@ const plActions: ToolBarActions = {
     // 非匿名块编译才展现
     isVisible(ctx: PLPage) {
       const plSchema = ctx.getFormatPLSchema();
-      const isMySQL = ctx.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL;
+      const isMySQL = isConnectionModeBeMySQLType(ctx.getSession()?.connection.dialectType);
       if (isMySQL) {
         return false;
       }

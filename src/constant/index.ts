@@ -46,8 +46,7 @@ import TypeSvg from '@/svgr/menuType.svg';
 
 import timeSvg from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 
-export const PASSWORD_REGEX =
-  /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
+export const PASSWORD_REGEX = /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
 
 export const SPACE_REGEX = /^[^\s]+$/;
 
@@ -123,21 +122,6 @@ export const labelColorsMap = {
 };
 
 export const tabExpiredTime = 48 * 3600 * 1000;
-
-/**
- * v2版本升级中，部分高频次使用的字段名称变更，为了降低该场景导致的前端code需要做大量同步调整，采用常量的方式进行迭代维护，明细如下：
- * 说明：如下字段，V2版本在后端均已废弃，对应V2版本字段见Map => [v1_key, v2_key]
- * */
-export const Revise_Field_Map_V1_To_V2 = new Map([
-  ['sid', 'id'],
-  ['sessionName', 'name'],
-  ['dbMode', 'dialectType'],
-  ['defaultDBName', 'defaultSchema'],
-  ['copyFromSid', 'copyFromId'],
-  ['dbUser', 'username'],
-  ['sysUser', 'sysTenantUsername'],
-  ['sysUserPassword', 'sysTenantPassword'],
-]);
 
 // 管控台-角色管理-系统权限入口
 export const EnableRoleSystemPermission = true;

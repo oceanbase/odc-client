@@ -2852,6 +2852,7 @@ export enum ConnectType {
   CLOUD_OB_MYSQL = 'CLOUD_OB_MYSQL',
   CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
+  MYSQL = 'MYSQL',
 }
 
 export enum DragInsertType {

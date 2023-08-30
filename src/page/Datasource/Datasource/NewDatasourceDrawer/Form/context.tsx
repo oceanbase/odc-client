@@ -18,6 +18,7 @@ import { ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { FormInstance } from 'antd';
 import React from 'react';
+import { IConfig } from './config';
 
 interface IDatasouceFormContext {
   form?: FormInstance<IDatasource>;
@@ -31,6 +32,7 @@ interface IDatasouceFormContext {
   };
   isEdit?: boolean;
   originDatasource?: IDatasource;
+  dataSourceConfig?: IConfig;
 }
 
 const DatasourceFormContext = React.createContext<IDatasouceFormContext>({

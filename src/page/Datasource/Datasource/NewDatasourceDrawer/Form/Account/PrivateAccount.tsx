@@ -69,6 +69,9 @@ const PrivateAccount: React.FC<IProps> = function (props) {
       return 'error';
     }
   }, [formContext?.testResult]);
+  if (!formContext?.dataSourceConfig?.account) {
+    return null;
+  }
   return (
     <>
       <FormItemGroup

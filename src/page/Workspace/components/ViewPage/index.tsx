@@ -43,6 +43,7 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -372,7 +373,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
       sessionManagerStore,
     } = this.props;
     const { topTab, propsTab, view, dataLoading, resultSet, formated } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
 
     return (
       view && (

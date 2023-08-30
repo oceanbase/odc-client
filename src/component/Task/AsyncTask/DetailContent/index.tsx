@@ -24,6 +24,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
@@ -46,7 +47,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
   const parameters = task?.parameters;
   const executionTimeout = parameters.timeoutMillis / 1000 / 60 / 60;
   const riskLevel = task?.riskLevel;
-  const isMySQL = task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(task?.connection?.dbMode);
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   return (
     <>

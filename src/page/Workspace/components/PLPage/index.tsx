@@ -69,6 +69,7 @@ import { checkPLNameChanged } from '@/util/pl';
 import { debounce } from 'lodash';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import SessionContextWrap from '../SessionContextWrap';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 const RESULT_HEIGHT = 230;
 const VERSION_324 = '3.2.4.0';
 const PL_DEBUG_TIP_VSIBLE_KEY = 'odc_pl_debug_visible';
@@ -432,7 +433,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   // 调试 - 是否 PL 调试需要输入入参
   private isPLNeedFillParams() {
     const { params } = this.props;
-    const isMySQL = this.getSession()?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(this.getSession()?.connection?.dialectType);
     switch (params?.plPageType) {
       case PLPageType.anonymous: {
         return false;
@@ -1133,7 +1134,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const { debug } = this.state;
     const plSchema = this.getFormatPLSchema();
     return (
-      (plSchema.plName && this.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL) ||
+      (plSchema.plName && isConnectionModeBeMySQLType(this.getSession()?.connection.dialectType)) ||
       debug
     );
   };
@@ -1166,7 +1167,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   public render() {
     const { pageKey, pageStore, params } = this.props;
     const debug = this.getDebug();
-    const isMySQL = this.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(this.getSession()?.connection.dialectType);
     const {
       showSaveSQLModal,
       showEditPLParamsModal,

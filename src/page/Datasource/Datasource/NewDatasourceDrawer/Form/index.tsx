@@ -17,8 +17,8 @@
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
-import { IDatasource } from '@/d.ts/datasource';
-import { isConnectTypeBeShardingType } from '@/util/connection';
+import { DataSourceGroup, IDataSourceType, IDatasource } from '@/d.ts/datasource';
+import { getConnectTypeItemsByConnectType, isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -31,6 +31,8 @@ import DBTypeItem from './DBTypeItem';
 import ParseURLItem from './ParseURLItem';
 import SSLItem from './SSLItem';
 import SysForm from './SysForm';
+import { ConnectTypeText } from '@/constant/label';
+import dataSourceConfig from './config';
 
 const Option = Select.Option;
 
@@ -49,6 +51,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
   ref,
 ) {
   const [form] = Form.useForm();
+
+  const type: ConnectType = Form.useWatch('type', form);
 
   const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
 
@@ -138,7 +142,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     }
     setTestResult(res?.data);
   }
-
+  const connectTypeList: ConnectType[] =
+    getConnectTypeItemsByConnectType(type) || DataSourceGroup[IDataSourceType.OceanBase].items;
+  const dsc = dataSourceConfig[type];
   return (
     <DatasourceFormContext.Provider
       value={{
@@ -148,6 +154,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         isEdit,
         isPersonal,
         originDatasource,
+        dataSourceConfig: dsc,
       }}
     >
       <Form initialValues={{}} layout="vertical" form={form} requiredMark="optional">
@@ -165,22 +172,19 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           rules={[{ required: true }]}
           label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Type' })} /*类型*/
           name={'type'}
-          noStyle={haveOCP() ? true : false}
+          noStyle={haveOCP() || connectTypeList?.length === 1 ? true : false}
         >
           <Select
             disabled={isEdit}
             placeholder="请选择类型"
-            style={{ width: 208, display: haveOCP() ? 'none' : 'inline-block' }}
+            style={{
+              width: 208,
+              display: haveOCP() || connectTypeList?.length === 1 ? 'none' : 'inline-block',
+            }}
           >
-            <Option value={ConnectType.OB_MYSQL}>OceanBase MySQL</Option>
-            <Option value={ConnectType.OB_ORACLE}>OceanBase Oracle</Option>
-            {!haveOCP() && (
-              <>
-                <Option value={ConnectType.CLOUD_OB_MYSQL}>OceanBase MySQL Cloud</Option>
-                <Option value={ConnectType.CLOUD_OB_ORACLE}>OceanBase Oracle Cloud</Option>
-                {/* <Option value={ConnectType.ODP_SHARDING_OB_MYSQL}>OceanBase MySQL Sharding</Option> */}
-              </>
-            )}
+            {connectTypeList?.map((item) => {
+              return <Option value={item}>{ConnectTypeText[item]}</Option>;
+            })}
           </Select>
         </Form.Item>
         <Form.Item noStyle shouldUpdate>
@@ -209,7 +213,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   <Space style={{ width: '100%' }} direction="vertical">
                     <Form.Item shouldUpdate noStyle>
                       {({ getFieldValue }) => {
-                        return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
+                        return !dsc?.sys ? null : (
                           <SysForm
                             formRef={form}
                             isEdit={isEdit}
@@ -218,7 +222,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                         );
                       }}
                     </Form.Item>
-                    <SSLItem />
+                    {dsc?.ssl ? <SSLItem /> : null}
                   </Space>
                 )}
               </>

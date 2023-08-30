@@ -97,6 +97,7 @@ const SQLCreateTableConfig: Partial<Record<ConnectionMode, ICreateConfig>> = {
     disableLinearHashPartition: true,
   },
 };
+SQLCreateTableConfig[ConnectionMode.MYSQL] = SQLCreateTableConfig[ConnectionMode.OB_MYSQL];
 
 export function useTableConfig(dialectType: ConnectionMode) {
   return SQLCreateTableConfig[dialectType] || {};

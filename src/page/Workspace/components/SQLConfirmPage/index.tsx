@@ -53,6 +53,7 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 import type { IProps, IState } from './type';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
@@ -380,7 +381,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
       sessionManagerStore,
     } = this.props;
     const { sql, log, loading } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
     const logEle = log ? this.getLogEle(log) : null;
     return (
       <>
