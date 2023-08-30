@@ -15,8 +15,6 @@
  */
 
 import { ConnectType } from '@/d.ts';
-import OBSvg from '@/svgr/source_ob.svg';
-import MySQLSvg from '@/svgr/mysql.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Form, Radio, Space } from 'antd';

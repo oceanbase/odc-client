@@ -150,26 +150,6 @@ export async function generateUpdateTableDDL(
   return res?.data?.sql;
 }
 
-export async function getTableUpdateSQL(
-  tableName: string,
-  sessionId: string,
-  dbName: string,
-  options: {
-    table: Partial<ITableModel>;
-    columnList?: Array<Partial<TableColumn>>;
-  },
-): Promise<string> {
-  const { table, columnList } = options;
-  const sid = generateTableSid(tableName, dbName, sessionId);
-  const ret = await request.patch(`/api/v1/table/getUpdateSql/${sid}`, {
-    data: {
-      table,
-      columnList,
-    },
-  });
-  return ret?.data?.sql;
-}
-
 export async function getTableListByDatabaseName(sessionId: string, databaseName?: string) {
   const sid = generateDatabaseSid(databaseName, sessionId);
   const ret = await request.get(`/api/v1/table/list/${sid}`);
