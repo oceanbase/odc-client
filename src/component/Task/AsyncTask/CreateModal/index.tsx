@@ -58,6 +58,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -100,7 +101,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
-  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
   const { asyncTaskData } = modalStore;
   const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql;
   const initRollbackContent = '';

@@ -22,6 +22,7 @@ import notification from '@/util/notification';
 import { message, Modal } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import CommonIDE from '../CommonIDE';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 function SQLExecuteModal(props: {
   isPL?: boolean;
@@ -82,7 +83,7 @@ function SQLExecuteModal(props: {
         session={session}
         bordered={true}
         language={
-          session?.connection.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle'
+          isConnectionModeBeMySQLType(session?.connection.dialectType) ? 'obmysql' : 'oboracle'
         }
         initialSQL={sql}
         onSQLChange={(sql) => {

@@ -41,6 +41,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -57,7 +58,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
-  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
   const { resultSetExportData } = modalStore;
   const initSql = resultSetExportData?.sql;
   const handleSqlChange = (sql: string) => {
@@ -229,7 +230,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Text type="secondary">
                 {
                   formatMessage({
-                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    id:
+                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>

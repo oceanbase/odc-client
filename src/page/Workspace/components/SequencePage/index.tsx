@@ -42,6 +42,7 @@ import { FormattedMessage } from '@umijs/max';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -156,7 +157,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
     const { params, session } = this.props;
     const { propsTab, formated } = this.state;
     const sequence = this.getSequence();
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
 
     return sequence ? (
       <>

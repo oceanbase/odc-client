@@ -56,6 +56,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {
@@ -95,7 +96,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   }>();
 
   const { createSQLPlanVisible, SQLPlanEditId } = modalStore;
-  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
   const isEdit = !!SQLPlanEditId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {

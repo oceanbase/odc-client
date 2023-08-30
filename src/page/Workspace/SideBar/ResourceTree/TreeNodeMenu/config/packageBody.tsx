@@ -31,6 +31,7 @@ import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageBody]: [
@@ -70,7 +71,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
       ],
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
+        const isMySQL = isConnectionModeBeMySQLType(session.connection.dialectType);
         return isMySQL;
       },
       async run(session, node) {

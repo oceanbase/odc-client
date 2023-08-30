@@ -30,13 +30,14 @@ import {
   getConnectionList,
 } from '@/common/network/connection';
 import { actionTypes } from '@/d.ts';
-import { IDatasource } from '@/d.ts/datasource';
+import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
 import setting from '@/store/setting';
 import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
+import { getDataSourceTypeByConnectType } from '@/util/connection';
 const ExtraContent = ({
   cid,
   name,
@@ -131,6 +132,9 @@ const tabs = [
     }),
     //回收站
     key: IPageType.Datasource_recycle,
+    isHide(datasource: IDatasource) {
+      return getDataSourceTypeByConnectType(datasource?.type) !== IDataSourceType.OceanBase;
+    },
   },
   {
     tab: formatMessage({
@@ -138,8 +142,11 @@ const tabs = [
     }),
     //命令行窗口
     key: IPageType.Datasource_obclient,
-    isHide() {
-      return !setting.enableOBClient;
+    isHide(datasource) {
+      return (
+        !setting.enableOBClient ||
+        getDataSourceTypeByConnectType(datasource?.type) !== IDataSourceType.OceanBase
+      );
     },
   },
 ];
@@ -199,6 +206,7 @@ const Index: React.FC<IProps> = function () {
       })
       ?.filter(Boolean) || [],
   );
+  const filterTabs = tabs?.filter((tab) => !tab.isHide?.(connection));
   return (
     <PageContainer
       titleProps={{
@@ -208,7 +216,7 @@ const Index: React.FC<IProps> = function () {
         onChange: handleSelectChange,
       }}
       icon={OBSvg}
-      tabList={tabs?.filter((tab) => !tab.isHide?.())}
+      tabList={filterTabs}
       tabActiveKey={page}
       tabBarExtraContent={
         <ExtraContent
@@ -230,6 +238,9 @@ const Index: React.FC<IProps> = function () {
     >
       {Object.entries(Pages)
         .map(([key, Page]) => {
+          if (!filterTabs?.find((tab) => tab.key === key)) {
+            return null;
+          }
           if (activeKeys.current.has(key) || key === page) {
             return (
               <div

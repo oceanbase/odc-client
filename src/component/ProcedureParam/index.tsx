@@ -44,6 +44,7 @@ import React, {
   useState,
 } from 'react';
 import Toolbar from '../Toolbar';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 interface IProps {
   session: SessionStore;
@@ -67,7 +68,7 @@ interface RowData extends RowType, Partial<IPLParam> {
 
 const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
   const { dbMode, mode, session } = props;
-  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(dbMode);
   const defaultParamMode = ParamMode.IN;
   const [rows, setRows] = useState<RowData[]>([]);
   const update = useUpdate();

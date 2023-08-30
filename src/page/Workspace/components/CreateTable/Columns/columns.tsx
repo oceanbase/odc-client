@@ -29,6 +29,7 @@ import { TableColumn } from '../interface';
 import WrapCheckboxFormatetr from '../RdgFomatter/CheckboxFormatter';
 import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 interface IColumnParams {
   session?: SessionStore;
@@ -38,7 +39,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
   const { dataTypes } = session;
   const { dialectType } = session.connection || {};
   const pageContext = useContext(TablePageContext);
-  const haveAutoIncrement = [ConnectionMode.OB_MYSQL].includes(session.connection.dialectType);
+  const haveAutoIncrement = isConnectionModeBeMySQLType(session.connection.dialectType);
 
   const DataTypeSelect = useMemo(() => {
     return function (props) {

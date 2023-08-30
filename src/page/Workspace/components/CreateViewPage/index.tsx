@@ -39,6 +39,7 @@ import BaseInfoForm from './component/BaseInfoForm';
 import ColumnSelector from './component/ColumnSelector';
 import TableSelector from './component/TableSelector';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -180,7 +181,7 @@ class CreateViewPage extends Component<
   private renderSQLPanel = () => {
     const { activeStepKey } = this.state;
     const session = this.props.session;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
     if (activeStepKey !== EnumStep.SQL_PAGE) {
       return null;
     }

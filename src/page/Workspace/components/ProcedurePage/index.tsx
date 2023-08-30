@@ -48,6 +48,7 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -187,7 +188,7 @@ class ProcedurePage extends Component<
       sessionManagerStore,
     } = this.props;
     const { propsTab, procedure, formated } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
 
     const tableColumns = [
       {

@@ -25,6 +25,7 @@ import { Drawer, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
   return [
@@ -76,7 +77,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const [open, setOpen] = useState(false);
   const subTask = subTasks?.find((item) => item.id === detailId);
   const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
-  const isMySQL = resultJson?.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(resultJson?.dialectType);
 
   const loadData = async () => {
     const res = await getSubTask(task.id);

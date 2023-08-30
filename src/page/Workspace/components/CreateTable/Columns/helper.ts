@@ -15,31 +15,33 @@
  */
 
 import { ConnectionMode } from '@/d.ts';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { dataTypesIns } from '@/util/dataType';
 
 export function getTypeByColumnName(columnName: string, dialectType) {
   if (!columnName) {
     return null;
   }
+  const isMySQL = isConnectionModeBeMySQLType(dialectType);
   const matchArr = [
     {
-      type: dialectType === ConnectionMode.OB_MYSQL ? 'int' : 'NUMBER',
+      type: isMySQL ? 'int' : 'NUMBER',
       regexp: /id$/i,
     },
     {
-      type: dialectType === ConnectionMode.OB_MYSQL ? 'varchar' : 'VARCHAR',
+      type: isMySQL ? 'varchar' : 'VARCHAR',
       regexp: /name/i,
     },
     {
-      type: dialectType === ConnectionMode.OB_MYSQL ? 'datetime' : 'DATE',
+      type: isMySQL ? 'datetime' : 'DATE',
       regexp: /date/i,
     },
     {
-      type: dialectType === ConnectionMode.OB_MYSQL ? 'timestamp' : 'TIMESTAMP',
+      type: isMySQL ? 'timestamp' : 'TIMESTAMP',
       regexp: /time/i,
     },
     {
-      type: dialectType === ConnectionMode.OB_MYSQL ? 'varchar' : 'VARCHAR',
+      type: isMySQL ? 'varchar' : 'VARCHAR',
       regexp: /.*/i,
     },
   ];

@@ -30,6 +30,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
@@ -54,7 +55,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
-  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
 
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {

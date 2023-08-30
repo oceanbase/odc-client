@@ -25,6 +25,7 @@ import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-des
 import { observer } from 'mobx-react';
 import React, { useContext, useRef, useState } from 'react';
 import TablePageContext from '../context';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -34,7 +35,7 @@ const TableDDL: React.FC<IProps> = function ({}) {
   const [formated, setFormated] = useState(false);
   const editorRef = useRef<IEditor>();
   const { table, onRefresh, session } = useContext(TablePageContext);
-  const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+  const isMySQL = isConnectionModeBeMySQLType(session?.connection?.dialectType);
   const handleFormat = () => {
     if (!formated) {
       editorRef.current?.doFormat();

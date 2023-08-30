@@ -37,6 +37,7 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -146,7 +147,7 @@ class SynonymPage extends Component<
   public render() {
     const { sessionManagerStore, session } = this.props;
     const { propsTab, synonym, formated } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
     const preTextForm = 'odc-toolPage-textFrom';
     return (
       synonym && (
