@@ -150,14 +150,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         originDatasource,
       }}
     >
-      <Form
-        initialValues={{
-          type: ConnectType.OB_ORACLE,
-        }}
-        layout="vertical"
-        form={form}
-        requiredMark="optional"
-      >
+      <Form initialValues={{}} layout="vertical" form={form} requiredMark="optional">
         {isEdit ? (
           <Form.Item
             rules={[{ required: true, max: 32 }]}
@@ -168,7 +161,6 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           </Form.Item>
         ) : null}
         <DBTypeItem />
-        {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
         <Form.Item
           rules={[{ required: true }]}
           label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Type' })} /*类型*/
@@ -177,6 +169,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         >
           <Select
             disabled={isEdit}
+            placeholder="请选择类型"
             style={{ width: 208, display: haveOCP() ? 'none' : 'inline-block' }}
           >
             <Option value={ConnectType.OB_MYSQL}>OceanBase MySQL</Option>
@@ -190,31 +183,48 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             )}
           </Select>
         </Form.Item>
-        <AddressItems />
-        <Account isEdit={isEdit} />
-        <Form.Item
-          rules={[{ required: true }]}
-          label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Environment' })}
-          /*环境*/ name={'environmentId'}
-        >
-          <Select loading={loading} style={{ width: 208 }}>
-            {environments?.map((env) => {
-              return <Option value={env.id}>{env.name}</Option>;
-            })}
-          </Select>
+        <Form.Item noStyle shouldUpdate>
+          {({ getFieldValue }) => {
+            const type = getFieldValue('type');
+            if (!type) {
+              return null;
+            }
+            return (
+              <>
+                {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
+                <AddressItems />
+                <Account isEdit={isEdit} />
+                <Form.Item
+                  rules={[{ required: true }]}
+                  label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Environment' })}
+                  /*环境*/ name={'environmentId'}
+                >
+                  <Select loading={loading} style={{ width: 208 }}>
+                    {environments?.map((env) => {
+                      return <Option value={env.id}>{env.name}</Option>;
+                    })}
+                  </Select>
+                </Form.Item>
+                {!haveOCP() && (
+                  <Space style={{ width: '100%' }} direction="vertical">
+                    <Form.Item shouldUpdate noStyle>
+                      {({ getFieldValue }) => {
+                        return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
+                          <SysForm
+                            formRef={form}
+                            isEdit={isEdit}
+                            sysAccountExist={sysAccountExist}
+                          />
+                        );
+                      }}
+                    </Form.Item>
+                    <SSLItem />
+                  </Space>
+                )}
+              </>
+            );
+          }}
         </Form.Item>
-        {!haveOCP() && (
-          <Space style={{ width: '100%' }} direction="vertical">
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
-                  <SysForm formRef={form} isEdit={isEdit} sysAccountExist={sysAccountExist} />
-                );
-              }}
-            </Form.Item>
-            <SSLItem />
-          </Space>
-        )}
       </Form>
     </DatasourceFormContext.Provider>
   );
