@@ -29,6 +29,8 @@ import OBSvg from '@/svgr/source_ob.svg';
 import classNames from 'classnames';
 import SelectModal from './modal';
 import tracert from '@/util/tracert';
+import { DataSourceGroup } from '@/d.ts/datasource';
+import { getDataSourceTypeByConnectType } from '@/util/connection';
 
 export default function SessionSelect({
   readonly,
@@ -61,6 +63,8 @@ export default function SessionSelect({
   }
 
   function renderDatasource() {
+    const DBIcon =
+      DataSourceGroup[getDataSourceTypeByConnectType(context?.session?.connection?.type)]?.icon;
     return (
       <Popover
         overlayClassName={styles.pop}
@@ -68,7 +72,10 @@ export default function SessionSelect({
         content={<ConnectionPopover connection={context?.session?.connection} />}
       >
         <Space size={4}>
-          <Icon component={OBSvg} style={{ fontSize: 16, verticalAlign: 'text-top' }} />
+          <Icon
+            component={DBIcon?.component}
+            style={{ fontSize: 16, verticalAlign: 'text-top', color: DBIcon?.color }}
+          />
           <span style={{ verticalAlign: 'top' }}>{context?.session?.connection?.name}</span>
         </Space>
       </Popover>

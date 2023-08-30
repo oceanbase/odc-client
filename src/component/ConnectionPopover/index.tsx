@@ -16,15 +16,15 @@
 
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
+import { DataSourceGroup } from '@/d.ts/datasource';
 import { ClusterStore } from '@/store/cluster';
+import { getDataSourceTypeByConnectType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-
-import OBSvg from '@/svgr/source_ob.svg';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
@@ -98,6 +98,7 @@ const ConnectionPopover: React.FC<{
       </div>
     );
   }
+  const DBIcon = DataSourceGroup[getDataSourceTypeByConnectType(connection?.type)]?.icon;
   return (
     <div
       onClick={(e) => {
@@ -123,7 +124,11 @@ const ConnectionPopover: React.FC<{
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Icon component={OBSvg} style={{ fontSize: 22, marginRight: 4 }} /> {connection.name}
+              <Icon
+                component={DBIcon?.component}
+                style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
+              />{' '}
+              {connection.name}
             </div>
           </div>
         </Tooltip>

@@ -30,10 +30,9 @@ import {
   getConnectionList,
 } from '@/common/network/connection';
 import { actionTypes } from '@/d.ts';
-import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
+import { DataSourceGroup, IDataSourceType, IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
 import setting from '@/store/setting';
-import OBSvg from '@/svgr/source_ob.svg';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
@@ -207,6 +206,7 @@ const Index: React.FC<IProps> = function () {
       ?.filter(Boolean) || [],
   );
   const filterTabs = tabs?.filter((tab) => !tab.isHide?.(connection));
+  const DBIcon = DataSourceGroup[getDataSourceTypeByConnectType(connection?.type)]?.icon;
   return (
     <PageContainer
       titleProps={{
@@ -215,7 +215,8 @@ const Index: React.FC<IProps> = function () {
         options: options,
         onChange: handleSelectChange,
       }}
-      icon={OBSvg}
+      icon={DBIcon?.component}
+      iconColor={DBIcon?.color}
       tabList={filterTabs}
       tabActiveKey={page}
       tabBarExtraContent={

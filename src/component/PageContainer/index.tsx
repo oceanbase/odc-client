@@ -45,6 +45,7 @@ interface IPageContainerProps {
   tabBarExtraContent?: ReactNode;
   onTabChange?: (key) => void;
   icon?: any;
+  iconColor?: string;
   bigSelectBottom?: React.ReactNode;
 }
 
@@ -56,6 +57,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
     tabBarExtraContent,
     bigSelectBottom,
     icon,
+    iconColor,
     onTabChange,
     containerWrapStyle,
   } = props;
@@ -95,6 +97,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
             defaultValue={defaultValue}
             options={options}
             icon={icon}
+            iconColor={iconColor}
             onChange={onChange}
             onDropdownVisibleChange={onDropdownVisibleChange}
           />
