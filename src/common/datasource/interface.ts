@@ -60,6 +60,26 @@ interface ICreateTableConfig {
   type2ColumnType?: Record<string, string>;
 }
 
+interface IFunctionConfig {
+  params: ('paramName' | 'dataType' | 'paramMode' | 'dataLength' | 'defaultValue')[];
+  defaultValue?: {
+    dataLength?: number;
+  };
+  deterministic?: boolean;
+  dataNature?: boolean;
+  sqlSecurity?: boolean;
+}
+
+interface IProcedureConfig {
+  params: ('paramName' | 'dataType' | 'paramMode' | 'dataLength' | 'defaultValue')[];
+  defaultValue?: {
+    dataLength?: number;
+  };
+  deterministic?: boolean;
+  dataNature?: boolean;
+  sqlSecurity?: boolean;
+}
+
 export interface IDataSourceModeConfig {
   priority?: number;
   connection: {
@@ -83,6 +103,8 @@ export interface IDataSourceModeConfig {
   };
   schema: {
     table: ICreateTableConfig;
+    func: IFunctionConfig;
+    proc: IProcedureConfig;
   };
   sql: {
     language: string;

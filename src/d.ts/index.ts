@@ -1136,6 +1136,7 @@ export interface IFunction {
   createTime?: number;
   modifyTime?: number;
   errorMessage: string;
+  characteristic: IRoutineCharacteristic;
   variables: {
     varName: string;
     varType: string;
@@ -1146,6 +1147,12 @@ export enum ParamMode {
   IN = 'IN',
   OUT = 'OUT',
   INOUT = 'INOUT',
+}
+
+export interface IRoutineCharacteristic {
+  deterministic: boolean;
+  dataNature: 'CONTAINS SQL' | 'NO SQL' | 'READS SQL' | 'MODIFIES SQL';
+  sqlSecurity: 'DEFINER' | 'INVOKER';
 }
 
 export interface IPLParam {
@@ -1172,6 +1179,7 @@ export interface IProcedure {
   modifyTime: number;
   status: string;
   errorMessage: string;
+  characteristic: IRoutineCharacteristic;
   variables: {
     varName: string;
     varType: string;

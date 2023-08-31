@@ -26,6 +26,10 @@ const oracleTableConfig = {
   },
 };
 
+const functionConfig: IDataSourceModeConfig['schema']['func'] = {
+  params: ['paramName', 'paramMode', 'dataType', 'defaultValue'],
+};
+
 const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSourceModeConfig> = {
   [ConnectType.OB_ORACLE]: {
     priority: 2,
@@ -49,6 +53,8 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     schema: {
       table: oracleTableConfig,
+      func: functionConfig,
+      proc: functionConfig,
     },
     sql: {
       language: 'oboracle',
@@ -77,6 +83,8 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     schema: {
       table: oracleTableConfig,
+      func: functionConfig,
+      proc: functionConfig,
     },
     sql: {
       language: 'oboracle',
