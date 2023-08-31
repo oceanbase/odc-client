@@ -30,13 +30,13 @@ import {
   getConnectionList,
 } from '@/common/network/connection';
 import { actionTypes } from '@/d.ts';
-import { DataSourceGroup, IDataSourceType, IDatasource } from '@/d.ts/datasource';
+import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
 import setting from '@/store/setting';
 import { useRequest } from 'ahooks';
 import { isNumber } from 'lodash';
 import OBClientPage from './OBClient';
-import { getDataSourceTypeByConnectType } from '@/util/connection';
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 const ExtraContent = ({
   cid,
   name,
@@ -132,7 +132,7 @@ const tabs = [
     //回收站
     key: IPageType.Datasource_recycle,
     isHide(datasource: IDatasource) {
-      return getDataSourceTypeByConnectType(datasource?.type) !== IDataSourceType.OceanBase;
+      return !getDataSourceModeConfig(datasource?.type)?.features?.recycleBin;
     },
   },
   {
@@ -143,8 +143,7 @@ const tabs = [
     key: IPageType.Datasource_obclient,
     isHide(datasource) {
       return (
-        !setting.enableOBClient ||
-        getDataSourceTypeByConnectType(datasource?.type) !== IDataSourceType.OceanBase
+        !setting.enableOBClient || !getDataSourceModeConfig(datasource?.type)?.features?.obclient
       );
     },
   },
@@ -206,7 +205,7 @@ const Index: React.FC<IProps> = function () {
       ?.filter(Boolean) || [],
   );
   const filterTabs = tabs?.filter((tab) => !tab.isHide?.(connection));
-  const DBIcon = DataSourceGroup[getDataSourceTypeByConnectType(connection?.type)]?.icon;
+  const DBIcon = getDataSourceStyleByConnectType(connection?.type)?.icon;
   return (
     <PageContainer
       titleProps={{

@@ -23,7 +23,7 @@ import { formatMessage } from '@/util/intl';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import tracert from '@/util/tracert';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [
@@ -46,7 +46,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       isHide(_, node) {
         const database: IDatabase = node.data;
-        return isConnectionModeBeMySQLType(database?.dataSource?.dialectType);
+        return !getDataSourceModeConfig(database?.dataSource?.type)?.features?.anonymousBlock;
       },
       ellipsis: true,
       run(session, node, databaseFrom) {

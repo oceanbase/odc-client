@@ -15,7 +15,6 @@
  */
 
 import { ConnectionMode, ConnectType } from '@/d.ts';
-import { DataSourceGroup, IDataSourceType } from '@/d.ts/datasource';
 import { encrypt } from '@/util/utils';
 
 const encryptKeys = ['password', 'sysTenantPassword', 'readonlyPassword', 'sysUserPassword'];
@@ -68,18 +67,6 @@ export function encryptConnection<T>(connection: T) {
     }
   });
   return res as T;
-}
-
-export function getDataSourceTypeByConnectType(type: ConnectType): IDataSourceType {
-  return Object.entries(DataSourceGroup).find(([dataSourceType, source]) => {
-    return source.items.includes(type);
-  })?.[0] as IDataSourceType;
-}
-
-export function getConnectTypeItemsByConnectType(type: ConnectType): ConnectType[] {
-  return Object.entries(DataSourceGroup).find(([dataSourceType, source]) => {
-    return source.items.includes(type);
-  })?.[1]?.items as ConnectType[];
 }
 
 export function isConnectionModeBeMySQLType(dbMode: ConnectionMode) {

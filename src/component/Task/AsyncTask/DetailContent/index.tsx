@@ -24,7 +24,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
@@ -47,7 +47,6 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
   const parameters = task?.parameters;
   const executionTimeout = parameters.timeoutMillis / 1000 / 60 / 60;
   const riskLevel = task?.riskLevel;
-  const isMySQL = isConnectionModeBeMySQLType(task?.connection?.dbMode);
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   return (
     <>
@@ -115,7 +114,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               sqlObjectIds={task?.parameters?.sqlObjectIds}
               sqlObjectNames={task?.parameters?.sqlObjectNames}
               taskId={task?.id}
-              isMySQL={isMySQL}
+              language={
+                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              }
             />
           </div>
         }
@@ -145,7 +146,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
               sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
               taskId={task?.id}
-              isMySQL={isMySQL}
+              language={
+                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              }
             />
           </div>
         }

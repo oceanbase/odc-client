@@ -41,7 +41,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -58,7 +58,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
-  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
   const { resultSetExportData } = modalStore;
   const initSql = resultSetExportData?.sql;
   const handleSqlChange = (sql: string) => {
@@ -253,7 +252,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <CommonIDE
             initialSQL={initSql}
-            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             editorProps={{
               theme,
             }}

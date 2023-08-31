@@ -58,7 +58,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -101,7 +101,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
-  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
   const { asyncTaskData } = modalStore;
   const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql;
   const initRollbackContent = '';
@@ -548,7 +547,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <CommonIDE
             initialSQL={initSqlContent}
-            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             onSQLChange={(sql) => {
               handleSqlChange('sqlContent', sql);
             }}
@@ -655,7 +654,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <CommonIDE
             initialSQL={initRollbackContent}
-            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             editorProps={{
               theme,
             }}

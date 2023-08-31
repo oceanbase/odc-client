@@ -23,7 +23,7 @@ import { ConnectionMode, IExportResultSetFileType, TaskExecStrategy } from '@/d.
 import { getFormatDateTime } from '@/util/utils';
 import { Divider } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
@@ -32,7 +32,6 @@ export const getItems = (
   if (!_task) {
     return [];
   }
-  const isMySQL = isConnectionModeBeMySQLType(_task?.connection?.dbMode);
   const taskExecStrategyMap = getTaskExecStrategyMap(_task?.type);
   const res: {
     sectionName?: string;
@@ -118,7 +117,10 @@ export const getItems = (
                     sqlObjectIds={null}
                     sqlObjectNames={null}
                     taskId={task?.id}
-                    isMySQL={isMySQL}
+                    language={
+                      getDataSourceModeConfigByConnectionMode(_task?.connection?.dbMode)?.sql
+                        ?.language
+                    }
                   />
                 </div>
               }

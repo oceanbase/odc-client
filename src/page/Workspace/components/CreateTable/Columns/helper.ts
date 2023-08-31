@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-import { ConnectionMode } from '@/d.ts';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { dataTypesIns } from '@/util/dataType';
 
 export function getTypeByColumnName(columnName: string, dialectType) {
   if (!columnName) {
     return null;
   }
-  const isMySQL = isConnectionModeBeMySQLType(dialectType);
+  const config = getDataSourceModeConfigByConnectionMode(dialectType)?.schema?.table
+    ?.type2ColumnType;
   const matchArr = [
     {
-      type: isMySQL ? 'int' : 'NUMBER',
+      type: config?.['id'],
       regexp: /id$/i,
     },
     {
-      type: isMySQL ? 'varchar' : 'VARCHAR',
+      type: config?.['name'],
       regexp: /name/i,
     },
     {
-      type: isMySQL ? 'datetime' : 'DATE',
+      type: config?.['date'],
       regexp: /date/i,
     },
     {
-      type: isMySQL ? 'timestamp' : 'TIMESTAMP',
+      type: config?.['time'],
       regexp: /time/i,
     },
     {
-      type: isMySQL ? 'varchar' : 'VARCHAR',
+      type: config?.['name'],
       regexp: /.*/i,
     },
   ];

@@ -147,7 +147,6 @@ export function mergeDataType(
   dataLength: string | number,
   precision: string | number,
 ) {
-  const lang = [ConnectionMode.MYSQL, ConnectionMode.OB_MYSQL].includes(dbMode) ? MySQL : Oracle;
   if (!/\w/.test(dataType)) {
     /**
      * 非法类型，直接返回原样内容
