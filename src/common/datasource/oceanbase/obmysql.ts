@@ -18,6 +18,26 @@ const tableConfig = {
   },
 };
 
+const functionConfig: IDataSourceModeConfig['schema']['func'] = {
+  params: ['paramName', 'dataType', 'dataLength'],
+  defaultValue: {
+    dataLength: 45,
+  },
+  dataNature: true,
+  sqlSecurity: true,
+  deterministic: true,
+};
+
+const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
+  params: ['paramName', 'paramMode', 'dataType', 'dataLength'],
+  defaultValue: {
+    dataLength: 45,
+  },
+  dataNature: true,
+  sqlSecurity: true,
+  deterministic: true,
+};
+
 const items: Record<
   ConnectType.OB_MYSQL | ConnectType.CLOUD_OB_MYSQL | ConnectType.ODP_SHARDING_OB_MYSQL,
   IDataSourceModeConfig
@@ -40,6 +60,8 @@ const items: Record<
     },
     schema: {
       table: tableConfig,
+      func: functionConfig,
+      proc: procedureConfig,
     },
     sql: {
       language: 'obmysql',
@@ -64,6 +86,8 @@ const items: Record<
     },
     schema: {
       table: tableConfig,
+      func: functionConfig,
+      proc: procedureConfig,
     },
     sql: {
       language: 'obmysql',
@@ -89,6 +113,8 @@ const items: Record<
     },
     schema: {
       table: tableConfig,
+      func: functionConfig,
+      proc: procedureConfig,
     },
     sql: {
       language: 'obmysql',

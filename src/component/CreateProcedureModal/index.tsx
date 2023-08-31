@@ -25,9 +25,10 @@ import { openCreateProcedurePage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { useDBSession } from '@/store/sessionManager/hooks';
-import { Form, Input, message, Modal } from 'antd';
+import { Form, Input, message, Modal, Spin } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import ProcedureParam from '../ProcedureParam';
+import ExtraOptions from '../ProcedureParam/ExtraOptions';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -40,10 +41,10 @@ const CreateProcedureModal: React.FC<IProps> = inject(
   'sessionManagerStore',
 )(
   observer((props) => {
-    const { sessionManagerStore, modalStore } = props;
+    const { modalStore } = props;
     const databaseId = modalStore.createProcedureModalData.databaseId;
     const dbName = modalStore.createProcedureModalData.dbName;
-    const { session } = useDBSession(databaseId);
+    const { session, loading } = useDBSession(databaseId);
     const sessionId = session?.sessionId;
     const [form] = useForm();
     const visible = modalStore.createProcedureModalVisible;
@@ -118,47 +119,50 @@ const CreateProcedureModal: React.FC<IProps> = inject(
         title={formatMessage({
           id: 'workspace.window.createProcedure.modal.title',
         })}
-        visible={visible}
+        open={visible}
         onOk={save}
         onCancel={onCancel}
       >
-        <Form form={form} requiredMark="optional" layout="vertical">
-          <Form.Item
-            name="proName"
-            label={formatMessage({
-              id: 'workspace.window.createProcedure.proName',
-            })}
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'workspace.window.createProcedure.proName.validation',
-                }),
-              },
-            ]}
-          >
-            <Input
-              style={{
-                width: 320,
-              }}
-              placeholder={formatMessage({
-                id: 'workspace.window.createProcedure.proName.placeholder',
+        <Spin spinning={loading}>
+          <Form form={form} requiredMark="optional" layout="vertical">
+            <Form.Item
+              name="proName"
+              label={formatMessage({
+                id: 'workspace.window.createProcedure.proName',
               })}
-            />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createFunction.params',
-            })}
-          >
-            <ProcedureParam
-              session={session}
-              mode={DbObjectType.procedure}
-              dbMode={session?.connection?.dialectType}
-              paramsRef={paramsRef}
-            />
-          </Form.Item>
-        </Form>
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'workspace.window.createProcedure.proName.validation',
+                  }),
+                },
+              ]}
+            >
+              <Input
+                style={{
+                  width: 320,
+                }}
+                placeholder={formatMessage({
+                  id: 'workspace.window.createProcedure.proName.placeholder',
+                })}
+              />
+            </Form.Item>
+            <ExtraOptions dbType={DbObjectType.procedure} connectType={session?.connection?.type} />
+            <Form.Item
+              label={formatMessage({
+                id: 'workspace.window.createFunction.params',
+              })}
+            >
+              <ProcedureParam
+                session={session}
+                mode={DbObjectType.procedure}
+                dbMode={session?.connection?.dialectType}
+                paramsRef={paramsRef}
+              />
+            </Form.Item>
+          </Form>
+        </Spin>
       </Modal>
     );
   }),
