@@ -159,9 +159,20 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         style={{
           marginBottom: 12,
         }}
-        type="info"
+        type="warning"
         showIcon
-        message="由于低版本 OB rename 过程不能保障原子的，对于 OB MySQL 版本 <  4.3 及 OB Oracle  版本 < 4.0， 表名切换之前会锁定数据库账号，并 kill session，表名切换期间，应用可能无法访问数据库，请务在业务高峰期执行无锁结构变更工单，磁盘空间充足的情况下，创建工单时建议保留原表！"
+        message="注意"
+        description={
+          <div>
+            1. MySQL 模式 OB 版本小于 4.3 及 Oracle 模式 OB 版本小于
+            4.0，表名切换之前会锁定数据库账号，并 kill 该账号对应的
+            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
+            <br />
+            2. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；
+            <br />
+            3. 创建工单时建议选择保留原表；
+          </div>
+        }
       />
       <Form
         name="basic"
