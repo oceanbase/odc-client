@@ -30,7 +30,7 @@ import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
-import { isConnectionModeBeMySQLType } from './connection';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
@@ -512,9 +512,9 @@ export function fixedEncodeURIComponent(str) {
  * 将后端回显的tableName添加正确的双引号
  */
 export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
-  const isMySQL = isConnectionModeBeMySQLType(dbMode);
-  tableName = encodeIdentifiers(tableName, isMySQL);
-  return isMySQL ? '`' + tableName + '`' : `"${tableName}"`;
+  const char = getDataSourceModeConfigByConnectionMode(dbMode)?.sql?.escapeChar;
+  tableName = encodeIdentifiers(tableName, char);
+  return char + tableName + char;
 }
 
 /**

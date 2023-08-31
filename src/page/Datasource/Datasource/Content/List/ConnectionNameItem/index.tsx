@@ -22,10 +22,10 @@ import React from 'react';
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
-import { DataSourceGroup, IDatasource } from '@/d.ts/datasource';
+import { IDatasource } from '@/d.ts/datasource';
 import classNames from 'classnames';
 import styles from './index.less';
-import { getDataSourceTypeByConnectType } from '@/util/connection';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   connection: IConnection;
@@ -38,7 +38,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
   }
   function getStatusIcon() {
     const { status, type } = connection;
-    const DBIcon = DataSourceGroup[getDataSourceTypeByConnectType(type)]?.icon;
+    const DBIcon = getDataSourceStyleByConnectType(type)?.icon;
     switch (status?.status) {
       case IConnectionStatus.TESTING: {
         return (

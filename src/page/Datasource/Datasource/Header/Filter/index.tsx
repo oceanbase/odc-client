@@ -23,6 +23,8 @@ import React, { useContext } from 'react';
 import ParamContext from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';
 import CheckboxTag from './CheckboxTag';
+import { getAllConnectTypes } from '@/common/datasource';
+import { IDataSourceType } from '@/d.ts/datasource';
 
 interface IProps {}
 
@@ -91,14 +93,9 @@ const Filter: React.FC<IProps> = function ({}) {
               </Typography.Text>
               <CheckboxTag
                 value={context?.connectType}
-                options={[
-                  ConnectType.OB_ORACLE,
-                  ConnectType.OB_MYSQL,
-                  ConnectType.CLOUD_OB_ORACLE,
-                  ConnectType.CLOUD_OB_MYSQL,
-                  ConnectType.ODP_SHARDING_OB_MYSQL,
-                  ConnectType.MYSQL,
-                ].map((v) => ({ label: ConnectTypeText[v], value: v }))}
+                options={[]
+                  .concat(getAllConnectTypes())
+                  .map((v) => ({ label: ConnectTypeText[v], value: v }))}
                 onChange={(v) => {
                   context.setConnectType(v as ConnectType[]);
                 }}

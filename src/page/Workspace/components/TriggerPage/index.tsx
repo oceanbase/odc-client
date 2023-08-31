@@ -47,7 +47,7 @@ import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -290,7 +290,6 @@ class TriggerPage extends Component<
   public render() {
     const { sessionManagerStore, session } = this.props;
     const { propsTab, trigger, isEditStatus, formated } = this.state;
-    const isMySQL = isConnectionModeBeMySQLType(session?.connection?.dialectType);
     const preTextForm = 'odc-toolPage-textFrom';
 
     if (!trigger || !trigger.triggerName) {
@@ -612,7 +611,7 @@ class TriggerPage extends Component<
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(trigger && trigger.ddl) || ''}
-                    language={isMySQL ? 'obmysql' : 'oboracle'}
+                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

@@ -292,8 +292,7 @@ class TableData extends React.Component<
 
   showExportResuleSetModal = () => {
     const { modalStore, session, tableName } = this.props;
-    const isOracle = session.connection?.dialectType === ConnectionMode.OB_ORACLE;
-    const sql = generateSelectSql(false, isOracle, tableName);
+    const sql = generateSelectSql(false, session.connection?.type, tableName);
     modalStore.changeCreateResultSetExportTaskModal(true, {
       sql,
       databaseId: session?.database.databaseId,
@@ -303,8 +302,13 @@ class TableData extends React.Component<
 
   render() {
     const { tableName, pageKey, table, settingStore, session } = this.props;
-    const { dataLoading, resultSet, showDataExecuteSQLModal, updateDataDML, isEditing } =
-      this.state;
+    const {
+      dataLoading,
+      resultSet,
+      showDataExecuteSQLModal,
+      updateDataDML,
+      isEditing,
+    } = this.state;
 
     return (
       <Spin spinning={dataLoading || !resultSet}>

@@ -35,7 +35,7 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ProcedureRoot]: [
@@ -47,8 +47,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       isHide(session, node) {
-        const isMySQL = isConnectionModeBeMySQLType(session.connection.dialectType);
-        return isMySQL;
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
       },
       run(session, node) {
         openBatchCompilePLPage(
@@ -134,8 +133,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       ellipsis: true,
       isHide(session, node) {
-        const isMySQL = isConnectionModeBeMySQLType(session.connection.dialectType);
-        return isMySQL;
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
       },
       async run(session, node) {
         const proc: IProcedure = node.data;

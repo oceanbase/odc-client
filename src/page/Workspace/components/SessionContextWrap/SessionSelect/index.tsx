@@ -25,12 +25,10 @@ import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
 import PjSvg from '@/svgr/project_space.svg';
-import OBSvg from '@/svgr/source_ob.svg';
 import classNames from 'classnames';
 import SelectModal from './modal';
 import tracert from '@/util/tracert';
-import { DataSourceGroup } from '@/d.ts/datasource';
-import { getDataSourceTypeByConnectType } from '@/util/connection';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 export default function SessionSelect({
   readonly,
@@ -63,8 +61,7 @@ export default function SessionSelect({
   }
 
   function renderDatasource() {
-    const DBIcon =
-      DataSourceGroup[getDataSourceTypeByConnectType(context?.session?.connection?.type)]?.icon;
+    const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.icon;
     return (
       <Popover
         overlayClassName={styles.pop}

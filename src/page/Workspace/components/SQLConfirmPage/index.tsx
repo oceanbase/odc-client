@@ -53,7 +53,7 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 import type { IProps, IState } from './type';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
@@ -381,13 +381,12 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
       sessionManagerStore,
     } = this.props;
     const { sql, log, loading } = this.state;
-    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
     const logEle = log ? this.getLogEle(log) : null;
     return (
       <>
         <CommonIDE
           session={session}
-          language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+          language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
           initialSQL={sql}
           log={logEle}
           onSQLChange={this.handleSqlChange}

@@ -43,7 +43,7 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -373,7 +373,6 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
       sessionManagerStore,
     } = this.props;
     const { topTab, propsTab, view, dataLoading, resultSet, formated } = this.state;
-    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
 
     return (
       view && (
@@ -476,7 +475,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                         readOnly
                         key={view.ddl}
                         defaultValue={`${view.ddl};`}
-                        language={isMySQL ? 'obmysql' : 'oboracle'}
+                        language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
                         onEditorCreated={(editor: IEditor) => {
                           this.editor = editor;
                         }}

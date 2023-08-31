@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
-import { DataSourceGroup } from '@/d.ts/datasource';
 import { ClusterStore } from '@/store/cluster';
-import { getDataSourceTypeByConnectType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
@@ -98,7 +97,7 @@ const ConnectionPopover: React.FC<{
       </div>
     );
   }
-  const DBIcon = DataSourceGroup[getDataSourceTypeByConnectType(connection?.type)]?.icon;
+  const DBIcon = getDataSourceStyleByConnectType(connection?.type)?.icon;
   return (
     <div
       onClick={(e) => {

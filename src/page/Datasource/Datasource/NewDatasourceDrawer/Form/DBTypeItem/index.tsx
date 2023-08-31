@@ -20,8 +20,8 @@ import Icon from '@ant-design/icons';
 import { Form, Radio, Space } from 'antd';
 
 import styles from './index.less';
-import { DataSourceGroup, IDataSourceType } from '@/d.ts/datasource';
-import { getDataSourceTypeByConnectType } from '@/util/connection';
+import { IDataSourceType } from '@/d.ts/datasource';
+import { getDataSourceStyle, getDefaultConnectType, getDsByConnectType } from '@/common/datasource';
 
 export default function DBTypeItem() {
   const typeSelect = (
@@ -32,13 +32,13 @@ export default function DBTypeItem() {
     >
       {({ getFieldValue, setFieldsValue }) => {
         const type: ConnectType = getFieldValue('type');
-        const ds = getDataSourceTypeByConnectType(type) || IDataSourceType.OceanBase;
+        const ds = getDsByConnectType(type) || IDataSourceType.OceanBase;
         return (
           <Radio.Group
             className={styles.select}
             value={ds}
             onChange={(e) => {
-              const defaultType: ConnectType = DataSourceGroup[e.target.value]?.default;
+              const defaultType: ConnectType = getDefaultConnectType(e.target.value);
               if (defaultType) {
                 setFieldsValue({
                   type: defaultType,
@@ -53,9 +53,9 @@ export default function DBTypeItem() {
                     <Icon
                       style={{
                         fontSize: 24,
-                        color: DataSourceGroup[IDataSourceType.OceanBase]?.icon?.color,
+                        color: getDataSourceStyle(IDataSourceType.OceanBase)?.icon?.color,
                       }}
-                      component={DataSourceGroup[IDataSourceType.OceanBase]?.icon?.component}
+                      component={getDataSourceStyle(IDataSourceType.OceanBase)?.icon?.component}
                     />
                   </div>
                   OceanBase
@@ -67,9 +67,9 @@ export default function DBTypeItem() {
                     <Icon
                       style={{
                         fontSize: 24,
-                        color: DataSourceGroup[IDataSourceType.MySQL]?.icon?.color,
+                        color: getDataSourceStyle(IDataSourceType.MySQL)?.icon?.color,
                       }}
-                      component={DataSourceGroup[IDataSourceType.MySQL]?.icon?.component}
+                      component={getDataSourceStyle(IDataSourceType.MySQL)?.icon?.component}
                     />
                   </div>
                   MySQL

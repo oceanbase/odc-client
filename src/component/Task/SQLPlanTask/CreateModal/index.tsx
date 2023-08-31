@@ -56,7 +56,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {
@@ -96,7 +96,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   }>();
 
   const { createSQLPlanVisible, SQLPlanEditId } = modalStore;
-  const isMySQL = isConnectionModeBeMySQLType(connection?.dialectType);
   const isEdit = !!SQLPlanEditId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {
@@ -557,7 +556,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           {isInitContent && (
             <CommonIDE
               initialSQL={formData?.sqlContent}
-              language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+              language={getDataSourceModeConfig(connection?.type)?.sql?.language}
               editorProps={{
                 theme,
               }}

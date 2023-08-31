@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-import { haveOCP } from '@/util/env';
-import { ConnectType, IConnection } from '.';
-import OBSvg from '@/svgr/source_ob.svg';
-import MySQLSvg from '@/svgr/mysql.svg';
-
-export enum DialectType {
-  MYSQL = 'MYSQL',
-  ORACLE = 'ORACLE',
-  OB_MYSQL = 'OB_MYSQL',
-  OB_ORACLE = 'OB_ORACLE',
-  CLOUD_OB_MYSQL = 'CLOUD_OB_MYSQL',
-  CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
-  ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
-  ODP_SHARDING_OB_ORACLE = 'ODP_SHARDING_OB_ORACLE',
-  UNKNOWN = 'UNKNOWN',
-}
+import { IConnection } from '.';
 
 export enum IConnectionStatus {
   ACTIVE = 'ACTIVE',
@@ -63,30 +48,3 @@ export enum IDataSourceType {
   OceanBase = 'ob',
   MySQL = 'mysql',
 }
-
-export const DataSourceGroup = {
-  [IDataSourceType.OceanBase]: {
-    default: ConnectType.OB_ORACLE,
-    items: !haveOCP()
-      ? [
-          ConnectType.OB_ORACLE,
-          ConnectType.OB_MYSQL,
-          ConnectType.CLOUD_OB_MYSQL,
-          ConnectType.CLOUD_OB_ORACLE,
-          ConnectType.ODP_SHARDING_OB_MYSQL,
-        ]
-      : [ConnectType.OB_ORACLE, ConnectType.OB_MYSQL],
-    icon: {
-      component: OBSvg,
-      color: undefined,
-    },
-  },
-  [IDataSourceType.MySQL]: {
-    default: ConnectType.MYSQL,
-    items: [ConnectType.MYSQL],
-    icon: {
-      component: MySQLSvg,
-      color: '#01608a',
-    },
-  },
-};

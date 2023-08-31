@@ -27,19 +27,18 @@ import {
 
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import plType from '@/constant/plType';
-import { ConnectionMode } from '@/d.ts';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { confirm } = Modal;
 
 export const getStatus = (ctx: PLPage) => {
-  const isMySQL = isConnectionModeBeMySQLType(ctx.getSession?.()?.connection.dialectType);
+  const plEdit = getDataSourceModeConfig(ctx.getSession?.()?.connection?.type)?.features?.plEdit;
   const plSchema = ctx.getFormatPLSchema && ctx.getFormatPLSchema();
-  return [plType.PROCEDURE, plType.FUNCTION].includes(plSchema?.plType) && isMySQL
+  return [plType.PROCEDURE, plType.FUNCTION].includes(plSchema?.plType) && !plEdit
     ? IConStatus.DISABLE
     : IConStatus.INIT;
 };
@@ -94,8 +93,9 @@ const plActions: ToolBarActions = {
     // 非匿名块编译才展现
     isVisible(ctx: PLPage) {
       const plSchema = ctx.getFormatPLSchema();
-      const isMySQL = isConnectionModeBeMySQLType(ctx.getSession()?.connection.dialectType);
-      if (isMySQL) {
+      const isDisable = !getDataSourceModeConfig(ctx.getSession()?.connection.type)?.features
+        ?.compile;
+      if (isDisable) {
         return false;
       }
       if ([plType.PKG_HEAD].indexOf(plSchema.plType) > -1) {

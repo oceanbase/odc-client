@@ -17,8 +17,7 @@
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
-import { DataSourceGroup, IDataSourceType, IDatasource } from '@/d.ts/datasource';
-import { getConnectTypeItemsByConnectType, isConnectTypeBeShardingType } from '@/util/connection';
+import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -33,6 +32,7 @@ import SSLItem from './SSLItem';
 import SysForm from './SysForm';
 import { ConnectTypeText } from '@/constant/label';
 import dataSourceConfig from './config';
+import { getAllConnectTypes, getDsByConnectType } from '@/common/datasource';
 
 const Option = Select.Option;
 
@@ -143,7 +143,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     setTestResult(res?.data);
   }
   const connectTypeList: ConnectType[] =
-    getConnectTypeItemsByConnectType(type) || DataSourceGroup[IDataSourceType.OceanBase].items;
+    getAllConnectTypes(getDsByConnectType(type)) || getAllConnectTypes(IDataSourceType.OceanBase);
   const dsc = dataSourceConfig[type];
   return (
     <DatasourceFormContext.Provider
