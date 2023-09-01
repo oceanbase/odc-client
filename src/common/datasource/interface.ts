@@ -10,6 +10,9 @@ export type columnExtraComponent = React.FC<{
 }>;
 
 interface ICreateTableConfig {
+  /**
+   * 是否开启自动递增
+   */
   enableAutoIncrement?: boolean;
   /**
    * 是否开启表的编码
@@ -55,9 +58,17 @@ interface ICreateTableConfig {
    */
   enableIndexesFullTextType?: boolean;
   /**
-   * 字段映射
+   * 类型自动识别字段映射
    */
   type2ColumnType?: Record<string, string>;
+  /**
+   * 索引是否可配置范围
+   */
+  enableIndexScope?: boolean;
+  /**
+   * 索引是否可配置可见/不可见
+   */
+  enableIndexVisible?: boolean;
 }
 
 interface IFunctionConfig {
@@ -100,6 +111,7 @@ export interface IDataSourceModeConfig {
     compile?: boolean;
     plEdit?: boolean;
     anonymousBlock?: boolean;
+    supportOBProxy?: boolean;
   };
   schema: {
     table: ICreateTableConfig;

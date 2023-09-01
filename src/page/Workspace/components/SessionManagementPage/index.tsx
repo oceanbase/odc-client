@@ -34,6 +34,7 @@ import SessionContextWrap from '../SessionContextWrap';
 import SessionContext from '../SessionContextWrap/context';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -54,6 +55,7 @@ function SessionManagementPage(props: IProps) {
   const [sessionList, setSessionList] = useState<IDatabaseSession[]>([]);
   const context = useContext(SessionContext);
   const session = context?.session;
+  const config = getDataSourceModeConfig(session?.connection?.type);
 
   async function fetchDatabaseSessionList() {
     if (!session?.sessionId) {
@@ -177,8 +179,9 @@ function SessionManagementPage(props: IProps) {
         );
       },
     },
-
-    {
+  ];
+  if (config?.features?.supportOBProxy) {
+    columns.push({
       title: formatMessage({
         id: 'workspace.window.session.management.column.obproxyIp',
       }),
@@ -187,8 +190,8 @@ function SessionManagementPage(props: IProps) {
       width: 160,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.obproxyIp, b.obproxyIp),
       sortDirections: ['descend', 'ascend'],
-    },
-  ];
+    });
+  }
 
   // 过滤搜索关键词
   const filteredRows = sessionList?.filter((session) =>

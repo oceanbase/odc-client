@@ -32,7 +32,7 @@ import Trace, { parseTraceTree } from './Trace';
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
 export default class SQLExplain extends Component<SQLExplainProps, SQLExplainState> {
-  constructor(props) {
+  constructor(props: SQLExplainProps) {
     super(props);
     this.state = {
       tabName: TAB_NAME.SUMMARY,
@@ -121,7 +121,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
   };
 
   public render() {
-    const { explain, sql, haveText, session, traceId } = this.props;
+    const { explain, sql, haveText, traceId } = this.props;
     const {
       tabName,
       onlyText,

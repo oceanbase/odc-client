@@ -92,7 +92,7 @@ export function useColumns(
       editor: TextEditor,
     },
 
-    {
+    config?.enableIndexScope && {
       key: 'scope',
       name: formatMessage({ id: 'odc.CreateTable.TableIndex.columns.Scope' }), //范围
       resizable: true,
@@ -134,7 +134,7 @@ export function useColumns(
       },
     },
 
-    {
+    config?.enableIndexVisible && {
       key: 'visible',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Invisible',
@@ -146,5 +146,5 @@ export function useColumns(
       formatter: visibleCheckbox,
       width: 100,
     },
-  ];
+  ].filter(Boolean);
 }

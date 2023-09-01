@@ -18,6 +18,8 @@ const oracleTableConfig = {
   disableListColumnsPartition: true,
   disableKeyPartition: true,
   disableLinearHashPartition: true,
+  enableIndexScope: true,
+  enableIndexVisible: true,
   type2ColumnType: {
     id: 'NUMBER',
     name: 'VARCHAR',
@@ -50,6 +52,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       compile: true,
       plEdit: true,
       anonymousBlock: true,
+      supportOBProxy: true,
     },
     schema: {
       table: oracleTableConfig,
@@ -80,6 +83,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       compile: true,
       plEdit: true,
       anonymousBlock: true,
+      supportOBProxy: true,
     },
     schema: {
       table: oracleTableConfig,

@@ -10,6 +10,8 @@ const tableConfig = {
   paritionNameCaseSensitivity: true,
   enableIndexesFullTextType: true,
   enableAutoIncrement: true,
+  enableIndexScope: true,
+  enableIndexVisible: true,
   type2ColumnType: {
     id: 'int',
     name: 'varchar',
@@ -57,6 +59,7 @@ const items: Record<
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
+      supportOBProxy: true,
     },
     schema: {
       table: tableConfig,
@@ -83,6 +86,7 @@ const items: Record<
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
+      supportOBProxy: true,
     },
     schema: {
       table: tableConfig,
@@ -110,6 +114,7 @@ const items: Record<
       obclient: false,
       recycleBin: false,
       sqlExplain: false,
+      supportOBProxy: true,
     },
     schema: {
       table: tableConfig,
