@@ -183,7 +183,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           const { timer } = row;
           const executeStage = timer?.stages?.find((stage) => stage.stageName === 'Execute');
           const executeSQLStage = executeStage?.subStages?.find(
-            (stage) => stage.stageName === 'OBServer Execute SQL',
+            (stage) => stage.stageName === 'DB Server Execute SQL',
           );
 
           const DBCostTime = formatTimeTemplate(
@@ -235,7 +235,8 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           message={
             formatMessage(
               {
-                id: 'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                id:
+                  'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
               },
 
               { selectedRowKeysLength: selectedRowKeys.length },

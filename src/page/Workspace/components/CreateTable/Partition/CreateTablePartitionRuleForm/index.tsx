@@ -23,10 +23,10 @@ import TableIndexSelector from '@/component/TableIndexSelector';
 import { IDataType, IPartitionType, ITablePartition } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { Button, Form, FormInstance, Input, InputNumber, Select } from 'antd';
-import SQLCreateTableConfig from '../../config';
 import { TableColumn, TablePartition } from '../../interface';
 import { getPartitionValueLabel, partitionValuePlaceholder } from './config';
 import styles from './index.less';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
   fixedFooter?: boolean;
@@ -88,7 +88,8 @@ class CreateTablePartitionRuleForm extends Component<
       return '';
     }
     const { session } = this.props;
-    const config = SQLCreateTableConfig[session.connection?.dialectType];
+    const config = getDataSourceModeConfigByConnectionMode(session.connection?.dialectType)?.schema
+      ?.table;
     return !config.paritionNameCaseSensitivity ? name.toLowerCase() : name;
   }
 
@@ -272,7 +273,8 @@ class CreateTablePartitionRuleForm extends Component<
     };
 
     const { partitionType } = this.state;
-    const config = SQLCreateTableConfig[session.connection?.dialectType] || {};
+    const config =
+      getDataSourceModeConfigByConnectionMode(session.connection?.dialectType)?.schema?.table || {};
 
     const initialPartitions = [{ name: '', value: '' }];
 

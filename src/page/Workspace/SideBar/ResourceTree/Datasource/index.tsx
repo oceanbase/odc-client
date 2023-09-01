@@ -32,8 +32,8 @@ import { IDatasource } from '@/d.ts/datasource';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
-import OBSvg from '@/svgr/source_ob.svg';
 import { toInteger, toNumber } from 'lodash';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 export default forwardRef(function DatasourceTree(props, ref) {
   const { data, loading, run } = useRequest(getDataSourceGroupByProject, {
@@ -76,10 +76,11 @@ export default forwardRef(function DatasourceTree(props, ref) {
         if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
           return null;
         }
+        const icon = getDataSourceStyleByConnectType(item.type)?.icon;
         return {
           title: item.name,
           key: item.id,
-          icon: <Icon component={OBSvg} style={{ fontSize: 16 }} />,
+          icon: <Icon component={icon?.component} style={{ fontSize: 16, color: icon?.color }} />,
         };
       })
       .filter(Boolean);
@@ -93,12 +94,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
     return map;
   }, [data?.contents]);
 
-  const {
-    data: db,
-    reset,
-    run: runListDatabases,
-    loading: dbLoading,
-  } = useRequest(listDatabases, {
+  const { data: db, reset, run: runListDatabases, loading: dbLoading } = useRequest(listDatabases, {
     manual: true,
   });
 
