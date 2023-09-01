@@ -114,8 +114,7 @@ const TitleButton: React.FC<IProps> = function (props) {
                   <Empty
                     description={
                       formatMessage({
-                        id:
-                          'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
+                        id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
                       }) /* 暂无有效数据源信息 */
                     }
                   />

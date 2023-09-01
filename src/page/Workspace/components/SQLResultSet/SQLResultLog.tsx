@@ -23,9 +23,9 @@ import {
   ExclamationCircleFilled,
   FileTextFilled,
 } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Space } from 'antd';
 import React from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
@@ -73,8 +73,7 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
           {
             formatMessage(
               {
-                id:
-                  'odc.components.SQLResultSet.SQLResultLog.CheckviolationslengthSpecificationSuggestionsExist',
+                id: 'odc.components.SQLResultSet.SQLResultLog.CheckviolationslengthSpecificationSuggestionsExist',
               },
               { checkViolationsLength: checkViolations.length },
             ) /*存在 {checkViolationsLength} 个规范建议*/

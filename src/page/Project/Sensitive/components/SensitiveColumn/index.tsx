@@ -21,8 +21,8 @@ import {
 } from '@/common/network/sensitiveColumn';
 import CommonTable from '@/component/CommonTable';
 import {
-  IRowSelecter,
   IOperationOptionType,
+  IRowSelecter,
   ITableInstance,
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
@@ -219,12 +219,8 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
-  const {
-    dataSourceIdMap,
-    maskingAlgorithms,
-    maskingAlgorithmIdMap,
-    maskingAlgorithmOptions,
-  } = sensitiveContext;
+  const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
+    sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,

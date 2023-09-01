@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { IRiskDetectRule, RiskDetectRuleCondition, RootNode } from '@/d.ts/riskDetectRule';
+import { IRiskDetectRule, RootNode } from '@/d.ts/riskDetectRule';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import request from '@/util/request';
 
 export async function updateRiskDetectRule(
   id: number,
   data: {
-  riskLevelId: number,
-  riskLevel: IRiskLevel,
-  rootNode: RootNode
+    riskLevelId: number;
+    riskLevel: IRiskLevel;
+    rootNode: RootNode;
   },
 ): Promise<boolean> {
   const res = await request.put(`/api/v2/regulation/riskDetectRules/${id}`, {

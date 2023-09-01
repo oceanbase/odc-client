@@ -17,9 +17,9 @@
 /**
  * ODC 对外能力开放节点，修改记得同步更新文档
  */
+import { formatMessage, history } from '@umijs/max';
 import { Layout, Spin, Tag } from 'antd'; // @ts-ignore
 import React, { useEffect, useState } from 'react';
-import { formatMessage, history } from '@umijs/max';
 
 import { decrypt } from '@/common/network/other';
 import { UserStore } from '@/store/login';

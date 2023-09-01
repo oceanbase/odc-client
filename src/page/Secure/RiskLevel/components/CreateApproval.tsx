@@ -15,9 +15,9 @@
  */
 
 import { getIntegrationList, getResourceRoles } from '@/common/network/manager';
+import { IntegrationType } from '@/d.ts';
 import { useEffect, useState } from 'react';
 import FormModal from '../../Approval/component/FormModal';
-import { IntegrationType } from '@/d.ts';
 
 const CreateApproval = ({ editId, formModalVisible, setFormModalVisible, reloadData }) => {
   const [roles, setRoles] = useState([]);

@@ -19,6 +19,7 @@ import {
   listSensitiveRules,
   setEnabled,
 } from '@/common/network/sensitiveRule';
+import CommonTable from '@/component/CommonTable';
 import {
   IOperationOptionType,
   ITableInstance,
@@ -36,7 +37,6 @@ import { DetectRuleTypeMap, FilterItemProps } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
-import CommonTable from '@/component/CommonTable';
 
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;

@@ -15,9 +15,9 @@
  */
 
 import { PlusOutlined } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Button } from 'antd';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import update from 'immutability-helper';
 import DragableViewColumn from './DragableViewColumn';

@@ -298,9 +298,9 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       </FormItem>
       <FormItem noStyle shouldUpdate>
         {({ getFieldValue }) => {
-          const importObjects = (getFieldValue(
-            'importFileName',
-          ) as ImportFormData['importFileName'])?.[0]?.response?.data?.importObjects;
+          const importObjects = (
+            getFieldValue('importFileName') as ImportFormData['importFileName']
+          )?.[0]?.response?.data?.importObjects;
           if (importObjects) {
             const data = Object.entries(importObjects).map(([dataType, list]) => {
               const ObjIcon = DbObjsIcon[dataType];

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { formatMessage } from '@umijs/max';
+import React from 'react';
 
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 

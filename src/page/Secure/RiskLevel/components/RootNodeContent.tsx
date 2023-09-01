@@ -16,11 +16,10 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { Empty, Space } from 'antd';
-import styles from './index.less';
-import { Expression, ExpressionMap, OperatorMap } from '../interface';
-import { BooleanOperatorMap, EBooleanOperator, EConditionType } from './InnerRiskLevel';
-import classNames from 'classnames';
 import { useState } from 'react';
+import { Expression, ExpressionMap, OperatorMap } from '../interface';
+import styles from './index.less';
+import { BooleanOperatorMap, EConditionType } from './InnerRiskLevel';
 const RootNodeContent = ({
   empty,
   rootNode,

@@ -34,8 +34,7 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
           <Descriptions.Item
             label={
               formatMessage({
-                id:
-                  'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
               }) //路径识别表达式
             }
           >

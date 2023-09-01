@@ -15,6 +15,8 @@
  */
 
 import { listMaskingAlgorithm } from '@/common/network/maskingAlgorithm';
+import CommonTable from '@/component/CommonTable';
+import { ITableLoadOptions } from '@/component/CommonTable/interface';
 import TooltipContent from '@/component/TooltipContent';
 import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
@@ -24,8 +26,6 @@ import { Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useRef, useState } from 'react';
 import ViewMaskingAlgorithmDrawer from './components/ViewMaskingAlgorithmDrawer';
-import CommonTable from '@/component/CommonTable';
-import { ITableLoadOptions } from '@/component/CommonTable/interface';
 
 interface MaskingAlgorithmProps {}
 const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {

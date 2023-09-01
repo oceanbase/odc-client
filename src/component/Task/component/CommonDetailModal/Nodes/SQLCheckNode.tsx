@@ -18,12 +18,12 @@ import { getFlowSQLLintResult } from '@/common/network/task';
 import LintDrawer from '@/component/SQLLintResult/Drawer';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { Descriptions, Steps } from 'antd';
 import React, { useState } from 'react';
+import styles from '../index.less';
 import NodeCompleteTime from './Items/NodeCompleteTime';
 import NodeStatus from './Items/NodeStatus';
-import { formatMessage } from '@/util/intl';
-import styles from '../index.less';
 const Step = Steps.Step;
 interface IProps {
   node: Partial<ITaskFlowNode>;
@@ -77,8 +77,7 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                 <Descriptions.Item
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.SQLExaminationResults',
+                      id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.SQLExaminationResults',
                     }) /* SQL 检查结果 */
                   }
                 >
@@ -113,15 +112,13 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                 <Descriptions.Item
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.PermissionsInspectionResults',
+                      id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.PermissionsInspectionResults',
                     }) /* 权限检查结果 */
                   }
                 >
                   {
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
+                      id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
                     }) /* 
                   无权限访问数据库：
                    */

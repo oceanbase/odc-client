@@ -15,29 +15,28 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Form, Space, message } from 'antd';
-import RiskLevelInfo from './RiskLevelInfo';
-import styles from './index.less';
-import { useEffect, useRef, useState } from 'react';
-import useForm from 'antd/es/form/hooks/useForm';
-import classnames from 'classnames';
-import _ from 'lodash';
-import Condition from './Condition';
-import { SelectItemProps } from '../interface';
-import TreeTitle from './TreeTitle';
 import {
   createRiskDetectRules,
   deleteRiskDetectRule,
   listRiskDetectRules,
   updateRiskDetectRule,
 } from '@/common/network/riskDetectRule';
-import { IRiskLevel } from '@/d.ts/riskLevel';
-import RootNodeContent from './RootNodeContent';
-import { initOptions } from './options';
-import { IConditionGroup } from '@/d.ts/riskDetectRule';
 import { Acess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
-import { IManagerResourceType, actionTypes } from '@/d.ts';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { IConditionGroup } from '@/d.ts/riskDetectRule';
+import { IRiskLevel } from '@/d.ts/riskLevel';
+import { Button, Form, message, Space } from 'antd';
+import useForm from 'antd/es/form/hooks/useForm';
+import classnames from 'classnames';
+import { useEffect, useRef, useState } from 'react';
+import { SelectItemProps } from '../interface';
+import Condition from './Condition';
+import styles from './index.less';
+import { initOptions } from './options';
+import RiskLevelInfo from './RiskLevelInfo';
+import RootNodeContent from './RootNodeContent';
+import TreeTitle from './TreeTitle';
 export type Operator = string;
 export enum EBooleanOperator {
   AND = 'AND',
@@ -74,9 +73,9 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     {},
   );
   const [taskTypeIdMap, setTaskTypeIdMap] = useState<{ [key in string | number]: string }>({});
-  const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<
-    { [key in string | number]: string }
-  >({});
+  const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
   const [environmentOptions, setEnvironmentOptions] = useState<SelectItemProps[]>([]);
   const [taskTypeOptions, setTaskTypeOptions] = useState<SelectItemProps[]>([]);
   const [sqlCheckResultOptions, setSqlCheckResultOptions] = useState<SelectItemProps[]>([]);
@@ -366,8 +365,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                   >
                                                     {
                                                       formatMessage({
-                                                        id:
-                                                          'odc.src.page.Secure.RiskLevel.components.AddConditions',
+                                                        id: 'odc.src.page.Secure.RiskLevel.components.AddConditions',
                                                       }) /* 
                                                     添加条件
                                                    */
@@ -462,8 +460,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                               >
                                 {
                                   formatMessage({
-                                    id:
-                                      'odc.src.page.Secure.RiskLevel.components.AddConditionGroup',
+                                    id: 'odc.src.page.Secure.RiskLevel.components.AddConditionGroup',
                                   }) /* 
                                 添加条件组
                                */

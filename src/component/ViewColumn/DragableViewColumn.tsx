@@ -15,9 +15,9 @@
  */
 
 import Icon, { CloseCircleFilled } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Col, Input, Row } from 'antd';
 import React from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import { IPLParam } from '@/d.ts';
 import classNames from 'classnames';
