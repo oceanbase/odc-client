@@ -15,11 +15,12 @@
  */
 
 import { formatMessage } from '@/util/intl';
+import { parser, getOBUser } from '@/util/dataSourceParser';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Form, Input, Spin } from 'antd';
 import React, { useCallback, useContext, useState } from 'react';
 
-import { parseConnectionStr, testConnection } from '@/common/network/connection';
+import { testConnection } from '@/common/network/connection';
 import { AccountType } from '@/d.ts';
 import classNames from 'classnames';
 import { trim } from 'lodash';
@@ -44,9 +45,17 @@ const ParseURLItem: React.FC<IProps> = function (props) {
     if (parserUrl) {
       setIsparsing(true);
       try {
-        const data = await parseConnectionStr(trim(parserUrl, ' \t\n'));
+        const data = parser.parse(trim(parserUrl, ' \t\n'));
         if (data) {
           let newData = { ...data };
+          if (newData?.user) {
+            const user = getOBUser(newData?.user);
+            newData = {
+              ...newData,
+              ...user,
+            };
+            delete newData.user;
+          }
           Object.keys(newData).forEach((key) => {
             if (newData[key] == null) {
               delete newData[key];

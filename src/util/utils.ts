@@ -25,7 +25,7 @@ import {
 import setting from '@/store/setting';
 import intl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
-import { Blowfish } from 'javascript-blowfish';
+import { JSEncrypt } from 'jsencrypt';
 import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
@@ -522,23 +522,16 @@ export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
  * 采用 zeropadding 的方式
  */
 export function encrypt(str: string) {
-  if (!setting.serverSystemInfo?.encryptionSecret || isNil(str)) {
+  if (!setting.encryptionPublicKey || isNil(str)) {
     return str;
   }
-  //@ts-ignore
-  const bf = new Blowfish(setting.serverSystemInfo?.encryptionSecret);
-  const encrypted = bf.encrypt(str);
-  return bf.base64Encode(encrypted);
+  const encrypt = new JSEncrypt();
+  encrypt.setPublicKey(setting.encryptionPublicKey);
+  return encrypt.encrypt(str) || '';
 }
-
+// 已废弃
 export function decrypt(str: string) {
-  if (!setting.serverSystemInfo?.encryptionSecret || !str) {
-    return str;
-  }
-  //@ts-ignore
-  const bf = new Blowfish(setting.serverSystemInfo?.encryptionSecret);
-  const decrypted = bf.decrypt(bf.base64Decode(str));
-  return bf.trimZeros(decrypted);
+  return str;
 }
 
 // 获取x天前的时间戳
