@@ -39,6 +39,14 @@ export async function getServerSystemInfo(): Promise<ServerSystemInfo> {
 }
 
 /**
+ * 获取非对称加密的公钥
+ */
+export async function getPublicKey(): Promise<string> {
+  const res = await request.get('/api/v2/encryption/publicKey', { params: { notLogin: true } });
+  return res?.data;
+}
+
+/**
  * 获取ODC后端时间戳【UTC时间】
  */
 export async function getDurationTimes(): Promise<{

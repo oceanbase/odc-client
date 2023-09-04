@@ -19,7 +19,7 @@ import { formatMessage } from '@/util/intl';
  * 样式与功能开关
  */
 
-import { getServerSystemInfo, getSystemConfig } from '@/common/network/other';
+import { getServerSystemInfo, getSystemConfig, getPublicKey } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
@@ -139,6 +139,12 @@ export class SettingStore {
    */
   @observable.shallow
   public serverSystemInfo: ServerSystemInfo = null;
+
+  /**
+   * 非对称加密的公钥
+   */
+  @observable
+  public encryptionPublicKey: string = null;
 
   /**
    * 系统配置是否初始化完毕
@@ -261,6 +267,7 @@ export class SettingStore {
     try {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
+      await this.getPublicKeyData();
       if (this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
         initTracert();
       }
@@ -291,6 +298,12 @@ export class SettingStore {
       console.log('server version:', info.version);
     } catch (e) {}
     this.serverSystemInfo = info;
+  }
+
+  @action
+  public async getPublicKeyData() {
+    const res = await getPublicKey();
+    this.encryptionPublicKey = res;
   }
 }
 
