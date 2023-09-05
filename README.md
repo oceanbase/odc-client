@@ -20,7 +20,7 @@ ODC has a centralized deployment **web version** and a locally run **client vers
 ##### ODC Server
 
 After packaging the ODC Server Jar file, store it in the following directory:
-
+[Build Jar](https://github.com/oceanbase/odc/blob/main/docs/zh-CN/DEVELOPER_GUIDE.md#31-jar-%E6%9E%84%E5%BB%BA%E5%92%8C%E5%90%AF%E5%8A%A8)
 ```shell
 libraries
  - java
@@ -30,8 +30,6 @@ libraries
    - starters
      - starter-related packages
 ```
-
-Alternatively, you can use the ODC provided Jar file with the following command:
 
 ```shell
 pnpm run prepack jar
