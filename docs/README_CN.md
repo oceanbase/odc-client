@@ -19,7 +19,7 @@ ODC 有集中化部署的 **Web 版**和本地运行的**客户端版本。**Web
 
 ##### ODC Server
 
-打包完 ODC Server Jar 包之后，需要在如下目录存放 Jar 包。
+打包完 ODC Server Jar 包之后，需要在如下目录存放 Jar 包。[如何构建 Jar](https://github.com/oceanbase/odc/blob/main/docs/zh-CN/DEVELOPER_GUIDE.md#31-jar-%E6%9E%84%E5%BB%BA%E5%92%8C%E5%90%AF%E5%8A%A8)
 
 ```shell
 libraries
@@ -31,11 +31,6 @@ libraries
      - starters 相关包
 ```
 
-或者可以通过如下命令使用 ODC 提供的 Jar 包
-
-```shell
-pnpm run prepack jar
-```
 
 ##### JRE
 
