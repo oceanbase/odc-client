@@ -56,16 +56,22 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const connection = database?.dataSource;
   const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
 
+  const hadleReset = () => {
+    form.resetFields(null);
+  };
+
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
         title: formatMessage({ id: 'odc.AlterDdlTask.CreateModal.AreYouSureYouWant' }), //确认取消无锁结构变更吗？
         centered: true,
         onOk: () => {
+          hadleReset();
           props.modalStore.changeCreateDDLAlterTaskModal(false);
         },
       });
     } else {
+      hadleReset();
       props.modalStore.changeCreateDDLAlterTaskModal(false);
     }
   };
