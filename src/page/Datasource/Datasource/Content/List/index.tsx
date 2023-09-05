@@ -330,13 +330,6 @@ const List: React.FC<IProps> = forwardRef(function (
                     id: 'odc.Content.List.YouCanConnectToOceanbase',
                   }) /*支持连接 OceanBase 数据库；*/
                 }
-
-                <br />
-                {
-                  formatMessage({
-                    id: 'odc.Content.List.IfNoConnectionInformationIs',
-                  }) /*若无连接信息，也可试一试申请数据库连接的权限*/
-                }
               </span>
             }
             icon={<img src={window.publicPath + 'img/graphic_empty.png'} style={{ height: 132 }} />}
