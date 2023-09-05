@@ -16,9 +16,9 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { listEnvironments } from '@/common/network/env';
-import { TaskType } from '@/d.ts';
-import { RiskLevelTextMap, RiskLevelEnum } from '../../interface';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import { TaskType } from '@/d.ts';
+import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 export const getEnvironmentOptions = async () => {
   const rawData = (await listEnvironments()) || [];
   const newEnvOptions = rawData?.map((rd) => {

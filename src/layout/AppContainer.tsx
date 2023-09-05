@@ -29,12 +29,11 @@ import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { haveLockPwd, initClientService, isLock } from '@/util/client';
 import { isClient } from '@/util/env';
-import { useAppData, useLocation, useRouteData } from '@umijs/max';
+import { Helmet, history, Outlet, useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { ContainerQuery } from 'react-container-query';
-import { Helmet, history, Outlet } from '@umijs/max';
 import Context from './MenuContext';
 import StoreProvider from './StoreProvider';
 

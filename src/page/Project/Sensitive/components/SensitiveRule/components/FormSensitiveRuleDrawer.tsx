@@ -376,8 +376,7 @@ const FormSensitiveRuleDrawer = ({
             {
               required: true,
               message: formatMessage({
-                id:
-                  'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
               }), //请选择脱敏算法
             },
           ]}

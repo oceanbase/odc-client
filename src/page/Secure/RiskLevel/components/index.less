@@ -69,19 +69,19 @@
 .title {
   position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .left {
-  height: calc(100% - 24px);
+  position: absolute;
   width: 10px;
+  height: calc(100% - 24px);
   margin-left: 10px;
   border: 2px solid var(--default-border-color);
+  border-right: none;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
-  border-right: none;
-  position: absolute;
 }
 
 .leftAnd {
@@ -96,17 +96,17 @@
   z-index: 10;
   width: 22px;
   height: 22px;
+  margin: auto;
   line-height: 22px;
+  text-align: center;
   background-color: white;
   border: 1px solid white;
-  text-align: center;
-  margin: auto;
+
+  user-select: none;
 
   &:hover {
     cursor: pointer;
   }
-
-  user-select: none;
 }
 .gl {
   margin-left: 11px;
@@ -139,11 +139,11 @@
 
 // InnerRiskLevel
 .innerRiskLevel {
-  height: 100%;
-  padding: 12px 0px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;
+  padding: 12px 0px;
 }
 
 .ruleContent {
@@ -169,8 +169,8 @@
 }
 
 .treeEmpty {
-  display: flex;
   position: relative;
+  display: flex;
   align-items: center;
 }
 
@@ -180,8 +180,8 @@
 }
 
 .tree {
-  display: flex;
   position: relative;
+  display: flex;
   margin-left: 11px;
 }
 
@@ -206,18 +206,18 @@
 
 // RootNodeContent
 .rootNodeContent {
+  width: 100%;
   min-height: 240px;
   padding: 16px 8px;
   background-color: var(--neutral-grey2-color);
-  width: 100%;
 
   &Empty {
+    display: flex;
+    align-items: center;
+    width: 100%;
     min-height: 240px;
     padding: 16px 8px;
     background-color: var(--neutral-grey2-color);
-    width: 100%;
-    display: flex;
-    align-items: center;
   }
 }
 
@@ -228,20 +228,20 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
     &Border {
       position: absolute;
-      width: 10px;
-      height: 100%;
       top: 0px;
       left: 12px;
+      width: 10px;
+      height: 100%;
       border: 2px solid transparent;
       border-color: #d9d9d9;
+      border-right: none;
       border-top-left-radius: 6px;
       border-bottom-left-radius: 6px;
-      border-right: none;
 
       &And {
         color: white;
@@ -255,15 +255,15 @@
     }
 
     &Title {
+      z-index: 2;
       width: 24px;
       height: 24px;
       line-height: 24px;
       text-align: center;
-      user-select: none;
+      background-color: var(--neutral-grey2-color);
       border: none;
       border-radius: 12px;
-      background-color: var(--neutral-grey2-color);
-      z-index: 2;
+      user-select: none;
 
       &And {
         color: white;
@@ -277,15 +277,17 @@
     }
 
     &Node {
-      margin-left: 11px;
-      padding: 6px 0px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      margin-left: 11px;
+      padding: 6px 0px;
     }
   }
 
   .treeInputBorder {
+    display: flex;
+    align-items: center;
     width: 250px;
     height: 28px;
 
@@ -295,11 +297,8 @@
 
     border: 1px solid #d9d9d9;
     border-radius: 2px;
-
-    display: flex;
-    align-items: center;
+    cursor: not-allowed;
 
     user-select: none;
-    cursor: not-allowed;
   }
 }

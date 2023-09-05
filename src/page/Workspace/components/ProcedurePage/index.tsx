@@ -26,10 +26,10 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';

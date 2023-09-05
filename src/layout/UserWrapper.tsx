@@ -19,11 +19,10 @@ import { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { Outlet, useLocation } from '@umijs/max';
+import { history, Outlet, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { history } from '@umijs/max';
 
 interface IProps {
   userStore: UserStore;

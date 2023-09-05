@@ -18,17 +18,16 @@ import { clearModalConfirm } from '@/component/ErrorConfirmModal';
 import OBLogin from '@/component/Login';
 import { SPACE_REGEX } from '@/constant';
 import { ODCErrorsCode } from '@/d.ts';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 import type { UserStore } from '@/store/login';
 import loginStore from '@/store/login';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import logger from '@/util/logger';
-import { useLocation } from '@umijs/max';
+import { history, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { history } from '@umijs/max';
-import { toDefaultProjectPage } from '@/service/projectHistory';
 
 const Login: React.FC<{
   userStore: UserStore;

@@ -158,15 +158,8 @@ const TaskTable: React.FC<IProps> = inject(
   'pageStore',
 )(
   observer((props) => {
-    const {
-      taskStore,
-      settingStore,
-      pageStore,
-      taskTabType,
-      tableRef,
-      taskList,
-      isMultiPage,
-    } = props;
+    const { taskStore, settingStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } =
+      props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
     const currentTask = taskList;

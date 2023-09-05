@@ -22,10 +22,10 @@ import { SpaceType } from '@/d.ts/_index';
 import logger from '@/util/logger';
 import request from '@/util/request';
 import tracert from '@/util/tracert';
-import { encrypt, safeParseJson } from '@/util/utils';
+import { encrypt } from '@/util/utils';
+import { history } from '@umijs/max';
 import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
-import { history } from '@umijs/max';
 import authStore from './auth';
 import setting from './setting';
 

@@ -15,9 +15,9 @@
  */
 
 import { FilterOutlined } from '@ant-design/icons';
+import { formatMessage, FormattedMessage } from '@umijs/max';
 import { Button, Checkbox, Input, Popover } from 'antd';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import styles from './index.less';

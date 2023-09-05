@@ -15,14 +15,14 @@
  */
 
 import RuleResult from '@/component/SQLLintResult/RuleResult';
-import { ISqlExecuteResultStatus } from '@/d.ts';
 import type { ISqlExecuteResult } from '@/d.ts';
+import { ISqlExecuteResultStatus } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { Modal, message } from 'antd';
+import { message, Modal } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 export interface IExecuteSQLParams {
   sql: string;

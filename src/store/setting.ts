@@ -25,9 +25,9 @@ import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
 import { initTracert } from '@/util/tracert';
+import { isLinux, isWin64 } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
-import { isLinux, isWin64 } from '@/util/utils';
 
 export const themeKey = 'odc-theme';
 

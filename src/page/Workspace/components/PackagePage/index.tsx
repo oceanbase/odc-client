@@ -27,12 +27,12 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Layout, Radio, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 

@@ -21,10 +21,10 @@ import PersonalSvg from '@/svgr/personal_space.svg';
 import GroupSvg from '@/svgr/project_space.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { CheckOutlined, ExclamationCircleFilled, SwapOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
 import { Checkbox, Modal, Select, Space, Typography } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import { history } from '@umijs/max';
 import styles from './index.less';
 
 const ORGANIZATION_TIP_VSIBLE_KEY = 'odc_organization_tip_visible';

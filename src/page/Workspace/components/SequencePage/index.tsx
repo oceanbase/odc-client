@@ -35,10 +35,10 @@ import {
   EditOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Layout, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';

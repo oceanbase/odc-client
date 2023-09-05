@@ -16,11 +16,11 @@
 
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, LockOutlined } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Badge, Dropdown, Menu, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import { LockResultSetHint } from '@/component/LockResultSetHint';
 import SQLLintResult from '@/component/SQLLintResult';

@@ -15,8 +15,8 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { Button } from 'antd';
 import { FormattedMessage } from '@umijs/max';
+import { Button } from 'antd';
 
 export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
   return [

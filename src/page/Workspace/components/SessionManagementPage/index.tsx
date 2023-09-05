@@ -19,10 +19,10 @@ import { IDatabaseSession } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { sortNumber, sortString } from '@/util/utils';
 import { SyncOutlined } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Input, Layout, message, Space, Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import { getDatabaseSessionList, killSessions } from '@/common/network/sessionParams';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';

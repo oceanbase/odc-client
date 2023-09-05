@@ -84,7 +84,9 @@ export const OperationContent: React.FC<IProps> = (props) => {
               ) : (
                 <Space>
                   <OperationItem option={item} onClick={onClick} />
-                  { otherContent && <div style={{ color: 'var(--neutral-black45-color)' }}>{otherContent}</div>}
+                  {otherContent && (
+                    <div style={{ color: 'var(--neutral-black45-color)' }}>{otherContent}</div>
+                  )}
                 </Space>
               )}
             </Tooltip>

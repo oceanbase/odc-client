@@ -15,13 +15,12 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Space, Form, Select, Input } from 'antd';
-import _ from 'lodash';
-import { DeleteOutlined } from '@ant-design/icons';
-import styles from './index.less';
-import { useEffect, useLayoutEffect, useState, useRef } from 'react';
-import { EOperator, Expression, ExpressionMap, OperatorMap } from '../interface';
 import { ICondition } from '@/d.ts/riskDetectRule';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Space } from 'antd';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { EOperator, Expression, ExpressionMap, OperatorMap } from '../interface';
+import styles from './index.less';
 import { Operator } from './InnerRiskLevel';
 const checkIsTags = (condition: ICondition): boolean => {
   return checkMultipleOrTags(condition?.operator) && checkIsProNameOrDBName(condition?.expression);

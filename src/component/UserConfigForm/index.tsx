@@ -15,8 +15,8 @@
  */
 
 import InputBigNumber from '@/component/InputBigNumber';
-import { DragInsertTypeText, SQLSessionModeText } from '@/constant/label';
-import { AutoCommitMode, DragInsertType, IUserConfig, SQLSessionMode } from '@/d.ts';
+import { DragInsertTypeText } from '@/constant/label';
+import { AutoCommitMode, DragInsertType, IUserConfig } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { Form, Radio, Select, Space } from 'antd';

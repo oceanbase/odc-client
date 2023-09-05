@@ -16,17 +16,15 @@
 
 import { listRiskLevels } from '@/common/network/riskLevel';
 import { IRiskLevel } from '@/d.ts/riskLevel';
+import { Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import { RiskLevelMap } from '../interface';
 import InnerRiskLevel from './components/InnerRiskLevel';
-import { Spin } from 'antd';
 
-function genRiskLevel(
-  riskLevel: IRiskLevel,
-): {
+function genRiskLevel(riskLevel: IRiskLevel): {
   label: string;
   value: number;
   origin: IRiskLevel;

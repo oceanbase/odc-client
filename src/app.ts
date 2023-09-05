@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { setLocale } from '@umijs/max';
+import React from 'react';
 import { initMetaStore } from './common/metaStore';
 import DndHTML5Provider from './component/DndHTML5Provider';
 import registerPlugins from './plugins/register';

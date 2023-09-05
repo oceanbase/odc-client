@@ -64,9 +64,8 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.componentType ===
         ComponentType.INPUT_STRING
       ) {
-        activeProperties[
-          `${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`
-        ] = rawData[activeKey] ? rawData[activeKey] : null;
+        activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
+          rawData[activeKey] ? rawData[activeKey] : null;
       } else {
         activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
           rawData[activeKey] !== -1 ? rawData[activeKey] : null;

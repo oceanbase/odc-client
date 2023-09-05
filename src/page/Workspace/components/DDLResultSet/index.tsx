@@ -48,11 +48,11 @@ import Icon, {
   VerticalLeftOutlined,
   VerticalRightOutlined,
 } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { useControllableValue, useUpdate } from 'ahooks';
 import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import styles from './index.less';

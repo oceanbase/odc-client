@@ -16,10 +16,10 @@
 
 import Node from '@/component/TreeNode';
 import Icon from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Menu } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { PureComponent } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import ProcedureSvg from '@/svgr/Stored-procedure.svg';
 

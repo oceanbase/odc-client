@@ -16,9 +16,9 @@
 
 import { IPage } from '@/d.ts';
 import { QuestionCircleFilled } from '@ant-design/icons';
+import { FormattedMessage } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import { Component, ReactNode } from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 import styles from './index.less';
 

@@ -40,9 +40,9 @@ import { CommonStore } from '@/store/common';
 import { PageStore } from '@/store/page';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import { history } from '@umijs/max';
 import { clone } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { history } from '@umijs/max';
 import TitleButton from '../TitleButton';
 
 interface IProps {

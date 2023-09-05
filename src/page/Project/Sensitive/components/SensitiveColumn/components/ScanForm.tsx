@@ -29,10 +29,10 @@ import {
   Table,
   Tooltip,
 } from 'antd';
+import classnames from 'classnames';
 import { ScanTableDataItem } from '../../../interface';
 import styles from './index.less';
 import ScanRule from './SacnRule';
-import classnames from 'classnames';
 const ScanForm = ({
   formRef,
   _formRef,
@@ -162,8 +162,7 @@ const ScanForm = ({
             <Button onClick={resetSearch}>
               {
                 formatMessage({
-                  id:
-                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Repossess',
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Repossess',
                 }) /* 重置 */
               }
             </Button>
@@ -318,8 +317,7 @@ const ScanForm = ({
                           },
                           {
                             title: formatMessage({
-                              id:
-                                'odc.SensitiveColumn.components.ScanForm.DesensitizationAlgorithm',
+                              id: 'odc.SensitiveColumn.components.ScanForm.DesensitizationAlgorithm',
                             }),
                             //脱敏算法
                             width: 180,

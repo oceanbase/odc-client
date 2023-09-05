@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Component } from 'react';
 import { formatMessage, FormattedMessage } from '@umijs/max';
+import { Component } from 'react';
 
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 // compatible

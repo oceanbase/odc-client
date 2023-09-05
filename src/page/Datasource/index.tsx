@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import PageContainer, { TitleType } from '@/component/PageContainer';
-import { formatMessage } from '@/util/intl';
-import { EllipsisOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from '@umijs/max';
-import { Button, Dropdown, message, Modal, Space } from 'antd';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { history, useParams } from '@umijs/max';
-import Info from './Info';
-import Recycle from './Recycle';
-import Session from './Session';
 import {
   deleteConnection,
   getConnectionDetail,
   getConnectionList,
 } from '@/common/network/connection';
+import PageContainer, { TitleType } from '@/component/PageContainer';
 import { actionTypes } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
 import setting from '@/store/setting';
 import OBSvg from '@/svgr/source_ob.svg';
+import { formatMessage } from '@/util/intl';
+import { EllipsisOutlined } from '@ant-design/icons';
+import { history, Link, useNavigate, useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
+import { Button, Dropdown, message, Modal, Space } from 'antd';
 import { isNumber } from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Info from './Info';
 import OBClientPage from './OBClient';
+import Recycle from './Recycle';
+import Session from './Session';
 const ExtraContent = ({
   cid,
   name,

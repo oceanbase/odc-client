@@ -17,8 +17,8 @@
 import type { ODCErrorsCode } from '@/d.ts';
 import loginStore from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Modal } from 'antd';
 import { history } from '@umijs/max';
+import { Modal } from 'antd';
 
 const lockStore = {
   PermissionChanged: null,

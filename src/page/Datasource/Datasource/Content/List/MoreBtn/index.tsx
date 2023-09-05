@@ -16,6 +16,7 @@
 
 import { deleteConnection } from '@/common/network/connection';
 import { actionTypes, IConnection } from '@/d.ts';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import {
@@ -25,11 +26,10 @@ import {
   QuestionCircleFilled,
 } from '@ant-design/icons';
 import { Dropdown, message, Modal } from 'antd';
-import React, { useContext } from 'react';
-import ParamContext from '../../../ParamContext';
-import { ModalStore } from '@/store/modal';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { inject, observer } from 'mobx-react';
+import React, { useContext } from 'react';
+import ParamContext from '../../../ParamContext';
 import styles from './index.less';
 interface IProps {
   connection: IConnection;

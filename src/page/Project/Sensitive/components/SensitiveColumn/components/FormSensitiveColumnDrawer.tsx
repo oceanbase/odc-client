@@ -441,12 +441,10 @@ const FormSensitiveColumnDrawer = ({
       title={
         addSensitiveColumnType === AddSensitiveColumnType.Manual
           ? formatMessage({
-              id:
-                'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ManuallyAddSensitiveColumns',
+              id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ManuallyAddSensitiveColumns',
             }) //手动添加敏感列
           : formatMessage({
-              id:
-                'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ScanToAddSensitiveColumns',
+              id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ScanToAddSensitiveColumns',
             }) //扫描添加敏感列
       }
       width={addSensitiveColumnType === AddSensitiveColumnType.Manual ? 800 : 724}

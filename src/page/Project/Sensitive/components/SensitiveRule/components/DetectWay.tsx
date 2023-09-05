@@ -230,8 +230,7 @@ const DetectWay = ({
                 >
                   {
                     formatMessage({
-                      id:
-                        'odc.src.page.Project.Sensitive.components.SensitiveRule.components.LookAtTheDocumentation',
+                      id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.LookAtTheDocumentation',
                     }) /* 
                   查看文档
                  */

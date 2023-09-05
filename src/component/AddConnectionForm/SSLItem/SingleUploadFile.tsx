@@ -17,11 +17,11 @@
 import { uploadSSLFileUrl } from '@/common/network/other';
 import { formatMessage } from '@/util/intl';
 import { UploadOutlined } from '@ant-design/icons';
+import { getLocale } from '@umijs/max';
 import { Button, Upload } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { getLocale } from '@umijs/max';
 
 interface IProps {
   label?: string;

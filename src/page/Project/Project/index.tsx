@@ -23,6 +23,7 @@ import PageContainer, { TitleType } from '@/component/PageContainer';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { setDefaultProject } from '@/service/projectHistory';
 import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
 import { Empty, List, Space, Spin } from 'antd';
@@ -31,7 +32,6 @@ import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
-import { setDefaultProject } from '@/service/projectHistory';
 
 const titleOptions: { label: string; value: 'all' | 'deleted' }[] = [
   {

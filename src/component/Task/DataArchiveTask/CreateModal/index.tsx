@@ -468,8 +468,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 required: true,
                 message: formatMessage({
-                  id:
-                    'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
+                  id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
                 }), //'请选择插入策略'
               },
             ]}

@@ -17,9 +17,9 @@
 import { localeList } from '@/constant';
 import odc from '@/plugins/odc';
 import { defaultLocale, formatMessage } from '@/util/intl';
+import { getLocale, setLocale } from '@umijs/max';
 import { Menu } from 'antd';
 import React from 'react';
-import { getLocale, setLocale } from '@umijs/max';
 import DropMenu from '../DropMenu';
 import MenuItem from '../DropMenu/MenuItem';
 

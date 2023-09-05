@@ -221,8 +221,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Text type="secondary">
                 {
                   formatMessage({
-                    id:
-                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>
