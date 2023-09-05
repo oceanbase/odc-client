@@ -122,6 +122,9 @@ const Database: React.FC<IProps> = ({ id }) => {
     >
       <MiniTable<IDatabase>
         rowKey={'id'}
+        scroll={{
+          x: 920,
+        }}
         columns={[
           {
             title: formatMessage({ id: 'odc.Project.Database.DatabaseName' }), //数据库名称
@@ -169,7 +172,7 @@ const Database: React.FC<IProps> = ({ id }) => {
               };
             }),
             filterMultiple: false,
-            width: 100,
+            width: 80,
             render(value, record, index) {
               return (
                 <Tag color={record?.environment?.style?.toLowerCase()}>
@@ -187,6 +190,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
             dataIndex: 'collationName',
             width: 120,
+            ellipsis: true,
           },
           {
             title: formatMessage({ id: 'odc.Project.Database.LastSynchronizationTime' }), //上一次同步时间
@@ -199,7 +203,7 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: formatMessage({ id: 'odc.Project.Database.Operation' }), //操作
             dataIndex: 'name',
-            width: 200,
+            width: 180,
             render(_, record) {
               if (!record.existed) {
                 return '-';
