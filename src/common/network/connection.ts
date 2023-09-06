@@ -171,7 +171,17 @@ export async function testConnection(
   return res;
 }
 
-export async function testExsitConnection(formData: Partial<IConnection>, testSys?: boolean) {
+export async function testExsitConnection(
+  formData: Partial<IConnection>,
+  testSys?: boolean,
+): Promise<{
+  data: {
+    active: boolean;
+    errorCode: string;
+    errorMessage: string;
+    type: string;
+  };
+}> {
   const cloneFormData = { ...formData };
   cloneFormData.password = encrypt(cloneFormData.password);
   const ret = await request.post(`/api/v2/connect/test`, {
@@ -187,12 +197,18 @@ export async function testExsitConnection(formData: Partial<IConnection>, testSy
   return ret;
 }
 
-export async function batchTest(cids: number[]): Promise<
-  {
-    active: boolean;
-    sid: number;
-    sidString?: string;
-  }[]
+export async function batchTest(
+  cids: number[],
+): Promise<
+  Record<
+    number,
+    {
+      errorCode: string;
+      errorMessage: string;
+      status: any;
+      type: any;
+    }
+  >
 > {
   const res = await request.get('/api/v2/datasource/datasources/status', {
     params: {
@@ -282,7 +298,9 @@ export async function newSessionByDataSource(
   return data;
 }
 
-export async function getSessionStatus(sessionId?: string): Promise<{
+export async function getSessionStatus(
+  sessionId?: string,
+): Promise<{
   settings: {
     autocommit: boolean;
     delimiter: string;
@@ -328,7 +346,9 @@ export async function getConnectionExists(params: { name: string }): Promise<boo
 /**
  * 获取集群 & 租户列表
  */
-export async function getClusterAndTenantList(visibleScope: IConnectionType): Promise<{
+export async function getClusterAndTenantList(
+  visibleScope: IConnectionType,
+): Promise<{
   tenantName: Record<string, string[]>;
   clusterName: Record<string, string[]>;
 }> {
