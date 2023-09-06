@@ -27,6 +27,7 @@ interface IProps {
   name?: string;
   projectId?: number;
   extra?: string;
+  width?: string;
   onChange?: (v: number) => void;
 }
 const { Text } = Typography;
@@ -40,6 +41,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     name = 'databaseId',
     projectId,
     extra = '',
+    width = '320px',
     onChange,
   } = props;
   const [database, setDatabase] = useState([]);
@@ -159,9 +161,13 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         placeholder={formatMessage({
           id: 'odc.component.DatabaseSelect.PleaseSelect',
         })}
-        /*请选择*/ style={{
-          width: '320px',
-        }}
+        /*请选择*/ style={
+          width
+            ? {
+                width,
+              }
+            : null
+        }
         options={databaseOptions}
         onChange={handleDatabaseChange}
       />
