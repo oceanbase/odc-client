@@ -172,11 +172,14 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             databaseName,
           }}
         >
-          <DatabaseSelect
-            onChange={(v) => form.resetFields(['tableName', 'columns'])}
-            projectId={projectId}
-          />
           <Row gutter={14}>
+            <Col span={12}>
+              <DatabaseSelect
+                onChange={(v) => form.resetFields(['tableName', 'columns'])}
+                projectId={projectId}
+                width="100%"
+              />
+            </Col>
             <Col span={12}>
               <Form.Item
                 rules={[
