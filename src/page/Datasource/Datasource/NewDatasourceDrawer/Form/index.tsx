@@ -16,7 +16,7 @@
 
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
-import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
+import { AccountType, ConnectType, ConnectionMode, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
@@ -150,7 +150,12 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         originDatasource,
       }}
     >
-      <Form initialValues={{}} layout="vertical" form={form} requiredMark="optional">
+      <Form
+        initialValues={haveOCP() ? { type: ConnectionMode.OB_ORACLE } : {}}
+        layout="vertical"
+        form={form}
+        requiredMark="optional"
+      >
         {isEdit ? (
           <Form.Item
             rules={[{ required: true, max: 32 }]}
