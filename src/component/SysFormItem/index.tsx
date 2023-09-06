@@ -122,8 +122,8 @@ const SysFormItem: React.FC<IProps> = function (props) {
     if (!res?.data?.active) {
       setStatus('error');
       notification.error({
-        track: res?.errMsg || res?.data?.errorMessage,
-        requestId: res?.requestId,
+        track: res?.data?.errorMessage,
+        requestId: null,
       });
     } else {
       setStatus('success');
