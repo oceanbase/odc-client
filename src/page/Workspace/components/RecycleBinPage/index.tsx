@@ -603,7 +603,7 @@ export default function WrapRecycleBin(props: Omit<IProps, 'session'>) {
         return !session ? (
           <WorkSpacePageLoading />
         ) : (
-          <RecycleBin key={session?.sessonId} session={session} {...props} />
+          <RecycleBin key={session?.sessionId} session={session} {...props} />
         );
       }}
     </SessionContextWrap>
