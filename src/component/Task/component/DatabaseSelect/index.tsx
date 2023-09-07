@@ -129,20 +129,22 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       name={name}
       required
       extra={
-        <Space direction="vertical" size={2}>
-          {
-            project &&
-              formatMessage(
-                {
-                  id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
-                },
-                {
-                  projectName: project.name,
-                },
-              ) //`当前项目: ${project.name}`
-          }
-          {extra && <span>{extra}</span>}
-        </Space>
+        !login.isPrivateSpace() && (
+          <Space direction="vertical" size={2}>
+            {
+              project &&
+                formatMessage(
+                  {
+                    id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
+                  },
+                  {
+                    projectName: project.name,
+                  },
+                ) //`当前项目: ${project.name}`
+            }
+            {extra && <span>{extra}</span>}
+          </Space>
+        )
       }
       rules={[
         {
