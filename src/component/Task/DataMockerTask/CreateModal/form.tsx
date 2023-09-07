@@ -19,7 +19,7 @@ import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { ConnectionMode, ITable, TaskExecStrategy } from '@/d.ts';
+import { ConnectionMode, ITable, TaskExecStrategy, TaskType } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
 import { getColumnSizeMapFromColumns } from '@/util/column';
@@ -178,6 +178,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 onChange={(v) => form.resetFields(['tableName', 'columns'])}
                 projectId={projectId}
                 width="100%"
+                type={TaskType.DATAMOCK}
               />
             </Col>
             <Col span={12}>

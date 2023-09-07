@@ -21,8 +21,10 @@ import { formatMessage } from '@/util/intl';
 import { Form, Popover, Select, Space, Tag, Typography } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
+import { IDatabase } from '@/d.ts/database';
+import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
-  type?: TaskType;
+  type: TaskType;
   label?: string;
   name?: string;
   projectId?: number;
@@ -44,16 +46,12 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     width = '320px',
     onChange,
   } = props;
-  const [database, setDatabase] = useState([]);
+  const [database, setDatabase] = useState<IDatabase[]>([]);
   const form = Form.useFormInstance();
   const databaseId = Form.useWatch(name, form);
   const databaseOptions = database
     ?.filter((item) =>
-      [TaskType.SHADOW, TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(
-        type,
-      )
-        ? item?.dataSource?.dialectType === 'OB_MYSQL'
-        : true,
+      getDataSourceModeConfig(item.dataSource?.type)?.features?.task?.includes(type),
     )
     ?.map(({ name, id, environment, dataSource, project }) => ({
       label: (

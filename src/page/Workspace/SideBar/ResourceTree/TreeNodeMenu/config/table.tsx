@@ -18,7 +18,7 @@ import { dropObject } from '@/common/network/database';
 import { getTableInfo } from '@/common/network/table';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
-import { DbObjectType, DragInsertType, ResourceTreeNodeMenuKeys } from '@/d.ts';
+import { DbObjectType, DragInsertType, ResourceTreeNodeMenuKeys, TaskType } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { openCreateTablePage, openTableViewPage } from '@/store/helper/page';
@@ -31,6 +31,7 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
@@ -110,8 +111,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       }) /*导入*/,
       actionType: actionTypes.update,
       ellipsis: true,
-      isHide: () => {
-        return !setting.enableDBImport;
+      isHide: (session) => {
+        return (
+          !setting.enableDBImport ||
+          !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+            TaskType.IMPORT,
+          )
+        );
       },
       run(session, node) {
         modalStore.changeImportModal(true, {
@@ -126,8 +132,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         formatMessage({ id: 'odc.TreeNodeMenu.config.table.Export' }), //导出
       ],
       ellipsis: true,
-      isHide: () => {
-        return !setting.enableDBExport;
+      isHide: (session) => {
+        return (
+          !setting.enableDBExport ||
+          !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+            TaskType.EXPORT,
+          )
+        );
       },
       run(session, node) {
         const table = node.data as ITableModel;

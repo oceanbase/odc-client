@@ -190,7 +190,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect projectId={projectId} />
+        <DatabaseSelect type={TaskType.ONLINE_SCHEMA_CHANGE} projectId={projectId} />
         <Form.Item
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',

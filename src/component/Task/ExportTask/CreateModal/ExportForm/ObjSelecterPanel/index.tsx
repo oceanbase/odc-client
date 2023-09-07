@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EXPORT_CONTENT, IConnection } from '@/d.ts';
+import { EXPORT_CONTENT, IConnection, TaskType } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Form, Radio } from 'antd';
@@ -94,7 +94,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnec
           </Radio.Button>
         </Radio.Group>
       </FormItem>
-      <DatabaseSelect projectId={projectId} onChange={handleChange} />
+      <DatabaseSelect type={TaskType.EXPORT} projectId={projectId} onChange={handleChange} />
       <FormItem
         label={
           formatMessage({ id: 'odc.ExportForm.ObjSelecterPanel.ExportRange' }) //导出范围

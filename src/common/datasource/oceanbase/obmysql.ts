@@ -54,8 +54,7 @@ const items: Record<
       ssl: true,
     },
     features: {
-      task: [],
-      allTask: true,
+      task: Object.values(TaskType),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
@@ -81,8 +80,7 @@ const items: Record<
       ssl: true,
     },
     features: {
-      task: [],
-      allTask: true,
+      task: Object.values(TaskType),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
@@ -109,8 +107,7 @@ const items: Record<
       defaultSchema: true,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.SQL_PLAN],
-      allTask: false,
+      task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.EXPORT_RESULT_SET],
       obclient: false,
       recycleBin: false,
       sqlExplain: false,
