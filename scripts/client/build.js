@@ -140,7 +140,13 @@ async function run() {
       return;
     }
     case 'win': {
-      execSync('npm run prepack jar obclient', { stdio: 'inherit' });
+      execSync('npm run prepack jar obclient', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          platform: 'win64',
+        }
+      });
       await buildWeb();
       await buildClient('win');
       execSync('npm run prepack jre', {
