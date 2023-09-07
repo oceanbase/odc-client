@@ -369,7 +369,7 @@ export class SQLStore {
       if (data?.invalid) {
         return {
           status: 'FAIL',
-          errorMessage: '',
+          errorMessage: 'Request Abort',
         };
       } else if (
         data?.executeResult?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS &&

@@ -29,9 +29,6 @@ dependencies:
   electron-log:
     specifier: ~4.2.4
     version: 4.2.4
-  jsencrypt:
-    specifier: ^3.3.2
-    version: 3.3.2
   qs:
     specifier: ^6.10.1
     version: 6.11.1
@@ -184,6 +181,9 @@ devDependencies:
   js-cookie:
     specifier: ^2.2.0
     version: 2.2.1
+  jsencrypt:
+    specifier: ^3.3.2
+    version: 3.3.2
   lint-staged:
     specifier: ^10.0.7
     version: 10.5.4
@@ -11221,7 +11221,7 @@ packages:
 
   /jsencrypt@3.3.2:
     resolution: {integrity: sha512-arQR1R1ESGdAxY7ZheWr12wCaF2yF47v5qpB76TtV64H1pyGudk9Hvw8Y9tb/FiTIaaTRUyaSnm5T/Y53Ghm/A==}
-    dev: false
+    dev: true
 
   /jsesc@0.5.0:
     resolution: {integrity: sha512-uZz5UnB7u4T9LvwmFqXii7pZSouaRPorGs5who1Ip7VO0wxanFvBL7GkM6dTHlgX+jhBApRetaWpnDabOeTcnA==}

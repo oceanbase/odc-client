@@ -167,6 +167,7 @@ export class PLEditPage extends PLPage {
         };
         fromPackage: true;
         plType: PLType;
+        readonly: boolean;
       }
     | {
         plPageType: PLPageType.plEdit;
@@ -177,6 +178,7 @@ export class PLEditPage extends PLPage {
         plSchema: IFunction | IProcedure | ITrigger | IType;
         fromPackage: false;
         plType: PLType;
+        readonly: boolean;
       };
   constructor(
     plType: PLType,
@@ -189,6 +191,7 @@ export class PLEditPage extends PLPage {
       | IType
       | ((IFunction | IProcedure) & { key: string; packageName: string }),
     fromPackage: boolean = false,
+    readonly: boolean = false,
   ) {
     super(plType, databaseId);
     this.pageKey = `pl-edit-plName:${plName}-dbid:${databaseId}`;
@@ -203,6 +206,7 @@ export class PLEditPage extends PLPage {
       plType,
       cid: databaseId,
       fromPackage,
+      readonly,
     };
   }
 }

@@ -16,8 +16,8 @@
 
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
-import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
+import { AccountType, ConnectType, ConnectionMode, IConnectionTestErrorType } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -157,7 +157,12 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         dataSourceConfig: dsc,
       }}
     >
-      <Form initialValues={{}} layout="vertical" form={form} requiredMark="optional">
+      <Form
+        initialValues={haveOCP() ? { type: ConnectionMode.OB_ORACLE } : {}}
+        layout="vertical"
+        form={form}
+        requiredMark="optional"
+      >
         {isEdit ? (
           <Form.Item
             rules={[{ required: true, max: 32 }]}
