@@ -48,7 +48,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       ssl: false,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.DATAMOCK, TaskType.SQL_PLAN, TaskType.EXPORT_RESULT_SET],
+      task: [TaskType.ASYNC, TaskType.DATAMOCK, TaskType.SQL_PLAN],
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
