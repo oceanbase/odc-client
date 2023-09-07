@@ -1,4 +1,4 @@
-import { ConnectType } from '@/d.ts';
+import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import OracleColumnExtra from './OracleColumnExtra';
 import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
@@ -44,8 +44,15 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
-      task: [],
-      allTask: true,
+      task: Object.values(TaskType).filter(
+        (type) =>
+          ![
+            TaskType.SHADOW,
+            TaskType.SQL_PLAN,
+            TaskType.DATA_ARCHIVE,
+            TaskType.DATA_DELETE,
+          ].includes(type),
+      ),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
@@ -75,8 +82,9 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
-      task: [],
-      allTask: true,
+      task: Object.values(TaskType).filter(
+        (type) => ![TaskType.SHADOW, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type),
+      ),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,

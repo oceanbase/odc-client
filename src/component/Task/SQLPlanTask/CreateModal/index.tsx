@@ -501,7 +501,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={defaultValue}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect projectId={projectId} />
+        <DatabaseSelect type={TaskType.SQL_PLAN} projectId={projectId} />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',

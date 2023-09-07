@@ -484,7 +484,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             <Divider style={{ margin: '8px 0px' }} />
           </Form.Item>
         ) : null}
-        <DatabaseSelect projectId={projectId} />
+        <DatabaseSelect type={TaskType.ASYNC} projectId={projectId} />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateAsyncTaskModal.SqlContent',

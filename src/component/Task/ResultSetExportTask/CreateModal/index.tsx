@@ -215,7 +215,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect projectId={projectId} />
+        <DatabaseSelect projectId={projectId} type={TaskType.EXPORT_RESULT_SET} />
         <Form.Item
           label={
             <Space>
