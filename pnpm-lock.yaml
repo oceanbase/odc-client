@@ -29,6 +29,9 @@ dependencies:
   electron-log:
     specifier: ~4.2.4
     version: 4.2.4
+  jsencrypt:
+    specifier: ^3.3.2
+    version: 3.3.2
   qs:
     specifier: ^6.10.1
     version: 6.11.1
@@ -172,9 +175,6 @@ devDependencies:
   immutability-helper:
     specifier: ^3.0.1
     version: 3.1.1
-  javascript-blowfish:
-    specifier: ^1.0.4
-    version: 1.0.4
   jest-canvas-mock:
     specifier: ^2.3.0
     version: 2.4.0
@@ -3731,7 +3731,7 @@ packages:
     dependencies:
       '@babel/core': 7.21.3
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@8.4.27)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -3758,7 +3758,7 @@ packages:
       postcss-syntax: '>=0.36.2'
     dependencies:
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@8.4.27)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
       remark: 13.0.0
       unist-util-find-all-after: 3.0.2
     transitivePeerDependencies:
@@ -11112,10 +11112,6 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /javascript-blowfish@1.0.4:
-    resolution: {integrity: sha512-vpwsowV5Bgsj7THHqqcuqvcpn4hXzjN8+CrAyEy0JOkQYq5XFHYrpWfaw/av18DlJhtwaUJYZrueAin36oSgmQ==}
-    dev: true
-
   /jest-canvas-mock@2.4.0:
     resolution: {integrity: sha512-mmMpZzpmLzn5vepIaHk5HoH3Ka4WykbSoLuG/EKoJd0x0ID/t+INo1l8ByfcUJuDM+RIsL4QDg/gDnBbrj2/IQ==}
     dependencies:
@@ -11221,6 +11217,10 @@ packages:
 
   /jsbn@0.1.1:
     resolution: {integrity: sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==}
+    dev: false
+
+  /jsencrypt@3.3.2:
+    resolution: {integrity: sha512-arQR1R1ESGdAxY7ZheWr12wCaF2yF47v5qpB76TtV64H1pyGudk9Hvw8Y9tb/FiTIaaTRUyaSnm5T/Y53Ghm/A==}
     dev: false
 
   /jsesc@0.5.0:
@@ -13333,7 +13333,7 @@ packages:
     dependencies:
       htmlparser2: 3.10.1
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@8.4.27)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
     dev: true
 
   /postcss-image-set-function@4.0.7(postcss@8.4.27):
@@ -13628,6 +13628,33 @@ packages:
     dependencies:
       lodash: 4.17.21
       postcss: 8.4.27
+    dev: true
+
+  /postcss-syntax@0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
+    resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
+    peerDependencies:
+      postcss: '>=5.0.0'
+      postcss-html: '*'
+      postcss-jsx: '*'
+      postcss-less: '*'
+      postcss-markdown: '*'
+      postcss-scss: '*'
+    peerDependenciesMeta:
+      postcss-html:
+        optional: true
+      postcss-jsx:
+        optional: true
+      postcss-less:
+        optional: true
+      postcss-markdown:
+        optional: true
+      postcss-scss:
+        optional: true
+    dependencies:
+      postcss: 7.0.39
+      postcss-html: 0.36.0(postcss-syntax@0.36.2)(postcss@7.0.39)
+      postcss-less: 3.1.4
+      postcss-scss: 2.1.1
     dev: true
 
   /postcss-syntax@0.36.2(postcss@8.4.27):
@@ -16463,7 +16490,7 @@ packages:
       postcss-sass: 0.4.4
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.0.11
-      postcss-syntax: 0.36.2(postcss@8.4.27)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
       slash: 3.0.0

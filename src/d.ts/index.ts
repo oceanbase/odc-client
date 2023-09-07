@@ -2812,7 +2812,6 @@ export interface ServerSystemInfo {
    * 模拟数据条数限制
    */
   mockDataMaxRowCount?: number;
-  encryptionSecret?: string;
   // 是否开启 登录验证码
   captchaEnabled?: boolean;
   spmEnabled?: boolean;
