@@ -180,6 +180,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
     return {
       ..._node,
       externalFlowInstanceUrl: node?.externalFlowInstanceUrl,
+      externalApprovalName: node?.externalApprovalName,
     };
   };
 
@@ -391,9 +392,11 @@ const TaskFlow: React.FC<IProps> = (props) => {
           hasDeadlineTimeLabel,
           autoApprove,
           externalFlowInstanceUrl,
+          externalApprovalName,
           nodeType,
           taskType,
         } = item;
+        const isExternalFlow = !!externalFlowInstanceUrl;
         switch (taskType) {
           /**
            * 新版逻辑 Node 封装
@@ -443,25 +446,30 @@ const TaskFlow: React.FC<IProps> = (props) => {
 
                             /*处理人*/
                           >
-                            <Space>
-                              <UserPopover
-                                name={operator?.name}
-                                accountName={operator?.accountName}
-                                roles={operator?.roleNames}
-                              />
+                            {isExternalFlow ? (
+                              '外部审批'
+                            ) : (
+                              <Space>
+                                <UserPopover
+                                  name={operator?.name}
+                                  accountName={operator?.accountName}
+                                  roles={operator?.roleNames}
+                                />
 
-                              {autoApprove && (
-                                <span className={styles.description}>
-                                  {
-                                    formatMessage({
-                                      id: 'odc.component.CommonTaskDetailModal.TaskFlow.AutomaticApproval',
-                                    })
+                                {autoApprove && (
+                                  <span className={styles.description}>
+                                    {
+                                      formatMessage({
+                                        id:
+                                          'odc.component.CommonTaskDetailModal.TaskFlow.AutomaticApproval',
+                                      })
 
-                                    /*(自动审批)*/
-                                  }
-                                </span>
-                              )}
-                            </Space>
+                                      /*(自动审批)*/
+                                    }
+                                  </span>
+                                )}
+                              </Space>
+                            )}
                           </Descriptions.Item>
                         )}
 
@@ -474,10 +482,8 @@ const TaskFlow: React.FC<IProps> = (props) => {
 
                             /*可处理人*/
                           >
-                            {externalFlowInstanceUrl ? (
-                              formatMessage({
-                                id: 'odc.component.CommonDetailModal.TaskFlow.ExternalApproval',
-                              }) //外部审批
+                            {isExternalFlow ? (
+                              externalApprovalName
                             ) : (
                               <MultiLineOverflowText
                                 className={styles.approverWrapper}
@@ -512,11 +518,12 @@ const TaskFlow: React.FC<IProps> = (props) => {
                         >
                           <Space>
                             {statusContent?.text}
-                            {externalFlowInstanceUrl && (
+                            {isExternalFlow && (
                               <a href={externalFlowInstanceUrl} target="_blank" rel="noreferrer">
                                 {
                                   formatMessage({
-                                    id: 'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
+                                    id:
+                                      'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
                                   })
                                   /*查看审批详情*/
                                 }

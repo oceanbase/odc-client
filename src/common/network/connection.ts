@@ -173,7 +173,17 @@ export async function testConnection(
   return res;
 }
 
-export async function testExsitConnection(formData: Partial<IConnection>, testSys?: boolean) {
+export async function testExsitConnection(
+  formData: Partial<IConnection>,
+  testSys?: boolean,
+): Promise<{
+  data: {
+    active: boolean;
+    errorCode: string;
+    errorMessage: string;
+    type: string;
+  };
+}> {
   const cloneFormData = { ...formData };
   cloneFormData.password = encrypt(cloneFormData.password);
   const ret = await request.post(`/api/v2/connect/test`, {
@@ -192,11 +202,15 @@ export async function testExsitConnection(formData: Partial<IConnection>, testSy
 export async function batchTest(
   cids: number[],
 ): Promise<
-  {
-    active: boolean;
-    sid: number;
-    sidString?: string;
-  }[]
+  Record<
+    number,
+    {
+      errorCode: string;
+      errorMessage: string;
+      status: any;
+      type: any;
+    }
+  >
 > {
   const res = await request.get('/api/v2/datasource/datasources/status', {
     params: {

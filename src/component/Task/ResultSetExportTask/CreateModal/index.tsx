@@ -70,7 +70,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(true);
   };
   const hadleReset = () => {
-    form.resetFields(null);
+    form.resetFields();
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -197,8 +197,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         name="basic"
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
-          databaseId: resultSetExportData?.databaseId,
-          tableName: resultSetExportData?.tableName,
+          databaseId: null,
+          tableName: null,
           fileFormat: EXPORT_TYPE.CSV,
           fileEncoding: IMPORT_ENCODING.UTF8,
           maxRows: 1000,

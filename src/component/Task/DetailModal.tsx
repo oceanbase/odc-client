@@ -412,7 +412,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       />
       <ApprovalModal
         type={type}
-        id={isCycleTask(type) ? task?.approveInstanceId : detailId}
+        id={
+          isCycleTask(type) || type === TaskType.ALTER_SCHEDULE ? task?.approveInstanceId : detailId
+        }
         visible={approvalVisible}
         status={task?.status}
         approvalStatus={approvalStatus}

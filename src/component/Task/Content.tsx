@@ -32,21 +32,9 @@ import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import React from 'react';
-import AlterDDLTaskCreateModal from './AlterDdlTask';
-import AsyncTaskCreateModal from './AsyncTask';
 import TaskTable from './component/TaskTable';
-import DataArchiveTaskCreateModal from './DataArchiveTask';
-import DataClearTaskCreateModal from './DataClearTask';
-import DataMockerTaskCreateModal from './DataMockerTask';
 import DetailModal from './DetailModal';
-import ExportTaskCreateModal from './ExportTask';
 import { isCycleTaskPage } from './helper';
-import ImportTaskCreateModal from './ImportTask';
-import PartitionTaskCreateModal from './PartitionTask';
-import ResultSetExportTask from './ResultSetExportTask';
-import ShadowSyncTaskCreateModal from './ShadowSyncTask';
-import SQLPlanTaskCreateModal from './SQLPlanTask';
-
 import styles from './index.less';
 import tracert from '@/util/tracert';
 
@@ -58,7 +46,6 @@ interface IProps {
   tabHeight?: number;
   projectId?: number;
   isMultiPage?: boolean;
-  theme?: string;
 }
 
 interface IState {
@@ -275,7 +262,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { projectId, pageKey, taskStore, isMultiPage = false, theme = '' } = this.props;
+    const { pageKey, taskStore, isMultiPage = false } = this.props;
     const { detailId, detailType, detailVisible, partitionPlan, cycleTasks, tasks } = this.state;
     const taskTabType = pageKey || taskStore?.taskPageType;
     const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
@@ -302,17 +289,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
           onDetailVisible={this.handleDetailVisible}
           onReloadList={this.reloadList}
         />
-        <AsyncTaskCreateModal projectId={projectId} theme={theme} />
-        <DataMockerTaskCreateModal projectId={projectId} />
-        <ExportTaskCreateModal projectId={projectId} />
-        <ImportTaskCreateModal projectId={projectId} />
-        <PartitionTaskCreateModal projectId={projectId} />
-        <SQLPlanTaskCreateModal projectId={projectId} theme={theme} />
-        <ShadowSyncTaskCreateModal projectId={projectId} />
-        <DataArchiveTaskCreateModal projectId={projectId} />
-        <DataClearTaskCreateModal projectId={projectId} />
-        <AlterDDLTaskCreateModal projectId={projectId} />
-        <ResultSetExportTask projectId={projectId} theme={theme} />
       </>
     );
   }

@@ -20,7 +20,13 @@ import { Dropdown, Empty, Input, message, Modal, Popover, Spin, Tree, TreeDataNo
 import ResourceTree from '..';
 import ResourceLayout from '../Layout';
 
-import { deleteConnection, getDataSourceGroupByProject } from '@/common/network/connection';
+import {
+  batchTest,
+  deleteConnection,
+  getConnectionDetail,
+  getDataSourceGroupByProject,
+  testExsitConnection,
+} from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
@@ -94,9 +100,25 @@ export default forwardRef(function DatasourceTree(props, ref) {
     return map;
   }, [data?.contents]);
 
-  const { data: db, reset, run: runListDatabases, loading: dbLoading } = useRequest(listDatabases, {
-    manual: true,
-  });
+  const { data: db, reset, run: _runListDatabases, loading: dbLoading } = useRequest(
+    listDatabases,
+    {
+      manual: true,
+    },
+  );
+
+  async function runListDatabases(...args: Parameters<typeof _runListDatabases>) {
+    if (login.isPrivateSpace()) {
+      const ds = await getConnectionDetail(args[1]);
+      const result = await testExsitConnection(ds);
+      if (!result?.data?.active) {
+        message.error(result?.data?.errorMessage || 'Connect Failed');
+        setSelectKeys([]);
+        return;
+      }
+    }
+    await _runListDatabases(...args);
+  }
 
   useEffect(() => {
     console.log(selectKeys?.[0]);

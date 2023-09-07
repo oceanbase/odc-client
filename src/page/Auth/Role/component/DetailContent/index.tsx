@@ -32,6 +32,13 @@ import styles from '../../index.less';
 import { permissionMap, resourceManagementTypeOptions } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
 
+const defaultSystemOperationPermission = [
+  {
+    label: '环境',
+    value: IManagerResourceType.environment,
+  },
+];
+
 const getColumns = (roles: IManagerRole[]) => {
   return [
     {
@@ -197,6 +204,7 @@ const getResourceColumns = (
 
 const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
   const { typeOptions } = permissionMap[type];
+  const allTypeOptions = [...typeOptions, ...defaultSystemOperationPermission];
   const actionsFilter = [
     {
       text: formatMessage({
@@ -220,14 +228,14 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
 
       // 对象类型
       ellipsis: true,
-      filters: typeOptions.map(({ label, value }) => ({
+      filters: allTypeOptions.map(({ label, value }) => ({
         text: label,
         value,
       })),
 
       onFilter: (value, record) => record?.resourceType === value,
       render: (resourceType) => {
-        return <span>{typeOptions?.find((item) => item.value === resourceType)?.label}</span>;
+        return <span>{allTypeOptions?.find((item) => item.value === resourceType)?.label}</span>;
       },
     },
 
@@ -250,8 +258,11 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
 };
 
 export const getPermissionsTypes = (value: Partial<IManagerRole>) => {
-  const { connectionAccessPermissions, resourceManagementPermissions, systemOperationPermissions } =
-    value;
+  const {
+    connectionAccessPermissions,
+    resourceManagementPermissions,
+    systemOperationPermissions,
+  } = value;
   const types = [];
   if (connectionAccessPermissions?.length) {
     types.push({
