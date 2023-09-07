@@ -74,6 +74,27 @@ function SessionManagementPage(props: IProps) {
     fetchDatabaseSessionList();
   }, [session?.sessionId]);
 
+  // 过滤搜索关键词
+  const filteredRows = sessionList?.filter((session) =>
+    [
+      `${session.sessionId}`,
+      session.dbUser,
+      session.database,
+      session.command,
+      session.srcIp,
+      session.status,
+      session.obproxyIp,
+      session.sql,
+    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
+  );
+
+  const statusFilter = [...new Set(filteredRows?.map((item) => item.status) ?? [])]?.map(
+    (item) => ({
+      text: item,
+      value: item,
+    }),
+  );
+
   const columns: ColumnsType<IDatabaseSession> = [
     {
       title: formatMessage({
@@ -127,9 +148,11 @@ function SessionManagementPage(props: IProps) {
       }),
 
       dataIndex: 'status',
-      width: 65,
+      width: 105,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.status, b.status),
       sortDirections: ['descend', 'ascend'],
+      filters: statusFilter,
+      onFilter: (value: string, record) => record.status === value,
     },
 
     {
@@ -192,20 +215,6 @@ function SessionManagementPage(props: IProps) {
       sortDirections: ['descend', 'ascend'],
     });
   }
-
-  // 过滤搜索关键词
-  const filteredRows = sessionList?.filter((session) =>
-    [
-      `${session.sessionId}`,
-      session.dbUser,
-      session.database,
-      session.command,
-      session.srcIp,
-      session.status,
-      session.obproxyIp,
-      session.sql,
-    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
-  );
 
   /**
    * 关闭会话查询
