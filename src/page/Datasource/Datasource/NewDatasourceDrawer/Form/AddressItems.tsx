@@ -23,9 +23,7 @@ import React, { useContext } from 'react';
 import DatasourceFormContext from './context';
 import styles from './index.less';
 import InstanceSelect from './InstanceSelect';
-
 interface IProps {}
-
 const AddressItems: React.FC<IProps> = function (props) {
   const { isEdit, dataSourceConfig } = useContext(DatasourceFormContext);
   const renderConnectInfo = () => {
@@ -66,10 +64,12 @@ const AddressItems: React.FC<IProps> = function (props) {
                 style={{
                   marginBottom: 16,
                 }}
-                label={formatMessage({
-                  id: 'odc.component.AddConnectionForm.AddressItems.HostIp',
-                })}
-                /*主机 IP*/
+                label={
+                  formatMessage({
+                    id:
+                      'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.HostIPDomainName',
+                  }) //"主机 IP/域名"
+                }
                 rules={[
                   {
                     required: true,
@@ -114,7 +114,6 @@ const AddressItems: React.FC<IProps> = function (props) {
                       id: 'odc.AddConnectionDrawer.AddConnectionForm.EnterThePortNumber',
                     }),
                   },
-
                   {
                     validator: checkNumberRange(0, 65535),
                   },
@@ -191,7 +190,6 @@ const AddressItems: React.FC<IProps> = function (props) {
       </div>
     );
   };
-
   return (
     <>
       <div className="ant-form-item-label">
@@ -205,5 +203,4 @@ const AddressItems: React.FC<IProps> = function (props) {
     </>
   );
 };
-
 export default AddressItems;

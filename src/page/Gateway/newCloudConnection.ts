@@ -176,7 +176,7 @@ export const action = async (config: INewCloudConnection) => {
   if (!pass) {
     return 'Connect Failed';
   }
-  updateConnectionFromConnection({
+  await updateConnectionFromConnection({
     ...targetConnection,
     passwordSaved: true,
     password: password,
