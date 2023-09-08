@@ -25,25 +25,26 @@ import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import PartitionPolicyTable from '../../../../page/Workspace/components/PartitionPolicyTable';
 import DatabaseSelect from '../../component/DatabaseSelect';
-
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
   FIRST_DAY_OF_MONTH = 'FIRST_DAY_OF_MONTH',
   LAST_DAY_OF_MONTH = 'LAST_DAY_OF_MONTH',
   NONE = 'NONE',
 }
-
 export const inspectOptions = [
   {
     label: formatMessage({
       id: 'odc.components.PartitionDrawer.NoInspectionRequired',
-    }), //无需巡检
+    }),
+    //无需巡检
     value: IPartitionPlanInspectTriggerStrategy.NONE,
     desc: '',
   },
-
   {
-    label: formatMessage({ id: 'odc.components.PartitionDrawer.EveryDay' }), //每天
+    label: formatMessage({
+      id: 'odc.components.PartitionDrawer.EveryDay',
+    }),
+    //每天
     value: IPartitionPlanInspectTriggerStrategy.EVERY_DAY,
     desc: formatMessage({
       id: 'odc.components.PartitionDrawer.EveryDayCheckTheNewly',
@@ -52,7 +53,8 @@ export const inspectOptions = [
   {
     label: formatMessage({
       id: 'odc.components.PartitionDrawer.FirstDayOfEachMonth',
-    }), //每月第一天
+    }),
+    //每月第一天
     value: IPartitionPlanInspectTriggerStrategy.FIRST_DAY_OF_MONTH,
     desc: formatMessage({
       id: 'odc.components.PartitionDrawer.OnTheFirstDayOf',
@@ -61,7 +63,8 @@ export const inspectOptions = [
   {
     label: formatMessage({
       id: 'odc.components.PartitionDrawer.LastDayOfEachMonth',
-    }), //每月最后一天
+    }),
+    //每月最后一天
     value: IPartitionPlanInspectTriggerStrategy.LAST_DAY_OF_MONTH,
     desc: formatMessage({
       id: 'odc.components.PartitionDrawer.OnTheLastDayOf',
@@ -71,12 +74,10 @@ export const inspectOptions = [
 
 // 4.0.0 版本不支持 巡检周期设置
 export const enabledInspectTriggerStrategy = false;
-
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
     const { modalStore, projectId } = props;
@@ -87,7 +88,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
     const [form] = Form.useForm();
     const databaseId = Form.useWatch('databaseId', form);
-
     const loadData = async () => {
       if (!databaseId) {
         return;
@@ -95,7 +95,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       const res = await getPartitionPlan({
         databaseId,
       });
-
       setPartitionPlans(
         res?.tablePartitionPlans?.map((item, index) => ({
           ...item,
@@ -103,7 +102,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         })),
       );
     };
-
     const onClose = useCallback(() => {
       form.resetFields();
       setDisabledSubmit(true);
@@ -111,19 +109,18 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       setPartitionPlans([]);
       modalStore.changePartitionModal(false);
     }, [modalStore]);
-
     const closeWithConfirm = useCallback(() => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.PartitionDrawer.AreYouSureYouWant',
-        }), //确认取消新建分区计划吗？
+        }),
+        //确认取消新建分区计划吗？
         centered: true,
         onOk() {
           onClose();
         },
       });
     }, [onClose]);
-
     const handleSubmit = async () => {
       try {
         const values = await form.validateFields();
@@ -144,7 +141,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             },
           },
         };
-
         setConfirmLoading(true);
         const resCount = await createTask(params);
         setConfirmLoading(false);
@@ -156,7 +152,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         console.log(e);
       }
     };
-
     const handlePlansConfigChange = (values: IPartitionPlanRecord[]) => {
       const newPartitionPlans = partitionPlans?.map((item) => {
         const planValue = values.find((value) => value.id === item.id);
@@ -164,29 +159,24 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       });
       setPartitionPlans(newPartitionPlans);
     };
-
     const checkPartitionPlanExist = async () => {
       const isExist = await checkConnectionPartitionPlan(databaseId);
       setHasPartitionPlan(isExist);
     };
-
     useEffect(() => {
       if (partitionVisible && databaseId) {
         checkPartitionPlanExist();
       }
     }, [partitionVisible, databaseId]);
-
     useEffect(() => {
       if (partitionPlans?.length) {
         const disabledSubmit = partitionPlans?.some((item) => !item.detail);
         setDisabledSubmit(disabledSubmit);
       }
     }, [partitionPlans]);
-
     useEffect(() => {
       loadData();
     }, [databaseId]);
-
     return (
       <Drawer
         visible={partitionVisible}
@@ -195,9 +185,13 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         width={720}
         title={formatMessage({
           id: 'odc.components.PartitionDrawer.CreateAPartitionPlan',
-        })} /*新建分区计划*/
-        footer={
-          <Space style={{ float: 'right' }}>
+        })}
+        /*新建分区计划*/ footer={
+          <Space
+            style={{
+              float: 'right',
+            }}
+          >
             <Button onClick={closeWithConfirm}>
               {
                 formatMessage({
@@ -243,7 +237,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             type={TaskType.PARTITION_PLAN}
             extra={
               hasPartitionPlan
-                ? '当前数据库已存在一个分区计划，任务审批通过后，原分区计划将终止'
+                ? formatMessage({
+                    id:
+                      'odc.src.component.Task.PartitionTask.CreateModal.TheCurrentDatabaseAlreadyHas',
+                  }) //'当前数据库已存在一个分区计划，任务审批通过后，原分区计划将终止'
                 : null
             }
           />
@@ -258,12 +255,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   <Form.Item
                     label={formatMessage({
                       id: 'odc.components.PartitionDrawer.InspectionCycle',
-                    })} /*巡检周期*/
-                    name="inspectTriggerStrategy"
+                    })}
+                    /*巡检周期*/ name="inspectTriggerStrategy"
                     required
                     extra={option.desc}
                   >
-                    <Select style={{ width: 120 }} options={inspectOptions} />
+                    <Select
+                      style={{
+                        width: 120,
+                      }}
+                      options={inspectOptions}
+                    />
                   </Form.Item>
                 );
               }}
@@ -294,5 +296,4 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     );
   }),
 );
-
 export default CreateModal;

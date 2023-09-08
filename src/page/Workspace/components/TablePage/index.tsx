@@ -283,7 +283,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                   })}
                   key={PropsTab.DDL}
                 >
-                  <TableDDL />
+                  <TableDDL key={version.current} />
                 </TabPane>
               </Tabs>
             </TabPane>

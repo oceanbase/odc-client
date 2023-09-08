@@ -35,17 +35,14 @@ import dataSourceConfig from './config';
 import { getAllConnectTypes, getDsByConnectType } from '@/common/datasource';
 
 const Option = Select.Option;
-
 export interface IFormRef {
   form: FormInstance<IDatasource>;
 }
-
 interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
   isPersonal?: boolean;
 }
-
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
   { isEdit, originDatasource, isPersonal }: IProps,
   ref,
@@ -55,14 +52,12 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
   const type: ConnectType = Form.useWatch('type', form);
 
   const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
-
   const [testResult, setTestResult] = useState<{
     active: boolean;
     errorCode: IConnectionTestErrorType;
     errorMessage: string;
     type: ConnectType;
   }>();
-
   useImperativeHandle(
     ref,
     () => {
@@ -72,9 +67,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     },
     [form],
   );
-
   const { data: environments, loading } = useRequest(listEnvironments);
-
   async function test() {
     setTestResult(null);
     let values;
@@ -93,7 +86,12 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     if (!values) {
       return;
     }
-    const params = isEdit ? { ...originDatasource, ...values } : values;
+    const params = isEdit
+      ? {
+          ...originDatasource,
+          ...values,
+        }
+      : values;
     const res = await testConnection(params, AccountType.MAIN, true);
     if (res?.errMsg) {
       setTestResult({
@@ -158,18 +156,35 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
       }}
     >
       <Form
-        initialValues={haveOCP() ? { type: ConnectionMode.OB_ORACLE } : {}}
+        initialValues={
+          haveOCP()
+            ? {
+                type: ConnectionMode.OB_ORACLE,
+              }
+            : {}
+        }
         layout="vertical"
         form={form}
         requiredMark="optional"
       >
         {isEdit ? (
           <Form.Item
-            rules={[{ required: true, max: 32 }]}
-            label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.DataSourceName' })}
+            rules={[
+              {
+                required: true,
+                max: 32,
+              },
+            ]}
+            label={formatMessage({
+              id: 'odc.NewDatasourceDrawer.Form.DataSourceName',
+            })}
             /*数据源名称*/ name={'name'}
           >
-            <Input style={{ width: '100%' }} />
+            <Input
+              style={{
+                width: '100%',
+              }}
+            />
           </Form.Item>
         ) : null}
         <DBTypeItem />
@@ -204,18 +219,34 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                 <AddressItems />
                 <Account isEdit={isEdit} />
                 <Form.Item
-                  rules={[{ required: true }]}
-                  label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Environment' })}
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                  label={formatMessage({
+                    id: 'odc.NewDatasourceDrawer.Form.Environment',
+                  })}
                   /*环境*/ name={'environmentId'}
                 >
-                  <Select loading={loading} style={{ width: 208 }}>
+                  <Select
+                    loading={loading}
+                    style={{
+                      width: 208,
+                    }}
+                  >
                     {environments?.map((env) => {
                       return <Option value={env.id}>{env.name}</Option>;
                     })}
                   </Select>
                 </Form.Item>
                 {!haveOCP() && (
-                  <Space style={{ width: '100%' }} direction="vertical">
+                  <Space
+                    style={{
+                      width: '100%',
+                    }}
+                    direction="vertical"
+                  >
                     <Form.Item shouldUpdate noStyle>
                       {({ getFieldValue }) => {
                         return !dsc?.sys ? null : (
