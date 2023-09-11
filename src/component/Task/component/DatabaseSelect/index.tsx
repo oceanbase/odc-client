@@ -49,9 +49,13 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch(name, form);
   const databaseOptions = database
     ?.filter((item) =>
-      [TaskType.SHADOW, TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(
-        type,
-      )
+      [
+        TaskType.PARTITION_PLAN,
+        TaskType.SHADOW,
+        TaskType.SQL_PLAN,
+        TaskType.DATA_ARCHIVE,
+        TaskType.DATA_DELETE,
+      ]?.includes(type)
         ? item?.dataSource?.dialectType === 'OB_MYSQL'
         : true,
     )
