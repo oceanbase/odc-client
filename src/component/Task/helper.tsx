@@ -167,7 +167,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           label: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
           }),
-          enabled: true,
+          enabled: !isClient(),
         },
         {
           value: TaskPageType.DATA_ARCHIVE,
