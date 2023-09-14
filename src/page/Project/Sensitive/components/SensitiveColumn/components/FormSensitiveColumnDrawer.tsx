@@ -236,6 +236,7 @@ const FormSensitiveColumnDrawer = ({
     reset();
     setScanTableData(defaultScanTableData);
     setOriginScanTableData(defaultScanTableData);
+    setSensitiveColumnMap(new Map());
     const rawData = await formRef.validateFields().catch();
     if (rawData.databaseIds?.includes(-1)) {
       rawData.allDatabases = true;
@@ -290,6 +291,7 @@ const FormSensitiveColumnDrawer = ({
     }
     setSubmiting(true);
     const res = await batchCreateSensitiveColumns(context.projectId, data);
+    setSubmiting(false);
     if (res) {
       tracert.click('a3112.b64002.c330861.d367391');
       message.success(
@@ -298,7 +300,6 @@ const FormSensitiveColumnDrawer = ({
       onOk();
       reset();
       resetScanTableData();
-      setSubmiting(false);
     } else {
       message.error(
         formatMessage({
@@ -479,7 +480,7 @@ const FormSensitiveColumnDrawer = ({
               disabled={
                 addSensitiveColumnType === AddSensitiveColumnType.Manual
                   ? submiting
-                  : sensitiveColumnMap?.size === 0 || submiting
+                  : (sensitiveColumnMap?.size === 0 || submiting)
               }
               onClick={
                 addSensitiveColumnType === AddSensitiveColumnType.Manual

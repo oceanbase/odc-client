@@ -27,6 +27,7 @@ interface IProps {
   name?: string;
   projectId?: number;
   extra?: string;
+  width?: string;
   onChange?: (v: number) => void;
 }
 const { Text } = Typography;
@@ -40,6 +41,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     name = 'databaseId',
     projectId,
     extra = '',
+    width = '320px',
     onChange,
   } = props;
   const [database, setDatabase] = useState([]);
@@ -47,9 +49,13 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch(name, form);
   const databaseOptions = database
     ?.filter((item) =>
-      [TaskType.SHADOW, TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(
-        type,
-      )
+      [
+        TaskType.PARTITION_PLAN,
+        TaskType.SHADOW,
+        TaskType.SQL_PLAN,
+        TaskType.DATA_ARCHIVE,
+        TaskType.DATA_DELETE,
+      ]?.includes(type)
         ? item?.dataSource?.dialectType === 'OB_MYSQL'
         : true,
     )
@@ -129,7 +135,8 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       extra={
         <Space direction="vertical" size={2}>
           {
-            project &&
+            !login.isPrivateSpace() &&
+              !!project &&
               formatMessage(
                 {
                   id: 'odc.component.DatabaseSelect.CurrentProjectProjectname',
@@ -159,9 +166,13 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         placeholder={formatMessage({
           id: 'odc.component.DatabaseSelect.PleaseSelect',
         })}
-        /*请选择*/ style={{
-          width: '320px',
-        }}
+        /*请选择*/ style={
+          width
+            ? {
+                width,
+              }
+            : null
+        }
         options={databaseOptions}
         onChange={handleDatabaseChange}
       />

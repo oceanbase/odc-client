@@ -122,7 +122,9 @@ export const action = async (config: INewCloudConnection) => {
   if (!connectionList) {
     return 'Get Conneciton List Failed';
   }
-  let targetConnection = connectionList?.contents?.find((c) => c.tenantName === params.tenantName);
+  let targetConnection = connectionList?.contents?.find(
+    (c) => c.tenantName === params.tenantName && c.username === params.username,
+  );
   if (!targetConnection) {
     /**
      * 不存在的话，需要新建一个
@@ -176,7 +178,7 @@ export const action = async (config: INewCloudConnection) => {
   if (!pass) {
     return 'Connect Failed';
   }
-  updateConnectionFromConnection({
+  await updateConnectionFromConnection({
     ...targetConnection,
     passwordSaved: true,
     password: password,

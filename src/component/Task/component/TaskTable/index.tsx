@@ -98,7 +98,8 @@ export const TaskTypeMap = {
   //计划变更
   [TaskType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ExportResultSet',
-  }), //'导出结果集'
+  }),
+  //'导出结果集'
   [TaskType.SQL_PLAN]: formatMessage({
     id: 'odc.component.TaskTable.SqlPlan',
   }),
@@ -406,7 +407,6 @@ const TaskTable: React.FC<IProps> = inject(
     ].includes(taskTabType);
     const menus = getTaskGroupLabels()?.filter((item) => !!item.groupName);
     const activeTaskLabel = getTaskLabelByType(taskTabType);
-
     return (
       <CommonTable
         ref={tableRef}
@@ -456,7 +456,14 @@ const TaskTable: React.FC<IProps> = inject(
                 }
               : {
                   type: IOperationOptionType.button,
-                  content: `新建${activeTaskLabel}`,
+                  content: formatMessage(
+                    {
+                      id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                    },
+                    {
+                      activeTaskLabel: activeTaskLabel,
+                    },
+                  ), //`新建${activeTaskLabel}`
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskTabType);

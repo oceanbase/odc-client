@@ -19,7 +19,14 @@ import { ClusterStore } from '@/store/cluster';
 import { formatMessage } from '@/util/intl';
 import { Cascader, Form, Input, Space, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { forwardRef, useContext, useImperativeHandle, useMemo, useRef } from 'react';
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import DatasourceFormContext from '../context';
 
 interface IProps {
@@ -48,6 +55,10 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
   const clusterRef = useRef<any>();
   const tenantRef = useRef<any>();
   const { form } = useContext(DatasourceFormContext);
+
+  useEffect(() => {
+    clusterStore.loadClusterList();
+  }, []);
 
   const options = useMemo(() => {
     let result = [];
@@ -107,9 +118,8 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                   innerValue = [cluster, tenant].filter(Boolean);
                 }
                 function onChange({ tenantId, cluster }) {
-                  const tenantMode = tenantListMap[cluster]?.find(
-                    (t) => t.tenantId === tenantId,
-                  )?.tenantMode;
+                  const tenantMode = tenantListMap[cluster]?.find((t) => t.tenantId === tenantId)
+                    ?.tenantMode;
                   form?.setFieldsValue({
                     clusterName: cluster,
                     tenantName: tenantId,
