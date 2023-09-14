@@ -16,7 +16,7 @@
 
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
-import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
+import { AccountType, ConnectType, ConnectionMode, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
@@ -31,34 +31,27 @@ import DBTypeItem from './DBTypeItem';
 import ParseURLItem from './ParseURLItem';
 import SSLItem from './SSLItem';
 import SysForm from './SysForm';
-
 const Option = Select.Option;
-
 export interface IFormRef {
   form: FormInstance<IDatasource>;
 }
-
 interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
   isPersonal?: boolean;
 }
-
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
   { isEdit, originDatasource, isPersonal }: IProps,
   ref,
 ) {
   const [form] = Form.useForm();
-
   const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
-
   const [testResult, setTestResult] = useState<{
     active: boolean;
     errorCode: IConnectionTestErrorType;
     errorMessage: string;
     type: ConnectType;
   }>();
-
   useImperativeHandle(
     ref,
     () => {
@@ -68,9 +61,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     },
     [form],
   );
-
   const { data: environments, loading } = useRequest(listEnvironments);
-
   async function test() {
     setTestResult(null);
     let values;
@@ -89,7 +80,12 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     if (!values) {
       return;
     }
-    const params = isEdit ? { ...originDatasource, ...values } : values;
+    const params = isEdit
+      ? {
+          ...originDatasource,
+          ...values,
+        }
+      : values;
     const res = await testConnection(params, AccountType.MAIN, true);
     if (res?.errMsg) {
       setTestResult({
@@ -138,7 +134,6 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     }
     setTestResult(res?.data);
   }
-
   return (
     <DatasourceFormContext.Provider
       value={{
@@ -150,27 +145,63 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         originDatasource,
       }}
     >
-      <Form initialValues={{}} layout="vertical" form={form} requiredMark="optional">
+      <Form
+        initialValues={
+          haveOCP()
+            ? {
+                type: ConnectionMode.OB_ORACLE,
+              }
+            : {}
+        }
+        layout="vertical"
+        form={form}
+        requiredMark="optional"
+      >
         {isEdit ? (
           <Form.Item
-            rules={[{ required: true, max: 32 }]}
-            label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.DataSourceName' })}
+            rules={[
+              {
+                required: true,
+                max: 32,
+              },
+            ]}
+            label={formatMessage({
+              id: 'odc.NewDatasourceDrawer.Form.DataSourceName',
+            })}
             /*数据源名称*/ name={'name'}
           >
-            <Input style={{ width: '100%' }} />
+            <Input
+              style={{
+                width: '100%',
+              }}
+            />
           </Form.Item>
         ) : null}
         <DBTypeItem />
         <Form.Item
-          rules={[{ required: true }]}
-          label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Type' })} /*类型*/
-          name={'type'}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          label={formatMessage({
+            id: 'odc.NewDatasourceDrawer.Form.Type',
+          })}
+          /*类型*/ name={'type'}
           noStyle={haveOCP() ? true : false}
         >
           <Select
             disabled={isEdit}
-            placeholder="请选择类型"
-            style={{ width: 208, display: haveOCP() ? 'none' : 'inline-block' }}
+            placeholder={
+              formatMessage({
+                id:
+                  'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType',
+              }) /* 请选择类型 */
+            }
+            style={{
+              width: 208,
+              display: haveOCP() ? 'none' : 'inline-block',
+            }}
           >
             <Option value={ConnectType.OB_MYSQL}>OceanBase MySQL</Option>
             <Option value={ConnectType.OB_ORACLE}>OceanBase Oracle</Option>
@@ -195,18 +226,34 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                 <AddressItems />
                 <Account isEdit={isEdit} />
                 <Form.Item
-                  rules={[{ required: true }]}
-                  label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Environment' })}
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                  label={formatMessage({
+                    id: 'odc.NewDatasourceDrawer.Form.Environment',
+                  })}
                   /*环境*/ name={'environmentId'}
                 >
-                  <Select loading={loading} style={{ width: 208 }}>
+                  <Select
+                    loading={loading}
+                    style={{
+                      width: 208,
+                    }}
+                  >
                     {environments?.map((env) => {
                       return <Option value={env.id}>{env.name}</Option>;
                     })}
                   </Select>
                 </Form.Item>
                 {!haveOCP() && (
-                  <Space style={{ width: '100%' }} direction="vertical">
+                  <Space
+                    style={{
+                      width: '100%',
+                    }}
+                    direction="vertical"
+                  >
                     <Form.Item shouldUpdate noStyle>
                       {({ getFieldValue }) => {
                         return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (

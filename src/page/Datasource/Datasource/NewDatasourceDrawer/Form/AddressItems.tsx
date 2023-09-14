@@ -23,9 +23,7 @@ import React, { useContext } from 'react';
 import DatasourceFormContext from './context';
 import styles from './index.less';
 import InstanceSelect from './InstanceSelect';
-
 interface IProps {}
-
 const AddressItems: React.FC<IProps> = function (props) {
   const { isEdit } = useContext(DatasourceFormContext);
   const renderConnectInfo = () => {
@@ -37,8 +35,7 @@ const AddressItems: React.FC<IProps> = function (props) {
             label={formatMessage({
               id: 'odc.component.AddConnectionForm.AddressItems.ClusterName',
             })}
-            /*集群名*/
-            style={{
+            /*集群名*/ style={{
               marginBottom: 16,
             }}
           >
@@ -59,8 +56,7 @@ const AddressItems: React.FC<IProps> = function (props) {
             label={formatMessage({
               id: 'odc.component.AddConnectionForm.AddressItems.TenantName',
             })}
-            /*租户名*/
-            name="tenantName"
+            /*租户名*/ name="tenantName"
             style={{
               marginBottom: 16,
             }}
@@ -72,7 +68,6 @@ const AddressItems: React.FC<IProps> = function (props) {
                 }),
                 //请输入租户名
               },
-
               {
                 validator: validTrimEmptyWithWarn(
                   formatMessage({
@@ -95,7 +90,6 @@ const AddressItems: React.FC<IProps> = function (props) {
         </Col>
       </>
     );
-
     return (
       <div className={styles.inlineForm}>
         <div>
@@ -106,10 +100,12 @@ const AddressItems: React.FC<IProps> = function (props) {
                 style={{
                   marginBottom: 16,
                 }}
-                label={formatMessage({
-                  id: 'odc.component.AddConnectionForm.AddressItems.HostIp',
-                })}
-                /*主机 IP*/
+                label={
+                  formatMessage({
+                    id:
+                      'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.HostIPDomainName',
+                  }) //"主机 IP/域名"
+                }
                 rules={[
                   {
                     required: true,
@@ -150,7 +146,6 @@ const AddressItems: React.FC<IProps> = function (props) {
                       id: 'odc.AddConnectionDrawer.AddConnectionForm.EnterThePortNumber',
                     }),
                   },
-
                   {
                     validator: checkNumberRange(0, 65535),
                   },
@@ -182,7 +177,6 @@ const AddressItems: React.FC<IProps> = function (props) {
       </div>
     );
   };
-
   return (
     <>
       <div className="ant-form-item-label">
@@ -196,5 +190,4 @@ const AddressItems: React.FC<IProps> = function (props) {
     </>
   );
 };
-
 export default AddressItems;

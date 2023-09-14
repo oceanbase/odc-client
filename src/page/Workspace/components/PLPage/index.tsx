@@ -579,7 +579,10 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       /**
        * 已经处于debug状态，说明是重新调试，只需要设置一下参数就行了
        */
-      this.getDebug()?.recoverDebug(plParams, anonymousBlockDdl);
+      this.getDebug()?.recoverDebug(
+        plParams,
+        plFormatSchema.plType === PLType.ANONYMOUSBLOCK ? plFormatSchema.ddl : anonymousBlockDdl,
+      );
       this.setState({
         showEditPLParamsModal: false,
         defaultAnonymousBlockDdl: '',
@@ -911,7 +914,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       switch (params?.plPageType) {
         case PLPageType.plEdit: {
           let newParams;
-          let ddl;
+          let ddl = params.scriptText;
           if (!this.isPackageProgram()) {
             if (plType === PL_TYPE.FUNCTION) {
               const newFunc = await getFunctionByFuncName(
@@ -1131,11 +1134,9 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   }
   private isEditorReadonly = () => {
     const { debug } = this.state;
-    const plSchema = this.getFormatPLSchema();
-    return (
-      (plSchema.plName && this.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL) ||
-      debug
-    );
+    const isReadonly =
+      PLPageType.plEdit === this.props.params.plPageType && this.props.params?.readonly;
+    return isReadonly || debug;
   };
   private getStatusBarDebugStatus() {
     const debug = this.getDebug();

@@ -19,6 +19,7 @@ import { formatMessage } from '@/util/intl';
 import Content from './Content';
 import styles from './index.less';
 import Sider from './Sider';
+import CreateModals from './CreateModals';
 export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
     case TaskType.DATA_ARCHIVE:
@@ -75,7 +76,8 @@ const TaskManaerPage = (props) => {
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content projectId={projectId} theme="white" />
+        <Content projectId={projectId} />
+        <CreateModals projectId={projectId} theme="white" />
       </div>
     </>
   );
