@@ -92,11 +92,19 @@ const RuleContent: React.FC<IRuleContentProps> = (props) => {
   const [isEditing, _setIsEditing] = useState(false);
   const itemRef = useRef<FormInstance>();
   let emptyShowFunc;
-  let { dbMode, columnType, ruleType, readonly, value, columnSizeMap, columnName, onChange } =
-    props;
+  let {
+    dbMode,
+    columnType,
+    ruleType,
+    readonly,
+    value,
+    columnSizeMap,
+    columnName,
+    onChange,
+  } = props;
   const maxLength = columnSizeMap?.[columnName];
   columnType = convertColumnType(columnType);
-  const ruleItem = columnTypeToRuleMap[dbMode][columnType];
+  const ruleItem = columnTypeToRuleMap[dbMode]?.[columnType];
   const setIsEditing = useCallback(
     (isEditing: boolean, newValue?: any) => {
       _setIsEditing(isEditing);
