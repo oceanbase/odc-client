@@ -35,6 +35,7 @@ import {
 } from './const';
 import styles from './index.less';
 import type {
+  ICascaderContent,
   IFilterContent,
   IOperationContent,
   IRowSelecter,
@@ -65,6 +66,7 @@ interface IProps<RecordType> {
   titleContent: ITitleContent;
   // 表头操作栏 筛选区配置
   filterContent?: IFilterContent;
+  cascaderContent?: ICascaderContent;
   // 是否展示表头 刷新按钮
   enabledReload?: boolean;
   // 表头操作栏 自定义操作区配置
@@ -99,6 +101,7 @@ const CommonTable: <RecordType extends object = any>(
     titleContent,
     filterContent,
     operationContent,
+    cascaderContent,
     isSplit = false,
     rowSelecter,
     rowSelectedCallback = (selectedRowKeys: any[]) => {},
@@ -115,6 +118,7 @@ const CommonTable: <RecordType extends object = any>(
     valuePropName: 'filterValue',
     trigger: 'onChange',
   });
+  const [cascaderValue, setCascaderValue] = useState<string[]>([]);
   const [sorter, setSorter] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -217,6 +221,7 @@ const CommonTable: <RecordType extends object = any>(
     setPagination(null);
     onChange?.({
       searchValue,
+      cascaderValue,
       filters: _filter,
       sorter,
       pagination: null,
@@ -229,6 +234,19 @@ const CommonTable: <RecordType extends object = any>(
     setPagination(null);
     onChange?.({
       searchValue: value,
+      cascaderValue,
+      filters,
+      sorter,
+      pagination: null,
+      pageSize,
+    });
+  }
+  function handleCascaderValueChangee(value: string[]) {
+    setCascaderValue(value);
+    setPagination(null);
+    onChange?.({
+      searchValue,
+      cascaderValue: value,
       filters,
       sorter,
       pagination: null,
@@ -247,6 +265,7 @@ const CommonTable: <RecordType extends object = any>(
     setPagination(paginationValue);
     onChange?.({
       searchValue,
+      cascaderValue,
       filters: _filter,
       sorter: _sorter,
       pagination: paginationValue,
@@ -350,6 +369,16 @@ const CommonTable: <RecordType extends object = any>(
           loading={loading}
           titleContent={titleContent}
           filterContent={filterContent}
+          cascaderContent={
+            cascaderContent
+              ? {
+                  ...cascaderContent,
+                  onChange: (value, selectedOptions) => {
+                    handleCascaderValueChangee(value);
+                  },
+                }
+              : null
+          }
           operationContent={operationContent}
           isSplit={isSplit}
           params={{

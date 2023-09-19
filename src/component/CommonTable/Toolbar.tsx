@@ -15,12 +15,13 @@
  */
 
 import { SyncOutlined } from '@ant-design/icons';
-import { Space } from 'antd';
+import { Cascader, Space } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { FilterContent, OperationContent, TitleContent } from './component';
 import styles from './index.less';
 import type {
+  ICascaderContent,
   IFilterContent,
   IOperationContent,
   ITableLoadOptions,
@@ -31,6 +32,7 @@ interface IProps {
   loading: boolean;
   titleContent: ITitleContent;
   filterContent: IFilterContent;
+  cascaderContent?: ICascaderContent;
   operationContent: IOperationContent;
   isSplit: boolean;
   params: ITableLoadOptions;
@@ -47,6 +49,7 @@ export const Toolbar: React.FC<IProps> = (props) => {
     titleContent,
     filterContent,
     operationContent,
+    cascaderContent,
     isSplit,
     loading,
     params,
@@ -62,6 +65,7 @@ export const Toolbar: React.FC<IProps> = (props) => {
       {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
       {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
       <Space split={isSplit ? '|' : null} size={16}>
+        {cascaderContent && <Cascader {...cascaderContent} multiple maxTagCount="responsive" />}
         {filterContent && (
           <FilterContent
             {...filterContent}

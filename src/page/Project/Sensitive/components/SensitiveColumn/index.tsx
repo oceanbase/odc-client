@@ -28,11 +28,11 @@ import {
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IResponseData } from '@/d.ts';
-import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
+import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import { formatMessage } from '@/util/intl';
-import { DownOutlined } from '@ant-design/icons';
-import { Button, Menu, message, Modal, Space } from 'antd';
+import Icon, { DownOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Drawer, Menu, message, Modal, Popover, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { debounce } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -41,14 +41,17 @@ import SensitiveContext from '../../SensitiveContext';
 import EditModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
 import tracert from '@/util/tracert';
+import NewManualForm from './components/ManualForm';
+import TableOutlined from '@/svgr/menuTable.svg';
+import ViewSvg from '@/svgr/menuView.svg';
+import styles from './index.less';
 
 const getColumns: ({
   handleStatusSwitch,
   handleEdit,
   handleDelete,
-  dataSourceFilters,
-  databaseFilters,
   maskingAlgorithmFilters,
+  maskingAlgorithms,
   dataSourceIdMap,
   hasRowSelected,
   maskingAlgorithmIdMap,
@@ -56,9 +59,8 @@ const getColumns: ({
   handleStatusSwitch,
   handleEdit,
   handleDelete,
-  dataSourceFilters,
-  databaseFilters,
   maskingAlgorithmFilters,
+  maskingAlgorithms,
   dataSourceIdMap,
   hasRowSelected,
   maskingAlgorithmIdMap,
@@ -69,77 +71,56 @@ const getColumns: ({
       width: 170,
       dataIndex: 'datasource',
       key: 'datasource',
-      filters: dataSourceFilters,
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: '170px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          },
-        };
-      },
-      render: (text, record, index) => (
-        <TooltipContent
-          content={dataSourceIdMap[record?.database?.dataSource?.id]}
-          maxWdith={170}
-        />
-      ),
+      ellipsis: true,
+      render: (text, record, index) => dataSourceIdMap[record?.database?.dataSource?.id],
     },
     {
       title: formatMessage({ id: 'odc.components.SensitiveColumn.DatabaseSchema' }), //数据库/schema
       width: 170,
       dataIndex: 'database',
       key: 'database',
-      filters: databaseFilters,
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: '170px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          },
-        };
-      },
-      render: (text, record, index) => (
-        <TooltipContent content={record?.database?.name} maxWdith={170} />
-      ),
+      ellipsis: true,
+      render: (text, record, index) => record?.database?.name,
     },
     {
-      title: formatMessage({ id: 'odc.components.SensitiveColumn.Table' }), //表
+      title: '表/视图', //表
       width: 170,
       dataIndex: 'tableName',
       key: 'tableName',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: '170px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          },
-        };
-      },
-      render: (text, record, index) => <TooltipContent content={text} maxWdith={170} />,
+      ellipsis: true,
+      render: (text, record, index) => (
+        <span
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span
+            style={{
+              display: 'flex',
+              lineHeight: 1,
+              fontSize: 14,
+              color: 'var(--icon-color-disable)',
+            }}
+          >
+            <Icon
+              component={
+                record?.type === ESensitiveColumnType.TABLE_COLUMN ? TableOutlined : ViewSvg
+              }
+            />
+          </span>
+          <TooltipContent content={text} maxWdith={170} />
+        </span>
+      ),
     },
     {
       title: formatMessage({ id: 'odc.components.SensitiveColumn.Column' }), //列
       width: 170,
       dataIndex: 'columnName',
       key: 'columnName',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: '170px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          },
-        };
-      },
-      render: (text, record, index) => <TooltipContent content={text} maxWdith={170} />,
+      ellipsis: true,
+      render: (text, record, index) => text, //<TooltipContent content={text} maxWdith={170} />,
     },
     {
       title: formatMessage({ id: 'odc.components.SensitiveColumn.DesensitizationAlgorithm' }), //脱敏算法
@@ -147,12 +128,31 @@ const getColumns: ({
       dataIndex: 'maskingAlgorithmId',
       key: 'maskingAlgorithmId',
       filters: maskingAlgorithmFilters,
-      render: (text, record, index) => (
-        <TooltipContent
-          content={maskingAlgorithmIdMap[record?.maskingAlgorithmId]}
-          maxWdith={170}
-        />
-      ),
+      ellipsis: true,
+      render: (text, record, index) => {
+        const target = maskingAlgorithms?.find(
+          (maskingAlgorithm) => maskingAlgorithm?.id === record?.maskingAlgorithmId,
+        );
+        return (
+          <Popover
+            placement="left"
+            title={maskingAlgorithmIdMap?.[record?.maskingAlgorithmId]}
+            content={
+              <Descriptions column={1} style={{ width: '250px' }}>
+                <Descriptions.Item label="脱敏方式">
+                  {MaskRyleTypeMap?.[target?.type]}
+                </Descriptions.Item>
+                <Descriptions.Item label="测试数据">{target?.sampleContent}</Descriptions.Item>
+                <Descriptions.Item label="结果预览">{target?.maskedContent}</Descriptions.Item>
+              </Descriptions>
+            }
+          >
+            <div className={styles.hover}>
+              {maskingAlgorithmIdMap?.[record?.maskingAlgorithmId]}
+            </div>
+          </Popover>
+        );
+      },
     },
     {
       title: formatMessage({ id: 'odc.components.SensitiveColumn.EnableStatus' }), //启用状态
@@ -213,9 +213,8 @@ const getColumns: ({
 };
 const SensitiveColumn = ({
   projectId,
-  dataSourceFilters,
-  databaseFilters,
   maskingAlgorithmFilters,
+  cascaderOptions,
   initSensitiveColumn,
 }) => {
   const tableRef = useRef<ITableInstance>();
@@ -230,6 +229,7 @@ const SensitiveColumn = ({
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
   );
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [sensitiveColumn, setSensitiveColumn] = useState<IResponseData<ISensitiveColumn>>(null);
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -258,11 +258,29 @@ const SensitiveColumn = ({
       },
     ],
   };
+
   const loadData = async (args: ITableLoadOptions) => {
-    const { searchValue, filters, sorter, pagination, pageSize } = args ?? {};
-    const { enabled, datasource, database, maskingAlgorithmId } = filters ?? {};
+    const {
+      searchValue,
+      filters,
+      sorter,
+      pagination,
+      pageSize,
+      cascaderValue = [undefined, undefined],
+    } = args ?? {};
+    const datasource = [];
+    const database = [];
+    const { enabled, maskingAlgorithmId } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
+    cascaderValue?.forEach((cv) => {
+      if (Array.isArray(cv) && cv.length === 1) {
+        datasource.push(cv?.[0]);
+      }
+      if (Array.isArray(cv) && cv.length === 2) {
+        database.push(cv?.[1]);
+      }
+    });
     const wrapArgs = (args) => {
       if (Array.isArray(args)) {
         return args;
@@ -325,7 +343,6 @@ const SensitiveColumn = ({
     setMaskingAlgorithmId(maskingAlgorithmId);
     setSensitiveColumnIds(ids);
     setModalVisible(true);
-    tableRef.current?.resetSelectedRows();
   };
 
   const handleStatusSwitch = async (id: number, enabled: boolean) => {
@@ -334,6 +351,8 @@ const SensitiveColumn = ({
       message.success(
         formatMessage({ id: 'odc.components.SensitiveColumn.UpdatedSuccessfully' }), //更新成功
       );
+
+      tableRef.current?.resetSelectedRows();
     } else {
       message.error(
         formatMessage({ id: 'odc.components.SensitiveColumn.UpdateFailed' }), //更新失败
@@ -377,9 +396,8 @@ const SensitiveColumn = ({
     handleStatusSwitch,
     handleEdit,
     handleDelete,
-    dataSourceFilters,
-    databaseFilters,
     maskingAlgorithmFilters,
+    maskingAlgorithms,
     dataSourceIdMap: dataSourceIdMap,
     maskingAlgorithmIdMap: maskingAlgorithmIdMap,
   });
@@ -410,7 +428,8 @@ const SensitiveColumn = ({
           key={AddSensitiveColumnType.Manual}
           onClick={() => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Manual);
-            handleOpenEditSensitiveColumnDrawer();
+            // handleOpenEditSensitiveColumnDrawer();
+            setModalOpen(true);
             tracert.click('a3112.b64002.c330861.d367388');
           }}
         >
@@ -443,6 +462,10 @@ const SensitiveColumn = ({
             id: 'odc.components.SensitiveColumn.EnterATableNameColumn',
           }), //请输入表名/列名
         }}
+        cascaderContent={{
+          options: cascaderOptions,
+          placeholder: '请选择数据源和库',
+        }}
         operationContent={{
           options: operationOptions,
         }}
@@ -465,6 +488,7 @@ const SensitiveColumn = ({
         {...{
           isEdit,
           visible,
+          projectId,
           onClose,
           onOk,
           addSensitiveColumnType,
@@ -484,6 +508,16 @@ const SensitiveColumn = ({
           initSensitiveColumn,
         }}
       />
+
+      {modalOpen && (
+        <NewManualForm
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          callback={() => {
+            tableRef.current?.reload?.();
+          }}
+        />
+      )}
     </>
   );
 };

@@ -159,7 +159,9 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
 
                 dataSource: dataSource,
                 rowKey: 'id',
-                pagination: false,
+                pagination: {
+                  pageSize: 4,
+                },
                 scroll: {
                   x: 564,
                 },
