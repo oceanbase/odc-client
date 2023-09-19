@@ -30,6 +30,7 @@ import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { message } from 'antd';
+import { listDatabases } from '@/common/network/database';
 export interface INewCloudConnection {
   action: 'newCloudConnection';
   data: IRemoteNewCloudConnectionData | string;
@@ -66,7 +67,13 @@ function resolveRemoteData(inputData: IRemoteNewCloudConnectionData): Partial<ID
   }
   return data;
 }
-
+async function getDefaultSchema(dsId: number, userName: string) {
+  const res = await listDatabases(null, dsId, 1, 999);
+  const databases = res?.contents;
+  const informationSchema = databases.find((d) => d.name === 'information_schema');
+  const sameName = databases.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  return informationSchema?.id || sameName?.id || databases?.[0]?.id;
+}
 async function newConnection(params: Partial<IConnection>, password: string) {
   const envs = await listEnvironments();
   const targetConnection = await createConnection({
@@ -181,6 +188,7 @@ export const action = async (config: INewCloudConnection) => {
       }
       const connection = await newConnection(params, v.password);
       if (connection) {
+        targetConnection = connection;
         pass = true;
         return;
       }
@@ -221,5 +229,10 @@ export const action = async (config: INewCloudConnection) => {
       password: password,
     });
   }
-  gotoSQLWorkspace(null, targetConnection?.id, null, true);
+  gotoSQLWorkspace(
+    null,
+    targetConnection?.id,
+    await getDefaultSchema(targetConnection?.id, targetConnection?.username),
+    true,
+  );
 };
