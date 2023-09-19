@@ -51,6 +51,7 @@ const EditModal = ({
       );
       setModalVisible(false);
       tableRef.current?.reload();
+      tableRef.current?.resetSelectedRows();
       initSensitiveColumn();
     } else {
       message.error(

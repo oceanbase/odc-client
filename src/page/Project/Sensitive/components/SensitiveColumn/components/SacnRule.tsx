@@ -20,15 +20,16 @@ import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
-import { Form, Select } from 'antd';
+import { Button, Divider, Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
 
-const ScanRule = ({ formRef, reset }) => {
+const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
   const [databaseId, setDatabaseId] = useState<number>(0);
+  const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
   const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
@@ -116,6 +117,7 @@ const ScanRule = ({ formRef, reset }) => {
     }
     reset();
   };
+
   useEffect(() => {
     initDataSources();
     initDetectRules();
@@ -209,6 +211,34 @@ const ScanRule = ({ formRef, reset }) => {
             formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
           }
           style={{ width: '244px' }}
+          open={selectOpen}
+          onDropdownVisibleChange={(visible) => {
+            initDetectRules();
+            setSelectOpen(visible);
+          }}
+          dropdownRender={(menu) => (
+            <>
+              {menu}
+              <Divider
+                style={{
+                  margin: '0px 0',
+                }}
+              />
+              <Button
+                type="link"
+                block
+                style={{
+                  textAlign: 'left',
+                }}
+                onClick={() => {
+                  setSelectOpen(false);
+                  setManageSensitiveRuleDrawerOpen(true);
+                }}
+              >
+                管理识别规则
+              </Button>
+            </>
+          )}
         />
       </Form.Item>
     </div>

@@ -26,10 +26,10 @@ import {
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IResponseData } from '@/d.ts';
+import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { formatMessage } from '@/util/intl';
-import { message, Modal, Space } from 'antd';
+import { Descriptions, message, Modal, Popover, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { DetectRuleTypeMap, FilterItemProps } from '../../interface';
@@ -38,11 +38,13 @@ import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
 import CommonTable from '@/component/CommonTable';
 import tracert from '@/util/tracert';
+import styles from './index.less';
 
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
   hanldeEditDrawerOpen;
   handleDelete;
+  maskingAlgorithms;
   maskingAlgorithmFilters;
   handleStatusSwitch;
   maskingAlgorithmIdMap;
@@ -50,6 +52,7 @@ const getColumns: (columnsFunction: {
   handleViewDrawerOpen,
   hanldeEditDrawerOpen,
   handleDelete,
+  maskingAlgorithms,
   maskingAlgorithmFilters,
   handleStatusSwitch,
   maskingAlgorithmIdMap,
@@ -120,9 +123,30 @@ const getColumns: (columnsFunction: {
           },
         };
       },
-      render: (text, record) => (
-        <TooltipContent content={maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'} />
-      ),
+      render: (text, record) => {
+        const target = maskingAlgorithms?.find(
+          (maskingAlgorithm) => maskingAlgorithm?.id === record?.maskingAlgorithmId,
+        );
+        return (
+          <Popover
+            placement="left"
+            title={maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'}
+            content={
+              <Descriptions column={1} style={{ width: '250px' }}>
+                <Descriptions.Item label="脱敏方式">
+                  {MaskRyleTypeMap?.[target?.type]}
+                </Descriptions.Item>
+                <Descriptions.Item label="测试数据">{target?.sampleContent}</Descriptions.Item>
+                <Descriptions.Item label="结果预览">{target?.maskedContent}</Descriptions.Item>
+              </Descriptions>
+            }
+          >
+            <div className={styles.hover}>
+              {maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'}
+            </div>
+          </Popover>
+        );
+      },
     },
     {
       title: formatMessage({ id: 'odc.components.SensitiveRule.EnableStatus' }), //启用状态
@@ -286,6 +310,7 @@ const SensitiveRule = ({ projectId }) => {
     handleViewDrawerOpen,
     hanldeEditDrawerOpen,
     handleDelete,
+    maskingAlgorithms,
     maskingAlgorithmIdMap,
     maskingAlgorithmFilters,
     handleStatusSwitch,

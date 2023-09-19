@@ -81,6 +81,18 @@ export async function listSensitiveColumns(
   return ret?.data;
 }
 
+export async function listColumns(projectId: number, database: number[]) {
+  const result = await request.get(
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/listColumns`,
+    {
+      params: {
+        database,
+      },
+    },
+  );
+  return result?.data;
+}
+
 export enum ScannResultType {
   CREATED = 'CREATED',
   RUNNING = 'RUNNING',

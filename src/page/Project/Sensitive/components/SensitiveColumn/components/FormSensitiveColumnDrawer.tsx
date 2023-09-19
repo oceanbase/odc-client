@@ -33,6 +33,7 @@ import styles from './index.less';
 import ManualForm from './ManualForm';
 import ScanForm from './ScanForm';
 import tracert from '@/util/tracert';
+import SensitiveRule from '../../SensitiveRule';
 
 const defaultScanTableData: Array<ScanTableData> = [];
 
@@ -42,10 +43,10 @@ const checkResult = (resData: Array<ScanTableData> = []) =>
 const FormSensitiveColumnDrawer = ({
   isEdit,
   visible,
+  projectId,
   onClose,
   onOk,
   addSensitiveColumnType,
-  initSensitiveColumn,
 }) => {
   const [formRef] = useForm();
   const [_formRef] = useForm();
@@ -55,7 +56,6 @@ const FormSensitiveColumnDrawer = ({
 
   const [scanTableData, setScanTableData] = useState<ScanTableData[]>([]);
   const [originScanTableData, setOriginScanTableData] = useState<ScanTableData[]>([]);
-  const [databasesMap, setDatabasesMap] = useState<Map<number, IDatabase[]>>(new Map());
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [sensitiveColumns, setSensitiveColumns] = useState<ISensitiveColumn[]>([]);
   const [sensitiveColumnMap, setSensitiveColumnMap] = useState(new Map());
@@ -66,6 +66,9 @@ const FormSensitiveColumnDrawer = ({
   const [percent, setPercent] = useState<number>(0);
   const [successful, setSuccessful] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
+  const [manageSensitiveRuleDrawerOpen, setManageSensitiveRuleDrawerOpen] = useState<boolean>(
+    false,
+  );
 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
@@ -236,7 +239,6 @@ const FormSensitiveColumnDrawer = ({
     reset();
     setScanTableData(defaultScanTableData);
     setOriginScanTableData(defaultScanTableData);
-    setSensitiveColumnMap(new Map());
     const rawData = await formRef.validateFields().catch();
     if (rawData.databaseIds?.includes(-1)) {
       rawData.allDatabases = true;
@@ -291,7 +293,6 @@ const FormSensitiveColumnDrawer = ({
     }
     setSubmiting(true);
     const res = await batchCreateSensitiveColumns(context.projectId, data);
-    setSubmiting(false);
     if (res) {
       tracert.click('a3112.b64002.c330861.d367391');
       message.success(
@@ -300,37 +301,6 @@ const FormSensitiveColumnDrawer = ({
       onOk();
       reset();
       resetScanTableData();
-    } else {
-      message.error(
-        formatMessage({
-          id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.FailedToCreate',
-        }), //新建失败
-      );
-    }
-  };
-  const handleManualSubmit = async () => {
-    const data = await formRef.validateFields().catch();
-    if (data?.manual?.length === 0) {
-      return message.error(
-        formatMessage({
-          id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.AnEmptyFormCannotBe',
-        }), //不能提交空表单
-      );
-    }
-    data?.manual?.map((d) => {
-      d.database = databasesMap.get(d.dataSource)?.find((database) => database?.id === d.database);
-      d.enabled = true;
-      return d;
-    });
-    setSubmiting(true);
-    const res = await batchCreateSensitiveColumns(context.projectId, data?.manual);
-    if (res) {
-      tracert.click('a3112.b64002.c330861.d367390');
-      message.success(
-        formatMessage({ id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New' }), //新建成功
-      );
-      onOk();
-      formRef.resetFields();
       setSubmiting(false);
     } else {
       message.error(
@@ -377,6 +347,7 @@ const FormSensitiveColumnDrawer = ({
             header: {
               database: d.database.name,
               tableName: d.tableName,
+              type: d.type,
             },
             dataSource: [
               {
@@ -444,70 +415,54 @@ const FormSensitiveColumnDrawer = ({
     };
   }, [taskId, scanStatus]);
   return (
-    <Drawer
-      title={
-        addSensitiveColumnType === AddSensitiveColumnType.Manual
-          ? formatMessage({
-              id:
-                'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ManuallyAddSensitiveColumns',
-            }) //手动添加敏感列
-          : formatMessage({
-              id:
-                'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ScanToAddSensitiveColumns',
-            }) //扫描添加敏感列
-      }
-      width={addSensitiveColumnType === AddSensitiveColumnType.Manual ? 800 : 724}
-      open={visible}
-      onClose={hanldeClose}
-      destroyOnClose={true}
-      footer={
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Space>
-            <Button onClick={hanldeClose}>
-              {
-                formatMessage({
-                  id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Cancel',
-                }) /*取消*/
-              }
-            </Button>
-            <Button
-              type="primary"
-              disabled={
-                addSensitiveColumnType === AddSensitiveColumnType.Manual
-                  ? submiting
-                  : sensitiveColumnMap?.size === 0 || submiting
-              }
-              onClick={
-                addSensitiveColumnType === AddSensitiveColumnType.Manual
-                  ? handleManualSubmit
-                  : handleScanSubmit
-              }
-            >
-              {
-                formatMessage({
-                  id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Submit',
-                }) /*提交*/
-              }
-            </Button>
-          </Space>
-        </div>
-      }
-      className={styles.drawer}
-    >
-      {addSensitiveColumnType === AddSensitiveColumnType.Manual ? (
-        <ManualForm
-          {...{
-            formRef,
-            databasesMap,
-            setDatabasesMap,
-          }}
-        />
-      ) : (
+    <>
+      <Drawer
+        title={
+          addSensitiveColumnType === AddSensitiveColumnType.Manual
+            ? formatMessage({
+                id:
+                  'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ManuallyAddSensitiveColumns',
+              }) //手动添加敏感列
+            : formatMessage({
+                id:
+                  'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ScanToAddSensitiveColumns',
+              }) //扫描添加敏感列
+        }
+        width={724}
+        open={visible}
+        onClose={hanldeClose}
+        destroyOnClose={true}
+        footer={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <Space>
+              <Button onClick={hanldeClose}>
+                {
+                  formatMessage({
+                    id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Cancel',
+                  }) /*取消*/
+                }
+              </Button>
+              <Button
+                type="primary"
+                disabled={sensitiveColumnMap?.size === 0 || submiting}
+                onClick={handleScanSubmit}
+              >
+                {
+                  formatMessage({
+                    id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Submit',
+                  }) /*提交*/
+                }
+              </Button>
+            </Space>
+          </div>
+        }
+        className={styles.drawer}
+      >
         <ScanForm
           {...{
             formRef,
@@ -529,10 +484,23 @@ const FormSensitiveColumnDrawer = ({
             handleScanTableDataChange,
             handleScanTableDataDelete,
             handleScanTableDataDeleteByTableName,
+            setManageSensitiveRuleDrawerOpen,
           }}
         />
-      )}
-    </Drawer>
+      </Drawer>
+
+      <Drawer
+        open={manageSensitiveRuleDrawerOpen}
+        title={'管理识别规则'}
+        width={720}
+        destroyOnClose
+        onClose={() => {
+          setManageSensitiveRuleDrawerOpen(false);
+        }}
+      >
+        <SensitiveRule projectId={projectId} />
+      </Drawer>
+    </>
   );
 };
 

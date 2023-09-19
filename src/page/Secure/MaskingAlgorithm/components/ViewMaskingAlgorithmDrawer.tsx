@@ -71,12 +71,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
   return (
     <Drawer
       width={520}
-      visible={visible}
-      title={
-        formatMessage({
-          id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DetailsOfDesensitizationRules',
-        }) //脱敏规则详情
-      }
+      open={visible}
+      title={'脱敏算法详情'}
       onClose={handleViewDrawerClose}
       destroyOnClose={true}
       maskClosable={false}
@@ -122,7 +118,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         <Descriptions.Item
           label={
             formatMessage({
-              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationMethod',
+              id:
+                'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationMethod',
             }) //脱敏方式
           }
         >
@@ -131,7 +128,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         <Descriptions.Item
           label={
             formatMessage({
-              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
+              id:
+                'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
             }) //脱敏效果
           }
         >
@@ -174,7 +172,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
             <Button onClick={handleMaskingTest}>
               {
                 formatMessage({
-                  id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationVerification',
+                  id:
+                    'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationVerification',
                 }) /*脱敏验证*/
               }
             </Button>
