@@ -40,7 +40,10 @@ const PasswordModal = function ({ formRef, cid, newConnection }) {
       /**
        * 测试未存在的连接
        */
-      testResult = await testConnection(newConnection, AccountType.MAIN);
+      testResult = await testConnection(
+        { ...newConnection, password: values.password },
+        AccountType.MAIN,
+      );
     } else {
       const connection = await getConnectionDetail(cid);
       if (!connection) {
