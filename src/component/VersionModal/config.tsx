@@ -253,71 +253,11 @@ const webVersionInfo: VersionMenuType[] = [
 ].filter(Boolean);
 
 const clientVersionInfo: VersionMenuType[] = [
-  {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.HomePageManagement',
-    }),
-    // 首页管理
-    content: (
-      <div>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.OnTheOdcHomepageYou.1',
-            })
-            /* 进入 ODC 首页，可以看到连接列表。在个人连接 TAB
-      ，用户可以新建、编辑、删除、登录连接，并可以执行打标签、置顶等操作。 */
-          }
-        </Paragraph>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.HistoryOnTheHomePage',
-            })
-            /* 首页的 [历史记录] 保存了最近 48h 的登录记录，用户可通过该入口快速恢复未保存的 SQL
-      窗口内容。 */
-          }
-        </Paragraph>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.TheHomepageNavigationBarProvides',
-            })
-            /* 首页导航栏提供了部分功能的快捷入口，其中鼠标悬停账号下可以看到 [个人设置] 
-      入口，用户可根据自己的开发习惯自定义分隔符、Oracle 或 MySQL
-      的事务提交模式以及查询结果条数限制。 */
-          }
-        </Paragraph>
-      </div>
-    ),
-
-    img: 'index.jpg',
-  },
-
   webVersionInfo[1],
   webVersionInfo[2],
   webVersionInfo[3],
   webVersionInfo[4],
   webVersionInfo[5],
-  {
-    title: formatMessage({
-      id: 'odc.component.VersionModal.config.OperationRecords',
-    }), //操作记录
-    content: (
-      <div>
-        <Paragraph>
-          {
-            formatMessage({
-              id: 'odc.component.VersionModal.config.ToEnsureThatUserOperations.1',
-            }) /*为了保证用户在 ODC 上进行的操作可追溯，ODC
-      3.3.0及之后版本提供了操作记录的能力。用户可根据事件类型、事件操作、所属连接等查找记录，并支持查看操作详情。操作记录的保留时间为30天，30天之外的操作记录不再支持查看。*/
-          }
-        </Paragraph>
-      </div>
-    ),
-
-    img: 'record.png',
-  },
 ];
 
 export const getCurrentVersionInfo = function () {
