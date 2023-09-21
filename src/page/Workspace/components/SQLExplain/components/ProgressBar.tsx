@@ -45,13 +45,21 @@ const ProgressBar = ({ totalEndTimestamp, totalStartTimestamp, node }) => {
           }}
         ></div>
       </Popover>
-      <div className={styles.time}>
-        {formatTimeTemplate(
-          BigNumber(node?.endTimestamp - node?.startTimestamp)
-            .div(1000000)
-            .toNumber(),
-        )}
-      </div>
+
+      <Popover
+        overlayClassName={styles.popover}
+        placement="left"
+        title={'Execute SQL'}
+        content={<PopoverContent node={node} />}
+      >
+        <div className={styles.time}>
+          {formatTimeTemplate(
+            BigNumber(node?.endTimestamp - node?.startTimestamp)
+              .div(1000000)
+              .toNumber(),
+          )}
+        </div>
+      </Popover>
     </div>
   );
 };
