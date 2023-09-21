@@ -57,7 +57,7 @@ interface IProps {
 
   onCloseResultSet: (resultSetKey: string) => void;
   onChangeResultSetTab?: (tabKey: string) => void;
-  onExportResultSet: (resultSetIndex: number, limit: number) => void;
+  onExportResultSet: (resultSetIndex: number, limit: number, tableName: string) => void;
   onLockResultSet?: (key: string) => void;
   onUnLockResultSet?: (key: string) => void;
   onShowExecuteDetail: (sql: string, tag: string) => void;
@@ -270,6 +270,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
             const isResultTab =
               set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS;
             const isLogTab = set.type === 'LOG';
+            const tableName = set.resultSetMetaData?.table?.tableName;
             if (isResultTab && resultTabCount < 30) {
               const executeStage = set.timer?.stages?.find(
                 (stage) => stage.stageName === 'Execute',
@@ -303,7 +304,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     sqlId={set.sqlId}
                     autoCommit={session?.params?.autoCommit}
                     table={{
-                      tableName: set.resultSetMetaData?.table?.tableName,
+                      tableName,
                       columns: set.resultSetMetaData?.columnList,
                     }}
                     disableEdit={
@@ -316,7 +317,9 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     resultHeight={resultHeight - TAB_HEADER_HEIGHT}
                     generalSqlType={set.generalSqlType}
                     traceId={set.traceId}
-                    onExport={set.allowExport ? (limit) => onExportResultSet(i, limit) : null}
+                    onExport={
+                      set.allowExport ? (limit) => onExportResultSet(i, limit, tableName) : null
+                    }
                     onShowExecuteDetail={() => onShowExecuteDetail(set.initialSql, set.traceId)}
                     onSubmitRows={(newRows, limit, autoCommit, columns) =>
                       onSubmitRows(
