@@ -26,7 +26,9 @@ import SessionStore from './session';
  * @param databaseId datbaseid
  * @returns [session对象，odc数据库对象，是否正在创建, 重新创建session]
  */
-export function useDBSession(databaseId: number): {
+export function useDBSession(
+  databaseId: number,
+): {
   session: SessionStore;
   database: IDatabase;
   loading: boolean;
@@ -52,6 +54,9 @@ export function useDBSession(databaseId: number): {
     setLoading(true);
     try {
       const session = await sessionManager.createSession(null, databaseId);
+      if (session === 'NotFound') {
+        return;
+      }
       if (unmountedRef.current && session) {
         sessionManager.destorySession(session?.sessionId);
         return;
@@ -93,7 +98,9 @@ export function useDBSession(databaseId: number): {
  * @param datasourceId
  * @returns
  */
-export function useDatasourceSession(datasourceId: number): {
+export function useDatasourceSession(
+  datasourceId: number,
+): {
   session: SessionStore;
   datasource: IDatasource;
   loading: boolean;
@@ -119,6 +126,9 @@ export function useDatasourceSession(datasourceId: number): {
     setLoading(true);
     try {
       const session = await sessionManager.createSession(datasourceId, null);
+      if (session === 'NotFound') {
+        return;
+      }
       if (unmountedRef.current && session) {
         sessionManager.destorySession(session?.sessionId);
         return;
