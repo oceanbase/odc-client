@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { getConnectionDetail } from '@/common/network/connection';
+import { getConnectionDetail, getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
+import { message } from 'antd';
+import notification from '@/util/notification';
 
 type ConnectionId = number;
 
@@ -37,12 +39,24 @@ export class SessionManagerStore {
   /**
    * 获取connection的信息
    */
-  async initConnection(connectionId: ConnectionId, databaseId: number) {
+  async initConnection(
+    connectionId: ConnectionId,
+    databaseId: number,
+  ): Promise<boolean | 'NotFound'> {
     if (databaseId) {
       /**
        * 数据库模式
        */
-      const database = await getDatabase(databaseId);
+      const res = await getDatabase(databaseId, true);
+      const database = res?.data;
+      if (!database && res?.errCode !== 'NotFound') {
+        notification.error({
+          track: res?.errMsg,
+        });
+      }
+      if (res?.errCode === 'NotFound') {
+        return 'NotFound';
+      }
       if (!database) {
         return false;
       }
@@ -50,7 +64,16 @@ export class SessionManagerStore {
       this.connection.set(database.dataSource?.id, database?.dataSource);
       return true;
     } else {
-      const datasource = await getConnectionDetail(connectionId);
+      const res = await getConnectionDetailResponse(connectionId);
+      const datasource = res?.data;
+      if (!datasource && res?.errCode !== 'NotFound') {
+        notification.error({
+          track: res?.errMsg,
+        });
+      }
+      if (res?.errCode === 'NotFound') {
+        return 'NotFound';
+      }
       if (!datasource) {
         return false;
       }
@@ -69,8 +92,11 @@ export class SessionManagerStore {
   async createSession(
     datasourceId: ConnectionId,
     databaseid: number,
-  ): Promise<SessionStore | null> {
-    if (!(await this.initConnection(datasourceId, databaseid))) {
+  ): Promise<SessionStore | null | 'NotFound'> {
+    const result = await this.initConnection(datasourceId, databaseid);
+    if (result === 'NotFound') {
+      return result;
+    } else if (!result) {
       return null;
     }
     const database = this.database.get(databaseid);

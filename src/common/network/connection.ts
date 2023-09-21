@@ -253,6 +253,18 @@ export async function getConnectionDetail(sid: number): Promise<IDatasource> {
   return results?.data;
 }
 
+export async function getConnectionDetailResponse(
+  sid: number,
+): Promise<{ data?: IDatasource; errCode: string; errMsg: string }> {
+  const results = await request.get(`/api/v2/datasource/datasources/${sid}`, {
+    params: {
+      ignoreError: true,
+    },
+  });
+
+  return results;
+}
+
 export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
   const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
   return data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;

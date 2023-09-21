@@ -82,9 +82,16 @@ export async function updateDataBase(databaseIds: number[], projectId: number): 
   return res?.data;
 }
 
-export async function getDatabase(databaseId: number): Promise<IDatabase> {
-  const res = await request.get(`/api/v2/database/databases/${databaseId}`);
-  return res?.data;
+export async function getDatabase(
+  databaseId: number,
+  ignoreError?: boolean,
+): Promise<{ data?: IDatabase; errCode: string; errMsg: string }> {
+  const res = await request.get(`/api/v2/database/databases/${databaseId}`, {
+    params: {
+      ignoreError,
+    },
+  });
+  return res;
 }
 
 export async function deleteDatabase(databaseIds: number[]): Promise<boolean> {

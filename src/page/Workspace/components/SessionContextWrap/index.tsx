@@ -51,6 +51,11 @@ export default function SessionContextWrap({
       return;
     }
     const newSession = await sessionManager.createSession(datasourceId, databaseId);
+    if (newSession === 'NotFound') {
+      setDatabaseId(null);
+      setDatasourceId(null);
+      return;
+    }
     if (newSession) {
       if (from) {
         setFrom(from);

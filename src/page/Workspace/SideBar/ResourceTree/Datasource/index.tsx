@@ -28,8 +28,16 @@ import {
   testExsitConnection,
 } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
-import { useRequest } from 'ahooks';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { useRequest, useUnmountedRef, useUpdate } from 'ahooks';
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styles from './index.less';
 
 import Action from '@/component/Action';
@@ -40,13 +48,19 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
 import OBSvg from '@/svgr/source_ob.svg';
 import { toInteger, toNumber } from 'lodash';
+import { IConnectionStatus } from '@/d.ts';
+import StatusIcon from './StatusIcon';
 
 export default forwardRef(function DatasourceTree(props, ref) {
   const { data, loading, run } = useRequest(getDataSourceGroupByProject, {
     defaultParams: [login.isPrivateSpace()],
   });
   const [editDatasourceId, setEditDatasourceId] = useState(null);
+  const [loopCount, setLoopCount] = useState<number>(0);
   const [searchKey, setSearchKey] = useState('');
+  const loopStatusRef = useRef<any>(null);
+  const update = useUpdate();
+  const unmountRef = useUnmountedRef();
 
   const context = useContext(ResourceTreeContext);
 
@@ -54,6 +68,46 @@ export default forwardRef(function DatasourceTree(props, ref) {
   function setSelectKeys(keys) {
     return context.setSelectDatasourceId(keys?.[0]);
   }
+
+  async function loopStatus() {
+    if (loopStatusRef?.current) {
+      clearTimeout(loopStatusRef?.current);
+      loopStatusRef.current = null;
+    }
+    loopStatusRef.current = setTimeout(async () => {
+      if (unmountRef.current) {
+        return;
+      }
+      const ids = data?.contents
+        ?.map((item) => (item.status?.status === IConnectionStatus.TESTING ? item.id : null))
+        .filter(Boolean);
+      if (!ids?.length) {
+        return;
+      }
+      const map = await batchTest(ids);
+      if (unmountRef.current) {
+        return;
+      }
+      data.contents?.forEach((item) => {
+        const status = map[item.id];
+        if (status) {
+          item.status = status;
+        }
+      });
+      setLoopCount(loopCount + 1);
+      update();
+      loopStatus();
+    }, 2000);
+  }
+
+  useEffect(() => {
+    /**
+     * 获取数据源状态
+     */
+    if (data?.contents?.length && login.isPrivateSpace()) {
+      loopStatus();
+    }
+  }, [data]);
 
   useImperativeHandle(
     ref,
@@ -84,12 +138,13 @@ export default forwardRef(function DatasourceTree(props, ref) {
         }
         return {
           title: item.name,
+          selectable: item.status?.status === IConnectionStatus.ACTIVE,
           key: item.id,
-          icon: <Icon component={OBSvg} style={{ fontSize: 16 }} />,
+          icon: <StatusIcon item={item} />,
         };
       })
       .filter(Boolean);
-  }, [data, searchKey]);
+  }, [data, searchKey, loopCount]);
 
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
