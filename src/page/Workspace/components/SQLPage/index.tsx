@@ -734,13 +734,17 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     }
   };
 
-  public handleStartExportResultSet = (resultSetIndex: number, limit: number) => {
+  public handleStartExportResultSet = (
+    resultSetIndex: number,
+    limit: number,
+    tableName: string,
+  ) => {
     this.setState(
       {
         resultSetIndexToExport: resultSetIndex,
       },
       () => {
-        this.showExportResuleSetModal();
+        this.showExportResuleSetModal(tableName);
       },
     );
   };
@@ -862,7 +866,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   //   }
   // };
 
-  showExportResuleSetModal = () => {
+  showExportResuleSetModal = (tableName: string) => {
     const {
       modalStore,
       pageKey,
@@ -874,6 +878,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     modalStore.changeCreateResultSetExportTaskModal(true, {
       sql,
       databaseId: session?.database.databaseId,
+      tableName,
     });
   };
 

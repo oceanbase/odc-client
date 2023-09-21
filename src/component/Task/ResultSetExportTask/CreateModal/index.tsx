@@ -100,6 +100,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           sql,
           description,
           fileFormat,
+          saveSql = false,
           fileEncoding,
           csvFormat,
           fileName,
@@ -114,6 +115,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           fileName,
           maxRows,
           tableName,
+          saveSql,
         };
         const data = {
           projectId,
