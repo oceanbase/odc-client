@@ -19,7 +19,7 @@ import DisplayTable from '@/component/DisplayTable';
 import { ISQLExplain } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { CodeOutlined, ProfileOutlined } from '@ant-design/icons';
-import { Checkbox, Empty, Modal, Radio, Tooltip } from 'antd';
+import { Checkbox, Empty, Modal, Radio, Table, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
@@ -254,19 +254,23 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                       <Empty />
                     </>
                   ) : (
-                    <DisplayTable
-                      key={sql}
-                      rowKey="operator"
-                      bordered={true}
-                      defaultExpandAllRows={true}
-                      scroll={{
-                        x: 1400,
-                        y: tableHeight,
-                      }}
-                      columns={columns}
-                      dataSource={explain && explain.tree ? explain.tree : []}
-                      disablePagination={true}
-                    />
+                    explain?.tree && (
+                      <DisplayTable
+                        key={sql}
+                        rowKey="operator"
+                        bordered={true}
+                        expandable={{
+                          defaultExpandAllRows: true,
+                        }}
+                        scroll={{
+                          x: 1400,
+                          y: tableHeight,
+                        }}
+                        columns={columns}
+                        dataSource={explain && explain.tree ? explain.tree : []}
+                        disablePagination={true}
+                      />
+                    )
                   )}
                 </>
               )}
