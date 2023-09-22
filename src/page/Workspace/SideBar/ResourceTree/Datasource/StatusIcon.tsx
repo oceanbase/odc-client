@@ -5,9 +5,14 @@ import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/i
 import { formatMessage } from '@/util/intl';
 
 import styles from './index.less';
+import login from '@/store/login';
 
 export default function StatusIcon({ item }: { item: IConnection }) {
-  switch (item?.status?.status) {
+  let status = item?.status?.status;
+  if (!login.isPrivateSpace()) {
+    status = IConnectionStatus.ACTIVE;
+  }
+  switch (status) {
     case IConnectionStatus.TESTING: {
       return (
         <Tooltip
