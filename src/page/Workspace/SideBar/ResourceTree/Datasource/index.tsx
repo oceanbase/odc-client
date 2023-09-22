@@ -69,19 +69,22 @@ export default forwardRef(function DatasourceTree(props, ref) {
     return context.setSelectDatasourceId(keys?.[0]);
   }
 
-  async function loopStatus() {
+  async function loopStatus(count: number = loopCount) {
     if (loopStatusRef?.current) {
+      console.log('clear');
       clearTimeout(loopStatusRef?.current);
       loopStatusRef.current = null;
     }
     loopStatusRef.current = setTimeout(async () => {
       if (unmountRef.current) {
+        console.log('unmount');
         return;
       }
       const ids = data?.contents
         ?.map((item) => (item.status?.status === IConnectionStatus.TESTING ? item.id : null))
         .filter(Boolean);
       if (!ids?.length) {
+        console.log('not found');
         return;
       }
       const map = await batchTest(ids);
@@ -94,9 +97,9 @@ export default forwardRef(function DatasourceTree(props, ref) {
           item.status = status;
         }
       });
-      setLoopCount(loopCount + 1);
+      setLoopCount(count + 1);
       update();
-      loopStatus();
+      loopStatus(count + 1);
     }, 2000);
   }
 
