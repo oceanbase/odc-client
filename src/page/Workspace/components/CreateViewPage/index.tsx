@@ -550,12 +550,16 @@ class CreateViewPage extends Component<
   };
 }
 
-export default WrapSessionPage(function CreateViewPageWrap(props: IProps) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <CreateViewPage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-});
+export default WrapSessionPage(
+  function CreateViewPageWrap(props: IProps) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <CreateViewPage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  false,
+  true,
+);

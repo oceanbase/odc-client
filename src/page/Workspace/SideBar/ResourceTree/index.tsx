@@ -116,7 +116,7 @@ const ResourceTree: React.FC<IProps> = function ({
       switch (type) {
         case ResourceNodeType.Database: {
           const dbId = (data as IDatabase).id;
-          const dbSession = await sessionManagerStore.createSession(null, data?.id);
+          const dbSession = await sessionManagerStore.createSession(null, data?.id, true);
           if (dbSession !== 'NotFound') {
             setDatabaseSessions({
               ...databaseSessions,

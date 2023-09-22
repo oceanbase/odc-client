@@ -36,6 +36,9 @@ export class SessionManagerStore {
   @observable
   public database: Map<number, IDatabase> = new Map();
 
+  @observable
+  public masterSession: Map<number, string> = new Map();
+
   /**
    * 获取connection的信息
    */
@@ -92,7 +95,14 @@ export class SessionManagerStore {
   async createSession(
     datasourceId: ConnectionId,
     databaseid: number,
+    isMaster: boolean = false,
   ): Promise<SessionStore | null | 'NotFound'> {
+    if (isMaster && databaseid) {
+      const masterSession = this.sessionMap.get(this.masterSession.get(databaseid));
+      if (masterSession) {
+        return masterSession;
+      }
+    }
     const result = await this.initConnection(datasourceId, databaseid);
     if (result === 'NotFound') {
       return result;
@@ -106,6 +116,9 @@ export class SessionManagerStore {
     runInAction(() => {
       if (session) {
         this.sessionMap.set(session.sessionId, session);
+        if (isMaster && database) {
+          this.masterSession.set(database?.id, session?.sessionId);
+        }
       }
     });
 
@@ -142,11 +155,19 @@ export class SessionManagerStore {
     SessionStore.batchDestory(Array.from(this.sessionMap.values()), force);
     this.sessionMap.clear();
     this.database.clear();
+    this.masterSession.clear();
   }
   @action
   destorySession(sessionId: string, force: boolean = false) {
     const session = this.sessionMap.get(sessionId);
     if (session) {
+      const masterSessionId = this.masterSession.get(session?.database?.databaseId);
+      if (session?.sessionId === masterSessionId && !force) {
+        /**
+         * do not destory master session
+         */
+        return;
+      }
       session.destory(force);
       this.sessionMap.delete(sessionId);
     }

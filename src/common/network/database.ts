@@ -37,10 +37,6 @@ export async function listDatabases(
   containsUnassigned?: boolean,
   existed?: boolean,
 ): Promise<IResponseData<IDatabase>> {
-  /**
-   * 个人空间模型下需要强制同步数据源数据库
-   */
-  dataSourceId && login.isPrivateSpace() && (await syncDatasource(dataSourceId));
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
       projectId,

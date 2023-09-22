@@ -168,15 +168,9 @@ export default forwardRef(function DatasourceTree(props, ref) {
   );
 
   async function runListDatabases(...args: Parameters<typeof _runListDatabases>) {
-    if (login.isPrivateSpace()) {
-      const ds = await getConnectionDetail(args[1]);
-      const result = await testExsitConnection(ds);
-      if (!result?.data?.active) {
-        message.error(result?.data?.errorMessage || 'Connect Failed');
-        setSelectKeys([]);
-        return;
-      }
-    }
+    /**
+     * 不需要test连接，因为list的时候会自动检查一次连接
+     */
     await _runListDatabases(...args);
   }
 
