@@ -144,7 +144,9 @@ export default forwardRef(function DatasourceTree(props, ref) {
         }
         return {
           title: item.name,
-          selectable: item.status?.status === IConnectionStatus.ACTIVE,
+          selectable: login.isPrivateSpace()
+            ? item.status?.status === IConnectionStatus.ACTIVE
+            : true,
           key: item.id,
           icon: <StatusIcon item={item} />,
         };
