@@ -116,13 +116,16 @@ export default forwardRef(function DatasourceTree(props, ref) {
     ref,
     () => {
       return {
-        reload() {
-          setSelectKeys([]);
-          return run();
+        async reload() {
+          const result = await run();
+          if (!result?.contents?.find((item) => context.selectDatasourceId == item.id)) {
+            setSelectKeys([]);
+          }
+          return result;
         },
       };
     },
-    [run],
+    [run, context],
   );
 
   const selectConnection = useMemo(() => {
@@ -294,7 +297,13 @@ export default forwardRef(function DatasourceTree(props, ref) {
                     );
                   }}
                   selectedKeys={selectKeys}
-                  onSelect={(keys) => {
+                  onSelect={(keys, info) => {
+                    if (!info.selected) {
+                      /**
+                       * disable unselect
+                       */
+                      return;
+                    }
                     setSelectKeys(keys);
                   }}
                   showIcon
