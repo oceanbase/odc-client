@@ -96,7 +96,16 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
   }
 
   private async loadDatabases() {
-    const res = await listDatabases(null, this.props.session?.connection?.id, 1, 9999);
+    const res = await listDatabases(
+      null,
+      this.props.session?.connection?.id,
+      1,
+      9999,
+      null,
+      null,
+      null,
+      true,
+    );
     this.setState({
       databases: res?.contents || [],
     });

@@ -179,7 +179,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
   useEffect(() => {
     console.log(selectKeys?.[0]);
     if (selectKeys?.[0]) {
-      runListDatabases(null, selectKeys?.[0], 1, 9999);
+      runListDatabases(null, selectKeys?.[0], 1, 9999, null, null, null, true);
     } else {
       reset();
     }

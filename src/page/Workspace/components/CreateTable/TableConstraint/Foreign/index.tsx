@@ -59,7 +59,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
     manual: true,
   });
   useEffect(() => {
-    run(null, tableContext?.session?.connection?.id, 1, 999);
+    run(null, tableContext?.session?.connection?.id, 1, 999, null, null, null, true);
   }, [tableContext?.session]);
   const gridColumns: any[] = useColumns(
     tableContext.columns,
