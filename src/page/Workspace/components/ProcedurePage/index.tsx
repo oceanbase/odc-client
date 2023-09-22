@@ -350,12 +350,16 @@ class ProcedurePage extends Component<
   }
 }
 
-export default WrapSessionPage(function Component(props: IProps) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <ProcedurePage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function Component(props: IProps) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <ProcedurePage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  true,
+);

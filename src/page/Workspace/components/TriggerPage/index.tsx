@@ -626,12 +626,16 @@ class TriggerPage extends Component<
   }
 }
 
-export default WrapSessionPage(function (props) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <TriggerPage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <TriggerPage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  true,
+);
