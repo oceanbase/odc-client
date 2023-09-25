@@ -22,7 +22,7 @@ interface IProps {
   datasource: IDatasource;
 }
 const Recycle: React.FC<IProps> = (props) => {
-  return <RecycleBin dataSourceId={props.id} />;
+  return <RecycleBin dataSourceId={props.id} theme="white" />;
 };
 
 export default Recycle;
