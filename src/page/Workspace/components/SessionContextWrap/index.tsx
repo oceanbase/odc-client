@@ -25,6 +25,7 @@ interface IProps extends React.PropsWithChildren<any> {
   defaultDatasourceId?: number;
   datasourceMode?: boolean;
   defaultMode?: 'project' | 'datasource';
+  useMaster?: boolean;
 }
 
 export default function SessionContextWrap({
@@ -33,6 +34,7 @@ export default function SessionContextWrap({
   datasourceMode,
   defaultMode = 'datasource',
   children,
+  useMaster,
 }: IProps) {
   const [session, _setSession] = useState<SessionStore>(null);
   const [databaseId, setDatabaseId] = useState(defaultDatabaseId);
@@ -50,7 +52,12 @@ export default function SessionContextWrap({
     if (!databaseId && !datasourceId) {
       return;
     }
-    const newSession = await sessionManager.createSession(datasourceId, databaseId);
+    const newSession = await sessionManager.createSession(datasourceId, databaseId, useMaster);
+    if (newSession === 'NotFound') {
+      setDatabaseId(null);
+      setDatasourceId(null);
+      return;
+    }
     if (newSession) {
       if (from) {
         setFrom(from);

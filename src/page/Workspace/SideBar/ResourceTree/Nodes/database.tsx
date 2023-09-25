@@ -29,6 +29,7 @@ import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
 
 import DatabaseSvg from '@/svgr/database.svg';
+import { openNewSQLPage } from '@/store/helper/page';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,
@@ -62,6 +63,9 @@ export function DataBaseTreeData(
     sessionId: dbSession?.sessionId,
     data: database,
     tip: database?.dataSource?.name,
+    doubleClick(session, node, databaseFrom) {
+      openNewSQLPage(database?.id);
+    },
     cid,
     icon: <Icon component={DatabaseSvg} style={{ color: '#3FA3FF', fontSize: 14 }} />,
     children: dbSession

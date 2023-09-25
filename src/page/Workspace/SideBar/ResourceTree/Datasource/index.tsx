@@ -28,8 +28,16 @@ import {
   testExsitConnection,
 } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
-import { useRequest } from 'ahooks';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { useRequest, useUnmountedRef, useUpdate } from 'ahooks';
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styles from './index.less';
 
 import Action from '@/component/Action';
@@ -40,13 +48,19 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
 import { toInteger, toNumber } from 'lodash';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { IConnectionStatus } from '@/d.ts';
+import StatusIcon from './StatusIcon';
 
 export default forwardRef(function DatasourceTree(props, ref) {
   const { data, loading, run } = useRequest(getDataSourceGroupByProject, {
     defaultParams: [login.isPrivateSpace()],
   });
   const [editDatasourceId, setEditDatasourceId] = useState(null);
+  const [loopCount, setLoopCount] = useState<number>(0);
   const [searchKey, setSearchKey] = useState('');
+  const loopStatusRef = useRef<any>(null);
+  const update = useUpdate();
+  const unmountRef = useUnmountedRef();
 
   const context = useContext(ResourceTreeContext);
 
@@ -55,17 +69,63 @@ export default forwardRef(function DatasourceTree(props, ref) {
     return context.setSelectDatasourceId(keys?.[0]);
   }
 
+  async function loopStatus(count: number = loopCount) {
+    if (loopStatusRef?.current) {
+      console.log('clear');
+      clearTimeout(loopStatusRef?.current);
+      loopStatusRef.current = null;
+    }
+    loopStatusRef.current = setTimeout(async () => {
+      if (unmountRef.current) {
+        console.log('unmount');
+        return;
+      }
+      const ids = data?.contents
+        ?.map((item) => (item.status?.status === IConnectionStatus.TESTING ? item.id : null))
+        .filter(Boolean);
+      if (!ids?.length) {
+        console.log('not found');
+        return;
+      }
+      const map = await batchTest(ids);
+      if (unmountRef.current) {
+        return;
+      }
+      data.contents?.forEach((item) => {
+        const status = map[item.id];
+        if (status) {
+          item.status = status;
+        }
+      });
+      setLoopCount(count + 1);
+      update();
+      loopStatus(count + 1);
+    }, 2000);
+  }
+
+  useEffect(() => {
+    /**
+     * 获取数据源状态
+     */
+    if (data?.contents?.length && login.isPrivateSpace()) {
+      loopStatus();
+    }
+  }, [data]);
+
   useImperativeHandle(
     ref,
     () => {
       return {
-        reload() {
-          setSelectKeys([]);
-          return run();
+        async reload() {
+          const result = await run();
+          if (!result?.contents?.find((item) => context.selectDatasourceId == item.id)) {
+            setSelectKeys([]);
+          }
+          return result;
         },
       };
     },
-    [run],
+    [run, context],
   );
 
   const selectConnection = useMemo(() => {
@@ -82,15 +142,17 @@ export default forwardRef(function DatasourceTree(props, ref) {
         if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
           return null;
         }
-        const icon = getDataSourceStyleByConnectType(item.type)?.icon;
         return {
           title: item.name,
+          selectable: login.isPrivateSpace()
+            ? item.status?.status === IConnectionStatus.ACTIVE
+            : true,
           key: item.id,
-          icon: <Icon component={icon?.component} style={{ fontSize: 16, color: icon?.color }} />,
+          icon: <StatusIcon item={item} />,
         };
       })
       .filter(Boolean);
-  }, [data, searchKey]);
+  }, [data, searchKey, loopCount]);
 
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
@@ -108,22 +170,16 @@ export default forwardRef(function DatasourceTree(props, ref) {
   );
 
   async function runListDatabases(...args: Parameters<typeof _runListDatabases>) {
-    if (login.isPrivateSpace()) {
-      const ds = await getConnectionDetail(args[1]);
-      const result = await testExsitConnection(ds);
-      if (!result?.data?.active) {
-        message.error(result?.data?.errorMessage || 'Connect Failed');
-        setSelectKeys([]);
-        return;
-      }
-    }
+    /**
+     * 不需要test连接，因为list的时候会自动检查一次连接
+     */
     await _runListDatabases(...args);
   }
 
   useEffect(() => {
     console.log(selectKeys?.[0]);
     if (selectKeys?.[0]) {
-      runListDatabases(null, selectKeys?.[0], 1, 9999);
+      runListDatabases(null, selectKeys?.[0], 1, 9999, null, null, null, true);
     } else {
       reset();
     }
@@ -237,7 +293,13 @@ export default forwardRef(function DatasourceTree(props, ref) {
                     );
                   }}
                   selectedKeys={selectKeys}
-                  onSelect={(keys) => {
+                  onSelect={(keys, info) => {
+                    if (!info.selected) {
+                      /**
+                       * disable unselect
+                       */
+                      return;
+                    }
                     setSelectKeys(keys);
                   }}
                   showIcon

@@ -525,12 +525,16 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
   }
 }
 
-export default WrapSessionPage(function ViewPageWrap(props: IProps) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <ViewPage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function ViewPageWrap(props: IProps) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <ViewPage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  true,
+);

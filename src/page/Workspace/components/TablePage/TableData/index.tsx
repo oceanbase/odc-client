@@ -320,6 +320,7 @@ class TableData extends React.Component<
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
+            disableEdit={!resultSet.resultSetMetaData?.editable}
             table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
             session={session}

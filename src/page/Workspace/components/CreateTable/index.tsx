@@ -248,4 +248,4 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
     </Card>
   );
 };
-export default inject('sessionManagerStore')(observer(WrapSessionPage(CreateTable)));
+export default inject('sessionManagerStore')(observer(WrapSessionPage(CreateTable, false, true)));
