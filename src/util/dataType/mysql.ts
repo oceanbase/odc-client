@@ -147,6 +147,9 @@ export const dataTypes: IDataTypes = {
     params: [IDataTypeParamType.DISPLAY_WIDTH],
     isDate: true,
   },
+  json: {
+    params: [],
+  },
   enum: {
     params: [],
     isEnum: true,
