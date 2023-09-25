@@ -31,15 +31,20 @@
     .ant-tree-list {
       .ant-tree-treenode {
         .ant-tree-node-content-wrapper {
+          .ant-dropdown-trigger {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
           &:hover {
             :local(.actions) {
-              display: block;
+              display: flex;
+              justify-content: center;
             }
           }
           :local(.actions) {
             display: none;
             flex: 0;
-            flex-basis: 20px;
+            flex-basis: 25px;
           }
           display: flex;
           .ant-tree-iconEle {

@@ -259,7 +259,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
                           <Popover
                             showArrow={false}
                             overlayClassName={styles.connectionPopover}
-                            placement="rightBottom"
+                            placement="right"
                             content={
                               <ConnectionPopover
                                 connection={datasourceMap.get(toNumber(node.key))}

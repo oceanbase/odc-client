@@ -155,7 +155,7 @@ const ResourceTree: React.FC<IProps> = function ({
     <div className={styles.resourceTree}>
       <div className={styles.title}>
         <span className={styles.label}>{title}</span>
-        <span>
+        <span className={styles.titleAction}>
           <Action.Group size={0} ellipsisIcon="vertical">
             <Action.Link
               key={'reload'}
