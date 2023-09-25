@@ -140,8 +140,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     }
     setTestResult(res?.data);
   }
-  const connectTypeList: ConnectType[] =
-    getAllConnectTypes(getDsByConnectType(type)) || getAllConnectTypes(IDataSourceType.OceanBase);
+  const connectTypeList: ConnectType[] = type
+    ? getAllConnectTypes(getDsByConnectType(type))
+    : getAllConnectTypes(IDataSourceType.OceanBase);
   const dsc = dataSourceConfig[type];
   return (
     <DatasourceFormContext.Provider

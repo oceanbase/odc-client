@@ -40,7 +40,7 @@ export default function StatusIcon({ item }: { item: IConnection }) {
             id: 'odc.components.ConnectionCardList.ValidConnection',
           })}
         >
-          <Icon component={OBSvg} style={{ fontSize: 16, color: icon?.color }} />
+          <Icon component={icon.component} style={{ fontSize: 16, color: icon?.color }} />
         </Tooltip>
       );
     }
