@@ -21,7 +21,7 @@ import { copyObj } from '@/component/TemplateInsertModal';
 import { DbObjectType, DragInsertType, ResourceTreeNodeMenuKeys, TaskType } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
-import { openCreateTablePage, openTableViewPage } from '@/store/helper/page';
+import { openCreateTablePage, openNewSQLPage, openTableViewPage } from '@/store/helper/page';
 import modalStore from '@/store/modal';
 import pageStore from '@/store/page';
 import setting from '@/store/setting';
@@ -32,6 +32,7 @@ import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import tracert from '@/util/tracert';
 
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
@@ -179,6 +180,15 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           tableName,
           databaseId: session?.database?.databaseId,
         });
+      },
+    },
+    {
+      key: ResourceTreeNodeMenuKeys.OPEN_TABLE_SQLWINDOW,
+      ellipsis: true,
+      text: ['打开 SQL 窗口'],
+      run(session, node) {
+        tracert.click('a3112.b41896.c330992.d367627');
+        openNewSQLPage(session?.database?.databaseId);
       },
     },
 

@@ -108,6 +108,9 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
       return;
     }
     const session = await sessionManager.createSession(datasourceId, databaseId);
+    if (session === 'NotFound') {
+      return;
+    }
     if (!session) {
       return;
     }

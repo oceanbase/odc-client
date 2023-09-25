@@ -311,4 +311,5 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
 export default WrapSessionPage(
   inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage)),
   true,
+  true,
 );
