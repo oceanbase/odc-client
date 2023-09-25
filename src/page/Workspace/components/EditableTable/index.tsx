@@ -74,6 +74,7 @@ interface IProps<R extends RowType<R>, SR> extends PickDataGridProps<R, SR> {
   enableColumnRecord?: boolean;
   gridRef?: React.Ref<DataGridRef>;
   bordered?: boolean;
+  theme?: 'dark' | 'white';
   onScroll?: (rowVisibleStartIdx: number, rowVisibleEndIdx: number) => void;
   getNewRowData?: () => R;
   /**
@@ -104,6 +105,7 @@ export default inject('settingStore')(
         enableFrozenRow,
         searchKey,
         settingStore,
+        theme,
         getNewRowData,
         onRowsChange,
         onScroll,
@@ -280,7 +282,7 @@ export default inject('settingStore')(
 
       return (
         <DataGrid
-          theme={settingStore.theme.sheetTheme as any}
+          theme={theme || (settingStore.theme.sheetTheme as any)}
           style={{
             height: minHeight,
           }}

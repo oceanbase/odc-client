@@ -18,8 +18,9 @@ import RecycleBinPage from '@/page/Workspace/components/RecycleBinPage';
 
 interface IProps {
   dataSourceId: string;
+  theme?: 'dark' | 'white';
 }
 
-export default function RecycleBin({ dataSourceId }: IProps) {
-  return <RecycleBinPage simpleHeader datasourceId={parseInt(dataSourceId)} />;
+export default function RecycleBin({ dataSourceId, theme }: IProps) {
+  return <RecycleBinPage simpleHeader datasourceId={parseInt(dataSourceId)} theme={theme} />;
 }
