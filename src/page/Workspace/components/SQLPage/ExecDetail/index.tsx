@@ -15,26 +15,17 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
-import {
-  Card,
-  Col,
-  Descriptions,
-  Drawer,
-  message,
-  Row,
-  Spin,
-  Statistic,
-  Tooltip as AntdTooltip,
-} from 'antd';
-import classNames from 'classnames';
+import { Col, Drawer, message, Row, Spin } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import SQLExplain from '../index';
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import styles from './index.less';
+import BasicInfo from './BasicInfo';
+import TimeStatistics from './TimeStatistics';
+import IOStatistics from './IOStatistics';
+import SQLExplain from '../../SQLExplain';
 
 interface IProps {
   visible: boolean;
@@ -85,11 +76,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
         setSqlExecuteDetailToShow(detail);
         setSqlExecuteExplainToShow(explain);
 
-        const {
-          queueTime = 0,
-          execTime = 0,
-          totalTime = 0,
-        } = detail || {
+        const { queueTime = 0, execTime = 0, totalTime = 0 } = detail || {
           queueTime: 0,
           waitTime: 0,
           execTime: 0,
@@ -234,7 +221,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
       }}
       destroyOnClose={true}
       width="96vw"
-      visible={visible}
+      open={visible}
       className={styles.explainDrawer}
       bodyStyle={{
         position: 'absolute',
@@ -260,151 +247,13 @@ const ExecDetail: React.FC<IProps> = function (props) {
             }}
           >
             <Col span={8}>
-              <Card
-                bodyStyle={{
-                  height: 210,
-                  padding: 16,
-                }}
-                className={classNames([styles.card, styles.baseCard])}
-              >
-                <Descriptions
-                  title={formatMessage({
-                    id: 'workspace.window.sql.explain.tab.detail.card.base.title',
-                  })}
-                  column={1}
-                >
-                  <Descriptions.Item
-                    label={formatMessage({
-                      id: 'workspace.window.sql.explain.tab.detail.card.base.sqlID',
-                    })}
-                  >
-                    {sqlExecuteDetailToShow?.sqlId}
-                  </Descriptions.Item>
-                  <Descriptions.Item
-                    label={formatMessage({
-                      id: 'workspace.window.sql.explain.tab.detail.card.base.sql',
-                    })}
-                  >
-                    <AntdTooltip title={sqlExecuteDetailToShow?.sql ?? ''}>
-                      <div
-                        style={{
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          maxWidth: 300,
-                        }}
-                      >
-                        {sqlExecuteDetailToShow?.sql}
-                      </div>
-                    </AntdTooltip>
-                  </Descriptions.Item>
-                  <Descriptions.Item
-                    label={formatMessage({
-                      id: 'workspace.window.sql.explain.tab.detail.card.base.traceID',
-                    })}
-                  >
-                    {sqlExecuteDetailToShow?.traceId}
-                  </Descriptions.Item>
-                  <Descriptions.Item
-                    label={formatMessage({
-                      id: 'workspace.window.sql.explain.tab.detail.card.base.reqTime',
-                    })}
-                  >
-                    {getLocalFormatDateTime(sqlExecuteDetailToShow?.reqTime)}
-                  </Descriptions.Item>
-                  <Descriptions.Item
-                    label={formatMessage({
-                      id: 'workspace.window.sql.explain.tab.detail.card.base.planType',
-                    })}
-                  >
-                    {sqlExecuteDetailToShow?.planType}
-                  </Descriptions.Item>
-                  <Descriptions.Item
-                    label={formatMessage({
-                      id: 'workspace.window.sql.explain.tab.detail.card.base.hitPlanCache',
-                    })}
-                  >
-                    {sqlExecuteDetailToShow?.hitPlanCache
-                      ? formatMessage({
-                          id: 'odc.components.SQLPage.Is',
-                        })
-                      : formatMessage({
-                          id: 'odc.components.SQLPage.No',
-                        })}
-                  </Descriptions.Item>
-                </Descriptions>
-              </Card>
+              <BasicInfo sqlExecuteDetailToShow={sqlExecuteDetailToShow} />
             </Col>
             <Col span={8}>
-              <Card
-                title={formatMessage({
-                  id: 'workspace.window.sql.explain.tab.detail.card.time.title',
-                })}
-                headStyle={{
-                  padding: '0 16px',
-                  fontSize: 14,
-                  border: 'none',
-                }}
-                bodyStyle={{
-                  height: 158,
-                  padding: 16,
-                }}
-                className={styles.card}
-              >
-                <div
-                  ref={stackBarBox}
-                  style={{
-                    marginTop: -30,
-                  }}
-                />
-              </Card>
+              <TimeStatistics stackBarBox={stackBarBox} />
             </Col>
             <Col span={8}>
-              <Card
-                title={formatMessage({
-                  id: 'workspace.window.sql.explain.tab.detail.card.io.title',
-                })}
-                headStyle={{
-                  padding: '0 16px',
-                  fontSize: 14,
-                  border: 'none',
-                }}
-                bodyStyle={{
-                  height: 158,
-                  padding: 16,
-                }}
-                className={classNames([styles.card, styles.ioCard])}
-              >
-                <Row>
-                  <Col span={8}>
-                    <Statistic
-                      title={formatMessage({
-                        id: 'workspace.window.sql.explain.tab.detail.card.io.rpcCount',
-                      })}
-                      value={sqlExecuteDetailToShow?.rpcCount}
-                      valueStyle={{ fontSize: '24px' }}
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <Statistic
-                      title={formatMessage({
-                        id: 'workspace.window.sql.explain.tab.detail.card.io.physicalRead',
-                      })}
-                      value={sqlExecuteDetailToShow?.physicalRead}
-                      valueStyle={{ fontSize: '24px' }}
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <Statistic
-                      title={formatMessage({
-                        id: 'workspace.window.sql.explain.tab.detail.card.io.ssstoreRead',
-                      })}
-                      value={sqlExecuteDetailToShow?.ssstoreRead}
-                      valueStyle={{ fontSize: '24px' }}
-                    />
-                  </Col>
-                </Row>
-              </Card>
+              <IOStatistics sqlExecuteDetailToShow={sqlExecuteDetailToShow} />
             </Col>
           </Row>
         </Spin>

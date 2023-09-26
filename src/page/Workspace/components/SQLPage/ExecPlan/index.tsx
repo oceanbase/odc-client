@@ -17,11 +17,11 @@
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Spin } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
-import SQLExplain from '../index';
 
 import { getSQLExplain } from '@/common/network/sql';
 import SessionStore from '@/store/sessionManager/session';
 import styles from './index.less';
+import SQLExplain from '../../SQLExplain';
 
 interface IProps {
   session: SessionStore;
