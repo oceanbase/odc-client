@@ -28,6 +28,7 @@ import { getSqlExplainColumns } from './column';
 import styles from './index.less';
 import { SQLExplainProps, SQLExplainState, TAB_NAME } from './interface';
 import Trace, { parseTraceTree } from './Trace';
+import { ColumnsType } from 'antd/es/table';
 
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
@@ -140,151 +141,233 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           <div className={styles.sql}>
             <Tooltip title={sql}>SQL: {sql}</Tooltip>
           </div>
-          {haveText ? (
+          {haveText && (
+            // 切换显示方式
             <span
               style={{
                 fontSize: 14,
               }}
             >
               {showExplainText ? (
-                <a
+                <ViewFormattingInformation
                   onClick={() => {
                     this.setState({
                       showExplainText: false,
                     });
                   }}
-                >
-                  <ProfileOutlined />
-                  {
-                    formatMessage({
-                      id: 'odc.components.SQLExplain.ViewFormattingInformation',
-                    }) /*查看格式化信息*/
-                  }
-                </a>
+                />
               ) : (
-                <a
+                <ViewPlanText
                   onClick={() => {
                     this.setState({
                       showExplainText: true,
                     });
                   }}
-                >
-                  <CodeOutlined />
-                  {
-                    formatMessage({
-                      id: 'odc.components.SQLExplain.ViewPlanText',
-                    }) /*查看计划文本*/
-                  }
-                </a>
+                />
               )}
             </span>
-          ) : null}
+          )}
         </div>
-        {!showExplainText && (
-          <Radio.Group
-            value={tabName}
-            onChange={(n) =>
-              this.setState({
-                tabName: n.target.value,
-              })
-            }
-            className={styles.radioGroup}
-          >
-            <Radio.Button value={TAB_NAME.SUMMARY}>
-              <FormattedMessage id="workspace.window.sql.explain.tab.summary" />
-            </Radio.Button>
-            {traceId && (
-              <Radio.Button value={TAB_NAME.TRACE}>
-                {formatMessage({ id: 'odc.components.SQLExplain.FullLinkTrace' }) /*全链路 TRACE*/}
-              </Radio.Button>
-            )}
-          </Radio.Group>
-        )}
-
-        {showExplainText ? (
-          <pre
-            style={{
-              padding: 12,
-              height: 'calc(100vh - 158px)',
-              backgroundColor: 'var(--background-tertraiy-color)',
-              color: 'var(--text-color-primary)',
-              overflow: 'auto',
-              marginBottom: 0,
-            }}
-          >
-            {(explain as ISQLExplain)?.originalText}
-          </pre>
-        ) : (
-          <>
-            <div
-              style={{
-                display: tabName === TAB_NAME.SUMMARY ? 'block' : 'none',
+        {
+          // 是否仅查看文本格式
+          showExplainText ? (
+            <OnlyExplainText originalText={(explain as ISQLExplain)?.originalText} />
+          ) : (
+            <RadioSwitchContainer
+              onlyText={onlyText}
+              explain={explain}
+              columns={columns}
+              tableHeight={tableHeight}
+              endTimestamp={endTimestamp}
+              startTimestamp={startTimestamp}
+              treeData={treeData}
+              tabName={tabName}
+              traceId={traceId}
+              handleSummaryOnChange={(e: CheckboxChangeEvent) => {
+                this.setState({
+                  onlyText: e.target.checked,
+                });
               }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  marginBottom: '8px',
-                }}
-              >
-                <div>
-                  <Checkbox
-                    checked={onlyText}
-                    onChange={(e: CheckboxChangeEvent) => {
-                      this.setState({
-                        onlyText: e.target.checked,
-                      });
-                    }}
-                  >
-                    {
-                      formatMessage({
-                        id: 'odc.components.SQLExplain.ViewOnlyTextFormats',
-                      }) /*仅查看文本格式*/
-                    }
-                  </Checkbox>
-                </div>
-              </div>
-              {onlyText ? (
-                <div className={styles.outline}>{explain && (explain as ISQLExplain).outline}</div>
-              ) : (
-                <>
-                  {typeof explain === 'string' ? (
-                    <>
-                      <Empty />
-                    </>
-                  ) : (
-                    explain?.tree && (
-                      <DisplayTable
-                        key={sql}
-                        rowKey="operator"
-                        bordered={true}
-                        expandable={{
-                          defaultExpandAllRows: true,
-                        }}
-                        scroll={{
-                          x: 1400,
-                          y: tableHeight,
-                        }}
-                        columns={columns}
-                        dataSource={explain && explain.tree ? explain.tree : []}
-                        disablePagination={true}
-                      />
-                    )
-                  )}
-                </>
-              )}
-            </div>
-            <div
-              style={{
-                display: tabName === TAB_NAME.TRACE ? 'block' : 'none',
-              }}
-            >
-              <Trace {...{ endTimestamp, startTimestamp, treeData }} />
-            </div>
-          </>
-        )}
+              handleRadioGroupOnChange={(e) =>
+                this.setState({
+                  tabName: e.target.value,
+                })
+              }
+            />
+          )
+        }
       </>
     );
   }
 }
+const OnlyExplainText: React.FC<{
+  originalText: string;
+}> = ({ originalText = '' }) => {
+  return (
+    <pre
+      style={{
+        padding: 12,
+        height: 'calc(100vh - 158px)',
+        backgroundColor: 'var(--background-tertraiy-color)',
+        color: 'var(--text-color-primary)',
+        overflow: 'auto',
+        marginBottom: 0,
+      }}
+    >
+      {originalText}
+    </pre>
+  );
+};
+const Summary: React.FC<{
+  onlyText: boolean;
+  explain: string | ISQLExplain;
+  columns: ColumnsType<any>[];
+  tableHeight: number;
+  handleSummaryOnChange: (e: CheckboxChangeEvent) => void;
+}> = ({ onlyText, explain, columns, tableHeight, handleSummaryOnChange }) => {
+  return (
+    <>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginBottom: '8px',
+        }}
+      >
+        <div>
+          <Checkbox checked={onlyText} onChange={handleSummaryOnChange}>
+            {
+              formatMessage({
+                id: 'odc.components.SQLExplain.ViewOnlyTextFormats',
+              }) /*仅查看文本格式*/
+            }
+          </Checkbox>
+        </div>
+      </div>
+      {onlyText ? (
+        <div className={styles.outline}>{explain && (explain as ISQLExplain).outline}</div>
+      ) : (
+        <>
+          {typeof explain === 'string' ? (
+            <>
+              <Empty />
+            </>
+          ) : (
+            explain?.tree && (
+              <DisplayTable
+                rowKey="operator"
+                bordered={true}
+                expandable={{
+                  defaultExpandAllRows: true,
+                }}
+                scroll={{
+                  x: 1400,
+                  y: tableHeight,
+                }}
+                columns={columns}
+                dataSource={explain && explain.tree ? explain.tree : []}
+                disablePagination={true}
+              />
+            )
+          )}
+        </>
+      )}
+    </>
+  );
+};
+const RadioSwitchContainer: React.FC<{
+  tabName: string;
+  onlyText: boolean;
+  explain: string | ISQLExplain;
+  columns: any[];
+  tableHeight: number;
+  traceId?: string;
+  endTimestamp: number;
+  startTimestamp: number;
+  treeData: any[];
+  handleSummaryOnChange: (e: CheckboxChangeEvent) => void;
+  handleRadioGroupOnChange: (e: any) => void;
+}> = ({
+  tabName,
+  onlyText,
+  explain,
+  columns,
+  tableHeight,
+  traceId,
+  endTimestamp,
+  startTimestamp,
+  treeData,
+  handleSummaryOnChange,
+  handleRadioGroupOnChange,
+}) => {
+  return (
+    <>
+      <Radio.Group
+        value={tabName}
+        onChange={handleRadioGroupOnChange}
+        className={styles.radioGroup}
+      >
+        <Radio.Button value={TAB_NAME.SUMMARY}>
+          <FormattedMessage id="workspace.window.sql.explain.tab.summary" />
+        </Radio.Button>
+        {traceId && (
+          <Radio.Button value={TAB_NAME.TRACE}>
+            {
+              formatMessage({
+                id: 'odc.components.SQLExplain.FullLinkTrace',
+              }) /*全链路 TRACE*/
+            }
+          </Radio.Button>
+        )}
+      </Radio.Group>
+      <div
+        style={{
+          display: tabName === TAB_NAME.SUMMARY ? 'block' : 'none',
+        }}
+      >
+        <Summary
+          onlyText={onlyText}
+          explain={explain}
+          columns={columns}
+          tableHeight={tableHeight}
+          handleSummaryOnChange={handleSummaryOnChange}
+        />
+      </div>
+      <div
+        style={{
+          display: tabName === TAB_NAME.TRACE ? 'block' : 'none',
+        }}
+      >
+        <Trace endTimestamp={endTimestamp} startTimestamp={startTimestamp} treeData={treeData} />
+      </div>
+    </>
+  );
+};
+const ViewPlanText: React.FC<{
+  onClick: () => void;
+}> = ({ onClick }) => {
+  return (
+    <a onClick={onClick}>
+      <CodeOutlined />
+      {
+        formatMessage({
+          id: 'odc.components.SQLExplain.ViewPlanText',
+        }) /*查看计划文本*/
+      }
+    </a>
+  );
+};
+const ViewFormattingInformation: React.FC<{
+  onClick: () => void;
+}> = ({ onClick }) => {
+  return (
+    <a onClick={onClick}>
+      <ProfileOutlined />
+      {
+        formatMessage({
+          id: 'odc.components.SQLExplain.ViewFormattingInformation',
+        }) /*查看格式化信息*/
+      }
+    </a>
+  );
+};
