@@ -17,26 +17,18 @@
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Empty, Input, Spin, Tree, TreeDataNode } from 'antd';
-import ResourceTree from '..';
-import ResourceLayout from '../Layout';
+import ResourceLayout from '../../Layout';
 
-import { listProjects } from '@/common/network/project';
-import { useRequest } from 'ahooks';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, useContext, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 
-import { listDatabases } from '@/common/network/database';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import ProjectSvg from '@/svgr/project_space.svg';
 
 export default forwardRef(function ProjectTree(props, ref) {
-  const { data, loading, run } = useRequest(listProjects, {
-    defaultParams: [null, 1, 9999, false],
-  });
-
   const [searchKey, setSearchKey] = useState('');
   const context = useContext(ResourceTreeContext);
-
+  const { projectList } = context;
   const selectKeys = [context.selectProjectId].filter(Boolean);
   function setSelectKeys(keys) {
     return context.setSelectProjectId(keys?.[0]);
@@ -47,25 +39,15 @@ export default forwardRef(function ProjectTree(props, ref) {
     () => {
       return {
         reload() {
-          setSelectKeys([]);
-          context?.setSelectProjectId(null);
-          return run(null, 1, 9999, false);
+          return context.reloadProjectList();
         },
       };
     },
-    [run],
+    [],
   );
 
-  const selectProject = useMemo(() => {
-    const key = selectKeys?.[0];
-    if (!key) {
-      return null;
-    }
-    return data?.contents?.find((item) => item.id == key);
-  }, [selectKeys, data]);
-
   const projects: TreeDataNode[] = useMemo(() => {
-    return data?.contents
+    return projectList
       ?.map((item) => {
         if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
           return null;
@@ -77,25 +59,7 @@ export default forwardRef(function ProjectTree(props, ref) {
         };
       })
       .filter(Boolean);
-  }, [data, searchKey]);
-
-  const {
-    data: db,
-    reset,
-    run: runListDatabases,
-    loading: dbLoading,
-  } = useRequest(listDatabases, {
-    manual: true,
-  });
-
-  useEffect(() => {
-    console.log(selectKeys?.[0]);
-    if (selectKeys?.[0]) {
-      runListDatabases(selectKeys?.[0], null, 1, 9999);
-    } else {
-      reset();
-    }
-  }, [selectKeys?.[0]]);
+  }, [projectList, searchKey]);
 
   return (
     <ResourceLayout
@@ -114,37 +78,25 @@ export default forwardRef(function ProjectTree(props, ref) {
             />
           </div>
           <div className={styles.list}>
-            <Spin spinning={loading || dbLoading}>
-              {projects?.length ? (
-                <Tree
-                  showIcon
-                  selectedKeys={selectKeys}
-                  onSelect={(keys) => {
-                    setSelectKeys(keys);
-                  }}
-                  selectable
-                  multiple={false}
-                  treeData={projects}
-                />
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
-            </Spin>
+            {projects?.length ? (
+              <Tree
+                showIcon
+                selectedKeys={selectKeys}
+                onSelect={(keys) => {
+                  setSelectKeys(keys);
+                }}
+                selectable
+                multiple={false}
+                treeData={projects}
+              />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </div>
         </div>
       }
-      bottomLoading={dbLoading}
-      bottom={
-        selectKeys?.length ? (
-          <ResourceTree
-            reloadDatabase={() => runListDatabases(selectKeys?.[0], null, 1, 9999)}
-            databaseFrom="project"
-            title={selectProject?.name}
-            databases={db?.contents}
-            showTip
-          />
-        ) : null
-      }
+      bottomLoading={false}
+      bottom={null}
     />
   );
 });

@@ -28,7 +28,7 @@ interface IActionProps {
 }
 
 export interface ITab {
-  title: string;
+  title: React.ReactNode;
   key: string;
   actions: {
     title: string;
@@ -42,6 +42,7 @@ export interface ITab {
 interface IProps {
   tabs: ITab[];
   selectTabKey?: string;
+  leftAction?: React.ReactNode;
   setSelectTabKey?: (v: string) => void;
 }
 
@@ -60,6 +61,7 @@ export default function SideTabs(props: IProps) {
     <div className={styles.sidetabs}>
       <div className={styles.header}>
         <Space size={12} className={styles.tabs}>
+          {props.leftAction}
           {tabs.map((tab) => {
             const isSelect = tab.key === selectTabKey;
             return (

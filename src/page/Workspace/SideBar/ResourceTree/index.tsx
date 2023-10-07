@@ -18,7 +18,7 @@ import Action from '@/component/Action';
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
-import { Input, Tree } from 'antd';
+import { Input, Space, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -30,14 +30,16 @@ import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
 import { useUpdate } from 'ahooks';
+import Icon, { DownOutlined } from '@ant-design/icons';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
   databases: IDatabase[];
   reloadDatabase: () => void;
-  title: string;
+  title: React.ReactNode;
   databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
+  onTitleClick?: () => void;
 }
 
 const ResourceTree: React.FC<IProps> = function ({
@@ -45,6 +47,7 @@ const ResourceTree: React.FC<IProps> = function ({
   databases,
   title,
   databaseFrom,
+  onTitleClick,
   reloadDatabase,
   showTip = false,
 }) {
@@ -161,7 +164,10 @@ const ResourceTree: React.FC<IProps> = function ({
   return (
     <div className={styles.resourceTree}>
       <div className={styles.title}>
-        <span className={styles.label}>{title}</span>
+        <Space size={2} onClick={() => onTitleClick?.()} className={styles.label}>
+          {title}
+          <Icon style={{ verticalAlign: 'text-bottom' }} component={DownOutlined} />
+        </Space>
         <span className={styles.titleAction}>
           <Action.Group size={0} ellipsisIcon="vertical">
             <Action.Link

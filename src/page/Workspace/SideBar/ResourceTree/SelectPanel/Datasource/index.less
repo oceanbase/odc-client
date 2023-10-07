@@ -40,6 +40,18 @@
               display: flex;
               justify-content: center;
             }
+            :local(.envTip) {
+              &.envTipPersonal {
+                display: none;
+              }
+            }
+          }
+          :local(.envTip) {
+            :global {
+              .ant-badge-status-dot {
+                border-radius: 0;
+              }
+            }
           }
           :local(.actions) {
             display: none;
