@@ -29,6 +29,7 @@ import { DataBaseTreeData } from './Nodes/database';
 import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
+import { useUpdate } from 'ahooks';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -47,7 +48,13 @@ const ResourceTree: React.FC<IProps> = function ({
   reloadDatabase,
   showTip = false,
 }) {
-  const [databaseSessions, setDatabaseSessions] = useState<Record<string, string>>({});
+  const databaseSessionsRef = useRef<Record<string, string>>({});
+  const update = useUpdate();
+  const databaseSessions = databaseSessionsRef.current;
+  function setDatabaseSessions(map: any) {
+    databaseSessionsRef.current = map;
+    update();
+  }
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [searchValue, setSearchValue] = useState<string>('');
   const treeWrapperRef = useRef<HTMLDivElement>();
@@ -119,7 +126,7 @@ const ResourceTree: React.FC<IProps> = function ({
           const dbSession = await sessionManagerStore.createSession(null, data?.id, true);
           if (dbSession !== 'NotFound') {
             setDatabaseSessions({
-              ...databaseSessions,
+              ...databaseSessionsRef.current,
               [dbId]: dbSession.sessionId,
             });
           }
