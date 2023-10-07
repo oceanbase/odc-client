@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import ProgressBar from '../components/ProgressBar';
+import ProgressBar from './components/ProgressBar';
 import DisplayTable from '@/component/DisplayTable';
 import { useEffect, useState } from 'react';
 
@@ -75,6 +75,7 @@ const Trace = ({ endTimestamp, startTimestamp, treeData = [] }) => {
       <DisplayTable
         bordered={true}
         key={treeData?.[0]?.spanId}
+        disablePagination
         expandable={{
           defaultExpandAllRows: true,
         }}
