@@ -41,10 +41,9 @@ export interface IFormRef {
 interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
-  isPersonal?: boolean;
 }
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
-  { isEdit, originDatasource, isPersonal }: IProps,
+  { isEdit, originDatasource }: IProps,
   ref,
 ) {
   const [form] = Form.useForm();
@@ -151,7 +150,6 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         test,
         testResult,
         isEdit,
-        isPersonal,
         originDatasource,
         dataSourceConfig: dsc,
       }}

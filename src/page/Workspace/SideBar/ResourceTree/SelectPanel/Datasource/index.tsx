@@ -17,12 +17,14 @@
 import { formatMessage } from '@/util/intl';
 import {
   Badge,
+  Button,
   Dropdown,
   Empty,
   Input,
   message,
   Modal,
   Popover,
+  Space,
   Spin,
   Tree,
   TreeDataNode,
@@ -49,12 +51,21 @@ import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawe
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
 import { toInteger, toNumber } from 'lodash';
-import { IConnectionStatus } from '@/d.ts';
+import { ConnectType, IConnectionStatus } from '@/d.ts';
+import { PlusOutlined } from '@ant-design/icons';
 import StatusIcon from './StatusIcon';
 import classNames from 'classnames';
 
-export default forwardRef(function DatasourceTree(props, ref) {
+interface IProps {
+  filters: {
+    envs: number[];
+    connectTypes: ConnectType[];
+  };
+}
+
+export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
   const [editDatasourceId, setEditDatasourceId] = useState(null);
+  const [addDSVisiable, setAddDSVisiable] = useState(false);
   const [loopCount, setLoopCount] = useState<number>(0);
   const [searchKey, setSearchKey] = useState('');
   const loopStatusRef = useRef<any>(null);
@@ -117,7 +128,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
     () => {
       return {
         async reload() {
-          context?.reloadDatasourceList();
+          await context?.reloadDatasourceList();
         },
       };
     },
@@ -130,6 +141,18 @@ export default forwardRef(function DatasourceTree(props, ref) {
         if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
           return null;
         }
+        if (filters?.envs?.length && !filters?.envs.includes(item.environmentId)) {
+          /**
+           * env filter
+           */
+          return null;
+        }
+        if (filters?.connectTypes?.length && !filters?.connectTypes.includes(item.type)) {
+          /**
+           * connectType filter
+           */
+          return null;
+        }
         return {
           title: item.name,
           selectable: login.isPrivateSpace()
@@ -140,7 +163,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
         };
       })
       .filter(Boolean);
-  }, [datasourceList, searchKey, loopCount]);
+  }, [datasourceList, searchKey, loopCount, filters?.envs, filters?.connectTypes]);
 
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
@@ -186,9 +209,24 @@ export default forwardRef(function DatasourceTree(props, ref) {
               placeholder={formatMessage({
                 id: 'odc.ResourceTree.Datasource.SearchForDataSources',
               })} /*搜索数据源*/
-              style={{ width: '100%' }}
+              style={{ width: '100%', flexGrow: 1, flexShrink: 1 }}
               size="small"
             />
+            {login.isPrivateSpace() ? (
+              <Button
+                size="small"
+                style={{
+                  flexShrink: 0,
+                  flexGrow: 0,
+                  marginLeft: 4,
+                  color: 'var(--icon-color-disable)',
+                }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setAddDSVisiable(true);
+                }}
+              />
+            ) : null}
           </div>
           <div className={styles.list}>
             {datasource?.length ? (
@@ -226,6 +264,7 @@ export default forwardRef(function DatasourceTree(props, ref) {
                                   onClick: (e) => {
                                     e.domEvent?.stopPropagation();
                                     setEditDatasourceId(node.key);
+                                    setAddDSVisiable(true);
                                   },
                                 },
                                 {
@@ -255,7 +294,10 @@ export default forwardRef(function DatasourceTree(props, ref) {
                             <div className={styles.actions}>
                               <Action.Group ellipsisIcon="vertical" size={0}>
                                 <Action.Link
-                                  onClick={() => setEditDatasourceId(node.key)}
+                                  onClick={() => {
+                                    setEditDatasourceId(node.key);
+                                    setAddDSVisiable(true);
+                                  }}
                                   key={'edit'}
                                 >
                                   {formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' })}
@@ -296,11 +338,13 @@ export default forwardRef(function DatasourceTree(props, ref) {
             )}
           </div>
           <NewDatasourceDrawer
-            isEdit={true}
-            isPersonal={true}
-            visible={!!editDatasourceId}
+            isEdit={!!editDatasourceId}
+            visible={addDSVisiable}
             id={editDatasourceId}
-            close={() => setEditDatasourceId(null)}
+            close={() => {
+              setEditDatasourceId(null);
+              setAddDSVisiable(false);
+            }}
             onSuccess={() => {
               context?.reloadDatasourceList();
             }}

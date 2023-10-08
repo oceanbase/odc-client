@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 
 export default function Reload({
   size = '13px',
@@ -23,5 +24,14 @@ export default function Reload({
   size?: string;
   onClick?: () => void;
 }) {
-  return <ReloadOutlined onClick={onClick} style={{ fontSize: size, cursor: 'pointer' }} />;
+  const [loading, setLoading] = useState(false);
+  async function _onClick() {
+    setLoading(true);
+    await onClick?.();
+    setLoading(false);
+  }
+  if (loading) {
+    return <LoadingOutlined style={{ fontSize: size, cursor: 'pointer' }} />;
+  }
+  return <ReloadOutlined onClick={_onClick} style={{ fontSize: size, cursor: 'pointer' }} />;
 }

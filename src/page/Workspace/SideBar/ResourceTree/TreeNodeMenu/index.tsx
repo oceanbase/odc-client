@@ -17,7 +17,7 @@
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
-import { Dropdown, Tooltip } from 'antd';
+import { Badge, Dropdown, Tooltip } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 import treeStyles from '../index.less';
 import { ResourceNodeType } from '../type';
@@ -194,6 +194,15 @@ const TreeNodeMenu = (props: IProps) => {
       </div>
     );
   }
+
+  function envRender() {
+    const env = node.env;
+    if (!env) {
+      return null;
+    }
+    return <Badge className={treeStyles.env} color={env?.style?.toLowerCase()} />;
+  }
+
   return (
     <>
       <Dropdown
@@ -212,6 +221,7 @@ const TreeNodeMenu = (props: IProps) => {
         {nodeChild}
       </Dropdown>
       {actionsRender()}
+      {showTip ? envRender() : null}
     </>
   );
 };

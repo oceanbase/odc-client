@@ -23,7 +23,6 @@ import { IConfig } from './config';
 interface IDatasouceFormContext {
   form?: FormInstance<IDatasource>;
   test: () => void;
-  isPersonal?: boolean;
   testResult?: {
     active: boolean;
     errorCode: IConnectionTestErrorType;

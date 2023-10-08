@@ -16,18 +16,21 @@
 
 import { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import ResourceTreeContext from '../../context/ResourceTreeContext';
 import tracert from '@/util/tracert';
 import SelectPanel from './SelectPanel';
 import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
+import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
 
 export default inject('userStore')(
   observer(function ResourceTreeContainer({ userStore }: { userStore: UserStore }) {
     const [selectPanelOpen, setSelectPanelOpen] = useState<boolean>(true);
     const resourcetreeContext = useContext(ResourceTreeContext);
     const { selectProjectId, selectDatasourceId } = resourcetreeContext;
+
+    const cacheRef = useRef<ITreeStateCache>({});
 
     const [loading, setLoading] = useState(true);
 
@@ -57,13 +60,17 @@ export default inject('userStore')(
       );
     }
     return (
-      <>
+      <TreeStateStore.Provider
+        value={{
+          cache: cacheRef?.current,
+        }}
+      >
         {selectPanelOpen ? (
           <SelectPanel onClose={() => setSelectPanelOpen(false)} />
         ) : (
           <DatabaseTree openSelectPanel={() => setSelectPanelOpen(true)} />
         )}
-      </>
+      </TreeStateStore.Provider>
     );
   }),
 );

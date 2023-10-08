@@ -31,6 +31,11 @@ import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
 import { useUpdate } from 'ahooks';
 import Icon, { DownOutlined } from '@ant-design/icons';
+import Reload from '@/component/Button/Reload';
+import DatasourceFilter from './DatasourceFilter';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import { ConnectType } from '@/d.ts';
+import useTreeState from './useTreeState';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -39,6 +44,8 @@ interface IProps {
   title: React.ReactNode;
   databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
+  enableFilter?: boolean;
+  stateId?: string;
   onTitleClick?: () => void;
 }
 
@@ -50,16 +57,17 @@ const ResourceTree: React.FC<IProps> = function ({
   onTitleClick,
   reloadDatabase,
   showTip = false,
+  enableFilter,
+  stateId,
 }) {
-  const databaseSessionsRef = useRef<Record<string, string>>({});
+  const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad } = useTreeState(
+    stateId,
+  );
   const update = useUpdate();
-  const databaseSessions = databaseSessionsRef.current;
-  function setDatabaseSessions(map: any) {
-    databaseSessionsRef.current = map;
-    update();
-  }
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [envs, setEnvs] = useState<number[]>([]);
+  const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
   const treeWrapperRef = useRef<HTMLDivElement>();
   useEffect(() => {
     tracert.expo('a3112.b41896.c330992');
@@ -77,10 +85,16 @@ const ResourceTree: React.FC<IProps> = function ({
 
   const treeData: TreeDataNode[] = (() => {
     const root = databases
-      ?.filter((db) => db.existed)
+      ?.filter((db) => {
+        return (
+          db.existed &&
+          !(envs?.length && !envs.includes(db.environment?.id)) &&
+          !(connectTypes?.length && !connectTypes.includes(db.dataSource?.type))
+        );
+      })
       ?.map((database) => {
         const dbId = database.id;
-        const dbSessionId = databaseSessions[dbId];
+        const dbSessionId = sessionIds[dbId];
         const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
         return DataBaseTreeData(dbSession, database, database?.id);
       });
@@ -121,17 +135,16 @@ const ResourceTree: React.FC<IProps> = function ({
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
-      console.log('load');
       const { type, data } = treeNode;
       switch (type) {
         case ResourceNodeType.Database: {
           const dbId = (data as IDatabase).id;
-          const dbSession = await sessionManagerStore.createSession(null, data?.id, true);
+          const dbSession =
+            sessionManagerStore.sessionMap.get(sessionIds[dbId]) ||
+            (await sessionManagerStore.createSession(null, data?.id, true));
           if (dbSession !== 'NotFound') {
-            setDatabaseSessions({
-              ...databaseSessionsRef.current,
-              [dbId]: dbSession.sessionId,
-            });
+            setSessionId(dbId, dbSession?.sessionId);
+            update();
           }
           break;
         }
@@ -140,7 +153,7 @@ const ResourceTree: React.FC<IProps> = function ({
         }
       }
     },
-    [databaseSessions],
+    [sessionIds],
   );
 
   const renderNode = useCallback(
@@ -158,7 +171,7 @@ const ResourceTree: React.FC<IProps> = function ({
         />
       );
     },
-    [databaseSessions],
+    [sessionIds],
   );
 
   return (
@@ -169,20 +182,30 @@ const ResourceTree: React.FC<IProps> = function ({
           <Icon style={{ verticalAlign: 'text-bottom' }} component={DownOutlined} />
         </Space>
         <span className={styles.titleAction}>
-          <Action.Group size={0} ellipsisIcon="vertical">
-            <Action.Link
-              key={'reload'}
+          <Space size={4}>
+            {enableFilter ? (
+              <DatasourceFilter
+                envs={envs}
+                types={connectTypes}
+                onClear={() => {
+                  setEnvs([]);
+                  setConnectTypes([]);
+                }}
+                onEnvsChange={(v) => {
+                  setEnvs(v);
+                }}
+                onTypesChange={(v) => {
+                  setConnectTypes(v);
+                }}
+                iconStyle={{ verticalAlign: 'text-bottom' }}
+              />
+            ) : null}
+            <Reload
               onClick={() => {
-                reloadDatabase();
+                return reloadDatabase();
               }}
-            >
-              {
-                formatMessage({
-                  id: 'odc.SideBar.ResourceTree.RefreshTheDatabaseList',
-                }) /*刷新数据库列表*/
-              }
-            </Action.Link>
-          </Action.Group>
+            />
+          </Space>
         </span>
       </div>
       <div className={styles.search}>
@@ -199,6 +222,8 @@ const ResourceTree: React.FC<IProps> = function ({
           expandAction="click"
           showIcon
           onExpand={(_, info) => {
+            onExpand(_, info);
+            //@ts-ignore
             tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
           }}
           filterTreeNode={(node) =>
@@ -207,6 +232,9 @@ const ResourceTree: React.FC<IProps> = function ({
           treeData={filteredTreeData}
           titleRender={renderNode}
           loadData={loadData}
+          expandedKeys={expandedKeys}
+          loadedKeys={loadedKeys}
+          onLoad={onLoad}
           height={wrapperHeight}
           selectable={false}
         />

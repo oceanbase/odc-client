@@ -188,13 +188,7 @@ export default function NewDatasourceDrawer({
       }
     >
       <Spin spinning={loading}>
-        <DatasourceForm
-          isPersonal={isPersonal}
-          originDatasource={data}
-          isEdit={isEdit}
-          key={visible + ''}
-          ref={formRef}
-        />
+        <DatasourceForm originDatasource={data} isEdit={isEdit} key={visible + ''} ref={formRef} />
       </Spin>
     </Drawer>
   );
