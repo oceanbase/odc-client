@@ -63,6 +63,7 @@ export function DataBaseTreeData(
     sessionId: dbSession?.sessionId,
     data: database,
     tip: database?.dataSource?.name,
+    env: database?.environment,
     doubleClick(session, node, databaseFrom) {
       openNewSQLPage(database?.id);
     },

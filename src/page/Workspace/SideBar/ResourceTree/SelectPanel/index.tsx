@@ -7,10 +7,11 @@ import ProjectTree from './Project';
 import { inject, observer } from 'mobx-react';
 import Icon, { CloseOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { UserStore } from '@/store/login';
-import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
-import { Space } from 'antd';
 import styles from './index.less';
 import classNames from 'classnames';
+import DatasourceFilter from '../DatasourceFilter';
+import { ConnectType } from '@/d.ts';
+import Reload from '@/component/Button/Reload';
 
 interface IProps {
   userStore?: UserStore;
@@ -25,8 +26,9 @@ enum PanelType {
 const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
   const resourcetreeContext = useContext(ResourceTreeContext);
   const { selectProjectId, selectDatasourceId } = resourcetreeContext;
-  const [addVisible, setAddVisible] = useState(false);
   const [selectPanel, setSelectPanel] = useState<PanelType>(PanelType.DataSource);
+  const [envs, setEnvs] = useState<number[]>([]);
+  const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
   const sourceRef = useRef<any>();
   const projectRef = useRef<any>();
   const isPersonal = userStore?.isPrivateSpace();
@@ -35,25 +37,36 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
     title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.DataSource' }), //数据源
     key: PanelType.DataSource,
     render() {
-      return <DataSourceTree ref={sourceRef} />;
+      return <DataSourceTree filters={{ envs, connectTypes }} ref={sourceRef} />;
     },
+    groupSize: 3,
     actions: [
-      isPersonal
-        ? {
-            icon: PlusOutlined,
-            key: 'add',
-            title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.AddADataSource' }), //添加数据源
-            async onClick() {
-              return setAddVisible(true);
-            },
-          }
-        : null,
       {
-        icon: ReloadOutlined,
-        key: 'reload',
-        title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.Refresh' }), //刷新
-        async onClick() {
-          return await sourceRef.current?.reload?.();
+        render() {
+          return (
+            <DatasourceFilter
+              iconStyle={{ verticalAlign: 'text-top' }}
+              onClear={() => {
+                setEnvs([]);
+                setConnectTypes([]);
+              }}
+              onEnvsChange={(v) => setEnvs(v)}
+              onTypesChange={(v) => setConnectTypes(v)}
+              envs={envs}
+              types={connectTypes}
+            />
+          );
+        },
+      },
+      {
+        render() {
+          return (
+            <Reload
+              onClick={async () => {
+                return await sourceRef.current?.reload?.();
+              }}
+            />
+          );
         },
       },
     ].filter(Boolean),
@@ -66,11 +79,14 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
     },
     actions: [
       {
-        icon: ReloadOutlined,
-        key: 'reload',
-        title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.Refresh' }), //刷新
-        async onClick() {
-          return await projectRef.current?.reload?.();
+        render() {
+          return (
+            <Reload
+              onClick={async () => {
+                return await projectRef.current?.reload?.();
+              }}
+            />
+          );
         },
       },
     ],
@@ -100,14 +116,6 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
             onClick={!isSelected ? null : () => onClose()}
           />
         }
-      />
-      <NewDatasourceDrawer
-        isPersonal={true}
-        visible={addVisible}
-        close={() => setAddVisible(false)}
-        onSuccess={() => {
-          sourceRef.current?.reload?.();
-        }}
       />
     </>
   );

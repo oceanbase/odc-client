@@ -30,13 +30,17 @@ interface IActionProps {
 export interface ITab {
   title: React.ReactNode;
   key: string;
-  actions: {
-    title: string;
-    icon: React.ComponentType;
-    key: string;
-    onClick: () => Promise<void> | void;
-  }[];
+  actions: (
+    | {
+        title: string;
+        icon: React.ComponentType;
+        key: string;
+        onClick: () => Promise<void> | void;
+      }
+    | { render: () => React.ReactElement }
+  )[];
   render: () => ReactElement;
+  groupSize?: number;
 }
 
 interface IProps {
@@ -80,8 +84,11 @@ export default function SideTabs(props: IProps) {
             );
           })}
         </Space>
-        <Action.Group>
+        <Action.Group size={selectTab.groupSize}>
           {selectTab?.actions?.map((action) => {
+            if ('render' in action) {
+              return action.render();
+            }
             return (
               <Action.Link replaceLoading={true} key={action.key} onClick={action.onClick}>
                 <Icon className={styles.acion} component={action.icon} />

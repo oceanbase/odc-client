@@ -24,6 +24,7 @@ import Icon from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
+import RiskLevelLabel from '../RiskLevelLabel';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
@@ -123,6 +124,10 @@ const ConnectionPopover: React.FC<{
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
+              <RiskLevelLabel
+                content={connection?.environmentName}
+                color={connection?.environmentStyle?.toLowerCase()}
+              />
               <Icon
                 component={DBIcon?.component}
                 style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}

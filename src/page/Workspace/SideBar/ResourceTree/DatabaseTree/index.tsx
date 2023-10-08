@@ -32,7 +32,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
   }
 
   async function reloadDatabase() {
-    initDatabase(selectProjectId, selectDatasourceId);
+    await initDatabase(selectProjectId, selectDatasourceId);
   }
 
   useEffect(() => {
@@ -43,11 +43,13 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
   function ProjectRender() {
     return (
       <ResourceTree
+        stateId={'project-' + selectProjectId}
         reloadDatabase={() => reloadDatabase()}
         databaseFrom={'project'}
         title={<TreeTitle project={selectProject} />}
         databases={db?.contents}
         onTitleClick={() => openSelectPanel()}
+        enableFilter
         showTip
       />
     );
@@ -55,12 +57,12 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
   function DatasourceRender() {
     return (
       <ResourceTree
+        stateId={'datasource-' + selectDatasourceId}
         reloadDatabase={() => reloadDatabase()}
         databaseFrom={'datasource'}
         title={<TreeTitle datasource={selectDatasource} />}
         databases={db?.contents}
         onTitleClick={() => openSelectPanel()}
-        showTip
       />
     );
   }

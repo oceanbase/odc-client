@@ -54,6 +54,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         word-break: break-all;
+        padding-right: 10px;
       }
 
       .ant-tree-treenode {
@@ -70,12 +71,27 @@
             align-items: center;
             background-color: var(--hover-color2);
           }
+          .env {
+            position: absolute;
+            top: 0px;
+            right: 8px;
+            bottom: 0px;
+            align-items: center;
+            :global {
+              .ant-badge-status-dot {
+                border-radius: 0px;
+              }
+            }
+          }
         }
         &:hover {
           background-color: var(--hover-color2);
           :local {
             .menuActions {
               display: flex;
+            }
+            .env {
+              display: none;
             }
           }
         }

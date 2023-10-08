@@ -22,9 +22,9 @@ import { Popover, Space, Typography } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';
-import CheckboxTag from './CheckboxTag';
 import { getAllConnectTypes } from '@/common/datasource';
 import { IDataSourceType } from '@/d.ts/datasource';
+import CheckboxTag from '@/component/CheckboxTag';
 
 interface IProps {}
 
