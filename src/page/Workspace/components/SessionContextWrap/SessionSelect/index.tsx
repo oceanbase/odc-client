@@ -15,12 +15,12 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Popover, Space, Spin, Tag } from 'antd';
+import { Dropdown, Popover, Space, Spin, Tag } from 'antd';
 import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
@@ -29,6 +29,9 @@ import classNames from 'classnames';
 import SelectModal from './modal';
 import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { useRequest } from 'ahooks';
+import { listDatabases } from '@/common/network/database';
+import { toInteger } from 'lodash';
 
 const colorMap = {
   1: 'var(--function-green2-color)',
@@ -48,6 +51,19 @@ export default function SessionSelect({
   useEffect(() => {
     tracert.expo('a3112.b41896.c330994');
   }, []);
+
+  const { data, loading, run: fetchDatabase } = useRequest(listDatabases, {
+    manual: true,
+  });
+
+  const databaseOptions = useMemo(() => {
+    return data?.contents?.map((item) => {
+      return {
+        label: item.name,
+        key: item.id,
+      };
+    });
+  }, [data]);
 
   function renderProject() {
     return (
@@ -117,6 +133,7 @@ export default function SessionSelect({
         </>
       );
     }
+    const fromDataSource = context?.from === 'datasource' || context.datasourceMode;
     return (
       <>
         {renderEnv()}
@@ -127,22 +144,54 @@ export default function SessionSelect({
           }}
           className={styles.dataSource}
         >
-          {context?.from === 'datasource' || context.datasourceMode
-            ? renderDatasource()
-            : renderProject()}
+          {fromDataSource ? renderDatasource() : renderProject()}
         </div>
         {!context.datasourceMode && (
           <>
             <span>/</span>
-            <div
-              onClick={() => {
-                tracert.click('a3112.b41896.c330994.d367631');
-                setVisible(true);
+            <Dropdown
+              trigger={['click']}
+              dropdownRender={(menus) => {
+                if (loading) {
+                  return <span></span>;
+                }
+                return menus;
               }}
-              className={styles.database}
+              menu={{
+                items: databaseOptions,
+                activeKey: context?.session?.odcDatabase?.id?.toString(),
+                async onClick(info) {
+                  if (toInteger(info.key) == context?.session?.odcDatabase?.id) {
+                    return;
+                  }
+                  tracert.click('a3112.b41896.c330994.d367631');
+                  await context.selectSession(toInteger(info.key), null, context?.from);
+                },
+              }}
+              onOpenChange={(v) =>
+                v &&
+                fetchDatabase(
+                  fromDataSource ? null : context?.session?.odcDatabase?.project?.id,
+                  fromDataSource ? context?.session?.odcDatabase?.dataSource?.id : null,
+                  1,
+                  9999,
+                  null,
+                  null,
+                  null,
+                  true,
+                )
+              }
             >
-              {context?.session?.odcDatabase?.name} <DownOutlined />
-            </div>
+              <div
+                className={styles.database}
+                style={{
+                  color: loading ? 'var(--text-color-hint)' : 'var(--text-color-secondary)',
+                }}
+              >
+                {context?.session?.odcDatabase?.name}{' '}
+                {loading ? <LoadingOutlined /> : <DownOutlined />}
+              </div>
+            </Dropdown>
           </>
         )}
       </>

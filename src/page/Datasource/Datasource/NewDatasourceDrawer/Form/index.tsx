@@ -21,7 +21,8 @@ import { AccountType, ConnectType, ConnectionMode, IConnectionTestErrorType } fr
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, FormInstance, Input, Select, Space } from 'antd';
+import { Form, FormInstance, Input, Select, Space, Typography } from 'antd';
+import Icon from '@ant-design/icons';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import Account from './Account';
 import AddressItems from './AddressItems';
@@ -32,7 +33,11 @@ import SSLItem from './SSLItem';
 import SysForm from './SysForm';
 import { ConnectTypeText } from '@/constant/label';
 import dataSourceConfig from './config';
-import { getAllConnectTypes, getDsByConnectType } from '@/common/datasource';
+import {
+  getAllConnectTypes,
+  getDataSourceStyleByConnectType,
+  getDsByConnectType,
+} from '@/common/datasource';
 
 const Option = Select.Option;
 export interface IFormRef {
@@ -41,14 +46,13 @@ export interface IFormRef {
 interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
+  type: ConnectType;
 }
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
-  { isEdit, originDatasource }: IProps,
+  { isEdit, originDatasource, type }: IProps,
   ref,
 ) {
   const [form] = Form.useForm();
-
-  const type: ConnectType = Form.useWatch('type', form);
 
   const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
   const [testResult, setTestResult] = useState<{
@@ -155,13 +159,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
       }}
     >
       <Form
-        initialValues={
-          haveOCP()
-            ? {
-                type: ConnectionMode.OB_ORACLE,
-              }
-            : {}
-        }
+        initialValues={{
+          type,
+        }}
         layout="vertical"
         form={form}
         requiredMark="optional"
@@ -186,19 +186,34 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             />
           </Form.Item>
         ) : null}
-        <DBTypeItem />
+        <Typography>
+          <Typography.Paragraph>
+            <Space size={4}>
+              <span>数据源类型:</span>
+              <Icon
+                component={getDataSourceStyleByConnectType(type)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(type)?.icon?.color,
+                  fontSize: 14,
+                }}
+              />
+              {ConnectTypeText[type] || ''}
+            </Space>
+          </Typography.Paragraph>
+        </Typography>
+        {/* <DBTypeItem /> */}
         <Form.Item
           rules={[{ required: true }]}
           label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Type' })} /*类型*/
           name={'type'}
-          noStyle={haveOCP() || connectTypeList?.length === 1 ? true : false}
+          noStyle
         >
           <Select
             disabled={isEdit}
             placeholder="请选择类型"
             style={{
               width: 208,
-              display: haveOCP() || connectTypeList?.length === 1 ? 'none' : 'inline-block',
+              display: 'none',
             }}
           >
             {connectTypeList?.map((item) => {
