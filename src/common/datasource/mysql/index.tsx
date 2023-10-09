@@ -50,7 +50,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     features: {
       task: [TaskType.ASYNC, TaskType.DATAMOCK, TaskType.SQL_PLAN],
       obclient: true,
-      recycleBin: true,
+      recycleBin: false,
       sqlExplain: true,
     },
     schema: {

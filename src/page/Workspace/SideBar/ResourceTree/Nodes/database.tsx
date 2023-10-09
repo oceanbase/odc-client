@@ -62,80 +62,80 @@ export function DataBaseTreeData(
 
   switch (searchValue?.type) {
     case DbObjectType.table: {
-      //@ts-ignore
       tableTreeData &&
+        //@ts-ignore
         (tableTreeData.children = tableTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.view: {
-      //@ts-ignore
       viewTreeData &&
+        //@ts-ignore
         (viewTreeData.children = viewTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.function: {
-      //@ts-ignore
       functionTreeData &&
+        //@ts-ignore
         (functionTreeData.children = functionTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.procedure: {
-      //@ts-ignore
       procedureTreeData &&
+        //@ts-ignore
         (procedureTreeData.children = procedureTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.package: {
-      //@ts-ignore
       packageTreeData &&
+        //@ts-ignore
         (packageTreeData.children = packageTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.type: {
-      //@ts-ignore
       typeTreeData &&
+        //@ts-ignore
         (typeTreeData.children = typeTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.sequence: {
-      //@ts-ignore
       sequenceTreeData &&
+        //@ts-ignore
         (sequenceTreeData.children = sequenceTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.synonym: {
-      //@ts-ignore
       synonymTreeData &&
+        //@ts-ignore
         (synonymTreeData.children = synonymTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.public_synonym: {
-      //@ts-ignore
       publicSynonymTreeData &&
+        //@ts-ignore
         (publicSynonymTreeData.children = publicSynonymTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
       break;
     }
     case DbObjectType.trigger: {
-      //@ts-ignore
       triggerTreeData &&
+        //@ts-ignore
         (triggerTreeData.children = triggerTreeData.children?.filter((item) => {
           return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
         }));
