@@ -221,7 +221,7 @@ const TreeNodeMenu = (props: IProps) => {
         {nodeChild}
       </Dropdown>
       {actionsRender()}
-      {showTip ? envRender() : null}
+      {envRender()}
     </>
   );
 };

@@ -31,7 +31,7 @@ import { useUpdate } from 'ahooks';
 import Icon, { DownOutlined } from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import DatasourceFilter from './DatasourceFilter';
-import { ConnectType } from '@/d.ts';
+import { ConnectType, DbObjectType } from '@/d.ts';
 import useTreeState from './useTreeState';
 import DatabaseSearch from './DatabaseSearch';
 
@@ -63,7 +63,11 @@ const ResourceTree: React.FC<IProps> = function ({
   );
   const update = useUpdate();
   const [wrapperHeight, setWrapperHeight] = useState(0);
-  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchValue, setSearchValue] = useState<{
+    type: DbObjectType;
+    value: string;
+  }>(null);
+
   const [envs, setEnvs] = useState<number[]>([]);
   const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
   const treeWrapperRef = useRef<HTMLDivElement>();
@@ -84,6 +88,15 @@ const ResourceTree: React.FC<IProps> = function ({
   const treeData: TreeDataNode[] = (() => {
     const root = databases
       ?.filter((db) => {
+        if (
+          searchValue?.type === DbObjectType.database &&
+          !db.name.toLowerCase()?.includes(searchValue?.value)
+        ) {
+          /**
+           * search filter
+           */
+          return false;
+        }
         return (
           db.existed &&
           !(envs?.length && !envs.includes(db.environment?.id)) &&
@@ -94,42 +107,10 @@ const ResourceTree: React.FC<IProps> = function ({
         const dbId = database.id;
         const dbSessionId = sessionIds[dbId];
         const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-        return DataBaseTreeData(dbSession, database, database?.id, true);
+        return DataBaseTreeData(dbSession, database, database?.id, true, searchValue);
       });
     return root || [];
   })();
-
-  const filteredTreeData = useMemo(() => {
-    if (!searchValue || !searchValue?.trim()) {
-      return treeData;
-    }
-    return treeData.filter((dbNode) => {
-      let haveObj = false;
-      const isDBNameMatch = dbNode.title
-        ?.toString()
-        ?.toLowerCase()
-        ?.includes(searchValue?.toLowerCase());
-      if (isDBNameMatch) {
-        /**
-         * db 名字匹配的情况下，不做内部的过滤
-         */
-        return true;
-      }
-      dbNode.children?.forEach((objRootNode: TreeDataNode) => {
-        /**
-         * 过滤数据库对象
-         */
-        let filterChildren: any = objRootNode.children?.filter((objNode) => {
-          return objNode.title?.toString()?.toLowerCase()?.includes(searchValue?.toLowerCase());
-        });
-        objRootNode.children = filterChildren;
-        if (filterChildren?.length) {
-          haveObj = true;
-        }
-      });
-      return haveObj;
-    });
-  }, [treeData, searchValue]);
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
@@ -209,7 +190,12 @@ const ResourceTree: React.FC<IProps> = function ({
       <div className={styles.search}>
         <DatabaseSearch
           onChange={(type, value) => {
-            console.log(type, value);
+            !type
+              ? setSearchValue(null)
+              : setSearchValue({
+                  type,
+                  value,
+                });
           }}
         />
       </div>
@@ -222,10 +208,7 @@ const ResourceTree: React.FC<IProps> = function ({
             //@ts-ignore
             tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
           }}
-          filterTreeNode={(node) =>
-            node.title.toString().toLowerCase().includes(searchValue?.toLowerCase())
-          }
-          treeData={filteredTreeData}
+          treeData={treeData}
           titleRender={renderNode}
           loadData={loadData}
           expandedKeys={expandedKeys}
