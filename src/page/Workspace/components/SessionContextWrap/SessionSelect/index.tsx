@@ -30,6 +30,12 @@ import SelectModal from './modal';
 import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
+const colorMap = {
+  1: 'var(--function-green2-color)',
+  2: 'var(--function-gold2-color)',
+  3: 'var(--function-red2-color)',
+};
+
 export default function SessionSelect({
   readonly,
   dialectTypes,
@@ -146,7 +152,10 @@ export default function SessionSelect({
   return (
     <>
       {!context?.databaseId && !context?.datasourceId ? (
-        <div className={styles.line}>
+        <div
+          style={{ background: colorMap[context?.session?.odcDatabase?.environment?.id] }}
+          className={styles.line}
+        >
           <a
             onClick={() => {
               tracert.click('a3112.b41896.c330994.d367630');
@@ -161,7 +170,10 @@ export default function SessionSelect({
           </a>
         </div>
       ) : (
-        <div className={styles.line}>
+        <div
+          style={{ background: colorMap[context?.session?.odcDatabase?.environment?.id] }}
+          className={styles.line}
+        >
           {context?.session ? (
             renderSessionInfo()
           ) : (

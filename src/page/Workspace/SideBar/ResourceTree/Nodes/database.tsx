@@ -30,11 +30,13 @@ import { ViewTreeData } from './view';
 
 import DatabaseSvg from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
+import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,
   database: IDatabase,
   cid: number,
+  showDBTypeIcon: boolean = false,
 ): TreeDataNode {
   const dbName = database.name;
 
@@ -68,7 +70,14 @@ export function DataBaseTreeData(
       openNewSQLPage(database?.id);
     },
     cid,
-    icon: <Icon component={DatabaseSvg} style={{ color: '#3FA3FF', fontSize: 14 }} />,
+    icon: showDBTypeIcon ? (
+      <Icon
+        component={getDataSourceStyleByConnectType(database?.dataSource?.type)?.dbIcon?.component}
+        style={{ fontSize: 14 }}
+      />
+    ) : (
+      <Icon component={DatabaseSvg} style={{ color: '#3FA3FF', fontSize: 14 }} />
+    ),
     children: dbSession
       ? [
           tableTreeData,

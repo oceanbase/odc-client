@@ -3,10 +3,6 @@ import ResourceTree from '..';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
-import { getDataSourceGroupByProject } from '@/common/network/connection';
-import login from '@/store/login';
-import { Space } from 'antd';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import TreeTitle from './Title';
 
 interface IProps {

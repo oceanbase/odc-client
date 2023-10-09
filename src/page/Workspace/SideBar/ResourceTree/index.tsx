@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import Action from '@/component/Action';
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
-import { formatMessage } from '@/util/intl';
 import { Input, Space, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
@@ -33,9 +31,9 @@ import { useUpdate } from 'ahooks';
 import Icon, { DownOutlined } from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import DatasourceFilter from './DatasourceFilter';
-import FilterIcon from '@/component/Button/FIlterIcon';
 import { ConnectType } from '@/d.ts';
 import useTreeState from './useTreeState';
+import DatabaseSearch from './DatabaseSearch';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -96,7 +94,7 @@ const ResourceTree: React.FC<IProps> = function ({
         const dbId = database.id;
         const dbSessionId = sessionIds[dbId];
         const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-        return DataBaseTreeData(dbSession, database, database?.id);
+        return DataBaseTreeData(dbSession, database, database?.id, true);
       });
     return root || [];
   })();
@@ -209,12 +207,10 @@ const ResourceTree: React.FC<IProps> = function ({
         </span>
       </div>
       <div className={styles.search}>
-        <Input.Search
-          onSearch={(v) => setSearchValue(v)}
-          size="small"
-          placeholder={formatMessage({
-            id: 'odc.SideBar.ResourceTree.SearchForLoadedObjects',
-          })} /*搜索已加载对象*/
+        <DatabaseSearch
+          onChange={(type, value) => {
+            console.log(type, value);
+          }}
         />
       </div>
       <div ref={treeWrapperRef} className={styles.tree}>
