@@ -23,6 +23,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
 
   const options = tmpValue
     ? [
+        DbObjectType.database,
         DbObjectType.table,
         DbObjectType.view,
         DbObjectType.function,
@@ -102,6 +103,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
                   setTmpValue(null);
                   ref.current?.blur();
                   e.stopPropagation();
+                  onChange(null, null);
                 }}
               />
             ) : null}

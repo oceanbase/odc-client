@@ -31,12 +31,14 @@ import { ViewTreeData } from './view';
 import DatabaseSvg from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { DbObjectType } from '@/d.ts';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,
   database: IDatabase,
   cid: number,
   showDBTypeIcon: boolean = false,
+  searchValue: { type: DbObjectType; value: string },
 ): TreeDataNode {
   const dbName = database.name;
 
@@ -57,6 +59,89 @@ export function DataBaseTreeData(
     dbSession?.supportFeature?.enableSynonym && SynonymTreeData(dbSession, database, false);
   const publicSynonymTreeData =
     dbSession?.supportFeature?.enableSynonym && SynonymTreeData(dbSession, database, true);
+
+  switch (searchValue?.type) {
+    case DbObjectType.table: {
+      //@ts-ignore
+      tableTreeData &&
+        (tableTreeData.children = tableTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.view: {
+      //@ts-ignore
+      viewTreeData &&
+        (viewTreeData.children = viewTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.function: {
+      //@ts-ignore
+      functionTreeData &&
+        (functionTreeData.children = functionTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.procedure: {
+      //@ts-ignore
+      procedureTreeData &&
+        (procedureTreeData.children = procedureTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.package: {
+      //@ts-ignore
+      packageTreeData &&
+        (packageTreeData.children = packageTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.type: {
+      //@ts-ignore
+      typeTreeData &&
+        (typeTreeData.children = typeTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.sequence: {
+      //@ts-ignore
+      sequenceTreeData &&
+        (sequenceTreeData.children = sequenceTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.synonym: {
+      //@ts-ignore
+      synonymTreeData &&
+        (synonymTreeData.children = synonymTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.public_synonym: {
+      //@ts-ignore
+      publicSynonymTreeData &&
+        (publicSynonymTreeData.children = publicSynonymTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+    case DbObjectType.trigger: {
+      //@ts-ignore
+      triggerTreeData &&
+        (triggerTreeData.children = triggerTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+        }));
+      break;
+    }
+  }
   return {
     title: dbName,
     key: database?.id,
