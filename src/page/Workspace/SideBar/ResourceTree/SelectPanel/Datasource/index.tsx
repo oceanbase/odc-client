@@ -55,6 +55,7 @@ import { ConnectType, IConnectionStatus } from '@/d.ts';
 import { PlusOutlined } from '@ant-design/icons';
 import StatusIcon from './StatusIcon';
 import classNames from 'classnames';
+import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
 
 interface IProps {
   filters: {
@@ -213,19 +214,18 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
               size="small"
             />
             {login.isPrivateSpace() ? (
-              <Button
-                size="small"
-                style={{
-                  flexShrink: 0,
-                  flexGrow: 0,
-                  marginLeft: 4,
-                  color: 'var(--icon-color-disable)',
-                }}
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  setAddDSVisiable(true);
-                }}
-              />
+              <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()}>
+                <Button
+                  size="small"
+                  style={{
+                    flexShrink: 0,
+                    flexGrow: 0,
+                    marginLeft: 4,
+                    color: 'var(--icon-color-disable)',
+                  }}
+                  icon={<PlusOutlined />}
+                />
+              </NewDatasourceButton>
             ) : null}
           </div>
           <div className={styles.list}>

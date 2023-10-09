@@ -27,6 +27,7 @@ interface IProps {
   description: string;
   templateName: string;
   data?: any;
+  noButton?: boolean;
   getResultByFiles: (files: UploadFile[]) => any[];
   previewContent: (content: any[]) => React.ReactNode;
   onChange: (files: UploadFile[]) => UploadFile[];
@@ -48,6 +49,9 @@ const BatchImportButton = (props, ref) => {
   useImperativeHandle(ref, () => {
     return {
       closeModal: handleClose,
+      openModal: () => {
+        handleVisible();
+      },
     };
   });
 
@@ -55,6 +59,9 @@ const BatchImportButton = (props, ref) => {
     return null;
   }
 
+  if (props.noButton) {
+    return <BatchImportModal {...rest} visible={visible} onClose={handleClose} />;
+  }
   return (
     <>
       {type === 'button' ? (

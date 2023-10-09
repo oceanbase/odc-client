@@ -70,7 +70,7 @@ register(IDataSourceType.OceanBase, obOracle);
 register(IDataSourceType.OceanBase, obMySQL);
 register(IDataSourceType.MySQL, MySQL);
 
-function getAllConnectTypes(ds?: IDataSourceType) {
+function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   if (!ds) {
     return Array.from(_types.keys())?.reduce((prev, key) => {
       return prev.concat(_types.get(key)?.connectTypes);
