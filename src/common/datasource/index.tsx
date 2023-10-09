@@ -5,7 +5,9 @@ import obOracle from './oceanbase/oboracle';
 import obMySQL from './oceanbase/obmysql';
 import MySQL from './mysql';
 import OBSvg from '@/svgr/source_ob.svg';
+import DBOBSvg from '@/svgr/database_oceanbase.svg';
 import MySQLSvg from '@/svgr/mysql.svg';
+import DBMySQLSvg from '@/svgr/database_mysql.svg';
 
 const _types: Map<
   IDataSourceType,
@@ -23,11 +25,17 @@ const _styles = {
       component: OBSvg,
       color: undefined,
     },
+    dbIcon: {
+      component: DBOBSvg,
+    },
   },
   [IDataSourceType.MySQL]: {
     icon: {
       component: MySQLSvg,
       color: '#01608a',
+    },
+    dbIcon: {
+      component: DBMySQLSvg,
     },
   },
 };
