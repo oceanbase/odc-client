@@ -17,13 +17,13 @@
 import { formatMessage } from '@/util/intl';
 import { PureComponent, ReactNode } from 'react';
 
-import { CloseOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { IPage, PageType } from '@/d.ts';
 import { Badge, Dropdown, Menu, Space, Tabs, Tooltip } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 
-import { movePagePostion } from '@/store/helper/page';
+import { movePagePostion, openNewDefaultPLPage } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
 import { pageMap } from './config';
@@ -165,6 +165,41 @@ class WindowManager extends PureComponent<
             movePagePostion(d, h);
           }}
           tabBarGutter={0}
+          addIcon={
+            <Space>
+              <PlusOutlined />
+              <Dropdown
+                trigger={['click']}
+                menu={{
+                  items: [
+                    {
+                      label: '新建 SQL 窗口',
+                      key: 'newSQL',
+                      onClick: (e) => {
+                        e.domEvent.stopPropagation();
+                        this.handleEditPage(null, 'add');
+                      },
+                    },
+                    {
+                      label: '新建匿名块窗口',
+                      key: 'newPL',
+                      onClick(e) {
+                        e.domEvent.stopPropagation();
+                        openNewDefaultPLPage();
+                      },
+                    },
+                  ],
+                }}
+              >
+                <DownOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                />
+              </Dropdown>
+            </Space>
+          }
           tabBarExtraContent={
             <Dropdown
               overlayClassName={styles.menuList}
