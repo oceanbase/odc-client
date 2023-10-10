@@ -106,7 +106,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
           id: 'odc.TaskManagePage.component.ApprovalModal.HandlingComments',
         })} /*处理意见*/
         wrapClassName={styles.approvalModal}
-        visible={visible}
+        open={visible}
         onOk={onSubmit}
         onCancel={handleCancel}
         zIndex={1001}
@@ -150,7 +150,8 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
               <TextArea
                 rows={5}
                 placeholder={formatMessage({
-                  id: 'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
+                  id:
+                    'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
                 })} /*请输入处理意见，200字以内*/
               />
             </Form.Item>

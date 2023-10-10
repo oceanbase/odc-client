@@ -112,7 +112,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
         `(${name})`
       }
       width={380}
-      visible={visible}
+      open={visible}
       onCancel={handleClose}
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>

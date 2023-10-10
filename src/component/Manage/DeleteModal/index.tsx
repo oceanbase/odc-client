@@ -52,7 +52,7 @@ export const CommonDeleteModal: React.FC<{
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       title={
         formatMessage(
           {

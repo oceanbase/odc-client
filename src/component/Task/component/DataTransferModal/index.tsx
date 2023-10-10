@@ -490,8 +490,9 @@ class TaskContent extends React.Component<any, any> {
               /*所属数据库*/ content={task?.databaseName || '-'}
             />
           </Col>
-        </Row>
-        <Row>
+          <Col span={12}>
+            <SimpleTextItem label="所属数据源" content={task?.connection?.name || '-'} />
+          </Col>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
@@ -525,9 +526,6 @@ class TaskContent extends React.Component<any, any> {
               />
             )}
           </Col>
-        </Row>
-
-        <Row>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({

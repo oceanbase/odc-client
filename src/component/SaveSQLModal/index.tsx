@@ -69,7 +69,7 @@ class SaveSQLModal extends Component<IProps> {
         title={
           formatMessage({ id: 'odc.component.SaveSQLModal.SaveScript' }) //保存脚本
         }
-        visible={visible}
+        open={visible}
         confirmLoading={this.state.saving}
         onOk={this.handleSubmit}
         onCancel={onCancel}

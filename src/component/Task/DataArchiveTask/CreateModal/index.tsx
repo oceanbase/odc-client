@@ -334,7 +334,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={dataArchiveVisible}
+      open={dataArchiveVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}

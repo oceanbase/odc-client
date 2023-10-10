@@ -71,6 +71,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         >
           {task?.databaseName || '-'}
         </Descriptions.Item>
+        <Descriptions.Item span={2} label="所属数据源">
+          {task?.connection?.name || '-'}
+        </Descriptions.Item>
         <Descriptions.Item
           span={2}
           label={

@@ -140,7 +140,7 @@ const BatchImportModal: React.FC<IProps> = (props) => {
         </Space>
       }
       destroyOnClose
-      visible={visible}
+      open={visible}
       onClose={handleCancel}
       footerStyle={{
         textAlign: 'right',

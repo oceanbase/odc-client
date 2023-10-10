@@ -242,7 +242,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
         title={formatMessage({
           id: 'odc.component.CreateSynonymModal.CreateSynonym',
         })}
-        visible={modalStore.createSynonymModalVisible}
+        open={modalStore.createSynonymModalVisible}
         onCancel={this.close}
         maskClosable={false}
         centered

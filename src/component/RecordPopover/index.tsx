@@ -139,7 +139,7 @@ const RecordPopover: React.FC<{}> = () => {
             <SyncOutlined onClick={handleReload} />
           </Space>
         }
-        visible={visible}
+        open={visible}
         onClose={handleCloseDrawer}
       >
         <RecordTable

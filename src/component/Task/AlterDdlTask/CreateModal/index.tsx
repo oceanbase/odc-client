@@ -165,7 +165,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={modalStore.createDDLAlterVisible}
+      open={modalStore.createDDLAlterVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}
