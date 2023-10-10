@@ -4,19 +4,10 @@
   height: 32px;
   padding-left: 16px;
   color: var(--text-color-secondary);
-  .database,
-  .dataSource {
-    margin: 0px 4px;
-    padding: 0px 8px;
-    line-height: 22px;
-    cursor: pointer;
-    &.readonly {
-      cursor: unset;
-    }
-    &:hover {
-      background-color: var(--hover-color);
-    }
-  }
+}
+.content {
+  display: flex;
+  align-items: center;
 }
 
 .pop {
@@ -25,4 +16,9 @@
       padding: 0px;
     }
   }
+}
+
+.link {
+  color: var(--text-color-link);
+  cursor: pointer;
 }
