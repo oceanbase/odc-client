@@ -335,7 +335,7 @@ const FormModal: React.FC<IProps> = (props) => {
     color: 'var(--text-color-hint)',
   };
   const helpDocUrl =
-    odc.appConfig.docs.url || getLocalDocs('5.web-odc-manage-automatic-authorization-rules.html');
+    odc.appConfig.docs.url || getLocalDocs('200.manage-automatic-authorization-rules.html');
   return (
     <>
       <Drawer
