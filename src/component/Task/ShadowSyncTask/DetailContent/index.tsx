@@ -140,6 +140,7 @@ export function getItems(
           //所属数据库
           task?.databaseName || '-',
         ],
+        ['所属数据源', task?.connection?.name || '-'],
 
         hasFlow ? riskItem : null,
         [

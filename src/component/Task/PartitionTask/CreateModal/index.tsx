@@ -179,7 +179,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     }, [databaseId]);
     return (
       <Drawer
-        visible={partitionVisible}
+        open={partitionVisible}
         onClose={closeWithConfirm}
         destroyOnClose
         width={720}

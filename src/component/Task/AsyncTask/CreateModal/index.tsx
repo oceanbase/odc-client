@@ -457,7 +457,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={modalStore.createAsyncTaskVisible}
+      open={modalStore.createAsyncTaskVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}

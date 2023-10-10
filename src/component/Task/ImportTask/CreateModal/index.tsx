@@ -434,6 +434,7 @@ class CreateModal extends React.Component<IProps, IState> {
         },
       };
     }
+    return null;
   }
 
   private handleSessionChange = (sessionData: { sessionId: string; databaseName: string }) => {
@@ -477,7 +478,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 id: 'workspace.tree.table.importSingleTable',
               })
         }
-        visible={modalStore.importModalVisible}
+        open={modalStore.importModalVisible}
         destroyOnClose={true}
         width={520}
         onClose={this.closeSelf}

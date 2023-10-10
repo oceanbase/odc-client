@@ -130,7 +130,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
         title={formatMessage({
           id: 'workspace.window.createFunction.modal.title',
         })}
-        visible={visible}
+        open={visible}
         onOk={save}
         onCancel={onCancel}
       >

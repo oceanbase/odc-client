@@ -94,7 +94,7 @@ const AskeventTrackingPermissionModal: React.FC<IProps> = (props: IProps) => {
       closable={false}
       destroyOnClose
       maskClosable={false}
-      visible={visible}
+      open={visible}
       onOk={save}
       okText={
         formatMessage({ id: 'odc.component.AskEventTrackingModal.Agree' }) //同意

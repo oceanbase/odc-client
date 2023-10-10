@@ -63,7 +63,7 @@ const FlowModal: React.FC<IProps> = function (props) {
   };
   return (
     <Drawer
-      visible={visible}
+      open={visible}
       width={520}
       onClose={onClose}
       title={formatMessage({

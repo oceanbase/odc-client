@@ -112,7 +112,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         title={formatMessage({
           id: 'workspace.window.session.modal.sql.title',
         })}
-        visible={visible}
+        open={visible}
         onOk={handleSubmit}
         onCancel={onCancel}
         footer={[

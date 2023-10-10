@@ -77,6 +77,7 @@ export const getItems = (
               }
               content={task?.databaseName || '-'}
             />
+            <SimpleTextItem label="所属数据源" content={task?.connection?.name || '-'} />
             <SimpleTextItem
               label={
                 formatMessage({

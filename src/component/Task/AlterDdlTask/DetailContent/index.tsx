@@ -115,7 +115,7 @@ export function getItems(
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.Library' }), //所属库
           task?.databaseName || '-',
         ],
-
+        ['所属数据源', task?.connection?.name || '-'],
         hasFlow ? riskItem : null,
         [
           formatMessage({ id: 'odc.AlterDdlTask.DetailContent.ChangeDefinition' }), //变更定义

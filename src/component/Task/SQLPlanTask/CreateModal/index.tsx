@@ -488,7 +488,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={createSQLPlanVisible}
+      open={createSQLPlanVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}

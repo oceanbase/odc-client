@@ -73,7 +73,19 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
         );
       },
     },
-
+    {
+      key: 'EXPORT',
+      text: '导出',
+      ellipsis: true,
+      run(session, node) {
+        const type: IType = node.data;
+        modal.changeExportModal(true, {
+          type: DbObjectType.type,
+          name: type?.typeName,
+          databaseId: session?.database?.databaseId,
+        });
+      },
+    },
     {
       key: 'DOWNLOAD',
       ellipsis: true,

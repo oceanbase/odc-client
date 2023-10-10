@@ -130,7 +130,7 @@ export default function withConfirmModal(WrappedComponent: any) {
             <Modal
               className={styles.modal}
               centered={true}
-              visible={showUnsavedModal}
+              open={showUnsavedModal}
               onOk={() => onSaveAndCloseUnsavedModal(pageKey, closeImmediately)}
               onCancel={onCancelUnsavedModal}
               footer={[

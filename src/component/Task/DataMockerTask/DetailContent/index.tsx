@@ -193,7 +193,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
           //所属数据库
           task?.databaseName || '-',
         ],
-
+        ['所属数据源', task?.connection?.name || '-'],
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.TaskType',

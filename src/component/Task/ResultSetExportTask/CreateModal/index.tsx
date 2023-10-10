@@ -190,7 +190,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={modalStore.createResultSetExportTaskVisible}
+      open={modalStore.createResultSetExportTaskVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}

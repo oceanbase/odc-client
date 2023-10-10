@@ -66,7 +66,7 @@ class TableRenameModal extends Component<IProps> {
       <Modal
         destroyOnClose={true}
         title={formatMessage({ id: 'workspace.tree.table.rename.modal.title' })}
-        visible={visible}
+        open={visible}
         onOk={this.save}
         onCancel={onCancel}
         centered={true}

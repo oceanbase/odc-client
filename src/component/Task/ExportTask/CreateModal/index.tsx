@@ -111,9 +111,14 @@ class CreateModal extends React.Component<IProps, IState> {
     },
   ];
 
+  private handleClose = () => {
+    this.props.modalStore.changeExportModal(false);
+    this.resetFormData();
+  };
+
   private closeSelf = () => {
     if (!this.state.isFormChanged) {
-      this.props.modalStore.changeExportModal(false);
+      this.handleClose();
       return;
     }
     Modal.confirm({
@@ -123,8 +128,7 @@ class CreateModal extends React.Component<IProps, IState> {
 
       centered: true,
       onOk: () => {
-        this.props.modalStore.changeExportModal(false);
-        this.resetFormData();
+        this.handleClose();
       },
     });
   };
@@ -199,9 +203,8 @@ class CreateModal extends React.Component<IProps, IState> {
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
             }
-            this.props.modalStore.changeExportModal(false);
+            this.handleClose();
             openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
-            this.resetFormData();
           }
         } finally {
           this.setState({
@@ -296,6 +299,7 @@ class CreateModal extends React.Component<IProps, IState> {
         formData,
       };
     }
+    return null;
   }
 
   render() {
@@ -320,7 +324,7 @@ class CreateModal extends React.Component<IProps, IState> {
         title={
           formatMessage({ id: 'odc.components.ExportDrawer.Export' }) //导出
         }
-        visible={modalStore.exportModalVisible}
+        open={modalStore.exportModalVisible}
         destroyOnClose
         width={720}
         onClose={this.closeSelf}

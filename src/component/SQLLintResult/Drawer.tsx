@@ -32,7 +32,7 @@ const LintDrawer: React.FC<IProps> = function ({ data, visible, closePage }) {
       zIndex={1003}
       width={520}
       destroyOnClose
-      visible={visible}
+      open={visible}
       title={formatMessage({
         id: 'odc.component.SQLLintResult.Drawer.CheckResult',
       })} /*检查结果*/

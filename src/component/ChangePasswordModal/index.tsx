@@ -93,7 +93,7 @@ class ChangePasswordModal extends Component<IProps> {
         width={560}
         destroyOnClose
         title={title || formatMessage({ id: 'login.button.changePassword' })}
-        visible={visible}
+        open={visible}
         onOk={this.handleSubmit}
         onCancel={onCancel}
         confirmLoading={confirmLoading}

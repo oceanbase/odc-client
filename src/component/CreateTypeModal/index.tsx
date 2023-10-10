@@ -76,7 +76,7 @@ function CreateTypeModal(props: IProps) {
       destroyOnClose
       title={formatMessage({ id: 'odc.component.CreateTypeModal.NewType' })}
       /* 新建类型 */
-      visible={modalStore.createTypeModalVisible}
+      open={modalStore.createTypeModalVisible}
       onCancel={handleCancel}
       maskClosable={false}
       centered

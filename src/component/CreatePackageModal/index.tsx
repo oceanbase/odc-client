@@ -64,7 +64,7 @@ function CreatePackageModal(props: IProps) {
       title={formatMessage({
         id: 'workspace.window.createPackage.modal.title',
       })}
-      visible={modalStore.createPackageModalVisible}
+      open={modalStore.createPackageModalVisible}
       okText={formatMessage({
         id: 'odc.component.CreatePackageModal.NextConfirmTheSqlStatement',
       })} /* 下一步：确认 SQL */
