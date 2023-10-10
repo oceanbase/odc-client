@@ -38,6 +38,7 @@ import { toInteger } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 import tracert from '@/util/tracert';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 interface IProps {
   id: string;
 }
@@ -175,9 +176,10 @@ const Database: React.FC<IProps> = ({ id }) => {
             width: 80,
             render(value, record, index) {
               return (
-                <Tag color={record?.environment?.style?.toLowerCase()}>
-                  {record?.environment?.name}
-                </Tag>
+                <RiskLevelLabel
+                  color={record?.environment?.style}
+                  content={record?.environment?.name}
+                />
               );
             },
           },

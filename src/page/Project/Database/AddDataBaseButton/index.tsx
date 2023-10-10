@@ -16,6 +16,7 @@
 
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Col, Form, message, Modal, Row, Select, Tag } from 'antd';
@@ -37,21 +38,19 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     defaultParams: [{ size: 99999, page: 1 }],
   });
 
-  const {
-    data: dataSource,
-    loading: dataSourceLoading,
-    run: fetchDataSource,
-  } = useRequest(getConnectionDetail, {
-    manual: true,
-  });
+  const { data: dataSource, loading: dataSourceLoading, run: fetchDataSource } = useRequest(
+    getConnectionDetail,
+    {
+      manual: true,
+    },
+  );
 
-  const {
-    data: databases,
-    loading: databasesListLoading,
-    run: fetchDatabases,
-  } = useRequest(listDatabases, {
-    manual: true,
-  });
+  const { data: databases, loading: databasesListLoading, run: fetchDatabases } = useRequest(
+    listDatabases,
+    {
+      manual: true,
+    },
+  );
 
   function close() {
     setOpen(false);
@@ -125,9 +124,10 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                 requiredMark={false}
                 label={formatMessage({ id: 'odc.Database.AddDataBaseButton.Environment' })} /*环境*/
               >
-                <Tag color={dataSource?.environmentStyle?.toLowerCase()}>
-                  {dataSource?.environmentName || '-'}
-                </Tag>
+                <RiskLevelLabel
+                  color={dataSource?.environmentStyle}
+                  content={dataSource?.environmentName || '-'}
+                />
               </Form.Item>
             </Col>
           </Row>
