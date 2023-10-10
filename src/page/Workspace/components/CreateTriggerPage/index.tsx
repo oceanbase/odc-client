@@ -102,7 +102,16 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
     this.loadDatabases();
   } // 获取 step对应的状态
   private async loadDatabases() {
-    const res = await listDatabases(null, this.props?.session?.connection?.id, 1, 9999);
+    const res = await listDatabases(
+      null,
+      this.props?.session?.connection?.id,
+      1,
+      9999,
+      null,
+      null,
+      null,
+      true,
+    );
     this.setState({
       databases: res?.contents || [],
     });

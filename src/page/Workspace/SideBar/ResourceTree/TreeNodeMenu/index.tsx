@@ -43,7 +43,7 @@ const TreeNodeMenu = (props: IProps) => {
     <span
       onDoubleClick={(e) => {
         e.stopPropagation();
-        if (!dbSession) {
+        if (!dbSession && type !== ResourceNodeType.Database) {
           return;
         }
         node.doubleClick?.(dbSession, node, databaseFrom);

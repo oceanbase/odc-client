@@ -162,7 +162,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             rules={[
               {
                 required: true,
-                max: 32,
+                max: 128,
               },
             ]}
             label={formatMessage({

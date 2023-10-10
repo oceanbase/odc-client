@@ -170,6 +170,8 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       const isODCSnippet = data.indexOf('!isODCSnippet_') > -1;
       if (isODCSnippet) {
         e.preventDefault();
+      } else {
+        return;
       }
       const text = getUnWrapedSnippetBody(data);
       editorUtils.insertSnippetTemplate(editorRef.current, text);

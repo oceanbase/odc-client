@@ -54,6 +54,7 @@ interface IProps {
   datasourceId: number;
   showDatasource?: boolean;
   simpleHeader?: boolean;
+  theme?: 'dark' | 'white';
 }
 
 class RecycleBin extends Component<
@@ -301,7 +302,7 @@ class RecycleBin extends Component<
       recycleConfig,
     } = this.state;
 
-    const { simpleHeader } = this.props;
+    const { simpleHeader, theme } = this.props;
 
     const columns: ColumnsType<IRecycleObject> = [
       {
@@ -568,6 +569,7 @@ class RecycleBin extends Component<
             columns={columnsInRestoreDrawer}
             rowKey="uniqueId"
             rows={selectedObjects as any}
+            theme={theme}
             onRowsChange={this.handleEditPropertyInCell}
           />
 
