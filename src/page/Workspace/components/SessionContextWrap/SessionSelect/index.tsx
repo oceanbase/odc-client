@@ -32,6 +32,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
 import { toInteger } from 'lodash';
+import SessionDropdown from './SessionDropdown';
 
 const colorMap = {
   1: 'var(--function-green2-color)',
@@ -72,11 +73,18 @@ export default function SessionSelect({
         placement="bottomLeft"
         content={<ConnectionPopover connection={context?.session?.connection} />}
       >
-        <Space size={4}>
+        <Space className={styles.link} size={4}>
           <Icon component={PjSvg} style={{ fontSize: 14, verticalAlign: 'text-bottom' }} />
           <span style={{ verticalAlign: 'top' }}>
             {context?.session?.odcDatabase?.project?.name}
           </span>
+          {!context.datasourceMode && (
+            <>
+              <span>/</span>
+              {context?.session?.odcDatabase?.name}
+            </>
+          )}
+          <DownOutlined />
         </Space>
       </Popover>
     );
@@ -90,12 +98,19 @@ export default function SessionSelect({
         placement="bottomLeft"
         content={<ConnectionPopover connection={context?.session?.connection} />}
       >
-        <Space size={4}>
+        <Space className={styles.link} size={4}>
           <Icon
             component={DBIcon?.component}
             style={{ fontSize: 16, verticalAlign: 'text-top', color: DBIcon?.color }}
           />
           <span style={{ verticalAlign: 'top' }}>{context?.session?.connection?.name}</span>
+          {!context.datasourceMode && (
+            <>
+              <span>/</span>
+              {context?.session?.odcDatabase?.name}
+            </>
+          )}
+          <DownOutlined />
         </Space>
       </Popover>
     );
@@ -113,88 +128,24 @@ export default function SessionSelect({
     );
   }
   function renderSessionInfo() {
+    const fromDataSource = context?.from === 'datasource' || context.datasourceMode;
     if (readonly) {
       return (
         <>
           {renderEnv()}
-          <div className={classNames(styles.dataSource, styles.readonly)}>
-            {context?.from === 'datasource' || context.datasourceMode
-              ? renderDatasource()
-              : renderProject()}
+          <div className={classNames(styles.readonly)}>
+            {fromDataSource ? renderDatasource() : renderProject()}
           </div>
-          {!context.datasourceMode && (
-            <>
-              <span>/</span>
-              <div className={classNames(styles.database, styles.readonly)}>
-                {context?.session?.odcDatabase?.name}
-              </div>
-            </>
-          )}
         </>
       );
     }
-    const fromDataSource = context?.from === 'datasource' || context.datasourceMode;
     return (
-      <>
-        {renderEnv()}
-        <div
-          onClick={() => {
-            tracert.click('a3112.b41896.c330994.d367631');
-            setVisible(true);
-          }}
-          className={styles.dataSource}
-        >
-          {fromDataSource ? renderDatasource() : renderProject()}
+      <SessionDropdown>
+        <div className={styles.content}>
+          {renderEnv()}
+          <div>{fromDataSource ? renderDatasource() : renderProject()}</div>
         </div>
-        {!context.datasourceMode && (
-          <>
-            <span>/</span>
-            <Dropdown
-              trigger={['click']}
-              dropdownRender={(menus) => {
-                if (loading) {
-                  return <span></span>;
-                }
-                return menus;
-              }}
-              menu={{
-                items: databaseOptions,
-                activeKey: context?.session?.odcDatabase?.id?.toString(),
-                async onClick(info) {
-                  if (toInteger(info.key) == context?.session?.odcDatabase?.id) {
-                    return;
-                  }
-                  tracert.click('a3112.b41896.c330994.d367631');
-                  await context.selectSession(toInteger(info.key), null, context?.from);
-                },
-              }}
-              onOpenChange={(v) =>
-                v &&
-                fetchDatabase(
-                  fromDataSource ? null : context?.session?.odcDatabase?.project?.id,
-                  fromDataSource ? context?.session?.odcDatabase?.dataSource?.id : null,
-                  1,
-                  9999,
-                  null,
-                  null,
-                  null,
-                  true,
-                )
-              }
-            >
-              <div
-                className={styles.database}
-                style={{
-                  color: loading ? 'var(--text-color-hint)' : 'var(--text-color-secondary)',
-                }}
-              >
-                {context?.session?.odcDatabase?.name}{' '}
-                {loading ? <LoadingOutlined /> : <DownOutlined />}
-              </div>
-            </Dropdown>
-          </>
-        )}
-      </>
+      </SessionDropdown>
     );
   }
 
