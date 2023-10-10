@@ -1,4 +1,4 @@
-import { Input, Popover, Select, Space, Tree } from 'antd';
+import { Badge, Input, Popover, Select, Space, Spin, Tree } from 'antd';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import styles from './index.less';
@@ -25,6 +25,8 @@ interface IProps {
 const SessionDropdown: React.FC<IProps> = function ({ children }) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>('');
   const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const databaseRef = useRef<Record<string, IDatabase[]>>({});
 
@@ -89,20 +91,25 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
 
   function treeData(): DataNode[] {
     if (context?.datasourceMode) {
-      return allDatasourceList?.contents?.map((item) => {
-        return {
-          title: item.name,
-          icon: (
-            <Icon
-              component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
-              style={{ fontSize: 14 }}
-            />
-          ),
-          key: item.id,
-          selectable: true,
-          isLeaf: true,
-        };
-      });
+      return allDatasourceList?.contents
+        ?.map((item) => {
+          if (searchValue && !item.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
+            return null;
+          }
+          return {
+            title: item.name,
+            icon: (
+              <Icon
+                component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
+                style={{ fontSize: 14 }}
+              />
+            ),
+            key: item.id,
+            selectable: true,
+            isLeaf: true,
+          };
+        })
+        .filter(Boolean);
     }
     switch (from) {
       case 'datasource': {
@@ -119,20 +126,30 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
             key: item.id,
             selectable: false,
             isLeaf: false,
-            children: dbList?.map((db) => {
-              return {
-                title: db.name,
-                key: `db:${db.id}`,
-                selectable: true,
-                isLeaf: true,
-                icon: (
-                  <Icon
-                    component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
-                    style={{ fontSize: 14 }}
-                  />
-                ),
-              };
-            }),
+            children: dbList
+              ?.map((db) => {
+                if (searchValue && !db.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
+                  return null;
+                }
+                return {
+                  title: (
+                    <>
+                      {db.name}
+                      <Badge color={db?.environment?.style} />
+                    </>
+                  ),
+                  key: `db:${db.id}`,
+                  selectable: true,
+                  isLeaf: true,
+                  icon: (
+                    <Icon
+                      component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
+                      style={{ fontSize: 14 }}
+                    />
+                  ),
+                };
+              })
+              .filter(Boolean),
           };
         });
       }
@@ -145,22 +162,32 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
             key: item.id,
             selectable: false,
             isLeaf: false,
-            children: dbList?.map((db) => {
-              return {
-                title: db.name,
-                key: `db:${db.id}`,
-                selectable: true,
-                isLeaf: true,
-                icon: (
-                  <Icon
-                    component={
-                      getDataSourceStyleByConnectType(db?.dataSource?.type)?.dbIcon?.component
-                    }
-                    style={{ fontSize: 14 }}
-                  />
-                ),
-              };
-            }),
+            children: dbList
+              ?.map((db) => {
+                if (searchValue && !db.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
+                  return null;
+                }
+                return {
+                  title: (
+                    <>
+                      {db.name}
+                      <Badge color={db?.environment?.style} />
+                    </>
+                  ),
+                  key: `db:${db.id}`,
+                  selectable: true,
+                  isLeaf: true,
+                  icon: (
+                    <Icon
+                      component={
+                        getDataSourceStyleByConnectType(db?.dataSource?.type)?.dbIcon?.component
+                      }
+                      style={{ fontSize: 14 }}
+                    />
+                  ),
+                };
+              })
+              .filter(Boolean),
           };
         });
       }
@@ -207,54 +234,69 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
       showArrow={false}
       onOpenChange={onOpen}
       content={
-        <div className={styles.main}>
-          <Space.Compact block>
-            <Select
-              onChange={(v) => setFrom(v)}
-              value={from}
-              size="small"
-              style={{ width: '96px' }}
-              options={[
-                {
-                  label: '按项目',
-                  value: 'project',
-                },
-                {
-                  label: '按数据源',
-                  value: 'datasource',
-                },
-              ]}
-            />
-            <Input
-              size="small"
-              suffix={<SearchOutlined />}
-              placeholder="搜索关键字"
-              style={{ width: '192px' }}
-            />
-          </Space.Compact>
-          <Tree
-            key={from}
-            onSelect={async (_, info) => {
-              const key = info.node?.key?.toString();
-              let dbId, dsId;
-              if (context.datasourceMode) {
-                dsId = key;
-              } else {
-                dbId = key?.replace('db:', '');
-              }
-              await context.selectSession(dbId, dsId, from);
-              setIsOpen(false);
-            }}
-            activeKey={
-              context?.datasourceMode ? context?.datasourceId : `db:${context?.databaseId}`
-            }
-            loadData={loadData}
-            style={{ marginTop: 10 }}
-            height={215}
-            showIcon
-            treeData={treeData()}
-          />
-        </div>
+        <Spin spinning={loading}>
+          <div className={styles.main}>
+            <Space.Compact block>
+              {context?.datasourceMode || login.isPrivateSpace() ? null : (
+                <Select
+                  onChange={(v) => setFrom(v)}
+                  value={from}
+                  size="small"
+                  style={{ width: '96px' }}
+                  options={[
+                    {
+                      label: '按项目',
+                      value: 'project',
+                    },
+                    {
+                      label: '按数据源',
+                      value: 'datasource',
+                    },
+                  ]}
+                />
+              )}
+              <Input
+                size="small"
+                value={searchValue}
+                suffix={<SearchOutlined />}
+                placeholder="搜索关键字"
+                onChange={(v) => setSearchValue(v.target.value)}
+                style={{ width: '192px' }}
+              />
+            </Space.Compact>
+            <div style={{ height: '215px', marginTop: 10, overflow: 'hidden' }}>
+              <Tree
+                className={styles.tree}
+                key={from}
+                onSelect={async (_, info) => {
+                  const key = info.node?.key?.toString();
+                  let dbId, dsId;
+                  if (context.datasourceMode) {
+                    dsId = key;
+                  } else {
+                    dbId = key?.replace('db:', '');
+                  }
+                  setLoading(true);
+                  try {
+                    await context.selectSession(dbId, dsId, from);
+                  } catch (e) {
+                    console.error(e);
+                  } finally {
+                    setLoading(false);
+                  }
+                  setIsOpen(false);
+                }}
+                activeKey={
+                  context?.datasourceMode ? context?.datasourceId : `db:${context?.databaseId}`
+                }
+                loadData={loadData}
+                height={215}
+                showIcon
+                treeData={treeData()}
+              />
+            </div>
+          </div>
+        </Spin>
       }
     >
       {children}

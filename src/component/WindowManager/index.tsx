@@ -45,6 +45,7 @@ class WindowManager extends PureComponent<
     onOpenPageAfterTarget: (targetPage: IPage) => void;
     onClosePage: (targetPageKey: string) => void;
     onCloseOtherPage: (targetPageKey: string) => void;
+    onCopySQLPage: (targetPage: IPage) => void;
     onCloseAllPage: () => void;
     onSavePage: (targetPageKey: string) => void;
     onStartSavingPage: (targetPageKey: string) => void;
@@ -221,6 +222,9 @@ class WindowManager extends PureComponent<
       case 'openNewPage': {
         return this.props.onOpenPageAfterTarget(page);
       }
+      case 'copyPage': {
+        return this.props.onCopySQLPage(page);
+      }
       default: {
       }
     }
@@ -263,6 +267,11 @@ class WindowManager extends PureComponent<
                 })}
               </Menu.Item>
             )}
+            <Menu.Divider />
+
+            {page.type === PageType.SQL ? (
+              <Menu.Item key="copyPage">复制 SQL 窗口</Menu.Item>
+            ) : null}
 
             <Menu.Item key="openNewPage">
               {formatMessage({
