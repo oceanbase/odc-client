@@ -31,14 +31,9 @@ import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
-import { toInteger } from 'lodash';
 import SessionDropdown from './SessionDropdown';
-
-const colorMap = {
-  1: 'var(--function-green2-color)',
-  2: 'var(--function-gold2-color)',
-  3: 'var(--function-red2-color)',
-};
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { EnvColorMap } from '@/constant';
 
 export default function SessionSelect({
   readonly,
@@ -121,9 +116,10 @@ export default function SessionSelect({
     }
     return (
       <div className={styles.tag}>
-        <Tag color={context?.session?.odcDatabase?.environment?.style?.toLowerCase()}>
-          {context?.session?.odcDatabase?.environment?.name}
-        </Tag>
+        <RiskLevelLabel
+          color={context?.session?.odcDatabase?.environment?.style}
+          content={context?.session?.odcDatabase?.environment?.name}
+        />
       </div>
     );
   }
@@ -153,7 +149,9 @@ export default function SessionSelect({
     <>
       {!context?.databaseId && !context?.datasourceId ? (
         <div
-          style={{ background: colorMap[context?.session?.odcDatabase?.environment?.id] }}
+          style={{
+            background: EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.background,
+          }}
           className={styles.line}
         >
           <a
@@ -171,7 +169,9 @@ export default function SessionSelect({
         </div>
       ) : (
         <div
-          style={{ background: colorMap[context?.session?.odcDatabase?.environment?.id] }}
+          style={{
+            background: EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.background,
+          }}
           className={styles.line}
         >
           {context?.session ? (
