@@ -374,8 +374,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }; // 保存 SQL
 
   public handleCreateSQL = async (script: ISQLScript) => {
-    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
-      this.props;
+    const {
+      userStore,
+      pageStore,
+      pageKey,
+      onSetUnsavedModalContent,
+      onChangeSaved,
+      params,
+    } = this.props;
     let existedScriptId;
     const newFiles = await newScript(
       [new File([params.scriptText], script.objectName)],
@@ -727,13 +733,17 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     }
   };
 
-  public handleStartExportResultSet = (resultSetIndex: number, limit: number) => {
+  public handleStartExportResultSet = (
+    resultSetIndex: number,
+    limit: number,
+    tableName: string,
+  ) => {
     this.setState(
       {
         resultSetIndexToExport: resultSetIndex,
       },
       () => {
-        this.showExportResuleSetModal();
+        this.showExportResuleSetModal(tableName);
       },
     );
   };
@@ -855,7 +865,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   //   }
   // };
 
-  showExportResuleSetModal = () => {
+  showExportResuleSetModal = (tableName: string) => {
     const {
       modalStore,
       pageKey,
@@ -867,6 +877,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     modalStore.changeCreateResultSetExportTaskModal(true, {
       sql,
       databaseId: session?.database.databaseId,
+      tableName,
     });
   };
 
@@ -1181,6 +1192,7 @@ export default forwardRef(function (props: IProps, ref: React.ForwardedRef<SQLPa
     <SessionContextWrap
       defaultDatabaseId={props.params?.cid}
       defaultMode={props.params?.databaseFrom}
+      warnIfNotFound={false}
     >
       {({ session }) => {
         return <SQLPage sessionId={session?.sessionId} {...props} ref={ref} />;

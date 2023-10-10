@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { getConnectionDetail } from '@/common/network/connection';
+import { getConnectionDetail, getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
+import { message } from 'antd';
+import notification from '@/util/notification';
 
 type ConnectionId = number;
 
@@ -34,15 +36,30 @@ export class SessionManagerStore {
   @observable
   public database: Map<number, IDatabase> = new Map();
 
+  @observable
+  public masterSession: Map<number, string> = new Map();
+
   /**
    * 获取connection的信息
    */
-  async initConnection(connectionId: ConnectionId, databaseId: number) {
+  async initConnection(
+    connectionId: ConnectionId,
+    databaseId: number,
+  ): Promise<boolean | 'NotFound'> {
     if (databaseId) {
       /**
        * 数据库模式
        */
-      const database = await getDatabase(databaseId);
+      const res = await getDatabase(databaseId, true);
+      const database = res?.data;
+      if (!database && res?.errCode !== 'NotFound') {
+        notification.error({
+          track: res?.errMsg,
+        });
+      }
+      if (res?.errCode === 'NotFound') {
+        return 'NotFound';
+      }
       if (!database) {
         return false;
       }
@@ -50,7 +67,16 @@ export class SessionManagerStore {
       this.connection.set(database.dataSource?.id, database?.dataSource);
       return true;
     } else {
-      const datasource = await getConnectionDetail(connectionId);
+      const res = await getConnectionDetailResponse(connectionId);
+      const datasource = res?.data;
+      if (!datasource && res?.errCode !== 'NotFound') {
+        notification.error({
+          track: res?.errMsg,
+        });
+      }
+      if (res?.errCode === 'NotFound') {
+        return 'NotFound';
+      }
       if (!datasource) {
         return false;
       }
@@ -69,8 +95,18 @@ export class SessionManagerStore {
   async createSession(
     datasourceId: ConnectionId,
     databaseid: number,
-  ): Promise<SessionStore | null> {
-    if (!(await this.initConnection(datasourceId, databaseid))) {
+    isMaster: boolean = false,
+  ): Promise<SessionStore | null | 'NotFound'> {
+    if (isMaster && databaseid) {
+      const masterSession = this.sessionMap.get(this.masterSession.get(databaseid));
+      if (masterSession) {
+        return masterSession;
+      }
+    }
+    const result = await this.initConnection(datasourceId, databaseid);
+    if (result === 'NotFound') {
+      return result;
+    } else if (!result) {
       return null;
     }
     const database = this.database.get(databaseid);
@@ -80,6 +116,9 @@ export class SessionManagerStore {
     runInAction(() => {
       if (session) {
         this.sessionMap.set(session.sessionId, session);
+        if (isMaster && database) {
+          this.masterSession.set(database?.id, session?.sessionId);
+        }
       }
     });
 
@@ -116,11 +155,19 @@ export class SessionManagerStore {
     SessionStore.batchDestory(Array.from(this.sessionMap.values()), force);
     this.sessionMap.clear();
     this.database.clear();
+    this.masterSession.clear();
   }
   @action
   destorySession(sessionId: string, force: boolean = false) {
     const session = this.sessionMap.get(sessionId);
     if (session) {
+      const masterSessionId = this.masterSession.get(session?.database?.databaseId);
+      if (session?.sessionId === masterSessionId && !force) {
+        /**
+         * do not destory master session
+         */
+        return;
+      }
       session.destory(force);
       this.sessionMap.delete(sessionId);
     }

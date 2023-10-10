@@ -25,11 +25,16 @@ interface IProps extends PropsWithChildren<any> {
   databaseId: number;
   databaseFrom: 'project' | 'datasource';
   readonly?: boolean;
+  useMaster?: boolean;
 }
 
-export function SessionPage({ children, databaseId, databaseFrom, readonly }: IProps) {
+export function SessionPage({ children, databaseId, databaseFrom, readonly, useMaster }: IProps) {
   return (
-    <SessionContextWrap defaultDatabaseId={databaseId} defaultMode={databaseFrom || 'datasource'}>
+    <SessionContextWrap
+      useMaster={useMaster}
+      defaultDatabaseId={databaseId}
+      defaultMode={databaseFrom || 'datasource'}
+    >
       {({ session }) => {
         return (
           <div className={styles.sessionWrap}>
@@ -44,13 +49,14 @@ export function SessionPage({ children, databaseId, databaseFrom, readonly }: IP
   );
 }
 
-export default function WrapSessionPage(Component, readonly?: boolean) {
+export default function WrapSessionPage(Component, readonly?: boolean, useMaster?: boolean) {
   return function WrapComponent(props) {
     return (
       <SessionPage
         databaseFrom={props?.params?.databaseFrom}
         databaseId={props?.params?.databaseId}
         readonly={readonly}
+        useMaster={useMaster}
       >
         <Component {...props} />
       </SessionPage>

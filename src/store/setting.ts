@@ -28,6 +28,7 @@ import { initTracert } from '@/util/tracert';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
 import { isLinux, isWin64 } from '@/util/utils';
+import login from './login';
 
 export const themeKey = 'odc-theme';
 
@@ -227,6 +228,9 @@ export class SettingStore {
       res?.['odc.features.task.export.enabled'] === 'true' && this.enableDataExport;
     this.enableMockdata = res?.['odc.features.task.mockdata.enabled'] === 'true';
     this.enableOSC = res?.['odc.features.task.osc.enabled'] === 'true';
+    if (login.isPrivateSpace()) {
+      this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
+    }
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
   }
 

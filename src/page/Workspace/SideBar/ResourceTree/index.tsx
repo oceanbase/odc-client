@@ -29,6 +29,7 @@ import { DataBaseTreeData } from './Nodes/database';
 import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
+import { useUpdate } from 'ahooks';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -47,7 +48,13 @@ const ResourceTree: React.FC<IProps> = function ({
   reloadDatabase,
   showTip = false,
 }) {
-  const [databaseSessions, setDatabaseSessions] = useState<Record<string, string>>({});
+  const databaseSessionsRef = useRef<Record<string, string>>({});
+  const update = useUpdate();
+  const databaseSessions = databaseSessionsRef.current;
+  function setDatabaseSessions(map: any) {
+    databaseSessionsRef.current = map;
+    update();
+  }
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [searchValue, setSearchValue] = useState<string>('');
   const treeWrapperRef = useRef<HTMLDivElement>();
@@ -116,11 +123,13 @@ const ResourceTree: React.FC<IProps> = function ({
       switch (type) {
         case ResourceNodeType.Database: {
           const dbId = (data as IDatabase).id;
-          const dbSession = await sessionManagerStore.createSession(null, data?.id);
-          setDatabaseSessions({
-            ...databaseSessions,
-            [dbId]: dbSession.sessionId,
-          });
+          const dbSession = await sessionManagerStore.createSession(null, data?.id, true);
+          if (dbSession !== 'NotFound') {
+            setDatabaseSessions({
+              ...databaseSessionsRef.current,
+              [dbId]: dbSession.sessionId,
+            });
+          }
           break;
         }
         default: {
@@ -153,7 +162,7 @@ const ResourceTree: React.FC<IProps> = function ({
     <div className={styles.resourceTree}>
       <div className={styles.title}>
         <span className={styles.label}>{title}</span>
-        <span>
+        <span className={styles.titleAction}>
           <Action.Group size={0} ellipsisIcon="vertical">
             <Action.Link
               key={'reload'}

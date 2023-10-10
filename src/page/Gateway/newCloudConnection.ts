@@ -23,13 +23,14 @@ import {
 import { listEnvironments } from '@/common/network/env';
 import { decrypt } from '@/common/network/other';
 import ShowConnectPassword from '@/component/ConnectPassowrd';
-import { ConnectType } from '@/d.ts';
+import { ConnectType, IConnection } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { SpaceType } from '@/d.ts/_index';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { message } from 'antd';
+import { listDatabases } from '@/common/network/database';
 export interface INewCloudConnection {
   action: 'newCloudConnection';
   data: IRemoteNewCloudConnectionData | string;
@@ -65,6 +66,27 @@ function resolveRemoteData(inputData: IRemoteNewCloudConnectionData): Partial<ID
     data.name = `${inputData.clusterDisplayName}_${inputData.tenantDisplayName}_${data.username}`;
   }
   return data;
+}
+async function getDefaultSchema(dsId: number, userName: string) {
+  const res = await listDatabases(null, dsId, 1, 999);
+  const databases = res?.contents;
+  const informationSchema = databases.find((d) => d.name === 'information_schema');
+  const sameName = databases.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  return informationSchema?.id || sameName?.id || databases?.[0]?.id;
+}
+async function newConnection(params: Partial<IConnection>, password: string) {
+  const envs = await listEnvironments();
+  const targetConnection = await createConnection({
+    ...params,
+    /**
+     * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
+     * 新的名字一律加上id
+     */
+    name: params.name + '_' + params.tenantName,
+    environmentId: envs?.[0]?.id,
+    password,
+  });
+  return targetConnection;
 }
 
 export const action = async (config: INewCloudConnection) => {
@@ -114,6 +136,7 @@ export const action = async (config: INewCloudConnection) => {
   if (!isSuccess) {
     return 'Switch Organization Failed';
   }
+
   const params = resolveRemoteData(data);
   const connectionList = await getConnectionList({
     fuzzySearchKeyword: params.name,
@@ -125,32 +148,53 @@ export const action = async (config: INewCloudConnection) => {
   let targetConnection = connectionList?.contents?.find(
     (c) => c.tenantName === params.tenantName && c.username === params.username,
   );
+  let isExist = true;
   if (!targetConnection) {
     /**
      * 不存在的话，需要新建一个
      */
-    const envs = await listEnvironments();
-    targetConnection = await createConnection({
-      ...params,
-      /**
-       * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
-       * 新的名字一律加上id
-       */
-      name: params.name + '_' + params.tenantName,
-      environmentId: envs?.[0]?.id,
-      password: 'defaultPwd',
-    });
+    isExist = false;
+    // const envs = await listEnvironments();
+    // targetConnection = await createConnection({
+    //   ...params,
+    //   /**
+    //    * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
+    //    * 新的名字一律加上id
+    //    */
+    //   name: params.name + '_' + params.tenantName,
+    //   environmentId: envs?.[0]?.id,
+    //   password: 'defaultPwd',
+    // });
   }
-  if (!targetConnection) {
-    /**
-     * 新建失败，直接退出
-     */
-    return 'Create Connection Failed';
-  }
+  // if (!targetConnection) {
+  //   /**
+  //    * 新建失败，直接退出
+  //    */
+  //   return 'Create Connection Failed';
+  // }
   let password;
   let isPasswordError = false;
   let pass = false;
   async function testSource() {
+    if (!isExist) {
+      /**
+       * 不存在的情况下先测试连接，没问题之后再新建，避免引发server同步数据库的bug
+       */
+      const v = (await ShowConnectPassword(null, params)) as {
+        password: string;
+      };
+      if (!v) {
+        window.close();
+      }
+      const connection = await newConnection(params, v.password);
+      if (connection) {
+        targetConnection = connection;
+        pass = true;
+        return;
+      }
+      message.error('Create Connection Failed');
+      return;
+    }
     if (isPasswordError) {
       const v = (await ShowConnectPassword(targetConnection.id.toString())) as {
         password: string;
@@ -178,10 +222,17 @@ export const action = async (config: INewCloudConnection) => {
   if (!pass) {
     return 'Connect Failed';
   }
-  await updateConnectionFromConnection({
-    ...targetConnection,
-    passwordSaved: true,
-    password: password,
-  });
-  gotoSQLWorkspace(null, targetConnection?.id, null, true);
+  if (isExist) {
+    await updateConnectionFromConnection({
+      ...targetConnection,
+      passwordSaved: true,
+      password: password,
+    });
+  }
+  gotoSQLWorkspace(
+    null,
+    targetConnection?.id,
+    await getDefaultSchema(targetConnection?.id, targetConnection?.username),
+    true,
+  );
 };

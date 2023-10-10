@@ -303,8 +303,13 @@ class TableData extends React.Component<
 
   render() {
     const { tableName, pageKey, table, settingStore, session } = this.props;
-    const { dataLoading, resultSet, showDataExecuteSQLModal, updateDataDML, isEditing } =
-      this.state;
+    const {
+      dataLoading,
+      resultSet,
+      showDataExecuteSQLModal,
+      updateDataDML,
+      isEditing,
+    } = this.state;
 
     return (
       <Spin spinning={dataLoading || !resultSet}>
@@ -316,6 +321,7 @@ class TableData extends React.Component<
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
+            disableEdit={!resultSet.resultSetMetaData?.editable}
             table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
             session={session}
