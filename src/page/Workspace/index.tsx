@@ -217,6 +217,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     pageStore.setPageUnsaved(targetPageKey);
   };
 
+  const onCopySQLPage = (page: IPage) => {
+    openNewSQLPage(page?.params?.cid, page?.params?.databaseFrom);
+  };
+
   useEffect(() => {
     tracert.expo('a3112.b41896.c330993');
     async function asyncEffect() {
@@ -262,6 +266,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
               onSavePage={handleSavePage}
               onStartSavingPage={handleStartSavingPage}
               onUnsavedChangePage={handelUnsavedChangePage}
+              onCopySQLPage={onCopySQLPage}
             />
           ) : null
         }

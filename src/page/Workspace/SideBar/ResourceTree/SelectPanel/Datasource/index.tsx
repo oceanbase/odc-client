@@ -217,11 +217,11 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
               <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()}>
                 <Button
                   size="small"
+                  type="primary"
                   style={{
                     flexShrink: 0,
                     flexGrow: 0,
                     marginLeft: 4,
-                    color: 'var(--icon-color-disable)',
                   }}
                   icon={<PlusOutlined />}
                 />
@@ -334,7 +334,14 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
                 treeData={datasource}
               />
             ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  login.isPrivateSpace() ? (
+                    <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()} />
+                  ) : null
+                }
+              />
             )}
           </div>
           <NewDatasourceDrawer
