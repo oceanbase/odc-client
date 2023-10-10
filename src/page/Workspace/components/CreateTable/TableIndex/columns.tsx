@@ -31,6 +31,22 @@ import {
 } from '../interface';
 import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+
+function NameFormatter({ row }) {
+  if (row.available !== false) {
+    return (
+      <span>
+        <Tooltip title="索引不可用">
+          <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />
+        </Tooltip>
+        {row.name}
+      </span>
+    );
+  }
+  return row.name || '';
+}
 
 export function useColumns(
   columns: TableColumn[],
@@ -89,6 +105,7 @@ export function useColumns(
       }), //名称
       resizable: true,
       editable: true,
+      formatter: NameFormatter,
       editor: TextEditor,
     },
 
