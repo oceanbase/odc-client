@@ -23,6 +23,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import { IDatabase } from '@/d.ts/database';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 interface IProps {
   type: TaskType;
   label?: string;
@@ -63,7 +64,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           content={
             <Space direction="vertical">
               <Space>
-                <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+                <RiskLevelLabel color={environment?.style} content={environment?.name} />
                 <Text strong>{name}</Text>
               </Space>
               <Text type="secondary">
@@ -92,7 +93,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
               display: 'flex',
             }}
           >
-            <Tag color={environment?.style?.toLowerCase()}>{environment?.name}</Tag>
+            <RiskLevelLabel color={environment?.style} content={environment?.name} />
             <span>{name}</span>
           </Space>
         </Popover>
