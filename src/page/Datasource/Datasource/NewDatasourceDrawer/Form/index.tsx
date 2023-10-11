@@ -32,12 +32,14 @@ import ParseURLItem from './ParseURLItem';
 import SSLItem from './SSLItem';
 import SysForm from './SysForm';
 import { ConnectTypeText } from '@/constant/label';
-import dataSourceConfig from './config';
 import {
   getAllConnectTypes,
+  getDataSourceModeConfig,
   getDataSourceStyleByConnectType,
   getDsByConnectType,
 } from '@/common/datasource';
+import ExtraConfig from './ExtraConfig';
+import JDBCParamsItem from './JDBCParamsItem';
 
 const Option = Select.Option;
 export interface IFormRef {
@@ -146,7 +148,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
   const connectTypeList: ConnectType[] = type
     ? getAllConnectTypes(getDsByConnectType(type))
     : getAllConnectTypes(IDataSourceType.OceanBase);
-  const dsc = dataSourceConfig[type];
+  const dsc = getDataSourceModeConfig(type)?.connection;
   return (
     <DatasourceFormContext.Provider
       value={{
@@ -217,7 +219,11 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             }}
           >
             {connectTypeList?.map((item) => {
-              return <Option value={item}>{ConnectTypeText[item]}</Option>;
+              return (
+                <Option key={item} value={item}>
+                  {ConnectTypeText[item]}
+                </Option>
+              );
             })}
           </Select>
         </Form.Item>
@@ -250,31 +256,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     }}
                   >
                     {environments?.map((env) => {
-                      return <Option value={env.id}>{env.name}</Option>;
+                      return (
+                        <Option key={env.id} value={env.id}>
+                          {env.name}
+                        </Option>
+                      );
                     })}
                   </Select>
                 </Form.Item>
-                {!haveOCP() && (
-                  <Space
-                    style={{
-                      width: '100%',
-                    }}
-                    direction="vertical"
-                  >
-                    <Form.Item shouldUpdate noStyle>
-                      {({ getFieldValue }) => {
-                        return !dsc?.sys ? null : (
-                          <SysForm
-                            formRef={form}
-                            isEdit={isEdit}
-                            sysAccountExist={sysAccountExist}
-                          />
-                        );
-                      }}
-                    </Form.Item>
-                    {dsc?.ssl ? <SSLItem /> : null}
-                  </Space>
-                )}
+                {!haveOCP() && <ExtraConfig />}
               </>
             );
           }}
