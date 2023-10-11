@@ -698,6 +698,8 @@ export interface IConnection {
   supportedOperations?: string[];
   type: ConnectType;
   errorMessage?: string;
+  jdbcUrlParameters?: Record<string, string>;
+  sessionInitScript?: string;
 }
 
 export interface IConnectionLabel {

@@ -34,7 +34,7 @@ import request from '@/util/request';
 import { decrypt, encrypt } from '@/util/utils';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
-import dataSourceConfig from '@/page/Datasource/Datasource/NewDatasourceDrawer/Form/config';
+import { getDataSourceModeConfig } from '../datasource';
 
 function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -55,8 +55,10 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
     properties: formData.properties,
     passwordSaved: formData.passwordSaved,
     environmentId: formData.environmentId,
+    jdbcUrlParameters: formData.jdbcUrlParameters || {},
+    sessionInitScript: formData.sessionInitScript,
   };
-  const config = dataSourceConfig[formData.type];
+  const config = getDataSourceModeConfig(formData.type)?.connection;
   config?.address?.items?.forEach((item) => {
     switch (item) {
       case 'cluster': {
