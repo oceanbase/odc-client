@@ -126,41 +126,52 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
     [onChange, rows],
   );
   return (
-    <Space
-      style={{ width: '100%', border: '1px solid var(--odc-border-color)' }}
-      direction="vertical"
-    >
-      <Toolbar compact>
-        <Toolbar.Button
-          icon={<PlusOutlined />}
-          text={formatMessage({
-            id: 'odc.component.ProcedureParam.AddParameters',
-          })}
-          /* 添加参数 */ onClick={addParam}
+    <>
+      <span>
+        属性配置{' '}
+        <a
+          href="https://www.oceanbase.com/docs/common-oceanbase-connector-j-cn-1000000000130260"
+          target="_blank"
+        >
+          说明文档
+        </a>
+      </span>
+      <Space
+        style={{ width: '100%', marginTop: 5, border: '1px solid var(--odc-border-color)' }}
+        direction="vertical"
+      >
+        <Toolbar compact>
+          <Toolbar.Button
+            icon={<PlusOutlined />}
+            text={formatMessage({
+              id: 'odc.component.ProcedureParam.AddParameters',
+            })}
+            /* 添加参数 */ onClick={addParam}
+          />
+          <Toolbar.Button
+            icon={<DeleteOutlined />}
+            text={formatMessage({
+              id: 'odc.component.ProcedureParam.DeleteParameters',
+            })} /* 删除参数 */
+            onClick={deleteParam}
+          />
+        </Toolbar>
+        <EditableTable
+          gridRef={gridRef}
+          readonly={false}
+          onRowsChange={onRowsChange}
+          rowKey="key"
+          bordered
+          enableRowRecord={true}
+          enableColumnRecord={false}
+          enableFilterRow={false}
+          enableSortRow={false}
+          minHeight="370px"
+          columns={columns}
+          rows={rows}
         />
-        <Toolbar.Button
-          icon={<DeleteOutlined />}
-          text={formatMessage({
-            id: 'odc.component.ProcedureParam.DeleteParameters',
-          })} /* 删除参数 */
-          onClick={deleteParam}
-        />
-      </Toolbar>
-      <EditableTable
-        gridRef={gridRef}
-        readonly={false}
-        onRowsChange={onRowsChange}
-        rowKey="key"
-        bordered
-        enableRowRecord={true}
-        enableColumnRecord={false}
-        enableFilterRow={false}
-        enableSortRow={false}
-        minHeight="370px"
-        columns={columns}
-        rows={rows}
-      />
-    </Space>
+      </Space>
+    </>
   );
 };
 
