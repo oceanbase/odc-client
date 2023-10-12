@@ -55,8 +55,6 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
   ref,
 ) {
   const [form] = Form.useForm();
-
-  const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
   const [testResult, setTestResult] = useState<{
     active: boolean;
     errorCode: IConnectionTestErrorType;
@@ -86,6 +84,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'username',
         'password',
         'sslConfig',
+        'sessionInitScript',
+        'jdbcUrlParameters',
       ]);
     } catch (e) {}
     if (!values) {

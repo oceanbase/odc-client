@@ -29,6 +29,7 @@ function Editor({ value, onChange }: IProps) {
       editorProps={{
         value,
       }}
+      initialSQL={value}
       language={'sql'}
       onSQLChange={(sql) => {
         onChange(sql);
