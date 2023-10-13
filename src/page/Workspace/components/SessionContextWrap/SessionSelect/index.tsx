@@ -154,18 +154,15 @@ export default function SessionSelect({
           }}
           className={styles.line}
         >
-          <a
-            onClick={() => {
-              tracert.click('a3112.b41896.c330994.d367630');
-              setVisible(true);
-            }}
-          >
-            {
-              formatMessage({
-                id: 'odc.SessionContextWrap.SessionSelect.SelectADatabase',
-              }) /*请选择数据库*/
-            }
-          </a>
+          <SessionDropdown>
+            <a>
+              {
+                formatMessage({
+                  id: 'odc.SessionContextWrap.SessionSelect.SelectADatabase',
+                }) /*请选择数据库*/
+              }
+            </a>
+          </SessionDropdown>
         </div>
       ) : (
         <div
