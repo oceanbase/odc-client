@@ -114,6 +114,7 @@ const ResourceTree: React.FC<IProps> = function ({
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
+      console.log('loaddata', treeNode.key);
       const { type, data } = treeNode;
       switch (type) {
         case ResourceNodeType.Database: {
@@ -131,6 +132,7 @@ const ResourceTree: React.FC<IProps> = function ({
           await loadNode(sessionManagerStore, treeNode);
         }
       }
+      console.log('loaddata-end', treeNode.key);
     },
     [sessionIds],
   );

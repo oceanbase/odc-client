@@ -19,12 +19,18 @@ export default function useTreeState(id: string) {
   const [expandedKeys, setExpandedKeys] = useState<(string | number)[]>(state.expandedKeys);
   const [loadedKeys, setLoadedKeys] = useState<(string | number)[]>(state.loadedKeys);
   const onExpand: TreeProps['onExpand'] = function (expandedKeys, { expanded, node }) {
+    console.log('expand', node.key);
+    if (expanded && !loadedKeys?.includes(node.key)) {
+      return;
+    }
     cache[id] = Object.assign({}, cache[id], { expandedKeys: [...expandedKeys] });
     setExpandedKeys(expandedKeys);
   };
   const onLoad: TreeProps['onLoad'] = function (loadedKeys, { event, node }) {
+    console.log('onload', node.key);
     cache[id] = Object.assign({}, cache[id], { loadedKeys: [...loadedKeys] });
     setLoadedKeys(loadedKeys);
+    setExpandedKeys([...expandedKeys, node.key]);
   };
 
   return {
