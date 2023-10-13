@@ -56,6 +56,7 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
     passwordSaved: formData.passwordSaved,
     environmentId: formData.environmentId,
     jdbcUrlParameters: formData.jdbcUrlParameters || {},
+    temp: isHiden,
     sessionInitScript: formData.sessionInitScript,
   };
   const config = getDataSourceModeConfig(formData.type)?.connection;
