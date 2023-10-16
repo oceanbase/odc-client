@@ -166,7 +166,15 @@ class WindowManager extends PureComponent<
           }}
           tabBarGutter={0}
           addIcon={
-            <Space>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'stretch',
+                flexDirection: 'row',
+                height: '100%',
+                alignItems: 'center',
+              }}
+            >
               <PlusOutlined />
               <Dropdown
                 trigger={['click']}
@@ -191,14 +199,17 @@ class WindowManager extends PureComponent<
                   ],
                 }}
               >
-                <DownOutlined
+                <div
+                  className={styles.addMoreIcon}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
-                />
+                >
+                  <DownOutlined />
+                </div>
               </Dropdown>
-            </Space>
+            </div>
           }
           tabBarExtraContent={
             <Dropdown
