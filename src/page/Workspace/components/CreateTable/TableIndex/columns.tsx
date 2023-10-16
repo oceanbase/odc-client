@@ -35,7 +35,7 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 
 function NameFormatter({ row }) {
-  if (row.available !== false) {
+  if (row.available === false) {
     return (
       <span>
         <Tooltip title="索引不可用">
