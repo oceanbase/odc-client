@@ -58,6 +58,16 @@ module.exports = [
                   component: '@/page/Workspace',
                   spmBPos: 'b41896'
                 },
+                {
+                  path: '/sqlworkspace/:tabKey/:datasourceId',
+                  wrappers: [
+                    "@/layout/OrganizationListenWrap",
+                    "@/layout/ThemeWrap"
+                  ],
+                  name: 'sqlworkspaceSingle',
+                  component: '@/page/Workspace',
+                  spmBPos: 'b41896'
+                },
               ],
             }
           ],

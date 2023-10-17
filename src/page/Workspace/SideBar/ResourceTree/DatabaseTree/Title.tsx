@@ -14,7 +14,7 @@ export default function TreeTitle({
 }) {
   const icon = getDataSourceStyleByConnectType(datasource?.type);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+    <div title={datasource?.name} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
       {!!datasource && (
         <>
           <div style={{ flexShrink: 0, flexGrow: 0 }}>

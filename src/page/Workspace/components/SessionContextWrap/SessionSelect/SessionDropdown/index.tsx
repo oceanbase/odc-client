@@ -1,5 +1,5 @@
 import { Badge, Input, Popover, Select, Space, Spin, Tree } from 'antd';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import styles from './index.less';
 import Icon, { SearchOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import PjSvg from '@/svgr/project_space.svg';
 import { IDatabase } from '@/d.ts/database';
 import { toInteger } from 'lodash';
+import { useParams } from '@umijs/max';
 
 interface IProps {
   dialectTypes?: ConnectionMode[];
@@ -26,6 +27,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { datasourceId } = useParams<{ datasourceId: string }>();
   const [searchValue, setSearchValue] = useState<string>('');
   const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const databaseRef = useRef<Record<string, IDatabase[]>>({});
@@ -93,6 +95,13 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
     if (context?.datasourceMode) {
       return allDatasourceList?.contents
         ?.map((item) => {
+          if (
+            (datasourceId && toInteger(datasourceId) !== item.id) ||
+            (!datasourceId && item.temp)
+          ) {
+            return null;
+          }
+
           if (searchValue && !item.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
             return null;
           }
@@ -113,45 +122,53 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
     }
     switch (from) {
       case 'datasource': {
-        return datasourceList?.contents?.map((item) => {
-          const dbList = databaseRef.current[`ds:${item.id}`];
-          return {
-            title: item.name,
-            icon: (
-              <Icon
-                component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
-                style={{ fontSize: 14 }}
-              />
-            ),
-            key: item.id,
-            selectable: false,
-            isLeaf: false,
-            children: dbList
-              ?.map((db) => {
-                if (searchValue && !db.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
-                  return null;
-                }
-                return {
-                  title: (
-                    <>
-                      {db.name}
-                      <Badge color={db?.environment?.style} />
-                    </>
-                  ),
-                  key: `db:${db.id}`,
-                  selectable: true,
-                  isLeaf: true,
-                  icon: (
-                    <Icon
-                      component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
-                      style={{ fontSize: 14 }}
-                    />
-                  ),
-                };
-              })
-              .filter(Boolean),
-          };
-        });
+        return datasourceList?.contents
+          ?.map((item) => {
+            if (
+              (datasourceId && toInteger(datasourceId) !== item.id) ||
+              (!datasourceId && item.temp)
+            ) {
+              return null;
+            }
+            const dbList = databaseRef.current[`ds:${item.id}`];
+            return {
+              title: item.name,
+              icon: (
+                <Icon
+                  component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
+                  style={{ fontSize: 14 }}
+                />
+              ),
+              key: item.id,
+              selectable: false,
+              isLeaf: false,
+              children: dbList
+                ?.map((db) => {
+                  if (searchValue && !db.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
+                    return null;
+                  }
+                  return {
+                    title: (
+                      <>
+                        {db.name}
+                        <Badge color={db?.environment?.style} />
+                      </>
+                    ),
+                    key: `db:${db.id}`,
+                    selectable: true,
+                    isLeaf: true,
+                    icon: (
+                      <Icon
+                        component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
+                        style={{ fontSize: 14 }}
+                      />
+                    ),
+                  };
+                })
+                .filter(Boolean),
+            };
+          })
+          .filter(Boolean);
       }
       case 'project': {
         return project?.contents?.map((item) => {
@@ -242,7 +259,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                   onChange={(v) => setFrom(v)}
                   value={from}
                   size="small"
-                  style={{ width: '96px' }}
+                  style={{ width: '35%' }}
                   options={[
                     {
                       label: '按项目',
@@ -261,7 +278,9 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                 suffix={<SearchOutlined />}
                 placeholder="搜索关键字"
                 onChange={(v) => setSearchValue(v.target.value)}
-                style={{ width: '192px' }}
+                style={{
+                  width: context?.datasourceMode || login.isPrivateSpace() ? '100%' : '65%',
+                }}
               />
             </Space.Compact>
             <div style={{ height: '215px', marginTop: 10, overflow: 'hidden' }}>

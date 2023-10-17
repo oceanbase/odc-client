@@ -16,6 +16,7 @@
 
 import { getConnectionList } from '@/common/network/connection';
 import { formatMessage } from '@/util/intl';
+import { useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { Form, Modal, Select } from 'antd';
 
