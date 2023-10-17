@@ -40,7 +40,6 @@ import {
 } from '@/common/datasource';
 import ExtraConfig from './ExtraConfig';
 import JDBCParamsItem from './JDBCParamsItem';
-
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -191,7 +190,14 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         <Typography>
           <Typography.Paragraph>
             <Space size={4}>
-              <span>数据源类型:</span>
+              <span>
+                {
+                  formatMessage({
+                    id:
+                      'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
+                  }) /* 数据源类型: */
+                }
+              </span>
               <Icon
                 component={getDataSourceStyleByConnectType(type)?.icon?.component}
                 style={{
@@ -205,14 +211,25 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         </Typography>
         {/* <DBTypeItem /> */}
         <Form.Item
-          rules={[{ required: true }]}
-          label={formatMessage({ id: 'odc.NewDatasourceDrawer.Form.Type' })} /*类型*/
-          name={'type'}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          label={formatMessage({
+            id: 'odc.NewDatasourceDrawer.Form.Type',
+          })}
+          /*类型*/ name={'type'}
           noStyle
         >
           <Select
             disabled={isEdit}
-            placeholder="请选择类型"
+            placeholder={
+              formatMessage({
+                id:
+                  'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType.1',
+              }) /* 请选择类型 */
+            }
             style={{
               width: 208,
               display: 'none',
