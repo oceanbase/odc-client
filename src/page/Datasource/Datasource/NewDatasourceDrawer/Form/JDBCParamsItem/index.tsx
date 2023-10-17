@@ -6,14 +6,11 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Form, Space } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 type IValue = Record<string, string>;
-
 interface IProps {
   value?: IValue;
   onChange?: (v: IValue) => void;
 }
-
 function JDBCParamsItem() {
   return (
     <Form.Item label="" name={'jdbcUrlParameters'}>
@@ -21,10 +18,14 @@ function JDBCParamsItem() {
     </Form.Item>
   );
 }
-
 const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
   const gridRef = useRef<DataGridRef>();
-  const [innerValue, setInnerValue] = useState<{ name: string; value: string }[]>(null);
+  const [innerValue, setInnerValue] = useState<
+    {
+      name: string;
+      value: string;
+    }[]
+  >(null);
   useEffect(() => {
     if (value && !innerValue) {
       setInnerValue(
@@ -37,15 +38,17 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
       );
     }
   }, [value]);
-
-  const rows: ({ name: string; value: string; key: number } & RowType)[] =
+  const rows: ({
+    name: string;
+    value: string;
+    key: number;
+  } & RowType)[] =
     innerValue?.map((item, index) => {
       return {
         ...item,
         key: index,
       };
     }) || [];
-
   function addParam() {
     setInnerValue(
       [...(innerValue || [])].concat({
@@ -89,24 +92,28 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
     );
     onChange(result);
   }
-
   const columns = useMemo(() => {
     return [
       {
-        name: '配置项',
+        name: formatMessage({
+          id:
+            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationItem',
+        }), //'配置项'
         key: 'name',
         editor: TextEditor,
         editable: true,
       },
       {
-        name: '配置信息',
+        name: formatMessage({
+          id:
+            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationInformation',
+        }), //'配置信息'
         key: 'value',
         editor: TextEditor,
         editable: true,
       },
     ];
   }, []);
-
   const onRowsChange = useCallback(
     (rows) => {
       const result = {};
@@ -128,16 +135,33 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
   return (
     <>
       <span>
-        属性配置{' '}
+        {
+          formatMessage({
+            id:
+              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.AttributeConfiguration',
+          }) /* 
+        属性配置 */
+        }{' '}
         <a
           href="https://www.oceanbase.com/docs/common-oceanbase-connector-j-cn-1000000000130260"
           target="_blank"
         >
+          {
+            formatMessage({
+              id:
+                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ExplanationDocument',
+            }) /* 
           说明文档
+         */
+          }
         </a>
       </span>
       <Space
-        style={{ width: '100%', marginTop: 5, border: '1px solid var(--odc-border-color)' }}
+        style={{
+          width: '100%',
+          marginTop: 5,
+          border: '1px solid var(--odc-border-color)',
+        }}
         direction="vertical"
       >
         <Toolbar compact>
@@ -152,8 +176,8 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
             icon={<DeleteOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.DeleteParameters',
-            })} /* 删除参数 */
-            onClick={deleteParam}
+            })}
+            /* 删除参数 */ onClick={deleteParam}
           />
         </Toolbar>
         <EditableTable
@@ -174,5 +198,4 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
     </>
   );
 };
-
 export default JDBCParamsItem;

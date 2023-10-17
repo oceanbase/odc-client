@@ -38,7 +38,6 @@ import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
 import { MaskRyleTypeMap } from '@/d.ts';
-
 const ScanForm = ({
   formRef,
   _formRef,
@@ -219,7 +218,16 @@ const ScanForm = ({
                     >
                       {''}
                     </Descriptions.Item>
-                    <Descriptions.Item label={'表/视图'}>{''}</Descriptions.Item>
+                    <Descriptions.Item
+                      label={
+                        formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView',
+                        }) //'表/视图'
+                      }
+                    >
+                      {''}
+                    </Descriptions.Item>
                   </Descriptions>
                 }
               >
@@ -253,7 +261,14 @@ const ScanForm = ({
                             >
                               <span className={styles.tooltipContent}>{database}</span>
                             </Descriptions.Item>
-                            <Descriptions.Item label={'表/视图'}>
+                            <Descriptions.Item
+                              label={
+                                formatMessage({
+                                  id:
+                                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView.1',
+                                }) //'表/视图'
+                              }
+                            >
                               <div
                                 style={{
                                   display: 'flex',
@@ -376,14 +391,40 @@ const ScanForm = ({
                                               placement="left"
                                               title={option?.label}
                                               content={
-                                                <Descriptions column={1} style={{ width: '250px' }}>
-                                                  <Descriptions.Item label="脱敏方式">
+                                                <Descriptions
+                                                  column={1}
+                                                  style={{
+                                                    width: '250px',
+                                                  }}
+                                                >
+                                                  <Descriptions.Item
+                                                    label={
+                                                      formatMessage({
+                                                        id:
+                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                                                      }) /* 脱敏方式 */
+                                                    }
+                                                  >
                                                     {MaskRyleTypeMap?.[target?.type]}
                                                   </Descriptions.Item>
-                                                  <Descriptions.Item label="测试数据">
+                                                  <Descriptions.Item
+                                                    label={
+                                                      formatMessage({
+                                                        id:
+                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                                                      }) /* 测试数据 */
+                                                    }
+                                                  >
                                                     {target?.sampleContent}
                                                   </Descriptions.Item>
-                                                  <Descriptions.Item label="结果预览">
+                                                  <Descriptions.Item
+                                                    label={
+                                                      formatMessage({
+                                                        id:
+                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                                                      }) /* 结果预览 */
+                                                    }
+                                                  >
                                                     {target?.maskedContent}
                                                   </Descriptions.Item>
                                                 </Descriptions>

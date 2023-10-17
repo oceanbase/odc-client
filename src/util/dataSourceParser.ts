@@ -1,7 +1,7 @@
+import { formatMessage } from '@/util/intl';
 function unifiedStr(value: string) {
   return value?.replace(/\\"|\\t|\'/g, '');
 }
-
 export function getOBUser(value) {
   const [username, tenantName = null, clusterName = null] = value?.split(/\@|#|:/);
   return {
@@ -10,61 +10,92 @@ export function getOBUser(value) {
     clusterName,
   };
 }
-
 class Parser {
   constructor(options) {
     this.options = options;
   }
-
   options: {
     name: string;
     param: [string, string];
     type: Function;
   }[] = [];
-
   handlers = {};
-
   validateOptions = () => {
     const { options } = this;
     const error = [];
     if (!options?.length) {
-      error?.push('选项不能为空');
+      error?.push(
+        formatMessage({
+          id: 'odc.src.util.TheOptionCannotBeEmpty',
+        }), //'选项不能为空'
+      );
     }
     for (const option of options) {
       const { name, param, type } = option;
       const [shortp] = param;
-
       if (param?.some((item) => !item?.startsWith('-'))) {
-        error?.push(`选项名称必须要以 - 开头: ${name}`);
+        error?.push(
+          formatMessage(
+            {
+              id: 'odc.src.util.TheOptionNameMustStart',
+            },
+            {
+              name: name,
+            },
+          ), //`选项名称必须要以 - 开头: ${name}`
+        );
       }
-
       if (param?.some((item) => item?.length === 1)) {
-        error?.push(`选项键必须包含一个名称，不允许使用单独的 -: ${name}`);
+        error?.push(
+          formatMessage(
+            {
+              id: 'odc.src.util.TheOptionKeyMustContain',
+            },
+            {
+              name: name,
+            },
+          ), //`选项键必须包含一个名称，不允许使用单独的 -: ${name}`
+        );
       }
-
       if (typeof type !== 'function') {
-        error?.push(`选项类型缺少或不是函数: ${name}`);
+        error?.push(
+          formatMessage(
+            {
+              id: 'odc.src.util.TheOptionTypeIsLacking',
+            },
+            {
+              name: name,
+            },
+          ), //`选项类型缺少或不是函数: ${name}`
+        );
       }
-
       if (shortp[1] !== '-' && shortp.length > 2) {
-        error?.push(`短选项名称必须只有一个字符: ${name}`);
+        error?.push(
+          formatMessage(
+            {
+              id: 'odc.src.util.TheShortOptionNameMust',
+            },
+            {
+              name: name,
+            },
+          ), //`短选项名称必须只有一个字符: ${name}`
+        );
       }
     }
     return error;
   };
-
   parse(command) {
     const { handlers, options } = this;
     const args = unifiedStr(command)?.split(/\s+/)?.slice(1);
     const result: {
       [key: string]: any;
-    } = { _: [] };
+    } = {
+      _: [],
+    };
     const errors = this.validateOptions();
-
     if (errors?.length) {
       return;
     }
-
     for (const option of options) {
       const { name, param, type } = option;
       let isFlag = type === Boolean;
@@ -72,14 +103,12 @@ class Parser {
         handlers[key] = [name, type, isFlag];
       });
     }
-
     for (let i = 0, len = args.length; i < len; i++) {
       const wholeArg = args[i];
       if (wholeArg === '--') {
         result._ = result._.concat(args.slice(i + 1));
         break;
       }
-
       if (wholeArg.length > 1 && wholeArg[0] === '-') {
         const [argName, argStr] =
           wholeArg[1] === '-' ? wholeArg.split(/=(.*)/, 2) : [wholeArg.substr(0, 2), undefined];
@@ -112,7 +141,6 @@ class Parser {
     return result;
   }
 }
-
 export const parser = new Parser([
   {
     name: 'user',

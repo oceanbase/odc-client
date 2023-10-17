@@ -16,13 +16,10 @@
 
 import { formatMessage } from '@/util/intl';
 import { PureComponent, ReactNode } from 'react';
-
 import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
-
 import { IPage, PageType } from '@/d.ts';
 import { Badge, Dropdown, Menu, Space, Tabs, Tooltip } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
-
 import { movePagePostion, openNewDefaultPLPage } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
@@ -32,9 +29,7 @@ import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
 import tracert from '@/util/tracert';
-
 const { TabPane } = Tabs;
-
 class WindowManager extends PureComponent<
   {
     pages: IPage[];
@@ -64,7 +59,6 @@ class WindowManager extends PureComponent<
     const { onUnsavedChangePage } = this.props;
     onUnsavedChangePage(targetKey);
   };
-
   public handleChangeSaved = (targetKey: string) => {
     const { onSavePage } = this.props;
     onSavePage(targetKey);
@@ -74,16 +68,13 @@ class WindowManager extends PureComponent<
   public handleSaveAndClosePage = (targetKey: string, closeImmediately?: boolean) => {
     const { onStartSavingPage } = this.props;
     onStartSavingPage(targetKey);
-
     this.setState({
       closePageKey: '',
     });
-
     if (closeImmediately) {
       this.handleClosePage(targetKey);
     }
   };
-
   public handleClosePage = (targetKey: string) => {
     const { onClosePage } = this.props;
     onClosePage(targetKey);
@@ -91,10 +82,8 @@ class WindowManager extends PureComponent<
       closePageKey: '',
     });
   };
-
   public handleEditPage = (targetKey: any, action: string) => {
     const { onOpenPage } = this.props;
-
     if (action === 'add') {
       tracert.click('a3112.b41896.c330993.d367629');
       onOpenPage();
@@ -120,7 +109,6 @@ class WindowManager extends PureComponent<
       this.props.onActivatePage(pageKey);
     }
   };
-
   public render() {
     const { pages, activeKey, onActivatePage } = this.props;
     const { closePageKey } = this.state;
@@ -152,7 +140,6 @@ class WindowManager extends PureComponent<
         ))}
       </Menu>
     );
-
     return (
       <>
         <DraggableTabs
@@ -181,7 +168,9 @@ class WindowManager extends PureComponent<
                 menu={{
                   items: [
                     {
-                      label: '新建 SQL 窗口',
+                      label: formatMessage({
+                        id: 'odc.src.component.WindowManager.NewSQLWindow',
+                      }), //'新建 SQL 窗口'
                       key: 'newSQL',
                       onClick: (e) => {
                         e.domEvent.stopPropagation();
@@ -189,7 +178,9 @@ class WindowManager extends PureComponent<
                       },
                     },
                     {
-                      label: '新建匿名块窗口',
+                      label: formatMessage({
+                        id: 'odc.src.component.WindowManager.CreateAnonymousBlockWindow',
+                      }), //'新建匿名块窗口'
                       key: 'newPL',
                       onClick(e) {
                         e.domEvent.stopPropagation();
@@ -225,7 +216,6 @@ class WindowManager extends PureComponent<
           {pages.map((page) => {
             const Page = pageMap[page.type].component;
             const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
-
             return (
               <TabPane tab={this.getPageTitle(page)} key={page.key} closable={false}>
                 <Page
@@ -239,7 +229,11 @@ class WindowManager extends PureComponent<
                   onUnsavedChange={this.handleUnsavedChange}
                   onChangeSaved={this.handleChangeSaved}
                   onCloseUnsavedModal={this.handleClosePage}
-                  onCancelUnsavedModal={() => this.setState({ closePageKey: '' })}
+                  onCancelUnsavedModal={() =>
+                    this.setState({
+                      closePageKey: '',
+                    })
+                  }
                   onSaveAndCloseUnsavedModal={this.handleSaveAndClosePage}
                   closeSelf={this.handleCloseTab.bind(this, page.key)}
                 />
@@ -251,7 +245,6 @@ class WindowManager extends PureComponent<
       </>
     );
   }
-
   private doTabAction(page: IPage, params: MenuInfo) {
     params.domEvent.stopPropagation();
     const { key } = params;
@@ -275,7 +268,6 @@ class WindowManager extends PureComponent<
       }
     }
   }
-
   private getPageTitle(page: IPage): ReactNode {
     const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type].color;
     const isDocked = page.params.isDocked;
@@ -316,7 +308,13 @@ class WindowManager extends PureComponent<
             <Menu.Divider />
 
             {page.type === PageType.SQL ? (
-              <Menu.Item key="copyPage">复制 SQL 窗口</Menu.Item>
+              <Menu.Item key="copyPage">
+                {
+                  formatMessage({
+                    id: 'odc.src.component.WindowManager.CopyTheSQLWindow',
+                  }) /* 复制 SQL 窗口 */
+                }
+              </Menu.Item>
             ) : null}
 
             <Menu.Item key="openNewPage">
@@ -381,18 +379,28 @@ class WindowManager extends PureComponent<
               })()}
             </span>
             {!page.params.isDocked ? (
-              <span style={{ width: 16 }}>
+              <span
+                style={{
+                  width: 16,
+                }}
+              >
                 <CloseOutlined
                   className={styles.closeBtn}
                   onClick={(e) => {
                     e.stopPropagation();
                     this.handleCloseTab(page.key);
                   }}
-                  style={{ fontSize: '8px' }}
+                  style={{
+                    fontSize: '8px',
+                  }}
                 />
               </span>
             ) : (
-              <span style={{ width: '16px' }} />
+              <span
+                style={{
+                  width: '16px',
+                }}
+              />
             )}
           </span>
         </Tooltip>
@@ -400,5 +408,4 @@ class WindowManager extends PureComponent<
     );
   }
 }
-
 export default inject('sqlStore')(observer(WindowManager));

@@ -1,12 +1,11 @@
+import { formatMessage } from '@/util/intl';
 import { getAllConnectTypes } from '@/common/datasource';
 import { ConnectTypeText } from '@/constant/label';
 import { IDataSourceType } from '@/d.ts/datasource';
 import { Dropdown } from 'antd';
 import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { useMemo } from 'react';
-
 interface IProps {}
-
 export default function AddDataSourceDropdown(props: IProps) {
   const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
   const obConnectTypes = getAllConnectTypes(IDataSourceType.OceanBase);
@@ -28,7 +27,9 @@ export default function AddDataSourceDropdown(props: IProps) {
       });
     });
     result.push({
-      label: '批量导入',
+      label: formatMessage({
+        id: 'odc.src.component.AddDataSourceDropdown.BatchImport',
+      }), //'批量导入'
       key: 'batchImport',
     });
     return result;
