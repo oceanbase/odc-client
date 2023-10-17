@@ -254,13 +254,12 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     }
     clearExpriedTabKey();
     window.localStorage.removeItem(key);
-    function clear() {
+    return () => {
+      // add tab close time
       if (tabKey) {
         window.localStorage.setItem(key, new Date().getTime().toString());
       }
-    }
-    window.addEventListener('unload', clear);
-    return () => window.removeEventListener('unload', clear);
+    };
   }, []);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330993');
