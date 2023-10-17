@@ -212,6 +212,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (this.props.isShow && !prevProps.isShow) {
       this.editor?.focus();
     }
+    if (this.props.sessionId != prevProps.sessionId && this.props.sessionId) {
+      // update dbid
+      this.props.pageStore.updatePage(
+        this.props.pageKey,
+        {},
+        { cid: this.getSession()?.odcDatabase?.id },
+      );
+    }
   }
 
   public componentWillUnmount() {
