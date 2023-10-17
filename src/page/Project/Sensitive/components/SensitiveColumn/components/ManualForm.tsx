@@ -1,3 +1,20 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { formatMessage } from '@/util/intl';
 import ExportCard from '@/component/ExportCard';
 import {
   Button,
@@ -31,12 +48,10 @@ import numberSvg from '@/svgr/Field-number.svg';
 import stringSvg from '@/svgr/Field-String.svg';
 import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
-
 import timeSvg from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { MaskRyleTypeMap } from '@/d.ts';
-
 const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
   const [formRef] = useForm();
   const [_formRef] = useForm();
@@ -55,15 +70,12 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
     })[]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
-
   const [treeData, setTreeData] = useState<any>([]);
   const [checkedKeys, setCheckedKeys] = useState<string[]>([]);
   const [data, setData] = useState<any>([]);
-
   const [databaseColumns, setDatabaseColumns] = useState<any>();
   const [allColumns, setAllColumns] = useState<number>(0);
   const [checkedColumns, setCheckedColumns] = useState<number>(0);
-
   const initDatabases = async () => {
     const rawData = await listDatabases(projectId);
     const resData = rawData?.contents?.map((content) => {
@@ -233,7 +245,10 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
                           rules={[
                             {
                               required: true,
-                              message: '请选择',
+                              message: formatMessage({
+                                id:
+                                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose',
+                              }), //'请选择'
                             },
                           ]}
                         >
@@ -252,14 +267,40 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
                                     placement="left"
                                     title={option?.label}
                                     content={
-                                      <Descriptions column={1} style={{ width: '250px' }}>
-                                        <Descriptions.Item label="脱敏方式">
+                                      <Descriptions
+                                        column={1}
+                                        style={{
+                                          width: '250px',
+                                        }}
+                                      >
+                                        <Descriptions.Item
+                                          label={
+                                            formatMessage({
+                                              id:
+                                                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
+                                            }) /* 脱敏方式 */
+                                          }
+                                        >
                                           {MaskRyleTypeMap?.[target?.type]}
                                         </Descriptions.Item>
-                                        <Descriptions.Item label="测试数据">
+                                        <Descriptions.Item
+                                          label={
+                                            formatMessage({
+                                              id:
+                                                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
+                                            }) /* 测试数据 */
+                                          }
+                                        >
                                           {target?.sampleContent}
                                         </Descriptions.Item>
-                                        <Descriptions.Item label="结果预览">
+                                        <Descriptions.Item
+                                          label={
+                                            formatMessage({
+                                              id:
+                                                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
+                                            }) /* 结果预览 */
+                                          }
+                                        >
                                           {target?.maskedContent}
                                         </Descriptions.Item>
                                       </Descriptions>
@@ -322,7 +363,6 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
     });
     return result;
   };
-
   const parseData = (data) => {
     const result = {};
     data?.forEach((d) => {
@@ -373,14 +413,23 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
         });
       });
     });
-
     const successful = await batchCreateSensitiveColumns(projectId, _data);
     if (successful) {
-      message.success('提交成功');
+      message.success(
+        formatMessage({
+          id:
+            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmittedSuccessfully',
+        }), //'提交成功'
+      );
       setModalOpen(false);
       callback?.();
     } else {
-      message.error('提交失败');
+      message.error(
+        formatMessage({
+          id:
+            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmissionFailed',
+        }), //'提交失败'
+      );
     }
   };
   const handleCheckedKeysChange = () => {
@@ -499,13 +548,20 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
   };
   const onClose = () => {
     return Modal.confirm({
-      title: '确认要取消手动添加敏感列吗？',
+      title: formatMessage({
+        id:
+          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DoYouConfirmThatYou',
+      }), //'确认要取消手动添加敏感列吗？'
       onOk: async () => {
         setModalOpen(false);
       },
       onCancel: () => {},
-      okText: '确定',
-      cancelText: '取消',
+      okText: formatMessage({
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Sure',
+      }), //'确定'
+      cancelText: formatMessage({
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Cancel',
+      }), //'取消'
     });
   };
   useEffect(() => {
@@ -530,7 +586,12 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
   return (
     <Drawer
       width={800}
-      title="手动添加敏感列"
+      title={
+        formatMessage({
+          id:
+            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManuallyAddSensitiveColumns',
+        }) /* 手动添加敏感列 */
+      }
       open={modalOpen}
       destroyOnClose
       onClose={onClose}
@@ -542,9 +603,22 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
           }}
         >
           <Space>
-            <Button onClick={onClose}>取消</Button>
+            <Button onClick={onClose}>
+              {
+                formatMessage({
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Cancel.1',
+                }) /* 取消 */
+              }
+            </Button>
             <Button disabled={checkedKeys?.length === 0} type="primary" onClick={submit}>
+              {
+                formatMessage({
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Submit',
+                }) /* 
               提交
+             */
+              }
             </Button>
           </Space>
         </div>
@@ -553,12 +627,24 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
     >
       <div className={styles.manualFormContent}>
         <Form layout="vertical" form={formRef} className={styles.form}>
-          <Form.Item label="数据库" name="database">
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Database',
+              }) /* 数据库 */
+            }
+            name="database"
+          >
             <Select
               className={styles.select}
               mode="multiple"
               maxTagCount="responsive"
-              placeholder="请选择"
+              placeholder={
+                formatMessage({
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose.1',
+                }) /* 请选择 */
+              }
               onSelect={handleDatabaseSelect}
               onDeselect={handleDatabaseDeselect}
             >
@@ -581,7 +667,20 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
                         content={option?.environment?.content}
                         color={option?.environment?.style}
                       />
-                      <Tooltip title={`数据源：${option?.dataSourceName}`} placement="right">
+                      <Tooltip
+                        title={
+                          formatMessage(
+                            {
+                              id:
+                                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DataSourceOptiontatasourcename',
+                            },
+                            {
+                              optionDataSourceName: option?.dataSourceName,
+                            },
+                          ) //`数据源：${option?.dataSourceName}`
+                        }
+                        placement="right"
+                      >
                         <div
                           style={{
                             whiteSpace: 'nowrap',
@@ -598,13 +697,42 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
               })}
             </Select>
           </Form.Item>
-          <div className={styles.currentProject}>当前项目：{project?.name}</div>
+          <div className={styles.currentProject}>
+            {
+              formatMessage({
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.CurrentProject',
+              }) /* 当前项目： */
+            }
+            {project?.name}
+          </div>
         </Form>
         <div className={styles.exportCard}>
-          <div className={styles.label}>选择敏感列</div>
+          <div className={styles.label}>
+            {
+              formatMessage({
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ChooseSensitiveLandscape',
+              }) /* 选择敏感列 */
+            }
+          </div>
           <div className={styles.doubleExportCardContainer}>
             <div className={styles.content}>
-              <ExportCard title={`选择列 (${checkedColumns}/${allColumns})`} onSearch={treeSearch}>
+              <ExportCard
+                title={
+                  formatMessage(
+                    {
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectColumnCheckColumns',
+                    },
+                    {
+                      checkedColumns: checkedColumns,
+                      allColumns: allColumns,
+                    },
+                  ) //`选择列 (${checkedColumns}/${allColumns})`
+                }
+                onSearch={treeSearch}
+              >
                 {loading ? (
                   <div className={styles.centerContainer}>
                     <Spin spinning={loading} />
@@ -628,7 +756,17 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
             </div>
             <div className={styles.content}>
               <ExportCard
-                title={`已选 ${checkedColumns} 项`}
+                title={
+                  formatMessage(
+                    {
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectedCheckColumnsItem',
+                    },
+                    {
+                      checkedColumns: checkedColumns,
+                    },
+                  ) //`已选 ${checkedColumns} 项`
+                }
                 onSearch={collapseSearch}
                 extra={
                   <Popconfirm
@@ -636,9 +774,21 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
                       setCheckedKeys([]);
                     }}
                     placement="left"
-                    title={'确定要清空已选对象吗？'}
+                    title={
+                      formatMessage({
+                        id:
+                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.AreYouSureYouWant',
+                      }) //'确定要清空已选对象吗？'
+                    }
                   >
-                    <a>清空</a>
+                    <a>
+                      {
+                        formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Empty',
+                        }) /* 清空 */
+                      }
+                    </a>
                   </Popconfirm>
                 }
                 disabled

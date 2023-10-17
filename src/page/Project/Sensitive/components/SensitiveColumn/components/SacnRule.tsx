@@ -23,7 +23,6 @@ import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
-
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
@@ -33,9 +32,10 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
   const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
-
   const initDataSources = async () => {
-    const rawData = await getConnectionList({ projectId: sensitiveContext.projectId });
+    const rawData = await getConnectionList({
+      projectId: sensitiveContext.projectId,
+    });
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
@@ -56,18 +56,25 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       resData?.length > 0
         ? [
             {
-              label: formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.All' }), //全部
+              label: formatMessage({
+                id: 'odc.SensitiveColumn.components.SacnRule.All',
+              }),
+              //全部
               value: -1,
             },
             ...resData,
           ]
         : [],
     );
-    formRef.setFieldsValue({ databaseIds: [], sensitiveRuleIds: [] });
+    formRef.setFieldsValue({
+      databaseIds: [],
+      sensitiveRuleIds: [],
+    });
   };
-
   const initDetectRules = async (projectId: number = context.projectId) => {
-    const rawData = await listSensitiveRules(projectId, { enabled: [true] });
+    const rawData = await listSensitiveRules(projectId, {
+      enabled: [true],
+    });
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
@@ -76,7 +83,10 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       resData?.length > 0
         ? [
             {
-              label: formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.All' }), //全部
+              label: formatMessage({
+                id: 'odc.SensitiveColumn.components.SacnRule.All',
+              }),
+              //全部
               value: -1,
             },
             ...resData,
@@ -89,10 +99,11 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     reset();
     setDatabaseId(0);
   };
-
   const handleDatabaseIdsSelect = async (value: number) => {
     if (value === -1) {
-      await formRef.setFieldsValue({ databaseIds: [-1] });
+      await formRef.setFieldsValue({
+        databaseIds: [-1],
+      });
     } else {
       const databaseIds = (await formRef.getFieldValue('databaseIds')) || [];
       if (databaseIds.includes(-1)) {
@@ -106,7 +117,9 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   };
   const handleSensitiveRuleIdsSelect = async (value: number) => {
     if (value === -1) {
-      await formRef.setFieldsValue({ sensitiveRuleIds: [-1] });
+      await formRef.setFieldsValue({
+        sensitiveRuleIds: [-1],
+      });
     } else {
       const sensitiveRuleIds = (await formRef.getFieldValue('sensitiveRuleIds')) || [];
       if (sensitiveRuleIds.includes(-1)) {
@@ -117,7 +130,6 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     }
     reset();
   };
-
   useEffect(() => {
     initDataSources();
     initDetectRules();
@@ -127,12 +139,18 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       initDatabases(context.projectId, dataSourceId);
     }
   }, [dataSourceId]);
-
   return (
-    <div style={{ display: 'flex', columnGap: '8px' }}>
+    <div
+      style={{
+        display: 'flex',
+        columnGap: '8px',
+      }}
+    >
       <Form.Item
         label={
-          formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.DataSource' }) //数据源
+          formatMessage({
+            id: 'odc.SensitiveColumn.components.SacnRule.DataSource',
+          }) //数据源
         }
         name="connectionId"
         rules={[
@@ -148,15 +166,21 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           options={dataSourceOptions}
           onChange={handleDataSourceIdChange}
           placeholder={
-            formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
+            formatMessage({
+              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
+            }) //请选择
           }
           maxTagCount="responsive"
-          style={{ width: '170px' }}
+          style={{
+            width: '170px',
+          }}
         ></Select>
       </Form.Item>
       <Form.Item
         label={
-          formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.Database' }) //数据库
+          formatMessage({
+            id: 'odc.SensitiveColumn.components.SacnRule.Database',
+          }) //数据库
         }
         name="databaseIds"
         rules={[
@@ -174,7 +198,9 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           // onChange={handleDatabaseIdsChange}
           onSelect={handleDatabaseIdsSelect}
           placeholder={
-            formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
+            formatMessage({
+              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
+            }) //请选择
           }
           maxTagCount="responsive"
           disabled={
@@ -182,12 +208,16 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             dataSourceOptions?.length === 0 ||
             dataSourceId === -1
           }
-          style={{ width: '262px' }}
+          style={{
+            width: '262px',
+          }}
         />
       </Form.Item>
       <Form.Item
         label={
-          formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.IdentificationRules' }) //识别规则
+          formatMessage({
+            id: 'odc.SensitiveColumn.components.SacnRule.IdentificationRules',
+          }) //识别规则
         }
         name="sensitiveRuleIds"
         rules={[
@@ -208,9 +238,13 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           }
           maxTagCount="responsive"
           placeholder={
-            formatMessage({ id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect' }) //请选择
+            formatMessage({
+              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
+            }) //请选择
           }
-          style={{ width: '244px' }}
+          style={{
+            width: '244px',
+          }}
           open={selectOpen}
           onDropdownVisibleChange={(visible) => {
             initDetectRules();
@@ -235,7 +269,14 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
                   setManageSensitiveRuleDrawerOpen(true);
                 }}
               >
+                {
+                  formatMessage({
+                    id:
+                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
+                  }) /* 
                 管理识别规则
+               */
+                }
               </Button>
             </>
           )}
@@ -244,5 +285,4 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     </div>
   );
 };
-
 export default ScanRule;

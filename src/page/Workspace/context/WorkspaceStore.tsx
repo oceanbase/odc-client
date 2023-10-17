@@ -25,10 +25,12 @@ import login from '@/store/login';
 import { useRequest } from 'ahooks';
 import { getDataSourceGroupByProject } from '@/common/network/connection';
 import { listProjects } from '@/common/network/project';
+import { useParams } from '@umijs/max';
+import { toInteger } from 'lodash';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
-
+  const { datasourceId } = useParams<{ datasourceId: string }>();
   const [selectTabKey, _setSelectTabKey] = useState<ResourceTreeTab>(ResourceTreeTab.datasource);
   function setSelectTabKey(v: ResourceTreeTab) {
     tracert.click(
@@ -40,7 +42,9 @@ export default function WorkspaceStore({ children }) {
   }
 
   const [selectProjectId, _setSelectProjectId] = useState<number>(null);
-  const [selectDatasourceId, _setSelectDatasourceId] = useState<number>(null);
+  const [selectDatasourceId, _setSelectDatasourceId] = useState<number>(
+    datasourceId ? toInteger(datasourceId) : null,
+  );
   const [datasourceList, setDatasourceList] = useState<IDatasource[]>([]);
   const [projectList, setProjectList] = useState<IProject[]>([]);
 

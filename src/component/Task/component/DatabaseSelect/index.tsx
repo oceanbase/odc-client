@@ -24,6 +24,8 @@ import styles from './index.less';
 import { IDatabase } from '@/d.ts/database';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { useParams } from '@umijs/max';
+import { toInteger } from 'lodash';
 interface IProps {
   type: TaskType;
   label?: string;
@@ -48,6 +50,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     onChange,
   } = props;
   const [database, setDatabase] = useState<IDatabase[]>([]);
+  const { datasourceId } = useParams<{ datasourceId: string }>();
   const form = Form.useFormInstance();
   const databaseId = Form.useWatch(name, form);
   const databaseOptions = database
@@ -100,10 +103,10 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       ),
       value: id,
     }));
-  const loadDatabase = async (projectId: number) => {
+  const loadDatabase = async (projectId: number, datasourceId: number) => {
     const res = await listDatabases(
       projectId,
-      null,
+      datasourceId,
       null,
       null,
       null,
@@ -120,7 +123,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     return database?.find((item) => item.id === databaseId)?.project;
   }, [database, databaseId]);
   useEffect(() => {
-    loadDatabase(projectId);
+    loadDatabase(projectId, datasourceId ? toInteger(datasourceId) : null);
   }, []);
   return (
     <Form.Item

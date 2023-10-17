@@ -34,12 +34,9 @@ import ManualForm from './ManualForm';
 import ScanForm from './ScanForm';
 import tracert from '@/util/tracert';
 import SensitiveRule from '../../SensitiveRule';
-
 const defaultScanTableData: Array<ScanTableData> = [];
-
 const checkResult = (resData: Array<ScanTableData> = []) =>
   resData?.length > 0 ? resData : defaultScanTableData;
-
 const FormSensitiveColumnDrawer = ({
   isEdit,
   visible,
@@ -53,7 +50,6 @@ const FormSensitiveColumnDrawer = ({
   const timer = useRef(null);
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
-
   const [scanTableData, setScanTableData] = useState<ScanTableData[]>([]);
   const [originScanTableData, setOriginScanTableData] = useState<ScanTableData[]>([]);
   const [submiting, setSubmiting] = useState<boolean>(false);
@@ -69,7 +65,6 @@ const FormSensitiveColumnDrawer = ({
   const [manageSensitiveRuleDrawerOpen, setManageSensitiveRuleDrawerOpen] = useState<boolean>(
     false,
   );
-
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
@@ -89,14 +84,12 @@ const FormSensitiveColumnDrawer = ({
         });
       }
     });
-
     setScanTableData(checkResult(resData));
   };
   const resetSearch = () => {
     setSearchText('');
     setScanTableData(originScanTableData);
   };
-
   const reset = () => {
     setTaskId(null);
     setScanStatus(null);
@@ -106,11 +99,9 @@ const FormSensitiveColumnDrawer = ({
     setHasScan(false);
     setSearchText('');
   };
-
   const resetScanTableData = () => {
     formRef.resetFields();
     _formRef.resetFields();
-
     setScanTableData(defaultScanTableData);
     setOriginScanTableData(defaultScanTableData);
     setSubmiting(false);
@@ -123,10 +114,8 @@ const FormSensitiveColumnDrawer = ({
     setPercent(0);
     setSuccessful(false);
     setSearchText('');
-
     clearTimeout(timer.current);
   };
-
   const handleScanTableDataChange = (
     key: string,
     columnName: string,
@@ -170,7 +159,6 @@ const FormSensitiveColumnDrawer = ({
     }
     setSensitiveColumnMap(sensitiveColumnMap);
   };
-
   const handleScanTableDataDelete = (database: string, tableName: string, columnName: string) => {
     const key = `${database}_${tableName}`;
     const filterDataSource =
@@ -296,8 +284,11 @@ const FormSensitiveColumnDrawer = ({
     if (res) {
       tracert.click('a3112.b64002.c330861.d367391');
       message.success(
-        formatMessage({ id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New' }), //新建成功
+        formatMessage({
+          id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New',
+        }), //新建成功
       );
+
       onOk();
       reset();
       resetScanTableData();
@@ -359,7 +350,6 @@ const FormSensitiveColumnDrawer = ({
           });
         }
       });
-
       setSensitiveColumnMap(dataSourceMap);
       const resData = [];
       dataSourceMap?.forEach((ds) => {
@@ -491,7 +481,12 @@ const FormSensitiveColumnDrawer = ({
 
       <Drawer
         open={manageSensitiveRuleDrawerOpen}
-        title={'管理识别规则'}
+        title={
+          formatMessage({
+            id:
+              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules',
+          }) //'管理识别规则'
+        }
         width={720}
         destroyOnClose
         onClose={() => {
@@ -503,5 +498,4 @@ const FormSensitiveColumnDrawer = ({
     </>
   );
 };
-
 export default FormSensitiveColumnDrawer;

@@ -74,7 +74,9 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
   const unmountRef = useUnmountedRef();
 
   const context = useContext(ResourceTreeContext);
-  const { datasourceList } = context;
+  let { datasourceList } = context;
+
+  datasourceList = datasourceList?.filter((item) => !item.temp);
 
   const selectKeys = [context.selectDatasourceId].filter(Boolean);
   function setSelectKeys(keys) {
