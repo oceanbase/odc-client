@@ -34,6 +34,7 @@ import DatasourceFilter from './DatasourceFilter';
 import { ConnectType, DbObjectType } from '@/d.ts';
 import useTreeState from './useTreeState';
 import DatabaseSearch from './DatabaseSearch';
+import { useParams } from '@umijs/max';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -61,6 +62,7 @@ const ResourceTree: React.FC<IProps> = function ({
   const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad } = useTreeState(
     stateId,
   );
+  const { tabKey } = useParams<{ tabKey: string }>();
   const update = useUpdate();
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [searchValue, setSearchValue] = useState<{
@@ -158,10 +160,16 @@ const ResourceTree: React.FC<IProps> = function ({
   return (
     <div className={styles.resourceTree}>
       <div className={styles.title}>
-        <Space size={2} onClick={() => onTitleClick?.()} className={styles.label}>
-          {title}
-          <Icon style={{ verticalAlign: 'text-bottom' }} component={DownOutlined} />
-        </Space>
+        {tabKey ? (
+          <Space size={2} className={styles.label}>
+            {title}
+          </Space>
+        ) : (
+          <Space size={2} onClick={() => onTitleClick?.()} className={styles.label}>
+            {title}
+            <Icon style={{ verticalAlign: 'text-bottom' }} component={DownOutlined} />
+          </Space>
+        )}
         <span className={styles.titleAction}>
           <Space size={4}>
             {enableFilter ? (

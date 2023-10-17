@@ -175,6 +175,7 @@ export const action = async (config: ICustomConnectAction) => {
       createResult?.id,
       await getDefaultSchema(createResult?.id, createResult?.username),
       true,
+      generateUniqKey(),
     );
   } else {
     return 'create connection failed';

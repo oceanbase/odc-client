@@ -51,6 +51,7 @@ export const getItems = (
             }), //'包含列头'
           );
         }
+
         if (parameters?.csvFormat?.isTransferEmptyString) {
           csvFormat.push(
             formatMessage({
@@ -59,6 +60,7 @@ export const getItems = (
             }), //'空字符串转为空值'
           );
         }
+
         return (
           <>
             <SimpleTextItem
@@ -77,7 +79,14 @@ export const getItems = (
               }
               content={task?.databaseName || '-'}
             />
-            <SimpleTextItem label="所属数据源" content={task?.connection?.name || '-'} />
+            <SimpleTextItem
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.DataSource',
+                }) /* 所属数据源 */
+              }
+              content={task?.connection?.name || '-'}
+            />
             <SimpleTextItem
               label={
                 formatMessage({

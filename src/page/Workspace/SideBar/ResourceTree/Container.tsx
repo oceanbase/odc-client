@@ -23,10 +23,12 @@ import SelectPanel from './SelectPanel';
 import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
 import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
+import { useParams } from '@umijs/max';
 
 export default inject('userStore')(
   observer(function ResourceTreeContainer({ userStore }: { userStore: UserStore }) {
-    const [selectPanelOpen, setSelectPanelOpen] = useState<boolean>(true);
+    const { tabKey, datasourceId } = useParams<{ tabKey: string; datasourceId: string }>();
+    const [selectPanelOpen, setSelectPanelOpen] = useState<boolean>(!tabKey);
     const resourcetreeContext = useContext(ResourceTreeContext);
     const { selectProjectId, selectDatasourceId } = resourcetreeContext;
 

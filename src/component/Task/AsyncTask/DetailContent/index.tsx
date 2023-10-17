@@ -71,7 +71,14 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         >
           {task?.databaseName || '-'}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="所属数据源">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.DataSource',
+            }) /* 所属数据源 */
+          }
+        >
           {task?.connection?.name || '-'}
         </Descriptions.Item>
         <Descriptions.Item
@@ -86,8 +93,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
             }) /* 
-          数据库变更
-         */
+           数据库变更
+           */
           }
         </Descriptions.Item>
         {hasFlow && (

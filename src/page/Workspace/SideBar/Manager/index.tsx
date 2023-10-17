@@ -28,8 +28,11 @@ import TabRecycleSvg from '@/svgr/tabRecycle.svg';
 import SettingOutlined from '@/svgr/tabSession.svg';
 import VariableSvg from '@/svgr/variable.svg';
 import tracert from '@/util/tracert';
+import { useParams } from '@umijs/max';
+import { toInteger } from 'lodash';
 
 const Manager: React.FC<{}> = function () {
+  const { datasourceId } = useParams<{ datasourceId: string }>();
   useEffect(() => {
     tracert.expo('a3112.b41896.c330995');
   }, []);
@@ -63,7 +66,7 @@ const Manager: React.FC<{}> = function () {
                       tracert.click('a3112.b41896.c330995.d367632', {
                         manageType: 'sessionManager',
                       });
-                      openSessionManagePage();
+                      openSessionManagePage(datasourceId ? toInteger(datasourceId) : null);
                     }}
                   />
 
@@ -81,7 +84,7 @@ const Manager: React.FC<{}> = function () {
                       tracert.click('a3112.b41896.c330995.d367632', {
                         manageType: 'sessionParams',
                       });
-                      openSessionParamsPage();
+                      openSessionParamsPage(datasourceId ? toInteger(datasourceId) : null);
                     }}
                   />
 
@@ -95,7 +98,7 @@ const Manager: React.FC<{}> = function () {
                     actions={[]}
                     onClick={() => {
                       tracert.click('a3112.b41896.c330995.d367632', { manageType: 'recyleBin' });
-                      openRecycleBin();
+                      openRecycleBin(datasourceId ? toInteger(datasourceId) : null);
                     }}
                   />
                 </Space>
