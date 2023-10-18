@@ -101,9 +101,6 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: formatMessage({
-                      id: 'workspace.window.createTable.baseInfo.tableName.validation',
-                    }),
                   },
                 ]}
               >
