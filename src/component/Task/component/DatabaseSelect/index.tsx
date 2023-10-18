@@ -33,7 +33,7 @@ interface IProps {
   projectId?: number;
   extra?: string;
   width?: string;
-  onChange?: (v: number) => void;
+  onChange?: (v: number, database?: IDatabase) => void;
 }
 const { Text } = Typography;
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -49,11 +49,11 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     width = '320px',
     onChange,
   } = props;
-  const [database, setDatabase] = useState<IDatabase[]>([]);
+  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const { datasourceId } = useParams<{ datasourceId: string }>();
   const form = Form.useFormInstance();
   const databaseId = Form.useWatch(name, form);
-  const databaseOptions = database
+  const databaseOptions = databases
     ?.filter((item) =>
       getDataSourceModeConfig(item.dataSource?.type)?.features?.task?.includes(type),
     )
@@ -113,15 +113,17 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       null,
       !!login.isPrivateSpace(),
       true,
+      type === TaskType.ONLINE_SCHEMA_CHANGE ? type : null,
     );
-    setDatabase(res?.contents);
+    setDatabases(res?.contents);
   };
   const handleDatabaseChange = (value) => {
-    onChange?.(value);
+    const database = databases?.find(({ id }) => id === value);
+    onChange?.(value, database);
   };
   const project = useMemo(() => {
-    return database?.find((item) => item.id === databaseId)?.project;
-  }, [database, databaseId]);
+    return databases?.find((item) => item.id === databaseId)?.project;
+  }, [databases, databaseId]);
   useEffect(() => {
     loadDatabase(projectId, datasourceId ? toInteger(datasourceId) : null);
   }, []);
