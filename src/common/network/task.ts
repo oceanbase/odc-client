@@ -33,6 +33,7 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
+  IDatasourceUser,
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';
@@ -437,5 +438,15 @@ export async function stopDataArchiveSubTask(taskId: number, subTaskId): Promise
  */
 export async function getSubTask(id: number): Promise<IResponseData<ISubTaskRecords>> {
   const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/result`);
+  return res?.data;
+}
+
+/**
+ * 获取数据源用户列表
+ */
+export async function getDatasourceUsers(
+  datasourceId: number,
+): Promise<IResponseData<IDatasourceUser>> {
+  const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/users`);
   return res?.data;
 }

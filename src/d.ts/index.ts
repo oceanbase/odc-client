@@ -2132,6 +2132,10 @@ export interface ISubTaskRecords {
   tasks: ISubTaskRecord[];
 }
 
+export interface IDatasourceUser {
+  name: string;
+}
+
 export type TaskRecordParameters =
   | IDataTransferTaskParams
   | IAsyncTaskParams

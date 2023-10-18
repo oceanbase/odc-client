@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-import { createTask } from '@/common/network/task';
+import { createTask, getDatasourceUsers } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IDatasourceUser } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { Alert, Button, Col, Drawer, Form, InputNumber, Modal, Radio, Row, Space } from 'antd';
+import {
+  Alert,
+  Button,
+  Col,
+  Drawer,
+  Form,
+  InputNumber,
+  Modal,
+  Radio,
+  Row,
+  Space,
+  Select,
+} from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -52,9 +65,15 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [datasourceUser, setDatasourceUser] = useState<IDatasourceUser[]>([]);
+  const [lockDatabaseUserRequired, setLockDatabaseUserRequired] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
+  const datasourceUserOptions = datasourceUser?.map(({ name }) => ({
+    label: name,
+    value: name,
+  }));
   const hadleReset = () => {
     form.resetFields(null);
   };
@@ -91,6 +110,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           description,
           executionTime,
           executionStrategy,
+          lockUsers,
         } = values;
         const parameters = {
           lockTableTimeOutSeconds,
@@ -99,6 +119,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlType,
           swapTableNameRetryTimes,
           originTableCleanStrategy,
+          lockUsers,
         };
         const data = {
           projectId,
@@ -116,9 +137,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         }
         setConfirmLoading(true);
         const res = await createTask(data);
-        handleCancel(false);
         setConfirmLoading(false);
         if (res) {
+          handleCancel(false);
           openTasksPage(TaskPageType.ONLINE_SCHEMA_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
@@ -132,9 +153,26 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     });
     setHasEdit(true);
   };
-  const handleFieldsChange = () => {
+  const handleFieldsChange = (changedFields) => {
     setHasEdit(true);
   };
+
+  const handleDatabaseChange = (v: number, database: IDatabase) => {
+    setLockDatabaseUserRequired(database?.lockDatabaseUserRequired);
+    form.setFieldValue('lockUsers', []);
+  };
+
+  const loadDatasourceUsers = async (datasourceId: number) => {
+    const res = await getDatasourceUsers(datasourceId);
+    setDatasourceUser(res?.contents);
+  };
+
+  useEffect(() => {
+    if (connection?.id && lockDatabaseUserRequired) {
+      loadDatasourceUsers(connection.id);
+    }
+  }, [connection?.id]);
+
   return (
     <Drawer
       destroyOnClose
@@ -219,7 +257,40 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect type={TaskType.ONLINE_SCHEMA_CHANGE} projectId={projectId} />
+        <Row gutter={14}>
+          <Col span={12}>
+            <DatabaseSelect
+              type={TaskType.ONLINE_SCHEMA_CHANGE}
+              projectId={projectId}
+              onChange={handleDatabaseChange}
+            />
+          </Col>
+          {lockDatabaseUserRequired && (
+            <Col span={12}>
+              <Form.Item
+                label="锁定用户"
+                name="lockUsers"
+                required
+                rules={[
+                  {
+                    required: true,
+                    message: '请选择用户',
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  mode="multiple"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  placeholder="请选择"
+                  options={datasourceUserOptions}
+                />
+              </Form.Item>
+            </Col>
+          )}
+        </Row>
         <Form.Item
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
