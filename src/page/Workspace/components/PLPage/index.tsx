@@ -441,7 +441,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       }
       case PLPageType.plEdit: {
         if ('params' in params?.plSchema) {
-          if (paramInputMode) {
+          if (paramInputMode === 'list') {
             return params?.plSchema?.params?.find(
               (param) => param.paramMode && this.isInMode(param.paramMode),
             );
