@@ -1478,6 +1478,8 @@ export interface ISqlExecuteResult {
     text: string;
     type: string;
   }[];
+  withFullLinkTrace: boolean;
+  traceEmptyReason?: string;
 }
 
 export enum ISqlExecuteResultStatus {

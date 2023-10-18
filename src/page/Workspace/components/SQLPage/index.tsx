@@ -60,6 +60,7 @@ import ExecDetail from './ExecDetail';
 import SQLResultSet, { recordsTabKey, sqlLintTabKey } from '../SQLResultSet';
 import styles from './index.less';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
+import Trace from '../Trace';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -70,6 +71,7 @@ interface ISQLPageState {
   showExplainDrawer: boolean;
 
   showExecuteDetailDrawer: boolean;
+  showTrace: boolean;
   execDetailSql: string;
   execDetailTraceId: string;
   selectedSQL: string; // 结果集编辑
@@ -87,6 +89,8 @@ interface ISQLPageState {
   };
 
   lintResultSet: ISQLLintReuslt[];
+  withFullLinkTrace: boolean;
+  traceEmptyReason?: string;
 }
 
 interface IProps {
@@ -119,6 +123,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     resultSetIndexToExport: -1,
     showExplainDrawer: false,
     showExecuteDetailDrawer: false,
+    showTrace: false,
     execDetailSql: null,
     execDetailTraceId: null,
     selectedSQL: '',
@@ -132,6 +137,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     editingMap: {},
     lintResultSet: null,
     isSavingScript: false,
+    withFullLinkTrace: false,
+    traceEmptyReason: '',
   };
 
   public editor: IEditor;
@@ -798,6 +805,13 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       showExecuteDetailDrawer: true,
     });
   };
+  public handleShowTrace = async (sql: string, traceId: string) => {
+    this.setState({
+      execDetailSql: sql,
+      execDetailTraceId: traceId,
+      showTrace: true,
+    });
+  };
 
   outOfLimitTipHaveShow = false;
 
@@ -905,6 +919,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       resultSetTabActiveKey,
       showExplainDrawer,
       showExecuteDetailDrawer,
+      showTrace,
       execDetailSql,
       execDetailTraceId,
       selectedSQL,
@@ -914,6 +929,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       editingMap,
       pageLoading,
       lintResultSet,
+      withFullLinkTrace,
+      traceEmptyReason,
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
@@ -955,12 +972,15 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 onUnLockResultSet={this.handleUnLockResultSet}
                 onExportResultSet={this.handleStartExportResultSet}
                 onShowExecuteDetail={this.handleShowExecuteDetail}
+                onShowTrace={this.handleShowTrace}
                 onSubmitRows={this.handleSaveRowData}
                 onUpdateEditing={this.onUpdateEditing}
                 editingMap={editingMap}
                 session={session}
                 lintResultSet={lintResultSet}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}
+                withFullLinkTrace={withFullLinkTrace}
+                traceEmptyReason={traceEmptyReason}
               />
             </Spin>
           }
@@ -1012,6 +1032,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
               onSave={this.handleExecuteDataDML}
               onCancel={() => this.setState({ showDataExecuteSQLModal: false })}
               onChange={(sql) => this.setState({ updateDataDML: sql })}
+            />,
+            <Trace
+              key={'trace' + this.getSession()?.sessionId}
+              open={showTrace}
+              sql={execDetailSql}
+              session={this.getSession()}
+              traceId={execDetailTraceId}
+              setOpen={() => this.setState({ showTrace: false })}
             />,
           ]}
         />
@@ -1065,9 +1093,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
      */
 
     const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-
     this.setState({
       resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
+      withFullLinkTrace: results?.executeResult?.[0]?.withFullLinkTrace || false,
+      traceEmptyReason: results?.executeResult?.[0]?.traceEmptyReason || '',
     });
 
     // TODO: 刷新左侧资源树

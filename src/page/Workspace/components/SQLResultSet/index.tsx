@@ -54,6 +54,8 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
+  withFullLinkTrace: boolean;
+  traceEmptyReason?: string;
 
   onCloseResultSet: (resultSetKey: string) => void;
   onChangeResultSetTab?: (tabKey: string) => void;
@@ -70,6 +72,7 @@ interface IProps {
     columnList: Partial<ITableColumn>[],
     dbName: string,
   ) => void;
+  onShowTrace: (sql: string, tag: string) => void;
   onUpdateEditing: (resultSetIndex: number, editing: boolean) => void;
 }
 
@@ -82,10 +85,13 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
+    withFullLinkTrace,
+    traceEmptyReason,
     onSubmitRows,
     onExportResultSet,
     onChangeResultSetTab,
     onShowExecuteDetail,
+    onShowTrace,
     onLockResultSet,
     onUnLockResultSet,
     onCloseResultSet,
@@ -321,6 +327,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       set.allowExport ? (limit) => onExportResultSet(i, limit, tableName) : null
                     }
                     onShowExecuteDetail={() => onShowExecuteDetail(set.initialSql, set.traceId)}
+                    onShowTrace={() => onShowTrace(set.initialSql, set.traceId)}
                     onSubmitRows={(newRows, limit, autoCommit, columns) =>
                       onSubmitRows(
                         i,
@@ -333,6 +340,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     }
                     onUpdateEditing={(editing) => onUpdateEditing(i, editing)}
                     isEditing={editingMap[set.uniqKey]}
+                    withFullLinkTrace={withFullLinkTrace}
+                    traceEmptyReason={traceEmptyReason}
                   />
                 </TabPane>
               );

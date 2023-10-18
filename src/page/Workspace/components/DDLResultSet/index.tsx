@@ -31,6 +31,7 @@ import modal from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import SubmitSvg from '@/svgr/Submit.svg';
+import TraceSvg from '@/svgr/Trace.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, {
   BarsOutlined,
@@ -129,6 +130,8 @@ interface IProps {
   traceId?: string;
   enableRowId?: boolean;
   autoCommit: boolean;
+  withFullLinkTrace?: boolean;
+  traceEmptyReason?: string;
   /**
    * db 查询耗时
    */
@@ -142,6 +145,7 @@ interface IProps {
   ) => void;
   onExport: (limit: number) => void;
   onShowExecuteDetail?: () => void;
+  onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
 }
 
@@ -164,17 +168,19 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     sqlId,
     autoCommit,
     dbTotalDurationMicroseconds,
+    withFullLinkTrace,
+    traceEmptyReason,
     onUpdateEditing,
     onRefresh,
     onShowExecuteDetail,
+    onShowTrace,
     onExport,
     onSubmitRows,
     enableRowId,
   } = props;
   const sessionId = session?.sessionId;
-
+  const obVersion = session?.params?.obVersion;
   const update = useUpdate();
-
   /**
    * 编辑中的rows
    */
@@ -982,6 +988,25 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   />
                 </Tooltip>
               ))}
+            {obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1 ? (
+              <ToolbarButton
+                text={withFullLinkTrace ? '全链路 Trace' : traceEmptyReason}
+                disabled={!withFullLinkTrace}
+                icon={<TraceSvg />}
+                onClick={() => {
+                  onShowTrace?.();
+                }}
+              />
+            ) : (
+              <ToolbarButton
+                text={'数据库版本低于 x ，暂不支持查看全链路 Trace'}
+                disabled={true}
+                icon={<TraceSvg />}
+                onClick={() => {
+                  onShowTrace?.();
+                }}
+              />
+            )}
 
             {showPagination && rows.length ? (
               <>
