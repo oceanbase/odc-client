@@ -96,7 +96,7 @@ const tabs = [
     key: IPageType.Project_User,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Project.SensitiveData' }), //敏感数据
+    tab: '敏感列',
     key: IPageType.Sensitive,
   },
   {
