@@ -34,7 +34,7 @@ import {
   message,
 } from 'antd';
 import styles from './index.less';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
 import { EColumnType, SelectItemProps } from '../../../interface';
 import { useForm } from 'antd/lib/form/Form';
@@ -52,7 +52,11 @@ import timeSvg from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { MaskRyleTypeMap } from '@/d.ts';
-const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
+const ManualForm: React.FC<{
+  modalOpen: boolean;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  callback: () => void;
+}> = ({ modalOpen, setModalOpen, callback }) => {
   const [formRef] = useForm();
   const [_formRef] = useForm();
   const sensitiveContext = useContext(SensitiveContext);
@@ -372,7 +376,7 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
             ...result[d.databaseId]?.[d.type],
             [d.tableTitle]: {
               ...result[d.databaseId]?.[d.type]?.[d.tableTitle],
-              [child.title]: 1,
+              [child.title]: maskingAlgorithmOptions?.[0]?.value || null,
             },
           };
         } else {
@@ -382,7 +386,7 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
             [d.type]: {
               ...result?.[d.databaseId]?.[d.type],
               [d.tableTitle]: {
-                [child.title]: 1,
+                [child.title]: maskingAlgorithmOptions?.[0]?.value || null,
               },
             },
           };
@@ -432,7 +436,7 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
       );
     }
   };
-  const handleCheckedKeysChange = () => {
+  const handleCheckedKeysChange = async () => {
     const treeData = [];
     let checkedColumns = 0;
     databaseColumns?.forEach((databaseColumn, index) => {
@@ -491,7 +495,7 @@ const ManualForm = ({ modalOpen, setModalOpen, callback }) => {
     setCheckedColumns(checkedColumns);
     const data = parseTreeData(treeData);
     setData(data);
-    _formRef.setFieldsValue(parseData(data));
+    await _formRef.setFieldsValue(parseData(data));
   };
   const collapseSearch = async function (searchValue: string) {
     if (!searchValue) {
