@@ -41,7 +41,7 @@ import SensitiveContext from '../../SensitiveContext';
 import EditModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
 import tracert from '@/util/tracert';
-import NewManualForm from './components/ManualForm';
+import ManualForm from './components/ManualForm';
 import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
 import styles from './index.less';
@@ -605,7 +605,7 @@ const SensitiveColumn = ({
       />
 
       {modalOpen && (
-        <NewManualForm
+        <ManualForm
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           callback={() => {
