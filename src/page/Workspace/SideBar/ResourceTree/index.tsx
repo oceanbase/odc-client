@@ -92,7 +92,7 @@ const ResourceTree: React.FC<IProps> = function ({
       ?.filter((db) => {
         if (
           searchValue?.type === DbObjectType.database &&
-          !db.name.toLowerCase()?.includes(searchValue?.value)
+          !db.name.toLowerCase()?.includes(searchValue?.value?.toLowerCase())
         ) {
           /**
            * search filter
