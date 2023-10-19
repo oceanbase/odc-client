@@ -786,6 +786,7 @@ export enum IConnectionTestErrorType {
   OB_MYSQL_ACCESS_DENIED = 'ObMysqlAccessDenied',
   UNKNOWN = 'Unknown',
   CONNECT_TYPE_NOT_MATCH = 'ConnectionDatabaseTypeMismatched',
+  INIT_SCRIPT_FAILED = 'ConnectionInitScriptFailed',
 }
 
 export interface IConnectionProperty {
