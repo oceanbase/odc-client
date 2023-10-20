@@ -209,6 +209,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
               onSearch={(v) => {
                 setSearchKey(v);
               }}
+              allowClear
               placeholder={formatMessage({
                 id: 'odc.ResourceTree.Datasource.SearchForDataSources',
               })} /*搜索数据源*/
