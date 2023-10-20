@@ -195,7 +195,7 @@ export async function getFullLinkTraceJson(
   const res = await request.post(`/api/v1/diagnose/getFullLinkTraceJson/${sid}`, {
     data,
   });
-  return res;
+  return res?.data || '';
 }
 export enum IDataFormmater {
   TEXT = 'TXT',

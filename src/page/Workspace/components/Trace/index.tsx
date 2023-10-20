@@ -10,6 +10,7 @@ import TraceTreeTable from './TraceTreeTable';
 import { getFullLinkTrace, getFullLinkTraceJson } from '@/common/network/sql';
 import { generateAndDownloadFile } from '@/util/utils';
 import { TraceSpan } from '@/d.ts';
+import SessionStore from '@/store/sessionManager/session';
 
 export const InfoRender = ({ infos }) => {
   return (
@@ -51,7 +52,7 @@ const Trace: React.FC<{
   setOpen: () => void;
   traceId: string;
   sql: string;
-  session: any;
+  session: SessionStore;
 }> = ({ open, setOpen, traceId, sql, session }) => {
   const [innerTreeData, setInnerTreeData] = useState([]);
   const [originTreeData, setOriginTreeData] = useState<ExpandTraceSpan[]>([]);
