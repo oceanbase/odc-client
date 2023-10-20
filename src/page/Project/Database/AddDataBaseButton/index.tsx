@@ -90,7 +90,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true);
+              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true, true);
             }
           }}
         >
