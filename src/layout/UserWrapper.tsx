@@ -43,7 +43,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
 
   async function checkLoginStatus() {
     setStatus(STATUS_TYPE.LOADING);
-    const query: { [key: string]: any } = new URLSearchParams(location.pathname);
+    const query: { [key: string]: any } = new URLSearchParams(location.search);
     if (query.has('accountVerifyToken') && !isClient()) {
       /**
        * 存在token的时候，直接跳到登录页面做自动登录处理

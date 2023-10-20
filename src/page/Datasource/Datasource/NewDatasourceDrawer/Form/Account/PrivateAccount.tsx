@@ -64,6 +64,7 @@ const PrivateAccount: React.FC<IProps> = function (props) {
         IConnectionTestErrorType.OB_ACCESS_DENIED,
         IConnectionTestErrorType.OB_MYSQL_ACCESS_DENIED,
         IConnectionTestErrorType.UNKNOWN,
+        IConnectionTestErrorType.INIT_SCRIPT_FAILED,
       ].includes(formContext?.testResult?.errorCode)
     ) {
       return 'error';

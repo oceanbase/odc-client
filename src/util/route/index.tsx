@@ -24,11 +24,13 @@ export function gotoSQLWorkspace(
   tabKey: string = '',
 ) {
   const url =
-    location.origin + location.pathname + tabKey
+    location.origin +
+    location.pathname +
+    (tabKey
       ? `#/sqlworkspace/${tabKey}/${datasourceId}`
       : `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${
           datasourceId || ''
-        }&databaseId=${databaseId || ''}`;
+        }&databaseId=${databaseId || ''}`);
 
   const name = 'sqlworkspace' + '%' + login.organizationId + tabKey;
   if (currentPage) {
