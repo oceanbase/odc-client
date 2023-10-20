@@ -23,6 +23,9 @@ import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
+import HelpDoc from '@/component/helpDoc';
+import { ProjectRole } from '@/d.ts/project';
+import { projectRoleTextMap } from '@/page/Project/User';
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
@@ -219,6 +222,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             id: 'odc.SensitiveColumn.components.SacnRule.IdentificationRules',
           }) //识别规则
         }
+        tooltip={'可通过路径、正则或Groovy任意一种识别方式，进行脚本批量选择列'}
         name="sensitiveRuleIds"
         rules={[
           {
