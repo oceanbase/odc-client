@@ -36,6 +36,7 @@ import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { isSupportExport } from './helper';
 
 export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.FunctionRoot]: [
@@ -209,6 +210,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
       ellipsis: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const func: IFunction = node.data;
         modal.changeExportModal(true, {
