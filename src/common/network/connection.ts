@@ -215,8 +215,8 @@ export async function batchTest(
     }
   >
 > {
-  const res = await request.get('/api/v2/datasource/datasources/status', {
-    params: {
+  const res = await request.post('/api/v2/datasource/datasources/status', {
+    data: {
       id: cids,
     },
   });
