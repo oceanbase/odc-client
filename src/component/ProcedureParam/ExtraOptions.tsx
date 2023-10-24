@@ -18,6 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { ConnectType, DbObjectType } from '@/d.ts';
 import { Col, Form, Row, Select } from 'antd';
+import HelpDoc from '../helpDoc';
 export default function ExtraOptions({
   dbType,
   connectType,
@@ -36,7 +37,9 @@ export default function ExtraOptions({
           <Col span={8}>
             <Form.Item
               label={
-                formatMessage({ id: 'odc.src.component.ProcedureParam.Decisive' }) /* 决定性 */
+                <HelpDoc isTip leftText title="判断函数是否对相同的输入产生相同的结果">
+                  {formatMessage({ id: 'odc.src.component.ProcedureParam.Decisive' })}
+                </HelpDoc> /* 决定性 */
               }
               name={['characteristic', 'deterministic']}
             >

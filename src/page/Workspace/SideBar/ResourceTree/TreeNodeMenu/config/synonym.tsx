@@ -28,6 +28,7 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { isSupportExport } from './helper';
 function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
   return [
     {
@@ -115,6 +116,9 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Export' }), //导出
       ellipsis: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const synonym: Partial<ISynonym> = node.data;
         modal.changeExportModal(true, {

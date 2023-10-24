@@ -36,6 +36,7 @@ import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { isSupportExport } from './helper';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ProcedureRoot]: [
@@ -211,6 +212,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
       ellipsis: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const proc: IProcedure = node.data;
         modal.changeExportModal(true, {
