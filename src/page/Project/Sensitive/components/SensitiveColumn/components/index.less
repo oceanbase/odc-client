@@ -98,18 +98,6 @@
   }
 }
 
-.option123 {
-  &::after {
-    content: 'tewswt';
-    color: rgb(230, 128, 13);
-  }
-  // :global {
-  //   .ant-select-item-option {
-  //     color: red;
-  //     &
-  //   }
-  // }
-}
 //处理文字内容过长和自定义内容重叠的样式
 .lineEllipsis {
   display: inline-block;
@@ -163,12 +151,12 @@
         & + & {
           border-right: 1px;
         }
-      }
-      .centerContainer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
+        .centerContainer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
       }
     }
   }

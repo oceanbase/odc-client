@@ -90,7 +90,7 @@ export async function listColumns(projectId: number, database: number[]) {
       },
     },
   );
-  return result?.data;
+  return result?.data || [];
 }
 
 export enum ScannResultType {
