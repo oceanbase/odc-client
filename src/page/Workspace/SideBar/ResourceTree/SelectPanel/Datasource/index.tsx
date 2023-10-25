@@ -56,6 +56,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import StatusIcon from './StatusIcon';
 import classNames from 'classnames';
 import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
+import { EnvColorMap } from '@/constant';
 
 interface IProps {
   filters: {
@@ -109,7 +110,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
         return;
       }
       datasourceList?.forEach((item) => {
-        const status = map[item.id];
+        const status = map?.[item.id];
         if (status) {
           item.status = status;
         }
@@ -307,7 +308,11 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
                               [styles.envTipPersonal]: login.isPrivateSpace(),
                             })}
                           >
-                            <Badge color={dataSource?.environmentStyle?.toLowerCase()} />
+                            <Badge
+                              color={
+                                EnvColorMap[dataSource?.environmentStyle?.toUpperCase()]?.tipColor
+                              }
+                            />
                           </div>
                           {login.isPrivateSpace() && (
                             <div className={styles.actions}>

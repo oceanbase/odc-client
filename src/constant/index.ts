@@ -123,17 +123,21 @@ export const EnvColorMap = {
   GREEN: {
     textColor: 'var(--function-green6-color)',
     background: 'var(--function-green1-color)',
+    tipColor: 'var(--function-green6-color)',
   },
   GRAY: {
     textColor: 'var(--text-color-secondary)',
-    background: 'var(--neutral-grey1-color)',
+    background: 'transparent',
+    tipColor: 'transparent',
   },
   RED: {
     textColor: 'var(--function-red6-color)',
     background: 'var(--function-red1-color)',
+    tipColor: 'var(--function-red6-color)',
   },
   ORANGE: {
     textColor: 'var(--function-gold6-color)',
     background: 'var(--function-gold1-color)',
+    tipColor: 'var(--function-gold6-color)',
   },
 };
