@@ -44,6 +44,7 @@ function Editor({ value, onChange }: IProps) {
       bordered
       editorProps={{
         value,
+        theme: 'obwhite',
       }}
       initialSQL={value}
       language={'sql'}

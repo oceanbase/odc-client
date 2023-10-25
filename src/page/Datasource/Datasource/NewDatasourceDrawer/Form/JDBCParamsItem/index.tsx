@@ -21,7 +21,8 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Form, Space } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import DatasourceFormContext from '../context';
 type IValue = Record<string, string>;
 interface IProps {
   value?: IValue;
@@ -36,6 +37,7 @@ function JDBCParamsItem() {
 }
 const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
   const gridRef = useRef<DataGridRef>();
+  const context = useContext(DatasourceFormContext);
   const [innerValue, setInnerValue] = useState<
     {
       name: string;
@@ -159,7 +161,10 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
         属性配置 */
         }{' '}
         <a
-          href="https://www.oceanbase.com/docs/common-oceanbase-connector-j-cn-1000000000130260"
+          href={
+            context?.dataSourceConfig?.jdbcDoc ||
+            'https://www.oceanbase.com/docs/common-oceanbase-connector-j-cn-1000000000130260'
+          }
           target="_blank"
         >
           {
@@ -197,6 +202,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
           />
         </Toolbar>
         <EditableTable
+          theme="white"
           gridRef={gridRef}
           readonly={false}
           onRowsChange={onRowsChange}
