@@ -140,4 +140,5 @@ export interface IDataSourceModeConfig {
     escapeChar: string;
     plParamMode?: 'text' | 'list';
   };
+  disable?: boolean;
 }
