@@ -40,6 +40,7 @@ import {
 } from '@/common/datasource';
 import ExtraConfig from './ExtraConfig';
 import JDBCParamsItem from './JDBCParamsItem';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -275,7 +276,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     {environments?.map((env) => {
                       return (
                         <Option key={env.id} value={env.id}>
-                          {env.name}
+                          <RiskLevelLabel color={env.style} content={env.name} />
                         </Option>
                       );
                     })}

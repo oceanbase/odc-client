@@ -24,6 +24,7 @@ import { ResourceNodeType } from '../type';
 import MenuConfig from './config';
 import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
+import { EnvColorMap } from '@/constant';
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip } = props;
@@ -200,7 +201,9 @@ const TreeNodeMenu = (props: IProps) => {
     if (!env) {
       return null;
     }
-    return <Badge className={treeStyles.env} color={env?.style?.toLowerCase()} />;
+    return (
+      <Badge className={treeStyles.env} color={EnvColorMap[env?.style?.toUpperCase()]?.tipColor} />
+    );
   }
 
   return (

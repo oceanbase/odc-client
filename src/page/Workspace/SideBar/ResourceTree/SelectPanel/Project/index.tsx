@@ -82,7 +82,13 @@ export default forwardRef(function ProjectTree(props, ref) {
               <Tree
                 showIcon
                 selectedKeys={selectKeys}
-                onSelect={(keys) => {
+                onSelect={(keys, info) => {
+                  if (!info.selected) {
+                    /**
+                     * disable unselect
+                     */
+                    return;
+                  }
                   setSelectKeys(keys);
                 }}
                 selectable
