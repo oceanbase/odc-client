@@ -50,7 +50,7 @@ import { IDatasource } from '@/d.ts/datasource';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
-import { toInteger, toNumber } from 'lodash';
+import { toInteger, toNumber, throttle } from 'lodash';
 import { ConnectType, IConnectionStatus } from '@/d.ts';
 import { PlusOutlined } from '@ant-design/icons';
 import StatusIcon from './StatusIcon';
@@ -69,9 +69,12 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
   const [addDSVisiable, setAddDSVisiable] = useState(false);
   const [loopCount, setLoopCount] = useState<number>(0);
   const [searchKey, setSearchKey] = useState('');
+  const [wrapperHeight, setWrapperHeight] = useState(0);
+  console.log('wrapperHeight', wrapperHeight);
   const loopStatusRef = useRef<any>(null);
   const update = useUpdate();
   const unmountRef = useUnmountedRef();
+  const treeWrapperRef = useRef<HTMLDivElement>();
 
   const context = useContext(ResourceTreeContext);
   let { datasourceList } = context;
@@ -116,6 +119,17 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
       loopStatus(count + 1);
     }, 2000);
   }
+
+  useEffect(() => {
+    const resizeHeight = throttle(() => {
+      setWrapperHeight(treeWrapperRef?.current?.offsetHeight);
+    }, 500);
+    setWrapperHeight(treeWrapperRef.current?.clientHeight);
+    window.addEventListener('resize', resizeHeight);
+    return () => {
+      window.removeEventListener('resize', resizeHeight);
+    };
+  }, []);
 
   useEffect(() => {
     /**
@@ -231,10 +245,12 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
               </NewDatasourceButton>
             ) : null}
           </div>
-          <div className={styles.list}>
+          <div className={styles.list} ref={treeWrapperRef}>
             {datasource?.length ? (
               <Tree
                 className={styles.tree}
+                // 设置一个最小值，可以避免height为0的时候，出现全量渲染
+                height={wrapperHeight || 100}
                 titleRender={(node) => {
                   const dataSource = datasourceList?.find((d) => d.id == node.key);
                   return (
