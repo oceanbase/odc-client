@@ -168,6 +168,7 @@ export enum TableIndexMehod {
   NONE = 'NONE',
   BTREE = 'BTREE',
   HASH = 'HASH',
+  FULLTEXT = 'FULLTEXT',
 }
 
 export enum TableIndexType {
