@@ -217,7 +217,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.props.pageStore.updatePage(
         this.props.pageKey,
         {},
-        { cid: this.getSession()?.odcDatabase?.id },
+        { cid: this.getSession()?.odcDatabase?.id, dbName: this.getSession()?.odcDatabase?.name },
       );
     }
   }
