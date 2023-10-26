@@ -16,18 +16,20 @@
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
+import { updateLimiterConfig } from '@/common/network/task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime, kbToMb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Collapse, Descriptions, Divider, Space, Typography } from 'antd';
+import { Collapse, Descriptions, Divider, Space, Typography, message } from 'antd';
 import React from 'react';
 import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -38,12 +40,33 @@ interface IProps {
 }
 const DataArchiveTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow } = props;
-  const { triggerConfig, jobParameters } = task ?? {};
+  const { triggerConfig, jobParameters, id } = task ?? {};
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const isCycleStrategy = isCycleTriggerStrategy(triggerConfig?.triggerStrategy);
   const insertActionLabel = InsertActionOptions?.find(
     (item) => item.value === jobParameters?.migrationInsertAction,
   )?.label;
+
+  const handleRowLimit = async (rowLimit, handleClose) => {
+    const res = updateLimiterConfig(id, {
+      rowLimit,
+    });
+    if (res) {
+      message.success('修改成功！');
+      handleClose();
+    }
+  };
+
+  const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
+    const res = updateLimiterConfig(id, {
+      dataSizeLimit,
+    });
+    if (res) {
+      message.success('修改成功！');
+      handleClose();
+    }
+  };
+
   return (
     <>
       <Descriptions column={2}>
@@ -198,7 +221,20 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-
+        <Descriptions.Item label="行限流">
+          <ThrottleEditableCell
+            suffix="Rows/s"
+            defaultValue={jobParameters?.limiterConfig?.rowLimit}
+            onOk={handleRowLimit}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label={'数据大小限流'}>
+          <ThrottleEditableCell
+            suffix="MB/s"
+            defaultValue={kbToMb(jobParameters?.limiterConfig?.dataSizeLimit)}
+            onOk={handleDataSizeLimit}
+          />
+        </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.Remarks',
