@@ -35,6 +35,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import { mbToKb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -43,6 +44,8 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
+import FormItemPanel from '@/component/FormItemPanel';
+import ThrottleFormItem from '../../component/ThrottleFormItem';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -60,6 +63,8 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   variables: [variable],
   tables: [null],
+  rowLimit: 100,
+  dataSizeLimit: 1,
 };
 
 interface IProps {
@@ -201,6 +206,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           triggerStrategy,
           archiveRange,
           description,
+          rowLimit,
+          dataSizeLimit,
         } = values;
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -218,6 +225,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                     };
                   })
                 : _tables,
+            limiterConfig: {
+              rowLimit,
+              dataSizeLimit: mbToKb(dataSizeLimit),
+            },
           },
           triggerConfig: {
             triggerStrategy,
@@ -384,6 +395,9 @@ const CreateModal: React.FC<IProps> = (props) => {
             return null;
           }}
         </Form.Item>
+        <FormItemPanel label="任务设置" keepExpand>
+          <ThrottleFormItem />
+        </FormItemPanel>
         <DescriptionInput />
       </Form>
     </Drawer>
