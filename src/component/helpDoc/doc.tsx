@@ -515,4 +515,6 @@ export default {
       }
     </p>
   ),
+  TaskLmitRow: <p>每秒操作数据总行限制</p>,
+  TaskLmitData: <p>每秒操作数据总大小限制</p>,
 };
