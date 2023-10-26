@@ -57,6 +57,7 @@ import StatusIcon from './StatusIcon';
 import classNames from 'classnames';
 import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
 import { EnvColorMap } from '@/constant';
+import { useDataSourceStatus } from './useDataSourceStatus';
 
 interface IProps {
   filters: {
@@ -68,57 +69,22 @@ interface IProps {
 export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [addDSVisiable, setAddDSVisiable] = useState(false);
-  const [loopCount, setLoopCount] = useState<number>(0);
   const [searchKey, setSearchKey] = useState('');
   const [wrapperHeight, setWrapperHeight] = useState(0);
   console.log('wrapperHeight', wrapperHeight);
-  const loopStatusRef = useRef<any>(null);
-  const update = useUpdate();
-  const unmountRef = useUnmountedRef();
   const treeWrapperRef = useRef<HTMLDivElement>();
+  const { fetchStatus, statusMap, reload } = useDataSourceStatus();
 
   const context = useContext(ResourceTreeContext);
   let { datasourceList } = context;
 
-  datasourceList = datasourceList?.filter((item) => !item.temp);
+  datasourceList = useMemo(() => {
+    return datasourceList?.filter((item) => !item.temp);
+  }, []);
 
   const selectKeys = [context.selectDatasourceId].filter(Boolean);
   function setSelectKeys(keys) {
     return context.setSelectDatasourceId(keys?.[0]);
-  }
-
-  async function loopStatus(count: number = loopCount) {
-    if (loopStatusRef?.current) {
-      console.log('clear');
-      clearTimeout(loopStatusRef?.current);
-      loopStatusRef.current = null;
-    }
-    loopStatusRef.current = setTimeout(async () => {
-      if (unmountRef.current) {
-        console.log('unmount');
-        return;
-      }
-      const ids = datasourceList
-        ?.map((item) => (item.status?.status === IConnectionStatus.TESTING ? item.id : null))
-        .filter(Boolean);
-      if (!ids?.length) {
-        console.log('not found');
-        return;
-      }
-      const map = await batchTest(ids);
-      if (unmountRef.current) {
-        return;
-      }
-      datasourceList?.forEach((item) => {
-        const status = map?.[item.id];
-        if (status) {
-          item.status = status;
-        }
-      });
-      setLoopCount(count + 1);
-      update();
-      loopStatus(count + 1);
-    }, 2000);
   }
 
   useEffect(() => {
@@ -137,7 +103,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
      * 获取数据源状态
      */
     if (datasourceList?.length && login.isPrivateSpace()) {
-      loopStatus();
+      reload();
     }
   }, [datasourceList]);
 
@@ -171,6 +137,8 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
            */
           return null;
         }
+        const status = statusMap?.[item.id];
+        item = status ? { ...item, status } : item;
         return {
           title: item.name,
           selectable: login.isPrivateSpace()
@@ -181,7 +149,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
         };
       })
       .filter(Boolean);
-  }, [datasourceList, searchKey, loopCount, filters?.envs, filters?.connectTypes]);
+  }, [datasourceList, searchKey, statusMap, filters?.envs, filters?.connectTypes]);
 
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
@@ -254,6 +222,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
                 height={wrapperHeight || 100}
                 titleRender={(node) => {
                   const dataSource = datasourceList?.find((d) => d.id == node.key);
+                  fetchStatus(dataSource?.id);
                   return (
                     <>
                       <Popover
