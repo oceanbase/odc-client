@@ -49,9 +49,10 @@ interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
   type: ConnectType;
+  disableTheme?: boolean;
 }
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
-  { isEdit, originDatasource, type }: IProps,
+  { isEdit, originDatasource, type, disableTheme }: IProps,
   ref,
 ) {
   const [form] = Form.useForm();
@@ -158,6 +159,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         isEdit,
         originDatasource,
         dataSourceConfig: dsc,
+        disableTheme,
       }}
     >
       <Form

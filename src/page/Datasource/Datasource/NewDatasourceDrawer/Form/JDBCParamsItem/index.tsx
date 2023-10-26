@@ -163,7 +163,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
         <a
           href={
             context?.dataSourceConfig?.jdbcDoc ||
-            'https://www.oceanbase.com/docs/common-oceanbase-connector-j-cn-1000000000130260'
+            'https://www.oceanbase.com/docs/common-oceanbase-connector-j-cn-1000000000271787'
           }
           target="_blank"
         >
@@ -202,7 +202,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
           />
         </Toolbar>
         <EditableTable
-          theme="white"
+          theme={context.disableTheme ? 'white' : null}
           gridRef={gridRef}
           readonly={false}
           onRowsChange={onRowsChange}

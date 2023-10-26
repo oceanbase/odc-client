@@ -56,6 +56,7 @@ const getResultByFiles = (files: UploadFile[]) => {
 };
 const NewDatasourceButton: React.FC<{
   onSuccess: () => void;
+  disableTheme?: boolean;
 }> = function NewDatasourceButton(props) {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState<ConnectType>(null);
@@ -250,6 +251,7 @@ const NewDatasourceButton: React.FC<{
         onSubmit={handleBatchImportSubmit}
       />
       <NewDatasourceDrawer
+        disableTheme={props.disableTheme}
         type={type}
         visible={visible}
         close={() => setVisible(false)}
