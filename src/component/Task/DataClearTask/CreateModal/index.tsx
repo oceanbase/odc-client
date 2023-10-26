@@ -225,7 +225,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     };
                   })
                 : _tables,
-            limiterConfig: {
+            rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
             },

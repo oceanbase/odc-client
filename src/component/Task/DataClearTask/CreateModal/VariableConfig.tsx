@@ -76,8 +76,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
             <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
               {
                 formatMessage({
-                  id: 'odc.DataClearTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn.1',
-                }) /*变量可在清理范围的过滤条件中引用*/
+                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn.1',
+                }) /*变量可在归档配置的过滤条件中引用 (可选)*/
               }
             </HelpDoc>
           </span>
