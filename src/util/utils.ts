@@ -582,3 +582,13 @@ export const secondsToHour = (seconds: number) => {
   const hour = seconds ? seconds / 60 / 60 : undefined;
   return hour;
 };
+
+// MB -> KB
+export const mbToKb = (value: number) => {
+  return value * 1024;
+};
+
+// KB -> MB
+export const kbToMb = (value: number) => {
+  return value / 1024;
+};
