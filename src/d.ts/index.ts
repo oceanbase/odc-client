@@ -2177,7 +2177,7 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
-  limiterConfig?: {
+  rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
   };
@@ -2198,7 +2198,7 @@ export interface IDataClearJobParameters {
   sourceDatabaseName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
-  limiterConfig?: {
+  rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
   };

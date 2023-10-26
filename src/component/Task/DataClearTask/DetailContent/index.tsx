@@ -20,6 +20,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import { updateLimiterConfig } from '@/common/network/task';
+import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb } from '@/util/utils';
@@ -156,14 +157,18 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label="行限流">
           <ThrottleEditableCell
             suffix="Rows/s"
-            defaultValue={jobParameters?.limiterConfig?.rowLimit}
+            min={0}
+            max={setting.maxSingleTaskRowLimit}
+            defaultValue={jobParameters?.rateLimit?.rowLimit}
             onOk={handleRowLimit}
           />
         </Descriptions.Item>
         <Descriptions.Item label={'数据大小限流'}>
           <ThrottleEditableCell
             suffix="MB/s"
-            defaultValue={kbToMb(jobParameters?.limiterConfig?.dataSizeLimit)}
+            min={1}
+            max={setting.maxSingleTaskDataSizeLimit}
+            defaultValue={kbToMb(jobParameters?.rateLimit?.dataSizeLimit)}
             onOk={handleDataSizeLimit}
           />
         </Descriptions.Item>

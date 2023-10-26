@@ -450,7 +450,7 @@ export async function updateLimiterConfig(
     dataSizeLimit?: number;
   },
 ): Promise<boolean> {
-  const res = await request.put(`/api/v2/schedule/${taskId}/jobs/dlm/limiterConfig`, {
+  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/dlmRateLimitConfiguration`, {
     data,
   });
   return !!res?.data;
