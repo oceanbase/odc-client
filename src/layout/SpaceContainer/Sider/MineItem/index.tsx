@@ -79,7 +79,7 @@ const MineItem: React.FC<IProps> = function ({
         }),
       );
     }
-    setChangePasswordLoading(true);
+    setChangePasswordLoading(false);
   };
 
   const handleLogout = async () => {
