@@ -32,6 +32,7 @@ interface IDatasouceFormContext {
   isEdit?: boolean;
   originDatasource?: IDatasource;
   dataSourceConfig?: IDataSourceModeConfig['connection'];
+  disableTheme?: boolean;
 }
 
 const DatasourceFormContext = React.createContext<IDatasouceFormContext>({
