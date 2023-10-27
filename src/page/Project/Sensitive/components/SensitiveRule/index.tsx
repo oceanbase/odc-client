@@ -39,6 +39,7 @@ import ViewDrawer from './components/ViewSensitiveRuleDrawer';
 import CommonTable from '@/component/CommonTable';
 import tracert from '@/util/tracert';
 import styles from './index.less';
+import { PopoverContainer } from '../SensitiveColumn';
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
   hanldeEditDrawerOpen;
@@ -139,56 +140,41 @@ const getColumns: (columnsFunction: {
           },
         };
       },
-      render: (text, record) => {
+      render: (text, record, index) => {
         const target = maskingAlgorithms?.find(
           (maskingAlgorithm) => maskingAlgorithm?.id === record?.maskingAlgorithmId,
         );
         return (
-          <Popover
-            placement="left"
+          <PopoverContainer
+            key={index}
             title={maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'}
-            content={
-              <Descriptions
-                column={1}
-                style={{
-                  width: '250px',
-                }}
-              >
-                <Descriptions.Item
-                  label={
-                    formatMessage({
-                      id:
-                        'odc.src.page.Project.Sensitive.components.SensitiveRule.DesensitizationMethod',
-                    }) /* 脱敏方式 */
-                  }
-                >
-                  {MaskRyleTypeMap?.[target?.type]}
-                </Descriptions.Item>
-                <Descriptions.Item
-                  label={
-                    formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.TestData',
-                    }) /* 测试数据 */
-                  }
-                >
-                  {target?.sampleContent}
-                </Descriptions.Item>
-                <Descriptions.Item
-                  label={
-                    formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.Preview',
-                    }) /* 结果预览 */
-                  }
-                >
-                  {target?.maskedContent}
-                </Descriptions.Item>
-              </Descriptions>
-            }
-          >
-            <div className={styles.hover}>
-              {maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'}
-            </div>
-          </Popover>
+            descriptionsData={[
+              {
+                label: formatMessage({
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveRule.DesensitizationMethod',
+                }) /* 脱敏方式 */,
+                value: MaskRyleTypeMap?.[target?.type],
+              },
+              {
+                label: formatMessage({
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.TestData',
+                }) /* 测试数据 */,
+                value: target?.sampleContent,
+              },
+              {
+                label: formatMessage({
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.Preview',
+                }) /* 结果预览 */,
+                value: target?.maskedContent,
+              },
+            ]}
+            children={() => (
+              <div className={styles.hover}>
+                {maskingAlgorithmIdMap[record?.maskingAlgorithmId] || '-'}
+              </div>
+            )}
+          />
         );
       },
     },

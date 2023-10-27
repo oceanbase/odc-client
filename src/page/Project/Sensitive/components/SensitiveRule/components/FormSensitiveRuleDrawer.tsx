@@ -24,6 +24,8 @@ import ProjectContext from '../../../../ProjectContext';
 import SensitiveContext from '../../../SensitiveContext';
 import DetectWay from './DetectWay';
 import styles from './index.less';
+import { MaskRyleTypeMap } from '@/d.ts';
+import { PopoverContainer } from '../../SensitiveColumn';
 
 const FormSensitiveRuleDrawer = ({
   formDrawerVisible,
@@ -388,11 +390,40 @@ const FormSensitiveRuleDrawer = ({
                 id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.PleaseSelect',
               }) //请选择
             }
-            options={sensitiveContext.maskingAlgorithmOptions}
             style={{
               width: '262px',
             }}
-          />
+            optionLabelProp="label"
+          >
+            {sensitiveContext?.maskingAlgorithmOptions?.map((option, index) => {
+              const target = sensitiveContext?.maskingAlgorithms?.find(
+                (maskingAlgorithm) => maskingAlgorithm?.id === option?.value,
+              );
+              return (
+                <Select.Option value={option?.value} key={index} label={option?.label}>
+                  <PopoverContainer
+                    key={index}
+                    title={option?.label}
+                    descriptionsData={[
+                      {
+                        label: '脱敏方式',
+                        value: MaskRyleTypeMap?.[target?.type],
+                      },
+                      {
+                        label: '测试数据',
+                        value: target?.sampleContent,
+                      },
+                      {
+                        label: '结果预览',
+                        value: target?.maskedContent,
+                      },
+                    ]}
+                    children={() => <div>{option?.label}</div>}
+                  />
+                </Select.Option>
+              );
+            })}
+          </Select>
         </Form.Item>
         <Form.Item
           label={

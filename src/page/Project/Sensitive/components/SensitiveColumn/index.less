@@ -3,3 +3,25 @@
     cursor: pointer;
   }
 }
+
+.selectPopover {
+  :global {
+    .ant-popover-title {
+      min-height: max-content;
+      padding: 12px 12px 0px;
+      border-bottom: none;
+    }
+    .ant-popover-inner-content {
+      padding: 8px 12px 12px;
+    }
+    .ant-popover-inner > .ant-popover-inner-content > div > div > table > tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ant-descriptions-row > th,
+    .ant-descriptions-row > td {
+      padding: 0px;
+    }
+  }
+}

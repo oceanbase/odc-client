@@ -37,7 +37,7 @@ export const RenderLevel: React.FC<{
 
   const colorMap = {
     [RiskLevelEnum.DEFAULT]: 'green',
-    [RiskLevelEnum.SUGGEST]: 'yellow',
+    [RiskLevelEnum.SUGGEST]: 'orange',
     [RiskLevelEnum.MUST]: 'red',
   };
   return <RiskLevelLabel content={levelMap[level]} color={colorMap[level]} />;
