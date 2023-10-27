@@ -1553,6 +1553,7 @@ export interface ISQLExplain {
   tree: ISQLExplainTreeNode[];
   outline: string;
   originalText: string;
+  showFormatInfo?: boolean;
 }
 
 export interface ISQLExecuteDetail {
