@@ -36,7 +36,7 @@ import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { isSupportExport } from './helper';
+import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ProcedureRoot]: [
@@ -117,6 +117,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       ellipsis: true,
       actionType: actionTypes.update,
+      disabled: (session, node) => {
+        return !isSupportPLEdit(session);
+      },
       async run(session, node) {
         const proc: IProcedure = node.data;
         await openProcedureEditPageByProName(

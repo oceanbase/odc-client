@@ -36,7 +36,7 @@ import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { isSupportExport } from './helper';
+import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.FunctionRoot]: [
@@ -115,6 +115,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
+      disabled: (session, node) => {
+        return !isSupportPLEdit(session);
+      },
       actionType: actionTypes.update,
       ellipsis: true,
       async run(session, node) {
