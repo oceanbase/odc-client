@@ -9,3 +9,7 @@ export function isSupportExport(session: SessionStore) {
     getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(TaskType.EXPORT)
   );
 }
+
+export function isSupportPLEdit(session: SessionStore) {
+  return getDataSourceModeConfig(session?.odcDatabase?.dataSource?.type)?.features?.plEdit;
+}

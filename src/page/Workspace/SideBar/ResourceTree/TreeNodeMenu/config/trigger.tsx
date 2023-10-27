@@ -35,7 +35,7 @@ import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { isSupportExport } from './helper';
+import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TriggerRoot]: [
@@ -103,6 +103,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       actionType: actionTypes.update,
       ellipsis: true,
+      disabled: (session, node) => {
+        return !isSupportPLEdit(session);
+      },
       run(session, node) {
         const trigger: ITrigger = node.data;
         openTriggerEditPageByName(
