@@ -28,6 +28,7 @@ import classNames from 'classnames';
 import DatasourceFilter from '../DatasourceFilter';
 import { ConnectType } from '@/d.ts';
 import Reload from '@/component/Button/Reload';
+import { Tooltip } from 'antd';
 
 interface IProps {
   userStore?: UserStore;
@@ -125,12 +126,14 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         }}
         tabs={isPersonal ? [datasource] : [datasource, project]}
         leftAction={
-          <Icon
-            disabled={!isSelected}
-            component={CloseOutlined}
-            className={classNames(styles.closeBtn, { [styles.closeBtnDisable]: !isSelected })}
-            onClick={!isSelected ? null : () => onClose()}
-          />
+          <Tooltip title={isSelected ? null : '请选择数据源或项目'}>
+            <Icon
+              disabled={!isSelected}
+              component={CloseOutlined}
+              className={classNames(styles.closeBtn, { [styles.closeBtnDisable]: !isSelected })}
+              onClick={!isSelected ? null : () => onClose()}
+            />
+          </Tooltip>
         }
       />
     </>
