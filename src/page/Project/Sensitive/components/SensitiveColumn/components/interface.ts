@@ -1,3 +1,4 @@
+import { IDataType } from '@/d.ts';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 
 export type TreeNode = {
@@ -7,6 +8,13 @@ export type TreeNode = {
   icon: JSX.Element;
   children: TreeNode[];
 };
+export type SelectNodeChild = {
+  title: string;
+  key: string;
+  type: ESensitiveColumnType;
+  columnType: string;
+  dataTypeUnits: IDataType[];
+};
 export type SelectNode = {
   databaseId: number;
   databaseKey: string;
@@ -14,14 +22,10 @@ export type SelectNode = {
   tableKey: string;
   tableTitle: string;
   type: ESensitiveColumnType;
-  children: {
-    title: string;
-    key: string;
-    type: ESensitiveColumnType;
-    columnType: string;
-  }[];
+  children: SelectNodeChild[];
 };
 export type DatabaseColumn = {
+  dataTypeUnits: IDataType[];
   databaseId: number;
   databaseName: string;
   table2Columns: {

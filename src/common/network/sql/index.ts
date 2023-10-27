@@ -89,6 +89,7 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
       tree: [formatSQLExplainTree(JSON.parse(data.expTree))],
       outline: data.outline,
       originalText: data?.originalText,
+      showFormatInfo: data?.showFormatInfo,
     };
   }
 
