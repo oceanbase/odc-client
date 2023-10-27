@@ -130,6 +130,18 @@ export class SettingStore {
   public maxResultSetRows: number = Number.MAX_SAFE_INTEGER;
 
   /**
+   * 工单（数据归档 & 数据清理）行限流最大值
+   */
+  @observable
+  public maxSingleTaskRowLimit: number = Number.MAX_SAFE_INTEGER;
+
+  /**
+   * 工单（数据归档 & 数据清理）数据限流最大值
+   */
+  @observable
+  public maxSingleTaskDataSizeLimit: number = Number.MAX_SAFE_INTEGER;
+
+  /**
    * 独立session最大数量
    */
   @observable
@@ -238,6 +250,10 @@ export class SettingStore {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
     }
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
+    this.maxSingleTaskRowLimit =
+      parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;
+    this.maxSingleTaskDataSizeLimit =
+      parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit']) || Number.MAX_SAFE_INTEGER;
   }
 
   @action

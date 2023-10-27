@@ -22,11 +22,13 @@ import Action from '@/component/Action';
 interface IProps {
   defaultValue: number | string;
   suffix: React.ReactNode;
+  min: number;
+  max: number;
   onOk: (value: number, onClose: () => void) => void;
 }
 
 const ThrottleEditableCell: React.FC<IProps> = (props) => {
-  const { defaultValue = 10, suffix, onOk } = props;
+  const { defaultValue = 10, min, max, suffix, onOk } = props;
   const [isLmitRowEdit, setIsLmitRowEdit] = useState(false);
   const [lmitValue, setLmitValue] = useState(Number(defaultValue));
   const [value, setValue] = useState(Number(defaultValue));
@@ -56,8 +58,8 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
         <Space>
           <InputNumber
             status={status}
-            min={1}
-            max={1000}
+            min={min}
+            max={max}
             value={lmitValue}
             onChange={handleChange}
           />

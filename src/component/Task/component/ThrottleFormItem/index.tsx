@@ -17,6 +17,7 @@
 import { Form, InputNumber, Space } from 'antd';
 import React from 'react';
 import HelpDoc from '@/component/helpDoc';
+import setting from '@/store/setting';
 
 interface IProps {}
 
@@ -44,7 +45,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber min={0} precision={1} />
+              <InputNumber min={0} precision={1} max={setting.maxSingleTaskRowLimit} />
             </Form.Item>
             <span>Rows/s</span>
           </Space>
@@ -69,7 +70,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber min={0} precision={1} />
+              <InputNumber min={1} max={setting.maxSingleTaskDataSizeLimit} precision={1} />
             </Form.Item>
             <span>MB/s</span>
           </Space>

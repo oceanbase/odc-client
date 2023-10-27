@@ -144,7 +144,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Form.Item {...restField} name={[name, 'operator']}>
                                 <Select
                                   placeholder={formatMessage({
-                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                    id:
+                                      'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
                                   })} /*请选择*/
                                   options={operatorOptions}
                                 />
@@ -152,7 +153,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Form.Item {...restField} name={[name, 'step']}>
                                 <InputNumber
                                   placeholder={formatMessage({
-                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                                    id:
+                                      'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
                                   })}
                                   /*请输入*/ min={1}
                                 />
@@ -160,7 +162,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Form.Item {...restField} name={[name, 'unit']}>
                                 <Select
                                   placeholder={formatMessage({
-                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                    id:
+                                      'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
                                   })} /*请选择*/
                                   options={timeUnitOptions}
                                 />
@@ -169,7 +172,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 <>
                                   <Tooltip
                                     title={formatMessage({
-                                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddTimeOperation',
+                                      id:
+                                        'odc.DataArchiveTask.CreateModal.VariableConfig.AddTimeOperation',
                                     })} /*添加时间运算*/
                                   >
                                     <Button type="text" disabled={disabledAdd}>
@@ -178,7 +182,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                   </Tooltip>
                                   <Tooltip
                                     title={formatMessage({
-                                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteTimeOperation',
+                                      id:
+                                        'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteTimeOperation',
                                     })} /*删除时间运算*/
                                   >
                                     <Button type="text">
