@@ -242,7 +242,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 : _tables,
             deleteAfterMigration,
             migrationInsertAction,
-            limiterConfig: {
+            rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
             },
