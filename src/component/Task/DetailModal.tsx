@@ -33,6 +33,7 @@ import type {
   IDataArchiveJobParameters,
   IDataClearJobParameters,
   IPartitionPlanParams,
+  IApplyPermissionTaskParams,
   IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
@@ -60,6 +61,7 @@ import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getResultSetExportTaskContentItems } from './ResultSetExportTask/DetailContent';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
+import { ApplyPermissionTaskContent } from './ApplyPermission';
 
 interface IProps {
   type: TaskType;
@@ -167,6 +169,14 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     );
   } else if (task?.type === TaskType.SQL_PLAN) {
     taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
+  } else if (task?.type === TaskType.APPLY_PROJECT_PERMISSION) {
+    taskContent = (
+      <ApplyPermissionTaskContent
+        task={task as TaskDetail<IApplyPermissionTaskParams>}
+        result={result}
+        hasFlow={hasFlow}
+      />
+    );
   } else {
     getItems = taskContentMap[task?.type]?.getItems;
   }

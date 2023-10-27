@@ -25,13 +25,15 @@ import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
-import { Empty, List, Space, Spin } from 'antd';
+import { Empty, List, Space, Spin, Typography } from 'antd';
 import VirtualList from 'rc-virtual-list';
 import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
 import { setDefaultProject } from '@/service/projectHistory';
+import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
+const { Title, Text } = Typography;
 
 const titleOptions: { label: string; value: 'all' | 'deleted' }[] = [
   {
@@ -110,12 +112,17 @@ const Project = () => {
         className={styles.content}
         header={
           <div className={styles.header}>
-            <Acess
-              fallback={<span></span>}
-              {...createPermission(IManagerResourceType.project, actionTypes.create)}
-            >
-              <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
-            </Acess>
+            <Space size={12}>
+              <Acess
+                fallback={<span></span>}
+                {...createPermission(IManagerResourceType.project, actionTypes.create)}
+              >
+                <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
+              </Acess>
+              {!!dataSource?.length && (
+                <ApplyPermissionButton disabled={isProjectDeleted} label="加入项目" />
+              )}
+            </Space>
             <Space size={12}>
               <Search
                 onSearch={(v) => {
@@ -160,8 +167,19 @@ const Project = () => {
               )}
             </VirtualList>
           ) : (
-            <Spin spinning={loading}>
-              <Empty />
+            <Spin spinning={loading} wrapperClassName={styles.spin}>
+              <Space direction="vertical" align="center">
+                <Empty
+                  description={
+                    <Space direction="vertical" size={0}>
+                      <Title level={4}>暂无新项目</Title>
+                      <Text type="secondary">当前暂无可使用项目，可以通过申请获得项目权限</Text>
+                    </Space>
+                  }
+                >
+                  <ApplyPermissionButton label="申请项目权限" type="primary" />
+                </Empty>
+              </Space>
             </Spin>
           )}
         </div>

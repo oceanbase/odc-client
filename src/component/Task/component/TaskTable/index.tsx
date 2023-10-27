@@ -115,6 +115,7 @@ export const TaskTypeMap = {
   [TaskType.DATA_DELETE]: formatMessage({
     id: 'odc.component.TaskTable.DataCleansing',
   }), //数据清理
+  [TaskType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
 };
 
 export const getStatusFilters = (status: {
