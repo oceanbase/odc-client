@@ -19,13 +19,11 @@ import ExportCard from '@/component/ExportCard';
 import {
   Button,
   Collapse,
-  Descriptions,
   Drawer,
   Empty,
   Form,
   Modal,
   Popconfirm,
-  Popover,
   Select,
   Space,
   Spin,
@@ -43,25 +41,30 @@ import React, {
   useState,
 } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
-import { EColumnType, SelectItemProps } from '../../../interface';
+import { SelectItemProps } from '../../../interface';
 import { useForm } from 'antd/lib/form/Form';
 import { listDatabases } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { batchCreateSensitiveColumns, listColumns } from '@/common/network/sensitiveColumn';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import DBSvg from '@/svgr/database_outline.svg';
-import binarySvg from '@/svgr/Field-Binary.svg';
-import numberSvg from '@/svgr/Field-number.svg';
-import stringSvg from '@/svgr/Field-String.svg';
 import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
-import timeSvg from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { MaskRyleTypeMap } from '@/d.ts';
-import _ from 'lodash';
+import { debounce, cloneDeep, merge } from 'lodash';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
-import { TreeNode, SelectNode, DatabaseColumn, ManualFormProps } from './interface';
+import {
+  TreeNode,
+  SelectNode,
+  DatabaseColumn,
+  ManualFormProps,
+  SelectNodeChild,
+} from './interface';
+import { PopoverContainer } from '..';
+import { fieldIconMap } from '@/constant';
+import { convertDataTypeToDataShowType } from '@/util/utils';
 const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callback }) => {
   const [formRef] = useForm();
   const _formRef = useRef<any>(null);
@@ -95,7 +98,7 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     });
     setDatabaseOptions(resData);
   };
-  const handleDatabaseSelect = async (value: number, args) => {
+  const handleDatabaseSelect = debounce(async (value: number, args) => {
     if (value === -1) {
       setDatabaseIds(databaseOptions?.map((option) => option.value as number));
       return;
@@ -103,10 +106,10 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     if (!databaseIds?.includes(value)) {
       setDatabaseIds(databaseIds.concat(value));
     }
-  };
-  const handleDatabaseDeselect = async (value: number) => {
+  }, 500);
+  const handleDatabaseDeselect = debounce(async (value: number) => {
     setDatabaseIds(databaseIds.filter((id) => id !== value));
-  };
+  }, 500);
   const submit = () => {
     _formRef.current?.submit(setModalOpen, callback);
   };
@@ -182,6 +185,9 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
               }) /* 数据库 */
             }
             name="database"
+            style={{
+              marginBottom: '4px',
+            }}
           >
             <Select
               className={styles.select}
@@ -195,6 +201,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
               }
               onSelect={handleDatabaseSelect}
               onDeselect={handleDatabaseDeselect}
+              optionLabelProp="label"
+              allowClear={true}
             >
               {databaseOptions?.map((option, index) => {
                 return (
@@ -205,30 +213,31 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
                       display: 'flex',
                       justifyContent: 'space-between',
                     }}
+                    label={option?.label}
                   >
-                    <div
-                      style={{
-                        display: 'flex',
-                      }}
+                    <Tooltip
+                      title={
+                        formatMessage(
+                          {
+                            id:
+                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DataSourceOptiontatasourcename',
+                          },
+                          {
+                            optionDataSourceName: option?.dataSourceName,
+                          },
+                        ) //`数据源：${option?.dataSourceName}`
+                      }
+                      placement="right"
                     >
-                      <RiskLevelLabel
-                        content={option?.environment?.content}
-                        color={option?.environment?.style}
-                      />
-                      <Tooltip
-                        title={
-                          formatMessage(
-                            {
-                              id:
-                                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DataSourceOptiontatasourcename',
-                            },
-                            {
-                              optionDataSourceName: option?.dataSourceName,
-                            },
-                          ) //`数据源：${option?.dataSourceName}`
-                        }
-                        placement="right"
+                      <div
+                        style={{
+                          display: 'flex',
+                        }}
                       >
+                        <RiskLevelLabel
+                          content={option?.environment?.content}
+                          color={option?.environment?.style}
+                        />
                         <div
                           style={{
                             whiteSpace: 'nowrap',
@@ -238,8 +247,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
                         >
                           {option?.label}
                         </div>
-                      </Tooltip>
-                    </div>
+                      </div>
+                    </Tooltip>
                   </Select.Option>
                 );
               })}
@@ -270,29 +279,6 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
 };
 export default ManualForm;
 
-const getIconByColumnType = (columnType: string) => {
-  switch (columnType) {
-    case EColumnType.NUMBER:
-      return numberSvg;
-    case EColumnType.VARCHAR2:
-    case EColumnType.NCHAR:
-    case EColumnType.CHAR:
-    case EColumnType.RAW:
-    case EColumnType.INTERVAL_DAY_TO_SECOND:
-    case EColumnType.INTERVAL_YEAR_TO_MONTH:
-      return stringSvg;
-    case EColumnType.DATE:
-    case EColumnType.TIMESTAMP:
-    case EColumnType.TIMESTAMP_WITH_TIME_ZONE:
-    case EColumnType.TIMESTAMP_WITH_LOCAL_TIME_ZONE:
-      return timeSvg;
-    case EColumnType.BLOB:
-    case EColumnType.CLOB:
-      return binarySvg;
-    default:
-      return stringSvg;
-  }
-};
 const SelectedSensitiveColumn = forwardRef<any, any>(function (
   {
     projectId,
@@ -317,7 +303,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
   // 左侧Tree展示数据
   const [treeData, setTreeData] = useState<TreeNode[]>([]);
   // 左侧Tree展示数据，用于在搜索后还原数据
-  const [originTreeData, setOriginTreeData] = useState<TreeNode[]>();
+  const [originTreeData, setOriginTreeData] = useState<TreeNode[]>([]);
   // 右侧Collapse展示数据
   const [data, setData] = useState<SelectNode[]>([]);
   // 右侧Collapse展示备份数据，用于在搜索后还原数据
@@ -395,7 +381,16 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
           key: `0-${index}-${tableViewIndex}-${_index}`,
           icon: (
             <span className={styles.icon}>
-              <Icon component={getIconByColumnType(tableColumn?.typeName)} />
+              <Icon
+                component={
+                  fieldIconMap[
+                    convertDataTypeToDataShowType(
+                      tableColumn?.typeName,
+                      databaseColumn?.dataTypeUnits,
+                    )
+                  ]
+                }
+              />
             </span>
           ),
           type: ESensitiveColumnType.TABLE_COLUMN,
@@ -420,7 +415,16 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
           key: `0-${index}-${tableViewIndex}-${_index}`,
           icon: (
             <span className={styles.icon}>
-              <Icon component={getIconByColumnType(viewColumn?.typeName)} />
+              <Icon
+                component={
+                  fieldIconMap[
+                    convertDataTypeToDataShowType(
+                      viewColumn?.typeName,
+                      databaseColumn?.dataTypeUnits,
+                    )
+                  ]
+                }
+              />
             </span>
           ),
           type: ESensitiveColumnType.VIEW_COLUMN,
@@ -516,6 +520,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
             key: `0-${index}-${tableViewIndex}-${_index}`,
             type: ESensitiveColumnType.TABLE_COLUMN,
             columnType: tableColumn?.typeName,
+            dataTypeUnits: databaseColumn?.dataTypeUnits,
           }))
           ?.filter((leaf) => checkedKeys?.includes(leaf?.key));
         checkedColumns = checkedColumns + leaves?.length;
@@ -536,6 +541,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
             key: `0-${index}-${tableViewIndex}-${_index}`,
             type: ESensitiveColumnType.VIEW_COLUMN,
             columnType: viewColumn?.typeName,
+            dataTypeUnits: databaseColumn?.dataTypeUnits,
           }))
           ?.filter((view) => checkedKeys?.includes(view?.key));
         checkedColumns = checkedColumns + leaves?.length;
@@ -573,7 +579,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       return;
     }
     const newData = [];
-    const D = _.cloneDeep(originData);
+    const D = cloneDeep(originData);
     D?.forEach((d) => {
       if (
         d?.databaseTitle?.toLowerCase()?.includes(searchValue?.toLowerCase()) ||
@@ -589,7 +595,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         }
       }
     });
-    await _formRef.setFieldsValue(_.merge(formData, values));
+    await _formRef.setFieldsValue(merge(formData, values));
     setData(newData);
   };
   const treeSearch = async function (searchValue: string) {
@@ -598,7 +604,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       return;
     }
     const newTreeData = [];
-    const copyTreeData = _.cloneDeep(originTreeData);
+    const copyTreeData = cloneDeep(originTreeData);
     copyTreeData?.forEach((td) => {
       if (td?.title?.toLowerCase()?.includes(searchValue?.toLowerCase())) {
         newTreeData.push(td);
@@ -622,6 +628,78 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
     });
     setTreeData(newTreeData);
   };
+  const renderEmptyOrTree = () => {
+    if (databaseIds?.length > 0 && treeData?.length === 0) {
+      return originTreeData?.length === 0 ? (
+        <div className={styles.centerContainer}>
+          <Empty
+            description={'所选数据库中没有可选的敏感列'}
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        </div>
+      ) : (
+        <div className={styles.centerContainer}>
+          <Empty
+            description={'可选的敏感列中不包含搜索关键字'}
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        </div>
+      );
+    }
+    if (databaseIds?.length === 0) {
+      return (
+        <div className={styles.centerContainer}>
+          <Empty description={'尚未选择数据库'} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        </div>
+      );
+    }
+    // if databaseIds?.length > 0 && treeData?.length > 0
+    return (
+      <Tree
+        checkable
+        showIcon
+        treeData={treeData}
+        checkedKeys={checkedKeys}
+        defaultExpandAll
+        onCheck={function (checkedKeys, e) {
+          setCheckedKeys(checkedKeys as string[]);
+        }}
+        className={styles.tree}
+      />
+    );
+  };
+  const colleageValueFromEvent = (e: string | number, root: SelectNode, leaf: SelectNodeChild) => {
+    setFormData(
+      merge(parseDataToFields(originData), {
+        [root?.databaseId]: {
+          [root?.type]: {
+            [root?.tableTitle]: {
+              [leaf?.title]: e,
+            },
+          },
+        },
+      }),
+    );
+    return e;
+  };
+  function handleCollapseDelete(root, leaf) {
+    const target = data.find(
+      (_data) => _data?.databaseKey === root.databaseKey && _data.tableKey === root.tableKey,
+    );
+    if (target) {
+      if (target.children.length === 1) {
+        const newCheckedKeys = checkedKeys.filter(
+          (checkedKey) => ![root.tableKey, leaf.key]?.includes(checkedKey),
+        );
+        setCheckedKeys(newCheckedKeys);
+      } else {
+        const newCheckedKeys = checkedKeys.filter(
+          (checkedKey) => ![root.tableKey, leaf.key]?.includes(checkedKey),
+        );
+        setCheckedKeys(newCheckedKeys);
+      }
+    }
+  }
   useEffect(() => {
     setAllColumns(0);
     setCheckedColumns(0);
@@ -674,24 +752,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
               <div className={styles.centerContainer}>
                 <Spin spinning={loading} />
               </div>
-            ) : databaseIds?.length > 0 && treeData?.length === 0 && !loading ? (
-              <div className={styles.centerContainer}>
-                <Empty
-                  description={'所选数据库中没有可选的敏感列'}
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-              </div>
             ) : (
-              <Tree
-                checkable
-                showIcon
-                treeData={treeData}
-                checkedKeys={checkedKeys}
-                defaultExpandAll
-                onCheck={function (checkedKeys, e) {
-                  setCheckedKeys(checkedKeys as string[]);
-                }}
-              />
+              renderEmptyOrTree()
             )}
           </ExportCard>
         </div>
@@ -767,7 +829,16 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                               <div className={styles.checkedTable}>
                                 <div className={styles.checkedTableColumn}>
                                   <span className={styles.checkedTableColumnIcon}>
-                                    <Icon component={getIconByColumnType(child?.columnType)} />
+                                    <Icon
+                                      component={
+                                        fieldIconMap[
+                                          convertDataTypeToDataShowType(
+                                            child?.columnType,
+                                            child?.dataTypeUnits,
+                                          )
+                                        ]
+                                      }
+                                    />
                                   </span>
                                   <Tooltip title={child?.title} placement="left">
                                     <div className={styles.checkedTableColumnTooltip}>
@@ -787,25 +858,13 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                                         }), //'请选择'
                                       },
                                     ]}
-                                    getValueFromEvent={(e) => {
-                                      setFormData(
-                                        _.merge(parseDataToFields(originData), {
-                                          [d?.databaseId]: {
-                                            [d?.type]: {
-                                              [d?.tableTitle]: {
-                                                [child?.title]: e,
-                                              },
-                                            },
-                                          },
-                                        }),
-                                      );
-                                      return e;
-                                    }}
+                                    getValueFromEvent={(e) => colleageValueFromEvent(e, d, child)}
                                   >
                                     <Select
                                       style={{
                                         width: '165px',
                                       }}
+                                      optionLabelProp="label"
                                     >
                                       {maskingAlgorithmOptions?.map((option, index) => {
                                         const target = maskingAlgorithms?.find(
@@ -813,81 +872,45 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                                             maskingAlgorithm?.id === option?.value,
                                         );
                                         return (
-                                          <Select.Option value={option?.value} key={index}>
-                                            <Popover
-                                              placement="left"
+                                          <Select.Option
+                                            value={option?.value}
+                                            key={index}
+                                            label={option?.label}
+                                          >
+                                            <PopoverContainer
+                                              key={index}
                                               title={option?.label}
-                                              content={
-                                                <Descriptions
-                                                  column={1}
-                                                  style={{
-                                                    width: '250px',
-                                                  }}
-                                                >
-                                                  <Descriptions.Item
-                                                    label={
-                                                      formatMessage({
-                                                        id:
-                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
-                                                      }) /* 脱敏方式 */
-                                                    }
-                                                  >
-                                                    {MaskRyleTypeMap?.[target?.type]}
-                                                  </Descriptions.Item>
-                                                  <Descriptions.Item
-                                                    label={
-                                                      formatMessage({
-                                                        id:
-                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
-                                                      }) /* 测试数据 */
-                                                    }
-                                                  >
-                                                    {target?.sampleContent}
-                                                  </Descriptions.Item>
-                                                  <Descriptions.Item
-                                                    label={
-                                                      formatMessage({
-                                                        id:
-                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
-                                                      }) /* 结果预览 */
-                                                    }
-                                                  >
-                                                    {target?.maskedContent}
-                                                  </Descriptions.Item>
-                                                </Descriptions>
-                                              }
-                                            >
-                                              {option?.label}
-                                            </Popover>
+                                              descriptionsData={[
+                                                {
+                                                  label: formatMessage({
+                                                    id:
+                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
+                                                  }) /* 脱敏方式 */,
+                                                  value: MaskRyleTypeMap?.[target?.type],
+                                                },
+                                                {
+                                                  label: formatMessage({
+                                                    id:
+                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
+                                                  }) /* 测试数据 */,
+                                                  value: target?.sampleContent,
+                                                },
+                                                {
+                                                  label: formatMessage({
+                                                    id:
+                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
+                                                  }) /* 结果预览 */,
+                                                  value: target?.maskedContent,
+                                                },
+                                              ]}
+                                              children={() => <div>{option?.label}</div>}
+                                            />
                                           </Select.Option>
                                         );
                                       })}
                                     </Select>
                                   </Form.Item>
-                                  <DeleteOutlined
-                                    onClick={() => {
-                                      const target = data.find(
-                                        (_data) =>
-                                          _data?.databaseKey === d.databaseKey &&
-                                          _data.tableKey === _data.tableKey,
-                                      );
-                                      if (target) {
-                                        if (target.children.length === 1) {
-                                          const newCheckedKeys = checkedKeys.filter(
-                                            (checkedKey) =>
-                                              ![d.tableKey, child.key]?.includes(checkedKey),
-                                          );
-                                          setCheckedKeys(newCheckedKeys);
-                                        } else {
-                                          const newCheckedKeys = checkedKeys.filter(
-                                            (checkedKey) =>
-                                              ![d.tableKey, child.key]?.includes(checkedKey),
-                                          );
-                                          setCheckedKeys(newCheckedKeys);
-                                        }
-                                      }
-                                    }}
-                                  />
+                                  <DeleteOutlined onClick={() => handleCollapseDelete(d, child)} />
                                 </Space>
                               </div>
                             </div>
@@ -898,9 +921,16 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                   })}
                 </Collapse>
               </Form>
-            ) : (
+            ) : originData?.length === 0 ? (
               <div className={styles.centerContainer}>
                 <Empty description={'尚未勾选敏感列'} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            ) : (
+              <div className={styles.centerContainer}>
+                <Empty
+                  description={'已勾选的敏感列中不包含搜索关键字'}
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
               </div>
             )}
           </ExportCard>
