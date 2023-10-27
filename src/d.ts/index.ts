@@ -1074,6 +1074,8 @@ export enum ColumnShowType {
   DATETIME = 'DATETIME',
   YEAR = 'YEAR',
   MONTH = 'MONTH',
+  ENUM = 'ENUM', // 枚举类型
+  SET = 'SET', // 集合类型
 }
 
 // 索引
@@ -1553,6 +1555,7 @@ export interface ISQLExplain {
   tree: ISQLExplainTreeNode[];
   outline: string;
   originalText: string;
+  showFormatInfo?: boolean;
 }
 
 export interface ISQLExecuteDetail {

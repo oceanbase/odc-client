@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { IResponseData } from '@/d.ts';
+import { IDataType, IResponseData } from '@/d.ts';
 import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import { IServerTableColumn } from '@/d.ts/table';
 import request from '@/util/request';
 
 export async function updateSensitiveColumn(
@@ -81,7 +82,22 @@ export async function listSensitiveColumns(
   return ret?.data;
 }
 
-export async function listColumns(projectId: number, database: number[]) {
+export async function listColumns(
+  projectId: number,
+  database: number[],
+): Promise<{
+  contents: {
+    dataTypeUnits: IDataType[];
+    databaseId: number;
+    databaseName: string;
+    table2Columns: {
+      [key in string]: IServerTableColumn[];
+    };
+    view2Columns: {
+      [key in string]: IServerTableColumn[];
+    };
+  }[];
+}> {
   const result = await request.get(
     `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/listColumns`,
     {
@@ -90,7 +106,7 @@ export async function listColumns(projectId: number, database: number[]) {
       },
     },
   );
-  return result?.data || [];
+  return result?.data || {};
 }
 
 export enum ScannResultType {

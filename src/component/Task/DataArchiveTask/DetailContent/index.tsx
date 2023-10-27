@@ -23,7 +23,7 @@ import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb } from '@/util/utils';
+import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space, Typography, message } from 'antd';
 import React from 'react';
@@ -60,7 +60,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
 
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
     const res = updateLimiterConfig(id, {
-      dataSizeLimit,
+      dataSizeLimit: mbToKb(dataSizeLimit),
     });
     if (res) {
       message.success('修改成功！');

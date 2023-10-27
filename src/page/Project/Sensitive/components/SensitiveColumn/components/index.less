@@ -1,3 +1,4 @@
+@import '../index.less';
 .formItem {
   margin-bottom: 12px;
 
@@ -136,6 +137,7 @@
       margin-top: 24px;
       .label {
         color: var(--text-color-primary);
+        margin-bottom: 4px;
       }
       .doubleExportCardContainer {
         display: flex;
@@ -162,6 +164,7 @@
   }
 }
 .wrapCollapse {
+  padding: 0px 12px 0px 0px;
   .panelHeader {
     display: flex;
     align-items: center;
@@ -176,11 +179,9 @@
   .panelContent {
     display: flex;
     justify-content: flex-end;
-    padding-right: 24px;
     .checkedTable {
       display: flex;
       justify-content: space-between;
-      width: 272px;
       &Column {
         display: flex;
         align-items: baseline;
@@ -198,8 +199,37 @@
           text-overflow: ellipsis;
           overflow: hidden;
           text-overflow: hidden;
+          &:hover {
+            cursor: pointer;
+          }
         }
       }
+    }
+  }
+  :global {
+    .ant-collapse-item {
+      margin-left: 4px;
+      .ant-collapse-header {
+        padding: 0px;
+        height: 22px;
+        line-height: 22px;
+      }
+      .ant-collapse-content {
+        .ant-collapse-content-box {
+          padding: 8px 0px 0px;
+        }
+      }
+      .ant-form-item {
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+
+.tree {
+  :global {
+    .ant-tree-node-content-wrapper {
+      display: flex;
     }
   }
 }

@@ -155,7 +155,8 @@ export default function SessionSelect({
       {!context?.databaseId && !context?.datasourceId ? (
         <div
           style={{
-            background: EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.background,
+            background:
+              EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.lineBackground,
           }}
           className={styles.line}
         >
@@ -172,7 +173,8 @@ export default function SessionSelect({
       ) : (
         <div
           style={{
-            background: EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.background,
+            background:
+              EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.lineBackground,
           }}
           className={styles.line}
         >

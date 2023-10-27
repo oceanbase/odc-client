@@ -141,7 +141,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           <div className={styles.sql}>
             <Tooltip title={sql}>SQL: {sql}</Tooltip>
           </div>
-          {haveText && (
+          {haveText && (explain as ISQLExplain)?.showFormatInfo && (
             // 切换显示方式
             <span
               style={{
@@ -173,27 +173,29 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           showExplainText ? (
             <OnlyExplainText originalText={(explain as ISQLExplain)?.originalText} />
           ) : (
-            <RadioSwitchContainer
-              onlyText={onlyText}
-              explain={explain}
-              columns={columns}
-              tableHeight={tableHeight}
-              endTimestamp={endTimestamp}
-              startTimestamp={startTimestamp}
-              treeData={treeData}
-              tabName={tabName}
-              traceId={traceId}
-              handleSummaryOnChange={(e: CheckboxChangeEvent) => {
-                this.setState({
-                  onlyText: e.target.checked,
-                });
-              }}
-              handleRadioGroupOnChange={(e) =>
-                this.setState({
-                  tabName: e.target.value,
-                })
-              }
-            />
+            <>
+              <RadioSwitchContainer
+                onlyText={onlyText}
+                explain={explain}
+                columns={columns}
+                tableHeight={tableHeight}
+                endTimestamp={endTimestamp}
+                startTimestamp={startTimestamp}
+                treeData={treeData}
+                tabName={tabName}
+                traceId={traceId}
+                handleSummaryOnChange={(e: CheckboxChangeEvent) => {
+                  this.setState({
+                    onlyText: e.target.checked,
+                  });
+                }}
+                handleRadioGroupOnChange={(e) =>
+                  this.setState({
+                    tabName: e.target.value,
+                  })
+                }
+              />
+            </>
           )
         }
       </>
