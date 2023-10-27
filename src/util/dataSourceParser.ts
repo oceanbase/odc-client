@@ -15,12 +15,19 @@
  */
 
 import { formatMessage } from '@/util/intl';
+import { isUndefined } from 'lodash';
 
 function unifiedStr(value: string) {
   return value?.replace(/\\"|\\t|\'/g, '');
 }
 export function getOBUser(value) {
-  const [username, tenantName = null, clusterName = null] = value?.split(/\@|#|:/);
+  let [username, tenantName = null, clusterName = null] = value?.split(/\@|#|:/);
+  if (clusterName) {
+    const [start, end] = value?.split(clusterName);
+    if (end) {
+      clusterName = clusterName += end;
+    }
+  }
   return {
     username,
     tenantName,
@@ -138,18 +145,18 @@ class Parser {
         } else if (argStr === undefined) {
           if (wholeArg[1] !== '-' && wholeArg.length > 2) {
             let value: any = wholeArg?.substr(2);
-            result[name] = type(value, name, result[name]);
+            result[name] = isUndefined(value) ? value : type(value, name, result[name]);
           } else {
             const next = args[i + 1];
             const isNextValid = !next?.startsWith('-');
             let value: any = isNextValid ? next : null;
-            result[name] = type(value, name, result[name]);
+            result[name] = isUndefined(value) ? value : type(value, name, result[name]);
             if (isNextValid) {
               ++i;
             }
           }
         } else {
-          result[name] = type(argStr, name, result[name]);
+          result[name] = isUndefined(argStr) ? argStr : type(argStr, name, result[name]);
         }
       } else {
         result._.push(wholeArg);
