@@ -124,6 +124,8 @@ export const AuditEventMetaMap = {
   [AuditEventType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.ExportResultSet',
   }), //'导出结果集'
+  // 申请项目权限
+  [AuditEventActionType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -536,6 +538,12 @@ export const AuditEventActionMap = {
   [AuditEventActionType.STOP_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.StopExportResultsSetTask',
   }), //'停止导出结果集任务'
+  // 申请项目权限
+  [AuditEventActionType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
+  [AuditEventActionType.CREATE_APPLY_PROJECT_PERMISSION_TASK]: '创建申请项目权限',
+  [AuditEventActionType.APPROVE_APPLY_PROJECT_PERMISSION_TASK]: '同意申请项目权限',
+  [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: '拒绝申请项目权限',
+  [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: '停止申请项目权限',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =

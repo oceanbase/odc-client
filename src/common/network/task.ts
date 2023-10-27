@@ -38,6 +38,7 @@ import {
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
+import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
 
 /**
@@ -448,5 +449,17 @@ export async function getDatasourceUsers(
   datasourceId: number,
 ): Promise<IResponseData<IDatasourceUser>> {
   const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/users`);
+  return res?.data;
+}
+
+/**
+ * 查询项目列表
+ */
+export async function getProjectList(archived: boolean): Promise<IResponseData<IProject>> {
+  const res = await request.get('/api/v2/collaboration/projects/basic', {
+    params: {
+      archived,
+    },
+  });
   return res?.data;
 }

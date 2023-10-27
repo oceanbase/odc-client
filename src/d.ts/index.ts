@@ -416,6 +416,8 @@ export enum AuditEventType {
   PROJECT_MANAGEMENT = 'PROJECT_MANAGEMENT',
   // 导出结果集
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  // 项目权限申请
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
 }
 
 export enum AuditEventActionType {
@@ -551,6 +553,12 @@ export enum AuditEventActionType {
   REJECT_EXPORT_RESULT_SET_TASK = 'REJECT_EXPORT_RESULT_SET_TASK',
   EXECUTE_EXPORT_RESULT_SET_TASK = 'EXECUTE_EXPORT_RESULT_SET_TASK',
   STOP_EXPORT_RESULT_SET_TASK = 'STOP_EXPORT_RESULT_SET_TASK',
+  // 项目权限申请
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  CREATE_APPLY_PROJECT_PERMISSION_TASK = 'CREATE_APPLY_PROJECT_PERMISSION_TASK',
+  APPROVE_APPLY_PROJECT_PERMISSION_TASK = 'APPROVE_APPLY_PROJECT_PERMISSION_TASK',
+  REJECT_APPLY_PROJECT_PERMISSION_TASK = 'REJECT_APPLY_PROJECT_PERMISSION_TASK',
+  STOP_APPLY_PROJECT_PERMISSION_TASK = 'STOP_APPLY_PROJECT_PERMISSION_TASK',
 }
 
 export enum AuditEventDialectType {
@@ -1742,6 +1750,7 @@ export enum TaskPageType {
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
 }
 
 export enum TaskType {
@@ -1760,6 +1769,7 @@ export enum TaskType {
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
 }
 
 export enum TaskJobType {
@@ -2145,7 +2155,8 @@ export type TaskRecordParameters =
   | IPartitionPlanParams
   | ISQLPlanTaskParams
   | IAlterScheduleTaskParams
-  | IResultSetExportTaskParams;
+  | IResultSetExportTaskParams
+  | IApplyPermissionTaskParams;
 
 export interface ITaskResult {
   containQuery: boolean;
@@ -2354,6 +2365,18 @@ export interface IAsyncTaskParams {
   rollbackSqlObjectNames: string[];
   generateRollbackPlan: boolean;
   parentFlowInstanceId?: number;
+}
+
+export interface IApplyPermissionTaskParams {
+  applyReason: string;
+  project: {
+    name: string;
+    id: number;
+  };
+  resourceRoles: {
+    name: string;
+    id: number;
+  }[];
 }
 
 export interface IResultSetExportTaskParams {

@@ -252,6 +252,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.EXPORT_RESULT_SET:
         modalStore.changeCreateResultSetExportTaskModal(true);
         break;
+      case TaskPageType.APPLY_PROJECT_PERMISSION:
+        modalStore.changeApplyPermissionModal(true);
+        break;
       default:
     }
   };

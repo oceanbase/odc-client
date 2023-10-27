@@ -187,6 +187,16 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
       ],
     },
+    {
+      groupName: '权限申请',
+      group: [
+        {
+          value: TaskPageType.APPLY_PROJECT_PERMISSION,
+          label: '申请项目权限',
+          enabled: true,
+        },
+      ],
+    },
     // {
     //   groupName: '权限申请',
     //   group: [
