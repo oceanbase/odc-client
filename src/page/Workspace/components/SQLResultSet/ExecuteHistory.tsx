@@ -194,8 +194,12 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             <Space size={5}>
               <span>{DBCostTime}</span>
               <Tooltip
-                overlayStyle={{ maxWidth: 350 }}
+                overlayStyle={{ maxWidth: 370 }}
                 color="var(--background-primary-color)"
+                overlayInnerStyle={{
+                  maxHeight: 500,
+                  overflow: 'auto',
+                }}
                 placement="leftTop"
                 showArrow={false}
                 title={<DBTimeline row={row} />}
