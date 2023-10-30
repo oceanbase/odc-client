@@ -34,6 +34,7 @@ import {
 import styles from './index.less';
 import React, {
   forwardRef,
+  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -311,6 +312,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
   // allColumns 左侧敏感列总数、checkedColumns 已勾选的敏感列总数
   const [allColumns, setAllColumns] = useState<number>(0);
   const [checkedColumns, setCheckedColumns] = useState<number>(0);
+  const [defaultActiveKey, setDefaultActiveKey] = useState<string[]>([]);
   // formData 用于记录右侧表单数据，确保搜索前后已选择的表单值不丢失。
   const [formData, setFormData] = useState<
     {
@@ -507,6 +509,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
     return result;
   };
   const handleCheckedKeysChange = async () => {
+    const values = await _formRef.getFieldsValue();
     const treeData = [];
     let checkedColumns = 0;
     databaseColumns?.forEach((databaseColumn, index) => {
@@ -565,16 +568,19 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       }
     });
     setCheckedColumns(checkedColumns);
-    const data = parseTreeData(treeData);
-    setData(data);
-    setOriginData(data);
-    setFormData(parseDataToFields(data));
-    await _formRef.setFieldsValue(parseDataToFields(data));
+    const rawData = parseTreeData(treeData);
+    setData(rawData);
+    setDefaultActiveKey(rawData?.map((d) => `${d?.databaseId}/${d?.tableTitle}`));
+    setOriginData(rawData);
+    // 避免删除时丢失已选择的项的值
+    setFormData(merge(merge(parseDataToFields(rawData), formData), values));
+    await _formRef.setFieldsValue(merge(merge(parseDataToFields(rawData), formData), values));
   };
   const collapseSearch = async function (searchValue: string) {
     const values = await _formRef.getFieldsValue();
     if (!searchValue) {
       setData(originData);
+      setDefaultActiveKey(originData?.map((d) => `${d?.databaseId}/${d?.tableTitle}`));
       await _formRef.setFieldsValue(formData);
       return;
     }
@@ -597,6 +603,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
     });
     await _formRef.setFieldsValue(merge(formData, values));
     setData(newData);
+    setDefaultActiveKey(newData?.map((d) => `${d?.databaseId}/${d?.tableTitle}`));
   };
   const treeSearch = async function (searchValue: string) {
     if (!searchValue) {
@@ -682,24 +689,130 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
     );
     return e;
   };
-  function handleCollapseDelete(root, leaf) {
-    const target = data.find(
-      (_data) => _data?.databaseKey === root.databaseKey && _data.tableKey === root.tableKey,
+  const handleCollapseDelete = (root: SelectNode, leaf: SelectNodeChild) => {
+    const newCheckedKeys = checkedKeys.filter(
+      (checkedKey) => ![root.databaseKey, root.tableKey, leaf.key]?.includes(checkedKey),
     );
-    if (target) {
-      if (target.children.length === 1) {
-        const newCheckedKeys = checkedKeys.filter(
-          (checkedKey) => ![root.tableKey, leaf.key]?.includes(checkedKey),
-        );
-        setCheckedKeys(newCheckedKeys);
-      } else {
-        const newCheckedKeys = checkedKeys.filter(
-          (checkedKey) => ![root.tableKey, leaf.key]?.includes(checkedKey),
-        );
-        setCheckedKeys(newCheckedKeys);
-      }
-    }
-  }
+    setCheckedKeys(newCheckedKeys);
+  };
+  // 需要及时更新data以及defaultActiveKey，确保新增勾选项时Collapse能正常展开。
+  const WrapCollapse = useCallback(() => {
+    return (
+      <Collapse defaultActiveKey={defaultActiveKey} ghost className={styles.wrapCollapse}>
+        {data?.map((root) => {
+          return (
+            <Collapse.Panel
+              header={
+                <span className={styles.panelHeader}>
+                  <span className={styles.headerIcon}>
+                    <Icon
+                      component={
+                        root?.type === ESensitiveColumnType.TABLE_COLUMN ? TableOutlined : ViewSvg
+                      }
+                    />
+                  </span>
+
+                  {`${root?.databaseTitle}/${root?.tableTitle}`}
+                </span>
+              }
+              key={`${root?.databaseId}/${root?.tableTitle}`}
+            >
+              {root?.children?.map((child, index) => {
+                return (
+                  <div className={styles.panelContent} key={index}>
+                    <div className={styles.checkedTable}>
+                      <div className={styles.checkedTableColumn}>
+                        <span className={styles.checkedTableColumnIcon}>
+                          <Icon
+                            component={
+                              fieldIconMap[
+                                convertDataTypeToDataShowType(
+                                  child?.columnType,
+                                  child?.dataTypeUnits,
+                                )
+                              ]
+                            }
+                          />
+                        </span>
+                        <Tooltip title={child?.title} placement="left">
+                          <div className={styles.checkedTableColumnTooltip}>{child?.title}</div>
+                        </Tooltip>
+                      </div>
+                      <Space align="baseline">
+                        <Form.Item
+                          name={[root?.databaseId, root?.type, root?.tableTitle, child?.title]}
+                          rules={[
+                            {
+                              required: true,
+                              message: formatMessage({
+                                id:
+                                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose',
+                              }), //'请选择'
+                            },
+                          ]}
+                          getValueFromEvent={(e) => colleageValueFromEvent(e, root, child)}
+                        >
+                          <Select
+                            style={{
+                              width: '165px',
+                            }}
+                            optionLabelProp="label"
+                          >
+                            {maskingAlgorithmOptions?.map((option, index) => {
+                              const target = maskingAlgorithms?.find(
+                                (maskingAlgorithm) => maskingAlgorithm?.id === option?.value,
+                              );
+                              return (
+                                <Select.Option
+                                  value={option?.value}
+                                  key={index}
+                                  label={option?.label}
+                                >
+                                  <PopoverContainer
+                                    key={index}
+                                    title={option?.label}
+                                    descriptionsData={[
+                                      {
+                                        label: formatMessage({
+                                          id:
+                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
+                                        }) /* 脱敏方式 */,
+                                        value: MaskRyleTypeMap?.[target?.type],
+                                      },
+                                      {
+                                        label: formatMessage({
+                                          id:
+                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
+                                        }) /* 测试数据 */,
+                                        value: target?.sampleContent,
+                                      },
+                                      {
+                                        label: formatMessage({
+                                          id:
+                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
+                                        }) /* 结果预览 */,
+                                        value: target?.maskedContent,
+                                      },
+                                    ]}
+                                    children={() => <div>{option?.label}</div>}
+                                  />
+                                </Select.Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                        <DeleteOutlined onClick={() => handleCollapseDelete(root, child)} />
+                      </Space>
+                    </div>
+                  </div>
+                );
+              })}
+            </Collapse.Panel>
+          );
+        })}
+      </Collapse>
+    );
+  }, [defaultActiveKey, data]);
   useEffect(() => {
     setAllColumns(0);
     setCheckedColumns(0);
@@ -707,6 +820,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
     setDatabaseColumns([]);
     if (databaseIds?.length > 0) {
       setData([]);
+      setDefaultActiveKey([]);
       setOriginData([]);
       setFormData({});
       getColumns();
@@ -714,6 +828,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       setTreeData([]);
       setOriginTreeData([]);
       setData([]);
+      setDefaultActiveKey([]);
       setOriginData([]);
       setFormData({});
     }
@@ -798,128 +913,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
           >
             {data?.length > 0 ? (
               <Form layout="vertical" form={_formRef}>
-                <Collapse
-                  defaultActiveKey={data?.map((d) => `${d?.databaseId}/${d?.tableTitle}`)}
-                  ghost
-                  className={styles.wrapCollapse}
-                >
-                  {data?.map((d) => {
-                    return (
-                      <Collapse.Panel
-                        header={
-                          <span className={styles.panelHeader}>
-                            <span className={styles.headerIcon}>
-                              <Icon
-                                component={
-                                  d?.type === ESensitiveColumnType.TABLE_COLUMN
-                                    ? TableOutlined
-                                    : ViewSvg
-                                }
-                              />
-                            </span>
-
-                            {`${d?.databaseTitle}/${d?.tableTitle}`}
-                          </span>
-                        }
-                        key={`${d?.databaseId}/${d?.tableTitle}`}
-                      >
-                        {d?.children?.map((child, index) => {
-                          return (
-                            <div className={styles.panelContent} key={index}>
-                              <div className={styles.checkedTable}>
-                                <div className={styles.checkedTableColumn}>
-                                  <span className={styles.checkedTableColumnIcon}>
-                                    <Icon
-                                      component={
-                                        fieldIconMap[
-                                          convertDataTypeToDataShowType(
-                                            child?.columnType,
-                                            child?.dataTypeUnits,
-                                          )
-                                        ]
-                                      }
-                                    />
-                                  </span>
-                                  <Tooltip title={child?.title} placement="left">
-                                    <div className={styles.checkedTableColumnTooltip}>
-                                      {child?.title}
-                                    </div>
-                                  </Tooltip>
-                                </div>
-                                <Space align="baseline">
-                                  <Form.Item
-                                    name={[d?.databaseId, d?.type, d?.tableTitle, child?.title]}
-                                    rules={[
-                                      {
-                                        required: true,
-                                        message: formatMessage({
-                                          id:
-                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose',
-                                        }), //'请选择'
-                                      },
-                                    ]}
-                                    getValueFromEvent={(e) => colleageValueFromEvent(e, d, child)}
-                                  >
-                                    <Select
-                                      style={{
-                                        width: '165px',
-                                      }}
-                                      optionLabelProp="label"
-                                    >
-                                      {maskingAlgorithmOptions?.map((option, index) => {
-                                        const target = maskingAlgorithms?.find(
-                                          (maskingAlgorithm) =>
-                                            maskingAlgorithm?.id === option?.value,
-                                        );
-                                        return (
-                                          <Select.Option
-                                            value={option?.value}
-                                            key={index}
-                                            label={option?.label}
-                                          >
-                                            <PopoverContainer
-                                              key={index}
-                                              title={option?.label}
-                                              descriptionsData={[
-                                                {
-                                                  label: formatMessage({
-                                                    id:
-                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
-                                                  }) /* 脱敏方式 */,
-                                                  value: MaskRyleTypeMap?.[target?.type],
-                                                },
-                                                {
-                                                  label: formatMessage({
-                                                    id:
-                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
-                                                  }) /* 测试数据 */,
-                                                  value: target?.sampleContent,
-                                                },
-                                                {
-                                                  label: formatMessage({
-                                                    id:
-                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
-                                                  }) /* 结果预览 */,
-                                                  value: target?.maskedContent,
-                                                },
-                                              ]}
-                                              children={() => <div>{option?.label}</div>}
-                                            />
-                                          </Select.Option>
-                                        );
-                                      })}
-                                    </Select>
-                                  </Form.Item>
-                                  <DeleteOutlined onClick={() => handleCollapseDelete(d, child)} />
-                                </Space>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </Collapse.Panel>
-                    );
-                  })}
-                </Collapse>
+                <WrapCollapse />
               </Form>
             ) : originData?.length === 0 ? (
               <div className={styles.centerContainer}>
