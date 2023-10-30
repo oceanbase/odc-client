@@ -51,6 +51,9 @@ class CsvMapping extends React.Component<
   }
   getTableColumns = async () => {
     const { databaseName, sessionId } = this.props;
+    if (!sessionId) {
+      return;
+    }
     const columns = await getTableColumnList(this.props.tableName, databaseName, sessionId);
     this.setState({
       columns,
@@ -60,6 +63,7 @@ class CsvMapping extends React.Component<
     prevProps: Readonly<{
       csvColumnMappings: CsvColumnMapping[];
       tableName: string;
+      sessionId: string;
       onChangeCsvColumnMappings: (csvColumnMappings: CsvColumnMapping[]) => void;
       csvMappingErrors: {
         errorMsg: string;
@@ -70,7 +74,8 @@ class CsvMapping extends React.Component<
     prevState: Readonly<{ columns: ITableColumn[] }>,
     snapshot?: any,
   ): void {
-    if (prevProps.tableName !== this.props.tableName) {
+    const { tableName, sessionId } = this.props;
+    if (prevProps.tableName !== tableName || prevProps.sessionId !== sessionId) {
       this.getTableColumns();
     }
   }
