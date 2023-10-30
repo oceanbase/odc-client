@@ -356,12 +356,13 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
   };
 
   showExportResuleSetModal = () => {
-    const { modalStore, session } = this.props;
+    const { modalStore, session, params } = this.props;
     const { resultSet } = this.state;
     const sql = resultSet?.originSql;
     modalStore.changeCreateResultSetExportTaskModal(true, {
       sql,
       databaseId: session?.database.databaseId,
+      tableName: params?.viewName,
     });
   };
 
