@@ -80,7 +80,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
 
   datasourceList = useMemo(() => {
     return datasourceList?.filter((item) => !item.temp);
-  }, []);
+  }, [datasourceList]);
 
   const selectKeys = [context.selectDatasourceId].filter(Boolean);
   function setSelectKeys(keys) {
