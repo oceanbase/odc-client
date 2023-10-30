@@ -2250,6 +2250,11 @@ export interface ICycleTaskRecord<T> {
     name: string;
     dbMode: ConnectionMode;
   };
+  datasource?: {
+    id: number;
+    name: string;
+    dbMode: ConnectionMode;
+  };
   riskLevel?: IRiskLevel;
   description?: string;
 }

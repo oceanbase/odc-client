@@ -25,13 +25,14 @@ import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } fr
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Collapse, Descriptions, Divider, Space, message } from 'antd';
+import { Collapse, Descriptions, Divider, Space, message, Typography } from 'antd';
 import React from 'react';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 
 const { Panel } = Collapse;
+const { Text } = Typography;
 
 interface IProps {
   task: CycleTaskDetail<IDataArchiveJobParameters>;
@@ -83,7 +84,10 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={formatMessage({ id: 'odc.DataClearTask.DetailContent.Database' })} /*数据库*/
         >
-          {task?.databaseName || '-'}
+          <Space size={2}>
+            <span>{task?.databaseName || '-'}</span>
+            <Text type="secondary">{task?.datasource?.name}</Text>
+          </Space>
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item
