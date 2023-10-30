@@ -283,6 +283,7 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
       columns: index.columnNames,
       method: index.algorithm as any,
       ordinalPosition: index.ordinalPosition,
+      available: index.available,
     };
   });
   // constraint

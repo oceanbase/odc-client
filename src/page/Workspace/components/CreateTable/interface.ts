@@ -123,6 +123,10 @@ export interface TableIndex {
    */
   visible: boolean;
   ordinalPosition: number;
+  /**
+   *  是否有效
+   */
+  available?: boolean;
 }
 
 export type TableConstraint =
