@@ -19,16 +19,6 @@ import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import { IServerTableColumn } from '@/d.ts/table';
 import request from '@/util/request';
 
-export async function updateSensitiveColumn(
-  id: number,
-  sensitiveColumn: ISensitiveColumn,
-): Promise<boolean> {
-  const ret = await request.put(`/api/v2/sensitive/columns/${id}`, {
-    data: sensitiveColumn,
-  });
-  return ret?.successful;
-}
-
 export async function startScanning(
   projectId: number,
   params: {
@@ -134,16 +124,6 @@ export async function getScanningResults(projectId: number, taskId: string): Pro
   return ret?.data;
 }
 
-export async function detailSensitiveColumn(
-  projectId: number,
-  id: number,
-): Promise<ISensitiveColumn> {
-  const ret = await request.get(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/${id}`,
-  );
-  return ret?.data?.contents;
-}
-
 export async function batchUpdateSensitiveColumn(
   projectId: number,
   params?: Partial<{
@@ -195,23 +175,4 @@ export async function statsSensitiveColumns(projectId: number) {
       maskingAlgorithmId: { distinct: [] },
     }
   );
-}
-
-export async function exist(
-  projectId: number,
-  data: {
-    database: {
-      id: number;
-    };
-    tableName: string;
-    columnName: string;
-  },
-): Promise<boolean> {
-  const res = await request.post(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/exists`,
-    {
-      data,
-    },
-  );
-  return res?.data || false;
 }
