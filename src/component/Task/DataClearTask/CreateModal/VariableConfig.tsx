@@ -73,12 +73,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
           }
 
           <span className={styles.desc}>
-            <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
-              {
-                formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn.1',
-                }) /*变量可在归档配置的过滤条件中引用 (可选)*/
-              }
+            <HelpDoc leftText isTip doc="dataClearVariablesDoc">
+              变量可在清理范围的清理条件中引用 (可选)
             </HelpDoc>
           </span>
         </Space>
