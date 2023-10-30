@@ -102,7 +102,6 @@ const EditSensitiveColumnModal = ({
                 id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.PleaseSelect',
               }) //请选择
             }
-            style={{ width: '352px' }}
             optionLabelProp="label"
           >
             {maskingAlgorithmOptions?.map((option, index) => {
