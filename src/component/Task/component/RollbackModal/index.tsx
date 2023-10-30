@@ -18,7 +18,7 @@ import { RollbackType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import type { RadioChangeEvent } from 'antd';
 import { Modal, Radio, Space, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 const { Text } = Typography;
 
 interface IProps {
@@ -29,9 +29,9 @@ interface IProps {
 }
 
 const RollBackModal: React.FC<IProps> = (props) => {
-  const { open, generateRollbackPlan, onOk, onCancel } = props;
-  const [value, setValue] = useState<RollbackType>(RollbackType.REF);
-  const [disabledRef, setDisabledRef] = useState(false);
+  const { open, onOk, onCancel } = props;
+  const [value, setValue] = useState<RollbackType>(RollbackType.CUSTOM);
+  const disabledRef = true;
 
   const handleChange = (e: RadioChangeEvent) => {
     setValue(e.target.value);
@@ -40,11 +40,6 @@ const RollBackModal: React.FC<IProps> = (props) => {
   const handleOk = () => {
     onOk(value);
   };
-
-  useEffect(() => {
-    setDisabledRef(!generateRollbackPlan);
-    setValue(generateRollbackPlan ? RollbackType.REF : RollbackType.CUSTOM);
-  }, [generateRollbackPlan]);
 
   return (
     <Modal
