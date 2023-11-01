@@ -152,7 +152,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
   );
   return (
     <>
-      <span>
+      <div style={{ marginTop: 12 }}>
         {
           formatMessage({
             id:
@@ -176,7 +176,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
          */
           }
         </a>
-      </span>
+      </div>
       <Space
         style={{
           width: '100%',

@@ -29,7 +29,6 @@ const messages = {
   'zh-tw': zh_TW,
   zh_hk: zh_TW,
 };
-
 let locale: string = getEnvLocale();
 let lowerCaseLocale = locale.toLowerCase();
 if (!messages[lowerCaseLocale]) {
