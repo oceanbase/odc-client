@@ -42,8 +42,12 @@ interface IThemeConfig {
   chartsTheme: string;
 }
 
+export enum EThemeConfigKey {
+  ODC_WHITE = 'odc-white',
+  ODC_DARK = 'odc-dark',
+}
 const themeConfig: { [key: string]: IThemeConfig } = {
-  'odc-white': {
+  [EThemeConfigKey.ODC_WHITE]: {
     key: 'odc-white',
     editorTheme: 'obwhite',
     className: 'odc-white',
@@ -52,7 +56,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     maskType: 'white',
     chartsTheme: 'white',
   },
-  'odc-dark': {
+  [EThemeConfigKey.ODC_DARK]: {
     key: 'odc-dark',
     editorTheme: 'vs-dark',
     className: 'odc-dark',
