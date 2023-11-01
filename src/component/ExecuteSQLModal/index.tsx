@@ -33,6 +33,7 @@ interface IProps {
   sessionStore: SessionStore;
   sql: string;
   tip?: string;
+  theme?: 'dark' | 'white';
   onSave: (sql?: string) => Promise<boolean | void>;
   visible: boolean;
   onCancel: () => void;
@@ -41,7 +42,7 @@ interface IProps {
 }
 
 const ExecuteSQLModal: React.FC<IProps> = (props) => {
-  const { tip, sql, visible, readonly, sessionStore, onCancel, onSave } = props;
+  const { tip, theme, sql, visible, readonly, sessionStore, onCancel, onSave } = props;
   const [loading, setLoading] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
   const [lintVisible, setLintVisible] = useState(false);
@@ -169,6 +170,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           }}
         >
           <MonacoEditor
+            theme={theme}
             sessionStore={sessionStore}
             readOnly={readonly && !isFormatting}
             defaultValue={sql}
