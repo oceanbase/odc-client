@@ -21,7 +21,6 @@ import { useForm } from 'antd/es/form/Form';
 import styles from './index.less';
 import { MaskRyleTypeMap } from '@/d.ts';
 import { PopoverContainer } from '..';
-
 const EditSensitiveColumnModal = ({
   projectId,
   tableRef,
@@ -52,6 +51,7 @@ const EditSensitiveColumnModal = ({
           id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.UpdatedSuccessfully',
         }), //更新成功
       );
+
       setModalVisible(false);
       tableRef.current?.reload();
       tableRef.current?.resetSelectedRows();
@@ -64,13 +64,14 @@ const EditSensitiveColumnModal = ({
       );
     }
   };
+
   return (
     <Modal
       width={400}
       title={formatMessage({
         id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.EditSensitiveColumns',
-      })} /*编辑敏感列*/
-      open={modalVisible}
+      })}
+      /*编辑敏感列*/ open={modalVisible}
       onCancel={onCancel}
       afterClose={afterClose}
       className={styles.modal}
@@ -115,15 +116,24 @@ const EditSensitiveColumnModal = ({
                     title={option?.label}
                     descriptionsData={[
                       {
-                        label: '脱敏方式',
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                        }), //'脱敏方式'
                         value: MaskRyleTypeMap?.[target?.type],
                       },
                       {
-                        label: '测试数据',
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                        }), //'测试数据'
                         value: target?.sampleContent,
                       },
                       {
-                        label: '结果预览',
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                        }), //'结果预览'
                         value: target?.maskedContent,
                       },
                     ]}
@@ -138,5 +148,4 @@ const EditSensitiveColumnModal = ({
     </Modal>
   );
 };
-
 export default EditSensitiveColumnModal;

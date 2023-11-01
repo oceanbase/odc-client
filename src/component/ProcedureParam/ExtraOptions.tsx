@@ -37,8 +37,18 @@ export default function ExtraOptions({
           <Col span={8}>
             <Form.Item
               label={
-                <HelpDoc isTip leftText title="判断函数是否对相同的输入产生相同的结果">
-                  {formatMessage({ id: 'odc.src.component.ProcedureParam.Decisive' })}
+                <HelpDoc
+                  isTip
+                  leftText
+                  title={
+                    formatMessage({
+                      id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
+                    }) /* 判断函数是否对相同的输入产生相同的结果 */
+                  }
+                >
+                  {formatMessage({
+                    id: 'odc.src.component.ProcedureParam.Decisive',
+                  })}
                 </HelpDoc> /* 决定性 */
               }
               name={['characteristic', 'deterministic']}
@@ -58,7 +68,9 @@ export default function ExtraOptions({
           <Col span={8}>
             <Form.Item
               label={
-                formatMessage({ id: 'odc.src.component.ProcedureParam.DataOption' }) /* 数据选项 */
+                formatMessage({
+                  id: 'odc.src.component.ProcedureParam.DataOption',
+                }) /* 数据选项 */
               }
               name={['characteristic', 'dataNature']}
             >

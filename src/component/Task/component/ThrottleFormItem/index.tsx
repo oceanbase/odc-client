@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -18,17 +19,28 @@ import { Form, InputNumber, Space } from 'antd';
 import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
-
 interface IProps {}
-
 const ThrottleFormItem: React.FC<IProps> = (props) => {
   return (
-    <Form.Item label="限流策略" required>
+    <Form.Item
+      label={
+        formatMessage({
+          id: 'odc.src.component.Task.component.ThrottleFormItem.StreamingStrategy',
+        }) /* 限流策略 */
+      }
+      required
+    >
       <Space size={12}>
         <Form.Item
           label={
             <Space size={2}>
-              <span>行限流</span>
+              <span>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.ThrottleFormItem.RestrictedFlow',
+                  }) /* 行限流 */
+                }
+              </span>
               <HelpDoc leftText isTip doc="TaskLmitRow" />
             </Space>
           }
@@ -37,11 +49,16 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
           <Space size={4} align="center">
             <Form.Item
               name="rowLimit"
-              style={{ marginBottom: 0 }}
+              style={{
+                marginBottom: 0,
+              }}
               rules={[
                 {
                   required: true,
-                  message: '请输行限流限流',
+                  message: formatMessage({
+                    id:
+                      'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
+                  }), //'请输行限流限流'
                 },
               ]}
             >
@@ -53,7 +70,13 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
         <Form.Item
           label={
             <Space size={2}>
-              <span>数据大小限流</span>
+              <span>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.ThrottleFormItem.DataSizeLimit',
+                  }) /* 数据大小限流 */
+                }
+              </span>
               <HelpDoc leftText isTip doc="TaskLmitData" />
             </Space>
           }
@@ -62,11 +85,15 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
           <Space size={4} align="center">
             <Form.Item
               name="dataSizeLimit"
-              style={{ marginBottom: 0 }}
+              style={{
+                marginBottom: 0,
+              }}
               rules={[
                 {
                   required: true,
-                  message: '请输数据大小限流',
+                  message: formatMessage({
+                    id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseLoseTheDataSize',
+                  }), //'请输数据大小限流'
                 },
               ]}
             >

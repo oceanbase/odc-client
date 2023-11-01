@@ -31,7 +31,6 @@ import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
-
 const { Text } = Typography;
 const { Panel } = Collapse;
 interface IProps {
@@ -47,27 +46,32 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
   const insertActionLabel = InsertActionOptions?.find(
     (item) => item.value === jobParameters?.migrationInsertAction,
   )?.label;
-
   const handleRowLimit = async (rowLimit, handleClose) => {
     const res = updateLimiterConfig(id, {
       rowLimit,
     });
     if (res) {
-      message.success('修改成功！');
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.DataArchiveTask.DetailContent.SuccessfullyModified',
+        }), //'修改成功！'
+      );
       handleClose();
     }
   };
-
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
     const res = updateLimiterConfig(id, {
       dataSizeLimit: mbToKb(dataSizeLimit),
     });
     if (res) {
-      message.success('修改成功！');
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.DataArchiveTask.DetailContent.SuccessfullyModified.1',
+        }), //'修改成功！'
+      );
       handleClose();
     }
   };
-
   return (
     <>
       <Descriptions column={2}>
@@ -222,7 +226,13 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="行限流">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow',
+            }) /* 行限流 */
+          }
+        >
           <ThrottleEditableCell
             suffix="Rows/s"
             min={0}
@@ -231,7 +241,13 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             onOk={handleRowLimit}
           />
         </Descriptions.Item>
-        <Descriptions.Item label={'数据大小限流'}>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.DataArchiveTask.DetailContent.DataSizeLimit',
+            }) //'数据大小限流'
+          }
+        >
           <ThrottleEditableCell
             suffix="MB/s"
             min={1}

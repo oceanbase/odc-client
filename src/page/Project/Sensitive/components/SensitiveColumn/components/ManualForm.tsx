@@ -119,19 +119,22 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
       title: formatMessage({
         id:
           'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DoYouConfirmThatYou',
-      }), //'确认要取消手动添加敏感列吗？'
+      }),
+      //'确认要取消手动添加敏感列吗？'
       onOk: async () => {
         setModalOpen(false);
       },
       onCancel: () => {},
       okText: formatMessage({
         id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Sure',
-      }), //'确定'
+      }),
+      //'确定'
       cancelText: formatMessage({
         id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Cancel',
       }), //'取消'
     });
   };
+
   useEffect(() => {
     initDatabases();
   }, []);
@@ -168,8 +171,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
                 formatMessage({
                   id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Submit',
                 }) /* 
-              提交
-             */
+           提交
+           */
               }
             </Button>
           </Space>
@@ -279,7 +282,6 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
   );
 };
 export default ManualForm;
-
 const SelectedSensitiveColumn = forwardRef<any, any>(function (
   {
     projectId,
@@ -314,11 +316,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
   const [checkedColumns, setCheckedColumns] = useState<number>(0);
   const [defaultActiveKey, setDefaultActiveKey] = useState<string[]>([]);
   // formData 用于记录右侧表单数据，确保搜索前后已选择的表单值不丢失。
-  const [formData, setFormData] = useState<
-    {
-      [key in string]: any;
-    }
-  >({});
+  const [formData, setFormData] = useState<{ [key in string]: any }>({});
   useImperativeHandle(ref, () => {
     return {
       submit: async (
@@ -354,6 +352,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmittedSuccessfully',
             }), //'提交成功'
           );
+
           setModalOpen(false);
           callback?.();
         } else {
@@ -367,6 +366,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       },
     };
   });
+
   const getColumns = async () => {
     setLoading(true);
     const { contents: databaseColumns } = await listColumns(projectId, databaseIds);
@@ -640,14 +640,24 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       return originTreeData?.length === 0 ? (
         <div className={styles.centerContainer}>
           <Empty
-            description={'所选数据库中没有可选的敏感列'}
+            description={
+              formatMessage({
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ThereIsNoOptionalSensitive',
+              }) //'所选数据库中没有可选的敏感列'
+            }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </div>
       ) : (
         <div className={styles.centerContainer}>
           <Empty
-            description={'可选的敏感列中不包含搜索关键字'}
+            description={
+              formatMessage({
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.OptionalSensitiveColumnsDoNot',
+              }) //'可选的敏感列中不包含搜索关键字'
+            }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </div>
@@ -656,7 +666,15 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
     if (databaseIds?.length === 0) {
       return (
         <div className={styles.centerContainer}>
-          <Empty description={'尚未选择数据库'} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <Empty
+            description={
+              formatMessage({
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.NoChoiceDatabase',
+              }) //'尚未选择数据库'
+            }
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
         </div>
       );
     }
@@ -917,12 +935,25 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
               </Form>
             ) : originData?.length === 0 ? (
               <div className={styles.centerContainer}>
-                <Empty description={'尚未勾选敏感列'} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <Empty
+                  description={
+                    formatMessage({
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.HaveNotCheckedTheSensitive',
+                    }) //'尚未勾选敏感列'
+                  }
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
               </div>
             ) : (
               <div className={styles.centerContainer}>
                 <Empty
-                  description={'已勾选的敏感列中不包含搜索关键字'}
+                  description={
+                    formatMessage({
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSelectedSensitiveColumnsDo',
+                    }) //'已勾选的敏感列中不包含搜索关键字'
+                  }
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               </div>
