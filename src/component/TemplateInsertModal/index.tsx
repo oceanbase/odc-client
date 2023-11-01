@@ -205,11 +205,15 @@ export async function getCopyText(
   sessionId: string,
 ) {
   const dbSession = sessionManager.sessionMap.get(sessionId);
+  if (!dbSession) {
+    return '';
+  }
   const _escape = isEscape
     ? escape
     : function (b) {
         return b;
       };
+
   switch (copyType) {
     case DragInsertType.NAME: {
       return _escape(name);

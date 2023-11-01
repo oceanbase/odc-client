@@ -17,6 +17,12 @@
 import { formatMessage } from '@/util/intl';
 import { Col, Drawer, message, Row, Spin } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import * as echarts from 'echarts/core';
+import { TooltipComponent, GridComponent, LegendComponent } from 'echarts/components';
+import { BarChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+
+echarts.use([TooltipComponent, GridComponent, LegendComponent, BarChart, CanvasRenderer]);
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
@@ -26,6 +32,7 @@ import BasicInfo from './BasicInfo';
 import TimeStatistics from './TimeStatistics';
 import IOStatistics from './IOStatistics';
 import SQLExplain from '../../SQLExplain';
+import setting from '@/store/setting';
 
 interface IProps {
   visible: boolean;
@@ -42,7 +49,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
     null,
   );
   const [sqlExecuteDetailToShow, setSqlExecuteDetailToShow] = useState<ISQLExecuteDetail>(null);
-  const stackBarPlot = useRef(null);
+  const stackBarPlot = useRef<echarts.ECharts>(null);
   const stackBarBox = useRef<HTMLDivElement>(null);
 
   const fetchExecDetail = useCallback(
@@ -98,94 +105,83 @@ const ExecDetail: React.FC<IProps> = function (props) {
 
         const data = [
           {
-            name: formatMessage({
-              id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
-            }),
-
-            label: otherTimeLabel,
-            value: totalTime - queueTime - execTime,
+            name: execTimeLabel,
+            type: 'bar',
+            stack: 'total',
+            label: {
+              show: true,
+            },
+            emphasis: {
+              focus: 'series',
+            },
+            barWidth: '30px',
+            data: [execTime],
           },
 
           {
-            name: formatMessage({
-              id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
-            }),
-
-            label: execTimeLabel,
-            value: execTime,
+            name: queueTimeLabel,
+            type: 'bar',
+            stack: 'total',
+            label: {
+              show: true,
+            },
+            emphasis: {
+              focus: 'series',
+            },
+            data: [queueTime],
           },
-
           {
-            name: formatMessage({
-              id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
-            }),
-
-            label: queueTimeLabel,
-            value: queueTime,
+            name: otherTimeLabel,
+            type: 'bar',
+            stack: 'total',
+            label: {
+              show: true,
+            },
+            emphasis: {
+              focus: 'series',
+            },
+            data: [totalTime - queueTime - execTime],
           },
         ];
         if (!stackBarPlot.current) {
-          const StackedBar = (await import('@antv/g2plot')).StackedBar;
-          stackBarPlot.current = new StackedBar(stackBarBox.current, {
-            forceFit: true,
-            height: 140,
-            data,
-            colorField: 'label',
-            color: (label: string) => {
-              if (label === queueTimeLabel) {
-                return '#EC7F66';
-              }
-              if (label === execTimeLabel) {
-                return '#76DCB3';
-              }
-              return '#F8C64A';
-            },
-            barSize: 24,
-            yField: 'name',
-            xField: 'value',
-            stackField: 'label',
-            xAxis: {
-              visible: false,
-              tickLine: {
-                visible: false,
-              },
-
-              title: {
-                visible: false,
-              },
-
-              grid: {
-                visible: false,
-              },
-            },
-
-            yAxis: {
-              tickLine: {
-                visible: false,
-              },
-
-              label: {
-                visible: false,
-              },
-
-              title: {
-                visible: false,
-              },
-            },
-
-            title: {
-              visible: false,
-              text: '',
-            },
-
-            legend: {
-              position: 'bottom-center',
-            },
-          });
-          stackBarPlot.current.render();
-        } else {
-          stackBarPlot.current.changeData(data);
+          stackBarPlot.current = echarts.init(stackBarBox.current, setting.theme?.chartsTheme);
         }
+        stackBarPlot.current.setOption({
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow',
+            },
+            textStyle: {
+              fontSize: 12,
+            },
+          },
+          legend: {
+            bottom: 0,
+            itemWidth: 14,
+          },
+          grid: {
+            // containLabel: true,
+            top: 40,
+            bottom: 40,
+            left: 0,
+            right: 0,
+            backgroundColor: 'transparent',
+          },
+          xAxis: {
+            show: false,
+          },
+          yAxis: {
+            show: false,
+            data: [
+              formatMessage({
+                id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
+              }),
+            ],
+          },
+          series: data,
+          backgroundColor: 'transparent',
+        });
       } else {
         message.error(
           formatMessage({
@@ -203,7 +199,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
     }
     return () => {
       if (stackBarPlot.current) {
-        stackBarPlot.current?.destroy();
+        stackBarPlot.current.dispose();
         stackBarPlot.current = null;
       }
     };
