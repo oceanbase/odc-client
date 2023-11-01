@@ -40,6 +40,8 @@ const TimeStatistics: React.FC<{
         ref={stackBarBox}
         style={{
           marginTop: -30,
+          width: '100%',
+          height: '100%',
         }}
       />
     </Card>

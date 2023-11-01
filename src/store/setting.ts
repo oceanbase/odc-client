@@ -39,6 +39,7 @@ interface IThemeConfig {
   cmdTheme: 'dark' | 'white';
   key: string;
   maskType: 'white' | 'dark';
+  chartsTheme: string;
 }
 
 const themeConfig: { [key: string]: IThemeConfig } = {
@@ -49,6 +50,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     sheetTheme: 'white',
     cmdTheme: 'white',
     maskType: 'white',
+    chartsTheme: 'white',
   },
   'odc-dark': {
     key: 'odc-dark',
@@ -57,6 +59,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     sheetTheme: 'dark',
     cmdTheme: 'dark',
     maskType: 'dark',
+    chartsTheme: 'dark',
   },
 };
 const defaultTheme = 'odc-white';
