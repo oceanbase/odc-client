@@ -26,7 +26,6 @@ import DetectWay from './DetectWay';
 import styles from './index.less';
 import { MaskRyleTypeMap } from '@/d.ts';
 import { PopoverContainer } from '../../SensitiveColumn';
-
 const FormSensitiveRuleDrawer = ({
   formDrawerVisible,
   handleFormDrawerClose,
@@ -109,6 +108,7 @@ const FormSensitiveRuleDrawer = ({
             id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdatedSuccessfully',
           }), //更新成功
         );
+
         handleFormDrawerClose(formRef.resetFields);
       } else {
         message.error(
@@ -121,8 +121,11 @@ const FormSensitiveRuleDrawer = ({
       const result = await createSensitiveRule(context.projectId, data);
       if (result) {
         message.success(
-          formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.New' }), //新建成功
+          formatMessage({
+            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.New',
+          }), //新建成功
         );
+
         handleFormDrawerClose();
       } else {
         message.error(
@@ -132,6 +135,7 @@ const FormSensitiveRuleDrawer = ({
         );
       }
     }
+
     setHasValidated(false);
   };
   const onCancel = () => {
@@ -142,19 +146,24 @@ const FormSensitiveRuleDrawer = ({
           }) //确认要取消编辑吗？
         : formatMessage({
             id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.AreYouSureYouWant.1',
-          }), //确认要取消新建吗？
+          }),
+      //确认要取消新建吗？
       onOk: () => {
         handleFormDrawerClose();
         formRef.resetFields();
         setHasValidated(false);
       },
       onCancel: () => {},
-      okText: formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Ok' }), //确定
+      okText: formatMessage({
+        id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Ok',
+      }),
+      //确定
       cancelText: formatMessage({
         id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.Cancel',
       }), //取消
     });
   };
+
   useEffect(() => {
     if (isEdit) {
       const {
@@ -187,28 +196,32 @@ const FormSensitiveRuleDrawer = ({
           databaseRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.LibraryName',
-            }), //库名
+            }),
+            //库名
             checked: hasDatabaseRegexExpression ? ['databaseRegexExpression'] : [],
             regExp: databaseRegexExpression,
           },
           tableRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.TableName',
-            }), //表名
+            }),
+            //表名
             checked: hasTableRegexExpression ? ['tableRegexExpression'] : [],
             regExp: tableRegexExpression,
           },
           columnRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnName',
-            }), //列名
+            }),
+            //列名
             checked: hasColumnRegexExpression ? ['columnRegexExpression'] : [],
             regExp: columnRegexExpression,
           },
           columnCommentRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnRemarks',
-            }), //列备注
+            }),
+            //列备注
             checked: hasColumnCommentRegexExpression ? ['columnCommentRegexExpression'] : [],
             regExp: columnCommentRegexExpression,
           },
@@ -229,28 +242,32 @@ const FormSensitiveRuleDrawer = ({
           databaseRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.LibraryName',
-            }), //库名
+            }),
+            //库名
             checked: [],
             regExp: '',
           },
           tableRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.TableName',
-            }), //表名
+            }),
+            //表名
             checked: [],
             regExp: '',
           },
           columnRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnName',
-            }), //列名
+            }),
+            //列名
             checked: [],
             regExp: '',
           },
           columnCommentRegexExpression: {
             label: formatMessage({
               id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.ColumnRemarks',
-            }), //列备注
+            }),
+            //列备注
             checked: [],
             regExp: '',
           },
@@ -276,7 +293,12 @@ const FormSensitiveRuleDrawer = ({
       onClose={onCancel}
       destroyOnClose={true}
       footer={
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           <Space>
             <Button onClick={onCancel}>
               {
@@ -304,7 +326,9 @@ const FormSensitiveRuleDrawer = ({
       <Form form={formRef} layout="vertical" requiredMark="optional">
         <Form.Item
           label={
-            formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleName' }) //规则名称
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleName',
+            }) //规则名称
           }
           name={'name'}
           required
@@ -325,7 +349,9 @@ const FormSensitiveRuleDrawer = ({
         </Form.Item>
         <Form.Item
           label={
-            formatMessage({ id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleStatus' }) //规则状态
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.RuleStatus',
+            }) //规则状态
           }
           name={'enabled'}
           required
@@ -406,15 +432,24 @@ const FormSensitiveRuleDrawer = ({
                     title={option?.label}
                     descriptionsData={[
                       {
-                        label: '脱敏方式',
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveRule.components.DesensitizationMethod',
+                        }), //'脱敏方式'
                         value: MaskRyleTypeMap?.[target?.type],
                       },
                       {
-                        label: '测试数据',
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveRule.components.TestData',
+                        }), //'测试数据'
                         value: target?.sampleContent,
                       },
                       {
-                        label: '结果预览',
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveRule.components.Preview',
+                        }), //'结果预览'
                         value: target?.maskedContent,
                       },
                     ]}
@@ -446,5 +481,4 @@ const FormSensitiveRuleDrawer = ({
     </Drawer>
   );
 };
-
 export default FormSensitiveRuleDrawer;

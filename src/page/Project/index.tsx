@@ -23,7 +23,6 @@ import Database from './Database';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
-
 import { getProject, listProjects } from '@/common/network/project';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
@@ -34,14 +33,24 @@ import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
 import tracert from '@/util/tracert';
-
 const menu = (
   <Menu>
-    <Menu.Item>{formatMessage({ id: 'odc.page.Project.MenuItem' }) /*菜单项一*/}</Menu.Item>
-    <Menu.Item>{formatMessage({ id: 'odc.page.Project.MenuItem.1' }) /*菜单项二*/}</Menu.Item>
+    <Menu.Item>
+      {
+        formatMessage({
+          id: 'odc.page.Project.MenuItem',
+        }) /*菜单项一*/
+      }
+    </Menu.Item>
+    <Menu.Item>
+      {
+        formatMessage({
+          id: 'odc.page.Project.MenuItem.1',
+        }) /*菜单项二*/
+      }
+    </Menu.Item>
   </Menu>
 );
-
 const ExtraContent = ({ projectId }) => {
   return (
     <Space size={12}>
@@ -52,7 +61,11 @@ const ExtraContent = ({ projectId }) => {
         }}
         type="primary"
       >
-        {formatMessage({ id: 'odc.page.Project.LogOnToTheDatabase' }) /*登录数据库*/}
+        {
+          formatMessage({
+            id: 'odc.page.Project.LogOnToTheDatabase',
+          }) /*登录数据库*/
+        }
       </Button>
       {/* <Dropdown.Button
          overlay={menu}
@@ -61,9 +74,7 @@ const ExtraContent = ({ projectId }) => {
     </Space>
   );
 };
-
 interface IProps {}
-
 const Pages = {
   [IPageType.Project_Database]: {
     component: Database,
@@ -81,32 +92,47 @@ const Pages = {
     component: Sensitive,
   },
 };
-
 const tabs = [
   {
-    tab: formatMessage({ id: 'odc.page.Project.Database' }), //数据库
+    tab: formatMessage({
+      id: 'odc.page.Project.Database',
+    }),
+    //数据库
     key: IPageType.Project_Database,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Project.Ticket' }), //工单
+    tab: formatMessage({
+      id: 'odc.page.Project.Ticket',
+    }),
+    //工单
     key: IPageType.Project_Task,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Project.Member' }), //成员
+    tab: formatMessage({
+      id: 'odc.page.Project.Member',
+    }),
+    //成员
     key: IPageType.Project_User,
   },
   {
-    tab: '敏感列',
+    tab: formatMessage({
+      id: 'odc.src.page.Project.Sensitive',
+    }), //'敏感列'
     key: IPageType.Sensitive,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Project.Settings' }), //设置
+    tab: formatMessage({
+      id: 'odc.page.Project.Settings',
+    }),
+    //设置
     key: IPageType.Project_Setting,
   },
 ];
-
 const Index: React.FC<IProps> = function () {
-  const params = useParams<{ id: string; page: IPageType }>();
+  const params = useParams<{
+    id: string;
+    page: IPageType;
+  }>();
   const navigate = useNavigate();
   const { id, page } = params;
   const Component = Pages[page].component;
@@ -114,12 +140,10 @@ const Index: React.FC<IProps> = function () {
   const handleChange = (key: string) => {
     history.push(`/project/${id}/${key}`);
   };
-
   const handleProjectChange = (value: string) => {
     tracert.click('a3112.b64002.c330857.d367379');
     history.push(`/project/${value}/${page}`);
   };
-
   const [project, setProject] = useState<IProject>(null);
   async function fetchProject(projectId: number) {
     const data = await getProject(projectId);
@@ -130,7 +154,6 @@ const Index: React.FC<IProps> = function () {
   const reloadProject = useCallback(() => {
     fetchProject(projectId);
   }, [project]);
-
   useEffect(() => {
     if (isNumber(projectId)) {
       fetchProject(projectId);
@@ -151,7 +174,6 @@ const Index: React.FC<IProps> = function () {
   const { data } = useRequest(listProjects, {
     defaultParams: [null, 1, 10],
   });
-
   const options = [
     {
       label: project?.name,
@@ -170,7 +192,6 @@ const Index: React.FC<IProps> = function () {
       })
       ?.filter(Boolean) || [],
   );
-
   const displayTabs = useMemo(() => {
     let roleTabConfig = {
       [ProjectRole.DBA]: [IPageType.Project_Database, IPageType.Project_Task, IPageType.Sensitive],
@@ -189,7 +210,6 @@ const Index: React.FC<IProps> = function () {
     }, []);
     return tabs.filter((tab) => roleTabs.includes(tab?.key));
   }, [tabs, project]);
-
   return (
     <PageContainer
       titleProps={{
@@ -215,15 +235,24 @@ const Index: React.FC<IProps> = function () {
       onTabChange={handleChange}
       bigSelectBottom={
         <Link onClick={() => tracert.click('a3112.b64002.c330857.d367380')} to={'/project'}>
-          {formatMessage({ id: 'odc.page.Project.ViewAllProjects' }) /*查看所有项目*/}
+          {
+            formatMessage({
+              id: 'odc.page.Project.ViewAllProjects',
+            }) /*查看所有项目*/
+          }
         </Link>
       }
     >
-      <ProjectContext.Provider value={{ project, projectId, reloadProject }}>
+      <ProjectContext.Provider
+        value={{
+          project,
+          projectId,
+          reloadProject,
+        }}
+      >
         <Component key={id} id={id} />
       </ProjectContext.Provider>
     </PageContainer>
   );
 };
-
 export default Index;

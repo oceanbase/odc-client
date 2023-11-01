@@ -46,18 +46,15 @@ import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import FormItemPanel from '@/component/FormItemPanel';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
-
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
 }
-
 export const variable = {
   name: '',
   format: '',
   pattern: [null],
 };
-
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
@@ -66,12 +63,10 @@ const defaultValue = {
   rowLimit: 100,
   dataSizeLimit: 1,
 };
-
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 const getVariables = (
   value: {
     name: string;
@@ -98,7 +93,6 @@ const getVariables = (
     };
   });
 };
-
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
   const [formData, setFormData] = useState(null);
@@ -110,20 +104,16 @@ const CreateModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
   const databaseName = database?.name;
-
   const loadTables = async () => {
     const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
     setTables(tables);
   };
-
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-
   const { dataClearVisible, SQLPlanEditId } = modalStore;
   const isEdit = !!SQLPlanEditId;
-
   const setFormStatus = (fieldName: string, errorMessage: string) => {
     form.setFields([
       {
@@ -132,11 +122,13 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     ]);
   };
-
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.DataClearTask.CreateModal.AreYouSureYouWant' }), //确认取消此数据清理吗？
+        title: formatMessage({
+          id: 'odc.DataClearTask.CreateModal.AreYouSureYouWant',
+        }),
+        //确认取消此数据清理吗？
         centered: true,
         onOk: () => {
           props.modalStore.changeDataClearModal(false);
@@ -146,11 +138,9 @@ const CreateModal: React.FC<IProps> = (props) => {
       props.modalStore.changeDataClearModal(false);
     }
   };
-
   const handleCrontabChange = (crontab) => {
     setCrontab(crontab);
   };
-
   const handleCreate = async (data: Partial<CreateTaskRecord>) => {
     const res = await createTask(data);
     handleCancel(false);
@@ -159,10 +149,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       openTasksPage(TaskPageType.DATA_DELETE, TaskPageScope.CREATED_BY_CURRENT_USER);
     }
   };
-
   const handleEditAndConfirm = async (data: Partial<CreateTaskRecord>) => {
     Modal.confirm({
-      title: formatMessage({ id: 'odc.DataClearTask.CreateModal.AreYouSureYouWant.1' }), //确认要修改此数据清理吗？
+      title: formatMessage({
+        id: 'odc.DataClearTask.CreateModal.AreYouSureYouWant.1',
+      }),
+      //确认要修改此数据清理吗？
       content: (
         <>
           <div>
@@ -181,9 +173,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
-
-      cancelText: formatMessage({ id: 'odc.DataClearTask.CreateModal.Cancel' }), //取消
-      okText: formatMessage({ id: 'odc.DataClearTask.CreateModal.Ok' }), //确定
+      cancelText: formatMessage({
+        id: 'odc.DataClearTask.CreateModal.Cancel',
+      }),
+      //取消
+      okText: formatMessage({
+        id: 'odc.DataClearTask.CreateModal.Ok',
+      }),
+      //确定
       centered: true,
       onOk: () => {
         handleCreate(data);
@@ -193,7 +190,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     });
   };
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -234,7 +230,6 @@ const CreateModal: React.FC<IProps> = (props) => {
             triggerStrategy,
           } as ICycleTaskTriggerConfig,
         };
-
         if (triggerStrategy === TaskExecStrategy.TIMER) {
           const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
           parameters.triggerConfig = {
@@ -255,7 +250,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           parameters,
           description,
         };
-
         setConfirmLoading(true);
         if (!isEdit) {
           delete parameters.taskId;
@@ -270,30 +264,25 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
-
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
-
   const handleReset = () => {
     setFormData(null);
     form?.resetFields();
     crontabRef.current?.resetFields();
   };
-
   useEffect(() => {
     if (!dataClearVisible) {
       handleReset();
     }
   }, [dataClearVisible]);
-
   useEffect(() => {
     if (database?.id) {
       loadTables();
       form.setFieldValue('tables', [null]);
     }
   }, [database?.id]);
-
   return (
     <Drawer
       destroyOnClose
@@ -301,8 +290,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       width={760}
       title={
         isEdit
-          ? formatMessage({ id: 'odc.DataClearTask.CreateModal.EditDataCleanup' }) //编辑数据清理
-          : formatMessage({ id: 'odc.DataClearTask.CreateModal.CreateDataCleanup' }) //新建数据清理
+          ? formatMessage({
+              id: 'odc.DataClearTask.CreateModal.EditDataCleanup',
+            }) //编辑数据清理
+          : formatMessage({
+              id: 'odc.DataClearTask.CreateModal.CreateDataCleanup',
+            }) //新建数据清理
       }
       footer={
         <Space>
@@ -311,13 +304,21 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
-            {formatMessage({ id: 'odc.DataClearTask.CreateModal.Cancel' }) /*取消*/}
+            {
+              formatMessage({
+                id: 'odc.DataClearTask.CreateModal.Cancel',
+              }) /*取消*/
+            }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
             {
               isEdit
-                ? formatMessage({ id: 'odc.DataClearTask.CreateModal.Save' }) //保存
-                : formatMessage({ id: 'odc.DataClearTask.CreateModal.Create' }) //新建
+                ? formatMessage({
+                    id: 'odc.DataClearTask.CreateModal.Save',
+                  }) //保存
+                : formatMessage({
+                    id: 'odc.DataClearTask.CreateModal.Create',
+                  }) //新建
             }
           </Button>
         </Space>
@@ -338,20 +339,28 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Space align="start">
           <DatabaseSelect
             type={TaskType.DATA_DELETE}
-            label={formatMessage({ id: 'odc.DataClearTask.CreateModal.SourceDatabase' })}
+            label={formatMessage({
+              id: 'odc.DataClearTask.CreateModal.SourceDatabase',
+            })}
             /*源端数据库*/ projectId={projectId}
           />
         </Space>
         <VariableConfig />
         <ArchiveRange tables={tables} />
         <Form.Item
-          label={formatMessage({ id: 'odc.DataClearTask.CreateModal.ExecutionMethod' })}
+          label={formatMessage({
+            id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
+          })}
           /*执行方式*/ name="triggerStrategy"
           required
         >
           <Radio.Group>
             <Radio.Button value={TaskExecStrategy.START_NOW}>
-              {formatMessage({ id: 'odc.DataClearTask.CreateModal.ExecuteNow' }) /*立即执行*/}
+              {
+                formatMessage({
+                  id: 'odc.DataClearTask.CreateModal.ExecuteNow',
+                }) /*立即执行*/
+              }
             </Radio.Button>
             {!isClient() ? (
               <Radio.Button value={TaskExecStrategy.START_AT}>
@@ -395,7 +404,14 @@ const CreateModal: React.FC<IProps> = (props) => {
             return null;
           }}
         </Form.Item>
-        <FormItemPanel label="任务设置" keepExpand>
+        <FormItemPanel
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.DataClearTask.CreateModal.TaskSetting',
+            }) /* 任务设置 */
+          }
+          keepExpand
+        >
           <ThrottleFormItem />
         </FormItemPanel>
         <DescriptionInput />
@@ -403,5 +419,4 @@ const CreateModal: React.FC<IProps> = (props) => {
     </Drawer>
   );
 };
-
 export default inject('modalStore')(observer(CreateModal));

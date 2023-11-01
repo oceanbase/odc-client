@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -18,7 +19,6 @@ import { InputNumber, Space, message } from 'antd';
 import React, { useState } from 'react';
 import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import Action from '@/component/Action';
-
 interface IProps {
   defaultValue: number | string;
   suffix: React.ReactNode;
@@ -26,32 +26,31 @@ interface IProps {
   max: number;
   onOk: (value: number, onClose: () => void) => void;
 }
-
 const ThrottleEditableCell: React.FC<IProps> = (props) => {
   const { defaultValue = 10, min, max, suffix, onOk } = props;
   const [isLmitRowEdit, setIsLmitRowEdit] = useState(false);
   const [lmitValue, setLmitValue] = useState(Number(defaultValue));
   const [value, setValue] = useState(Number(defaultValue));
   const [status, setStatus] = useState(null);
-
   const handleClose = () => {
     setIsLmitRowEdit(false);
   };
-
   const handleOk = () => {
     if (value) {
       setLmitValue(value);
       onOk(value, handleClose);
     } else {
       setStatus('error');
-      message.error('不能为空!');
+      message.error(
+        formatMessage({
+          id: 'odc.src.component.Task.component.ThrottleEditableCell.CanNotBeEmpty',
+        }), //'不能为空!'
+      );
     }
   };
-
   const handleChange = (value) => {
     setValue(value);
   };
-
   return (
     <>
       {isLmitRowEdit ? (
@@ -64,10 +63,18 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
             onChange={handleChange}
           />
           <Action.Link onClick={handleOk}>
-            <CheckOutlined style={{ color: 'var(--icon-green-color)' }} />
+            <CheckOutlined
+              style={{
+                color: 'var(--icon-green-color)',
+              }}
+            />
           </Action.Link>
           <Action.Link onClick={handleClose}>
-            <CloseOutlined style={{ color: 'var(--function-red6-color)' }} />
+            <CloseOutlined
+              style={{
+                color: 'var(--function-red6-color)',
+              }}
+            />
           </Action.Link>
         </Space>
       ) : (

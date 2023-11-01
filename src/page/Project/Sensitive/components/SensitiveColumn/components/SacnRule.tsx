@@ -222,7 +222,12 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             id: 'odc.SensitiveColumn.components.SacnRule.IdentificationRules',
           }) //识别规则
         }
-        tooltip={'可通过路径、正则或Groovy任意一种识别方式，进行脚本批量选择列'}
+        tooltip={
+          formatMessage({
+            id:
+              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath',
+          }) //'可通过路径、正则或Groovy任意一种识别方式，进行脚本批量选择列'
+        }
         name="sensitiveRuleIds"
         rules={[
           {
@@ -278,8 +283,8 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
                     id:
                       'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
                   }) /* 
-                管理识别规则
-               */
+             管理识别规则
+             */
                 }
               </Button>
             </>
