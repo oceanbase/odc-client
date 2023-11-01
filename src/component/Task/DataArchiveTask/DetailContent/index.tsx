@@ -37,9 +37,10 @@ interface IProps {
   task: CycleTaskDetail<IDataArchiveJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
+  onReload?: () => void;
 }
 const DataArchiveTaskContent: React.FC<IProps> = (props) => {
-  const { task, hasFlow } = props;
+  const { task, hasFlow, onReload } = props;
   const { triggerConfig, jobParameters, id } = task ?? {};
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const isCycleStrategy = isCycleTriggerStrategy(triggerConfig?.triggerStrategy);
@@ -47,7 +48,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
     (item) => item.value === jobParameters?.migrationInsertAction,
   )?.label;
   const handleRowLimit = async (rowLimit, handleClose) => {
-    const res = updateLimiterConfig(id, {
+    const res = await updateLimiterConfig(id, {
       rowLimit,
     });
     if (res) {
@@ -57,10 +58,11 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         }), //'修改成功！'
       );
       handleClose();
+      onReload();
     }
   };
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
-    const res = updateLimiterConfig(id, {
+    const res = await updateLimiterConfig(id, {
       dataSizeLimit: mbToKb(dataSizeLimit),
     });
     if (res) {
