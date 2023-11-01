@@ -30,7 +30,7 @@ const InitScriptItem: React.FC<{}> = function () {
   return (
     <Form.Item
       className={styles.sqlContent}
-      style={{ height: 370 }}
+      style={{ height: 370, marginTop: 12 }}
       name={'sessionInitScript'}
       label=""
     >
