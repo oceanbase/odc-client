@@ -67,6 +67,7 @@ export default forwardRef(function ProjectTree(props, ref) {
         <div className={styles.container}>
           <div className={styles.search}>
             <Input.Search
+              allowClear
               onSearch={(v) => {
                 setSearchKey(v);
               }}
