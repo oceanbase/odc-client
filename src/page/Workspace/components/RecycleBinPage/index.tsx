@@ -518,6 +518,7 @@ class RecycleBin extends Component<
         <ExecuteSQLModal
           sessionStore={this.session}
           sql={updateDML}
+          theme={theme}
           visible={showExecuteSQLModal}
           onSave={this.handleExecuteUpdateDML}
           onCancel={() => this.setState({ showExecuteSQLModal: false, updateDML: '' })}
@@ -540,6 +541,7 @@ class RecycleBin extends Component<
             rowKey="uniqueId"
             rows={selectedObjects as any}
             readonly={true}
+            theme={theme}
           />
 
           <div className={styles.drawerFooter}>

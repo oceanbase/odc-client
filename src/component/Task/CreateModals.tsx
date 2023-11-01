@@ -29,7 +29,7 @@ import SQLPlanTaskCreateModal from './SQLPlanTask';
 
 interface IProps {
   projectId?: number;
-  theme?: string;
+  theme?: 'dark' | 'white';
 }
 
 const CreateModals: React.FC<IProps> = (props) => {
@@ -45,7 +45,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ShadowSyncTaskCreateModal projectId={projectId} />
       <DataArchiveTaskCreateModal projectId={projectId} />
       <DataClearTaskCreateModal projectId={projectId} />
-      <AlterDDLTaskCreateModal projectId={projectId} />
+      <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
       <ResultSetExportTask projectId={projectId} theme={theme} />
     </>
   );
