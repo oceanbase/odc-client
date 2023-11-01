@@ -65,7 +65,7 @@ export function DataBaseTreeData(
       tableTreeData &&
         //@ts-ignore
         (tableTreeData.children = tableTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -73,7 +73,7 @@ export function DataBaseTreeData(
       viewTreeData &&
         //@ts-ignore
         (viewTreeData.children = viewTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -81,7 +81,7 @@ export function DataBaseTreeData(
       functionTreeData &&
         //@ts-ignore
         (functionTreeData.children = functionTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -89,7 +89,7 @@ export function DataBaseTreeData(
       procedureTreeData &&
         //@ts-ignore
         (procedureTreeData.children = procedureTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -97,7 +97,7 @@ export function DataBaseTreeData(
       packageTreeData &&
         //@ts-ignore
         (packageTreeData.children = packageTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -105,7 +105,7 @@ export function DataBaseTreeData(
       typeTreeData &&
         //@ts-ignore
         (typeTreeData.children = typeTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -113,7 +113,7 @@ export function DataBaseTreeData(
       sequenceTreeData &&
         //@ts-ignore
         (sequenceTreeData.children = sequenceTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -121,7 +121,7 @@ export function DataBaseTreeData(
       synonymTreeData &&
         //@ts-ignore
         (synonymTreeData.children = synonymTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -129,7 +129,7 @@ export function DataBaseTreeData(
       publicSynonymTreeData &&
         //@ts-ignore
         (publicSynonymTreeData.children = publicSynonymTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
@@ -137,7 +137,7 @@ export function DataBaseTreeData(
       triggerTreeData &&
         //@ts-ignore
         (triggerTreeData.children = triggerTreeData.children?.filter((item) => {
-          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value);
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
         }));
       break;
     }
