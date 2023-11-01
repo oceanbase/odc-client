@@ -116,6 +116,7 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(
           formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.SuccessfulExecution' }), //执行成功
         );
+        props.onReloadList();
       }
     };
 
@@ -125,6 +126,7 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(
           formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.RetrySucceeded' }), //重试成功
         );
+        props.onReloadList();
       }
     };
 
