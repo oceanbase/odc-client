@@ -28,7 +28,6 @@ import { getFormatDateTime } from '@/util/utils';
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { getTaskExecStrategyMap } from '../..';
-
 interface IShadowSyncParamters {
   errorStrategy: ErrorStrategy;
   connectionId: string;
@@ -36,9 +35,11 @@ interface IShadowSyncParamters {
   comparingTaskId: string;
   description: string;
 }
-
 const ErrorStrategyText = {
-  ABORT: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.StopATask' }), // 停止任务
+  ABORT: formatMessage({
+    id: 'odc.TaskManagePage.AsyncTask.StopATask',
+  }),
+  // 停止任务
   CONTINUE: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.IgnoreErrorsContinueTasks',
   }),
@@ -81,7 +82,6 @@ function StructAnalysisWrap({
   }
   return <StructAnalysisResult connectionMode={connectionMode} data={result} resultData={data} />;
 }
-
 export function getItems(
   task: TaskDetail<IShadowSyncParamters>,
   result: ShadowTableSyncTaskResult,
@@ -99,7 +99,10 @@ export function getItems(
   const connectionMode = task?.connection?.dbMode;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const riskItem = [
-    formatMessage({ id: 'odc.component.DetailModal.dataMocker.RiskLevel' }), //风险等级
+    formatMessage({
+      id: 'odc.component.DetailModal.dataMocker.RiskLevel',
+    }),
+    //风险等级
     <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
   ];
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
@@ -110,7 +113,6 @@ export function getItems(
     //执行时间
     getFormatDateTime(task?.executionTime),
   ];
-
   return [
     {
       //@ts-ignore
@@ -119,10 +121,8 @@ export function getItems(
           formatMessage({
             id: 'odc.component.DetailModal.permission.TaskNumber',
           }),
-
           task.id,
         ],
-
         [
           formatMessage({
             id: 'odc.component.DetailModal.permission.TaskType',
@@ -131,47 +131,49 @@ export function getItems(
             id: 'odc.component.DetailModal.shadowSync.ShadowTableSynchronization',
           }), //影子表同步
         ],
-
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
-
           //所属数据库
           task?.databaseName || '-',
         ],
-
+        [
+          formatMessage({
+            id: 'odc.src.component.Task.ShadowSyncTask.DetailContent.DataSource',
+          }), //'所属数据源'
+          task?.connection?.name || '-',
+        ],
         hasFlow ? riskItem : null,
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
           }),
-
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
         ],
-
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({
             id: 'odc.TaskManagePage.AsyncTask.TaskErrorHandling',
           }),
-
           ErrorStrategyText[parameters.errorStrategy],
         ],
-
         [
-          formatMessage({ id: 'odc.ShadowSyncTask.DetailContent.Description' }), //描述
+          formatMessage({
+            id: 'odc.ShadowSyncTask.DetailContent.Description',
+          }),
+          //描述
           task?.description,
           2,
         ],
       ].filter(Boolean),
     },
-
     {
       sectionName: formatMessage({
         id: 'odc.component.DetailModal.shadowSync.StructuralAnalysis',
-      }), //结构分析
+      }),
+      //结构分析
       sectionRender: (task) => {
         return (
           <StructAnalysisWrap
@@ -183,16 +185,20 @@ export function getItems(
       },
       textItems: [],
     },
-
     {
       textItems: [
         [
-          formatMessage({ id: 'odc.component.DetailModal.dataMocker.Created' }), //创建人
+          formatMessage({
+            id: 'odc.component.DetailModal.dataMocker.Created',
+          }),
+          //创建人
           task?.creator?.name || '-',
         ],
-
         [
-          formatMessage({ id: 'odc.TaskManagePage.DataMocker.CreationTime' }), // 创建时间
+          formatMessage({
+            id: 'odc.TaskManagePage.DataMocker.CreationTime',
+          }),
+          // 创建时间
           getFormatDateTime(task.createTime),
         ],
       ],

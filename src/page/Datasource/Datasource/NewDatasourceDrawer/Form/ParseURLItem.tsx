@@ -15,11 +15,12 @@
  */
 
 import { formatMessage } from '@/util/intl';
+import { parser, getOBUser } from '@/util/dataSourceParser';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Form, Input, Spin } from 'antd';
 import React, { useCallback, useContext, useState } from 'react';
 
-import { parseConnectionStr, testConnection } from '@/common/network/connection';
+import { testConnection } from '@/common/network/connection';
 import { AccountType } from '@/d.ts';
 import classNames from 'classnames';
 import { trim } from 'lodash';
@@ -44,38 +45,22 @@ const ParseURLItem: React.FC<IProps> = function (props) {
     if (parserUrl) {
       setIsparsing(true);
       try {
-        const data = await parseConnectionStr(trim(parserUrl, ' \t\n'));
+        const data = parser.parse(trim(parserUrl, ' \t\n'));
         if (data) {
           let newData = { ...data };
+          if (newData?.user) {
+            const user = getOBUser(newData?.user);
+            newData = {
+              ...newData,
+              ...user,
+            };
+            delete newData.user;
+          }
           Object.keys(newData).forEach((key) => {
             if (newData[key] == null) {
               delete newData[key];
             }
           });
-          const { clusterName, tenantName, host, port, username, password } = newData;
-          if (autoType && tenantName && host && port && username && password) {
-            /**
-             * 具备测试连接的必要条件，去主动获取一下数据库类型
-             */
-            const res = await testConnection(
-              {
-                clusterName,
-                tenantName,
-                host,
-                port,
-                username,
-                password,
-                sslConfig: {
-                  enabled: false,
-                },
-              },
-              AccountType.MAIN,
-              true,
-            );
-            if (res?.data?.type) {
-              newData.type = res?.data?.type;
-            }
-          }
           newData = {
             password: '',
             clusterName: '',

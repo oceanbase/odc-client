@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
 import styles from './index.less';
 import odc from '@/plugins/odc';
+import { EThemeConfigKey } from '@/store/setting';
 const DetectWay = ({
   key,
   script,
@@ -250,6 +251,9 @@ const DetectWay = ({
                   bordered={true}
                   language={'groovy'}
                   initialSQL={script}
+                  editorProps={{
+                    theme: EThemeConfigKey.ODC_WHITE,
+                  }}
                   onSQLChange={(script) => {
                     handleScriptChange(script);
                   }}

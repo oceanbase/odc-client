@@ -20,13 +20,11 @@ import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { Button, Descriptions, Drawer, Input, message } from 'antd';
 import { useEffect, useState } from 'react';
-
 const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClose }) => {
   const [searchText, setSearchText] = useState<string>('');
   const [testResult, setTestResult] = useState<string>('');
   const [showResult, setShowResult] = useState<boolean>(false);
   const [detailMaskingAlgorithmData, setDetailMaskingAlgorithmData] = useState<IMaskingAlgorithm>();
-
   const handleSearchTextChange = async (e) => {
     setSearchText(e.target.value);
   };
@@ -42,6 +40,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         }), //测试数据不能为空
       );
     }
+
     setShowResult(true);
     const result = await testMaskingAlgorithm({
       ...detailMaskingAlgorithmData,
@@ -67,21 +66,25 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
       reset();
     };
   }, [visible]);
-
   return (
     <Drawer
       width={520}
-      visible={visible}
+      open={visible}
       title={
         formatMessage({
-          id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DetailsOfDesensitizationRules',
-        }) //脱敏规则详情
+          id: 'odc.src.page.Secure.MaskingAlgorithm.components.DesertensitivityAlgorithmDetails',
+        }) //'脱敏算法详情'
       }
       onClose={handleViewDrawerClose}
       destroyOnClose={true}
       maskClosable={false}
       footer={
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           <Button onClick={handleViewDrawerClose}>
             {
               formatMessage({
@@ -122,7 +125,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         <Descriptions.Item
           label={
             formatMessage({
-              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationMethod',
+              id:
+                'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationMethod',
             }) //脱敏方式
           }
         >
@@ -131,7 +135,8 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         <Descriptions.Item
           label={
             formatMessage({
-              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
+              id:
+                'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
             }) //脱敏效果
           }
         >
@@ -155,7 +160,12 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
               }) /*测试数据*/
             }
           </span>
-          <div style={{ display: 'flex', columnGap: '8px' }}>
+          <div
+            style={{
+              display: 'flex',
+              columnGap: '8px',
+            }}
+          >
             <Input
               value={searchText}
               {...(selectedData?.id === 19
@@ -167,14 +177,17 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
               onChange={handleSearchTextChange}
               placeholder={formatMessage({
                 id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.PleaseEnter',
-              })} /*请输入*/
-              style={{ width: '240px' }}
+              })}
+              /*请输入*/ style={{
+                width: '240px',
+              }}
             />
 
             <Button onClick={handleMaskingTest}>
               {
                 formatMessage({
-                  id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationVerification',
+                  id:
+                    'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationVerification',
                 }) /*脱敏验证*/
               }
             </Button>
@@ -188,12 +201,19 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
               }) /*结果预览*/
             }
           </span>
-          <div style={{ display: 'flex', columnGap: '8px' }}>
+          <div
+            style={{
+              display: 'flex',
+              columnGap: '8px',
+            }}
+          >
             <Input
               placeholder={formatMessage({
                 id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.PleaseEnter',
-              })} /*请输入*/
-              style={{ width: '240px' }}
+              })}
+              /*请输入*/ style={{
+                width: '240px',
+              }}
               value={testResult}
               readOnly={!showResult}
               disabled={!showResult}
@@ -204,5 +224,4 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
     </Drawer>
   );
 };
-
 export default ViewMaskingAlgorithmDrawer;

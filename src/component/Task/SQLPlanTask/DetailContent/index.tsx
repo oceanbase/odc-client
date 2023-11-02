@@ -27,6 +27,7 @@ import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
 import { getCronCycle } from '../../component/TaskTable';
 import styles from '../../index.less';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 const { Panel } = Collapse;
 const ErrorStrategy = {
@@ -56,7 +57,6 @@ interface IProps {
 
 const SqlPlanTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow, operationType } = props;
-  const isMySQL = task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
   const { jobParameters, triggerConfig, allowConcurrent } = task ?? {};
   const executionTimeout = jobParameters?.timeoutMillis / 1000 / 60 / 60;
 
@@ -114,7 +114,9 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
               sqlObjectIds={jobParameters?.sqlObjectIds}
               sqlObjectNames={jobParameters?.sqlObjectNames}
               taskId={task?.id}
-              isMySQL={isMySQL}
+              language={
+                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              }
             />
           </div>
         }

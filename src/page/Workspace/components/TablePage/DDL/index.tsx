@@ -25,6 +25,7 @@ import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-des
 import { observer } from 'mobx-react';
 import React, { useContext, useRef, useState } from 'react';
 import TablePageContext from '../context';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -34,7 +35,6 @@ const TableDDL: React.FC<IProps> = function ({}) {
   const [formated, setFormated] = useState(false);
   const editorRef = useRef<IEditor>();
   const { table, onRefresh, session } = useContext(TablePageContext);
-  const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
   const handleFormat = () => {
     if (!formated) {
       editorRef.current?.doFormat();
@@ -95,7 +95,7 @@ const TableDDL: React.FC<IProps> = function ({}) {
         <SQLCodeEditorDDL
           readOnly
           defaultValue={table?.info?.DDL}
-          language={isMySQL ? 'obmysql' : 'oboracle'}
+          language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
           onEditorCreated={(editor: IEditor) => {
             editorRef.current = editor;
           }}

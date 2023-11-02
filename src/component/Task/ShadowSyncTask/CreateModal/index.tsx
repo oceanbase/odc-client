@@ -82,8 +82,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   const connection = database?.dataSource;
   const connectionId = connection?.id;
   const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
-  const connectionMode =
-    connection?.dialectType === ConnectionMode.OB_MYSQL ? 'obmysql' : 'oboracle';
+  const connectionMode = connection?.dialectType;
 
   function setData(v) {
     _setData(v);
@@ -159,7 +158,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   return (
     <Drawer
       className={styles.drawer}
-      visible={modalStore.addShadowSyncVisible}
+      open={modalStore.addShadowSyncVisible}
       destroyOnClose
       onClose={() => close()}
       width={720}
@@ -235,7 +234,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         isReadonlyPublicConn={isReadonlyPublicConn}
         sessionId={sessionId}
         data={data}
-        connectionMode={connectionMode as ConnectionMode}
+        connectionMode={connectionMode}
         projectId={projectId}
         setData={setData}
         ref={contentRef}

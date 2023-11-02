@@ -25,8 +25,9 @@ import { openCreateFunctionPageByRemote } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { useDBSession } from '@/store/sessionManager/hooks';
-import { AutoComplete, Col, Form, Input, message, Modal, Row } from 'antd';
+import { AutoComplete, Col, Form, Input, message, Modal, Row, Spin } from 'antd';
 import { useForm } from 'antd/es/form/Form';
+import ExtraOptions from '../ProcedureParam/ExtraOptions';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -46,8 +47,8 @@ const CreateFunctionModal: React.FC<IProps> = inject(
     const { modalStore, model, sessionManagerStore } = props;
     const dbId = modalStore?.createFunctionModalData?.databaseId;
     const dbName = modalStore?.createFunctionModalData?.dbName;
-    const { session } = useDBSession(dbId);
-    const dbMode = session?.connection?.dialectType || ConnectionMode.OB_MYSQL;
+    const { session, loading } = useDBSession(dbId);
+    const dbMode = session?.connection?.dialectType;
     const [form] = useForm();
     const visible = modalStore.createFunctionModalVisible;
     const paramsRef = useRef<{
@@ -120,7 +121,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
       if (visible) {
         form.resetFields();
       }
-    }, [visible]);
+    }, [visible, session]);
     return (
       <Modal
         centered={true}
@@ -129,85 +130,90 @@ const CreateFunctionModal: React.FC<IProps> = inject(
         title={formatMessage({
           id: 'workspace.window.createFunction.modal.title',
         })}
-        visible={visible}
+        open={visible}
         onOk={save}
         onCancel={onCancel}
       >
-        <Form requiredMark="optional" layout="vertical" form={form} initialValues={{ ...model }}>
-          <Row>
-            <Col span={12}>
-              <Form.Item
-                name="funName"
-                label={formatMessage({
-                  id: 'workspace.window.createFunction.funName',
-                })}
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'workspace.window.createFunction.funName.validation',
-                    }),
-                  },
-                ]}
-              >
-                <Input
-                  style={{
-                    width: 320,
-                  }}
-                  placeholder={formatMessage({
-                    id: 'workspace.window.createFunction.funName.placeholder',
+        <Spin spinning={loading}>
+          <Form requiredMark="optional" layout="vertical" form={form} initialValues={{ ...model }}>
+            <Row>
+              <Col span={12}>
+                <Form.Item
+                  name="funName"
+                  label={formatMessage({
+                    id: 'workspace.window.createFunction.funName',
                   })}
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'workspace.window.createFunction.funName.validation',
+                      }),
+                    },
+                  ]}
+                >
+                  <Input
+                    style={{
+                      width: 320,
+                    }}
+                    placeholder={formatMessage({
+                      id: 'workspace.window.createFunction.funName.placeholder',
+                    })}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="returnType"
+                  label={formatMessage({
+                    id: 'workspace.window.createFunction.returnType',
+                  })}
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'workspace.window.createFunction.returnType.validation',
+                      }),
+                    },
+                  ]}
+                >
+                  <AutoComplete
+                    style={{
+                      width: 160,
+                    }}
+                    options={session?.dataTypes
+                      ?.map((d) =>
+                        dbMode === ConnectionMode.OB_ORACLE
+                          ? d.databaseType.replace('(', '').replace(')', '')
+                          : d.databaseType,
+                      )
+                      .map((a) => ({ value: a }))}
+                    filterOption={(inputValue, option) =>
+                      // @ts-ignore
+                      option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                    }
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <ExtraOptions connectType={session?.connection?.type} dbType={DbObjectType.function} />
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.component.CreateFunctionModal.Parameter',
+              })}
+              /* 参数 */ required
+            >
+              {session ? (
+                <FunctionOrProcedureParams
+                  session={session}
+                  dbMode={dbMode}
+                  mode={DbObjectType.function}
+                  paramsRef={paramsRef}
                 />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="returnType"
-                label={formatMessage({
-                  id: 'workspace.window.createFunction.returnType',
-                })}
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'workspace.window.createFunction.returnType.validation',
-                    }),
-                  },
-                ]}
-              >
-                <AutoComplete
-                  style={{
-                    width: 160,
-                  }}
-                  options={session?.dataTypes
-                    ?.map((d) =>
-                      dbMode === ConnectionMode.OB_ORACLE
-                        ? d.databaseType.replace('(', '').replace(')', '')
-                        : d.databaseType,
-                    )
-                    .map((a) => ({ value: a }))}
-                  filterOption={(inputValue, option) =>
-                    // @ts-ignore
-                    option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                  }
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.component.CreateFunctionModal.Parameter',
-            })}
-            /* 参数 */ required
-          >
-            <FunctionOrProcedureParams
-              session={session}
-              dbMode={dbMode}
-              mode={DbObjectType.function}
-              paramsRef={paramsRef}
-            />
-          </Form.Item>
-        </Form>
+              ) : null}
+            </Form.Item>
+          </Form>
+        </Spin>
       </Modal>
     );
   }),

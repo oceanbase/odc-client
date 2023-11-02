@@ -183,7 +183,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           const { timer } = row;
           const executeStage = timer?.stages?.find((stage) => stage.stageName === 'Execute');
           const executeSQLStage = executeStage?.subStages?.find(
-            (stage) => stage.stageName === 'OBServer Execute SQL',
+            (stage) => stage.stageName === 'DB Server Execute SQL',
           );
 
           const DBCostTime = formatTimeTemplate(
@@ -194,8 +194,12 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             <Space size={5}>
               <span>{DBCostTime}</span>
               <Tooltip
-                overlayStyle={{ maxWidth: 350 }}
+                overlayStyle={{ maxWidth: 370 }}
                 color="var(--background-primary-color)"
+                overlayInnerStyle={{
+                  maxHeight: 500,
+                  overflow: 'auto',
+                }}
                 placement="leftTop"
                 showArrow={false}
                 title={<DBTimeline row={row} />}
@@ -235,7 +239,8 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           message={
             formatMessage(
               {
-                id: 'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                id:
+                  'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
               },
 
               { selectedRowKeysLength: selectedRowKeys.length },

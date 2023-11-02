@@ -24,6 +24,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
@@ -46,7 +47,6 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
   const parameters = task?.parameters;
   const executionTimeout = parameters.timeoutMillis / 1000 / 60 / 60;
   const riskLevel = task?.riskLevel;
-  const isMySQL = task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   return (
     <>
@@ -75,6 +75,16 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={
             formatMessage({
+              id: 'odc.src.component.Task.AsyncTask.DetailContent.DataSource',
+            }) /* 所属数据源 */
+          }
+        >
+          {task?.connection?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Type',
             }) /* 任务类型 */
           }
@@ -83,8 +93,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
             }) /* 
-          数据库变更
-         */
+           数据库变更
+           */
           }
         </Descriptions.Item>
         {hasFlow && (
@@ -114,7 +124,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               sqlObjectIds={task?.parameters?.sqlObjectIds}
               sqlObjectNames={task?.parameters?.sqlObjectNames}
               taskId={task?.id}
-              isMySQL={isMySQL}
+              language={
+                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              }
             />
           </div>
         }
@@ -144,7 +156,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
               sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
               taskId={task?.id}
-              isMySQL={isMySQL}
+              language={
+                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              }
             />
           </div>
         }

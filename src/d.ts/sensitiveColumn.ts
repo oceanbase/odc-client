@@ -23,7 +23,10 @@ export enum Level {
   HIGH,
   EXTREME_HIGH,
 }
-
+export enum ESensitiveColumnType {
+  TABLE_COLUMN = 'TABLE_COLUMN',
+  VIEW_COLUMN = 'VIEW_COLUMN',
+}
 export interface ISensitiveColumn {
   id?: number;
   enabled: boolean;
@@ -33,6 +36,7 @@ export interface ISensitiveColumn {
   maskingAlgorithmId: number;
   sensitiveRuleId: number;
   level: Level;
+  type: ESensitiveColumnType;
   creator: ProjectUser;
   createTime: number;
   updateTime: number;

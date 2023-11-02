@@ -30,13 +30,13 @@ import {
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import userStore from '@/store/login';
-import { isConnectTypeBeCloudType } from '@/util/connection';
 import request from '@/util/request';
 import { decrypt, encrypt } from '@/util/utils';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
+import { getDataSourceModeConfig } from '../datasource';
 
-function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: boolean) {
+function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
   const userId = userStore?.user?.id;
   const params: Partial<IConnection> = {
@@ -45,36 +45,41 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
     name: formData.name,
     username: formData.username,
     password: encrypt(formData.password),
-    sysTenantUsername: formData.sysTenantUsername,
+    sysTenantUsername: formData?.useSys ? formData.sysTenantUsername : null,
     sslConfig: formData.sslConfig || { enabled: false },
     /**
      * 逻辑同 pwd
      */
-    sysTenantPassword: encrypt(formData.sysTenantPassword),
+    sysTenantPassword: formData?.useSys ? encrypt(formData.sysTenantPassword) : null,
     queryTimeoutSeconds: formData.queryTimeoutSeconds,
     properties: formData.properties,
     passwordSaved: formData.passwordSaved,
     environmentId: formData.environmentId,
+    jdbcUrlParameters: formData.jdbcUrlParameters || {},
+    temp: isHiden,
+    sessionInitScript: formData.sessionInitScript,
   };
-
-  if (isConnectTypeBeCloudType(formData.type)) {
-    /**
-     * 共有云
-     */
-    params.host = formData.host;
-    params.port = formData.port;
-  } else {
-    /**
-     * 私有云
-     */
-    params.clusterName = formData.clusterName;
-    params.tenantName = formData.tenantName;
-    /**
-     * host:port 连接
-     */
-    params.host = formData.host;
-    params.port = formData.port;
-  }
+  const config = getDataSourceModeConfig(formData.type)?.connection;
+  config?.address?.items?.forEach((item) => {
+    switch (item) {
+      case 'cluster': {
+        params.clusterName = formData.clusterName;
+        break;
+      }
+      case 'ip': {
+        params.host = formData.host;
+        break;
+      }
+      case 'port': {
+        params.port = formData.port;
+        break;
+      }
+      case 'tenant': {
+        params.tenantName = formData.tenantName;
+        break;
+      }
+    }
+  });
 
   // 取消数据订正，详见clearReviseV2Field
   return params;
@@ -210,10 +215,8 @@ export async function batchTest(
     }
   >
 > {
-  const res = await request.get('/api/v2/datasource/datasources/status', {
-    params: {
-      id: cids,
-    },
+  const res = await request.post('/api/v2/datasource/datasources/status', {
+    data: cids,
   });
   return res?.data;
 }

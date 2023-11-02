@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityBarItemType } from '../ActivityBar/type';
 import ActivityBarContext from './ActivityBarContext';
 import ResourceTreeContext, { ResourceTreeTab } from './ResourceTreeContext';
 import tracert from '@/util/tracert';
+import { IDatasource } from '@/d.ts/datasource';
+import { IProject } from '@/d.ts/project';
+import login from '@/store/login';
+import { useRequest } from 'ahooks';
+import { getDataSourceGroupByProject } from '@/common/network/connection';
+import { listProjects } from '@/common/network/project';
+import { useParams } from '@umijs/max';
+import { toInteger } from 'lodash';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
-
+  const { datasourceId } = useParams<{ datasourceId: string }>();
   const [selectTabKey, _setSelectTabKey] = useState<ResourceTreeTab>(ResourceTreeTab.datasource);
   function setSelectTabKey(v: ResourceTreeTab) {
     tracert.click(
@@ -33,8 +41,41 @@ export default function WorkspaceStore({ children }) {
     _setSelectTabKey(v);
   }
 
-  const [selectProjectId, setSelectProjectId] = useState<number>(null);
-  const [selectDatasourceId, setSelectDatasourceId] = useState<number>(null);
+  const [selectProjectId, _setSelectProjectId] = useState<number>(null);
+  const [selectDatasourceId, _setSelectDatasourceId] = useState<number>(
+    datasourceId ? toInteger(datasourceId) : null,
+  );
+  const [datasourceList, setDatasourceList] = useState<IDatasource[]>([]);
+  const [projectList, setProjectList] = useState<IProject[]>([]);
+
+  function setSelectProjectId(v: number) {
+    _setSelectProjectId(v);
+    _setSelectDatasourceId(null);
+  }
+
+  function setSelectDatasourceId(v: number) {
+    _setSelectProjectId(null);
+    _setSelectDatasourceId(v);
+  }
+
+  const { loading: dsLoading, run: fetchDatasource } = useRequest(getDataSourceGroupByProject, {
+    defaultParams: [login.isPrivateSpace()],
+    manual: true,
+  });
+  const { loading: projLoading, run: fetchProject } = useRequest(listProjects, {
+    defaultParams: [null, 1, 9999, false],
+    manual: true,
+  });
+
+  const reloadDatasourceList = useCallback(async () => {
+    const data = await fetchDatasource();
+    setDatasourceList(data?.contents || []);
+  }, []);
+
+  const reloadProjectList = useCallback(async () => {
+    const data = await fetchProject(null, 1, 99999, false);
+    setProjectList(data?.contents || []);
+  }, []);
 
   return (
     <ResourceTreeContext.Provider
@@ -45,6 +86,10 @@ export default function WorkspaceStore({ children }) {
         selectDatasourceId,
         setSelectDatasourceId,
         setSelectProjectId,
+        datasourceList,
+        reloadDatasourceList,
+        projectList,
+        reloadProjectList,
       }}
     >
       <ActivityBarContext.Provider

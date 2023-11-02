@@ -112,7 +112,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
         `(${name})`
       }
       width={380}
-      visible={visible}
+      open={visible}
       onCancel={handleClose}
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -205,11 +205,15 @@ export async function getCopyText(
   sessionId: string,
 ) {
   const dbSession = sessionManager.sessionMap.get(sessionId);
+  if (!dbSession) {
+    return '';
+  }
   const _escape = isEscape
     ? escape
     : function (b) {
         return b;
       };
+
   switch (copyType) {
     case DragInsertType.NAME: {
       return _escape(name);

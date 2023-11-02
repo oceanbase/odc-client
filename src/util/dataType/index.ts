@@ -147,7 +147,6 @@ export function mergeDataType(
   dataLength: string | number,
   precision: string | number,
 ) {
-  const lang = dbMode === ConnectionMode.OB_MYSQL ? MySQL : Oracle;
   if (!/\w/.test(dataType)) {
     /**
      * 非法类型，直接返回原样内容
@@ -175,11 +174,10 @@ export function parseDataType(dataType: string) {
   };
 }
 
-const a: ConnectionMode[] = [ConnectionMode.OB_MYSQL];
-
 class DataTypes {
   public dataTypes: Partial<Record<ConnectionMode, IDataTypes>> = {
     [ConnectionMode.OB_MYSQL]: MySQLDataTypes,
+    [ConnectionMode.MYSQL]: MySQLDataTypes,
     [ConnectionMode.OB_ORACLE]: OracleDataTypes,
   };
   public getParamsCount(mode: ConnectionMode, dataTypeName: string) {

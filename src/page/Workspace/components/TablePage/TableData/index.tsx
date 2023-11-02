@@ -292,8 +292,7 @@ class TableData extends React.Component<
 
   showExportResuleSetModal = () => {
     const { modalStore, session, tableName } = this.props;
-    const isOracle = session.connection?.dialectType === ConnectionMode.OB_ORACLE;
-    const sql = generateSelectSql(false, isOracle, tableName);
+    const sql = generateSelectSql(false, session.connection?.type, tableName);
     modalStore.changeCreateResultSetExportTaskModal(true, {
       sql,
       databaseId: session?.database.databaseId,

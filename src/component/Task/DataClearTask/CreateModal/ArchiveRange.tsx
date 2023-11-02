@@ -76,7 +76,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     }
                   </div>
                   <div style={{ width: '460px' }}>
-                    <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
+                    <HelpDoc leftText isTip doc="dataClearFilterDoc">
                       {
                         formatMessage({
                           id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
@@ -121,7 +121,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           <Form.Item {...restField} name={[name, 'conditionExpression']}>
                             <Input
                               placeholder={formatMessage({
-                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                                id:
+                                  'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
                               })} /*请输入清理条件*/
                             />
                           </Form.Item>

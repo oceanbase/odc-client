@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { IDatasource } from '@/d.ts/datasource';
+import { IProject } from '@/d.ts/project';
 import React from 'react';
 
 export enum ResourceTreeTab {
@@ -27,11 +29,17 @@ interface IResourceTreeContext {
   setSelectProjectId?: (v: number) => void;
   selectDatasourceId: number;
   setSelectDatasourceId?: (v: number) => void;
+  datasourceList: IDatasource[];
+  reloadDatasourceList?: () => void;
+  projectList: IProject[];
+  reloadProjectList?: () => void;
 }
 
 const ResourceTreeContext = React.createContext<IResourceTreeContext>({
   selectTabKey: ResourceTreeTab.datasource,
   selectProjectId: null,
   selectDatasourceId: null,
+  datasourceList: [],
+  projectList: [],
 });
 export default ResourceTreeContext;

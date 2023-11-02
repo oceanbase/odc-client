@@ -17,6 +17,7 @@
 import { Tag } from 'antd';
 import { RiskLevelMap } from '../../page/Secure/interface';
 import styles from './index.less';
+import { EnvColorMap } from '@/constant';
 
 const RiskLevelLabel: React.FC<{ level?: number; color: string; content?: string }> = ({
   level = -1,
@@ -27,7 +28,15 @@ const RiskLevelLabel: React.FC<{ level?: number; color: string; content?: string
     <span>-</span>
   ) : (
     <div className={styles.tag}>
-      <Tag color={color.toLowerCase()}>{level !== -1 ? RiskLevelMap[level] : content}</Tag>
+      <Tag
+        style={{
+          background: EnvColorMap[color?.toUpperCase()]?.background,
+          color: EnvColorMap[color?.toUpperCase()]?.textColor,
+        }}
+        color={''}
+      >
+        {level !== -1 ? RiskLevelMap[level] : content}
+      </Tag>
     </div>
   );
 };

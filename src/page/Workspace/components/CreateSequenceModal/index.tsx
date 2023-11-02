@@ -45,7 +45,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
   const [form] = Form.useForm();
   const isEditMode = !!createSequenceModalData?.isEdit;
   const { databaseId, dbName } = modalStore.createSequenceModalData || {};
-  const { session } = useDBSession(databaseId);
+  const { session, loading } = useDBSession(databaseId);
   const sessionId = session?.sessionId;
   useEffect(() => {
     if (modalStore.createSequenceModalVisible) {
@@ -160,7 +160,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
           modalStore.changeCreateSequenceModalVisible(false);
         }}
         okButtonProps={{
-          disabled: isEditMode && !haveChanged,
+          disabled: (isEditMode && !haveChanged) || loading,
         }}
         onOk={async () => {
           try {

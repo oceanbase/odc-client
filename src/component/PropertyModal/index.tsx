@@ -89,7 +89,7 @@ class PropertyModal extends Component<IProps> {
         title={formatMessage({
           id: 'workspace.window.session.modal.title',
         })}
-        visible={visible}
+        open={visible}
         onOk={this.save}
         onCancel={onCancel}
       >

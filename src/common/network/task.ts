@@ -439,3 +439,19 @@ export async function getSubTask(id: number): Promise<IResponseData<ISubTaskReco
   const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/result`);
   return res?.data;
 }
+
+/**
+ * 更新限流配置
+ */
+export async function updateLimiterConfig(
+  taskId: number,
+  data: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  },
+): Promise<boolean> {
+  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/dlmRateLimitConfiguration`, {
+    data,
+  });
+  return !!res?.data;
+}

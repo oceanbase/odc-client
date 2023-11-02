@@ -1,3 +1,4 @@
+@import '../index.less';
 .formItem {
   margin-bottom: 12px;
 
@@ -94,6 +95,142 @@
   :global {
     .ant-drawer-body {
       padding: 16px;
+    }
+  }
+}
+
+//处理文字内容过长和自定义内容重叠的样式
+.lineEllipsis {
+  display: inline-block;
+  width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+//自定义内容
+.optionExpand::after {
+  content: attr(data-name);
+  color: rgb(230, 128, 13);
+}
+.icon {
+  display: flex;
+  line-height: 24px;
+  font-size: 14px;
+  height: 24px;
+  width: 14px !important;
+  color: var(--icon-color-disable);
+  justify-content: center;
+  align-items: center;
+}
+.manualForm {
+  &Content {
+    display: flex;
+    flex-direction: column;
+    .form {
+      .select {
+        width: 320px;
+      }
+      .currentProject {
+        color: var(--neutral-black45-color);
+      }
+    }
+    .exportCard {
+      margin-top: 24px;
+      .label {
+        color: var(--text-color-primary);
+        margin-bottom: 4px;
+      }
+      .doubleExportCardContainer {
+        display: flex;
+        width: 100%;
+      }
+      .content {
+        flex: 1 1 50%;
+        height: calc(100vh - 265px);
+        overflow-y: auto;
+        width: 50%;
+        border: 1px solid var(--odc-border-color);
+        border-right: 0;
+        & + & {
+          border-right: 1px;
+        }
+        .centerContainer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+.wrapCollapse {
+  padding: 0px 12px 0px 0px;
+  .panelHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .headerIcon {
+      display: flex;
+      line-height: 1;
+      font-size: 14;
+      color: var(--icon-color-disable) !important;
+    }
+  }
+  .panelContent {
+    display: flex;
+    justify-content: flex-end;
+    .checkedTable {
+      display: flex;
+      justify-content: space-between;
+      &Column {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-right: 8px;
+        &Icon {
+          align-self: flex-start;
+          line-height: 28px;
+          height: 28px;
+          color: var(--icon-color-disable) !important;
+        }
+        &Tooltip {
+          width: 76px;
+          line-height: 28px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-overflow: hidden;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  :global {
+    .ant-collapse-item {
+      margin-left: 4px;
+      .ant-collapse-header {
+        padding: 0px;
+        height: 22px;
+        line-height: 22px;
+      }
+      .ant-collapse-content {
+        .ant-collapse-content-box {
+          padding: 8px 0px 0px;
+        }
+      }
+      .ant-form-item {
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+
+.tree {
+  :global {
+    .ant-tree-node-content-wrapper {
+      display: flex;
     }
   }
 }

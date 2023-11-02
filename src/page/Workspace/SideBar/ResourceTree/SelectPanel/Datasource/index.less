@@ -1,0 +1,86 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+  padding-left: 12px;
+  .search {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 100%;
+    padding: 0px 12px 4px 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .list {
+    flex: 1;
+    padding-right: 12px;
+    overflow: auto;
+    overflow-x: hidden;
+  }
+}
+
+.connectionPopover {
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+  }
+}
+
+.tree {
+  :global {
+    .ant-tree-list {
+      .ant-tree-treenode {
+        .ant-tree-node-content-wrapper {
+          .ant-dropdown-trigger {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          &:hover {
+            :local(.actions) {
+              display: flex;
+              justify-content: center;
+            }
+            :local(.envTip.envTipPersonal) {
+              display: none;
+            }
+          }
+          :local(.envTip) {
+            :global {
+              .ant-badge-status-dot {
+                border-radius: 0;
+              }
+            }
+          }
+          :local(.actions) {
+            display: none;
+            flex: 0;
+            flex-basis: 25px;
+          }
+          display: flex;
+          .ant-tree-iconEle {
+            flex-grow: 0;
+            flex-shrink: 0;
+          }
+          .ant-tree-title {
+            position: relative;
+            display: flex;
+            flex: 1;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+}
+
+.activeStatus:global(.anticon) {
+  color: #1890ff;
+  font-size: 24px;
+}

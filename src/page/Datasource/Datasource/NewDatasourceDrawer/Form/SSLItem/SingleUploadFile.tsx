@@ -38,11 +38,11 @@ const SingleUpload: React.FC<IProps> = function ({
 }) {
   const [innerFile, _setInnerFile] = useState<UploadFile>(null);
   function setInnerFile(file: UploadFile) {
-    if (file?.uid !== value) {
+    _setInnerFile(file);
+    if (file?.uid !== value && !['error', 'uploading'].includes(file?.status)) {
       const objectId = file?.response?.data?.contents?.[0]?.objectId;
       onChange(objectId);
     }
-    _setInnerFile(file);
   }
   useEffect(() => {
     if (value) {

@@ -47,6 +47,8 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -186,7 +188,7 @@ class FunctionPage extends Component<
       params: { funName },
     } = this.props;
     const { propsTab, func, formated } = this.state;
-    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection?.dialectType);
 
     const tableColumns = [
       {
@@ -279,7 +281,7 @@ class FunctionPage extends Component<
               </TabPane>
               <TabPane tab={'DDL'} key={PropsTab.DDL}>
                 <Toolbar>
-                  {!isMySQL && (
+                  {getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit && (
                     <ToolbarButton
                       text={<FormattedMessage id="workspace.window.session.button.edit" />}
                       icon={<EditOutlined />}
@@ -333,7 +335,7 @@ class FunctionPage extends Component<
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(func && func.ddl) || ''}
-                    language={isMySQL ? 'obmysql' : 'oboracle'}
+                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

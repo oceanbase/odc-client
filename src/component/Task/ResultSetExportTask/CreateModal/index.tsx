@@ -41,6 +41,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -57,7 +58,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
-  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
   const { resultSetExportData } = modalStore;
   const initSql = resultSetExportData?.sql;
   const handleSqlChange = (sql: string) => {
@@ -190,7 +190,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={modalStore.createResultSetExportTaskVisible}
+      open={modalStore.createResultSetExportTaskVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}
@@ -217,7 +217,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect projectId={projectId} />
+        <DatabaseSelect projectId={projectId} type={TaskType.EXPORT_RESULT_SET} />
         <Form.Item
           label={
             <Space>
@@ -254,7 +254,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <CommonIDE
             initialSQL={initSql}
-            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             editorProps={{
               theme,
             }}

@@ -37,6 +37,7 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -146,7 +147,6 @@ class SynonymPage extends Component<
   public render() {
     const { sessionManagerStore, session } = this.props;
     const { propsTab, synonym, formated } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
     const preTextForm = 'odc-toolPage-textFrom';
     return (
       synonym && (
@@ -267,7 +267,7 @@ class SynonymPage extends Component<
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(synonym && synonym.ddl) || ''}
-                    language={isMySQL ? 'obmysql' : 'oboracle'}
+                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

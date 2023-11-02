@@ -33,7 +33,7 @@ export class SQLContent extends React.PureComponent<{
   sqlObjectNames: string[];
   sqlContent: string;
   taskId: number;
-  isMySQL: boolean;
+  language: string;
   settingStore?: SettingStore;
 }> {
   public editor: IEditor;
@@ -48,7 +48,7 @@ export class SQLContent extends React.PureComponent<{
   };
 
   render() {
-    const { sqlObjectNames, sqlContent, isMySQL, settingStore } = this.props;
+    const { sqlObjectNames, sqlContent, language, settingStore } = this.props;
     return (
       <div className={styles.sqlContent}>
         {sqlObjectNames ? (
@@ -79,7 +79,7 @@ export class SQLContent extends React.PureComponent<{
             <MonacoEditor
               readOnly
               defaultValue={sqlContent}
-              language={isMySQL ? 'obmysql' : 'oboracle'}
+              language={language}
               onEditorCreated={async (e: IEditor) => {
                 this.editor = e;
                 await this.editor.doFormat();

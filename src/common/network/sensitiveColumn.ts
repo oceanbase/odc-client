@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import { IResponseData } from '@/d.ts';
+import { IDataType, IResponseData } from '@/d.ts';
 import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import { IServerTableColumn } from '@/d.ts/table';
 import request from '@/util/request';
-
-export async function updateSensitiveColumn(
-  id: number,
-  sensitiveColumn: ISensitiveColumn,
-): Promise<boolean> {
-  const ret = await request.put(`/api/v2/sensitive/columns/${id}`, {
-    data: sensitiveColumn,
-  });
-  return ret?.successful;
-}
 
 export async function startScanning(
   projectId: number,
@@ -81,6 +72,33 @@ export async function listSensitiveColumns(
   return ret?.data;
 }
 
+export async function listColumns(
+  projectId: number,
+  database: number[],
+): Promise<{
+  contents: {
+    dataTypeUnits: IDataType[];
+    databaseId: number;
+    databaseName: string;
+    table2Columns: {
+      [key in string]: IServerTableColumn[];
+    };
+    view2Columns: {
+      [key in string]: IServerTableColumn[];
+    };
+  }[];
+}> {
+  const result = await request.get(
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/listColumns`,
+    {
+      params: {
+        database,
+      },
+    },
+  );
+  return result?.data || {};
+}
+
 export enum ScannResultType {
   CREATED = 'CREATED',
   RUNNING = 'RUNNING',
@@ -104,16 +122,6 @@ export async function getScanningResults(projectId: number, taskId: string): Pro
     `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults?taskId=${taskId}`,
   );
   return ret?.data;
-}
-
-export async function detailSensitiveColumn(
-  projectId: number,
-  id: number,
-): Promise<ISensitiveColumn> {
-  const ret = await request.get(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/${id}`,
-  );
-  return ret?.data?.contents;
 }
 
 export async function batchUpdateSensitiveColumn(
@@ -167,23 +175,4 @@ export async function statsSensitiveColumns(projectId: number) {
       maskingAlgorithmId: { distinct: [] },
     }
   );
-}
-
-export async function exist(
-  projectId: number,
-  data: {
-    database: {
-      id: number;
-    };
-    tableName: string;
-    columnName: string;
-  },
-): Promise<boolean> {
-  const res = await request.post(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/exists`,
-    {
-      data,
-    },
-  );
-  return res?.data || false;
 }

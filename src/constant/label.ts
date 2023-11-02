@@ -75,11 +75,12 @@ export const ConnectTypeText = {
     id: 'odc.components.ConnectionCardList.AllModes',
   }),
 
-  [ConnectType.OB_MYSQL]: 'OB MySQL',
-  [ConnectType.OB_ORACLE]: 'OB Oracle',
-  [ConnectType.CLOUD_OB_MYSQL]: 'Cloud OB MySQL',
-  [ConnectType.CLOUD_OB_ORACLE]: 'Cloud OB Oracle',
-  [ConnectType.ODP_SHARDING_OB_MYSQL]: 'ODP(Sharding) OB MySQL',
+  [ConnectType.OB_MYSQL]: 'OceanBase MySQL',
+  [ConnectType.OB_ORACLE]: 'OceanBase Oracle',
+  [ConnectType.CLOUD_OB_MYSQL]: 'OB Cloud MySQL',
+  [ConnectType.CLOUD_OB_ORACLE]: 'OB Cloud Oracle',
+  [ConnectType.ODP_SHARDING_OB_MYSQL]: 'OB Sharding MySQL',
+  [ConnectType.MYSQL]: 'MySQL',
 };
 
 export const DragInsertTypeText = {

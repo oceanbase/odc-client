@@ -20,21 +20,14 @@ import { statsSensitiveColumns } from '@/common/network/sensitiveColumn';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import { IDatasource } from '@/d.ts/datasource';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
-import { formatMessage } from '@/util/intl';
 import { useEffect, useState } from 'react';
-import SecureLayout from '../../Secure/components/SecureLayout';
-import SecureSider, { SiderItem } from '../../Secure/components/SecureSider';
 import SensitiveColumn from './components/SensitiveColumn';
-import SensitiveRule from './components/SensitiveRule';
 import styles from './index.less';
 import { FilterItemProps, SelectItemProps } from './interface';
 import SensitiveContext from './SensitiveContext';
 import tracert from '@/util/tracert';
 
 const Sensitive: React.FC<{ id: number }> = ({ id }) => {
-  const [selectedItem, setSelectedItem] = useState<string>('sensitiveColumn');
-  const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
-
   const [dataSourceIdMap, setDataSourceIdMap] = useState<
     {
       [key in string | number]: string;
@@ -53,11 +46,8 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
   const [maskingAlgorithms, setMaskingAlgorithms] = useState<IMaskingAlgorithm[]>([]);
   const [dataSources, setDataSources] = useState<IDatasource[]>([]);
   const [maskingAlgorithmOptions, setMaskingAlgorithmOptions] = useState<SelectItemProps[]>();
-
-  const [dataSourceFilters, setDataSourceFilters] = useState<FilterItemProps[]>();
-  const [databaseFilters, setDatabaseFilters] = useState<FilterItemProps[]>();
   const [maskingAlgorithmFilters, setMaskingAlgorithmFilters] = useState<FilterItemProps[]>();
-
+  const [cascaderOptions, setCascaderOptions] = useState<any>([]);
   useEffect(() => {
     tracert.expo('a3112.b64002.c330861');
   }, []);
@@ -72,64 +62,45 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
   };
 
   const initSensitiveColumnFilters = (
-    rawData: {
-      datasource: {
-        distinct: string[];
-      };
-      database: {
-        distinct: string[];
-      };
-      maskingAlgorithmId: {
-        distinct: string[];
-      };
-    },
+    rawData: any,
     maskingAlgorithmIdMap: {
       [key in string | number]: string;
     },
   ) => {
-    const {
-      datasource: { distinct: datasource = [] },
-      database: { distinct: database = [] },
-      maskingAlgorithmId: { distinct: maskingAlgorithmId = [] },
-    } = rawData;
-    setDataSourceFilters(
-      datasource?.map((d) => ({
-        text: d,
-        value: d,
-      })),
-    );
-    setDatabaseFilters(
-      database?.map((d) => ({
-        text: d,
-        value: d,
+    const { databases = [], maskingAlgorithms = [] } = rawData;
+    const map = {};
+    databases?.forEach((database) => {
+      const dataSourceName = database?.dataSource?.name;
+      if (map?.[dataSourceName]) {
+        map?.[dataSourceName].children.push({
+          label: database?.name,
+          value: database?.id,
+        });
+      } else {
+        map[dataSourceName] = {
+          id: database?.dataSource?.id,
+          children: [
+            {
+              label: database?.name,
+              value: database?.id,
+            },
+          ],
+        };
+      }
+    });
+    setCascaderOptions(
+      Object.keys(map)?.map((key) => ({
+        label: key,
+        value: map?.[key]?.id,
+        children: map?.[key]?.children,
       })),
     );
     setMaskingAlgorithmFilters(
-      maskingAlgorithmId?.map((d) => ({
-        text: maskingAlgorithmIdMap[d],
-        value: d,
+      maskingAlgorithms?.map((ma) => ({
+        text: maskingAlgorithmIdMap[ma?.id],
+        value: ma?.id,
       })),
     );
-  };
-
-  const handleItemClick = (item: any) => {
-    setSelectedItem(item.value);
-  };
-
-  const initSiderData = async () => {
-    const siderItems = [
-      {
-        value: 'sensitiveColumn',
-        label: formatMessage({ id: 'odc.Project.Sensitive.SensitiveColumn' }), //敏感列
-      },
-      {
-        value: 'detectRule',
-        label: formatMessage({ id: 'odc.Project.Sensitive.IdentificationRules' }), //识别规则
-      },
-    ];
-
-    handleItemClick(siderItems[0]);
-    setSiderItemList(siderItems);
   };
 
   const getListMaskingAlgorithm = async (): Promise<
@@ -179,63 +150,28 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
     getStatsSensitiveColumns(map);
     getListDataSources();
     getListSensitiveRules();
-    initSiderData();
-  };
-  const renderBySelectedItem = (selectedItem: string) => {
-    switch (selectedItem) {
-      case 'sensitiveColumn': {
-        return (
-          <SensitiveColumn
-            {...{
-              projectId: id,
-              dataSourceFilters,
-              databaseFilters,
-              maskingAlgorithmFilters,
-              initSensitiveColumn,
-            }}
-          />
-        );
-      }
-      case 'detectRule': {
-        return <SensitiveRule projectId={id} />;
-      }
-      default: {
-        return (
-          <SensitiveColumn
-            {...{
-              projectId: id,
-              dataSourceFilters,
-              databaseFilters,
-              maskingAlgorithmFilters,
-              initSensitiveColumn,
-            }}
-          />
-        );
-      }
-    }
   };
   return (
-    <SecureLayout>
-      <SecureSider
-        siderItemList={siderItemList}
-        selectedItem={selectedItem}
-        handleItemClick={handleItemClick}
-      />
-
-      <SensitiveContext.Provider
-        value={{
-          projectId: id,
-          dataSources,
-          dataSourceIdMap,
-          maskingAlgorithms,
-          maskingAlgorithmIdMap,
-          maskingAlgorithmOptions,
-          sensitiveRuleIdMap,
-        }}
-      >
-        <div className={styles.sensitive}>{renderBySelectedItem(selectedItem)}</div>
-      </SensitiveContext.Provider>
-    </SecureLayout>
+    <SensitiveContext.Provider
+      value={{
+        projectId: id,
+        dataSources,
+        dataSourceIdMap,
+        maskingAlgorithms,
+        maskingAlgorithmIdMap,
+        maskingAlgorithmOptions,
+        sensitiveRuleIdMap,
+      }}
+    >
+      <div className={styles.sensitive}>
+        <SensitiveColumn
+          projectId={id}
+          cascaderOptions={cascaderOptions}
+          maskingAlgorithmFilters={maskingAlgorithmFilters}
+          initSensitiveColumn={initSensitiveColumn}
+        />
+      </div>
+    </SensitiveContext.Provider>
   );
 };
 

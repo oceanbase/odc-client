@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isConnectTypeBeCloudType, isConnectTypeBeShardingType } from '@/util/connection';
+import { isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { checkNumberRange, validTrimEmptyWithWarn } from '@/util/valid';
@@ -25,75 +25,39 @@ import styles from './index.less';
 import InstanceSelect from './InstanceSelect';
 interface IProps {}
 const AddressItems: React.FC<IProps> = function (props) {
-  const { isEdit } = useContext(DatasourceFormContext);
+  const { isEdit, dataSourceConfig } = useContext(DatasourceFormContext);
   const renderConnectInfo = () => {
-    const baseFormItem = (
-      <>
-        <Col span={12}>
-          <Form.Item
-            name="clusterName"
-            label={formatMessage({
-              id: 'odc.component.AddConnectionForm.AddressItems.ClusterName',
-            })}
-            /*集群名*/ style={{
-              marginBottom: 16,
-            }}
-          >
-            <Input
-              style={{
-                width: '100%',
-              }}
-              placeholder={formatMessage({
-                id: 'odc.component.AddConnectionForm.AddressItems.EnterAClusterName',
-              })}
-              /*请输入集群名*/
-            />
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.component.AddConnectionForm.AddressItems.TenantName',
-            })}
-            /*租户名*/ name="tenantName"
-            style={{
-              marginBottom: 16,
-            }}
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.component.AddConnectionForm.AddressItems.EnterATenantName',
-                }),
-                //请输入租户名
-              },
-              {
-                validator: validTrimEmptyWithWarn(
-                  formatMessage({
-                    id: 'portal.connection.form.tenant.validation.trim',
-                  }),
-                ),
-              },
-            ]}
-          >
-            <Input
-              style={{
-                width: '100%',
-              }}
-              placeholder={formatMessage({
-                id: 'odc.component.AddConnectionForm.AddressItems.EnterATenantName',
-              })}
-              /*请输入租户名*/
-            />
-          </Form.Item>
-        </Col>
-      </>
-    );
-    return (
-      <div className={styles.inlineForm}>
-        <div>
-          <Row gutter={12}>
+    const items = dataSourceConfig?.address?.items;
+    const formItems = items?.map((item) => {
+      switch (item) {
+        case 'cluster': {
+          return (
+            <Col span={12}>
+              <Form.Item
+                name="clusterName"
+                label={formatMessage({
+                  id: 'odc.component.AddConnectionForm.AddressItems.ClusterName',
+                })}
+                /*集群名*/
+                style={{
+                  marginBottom: 16,
+                }}
+              >
+                <Input
+                  style={{
+                    width: '100%',
+                  }}
+                  placeholder={formatMessage({
+                    id: 'odc.component.AddConnectionForm.AddressItems.EnterAClusterName',
+                  })}
+                  /*请输入集群名*/
+                />
+              </Form.Item>
+            </Col>
+          );
+        }
+        case 'ip': {
+          return (
             <Col span={12}>
               <Form.Item
                 name="host"
@@ -130,6 +94,10 @@ const AddressItems: React.FC<IProps> = function (props) {
                 />
               </Form.Item>
             </Col>
+          );
+        }
+        case 'port': {
+          return (
             <Col span={12}>
               <Form.Item
                 name="port"
@@ -163,16 +131,61 @@ const AddressItems: React.FC<IProps> = function (props) {
                 />
               </Form.Item>
             </Col>
-          </Row>
-          <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const connectType = getFieldValue('type');
-              return isConnectTypeBeCloudType(connectType) ||
-                isConnectTypeBeShardingType(connectType) ? null : (
-                <Row gutter={12}>{baseFormItem}</Row>
-              );
-            }}
-          </Form.Item>
+          );
+        }
+        case 'tenant': {
+          return (
+            <Col span={12}>
+              <Form.Item
+                label={formatMessage({
+                  id: 'odc.component.AddConnectionForm.AddressItems.TenantName',
+                })}
+                /*租户名*/
+                name="tenantName"
+                style={{
+                  marginBottom: 16,
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'odc.component.AddConnectionForm.AddressItems.EnterATenantName',
+                    }),
+                    //请输入租户名
+                  },
+
+                  {
+                    validator: validTrimEmptyWithWarn(
+                      formatMessage({
+                        id: 'portal.connection.form.tenant.validation.trim',
+                      }),
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  style={{
+                    width: '100%',
+                  }}
+                  placeholder={formatMessage({
+                    id: 'odc.component.AddConnectionForm.AddressItems.EnterATenantName',
+                  })}
+                  /*请输入租户名*/
+                />
+              </Form.Item>
+            </Col>
+          );
+        }
+        default: {
+          return null;
+        }
+      }
+    });
+
+    return (
+      <div className={styles.inlineForm}>
+        <div>
+          <Row gutter={12}>{formItems}</Row>
         </div>
       </div>
     );

@@ -698,6 +698,8 @@ export interface IConnection {
   supportedOperations?: string[];
   type: ConnectType;
   errorMessage?: string;
+  jdbcUrlParameters?: Record<string, string>;
+  sessionInitScript?: string;
 }
 
 export interface IConnectionLabel {
@@ -784,6 +786,7 @@ export enum IConnectionTestErrorType {
   OB_MYSQL_ACCESS_DENIED = 'ObMysqlAccessDenied',
   UNKNOWN = 'Unknown',
   CONNECT_TYPE_NOT_MATCH = 'ConnectionDatabaseTypeMismatched',
+  INIT_SCRIPT_FAILED = 'ConnectionInitScriptFailed',
 }
 
 export interface IConnectionProperty {
@@ -1071,6 +1074,8 @@ export enum ColumnShowType {
   DATETIME = 'DATETIME',
   YEAR = 'YEAR',
   MONTH = 'MONTH',
+  ENUM = 'ENUM', // 枚举类型
+  SET = 'SET', // 集合类型
 }
 
 // 索引
@@ -1136,6 +1141,7 @@ export interface IFunction {
   createTime?: number;
   modifyTime?: number;
   errorMessage: string;
+  characteristic: IRoutineCharacteristic;
   variables: {
     varName: string;
     varType: string;
@@ -1146,6 +1152,12 @@ export enum ParamMode {
   IN = 'IN',
   OUT = 'OUT',
   INOUT = 'INOUT',
+}
+
+export interface IRoutineCharacteristic {
+  deterministic: boolean;
+  dataNature: 'CONTAINS SQL' | 'NO SQL' | 'READS SQL' | 'MODIFIES SQL';
+  sqlSecurity: 'DEFINER' | 'INVOKER';
 }
 
 export interface IPLParam {
@@ -1172,6 +1184,7 @@ export interface IProcedure {
   modifyTime: number;
   status: string;
   errorMessage: string;
+  characteristic: IRoutineCharacteristic;
   variables: {
     varName: string;
     varType: string;
@@ -1542,6 +1555,7 @@ export interface ISQLExplain {
   tree: ISQLExplainTreeNode[];
   outline: string;
   originalText: string;
+  showFormatInfo?: boolean;
 }
 
 export interface ISQLExecuteDetail {
@@ -2166,6 +2180,10 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  rateLimit?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
   tables: {
     conditionExpression: string;
     tableName: string;
@@ -2183,6 +2201,10 @@ export interface IDataClearJobParameters {
   sourceDatabaseName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
+  rateLimit?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
   tables: {
     conditionExpression: string;
     tableName: string;
@@ -2224,6 +2246,11 @@ export interface ICycleTaskRecord<T> {
   nodeList?: ITaskFlowNode[];
   triggerConfig?: ICycleTaskTriggerConfig;
   connection: {
+    id: number;
+    name: string;
+    dbMode: ConnectionMode;
+  };
+  datasource?: {
     id: number;
     name: string;
     dbMode: ConnectionMode;
@@ -2805,7 +2832,6 @@ export interface ServerSystemInfo {
    * 模拟数据条数限制
    */
   mockDataMaxRowCount?: number;
-  encryptionSecret?: string;
   // 是否开启 登录验证码
   captchaEnabled?: boolean;
   spmEnabled?: boolean;
@@ -2853,6 +2879,7 @@ export enum ConnectType {
   CLOUD_OB_MYSQL = 'CLOUD_OB_MYSQL',
   CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
+  MYSQL = 'MYSQL',
 }
 
 export enum DragInsertType {

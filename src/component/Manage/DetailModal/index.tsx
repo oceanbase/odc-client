@@ -70,7 +70,7 @@ const CommonDetailModal: React.FC<IProps> = (props) => {
 
   return (
     <Drawer
-      visible={visible}
+      open={visible}
       width={width}
       title={title}
       destroyOnClose

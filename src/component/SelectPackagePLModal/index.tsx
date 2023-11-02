@@ -69,7 +69,7 @@ class SelectPackagePLModal extends Component<IProps> {
         title={formatMessage({
           id: 'odc.component.SelectPackagePLModal.SelectPlObject',
         })}
-        visible={visible}
+        open={visible}
         onOk={this.save}
         onCancel={onCancel}
       >

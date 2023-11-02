@@ -24,6 +24,38 @@ import { message } from 'antd';
 import { Base64 } from 'js-base64';
 import moment from 'moment';
 import { history } from '@umijs/max';
+import login from '@/store/login';
+import { SpaceType } from '@/d.ts/_index';
+import { IDatasource } from '@/d.ts/datasource';
+import { listEnvironments } from '@/common/network/env';
+import { createConnection } from '@/common/network/connection';
+import { gotoSQLWorkspace } from '@/util/route';
+import { listDatabases } from '@/common/network/database';
+
+async function getDefaultSchema(dsId: number, userName: string) {
+  const res = await listDatabases(null, dsId, 1, 999);
+  const databases = res?.contents;
+  const informationSchema = databases.find((d) => d.name === 'information_schema');
+  const sameName = databases.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  return informationSchema?.id || sameName?.id || databases?.[0]?.id;
+}
+
+async function newConnection(params: Partial<IDatasource>): Promise<IDatasource | null> {
+  const envs = await listEnvironments();
+  const targetConnection = await createConnection(
+    {
+      ...params,
+      /**
+       * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
+       * 新的名字一律加上id
+       */
+      name: params.name + '_' + params.tenantName,
+      environmentId: envs?.[0]?.id,
+    },
+    true,
+  );
+  return targetConnection;
+}
 export interface ICustomConnectAction {
   action: 'newTempSession';
   data: IRemoteCustomConnectionData | string;
@@ -118,38 +150,34 @@ export const action = async (config: ICustomConnectAction) => {
       return;
     }
   }
-  return '';
 
-  // const params = resolveRemoteData({
-  //   ...(data as IRemoteCustomConnectionData),
-  // });
-  // const createResult = await createConnection(params, true);
+  await login.getOrganizations();
+  if (!login.organizations?.length) {
+    return 'Get User Failed';
+  }
+  const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
+  if (!personalOrganization) {
+    return formatMessage({ id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist' }); //个人空间不存在！
+  }
+  const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
+  if (!isSuccess) {
+    return 'Switch Organization Failed';
+  }
 
-  // if (createResult) {
-  //   let sessionId;
-  //   try {
-  //     sessionId = await connectionStore.connect(createResult.id, null, null, true);
-  //   } catch (e) {
-  //     if (e) {
-  //       return e.message;
-  //     }
-  //   }
+  const params = resolveRemoteData({
+    ...(data as IRemoteCustomConnectionData),
+  });
+  const createResult = await newConnection(params);
 
-  //   if (sessionId) {
-  //     const isSuccess = await connectionStore.get(sessionId);
-
-  //     if (isSuccess) {
-  //       if (connectionStore.connection.defaultDBName) {
-  //         schema.database = {
-  //           name: connectionStore.connection.defaultDBName,
-  //         };
-  //       }
-  //       commonStore.updateTabKey(true);
-  //       history.push(pageStore.generatePagePath());
-  //       return;
-  //     }
-  //   } else {
-  //     return 'create session failed';
-  //   }
-  // }
+  if (createResult) {
+    gotoSQLWorkspace(
+      null,
+      createResult?.id,
+      await getDefaultSchema(createResult?.id, createResult?.username),
+      true,
+      generateUniqKey(),
+    );
+  } else {
+    return 'create connection failed';
+  }
 };

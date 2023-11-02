@@ -55,10 +55,11 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
-import ExecDetail from '../SQLExplain/ExecDetail';
-import ExecPlan from '../SQLExplain/ExecPlan';
+import ExecPlan from './ExecPlan';
+import ExecDetail from './ExecDetail';
 import SQLResultSet, { recordsTabKey, sqlLintTabKey } from '../SQLResultSet';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -211,6 +212,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (this.props.isShow && !prevProps.isShow) {
       this.editor?.focus();
     }
+    if (this.props.sessionId != prevProps.sessionId && this.props.sessionId) {
+      // update dbid
+      this.props.pageStore.updatePage(
+        this.props.pageKey,
+        {},
+        { cid: this.getSession()?.odcDatabase?.id, dbName: this.getSession()?.odcDatabase?.name },
+      );
+    }
   }
 
   public componentWillUnmount() {
@@ -309,7 +318,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         const result = await getCurrentSQL(
           this.editor.getValue(),
           offset,
-          this.getSession()?.connection.dialectType == ConnectionMode.OB_MYSQL,
+          isConnectionModeBeMySQLType(this.getSession()?.connection.dialectType),
           this.getSession()?.params?.delimiter,
         );
 
@@ -759,7 +768,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
           await getCurrentSQL(
             this.editor.getValue(),
             offset,
-            this.getSession()?.connection.dialectType == ConnectionMode.OB_MYSQL,
+            isConnectionModeBeMySQLType(this.getSession()?.connection.dialectType),
             this.getSession()?.params?.delimiter,
           )
         )?.sql;
@@ -824,7 +833,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     const result = await getCurrentSQL(
       value,
       offset,
-      this.getSession()?.connection.dialectType == ConnectionMode.OB_MYSQL,
+      isConnectionModeBeMySQLType(this.getSession()?.connection.dialectType),
       this.getSession()?.params?.delimiter,
     );
 
@@ -889,7 +898,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       params,
     } = this.props;
     const session = this.getSession();
-    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection?.dialectType);
     const {
       initialSQL,
       showSaveSQLModal,

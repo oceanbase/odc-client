@@ -1,0 +1,26 @@
+.main {
+  height: 256px;
+  width: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.tree {
+  :global {
+    .ant-tree-treenode {
+      width: 100%;
+    }
+    .ant-tree-node-content-wrapper {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ant-badge {
+      position: absolute;
+      right: 4px;
+      .ant-badge-status-dot {
+        border-radius: 0px;
+      }
+    }
+  }
+}

@@ -15,10 +15,11 @@
  */
 
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
+import { ConnectType, ConnectionMode, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
 import { Oracle } from './dataType';
 import { getQuoteTableName } from './utils';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。
@@ -226,16 +227,11 @@ export function getRealNameInDatabase(
 /**
  * 生成查询SQL
  */
-export function generateSelectSql(addRowId: boolean, isOracle: boolean, tableName: string) {
+export function generateSelectSql(addRowId: boolean, type: ConnectType, tableName: string) {
   let column = '*';
   let table = tableName;
-  if (!isOracle) {
-    // MySQL 用反引号包裹表名，避免用户使用关键词做表名
-    // Oracle @see aone/issue/25346972
-    table = `\`${encodeIdentifiers(tableName, true)}\``;
-  } else {
-    table = `"${encodeIdentifiers(tableName, false)}"`;
-  }
+  const char = getDataSourceModeConfig(type)?.sql?.escapeChar;
+  table = `${char}${encodeIdentifiers(tableName, char)}${char}`;
 
   if (addRowId) {
     column = `${table}."ROWID", ${table}.*`;
@@ -243,11 +239,12 @@ export function generateSelectSql(addRowId: boolean, isOracle: boolean, tableNam
   return `select ${column} from ${table}`;
 }
 
-export function encodeIdentifiers(str, isMySQL: boolean) {
+export function encodeIdentifiers(str, char: string) {
   if (!str) {
     return str;
   }
-  return isMySQL ? str.replace(/`/g, '``') : str.replace(/"/g, '""');
+  const regexp = new RegExp(`${char}`, 'g');
+  return str.replace(regexp, `${char}${char}`);
 }
 
 export async function splitSql(

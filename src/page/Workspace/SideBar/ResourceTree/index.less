@@ -8,18 +8,31 @@
   .title {
     display: flex;
     flex: 0;
-    flex-basis: 36px;
+    flex-basis: 42px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding: 0px 12px;
+    font-size: 12px;
     .label {
       font-weight: 600;
       flex-shrink: 1;
       overflow: hidden;
       text-overflow: ellipsis;
+      font-weight: bold;
+      :global {
+        .ant-space-item {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      cursor: pointer;
+      &:hover {
+        color: var(--text-color-link);
+      }
     }
     .titleAction {
+      margin-left: 4px;
       flex-shrink: 0;
       flex-grow: 0;
     }
@@ -41,6 +54,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         word-break: break-all;
+        padding-right: 10px;
       }
 
       .ant-tree-treenode {
@@ -57,12 +71,27 @@
             align-items: center;
             background-color: var(--hover-color2);
           }
+          .env {
+            position: absolute;
+            top: 0px;
+            right: 8px;
+            bottom: 0px;
+            align-items: center;
+            :global {
+              .ant-badge-status-dot {
+                border-radius: 0px;
+              }
+            }
+          }
         }
         &:hover {
           background-color: var(--hover-color2);
           :local {
             .menuActions {
               display: flex;
+            }
+            .env {
+              display: none;
             }
           }
         }

@@ -85,14 +85,17 @@ export class SQLPage extends Page {
     fromTask?: boolean;
     databaseFrom: 'datasource' | 'project';
     pageIndex?: number;
+    dbName?: string;
   } & Partial<IScriptMeta>;
   static getTitleByParams(params: SQLPage['pageParams']) {
     if (params?.scriptId) {
       return params?.objectName;
+    } else if (params?.dbName) {
+      return params?.dbName;
     }
     return `${formatMessage({
       id: 'workspace.header.create.sql',
-    })}_${params?.pageIndex}`;
+    })}`;
   }
   public findCurrentNum() {
     const indexList = page.pages

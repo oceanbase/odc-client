@@ -59,6 +59,12 @@ export interface IFilterContent {
   onChange?: (args?: ITableLoadOptions) => void;
 }
 
+export interface ICascaderContent {
+  options: any[];
+  placeholder: string;
+  onChange?: (value, selectedOptions) => void;
+}
+
 export enum IOperationOptionType {
   button = 'button',
   icon = 'icon',
@@ -94,6 +100,7 @@ export interface ITabOption {
 }
 export interface ITableLoadOptions {
   filters?: ITableFilter;
+  cascaderValue?: string[];
   searchValue?: string;
   sorter?: ITableSorter;
   pagination?: ITablePagination;

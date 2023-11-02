@@ -17,13 +17,18 @@
 import { getMetaStoreInstance } from '@/common/metaStore';
 import login from '@/store/login';
 import logger from '@/util/logger';
+import { history } from '@umijs/max';
 import { isNil, throttle } from 'lodash';
 import { IReactionDisposer, reaction } from 'mobx';
 
 function getOrganizationKey() {
   const userId = login?.user?.id;
   const organizationId = login?.organizationId;
-  return organizationId ? `${userId}-organization-${organizationId}` : null;
+  const tabKey = /sqlworkspace\/(.+)/.exec(history.location.pathname)?.[1] || '';
+  const key = tabKey
+    ? `tmp-${tabKey}-${userId}-organization-${organizationId}`
+    : `${userId}-organization-${organizationId}`;
+  return organizationId ? key : null;
 }
 
 /**

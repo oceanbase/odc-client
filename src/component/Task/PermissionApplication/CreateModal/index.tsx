@@ -114,7 +114,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
     return (
       <Drawer
-        visible={sensitiveColumnVisible}
+        open={sensitiveColumnVisible}
         onClose={closeWithConfirm}
         destroyOnClose
         width={724}

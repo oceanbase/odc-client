@@ -19,13 +19,13 @@ import { formatMessage } from '@/util/intl';
 import { message, Popover, Space, Tooltip } from 'antd';
 import React from 'react';
 
-import OBSvg from '@/svgr/source_ob.svg';
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
 import classNames from 'classnames';
 import styles from './index.less';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   connection: IConnection;
@@ -37,7 +37,8 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
     return null;
   }
   function getStatusIcon() {
-    const { status } = connection;
+    const { status, type } = connection;
+    const DBIcon = getDataSourceStyleByConnectType(type)?.icon;
     switch (status?.status) {
       case IConnectionStatus.TESTING: {
         return (
@@ -64,7 +65,11 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
               id: 'odc.components.ConnectionCardList.ValidConnection',
             })}
           >
-            <Icon component={OBSvg} className={styles.activeStatus} />
+            <Icon
+              style={{ color: DBIcon.color }}
+              component={DBIcon.component}
+              className={styles.activeStatus}
+            />
           </Tooltip>
         );
       }
@@ -103,7 +108,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
         return (
           <Tooltip title={status?.errorMessage} placement="top">
             <Icon
-              component={OBSvg}
+              component={DBIcon.component}
               style={{ filter: 'grayscale(1)' }}
               className={styles.activeStatus}
             />

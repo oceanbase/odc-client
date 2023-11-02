@@ -35,6 +35,8 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ProcedureRoot]: [
@@ -46,8 +48,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
-        return isMySQL;
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
       },
       run(session, node) {
         openBatchCompilePLPage(
@@ -116,6 +117,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       ellipsis: true,
       actionType: actionTypes.update,
+      disabled: (session, node) => {
+        return !isSupportPLEdit(session);
+      },
       async run(session, node) {
         const proc: IProcedure = node.data;
         await openProcedureEditPageByProName(
@@ -133,8 +137,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       ellipsis: true,
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
-        return isMySQL;
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
       },
       async run(session, node) {
         const proc: IProcedure = node.data;
@@ -212,6 +215,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
       ellipsis: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const proc: IProcedure = node.data;
         modal.changeExportModal(true, {

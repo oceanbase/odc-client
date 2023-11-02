@@ -15,34 +15,13 @@
  */
 
 import { ConnectType } from '@/d.ts';
-import OBSvg from '@/svgr/source_ob.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Form, Radio, Space } from 'antd';
 
 import styles from './index.less';
-
-enum DBTypeEnum {
-  OceanBase = 'ob',
-}
-
-class DBType {
-  constructor(public type: DBTypeEnum, public defaultType: ConnectType) {}
-}
-
-const oceanbase = new DBType(DBTypeEnum.OceanBase, ConnectType.OB_ORACLE);
-
-const dbType2Ins = {
-  [DBTypeEnum.OceanBase]: oceanbase,
-};
-
-const typeMap = {
-  [ConnectType.CLOUD_OB_MYSQL]: dbType2Ins[DBTypeEnum.OceanBase],
-  [ConnectType.CLOUD_OB_ORACLE]: dbType2Ins[DBTypeEnum.OceanBase],
-  [ConnectType.OB_MYSQL]: dbType2Ins[DBTypeEnum.OceanBase],
-  [ConnectType.OB_ORACLE]: dbType2Ins[DBTypeEnum.OceanBase],
-  [ConnectType.ODP_SHARDING_OB_MYSQL]: dbType2Ins[DBTypeEnum.OceanBase],
-};
+import { IDataSourceType } from '@/d.ts/datasource';
+import { getDataSourceStyle, getDefaultConnectType, getDsByConnectType } from '@/common/datasource';
 
 export default function DBTypeItem() {
   const typeSelect = (
@@ -53,36 +32,51 @@ export default function DBTypeItem() {
     >
       {({ getFieldValue, setFieldsValue }) => {
         const type: ConnectType = getFieldValue('type');
-        const dbType: DBType = typeMap[type] || dbType2Ins[DBTypeEnum.OceanBase];
+        const ds = getDsByConnectType(type) || IDataSourceType.OceanBase;
         return (
           <Radio.Group
             className={styles.select}
-            optionType="button"
-            value={dbType.type}
-            options={[
-              {
-                label: (
-                  <Space style={{ verticalAlign: 'middle' }}>
-                    <div style={{ lineHeight: 1 }}>
-                      <Icon style={{ fontSize: 24 }} component={OBSvg} />
-                    </div>
-                    OceanBase
-                  </Space>
-                ),
-
-                value: oceanbase.type,
-              },
-            ]}
+            value={ds}
             onChange={(e) => {
-              const value: DBTypeEnum = e.target.value;
-              const ins = dbType2Ins[value];
-              if (ins) {
+              const defaultType: ConnectType = getDefaultConnectType(e.target.value);
+              if (defaultType) {
                 setFieldsValue({
-                  type: ins.defaultType,
+                  type: defaultType,
                 });
               }
             }}
-          />
+          >
+            <Space>
+              <Radio.Button value={IDataSourceType.OceanBase}>
+                <Space style={{ verticalAlign: 'middle' }}>
+                  <div style={{ lineHeight: 1 }}>
+                    <Icon
+                      style={{
+                        fontSize: 24,
+                        color: getDataSourceStyle(IDataSourceType.OceanBase)?.icon?.color,
+                      }}
+                      component={getDataSourceStyle(IDataSourceType.OceanBase)?.icon?.component}
+                    />
+                  </div>
+                  OceanBase
+                </Space>
+              </Radio.Button>
+              <Radio.Button value={IDataSourceType.MySQL}>
+                <Space style={{ verticalAlign: 'middle' }}>
+                  <div style={{ lineHeight: 1 }}>
+                    <Icon
+                      style={{
+                        fontSize: 24,
+                        color: getDataSourceStyle(IDataSourceType.MySQL)?.icon?.color,
+                      }}
+                      component={getDataSourceStyle(IDataSourceType.MySQL)?.icon?.component}
+                    />
+                  </div>
+                  MySQL
+                </Space>
+              </Radio.Button>
+            </Space>
+          </Radio.Group>
         );
       }}
     </Form.Item>

@@ -70,7 +70,7 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
       title={formatMessage({
         id: 'odc.StructConfigPanel.RecordSQLView.StructuralAnalysisDetails',
       })} /*结构分析详情*/
-      visible={visiable}
+      open={visiable}
       onClose={() => {
         setVisiable(false);
         setRecord(null);

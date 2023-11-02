@@ -64,6 +64,7 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
         </div>
         <NewDatasourceDrawer
           isEdit={true}
+          disableTheme
           visible={!!editDatasourceId}
           id={editDatasourceId}
           close={() => setEditDatasourceId(null)}
