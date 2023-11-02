@@ -72,6 +72,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         }), //'修改成功！'
       );
       handleClose();
+      onReload();
     }
   };
   return (
