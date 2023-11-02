@@ -83,16 +83,23 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
     },
   });
   const { data } = result;
-  if (data && data.expTree) {
-    // 需要预处理成标准树形结构
+  if (data) {
+    if (data?.expTree) {
+      // 需要预处理成标准树形结构
+      return {
+        tree: [formatSQLExplainTree(JSON.parse(data.expTree))],
+        outline: data.outline,
+        originalText: data?.originalText,
+        showFormatInfo: data?.showFormatInfo,
+      };
+    }
     return {
-      tree: [formatSQLExplainTree(JSON.parse(data.expTree))],
+      tree: null,
       outline: data.outline,
       originalText: data?.originalText,
       showFormatInfo: data?.showFormatInfo,
     };
   }
-
   return null;
 }
 
