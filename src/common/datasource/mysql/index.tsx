@@ -63,7 +63,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       sys: false,
       ssl: false,
       jdbcDoc:
-        'https://dev.mysql.com/doc/connector-j/8.1/en/connector-j-reference-configuration-properties.html',
+        'https://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html',
     },
     features: {
       task: [
