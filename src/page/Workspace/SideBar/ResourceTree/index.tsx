@@ -124,9 +124,12 @@ const ResourceTree: React.FC<IProps> = function ({
           const dbSession =
             sessionManagerStore.sessionMap.get(sessionIds[dbId]) ||
             (await sessionManagerStore.createSession(null, data?.id, true));
-          if (dbSession !== 'NotFound') {
+          if (dbSession && dbSession !== 'NotFound') {
             setSessionId(dbId, dbSession?.sessionId);
             update();
+          } else {
+            throw new Error("load database's session failed");
+            return;
           }
           break;
         }

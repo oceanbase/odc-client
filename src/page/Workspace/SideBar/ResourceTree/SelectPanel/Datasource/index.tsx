@@ -64,9 +64,10 @@ interface IProps {
     envs: number[];
     connectTypes: ConnectType[];
   };
+  closeSelectPanel: () => void;
 }
 
-export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
+export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }: IProps, ref) {
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [addDSVisiable, setAddDSVisiable] = useState(false);
   const [searchKey, setSearchKey] = useState('');
@@ -317,6 +318,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
                     /**
                      * disable unselect
                      */
+                    closeSelectPanel();
                     return;
                   }
                   setSelectKeys(keys);

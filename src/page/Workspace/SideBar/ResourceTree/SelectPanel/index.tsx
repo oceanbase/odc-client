@@ -55,6 +55,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
     render() {
       return (
         <DataSourceTree
+          closeSelectPanel={onClose}
           filters={{
             envs,
             connectTypes,
@@ -104,7 +105,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
     //项目
     key: PanelType.Project,
     render() {
-      return <ProjectTree ref={projectRef} />;
+      return <ProjectTree closeSelectPanel={onClose} ref={projectRef} />;
     },
     actions: [
       {
