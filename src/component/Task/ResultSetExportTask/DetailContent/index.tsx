@@ -23,6 +23,7 @@ import { ConnectionMode, IExportResultSetFileType, TaskExecStrategy } from '@/d.
 import { getFormatDateTime } from '@/util/utils';
 import { Divider } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
@@ -31,7 +32,6 @@ export const getItems = (
   if (!_task) {
     return [];
   }
-  const isMySQL = _task?.connection?.dbMode === ConnectionMode.OB_MYSQL;
   const taskExecStrategyMap = getTaskExecStrategyMap(_task?.type);
   const res: {
     sectionName?: string;
@@ -51,6 +51,7 @@ export const getItems = (
             }), //'包含列头'
           );
         }
+
         if (parameters?.csvFormat?.isTransferEmptyString) {
           csvFormat.push(
             formatMessage({
@@ -59,6 +60,7 @@ export const getItems = (
             }), //'空字符串转为空值'
           );
         }
+
         return (
           <>
             <SimpleTextItem
@@ -76,6 +78,14 @@ export const getItems = (
                 }) /* 所属数据库 */
               }
               content={task?.databaseName || '-'}
+            />
+            <SimpleTextItem
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.DataSource',
+                }) /* 所属数据源 */
+              }
+              content={task?.connection?.name || '-'}
             />
             <SimpleTextItem
               label={
@@ -117,7 +127,10 @@ export const getItems = (
                     sqlObjectIds={null}
                     sqlObjectNames={null}
                     taskId={task?.id}
-                    isMySQL={isMySQL}
+                    language={
+                      getDataSourceModeConfigByConnectionMode(_task?.connection?.dbMode)?.sql
+                        ?.language
+                    }
                   />
                 </div>
               }

@@ -34,6 +34,7 @@ import SessionContextWrap from '../SessionContextWrap';
 import SessionContext from '../SessionContextWrap/context';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -54,6 +55,7 @@ function SessionManagementPage(props: IProps) {
   const [sessionList, setSessionList] = useState<IDatabaseSession[]>([]);
   const context = useContext(SessionContext);
   const session = context?.session;
+  const config = getDataSourceModeConfig(session?.connection?.type);
 
   async function fetchDatabaseSessionList() {
     if (!session?.sessionId) {
@@ -71,6 +73,27 @@ function SessionManagementPage(props: IProps) {
   useEffect(() => {
     fetchDatabaseSessionList();
   }, [session?.sessionId]);
+
+  // 过滤搜索关键词
+  const filteredRows = sessionList?.filter((session) =>
+    [
+      `${session.sessionId}`,
+      session.dbUser,
+      session.database,
+      session.command,
+      session.srcIp,
+      session.status,
+      session.obproxyIp,
+      session.sql,
+    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
+  );
+
+  const statusFilter = [...new Set(filteredRows?.map((item) => item.status) ?? [])]?.map(
+    (item) => ({
+      text: item,
+      value: item,
+    }),
+  );
 
   const columns: ColumnsType<IDatabaseSession> = [
     {
@@ -125,9 +148,11 @@ function SessionManagementPage(props: IProps) {
       }),
 
       dataIndex: 'status',
-      width: 65,
+      width: 105,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.status, b.status),
       sortDirections: ['descend', 'ascend'],
+      filters: statusFilter,
+      onFilter: (value: string, record) => record.status === value,
     },
 
     {
@@ -177,8 +202,9 @@ function SessionManagementPage(props: IProps) {
         );
       },
     },
-
-    {
+  ];
+  if (config?.features?.supportOBProxy) {
+    columns.push({
       title: formatMessage({
         id: 'workspace.window.session.management.column.obproxyIp',
       }),
@@ -187,22 +213,8 @@ function SessionManagementPage(props: IProps) {
       width: 160,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.obproxyIp, b.obproxyIp),
       sortDirections: ['descend', 'ascend'],
-    },
-  ];
-
-  // 过滤搜索关键词
-  const filteredRows = sessionList?.filter((session) =>
-    [
-      `${session.sessionId}`,
-      session.dbUser,
-      session.database,
-      session.command,
-      session.srcIp,
-      session.status,
-      session.obproxyIp,
-      session.sql,
-    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
-  );
+    });
+  }
 
   /**
    * 关闭会话查询

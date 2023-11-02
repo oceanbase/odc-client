@@ -27,6 +27,7 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { isSupportExport } from './helper';
 
 export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.SequenceRoot]: [
@@ -146,6 +147,9 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       ellipsis: true,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Export' }), //导出
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const sequenceInfo: ISequence = node.data;
         modal.changeExportModal(true, {

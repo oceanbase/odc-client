@@ -20,7 +20,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
+import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE, TaskType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
@@ -118,7 +118,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
                   </Radio.Button>
                 </Radio.Group>
               </FormItem>
-              <DatabaseSelect projectId={projectId} />
+              <DatabaseSelect type={TaskType.IMPORT} projectId={projectId} />
               {(isCsvFileType || isSingleImport) && (
                 <FormItem
                   required={isCsvFileType}

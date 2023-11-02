@@ -15,6 +15,7 @@
  */
 
 import { DbObjectType, IPackage } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
 import SessionStore from '@/store/sessionManager/session';
 import { DataNode } from 'antd/lib/tree';
 
@@ -93,6 +94,7 @@ interface ExtraData {
   dbObjectType?: DbObjectType;
   warning?: string;
   tip?: string;
+  env?: IEnvironment;
   doubleClick?: (
     session: SessionStore,
     node: TreeDataNode,

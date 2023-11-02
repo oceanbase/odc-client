@@ -16,8 +16,11 @@
 
 import ReactDom from 'react-dom';
 import SelectModal from './component';
+import { ConnectType } from '@/d.ts';
 
-export default async function SelectDatabase(): Promise<[number]> {
+export default async function SelectDatabase(
+  isSupport?: (v: ConnectType) => boolean,
+): Promise<[number]> {
   return new Promise((resolve) => {
     const mountDom = document.createElement('div');
     document.body.appendChild(mountDom);
@@ -26,6 +29,7 @@ export default async function SelectDatabase(): Promise<[number]> {
     }
     ReactDom.render(
       <SelectModal
+        isSupport={isSupport}
         open={true}
         onClose={() => {
           resolve([null]);

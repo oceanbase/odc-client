@@ -31,7 +31,31 @@ import {
 } from '../interface';
 import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
-
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+function NameFormatter({ row }) {
+  if (row.available === false) {
+    return (
+      <span>
+        <Tooltip
+          title={
+            formatMessage({
+              id: 'odc.src.page.Workspace.components.CreateTable.TableIndex.IndexIsNotAvailable',
+            }) /* 索引不可用 */
+          }
+        >
+          <ExclamationCircleFilled
+            style={{
+              color: 'var(--icon-orange-color)',
+            }}
+          />
+        </Tooltip>
+        {row.name}
+      </span>
+    );
+  }
+  return row.name || '';
+}
 export function useColumns(
   columns: TableColumn[],
   connection: IDatasource,
@@ -40,11 +64,12 @@ export function useColumns(
   const methodOptions = {
     [TableIndexMehod.NONE]: formatMessage({
       id: 'odc.CreateTable.TableIndex.columns.Empty',
-    }), //空
+    }),
+    //空
     [TableIndexMehod.HASH]: 'HASH',
     [TableIndexMehod.BTREE]: 'BTREE',
+    [TableIndexMehod.FULLTEXT]: 'FULLTEXT',
   };
-
   const visibleCheckbox = useMemo(() => {
     return WrapReverseCheckboxFormatetr('visible');
   }, []);
@@ -86,24 +111,30 @@ export function useColumns(
       key: 'name',
       name: formatMessage({
         id: 'odc.CreateTable.Columns.columns.Name',
-      }), //名称
+      }),
+      //名称
       resizable: true,
       editable: true,
+      formatter: NameFormatter,
       editor: TextEditor,
     },
-
-    {
+    config?.enableIndexScope && {
       key: 'scope',
-      name: formatMessage({ id: 'odc.CreateTable.TableIndex.columns.Scope' }), //范围
+      name: formatMessage({
+        id: 'odc.CreateTable.TableIndex.columns.Scope',
+      }),
+      //范围
       resizable: true,
       editable: true,
       editor: scopeSelect,
       width: 120,
     },
-
     {
       key: 'method',
-      name: formatMessage({ id: 'odc.CreateTable.TableIndex.columns.Method' }), //方法
+      name: formatMessage({
+        id: 'odc.CreateTable.TableIndex.columns.Method',
+      }),
+      //方法
       resizable: true,
       editable: true,
       filterable: false,
@@ -111,20 +142,24 @@ export function useColumns(
       formatter: methodFormatter,
       width: 100,
     },
-
     {
       key: 'type',
-      name: formatMessage({ id: 'odc.CreateTable.TableIndex.columns.Type' }), //类型
+      name: formatMessage({
+        id: 'odc.CreateTable.TableIndex.columns.Type',
+      }),
+      //类型
       resizable: true,
       editable: true,
       filterable: false,
       editor: typeSelect,
       width: 120,
     },
-
     {
       key: 'columns',
-      name: formatMessage({ id: 'odc.CreateTable.TableIndex.columns.Column' }), //列
+      name: formatMessage({
+        id: 'odc.CreateTable.TableIndex.columns.Column',
+      }),
+      //列
       resizable: true,
       editable: true,
       filterable: false,
@@ -133,12 +168,12 @@ export function useColumns(
         return <span>{row.columns?.join?.(',')}</span>;
       },
     },
-
-    {
+    config?.enableIndexVisible && {
       key: 'visible',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Invisible',
-      }), //不可见
+      }),
+      //不可见
       resizable: true,
       filterable: false,
       editor: TextEditor,
@@ -146,5 +181,5 @@ export function useColumns(
       formatter: visibleCheckbox,
       width: 100,
     },
-  ];
+  ].filter(Boolean);
 }

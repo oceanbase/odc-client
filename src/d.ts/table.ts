@@ -121,6 +121,7 @@ export interface IServerTableIndex {
   warning: string;
   algorithm: string;
   ordinalPosition: number;
+  available: boolean;
 }
 
 export interface IServerTableConstraint {

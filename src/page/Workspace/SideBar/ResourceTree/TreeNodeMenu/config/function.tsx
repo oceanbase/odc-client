@@ -35,6 +35,8 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.FunctionRoot]: [
@@ -46,8 +48,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
-        return isMySQL;
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
       },
       run(session, node) {
         openBatchCompilePLPage(
@@ -114,6 +115,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
       ],
+      disabled: (session, node) => {
+        return !isSupportPLEdit(session);
+      },
       actionType: actionTypes.update,
       ellipsis: true,
       async run(session, node) {
@@ -133,8 +137,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       ellipsis: true,
       isHide(session, node) {
-        const isMySQL = session.connection.dialectType === ConnectionMode.OB_MYSQL;
-        return isMySQL;
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
       },
       async run(session, node) {
         const func: IFunction = node.data;
@@ -210,6 +213,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
       ellipsis: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const func: IFunction = node.data;
         modal.changeExportModal(true, {

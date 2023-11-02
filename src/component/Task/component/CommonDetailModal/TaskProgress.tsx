@@ -19,12 +19,13 @@ import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
-import { ConnectionMode, TaskDetail, TaskRecordParameters } from '@/d.ts';
+import { TaskDetail, TaskRecordParameters } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Drawer, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
   return [
@@ -76,7 +77,6 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const [open, setOpen] = useState(false);
   const subTask = subTasks?.find((item) => item.id === detailId);
   const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
-  const isMySQL = resultJson?.dialectType === ConnectionMode.OB_MYSQL;
 
   const loadData = async () => {
     const res = await getSubTask(task.id);
@@ -163,7 +163,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
                   sqlObjectIds={null}
                   sqlObjectNames={null}
                   taskId={task?.id}
-                  isMySQL={isMySQL}
+                  language={
+                    getDataSourceModeConfigByConnectionMode(resultJson?.dialectType)?.sql?.language
+                  }
                 />
               </div>
             }
@@ -181,7 +183,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
                   sqlObjectIds={null}
                   sqlObjectNames={null}
                   taskId={task?.id}
-                  isMySQL={isMySQL}
+                  language={
+                    getDataSourceModeConfigByConnectionMode(resultJson?.dialectType)?.sql?.language
+                  }
                 />
               </div>
             }

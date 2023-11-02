@@ -25,11 +25,12 @@ import {
 import setting from '@/store/setting';
 import intl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
-import { Blowfish } from 'javascript-blowfish';
+import { JSEncrypt } from 'jsencrypt';
 import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
@@ -511,9 +512,9 @@ export function fixedEncodeURIComponent(str) {
  * 将后端回显的tableName添加正确的双引号
  */
 export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
-  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
-  tableName = encodeIdentifiers(tableName, isMySQL);
-  return isMySQL ? '`' + tableName + '`' : `"${tableName}"`;
+  const char = getDataSourceModeConfigByConnectionMode(dbMode)?.sql?.escapeChar;
+  tableName = encodeIdentifiers(tableName, char);
+  return char + tableName + char;
 }
 
 /**
@@ -521,23 +522,16 @@ export function getQuoteTableName(tableName: string, dbMode: ConnectionMode) {
  * 采用 zeropadding 的方式
  */
 export function encrypt(str: string) {
-  if (!setting.serverSystemInfo?.encryptionSecret || isNil(str)) {
+  if (!setting.encryptionPublicKey || isNil(str)) {
     return str;
   }
-  //@ts-ignore
-  const bf = new Blowfish(setting.serverSystemInfo?.encryptionSecret);
-  const encrypted = bf.encrypt(str);
-  return bf.base64Encode(encrypted);
+  const encrypt = new JSEncrypt();
+  encrypt.setPublicKey(setting.encryptionPublicKey);
+  return encrypt.encrypt(str) || '';
 }
-
+// 已废弃
 export function decrypt(str: string) {
-  if (!setting.serverSystemInfo?.encryptionSecret || !str) {
-    return str;
-  }
-  //@ts-ignore
-  const bf = new Blowfish(setting.serverSystemInfo?.encryptionSecret);
-  const decrypted = bf.decrypt(bf.base64Decode(str));
-  return bf.trimZeros(decrypted);
+  return str;
 }
 
 // 获取x天前的时间戳
@@ -587,4 +581,14 @@ export const hourToSeconds = (hour: number) => {
 export const secondsToHour = (seconds: number) => {
   const hour = seconds ? seconds / 60 / 60 : undefined;
   return hour;
+};
+
+// MB -> KB
+export const mbToKb = (value: number) => {
+  return value * 1024;
+};
+
+// KB -> MB
+export const kbToMb = (value: number) => {
+  return value / 1024;
 };

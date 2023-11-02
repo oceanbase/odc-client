@@ -21,7 +21,7 @@ import React, { useState } from 'react';
 import styles from './index.less';
 import config from './newVersionConfig';
 
-import setting from '@/store/setting';
+import setting, { EThemeConfigKey } from '@/store/setting';
 import WelComeSvg from '@/svgr/emoji_welcome.svg';
 import NewOpenSvg from '@/svgr/newopen.svg';
 import { getLocalImg } from '@/util/intl';
@@ -153,7 +153,7 @@ const NewVersion: React.FC<IProps> = () => {
         <Button
           type="primary"
           onClick={() => {
-            setting.setTheme('odc-dark');
+            setting.setTheme(EThemeConfigKey.ODC_DARK);
           }}
         >
           {

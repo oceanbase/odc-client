@@ -16,7 +16,7 @@
 
 import { getExportObjects } from '@/common/network';
 import ExportCard from '@/component/ExportCard';
-import { DbObjectType } from '@/d.ts';
+import { DbObjectType, ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Empty, Popconfirm, Spin, Tree } from 'antd';
@@ -35,6 +35,7 @@ interface IProps {
   connectionId: number;
   onlyTable?: boolean;
   value?: any[];
+  dialectType: ConnectionMode;
   onChange?: (newValue: any[]) => void;
 }
 
@@ -47,6 +48,7 @@ const ExportSelecter: React.FC<IProps> = function ({
   connectionId,
   onlyTable,
   value,
+  dialectType,
   onChange,
 }) {
   const [objsLoading, setObjsLoading] = useState(false);
@@ -94,19 +96,23 @@ const ExportSelecter: React.FC<IProps> = function ({
   }, [value]);
 
   function getObjTypeList() {
-    return onlyTable
+    const typeList = onlyTable
       ? [DbObjectType.table]
       : [
           DbObjectType.table,
           DbObjectType.view,
           DbObjectType.function,
           DbObjectType.procedure,
-          DbObjectType.sequence,
           DbObjectType.package,
           DbObjectType.trigger,
           DbObjectType.synonym,
           DbObjectType.public_synonym,
+          DbObjectType.type,
         ];
+    if (!onlyTable && dialectType !== ConnectionMode.MYSQL) {
+      typeList.push(DbObjectType.sequence);
+    }
+    return typeList;
   }
 
   const loadExportObjects = async () => {
@@ -232,9 +238,8 @@ const ExportSelecter: React.FC<IProps> = function ({
   const allTreeDataCount = Object.entries(allTreeData).reduce((prev, current) => {
     return prev + current?.[1]?.children.length;
   }, 0);
-  const selectedTreeDataCount = checkedKeys.filter(
-    (key) => !getObjTypeList().includes(key),
-  )?.length;
+  const selectedTreeDataCount = checkedKeys.filter((key) => !getObjTypeList().includes(key))
+    ?.length;
   return (
     <div className={styles.selecter}>
       <div className={styles.content}>
@@ -328,9 +333,8 @@ const ExportSelecter: React.FC<IProps> = function ({
                           /**
                            * 说明这里删除的是根节点
                            */
-                          const typeList = selectedTreeData.find(
-                            (d) => d.key === nodeKey,
-                          )?.children;
+                          const typeList = selectedTreeData.find((d) => d.key === nodeKey)
+                            ?.children;
                           const filterAllkeys = typeList?.map((item) => item.key);
                           setCheckedKeys(
                             checkedKeys.filter((key) => !filterAllkeys?.includes(key)),

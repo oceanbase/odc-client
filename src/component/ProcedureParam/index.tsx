@@ -44,6 +44,8 @@ import React, {
   useState,
 } from 'react';
 import Toolbar from '../Toolbar';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
   session: SessionStore;
@@ -67,13 +69,13 @@ interface RowData extends RowType, Partial<IPLParam> {
 
 const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
   const { dbMode, mode, session } = props;
-  const isMySQL = dbMode === ConnectionMode.OB_MYSQL;
+  const modeConfig = getDataSourceModeConfigByConnectionMode(dbMode)?.schema;
   const defaultParamMode = ParamMode.IN;
   const [rows, setRows] = useState<RowData[]>([]);
   const update = useUpdate();
   const gridRef = useRef<DataGridRef>();
 
-  const isMysqlFunction = isMySQL && mode === DbObjectType.function;
+  const config = mode === DbObjectType.function ? modeConfig?.func : modeConfig?.proc;
 
   useImperativeHandle(
     props.paramsRef,
@@ -94,45 +96,21 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
   );
 
   const columns = useMemo<Column<RowData>[]>(() => {
-    if (isMysqlFunction) {
-      return [
-        {
-          key: 'paramName',
-          name: formatMessage({ id: 'odc.component.ProcedureParam.Name' }), // 名称
-          editor: TextEditor,
-        },
-
-        {
-          key: 'dataType',
-          name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
-          width: 120,
-          editor: WrapAutoCompleteEditor(
-            session?.dataTypes.map((d) => d.databaseType.replace('()', '')),
-          ),
-        },
-        {
-          key: 'dataLength',
-          name: formatMessage({ id: 'odc.component.ProcedureParam.Length' }), // 长度
-          width: 100,
-          editor: InputNumberEditor,
-        },
-      ];
-    }
     return [
-      {
+      config?.params?.includes('paramName') && {
         key: 'paramName',
         name: formatMessage({ id: 'odc.component.ProcedureParam.Name' }), // 名称
         editor: TextEditor,
       },
 
-      {
+      config?.params?.includes('paramMode') && {
         key: 'paramMode',
         name: formatMessage({ id: 'odc.component.ProcedureParam.Mode' }), // 模式
         width: 60,
         editor: WrapSelectEditor([ParamMode.IN, ParamMode.OUT, ParamMode.INOUT], false),
       },
 
-      {
+      config?.params?.includes('dataType') && {
         key: 'dataType',
         name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
         width: 100,
@@ -140,40 +118,36 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
           session?.dataTypes.map((d) => d.databaseType.replace('()', '')),
         ),
       },
-      isMySQL
-        ? {
-            key: 'dataLength',
-            name: formatMessage({ id: 'odc.component.ProcedureParam.Length' }), // 长度
-            width: 60,
-            editor: InputNumberEditor,
-          }
-        : null,
-      !isMySQL
-        ? {
-            key: 'defaultValue',
-            name: formatMessage({
-              id: 'odc.component.ProcedureParam.DefaultValue',
-            }), // 默认值
-            width: 150,
-            editor: TextEditor,
-            editable: (row) => row.paramMode === 'IN',
-          }
-        : null,
+      config?.params?.includes('dataLength') && {
+        key: 'dataLength',
+        name: formatMessage({ id: 'odc.component.ProcedureParam.Length' }), // 长度
+        width: 60,
+        editor: InputNumberEditor,
+      },
+      config?.params?.includes('defaultValue') && {
+        key: 'defaultValue',
+        name: formatMessage({
+          id: 'odc.component.ProcedureParam.DefaultValue',
+        }), // 默认值
+        width: 150,
+        editor: TextEditor,
+        editable: (row) => row.paramMode === 'IN',
+      },
     ].filter(Boolean);
-  }, [session, defaultParamMode, isMysqlFunction, isMySQL]);
+  }, [session, defaultParamMode, config]);
 
   const getDefaultRowData = useCallback(() => {
-    if (isMySQL) {
+    if (config?.defaultValue) {
       return {
         ...defaultRowData,
-        dataLength: 45,
+        ...config.defaultValue,
       };
     } else {
       return {
         ...defaultRowData,
       };
     }
-  }, [isMySQL]);
+  }, [config]);
 
   const addParam = useCallback(
     (idx?: number | any) => {

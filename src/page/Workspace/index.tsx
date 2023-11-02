@@ -28,7 +28,7 @@ import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
-import { history, useLocation, useSearchParams } from '@umijs/max';
+import { history, useLocation, useParams, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
 import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -40,6 +40,7 @@ import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
 import tracert from '@/util/tracert';
+import { getMetaStoreInstance } from '@/common/metaStore';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -65,6 +66,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const resourceTreeContext = useContext(ResourceTreeContext);
 
   const [isReady, setIsReady] = useState<boolean>(false);
+  const { tabKey } = useParams<{ tabKey: string }>();
 
   function resolveParams() {
     const projectId = toInteger(params.get('projectId'));
@@ -217,6 +219,48 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     pageStore.setPageUnsaved(targetPageKey);
   };
 
+  const onCopySQLPage = (page: IPage) => {
+    openNewSQLPage(page?.params?.cid, page?.params?.databaseFrom);
+  };
+  useEffect(() => {
+    // clear expired tab data
+    const key = 'tabKey-time' + tabKey;
+    async function clearExpriedTabKey() {
+      const store = await getMetaStoreInstance();
+      const expriedKeys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) {
+          break;
+        }
+        if (key.indexOf('tabKey-time') === 0) {
+          const time = parseInt(localStorage.getItem(key) || '0');
+          if (new Date().getTime() - time > 1000 * 60 * 60 * 24 * 3) {
+            expriedKeys.push(key);
+            localStorage.removeItem(key);
+          }
+        }
+      }
+      const items = await store.getAllItem();
+      items.forEach(async ([itemKey, value]) => {
+        const expriedKey = expriedKeys.find((key) => {
+          return itemKey.includes(key.replace('tabKey-time', ''));
+        });
+        if (!expriedKey) {
+          return;
+        }
+        store.removeItem(itemKey);
+      });
+    }
+    clearExpriedTabKey();
+    window.localStorage.removeItem(key);
+    return () => {
+      // add tab close time
+      if (tabKey) {
+        window.localStorage.setItem(key, new Date().getTime().toString());
+      }
+    };
+  }, []);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330993');
     async function asyncEffect() {
@@ -262,6 +306,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
               onSavePage={handleSavePage}
               onStartSavingPage={handleStartSavingPage}
               onUnsavedChangePage={handelUnsavedChangePage}
+              onCopySQLPage={onCopySQLPage}
             />
           ) : null
         }
@@ -288,12 +333,16 @@ const WorkspaceMobxWrap = inject(
 
 export default inject('userStore')(
   observer(function WorkSpaceWrap(props: WorkspaceProps) {
+    const { tabKey } = useParams<{ tabKey: string }>();
     useEffect(() => {
+      if (tabKey) {
+        return;
+      }
       window.name = 'sqlworkspace' + '%' + props.userStore?.organizationId;
       return () => {
         window.name = null;
       };
-    }, [props.userStore?.organizationId]);
+    }, [props.userStore?.organizationId, tabKey]);
     return (
       <WorkspaceStore key={props.userStore?.organizationId}>
         <WorkspaceMobxWrap {...props} />

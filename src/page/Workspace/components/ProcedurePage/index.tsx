@@ -48,6 +48,8 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -187,7 +189,7 @@ class ProcedurePage extends Component<
       sessionManagerStore,
     } = this.props;
     const { propsTab, procedure, formated } = this.state;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
+    const isMySQL = isConnectionModeBeMySQLType(session?.connection.dialectType);
 
     const tableColumns = [
       {
@@ -279,7 +281,7 @@ class ProcedurePage extends Component<
               <TabPane tab={'DDL'} key={PropsTab.DDL}>
                 <Toolbar>
                   <ToolbarButton
-                    disabled={isMySQL}
+                    disabled={!getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit}
                     text={<FormattedMessage id="workspace.window.session.button.edit" />}
                     icon={<EditOutlined />}
                     onClick={this.editProcedure.bind(this, procedure.proName)}
@@ -335,7 +337,7 @@ class ProcedurePage extends Component<
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(procedure && procedure.ddl) || ''}
-                    language={isMySQL ? 'obmysql' : 'oboracle'}
+                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
                     onEditorCreated={(editor: IEditor) => {
                       this.editor = editor;
                     }}

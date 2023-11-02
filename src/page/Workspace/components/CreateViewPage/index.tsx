@@ -39,6 +39,7 @@ import BaseInfoForm from './component/BaseInfoForm';
 import ColumnSelector from './component/ColumnSelector';
 import TableSelector from './component/TableSelector';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -180,7 +181,6 @@ class CreateViewPage extends Component<
   private renderSQLPanel = () => {
     const { activeStepKey } = this.state;
     const session = this.props.session;
-    const isMySQL = session?.connection.dialectType === ConnectionMode.OB_MYSQL;
     if (activeStepKey !== EnumStep.SQL_PAGE) {
       return null;
     }
@@ -189,7 +189,7 @@ class CreateViewPage extends Component<
       <ScriptPage
         ctx={this}
         session={session}
-        language={isMySQL ? 'obmysql' : 'oboracle'}
+        language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
         toolbar={{
           loading: false,
           actionGroupKey: 'VIEW_CREATE_ACTION_GROUP',

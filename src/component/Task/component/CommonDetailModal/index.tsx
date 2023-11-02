@@ -139,7 +139,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
   ].includes(task?.type);
   return (
     <Drawer
-      visible={visible}
+      open={visible}
       width={width}
       onClose={onClose}
       title={formatMessage({

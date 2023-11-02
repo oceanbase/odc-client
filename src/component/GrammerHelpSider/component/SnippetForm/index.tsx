@@ -177,7 +177,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
         width={520}
         maskClosable={false}
         onClose={this.onClose}
-        visible={visible}
+        open={visible}
         bodyStyle={{
           paddingBottom: 80,
         }}

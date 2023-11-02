@@ -16,12 +16,18 @@
 
 import { formatMessage } from '@/util/intl';
 import { FormattedMessage } from '@umijs/max';
-
-const dataArchiveFilterDoc = formatMessage({ id: 'odc.component.helpDoc.doc.YouCanUseSqlWhere' });
-
+const dataArchiveFilterDoc = formatMessage({
+  id: 'odc.src.component.helpDoc.CanConfigureTheFilteringConditions',
+}); //"可使用常量或引用上文中定义的变量来配置过滤条件。样例1：gmt_create <=  '2023-01-01' ，样例2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为归档表中的字段。"
+const dataClearFilterDoc = formatMessage({
+  id: 'odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1',
+}); //"可使用常量或引用上文中定义的变量来配置过滤条件。样例1：gmt_create <=  '2023-01-01' ，样例2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为清理表中的字段。"
 const dataArchiveVariablesDoc = formatMessage({
-  id: 'odc.component.helpDoc.doc.FilterConditionsSuchAsGmt',
-}); //`过滤条件，如 gmt_create  <= \${bizdate}`
+  id: 'odc.src.component.helpDoc.DefineVariablesSetTime',
+}); //'定义变量、设置时间偏移量并在下文的过滤条件中引用'
+const dataClearVariablesDoc = formatMessage({
+  id: 'odc.src.component.helpDoc.DefineVariablesSetTime.1',
+}); //'定义变量、设置时间偏移量并在下文的清理条件中引用'
 export default {
   sysTransfer: () => (
     <p>
@@ -34,26 +40,28 @@ export default {
       }
     </p>
   ),
-
   connectType: () => (
     <p>
       <FormattedMessage id="portal.connection.form.connectType.desc" />
     </p>
   ),
-
   dbMode: () => (
     <p>
       <FormattedMessage id="portal.connection.form.mode.desc" />
     </p>
   ),
-
   configUrl: () => (
     <p>
       <FormattedMessage id="portal.connection.form.configUrl.desc" />
     </p>
   ),
-
-  sessionTimeTip: <p>{formatMessage({ id: 'odc.component.helpDoc.doc.SqlQueryTimesOutAnd' })}</p>,
+  sessionTimeTip: (
+    <p>
+      {formatMessage({
+        id: 'odc.component.helpDoc.doc.SqlQueryTimesOutAnd',
+      })}
+    </p>
+  ),
   connectSysTip: (
     <p>
       {formatMessage({
@@ -61,10 +69,13 @@ export default {
       })}
     </p>
   ),
-
   exportType: (
     <p>
-      <div>{formatMessage({ id: 'odc.component.helpDoc.doc.TheTableDataInOdc' })}</div>
+      <div>
+        {formatMessage({
+          id: 'odc.component.helpDoc.doc.TheTableDataInOdc',
+        })}
+      </div>
       <div>
         {formatMessage({
           id: 'odc.component.helpDoc.doc.SqlFormatTableDataContent',
@@ -72,8 +83,13 @@ export default {
       </div>
     </p>
   ),
-
-  batchCommit: <p>{formatMessage({ id: 'odc.component.helpDoc.doc.AddACommitStatementTo' })}</p>,
+  batchCommit: (
+    <p>
+      {formatMessage({
+        id: 'odc.component.helpDoc.doc.AddACommitStatementTo',
+      })}
+    </p>
+  ),
   globalSnapshot: (
     <p>
       {formatMessage({
@@ -81,8 +97,13 @@ export default {
       })}
     </p>
   ),
-
-  batchCommitNum: <p>{formatMessage({ id: 'odc.component.helpDoc.doc.EachTimeASpecifiedRow' })}</p>,
+  batchCommitNum: (
+    <p>
+      {formatMessage({
+        id: 'odc.component.helpDoc.doc.EachTimeASpecifiedRow',
+      })}
+    </p>
+  ),
   existAction: (
     <p>
       {formatMessage({
@@ -90,7 +111,6 @@ export default {
       })}
     </p>
   ),
-
   truncateTableBeforeImport: (
     <p>
       {formatMessage({
@@ -98,7 +118,6 @@ export default {
       })}
     </p>
   ),
-
   elapsedTime: (
     <p>
       <div>
@@ -139,7 +158,6 @@ export default {
       </div>
     </p>
   ),
-
   normalDB: (
     <p>
       {
@@ -151,7 +169,6 @@ export default {
       }
     </p>
   ),
-
   shardingDB: (
     <p>
       {
@@ -163,7 +180,6 @@ export default {
       }
     </p>
   ),
-
   riskDegree: (
     <p>
       {
@@ -175,7 +191,6 @@ export default {
       }
     </p>
   ),
-
   approvalExpiration: (
     <p>
       {
@@ -187,7 +202,6 @@ export default {
       }
     </p>
   ),
-
   waitExecutionExpiration: (
     <p>
       {
@@ -199,7 +213,6 @@ export default {
       }
     </p>
   ),
-
   executionExpiration: (
     <p>
       {
@@ -211,7 +224,6 @@ export default {
       }
     </p>
   ),
-
   approvalRoles: (
     <p>
       {
@@ -223,7 +235,6 @@ export default {
       }
     </p>
   ),
-
   exportTableName: (
     <p>
       {
@@ -235,7 +246,6 @@ export default {
       }
     </p>
   ),
-
   customSegement: (
     <p>
       {
@@ -247,7 +257,6 @@ export default {
       }
     </p>
   ),
-
   exportDataConfig: (
     <p>
       {
@@ -259,7 +268,6 @@ export default {
       }
     </p>
   ),
-
   exportStructConfig: (
     <p>
       {
@@ -271,7 +279,6 @@ export default {
       }
     </p>
   ),
-
   exportDropTable: (
     <p>
       {
@@ -283,7 +290,6 @@ export default {
       }
     </p>
   ),
-
   taskFlowIsMatch: (
     <p>
       {
@@ -295,7 +301,6 @@ export default {
       }
     </p>
   ),
-
   maskRuleInclude: (
     <p>
       <p>
@@ -318,7 +323,6 @@ export default {
       </p>
     </p>
   ),
-
   preCreatePartitionCount: (
     <p>
       {
@@ -329,7 +333,6 @@ export default {
       }
     </p>
   ),
-
   partitionInterval: (
     <p>
       {
@@ -340,7 +343,6 @@ export default {
       }
     </p>
   ),
-
   expirePeriod: (
     <p>
       {
@@ -351,7 +353,6 @@ export default {
       }
     </p>
   ),
-
   shadowSyncTableName: (
     <p>
       {
@@ -362,7 +363,6 @@ export default {
       }
     </p>
   ),
-
   saveImportAndExportConfig: (
     <p>
       {
@@ -372,7 +372,6 @@ export default {
       }
     </p>
   ),
-
   resourceManagementPermissionsAction: (
     <p>
       <p>
@@ -398,7 +397,6 @@ export default {
       </p>
     </p>
   ),
-
   systemOperationPermissionsAction: (
     <p>
       <p>
@@ -417,18 +415,16 @@ export default {
       </p>
     </p>
   ),
-
   tableRowcountToolTip: (
     <p>
       {
         formatMessage({
           id: 'odc.component.helpDoc.doc.BecauseTheDataIsObtained',
         }) /*由于该数据是通过静态基线数据得到的，因此会有延迟，可能出现不准确的情况。如想得到准确的数据请使用
-    “select count(*) from table_name;” 进行查询。*/
+       “select count(*) from table_name;” 进行查询。*/
       }
     </p>
   ),
-
   exportFileMaxSize: (
     <p>
       {
@@ -438,7 +434,6 @@ export default {
       }
     </p>
   ),
-
   importTaskSkipHeader: (
     <p>
       {
@@ -448,7 +443,6 @@ export default {
       }
     </p>
   ),
-
   projectOwner: (
     <p>
       {
@@ -476,7 +470,6 @@ export default {
       }
     </p>
   ),
-
   dataArchiveTimeDoc: (
     <p>
       {
@@ -487,7 +480,9 @@ export default {
     </p>
   ),
   dataArchiveFilterDoc: <p>{dataArchiveFilterDoc}</p>,
+  dataClearFilterDoc: <p>{dataClearFilterDoc}</p>,
   dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
+  dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
     <p>
       {
@@ -512,6 +507,24 @@ export default {
         formatMessage({
           id: 'odc.component.helpDoc.doc.AfterTheTableLockTime',
         }) /*超过锁表时间后，未切换完成可自动重试*/
+      }
+    </p>
+  ),
+  TaskLmitRow: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.TheDataDataDataData',
+        }) /* 每秒操作数据总行限制 */
+      }
+    </p>
+  ),
+  TaskLmitData: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.TheTotalSizeLimitOf',
+        }) /* 每秒操作数据总大小限制 */
       }
     </p>
   ),

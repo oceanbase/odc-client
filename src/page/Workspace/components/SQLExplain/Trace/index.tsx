@@ -15,49 +15,109 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { Table } from 'antd';
-import ProgressBar from '../components/ProgressBar';
-import styles from './index.less';
+import ProgressBar from './components/ProgressBar';
+import DisplayTable from '@/component/DisplayTable';
+import { useEffect, useState } from 'react';
 
-const Trace = ({ endTimestamp, startTimestamp, treeData }) => {
+const Trace = ({ endTimestamp, startTimestamp, treeData = [] }) => {
+  const [tableHeight, setTableHeight] = useState<number>();
+  useEffect(() => {
+    setTableHeight(window.innerHeight - 170);
+  }, []);
+  if (Array.isArray(treeData) && treeData.length === 0) {
+    return (
+      <DisplayTable
+        bordered={true}
+        expandable={{
+          defaultExpandAllRows: true,
+        }}
+        scroll={{
+          x: 1400,
+        }}
+        columns={[
+          {
+            dataIndex: 'title',
+            key: 'title',
+            fixed: 'left',
+            title: formatMessage({
+              id: 'workspace.window.sql.explain.tab.summary.columns.name',
+            }),
+            width: 378,
+          },
+          {
+            dataIndex: 'nodeWithHost',
+            key: 'nodeWithHost',
+            title: formatMessage({ id: 'odc.SQLExplain.Trace.Node' }), //节点
+            width: 262,
+          },
+          {
+            dataIndex: 'host',
+            key: 'host',
+            title: formatMessage({ id: 'odc.SQLExplain.Trace.ExecutionTimeline' }), //执行时间线
+            width: 711,
+            render: (_, record) => (
+              <ProgressBar
+                {...{
+                  totalEndTimestamp: endTimestamp,
+                  totalStartTimestamp: startTimestamp,
+                  node: record,
+                }}
+              />
+            ),
+          },
+        ]}
+        dataSource={[]}
+      />
+    );
+  }
   return (
-    <Table
-      className={styles.treeTable}
-      columns={[
-        {
-          dataIndex: 'title',
-          key: 'title',
-          fixed: 'left',
-          title: formatMessage({
-            id: 'workspace.window.sql.explain.tab.summary.columns.name',
-          }),
-          width: 378,
-        },
-        {
-          dataIndex: 'nodeWithHost',
-          key: 'nodeWithHost',
-          title: formatMessage({ id: 'odc.SQLExplain.Trace.Node' }), //节点
-          width: 262,
-        },
-        {
-          dataIndex: 'host',
-          key: 'host',
-          title: formatMessage({ id: 'odc.SQLExplain.Trace.ExecutionTimeline' }), //执行时间线
-          width: 711,
-          render: (_, record) => (
-            <ProgressBar
-              {...{
-                totalEndTimestamp: endTimestamp,
-                totalStartTimestamp: startTimestamp,
-                node: record,
-              }}
-            />
-          ),
-        },
-      ]}
-      dataSource={treeData}
-      pagination={false}
-    />
+    treeData && (
+      <DisplayTable
+        bordered={true}
+        key={treeData?.[0]?.spanId}
+        disablePagination
+        expandable={{
+          defaultExpandAllRows: true,
+        }}
+        scroll={{
+          x: 1400,
+          y: tableHeight,
+        }}
+        columns={[
+          {
+            dataIndex: 'title',
+            key: 'title',
+            fixed: 'left',
+            title: formatMessage({
+              id: 'workspace.window.sql.explain.tab.summary.columns.name',
+            }),
+            width: 378,
+          },
+          {
+            dataIndex: 'nodeWithHost',
+            key: 'nodeWithHost',
+            title: formatMessage({ id: 'odc.SQLExplain.Trace.Node' }), //节点
+            width: 262,
+          },
+          {
+            dataIndex: 'host',
+            key: 'host',
+            title: formatMessage({ id: 'odc.SQLExplain.Trace.ExecutionTimeline' }), //执行时间线
+            width: 711,
+            render: (_, record) => (
+              <ProgressBar
+                {...{
+                  totalEndTimestamp: endTimestamp,
+                  totalStartTimestamp: startTimestamp,
+                  node: record,
+                }}
+              />
+            ),
+          },
+        ]}
+        dataSource={treeData}
+      />
+    )
   );
 };
 export default Trace;

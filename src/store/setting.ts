@@ -19,7 +19,7 @@ import { formatMessage } from '@/util/intl';
  * 样式与功能开关
  */
 
-import { getServerSystemInfo, getSystemConfig } from '@/common/network/other';
+import { getServerSystemInfo, getSystemConfig, getPublicKey } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
@@ -39,24 +39,31 @@ interface IThemeConfig {
   cmdTheme: 'dark' | 'white';
   key: string;
   maskType: 'white' | 'dark';
+  chartsTheme: string;
 }
 
+export enum EThemeConfigKey {
+  ODC_WHITE = 'odc-white',
+  ODC_DARK = 'odc-dark',
+}
 const themeConfig: { [key: string]: IThemeConfig } = {
-  'odc-white': {
+  [EThemeConfigKey.ODC_WHITE]: {
     key: 'odc-white',
     editorTheme: 'obwhite',
     className: 'odc-white',
     sheetTheme: 'white',
     cmdTheme: 'white',
     maskType: 'white',
+    chartsTheme: 'white',
   },
-  'odc-dark': {
+  [EThemeConfigKey.ODC_DARK]: {
     key: 'odc-dark',
     editorTheme: 'vs-dark',
     className: 'odc-dark',
     sheetTheme: 'dark',
     cmdTheme: 'dark',
     maskType: 'dark',
+    chartsTheme: 'dark',
   },
 };
 const defaultTheme = 'odc-white';
@@ -130,6 +137,18 @@ export class SettingStore {
   public maxResultSetRows: number = Number.MAX_SAFE_INTEGER;
 
   /**
+   * 工单（数据归档 & 数据清理）行限流最大值
+   */
+  @observable
+  public maxSingleTaskRowLimit: number = Number.MAX_SAFE_INTEGER;
+
+  /**
+   * 工单（数据归档 & 数据清理）数据限流最大值
+   */
+  @observable
+  public maxSingleTaskDataSizeLimit: number = Number.MAX_SAFE_INTEGER;
+
+  /**
    * 独立session最大数量
    */
   @observable
@@ -140,6 +159,12 @@ export class SettingStore {
    */
   @observable.shallow
   public serverSystemInfo: ServerSystemInfo = null;
+
+  /**
+   * 非对称加密的公钥
+   */
+  @observable
+  public encryptionPublicKey: string = null;
 
   /**
    * 系统配置是否初始化完毕
@@ -232,6 +257,10 @@ export class SettingStore {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
     }
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
+    this.maxSingleTaskRowLimit =
+      parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;
+    this.maxSingleTaskDataSizeLimit =
+      parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit']) || Number.MAX_SAFE_INTEGER;
   }
 
   @action
@@ -265,6 +294,7 @@ export class SettingStore {
     try {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
+      await this.getPublicKeyData();
       if (this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
         initTracert();
       }
@@ -295,6 +325,12 @@ export class SettingStore {
       console.log('server version:', info.version);
     } catch (e) {}
     this.serverSystemInfo = info;
+  }
+
+  @action
+  public async getPublicKeyData() {
+    const res = await getPublicKey();
+    this.encryptionPublicKey = res;
   }
 }
 

@@ -16,13 +16,13 @@
 
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
+import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
 import { AccountType, ConnectType, ConnectionMode, IConnectionTestErrorType } from '@/d.ts';
-import { IDatasource } from '@/d.ts/datasource';
-import { isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, FormInstance, Input, Select, Space } from 'antd';
+import { Form, FormInstance, Input, Select, Space, Typography } from 'antd';
+import Icon from '@ant-design/icons';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import Account from './Account';
 import AddressItems from './AddressItems';
@@ -31,6 +31,16 @@ import DBTypeItem from './DBTypeItem';
 import ParseURLItem from './ParseURLItem';
 import SSLItem from './SSLItem';
 import SysForm from './SysForm';
+import { ConnectTypeText } from '@/constant/label';
+import {
+  getAllConnectTypes,
+  getDataSourceModeConfig,
+  getDataSourceStyleByConnectType,
+  getDsByConnectType,
+} from '@/common/datasource';
+import ExtraConfig from './ExtraConfig';
+import JDBCParamsItem from './JDBCParamsItem';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -38,14 +48,14 @@ export interface IFormRef {
 interface IProps {
   isEdit?: boolean;
   originDatasource?: IDatasource;
-  isPersonal?: boolean;
+  type: ConnectType;
+  disableTheme?: boolean;
 }
 export default forwardRef<IFormRef, IProps>(function DatasourceForm(
-  { isEdit, originDatasource, isPersonal }: IProps,
+  { isEdit, originDatasource, type, disableTheme }: IProps,
   ref,
 ) {
   const [form] = Form.useForm();
-  const sysAccountExist = isEdit && !!originDatasource?.sysTenantUsername;
   const [testResult, setTestResult] = useState<{
     active: boolean;
     errorCode: IConnectionTestErrorType;
@@ -75,6 +85,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'username',
         'password',
         'sslConfig',
+        'sessionInitScript',
+        'jdbcUrlParameters',
       ]);
     } catch (e) {}
     if (!values) {
@@ -134,6 +146,10 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     }
     setTestResult(res?.data);
   }
+  const connectTypeList: ConnectType[] = type
+    ? getAllConnectTypes(getDsByConnectType(type))
+    : getAllConnectTypes(IDataSourceType.OceanBase);
+  const dsc = getDataSourceModeConfig(type)?.connection;
   return (
     <DatasourceFormContext.Provider
       value={{
@@ -141,18 +157,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         test,
         testResult,
         isEdit,
-        isPersonal,
         originDatasource,
+        dataSourceConfig: dsc,
+        disableTheme,
       }}
     >
       <Form
-        initialValues={
-          haveOCP()
-            ? {
-                type: ConnectionMode.OB_ORACLE,
-              }
-            : {}
-        }
+        initialValues={{
+          type,
+        }}
         layout="vertical"
         form={form}
         requiredMark="optional"
@@ -177,7 +190,29 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             />
           </Form.Item>
         ) : null}
-        <DBTypeItem />
+        <Typography>
+          <Typography.Paragraph>
+            <Space size={4}>
+              <span>
+                {
+                  formatMessage({
+                    id:
+                      'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
+                  }) /* 数据源类型: */
+                }
+              </span>
+              <Icon
+                component={getDataSourceStyleByConnectType(type)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(type)?.icon?.color,
+                  fontSize: 14,
+                }}
+              />
+              {ConnectTypeText[type] || ''}
+            </Space>
+          </Typography.Paragraph>
+        </Typography>
+        {/* <DBTypeItem /> */}
         <Form.Item
           rules={[
             {
@@ -188,30 +223,28 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             id: 'odc.NewDatasourceDrawer.Form.Type',
           })}
           /*类型*/ name={'type'}
-          noStyle={haveOCP() ? true : false}
+          noStyle
         >
           <Select
             disabled={isEdit}
             placeholder={
               formatMessage({
                 id:
-                  'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType',
+                  'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType.1',
               }) /* 请选择类型 */
             }
             style={{
               width: 208,
-              display: haveOCP() ? 'none' : 'inline-block',
+              display: 'none',
             }}
           >
-            <Option value={ConnectType.OB_MYSQL}>OceanBase MySQL</Option>
-            <Option value={ConnectType.OB_ORACLE}>OceanBase Oracle</Option>
-            {!haveOCP() && (
-              <>
-                <Option value={ConnectType.CLOUD_OB_MYSQL}>OceanBase MySQL Cloud</Option>
-                <Option value={ConnectType.CLOUD_OB_ORACLE}>OceanBase Oracle Cloud</Option>
-                {/* <Option value={ConnectType.ODP_SHARDING_OB_MYSQL}>OceanBase MySQL Sharding</Option> */}
-              </>
-            )}
+            {connectTypeList?.map((item) => {
+              return (
+                <Option key={item} value={item}>
+                  {ConnectTypeText[item]}
+                </Option>
+              );
+            })}
           </Select>
         </Form.Item>
         <Form.Item noStyle shouldUpdate>
@@ -243,31 +276,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     }}
                   >
                     {environments?.map((env) => {
-                      return <Option value={env.id}>{env.name}</Option>;
+                      return (
+                        <Option key={env.id} value={env.id}>
+                          <RiskLevelLabel color={env.style} content={env.name} />
+                        </Option>
+                      );
                     })}
                   </Select>
                 </Form.Item>
-                {!haveOCP() && (
-                  <Space
-                    style={{
-                      width: '100%',
-                    }}
-                    direction="vertical"
-                  >
-                    <Form.Item shouldUpdate noStyle>
-                      {({ getFieldValue }) => {
-                        return isConnectTypeBeShardingType(getFieldValue('type')) ? null : (
-                          <SysForm
-                            formRef={form}
-                            isEdit={isEdit}
-                            sysAccountExist={sysAccountExist}
-                          />
-                        );
-                      }}
-                    </Form.Item>
-                    <SSLItem />
-                  </Space>
-                )}
+                {!haveOCP() && <ExtraConfig />}
               </>
             );
           }}

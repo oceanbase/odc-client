@@ -15,7 +15,7 @@
  */
 
 import { getTableInfo } from '@/common/network/table';
-import { DbObjectType } from '@/d.ts';
+import { DbObjectType, TaskType } from '@/d.ts';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
@@ -44,6 +44,7 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const Content = Layout.Content;
 const TabPane = Tabs.TabPane;
@@ -180,7 +181,10 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             </Radio.Button>
           </Radio.Group>
           <Space>
-            {settingStore.enableDBExport ? (
+            {settingStore.enableDBExport &&
+            getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+              TaskType.EXPORT,
+            ) ? (
               <Toolbar.Button
                 text={
                   formatMessage({ id: 'odc.components.TablePage.Export' }) //导出

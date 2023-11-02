@@ -28,20 +28,25 @@ interface IActionProps {
 }
 
 export interface ITab {
-  title: string;
+  title: React.ReactNode;
   key: string;
-  actions: {
-    title: string;
-    icon: React.ComponentType;
-    key: string;
-    onClick: () => Promise<void> | void;
-  }[];
+  actions: (
+    | {
+        title: string;
+        icon: React.ComponentType;
+        key: string;
+        onClick: () => Promise<void> | void;
+      }
+    | { render: () => React.ReactElement }
+  )[];
   render: () => ReactElement;
+  groupSize?: number;
 }
 
 interface IProps {
   tabs: ITab[];
   selectTabKey?: string;
+  leftAction?: React.ReactNode;
   setSelectTabKey?: (v: string) => void;
 }
 
@@ -60,6 +65,7 @@ export default function SideTabs(props: IProps) {
     <div className={styles.sidetabs}>
       <div className={styles.header}>
         <Space size={12} className={styles.tabs}>
+          {props.leftAction}
           {tabs.map((tab) => {
             const isSelect = tab.key === selectTabKey;
             return (
@@ -78,8 +84,11 @@ export default function SideTabs(props: IProps) {
             );
           })}
         </Space>
-        <Action.Group>
+        <Action.Group size={selectTab.groupSize}>
           {selectTab?.actions?.map((action) => {
+            if ('render' in action) {
+              return action.render();
+            }
             return (
               <Action.Link replaceLoading={true} key={action.key} onClick={action.onClick}>
                 <Icon className={styles.acion} component={action.icon} />

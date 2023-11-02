@@ -24,6 +24,7 @@ interface IBigSelectProps {
   defaultValue?: string | number;
   value?: string | number;
   icon: any;
+  iconColor?: string;
   options: {
     value: string | number;
     label: string;
@@ -33,11 +34,19 @@ interface IBigSelectProps {
   bottom?: React.ReactNode;
 }
 const BigSelect: React.FC<IBigSelectProps> = (props) => {
-  const { defaultValue, options, bottom, icon, onChange, onDropdownVisibleChange } = props;
+  const {
+    defaultValue,
+    options,
+    bottom,
+    icon,
+    iconColor,
+    onChange,
+    onDropdownVisibleChange,
+  } = props;
   return (
     <Space size={12} className={styles['select-wrapper']}>
       <div className={styles.logo}>
-        <Icon component={icon || ProjectSvg} />
+        <Icon component={icon || ProjectSvg} style={{ color: iconColor }} />
       </div>
       <Select
         className={styles.select}

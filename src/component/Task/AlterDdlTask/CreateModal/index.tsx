@@ -30,9 +30,11 @@ import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  theme?: 'dark' | 'white';
 }
 enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
@@ -47,14 +49,13 @@ export enum ClearStrategy {
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, theme } = props;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
-  const isMySQL = connection?.dialectType === ConnectionMode.OB_MYSQL;
   const hadleReset = () => {
     form.resetFields(null);
   };
@@ -165,7 +166,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </Button>
         </Space>
       }
-      visible={modalStore.createDDLAlterVisible}
+      open={modalStore.createDDLAlterVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}
@@ -219,7 +220,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect projectId={projectId} />
+        <DatabaseSelect type={TaskType.ONLINE_SCHEMA_CHANGE} projectId={projectId} />
         <Form.Item
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
@@ -259,7 +260,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           }}
         >
           <CommonIDE
-            language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+            editorProps={{
+              theme,
+            }}
+            language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             onSQLChange={handleSqlChange}
           />
         </Form.Item>

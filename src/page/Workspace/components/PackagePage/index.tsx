@@ -269,7 +269,6 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
     } = this.props;
     const { propsTab, ddlReadOnly, topTab, headerFormated, bodyFormated, reloading } = this.state;
     const pkg = this.getPackage(packageName);
-    const isMySQL = session?.connection?.dialectType === ConnectionMode.OB_MYSQL;
     const dbName = session?.odcDatabase?.name;
 
     if (!pkg) {
@@ -422,7 +421,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                       <SQLCodeEditorDDL
                         readOnly
                         defaultValue={pkg?.packageHead?.basicInfo?.ddl}
-                        language={isMySQL ? 'obmysql' : 'oboracle'}
+                        language={'oboracle'}
                         onEditorCreated={(editor: IEditor) => {
                           this.editor_header = editor;
                         }}
@@ -558,7 +557,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                       <SQLCodeEditorDDL
                         readOnly
                         defaultValue={pkg.packageBody.basicInfo.ddl}
-                        language={isMySQL ? 'obmysql' : 'oboracle'}
+                        language={'oboracle'}
                         onEditorCreated={(editor: IEditor) => {
                           this.editor_body = editor;
                         }}

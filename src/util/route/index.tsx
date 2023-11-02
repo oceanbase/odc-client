@@ -21,15 +21,18 @@ export function gotoSQLWorkspace(
   datasourceId?: number,
   databaseId?: number,
   currentPage?: boolean,
+  tabKey: string = '',
 ) {
   const url =
     location.origin +
     location.pathname +
-    `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${datasourceId || ''}&databaseId=${
-      databaseId || ''
-    }`;
+    (tabKey
+      ? `#/sqlworkspace/${tabKey}/${datasourceId}`
+      : `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${
+          datasourceId || ''
+        }&databaseId=${databaseId || ''}`);
 
-  const name = 'sqlworkspace' + '%' + login.organizationId;
+  const name = 'sqlworkspace' + '%' + login.organizationId + tabKey;
   if (currentPage) {
     location.href = url;
     window.name = name;

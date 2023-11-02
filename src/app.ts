@@ -44,9 +44,7 @@ export const qiankun = {
     // TODO：支持英文版
     if (props && props.locale) {
       logger.log('[setLocale] props.locale', props.locale);
-      setLocale(props.locale, false);
-    } else {
-      // setLocale('zh-CN', false);
+      setLocale(props.locale, true);
     }
   },
   // 应用卸载之后触发

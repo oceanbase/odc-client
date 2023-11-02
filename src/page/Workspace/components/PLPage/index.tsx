@@ -69,6 +69,7 @@ import { checkPLNameChanged } from '@/util/pl';
 import { debounce } from 'lodash';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import SessionContextWrap from '../SessionContextWrap';
+import { getDataSourceModeConfig } from '@/common/datasource';
 const RESULT_HEIGHT = 230;
 const VERSION_324 = '3.2.4.0';
 const PL_DEBUG_TIP_VSIBLE_KEY = 'odc_pl_debug_visible';
@@ -432,14 +433,15 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   // 调试 - 是否 PL 调试需要输入入参
   private isPLNeedFillParams() {
     const { params } = this.props;
-    const isMySQL = this.getSession()?.connection?.dialectType === ConnectionMode.OB_MYSQL;
+    const config = getDataSourceModeConfig(this.getSession()?.connection?.type);
+    const paramInputMode = config?.sql?.plParamMode || 'list';
     switch (params?.plPageType) {
       case PLPageType.anonymous: {
         return false;
       }
       case PLPageType.plEdit: {
         if ('params' in params?.plSchema) {
-          if (isMySQL) {
+          if (paramInputMode === 'list') {
             return params?.plSchema?.params?.find(
               (param) => param.paramMode && this.isInMode(param.paramMode),
             );
@@ -1167,7 +1169,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   public render() {
     const { pageKey, pageStore, params } = this.props;
     const debug = this.getDebug();
-    const isMySQL = this.getSession()?.connection.dialectType === ConnectionMode.OB_MYSQL;
     const {
       showSaveSQLModal,
       showEditPLParamsModal,
@@ -1188,7 +1189,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       <ScriptPage
         session={this.getSession()}
         ctx={this}
-        language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+        language={getDataSourceModeConfig(this.getSession()?.connection?.type)?.sql?.language}
         toolbar={{
           loading: toolBarLoading || !isReady,
           actionGroupKey: this.getActionGroupKey(),

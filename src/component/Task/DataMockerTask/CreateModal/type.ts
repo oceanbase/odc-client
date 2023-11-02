@@ -34,7 +34,7 @@ export enum RuleItem {
 /**
  * 把数据类型转换成规则组件类型
  */
-export const columnTypeToRuleMap = {
+const _columnTypeToRuleMap = {
   [ConnectionMode.OB_ORACLE]: {
     INTEGER: RuleItem.NUMBER,
     NUMBER: RuleItem.NUMBER,
@@ -89,7 +89,8 @@ export const columnTypeToRuleMap = {
     VARBINARY: RuleItem.CHAR,
   },
 };
-
+_columnTypeToRuleMap[ConnectionMode.MYSQL] = _columnTypeToRuleMap[ConnectionMode.OB_MYSQL];
+export const columnTypeToRuleMap = _columnTypeToRuleMap;
 export interface IMockFormColumn {
   columnName: string;
   columnType: string;

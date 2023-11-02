@@ -24,6 +24,7 @@ import {
   LobExt,
   ResultSetColumn,
   RSModifyDataType,
+  TaskType,
   TransState,
 } from '@/d.ts';
 import modal from '@/store/modal';
@@ -75,6 +76,7 @@ import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -698,7 +700,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   let filterRowIdx;
   if (selectedCellRowsKey.length === 1) {
     selectedRowIdx = rows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
-    filterRowIdx = gridRef.current?.selectedRange?.rowIdx;
+    filterRowIdx = filterRows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
   }
   const rgdColumns = useColumns(
     columnsToDisplay,
@@ -905,7 +907,12 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 />
               )
             ) : null}
-            {!isEditing && onExport && settingStore.enableDBExport ? (
+            {!isEditing &&
+            onExport &&
+            settingStore.enableDBExport &&
+            getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+              TaskType.EXPORT_RESULT_SET,
+            ) ? (
               <ToolbarButton
                 text={
                   formatMessage({

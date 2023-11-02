@@ -78,7 +78,7 @@ exports.download = async function (ossPath, saveDir, fileName) {
 exports.oss = {
   getOSSIns: () => {
     return new OSS({
-      endpoint: 'cn-hangzhou-alipay-b-internal.oss-internal.aliyun-inc.com',
+      endpoint: process.env.OSS_ENDPOINT,
       accessKeyId: process.env.OSS_ACCESS_KEY_ID || process.env.ACI_VAR_OSS_ACCESS_KEY_ID,
       accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET || process.env.ACI_VAR_OSS_ACCESS_KEY_SECRET,
       bucket: 'antsys-obodc-build',

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
 import { ClusterStore } from '@/store/cluster';
@@ -23,8 +24,7 @@ import Icon from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-
-import OBSvg from '@/svgr/source_ob.svg';
+import RiskLevelLabel from '../RiskLevelLabel';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
@@ -98,6 +98,7 @@ const ConnectionPopover: React.FC<{
       </div>
     );
   }
+  const DBIcon = getDataSourceStyleByConnectType(connection?.type)?.icon;
   return (
     <div
       onClick={(e) => {
@@ -123,7 +124,15 @@ const ConnectionPopover: React.FC<{
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Icon component={OBSvg} style={{ fontSize: 22, marginRight: 4 }} /> {connection.name}
+              <RiskLevelLabel
+                content={connection?.environmentName}
+                color={connection?.environmentStyle?.toLowerCase()}
+              />
+              <Icon
+                component={DBIcon?.component}
+                style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
+              />{' '}
+              {connection.name}
             </div>
           </div>
         </Tooltip>
