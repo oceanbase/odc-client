@@ -25,7 +25,10 @@ import styles from './index.less';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import ProjectSvg from '@/svgr/project_space.svg';
 
-export default forwardRef(function ProjectTree(props, ref) {
+export default forwardRef(function ProjectTree(
+  { closeSelectPanel }: { closeSelectPanel: () => void },
+  ref,
+) {
   const [searchKey, setSearchKey] = useState('');
   const context = useContext(ResourceTreeContext);
   const { projectList } = context;
@@ -88,6 +91,7 @@ export default forwardRef(function ProjectTree(props, ref) {
                     /**
                      * disable unselect
                      */
+                    closeSelectPanel();
                     return;
                   }
                   setSelectKeys(keys);

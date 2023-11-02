@@ -44,9 +44,13 @@ export default function useTreeState(id: string) {
   };
   const onLoad: TreeProps['onLoad'] = function (loadedKeys, { event, node }) {
     console.log('onload', node.key);
-    cache[id] = Object.assign({}, cache[id], { loadedKeys: [...loadedKeys] });
+    const newExpandedKeys = [...expandedKeys, node.key];
+    cache[id] = Object.assign({}, cache[id], {
+      loadedKeys: [...loadedKeys],
+      expandedKeys: newExpandedKeys,
+    });
     setLoadedKeys(loadedKeys);
-    setExpandedKeys([...expandedKeys, node.key]);
+    setExpandedKeys(newExpandedKeys);
   };
 
   return {
