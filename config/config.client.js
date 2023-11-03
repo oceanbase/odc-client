@@ -13,10 +13,6 @@ export default {
       ws: true,
     },
     '/api/': {
-      // target: 'http://11.124.185.132',
-      // target: 'http://100.81.152.104:8989',
-      // target: 'http://100.81.152.113:9000',
-      // target: 'http://100.81.152.113:8989',
       target: 'http://localhost:8989',
     },
   },

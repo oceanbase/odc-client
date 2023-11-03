@@ -1,5 +1,4 @@
 // 上传下载文件，目前用于 BLOB 类型数据的管理
-// @see https://yuque.antfin-inc.com/ob/platform/rgfghm
 const mockJs = require('mockjs');
 import { MOCK_CONNECT_LIST } from './session';
 export default {
