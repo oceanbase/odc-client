@@ -6017,7 +6017,7 @@
   "odc.src.component.Task.DataClearTask.CreateModal.TaskSetting": "Ticket Settings",
   "odc.src.component.helpDoc.DefineVariablesSetTime.1": "Define variables, set time offsets, and reference them in the subsequent cleanup conditions.",
   "odc.src.component.Task.DataClearTask.CreateModal.VariablesCanBeReferencedIn": "(Optional) Variables can be referenced in Cleanup Condition in Cleanup Scope.",
-  "odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1": "You can configure filter conditions using constants or variables defined in the previous section. Example 1: \"gmt_create ≤ '2023-01-01'\", Example 2: \"gmt_create ≤ '{bizdate}'\" where 'bizdate' is the variable name defined in Variable Configuration, and 'gmt_create' is a field in the cleanup table.",
+  "odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1": "You can configure filter conditions using constants or variables defined in the previous section. Example 1: \"gmt_create ≤ '2023-01-01'\", Example 2: \"gmt_create ≤ '${bizdate}'\" where 'bizdate' is the variable name defined in Variable Configuration, and 'gmt_create' is a field in the cleanup table.",
   "odc.src.component.Task.DataArchiveTask.DetailContent.SuccessfullyModified": "Modified successfully",
   "odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow": "Row Limit",
   "odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow": "Please enter a row limit",
