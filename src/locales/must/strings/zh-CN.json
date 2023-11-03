@@ -6038,7 +6038,7 @@
   "odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath": "可通过路径、正则或 Groovy 任意一种识别方式，进行脚本批量选择列",
   "odc.src.component.Task.component.ThrottleFormItem.RestrictedFlow": "行限流",
   "odc.src.component.helpDoc.TheTotalSizeLimitOf": "每秒操作数据总大小限制",
-  "odc.src.component.helpDoc.CanConfigureTheFilteringConditions": "可使用常量或引用上文中定义的变量来配置过滤条件。样例 1：gmt_create <= '2023-01-01' ，样例 2：gmt_create <= '{bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为归档表中的字段。",
+  "odc.src.component.helpDoc.CanConfigureTheFilteringConditions": "可使用常量或引用上文中定义的变量来配置过滤条件。样例 1：gmt_create <= '2023-01-01' ，样例 2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为归档表中的字段。",
   "odc.src.component.Task.DataClearTask.DetailContent.RestrictedFlow": "行限流",
   "odc.src.component.Task.DataClearTask.CreateModal.TaskSetting": "任务设置",
   "odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow": "行限流"
