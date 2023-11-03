@@ -6017,7 +6017,7 @@
   "odc.src.component.Task.DataClearTask.CreateModal.TaskSetting": "任務設定",
   "odc.src.component.helpDoc.DefineVariablesSetTime.1": "定義變數、設定時間位移量並在下文的清理條件中引用",
   "odc.src.component.Task.DataClearTask.CreateModal.VariablesCanBeReferencedIn": "變數可在清理範圍的清理條件中引用 (可選)",
-  "odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1": "可使用常量或引用上文中定義的變數來配置過濾條件。範例 1：gmt_create <= '2023-01-01' ，範例 2：gmt_create <= '{bizdate}'，其中 bizdate 為變數配置中的變數名，gmt_create 為清理表中的欄位。",
+  "odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1": "可使用常量或引用上文中定義的變數來配置過濾條件。範例 1：gmt_create <= '2023-01-01' ，範例 2：gmt_create <= '${bizdate}'，其中 bizdate 為變數配置中的變數名，gmt_create 為清理表中的欄位。",
   "odc.src.component.Task.DataArchiveTask.DetailContent.SuccessfullyModified": "修改成功！",
   "odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow": "行限流",
   "odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow": "請輸行限流限流",
