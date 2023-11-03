@@ -7,7 +7,7 @@
   "bugs": {
     "email": "odcsupport@service.alipay.com"
   },
-  "repository": "git@code.alipay.com:oceanbase/oceanbase-developer-center.git",
+  "repository": "git@github.com:oceanbase/odc-client.git",
   "author": {
     "name": "odc"
   },
