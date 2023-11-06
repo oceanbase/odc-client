@@ -124,6 +124,8 @@ export const AuditEventMetaMap = {
   [AuditEventType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.ExportResultSet',
   }), //'导出结果集'
+  // SQL安全规则管理
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -536,6 +538,8 @@ export const AuditEventActionMap = {
   [AuditEventActionType.STOP_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.StopExportResultsSetTask',
   }), //'停止导出结果集任务'
+  // SQL安全规则管理
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '更新SQL安全规则',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =
