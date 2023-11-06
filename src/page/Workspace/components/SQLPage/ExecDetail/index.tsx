@@ -114,6 +114,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
             emphasis: {
               focus: 'series',
             },
+            barMinHeight: 30,
             barWidth: '30px',
             data: [execTime],
           },
@@ -128,6 +129,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
             emphasis: {
               focus: 'series',
             },
+            barMinHeight: 30,
             data: [queueTime],
           },
           {
@@ -137,6 +139,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
             label: {
               show: true,
             },
+            barMinHeight: 30,
             emphasis: {
               focus: 'series',
             },
@@ -173,6 +176,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
           },
           yAxis: {
             show: false,
+            // type: "log",
             data: [
               formatMessage({
                 id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
@@ -204,6 +208,18 @@ const ExecDetail: React.FC<IProps> = function (props) {
       }
     };
   }, [sql, traceId, visible]);
+
+  useEffect(() => {
+    function resize() {
+      setTimeout(() => {
+        stackBarPlot.current?.resize?.();
+      }, 500);
+    }
+    window.addEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
   return (
     <Drawer
