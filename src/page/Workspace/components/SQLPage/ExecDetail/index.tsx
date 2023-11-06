@@ -103,49 +103,34 @@ const ExecDetail: React.FC<IProps> = function (props) {
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.otherTime',
         });
 
-        const data = [
-          {
-            name: execTimeLabel,
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true,
-            },
-            emphasis: {
-              focus: 'series',
-            },
-            barMinHeight: 30,
-            barWidth: '30px',
-            data: [execTime],
-          },
+        const values = [execTime, queueTime, totalTime - queueTime - execTime];
+        const names = [execTimeLabel, queueTimeLabel, otherTimeLabel];
 
-          {
-            name: queueTimeLabel,
+        const newValues = setMinValues(values);
+
+        const data = newValues.map((newValue, index) => {
+          return {
+            name: names[index],
             type: 'bar',
             stack: 'total',
             label: {
               show: true,
+              formatter() {
+                return values[index];
+              },
             },
             emphasis: {
               focus: 'series',
             },
-            barMinHeight: 30,
-            data: [queueTime],
-          },
-          {
-            name: otherTimeLabel,
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true,
+            barWidth: '30px',
+            data: [newValue],
+            tooltip: {
+              valueFormatter() {
+                return values[index];
+              },
             },
-            barMinHeight: 30,
-            emphasis: {
-              focus: 'series',
-            },
-            data: [totalTime - queueTime - execTime],
-          },
-        ];
+          };
+        });
         if (!stackBarPlot.current) {
           stackBarPlot.current = echarts.init(stackBarBox.current, setting.theme?.chartsTheme);
         }
@@ -284,3 +269,13 @@ const ExecDetail: React.FC<IProps> = function (props) {
 };
 
 export default ExecDetail;
+
+function setMinValues(values: number[]) {
+  const sum = values.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue;
+  }, 0);
+  const newValues = values.map((value, index) => {
+    return Math.floor(value * 0.7 + sum * 0.1);
+  });
+  return newValues;
+}
