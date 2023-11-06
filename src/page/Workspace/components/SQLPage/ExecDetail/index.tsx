@@ -103,46 +103,34 @@ const ExecDetail: React.FC<IProps> = function (props) {
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.otherTime',
         });
 
-        const data = [
-          {
-            name: execTimeLabel,
+        const values = [execTime, queueTime, totalTime - queueTime - execTime];
+        const names = [execTimeLabel, queueTimeLabel, otherTimeLabel];
+
+        const newValues = setMinValues(values);
+
+        const data = newValues.map((newValue, index) => {
+          return {
+            name: names[index],
             type: 'bar',
             stack: 'total',
             label: {
               show: true,
+              formatter() {
+                return values[index];
+              },
             },
             emphasis: {
               focus: 'series',
             },
             barWidth: '30px',
-            data: [execTime],
-          },
-
-          {
-            name: queueTimeLabel,
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true,
+            data: [newValue],
+            tooltip: {
+              valueFormatter() {
+                return values[index];
+              },
             },
-            emphasis: {
-              focus: 'series',
-            },
-            data: [queueTime],
-          },
-          {
-            name: otherTimeLabel,
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true,
-            },
-            emphasis: {
-              focus: 'series',
-            },
-            data: [totalTime - queueTime - execTime],
-          },
-        ];
+          };
+        });
         if (!stackBarPlot.current) {
           stackBarPlot.current = echarts.init(stackBarBox.current, setting.theme?.chartsTheme);
         }
@@ -173,6 +161,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
           },
           yAxis: {
             show: false,
+            // type: "log",
             data: [
               formatMessage({
                 id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
@@ -204,6 +193,18 @@ const ExecDetail: React.FC<IProps> = function (props) {
       }
     };
   }, [sql, traceId, visible]);
+
+  useEffect(() => {
+    function resize() {
+      setTimeout(() => {
+        stackBarPlot.current?.resize?.();
+      }, 500);
+    }
+    window.addEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
   return (
     <Drawer
@@ -268,3 +269,13 @@ const ExecDetail: React.FC<IProps> = function (props) {
 };
 
 export default ExecDetail;
+
+function setMinValues(values: number[]) {
+  const sum = values.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue;
+  }, 0);
+  const newValues = values.map((value, index) => {
+    return Math.floor(value * 0.7 + sum * 0.1);
+  });
+  return newValues;
+}
