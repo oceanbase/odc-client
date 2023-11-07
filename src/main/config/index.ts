@@ -30,10 +30,5 @@ export const mainWebWindowConfig = {
   center: true,
   show: false,
   webPreferences: {
-    nodeIntegration: true,
-    nodeIntegrationInWorker: false,
-    enableRemoteModule: true,
-    contextIsolation: false,
-    plugins: true,
   },
 };
