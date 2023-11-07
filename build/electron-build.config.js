@@ -14,7 +14,9 @@ const config = {
     entitlementsInherit: "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist",
     gatekeeperAssess: false,
     target: 'dmg',
-    notarize: false
+    notarize: {
+      tool: "notarytool"
+    }
   },
   dmg: {
     artifactName: 'odc_${version}${env.ENV}.${ext}',
