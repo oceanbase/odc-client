@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { createTask, getDatasourceUsers } from '@/common/network/task';
+import { createTask, getDatasourceUsers, getLockDatabaseUserRequired } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IDatasourceUser } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -74,6 +73,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     label: name,
     value: name,
   }));
+
   const hadleReset = () => {
     form.resetFields(null);
   };
@@ -157,8 +157,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     setHasEdit(true);
   };
 
-  const handleDatabaseChange = (v: number, database: IDatabase) => {
-    setLockDatabaseUserRequired(database?.lockDatabaseUserRequired);
+  const handleDatabaseChange = () => {
     form.setFieldValue('lockUsers', []);
   };
 
@@ -167,11 +166,22 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     setDatasourceUser(res?.contents);
   };
 
+  const checkLockDatabaseUserRequired = async (databaseId: number) => {
+    const res = await getLockDatabaseUserRequired(databaseId);
+    setLockDatabaseUserRequired(res?.lockDatabaseUserRequired);
+  };
+
   useEffect(() => {
     if (connection?.id && lockDatabaseUserRequired) {
       loadDatasourceUsers(connection.id);
     }
   }, [connection?.id]);
+
+  useEffect(() => {
+    if (databaseId) {
+      checkLockDatabaseUserRequired(databaseId);
+    }
+  }, [databaseId]);
 
   return (
     <Drawer
