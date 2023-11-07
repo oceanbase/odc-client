@@ -209,7 +209,7 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: formatMessage({ id: 'odc.Project.Database.Operation' }), //操作
             dataIndex: 'name',
-            width: 180,
+            width: 200,
             render(_, record) {
               if (!record.existed) {
                 return '-';
