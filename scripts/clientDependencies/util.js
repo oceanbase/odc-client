@@ -145,7 +145,6 @@ exports.oss = {
         'max-keys': 1000,
         'continuation-token': nextToken,
       });
-      console.log(res);
       if (res?.res?.status !== 200) {
         console.error('error', res);
         return null;
