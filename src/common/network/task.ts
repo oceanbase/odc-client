@@ -463,3 +463,16 @@ export async function getProjectList(archived: boolean): Promise<IResponseData<I
   });
   return res?.data;
 }
+
+/**
+ * 查询当前数据库是否需要锁表
+ */
+export async function getLockDatabaseUserRequired(
+  databaseId: number,
+): Promise<{
+  lockDatabaseUserRequired: boolean;
+  databaseId: number;
+}> {
+  const res = await request.get(`/api/v2/osc/lockDatabaseUserRequired/${databaseId}`);
+  return res?.data;
+}
