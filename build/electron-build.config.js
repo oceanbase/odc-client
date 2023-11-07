@@ -15,7 +15,7 @@ const config = {
     gatekeeperAssess: false,
     target: 'dmg',
     notarize: {
-      tool: "notarytool"
+      teamId: process.env.APPLE_TEAM_ID
     }
   },
   dmg: {
