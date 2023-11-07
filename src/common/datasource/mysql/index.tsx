@@ -17,6 +17,7 @@
 import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
+import { haveOCP } from '@/util/env';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -88,5 +89,9 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     },
   },
 };
+
+if (haveOCP()) {
+  delete items[ConnectType.MYSQL];
+}
 
 export default items;
