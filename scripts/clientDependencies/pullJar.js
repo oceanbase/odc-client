@@ -27,7 +27,9 @@ exports.run = async function () {
     return true;
   }
   const plugins = await oss.getOSSFolderFiles(pluginUrl)
+  console.log(plugins)
   for (let plugin of plugins) {
+    console.log(plugins)
     const pluginFileName = path.relative(pluginUrl, plugin.name);
     const isSuccess = await oss.download(plugin.name, 'libraries/java/plugins', pluginFileName);
     if (!isSuccess) {
