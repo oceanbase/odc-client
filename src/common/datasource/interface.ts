@@ -117,6 +117,7 @@ export interface IDataSourceModeConfig {
     sys: boolean;
     ssl: boolean;
     defaultSchema?: boolean;
+    jdbcDoc?: string;
   };
   features: {
     task: TaskType[];
@@ -139,4 +140,5 @@ export interface IDataSourceModeConfig {
     escapeChar: string;
     plParamMode?: 'text' | 'list';
   };
+  disable?: boolean;
 }

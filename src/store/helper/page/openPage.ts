@@ -198,7 +198,7 @@ export async function openSessionParamsPage(datasourceId?: number) {
 
 export async function openRecycleBin(cid?: number) {
   if (!cid) {
-    [cid] = await SelectDatabase();
+    [cid] = await SelectDatabase((type) => getDataSourceModeConfig(type)?.features?.recycleBin);
   }
   if (!cid) {
     return;

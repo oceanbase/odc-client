@@ -17,6 +17,7 @@
 import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
+import { haveOCP } from '@/util/env';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -62,6 +63,8 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       account: true,
       sys: false,
       ssl: false,
+      jdbcDoc:
+        'https://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html',
     },
     features: {
       task: [
@@ -88,5 +91,9 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     },
   },
 };
+
+if (haveOCP()) {
+  delete items[ConnectType.MYSQL];
+}
 
 export default items;

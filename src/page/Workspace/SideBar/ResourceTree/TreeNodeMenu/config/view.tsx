@@ -18,7 +18,7 @@ import { dropObject } from '@/common/network/database';
 import { getView } from '@/common/network/view';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
-import { DbObjectType, DragInsertType, IView, ResourceTreeNodeMenuKeys } from '@/d.ts';
+import { DbObjectType, DragInsertType, IView, ResourceTreeNodeMenuKeys, TaskType } from '@/d.ts';
 import { PropsTab, TopTab } from '@/page/Workspace/components/ViewPage';
 import { openCreateViewPage, openViewViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
@@ -29,6 +29,9 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import setting from '@/store/setting';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { isSupportExport } from './helper';
 
 export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ViewRoot]: [
@@ -91,6 +94,9 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.view.Export' }), //导出
       ellipsis: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       run(session, node) {
         const view = node.data as IView;
         modal.changeExportModal(true, {

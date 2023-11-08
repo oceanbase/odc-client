@@ -62,6 +62,7 @@ export default function SessionSelect({
   }, [data]);
 
   function renderProject() {
+    const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.dbIcon;
     return (
       <Popover
         overlayClassName={styles.pop}
@@ -69,13 +70,17 @@ export default function SessionSelect({
         content={<ConnectionPopover connection={context?.session?.connection} />}
       >
         <Space className={styles.link} size={4}>
-          <Icon component={PjSvg} style={{ fontSize: 14, verticalAlign: 'text-bottom' }} />
+          <Icon component={PjSvg} style={{ fontSize: 14, verticalAlign: 'text-top' }} />
           <span style={{ verticalAlign: 'top' }}>
             {context?.session?.odcDatabase?.project?.name}
           </span>
           {!context.datasourceMode && (
             <>
               <span>/</span>
+              <Icon
+                component={DBIcon?.component}
+                style={{ fontSize: 14, marginLeft: 2, verticalAlign: 'middle' }}
+              />
               {context?.session?.odcDatabase?.name}
             </>
           )}
@@ -150,7 +155,8 @@ export default function SessionSelect({
       {!context?.databaseId && !context?.datasourceId ? (
         <div
           style={{
-            background: EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.background,
+            background:
+              EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.lineBackground,
           }}
           className={styles.line}
         >
@@ -167,7 +173,8 @@ export default function SessionSelect({
       ) : (
         <div
           style={{
-            background: EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.background,
+            background:
+              EnvColorMap[context?.session?.odcDatabase?.environment?.style]?.lineBackground,
           }}
           className={styles.line}
         >

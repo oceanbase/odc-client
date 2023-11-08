@@ -35,6 +35,7 @@ interface IProps {
   isEdit?: boolean;
   isPersonal?: boolean;
   id?: number;
+  disableTheme?: boolean;
   type?: ConnectType;
   close: () => void;
   onSuccess: () => void;
@@ -45,6 +46,7 @@ export default function NewDatasourceDrawer({
   isEdit,
   type,
   id,
+  disableTheme,
   close,
   onSuccess,
 }: IProps) {
@@ -191,6 +193,7 @@ export default function NewDatasourceDrawer({
     >
       <Spin spinning={loading}>
         <DatasourceForm
+          disableTheme={disableTheme}
           type={data?.type || type}
           originDatasource={data}
           isEdit={isEdit}

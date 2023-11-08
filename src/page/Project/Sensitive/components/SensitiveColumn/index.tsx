@@ -38,13 +38,49 @@ import { debounce } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AddSensitiveColumnType } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
-import EditModal from './components/EditSensitiveColumnModal';
+import EditSensitiveColumnModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
 import tracert from '@/util/tracert';
-import NewManualForm from './components/ManualForm';
+import ManualForm from './components/ManualForm';
 import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
 import styles from './index.less';
+
+export const PopoverContainer: React.FC<{
+  title: string;
+  descriptionsData: {
+    label: string;
+    value: string;
+  }[];
+  children: () => JSX.Element;
+}> = ({ title, descriptionsData, children }) => {
+  return (
+    <Popover
+      placement="left"
+      title={title}
+      overlayClassName={styles.selectPopover}
+      content={
+        <Descriptions
+          column={1}
+          style={{
+            width: '250px',
+          }}
+        >
+          {descriptionsData?.map((description, index) => {
+            return (
+              <Descriptions.Item key={index} label={description?.label}>
+                {description?.value}
+              </Descriptions.Item>
+            );
+          })}
+        </Descriptions>
+      }
+    >
+      {' '}
+      {children?.()}
+    </Popover>
+  );
+};
 const getColumns: ({
   handleStatusSwitch,
   handleEdit,
@@ -148,51 +184,36 @@ const getColumns: ({
           (maskingAlgorithm) => maskingAlgorithm?.id === record?.maskingAlgorithmId,
         );
         return (
-          <Popover
-            placement="left"
+          <PopoverContainer
+            key={index}
             title={maskingAlgorithmIdMap?.[record?.maskingAlgorithmId]}
-            content={
-              <Descriptions
-                column={1}
-                style={{
-                  width: '250px',
-                }}
-              >
-                <Descriptions.Item
-                  label={
-                    formatMessage({
-                      id:
-                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
-                    }) /* 脱敏方式 */
-                  }
-                >
-                  {MaskRyleTypeMap?.[target?.type]}
-                </Descriptions.Item>
-                <Descriptions.Item
-                  label={
-                    formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.TestData',
-                    }) /* 测试数据 */
-                  }
-                >
-                  {target?.sampleContent}
-                </Descriptions.Item>
-                <Descriptions.Item
-                  label={
-                    formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.Preview',
-                    }) /* 结果预览 */
-                  }
-                >
-                  {target?.maskedContent}
-                </Descriptions.Item>
-              </Descriptions>
-            }
-          >
-            <div className={styles.hover}>
-              {maskingAlgorithmIdMap?.[record?.maskingAlgorithmId]}
-            </div>
-          </Popover>
+            descriptionsData={[
+              {
+                label: formatMessage({
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
+                }) /* 脱敏方式 */,
+                value: MaskRyleTypeMap?.[target?.type],
+              },
+              {
+                label: formatMessage({
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.TestData',
+                }) /* 测试数据 */,
+                value: target?.sampleContent,
+              },
+              {
+                label: formatMessage({
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.Preview',
+                }) /* 结果预览 */,
+                value: target?.maskedContent,
+              },
+            ]}
+            children={() => (
+              <div className={styles.hover}>
+                {maskingAlgorithmIdMap?.[record?.maskingAlgorithmId]}
+              </div>
+            )}
+          />
         );
       },
     },
@@ -591,7 +612,7 @@ const SensitiveColumn = ({
         }}
       />
 
-      <EditModal
+      <EditSensitiveColumnModal
         {...{
           tableRef,
           projectId: projectId,
@@ -599,13 +620,14 @@ const SensitiveColumn = ({
           sensitiveColumnIds,
           modalVisible,
           setModalVisible,
+          maskingAlgorithms,
           maskingAlgorithmOptions,
           initSensitiveColumn,
         }}
       />
 
       {modalOpen && (
-        <NewManualForm
+        <ManualForm
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           callback={() => {

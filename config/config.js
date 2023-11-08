@@ -61,14 +61,10 @@ const config = {
   proxy: {
     // 本地开发或者对内 Site 应用的开发环境的代理配置
     '/api/v1/webSocket/obclient': {
-      target: 'http://11.124.9.80:8990',
+      target: 'http://11.162.218.70:7001/proxy/96',
       ws: true,
     },
     '/api/': {
-      // target: 'http://11.124.185.132',
-      // target: 'http://100.81.152.104:8989',
-      // target: 'http://100.81.152.113:9000',
-      // target: 'http://100.81.152.113:8989',
       target: 'http://11.162.218.70:7001/proxy/96',
     },
     '/oauth2/': {

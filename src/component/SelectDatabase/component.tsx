@@ -15,18 +15,19 @@
  */
 
 import { getConnectionList } from '@/common/network/connection';
+import { ConnectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { Form, Modal, Select } from 'antd';
 
 interface IProps {
   open: boolean;
+  isSupport?: (type: ConnectType) => boolean;
   onOk: (v: number) => void;
   onClose: () => void;
 }
 
-export default function SelectModal({ open, onOk, onClose }: IProps) {
+export default function SelectModal({ open, onOk, onClose, isSupport }: IProps) {
   const { data, loading } = useRequest(getConnectionList, {
     defaultParams: [
       {
@@ -70,13 +71,19 @@ export default function SelectModal({ open, onOk, onClose }: IProps) {
             })} /*请选择*/
             style={{ width: 320 }}
           >
-            {data?.contents?.map((item) => {
-              return (
-                <Select.Option value={item.id} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              );
-            })}
+            {data?.contents
+              ?.map((item) => {
+                const support = isSupport ? isSupport?.(item?.type) : true;
+                if (!support) {
+                  return null;
+                }
+                return (
+                  <Select.Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Select.Option>
+                );
+              })
+              .filter(Boolean)}
           </Select>
         </Form.Item>
       </Form>

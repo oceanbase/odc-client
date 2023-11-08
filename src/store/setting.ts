@@ -39,24 +39,31 @@ interface IThemeConfig {
   cmdTheme: 'dark' | 'white';
   key: string;
   maskType: 'white' | 'dark';
+  chartsTheme: string;
 }
 
+export enum EThemeConfigKey {
+  ODC_WHITE = 'odc-white',
+  ODC_DARK = 'odc-dark',
+}
 const themeConfig: { [key: string]: IThemeConfig } = {
-  'odc-white': {
+  [EThemeConfigKey.ODC_WHITE]: {
     key: 'odc-white',
     editorTheme: 'obwhite',
     className: 'odc-white',
     sheetTheme: 'white',
     cmdTheme: 'white',
     maskType: 'white',
+    chartsTheme: 'white',
   },
-  'odc-dark': {
+  [EThemeConfigKey.ODC_DARK]: {
     key: 'odc-dark',
     editorTheme: 'vs-dark',
     className: 'odc-dark',
     sheetTheme: 'dark',
     cmdTheme: 'dark',
     maskType: 'dark',
+    chartsTheme: 'dark',
   },
 };
 const defaultTheme = 'odc-white';
@@ -128,6 +135,18 @@ export class SettingStore {
    */
   @observable
   public maxResultSetRows: number = Number.MAX_SAFE_INTEGER;
+
+  /**
+   * 工单（数据归档 & 数据清理）行限流最大值
+   */
+  @observable
+  public maxSingleTaskRowLimit: number = Number.MAX_SAFE_INTEGER;
+
+  /**
+   * 工单（数据归档 & 数据清理）数据限流最大值
+   */
+  @observable
+  public maxSingleTaskDataSizeLimit: number = Number.MAX_SAFE_INTEGER;
 
   /**
    * 独立session最大数量
@@ -238,6 +257,10 @@ export class SettingStore {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
     }
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
+    this.maxSingleTaskRowLimit =
+      parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;
+    this.maxSingleTaskDataSizeLimit =
+      parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit']) || Number.MAX_SAFE_INTEGER;
   }
 
   @action

@@ -55,6 +55,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
   const clusterRef = useRef<any>();
   const tenantRef = useRef<any>();
   const { form } = useContext(DatasourceFormContext);
+  const type = Form.useWatch('type', form);
 
   useEffect(() => {
     clusterStore.loadClusterList();
@@ -67,26 +68,50 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
       .filter((c) => c.status === 'ONLINE')
       .forEach((cluster) => {
         const tenants = tenantListMap[cluster.instanceId];
+
         if (cluster.type !== 'CLUSTER') {
+          const tenantMode = tenantListMap[cluster?.instanceId]?.find(
+            (t) => t.tenantId === cluster?.instanceId,
+          )?.tenantMode;
+          const tenantType = tenantMode === 'MySQL' ? ConnectType.OB_MYSQL : ConnectType.OB_ORACLE;
+          if (tenantType !== type) {
+            return;
+          }
           result.push({
             value: cluster.instanceId,
             label: cluster.instanceName,
             isLeaf: true,
           });
         } else {
+          const children = tenants
+            ?.map((tenant) => {
+              const tenantMode = tenantListMap[cluster?.instanceId]?.find(
+                (t) => t.tenantId === tenant?.tenantId,
+              )?.tenantMode;
+              const tenantType =
+                tenantMode === 'MySQL' ? ConnectType.OB_MYSQL : ConnectType.OB_ORACLE;
+              if (tenantType !== type) {
+                return null;
+              }
+              return {
+                value: tenant.tenantId,
+                label: tenant.tenantName,
+              };
+            })
+            .filter(Boolean);
+          if (!children?.length) {
+            return;
+          }
           result.push({
             value: cluster.instanceId,
             label: cluster.instanceName,
             isLeaf: false,
-            children: tenants?.map((tenant) => ({
-              value: tenant.tenantId,
-              label: tenant.tenantName,
-            })),
+            children: children,
           });
         }
       });
     return result;
-  }, [clusterList, tenantListMap]);
+  }, [clusterList, tenantListMap, type]);
 
   return (
     <>

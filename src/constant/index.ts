@@ -15,7 +15,7 @@
  */
 
 import { ColumnShowType, DbObjectType } from '@/d.ts'; // @ts-ignore
-import { isClient } from '@/util/env';
+
 import { formatMessage } from '@/util/intl';
 
 import binarySvg from '@/svgr/Field-Binary.svg'; // @ts-ignore
@@ -43,6 +43,10 @@ import TriggerSvg from '@/svgr/menuTrigger.svg'; // @ts-ignore
 import FileSvg from '@/svgr/File.svg'; // @ts-ignore
 
 import TypeSvg from '@/svgr/menuType.svg';
+
+import EnumSvg from '@/svgr/Enum.svg'; // 枚举类型 icon
+
+import SetSvg from '@/svgr/Set.svg'; // 集合类型 icon
 
 import timeSvg from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 
@@ -76,6 +80,8 @@ export const fieldIconMap = {
   [ColumnShowType.TIME]: timeSvg,
   [ColumnShowType.TIMESTAMP]: timeSvg,
   [ColumnShowType.YEAR]: timeSvg,
+  [ColumnShowType.ENUM]: EnumSvg,
+  [ColumnShowType.SET]: SetSvg,
 };
 /**
  * 程序包调试开关
@@ -118,22 +124,32 @@ export const DbObjsIcon = {
   [DbObjectType.public_synonym]: SynonymSvg,
   [DbObjectType.file]: FileSvg,
 };
-
+/**
+ * lineBackground: src/page/Workspace/components/SessionContextWrap/SessionSelect/index.tsx 中使用的背景，使用场景较为特殊，单独区分出来。
+ */
 export const EnvColorMap = {
   GREEN: {
     textColor: 'var(--function-green6-color)',
     background: 'var(--function-green1-color)',
+    lineBackground: 'var(--function-green1-color)',
+    tipColor: 'var(--function-green6-color)',
   },
   GRAY: {
     textColor: 'var(--text-color-secondary)',
-    background: 'var(--neutral-grey1-color)',
+    background: 'var(--hover-color)',
+    tipColor: 'transparent',
+    lineBackground: 'transparent',
   },
   RED: {
     textColor: 'var(--function-red6-color)',
     background: 'var(--function-red1-color)',
+    tipColor: 'var(--function-red6-color)',
+    lineBackground: 'var(--function-red1-color)',
   },
   ORANGE: {
     textColor: 'var(--function-gold6-color)',
     background: 'var(--function-gold1-color)',
+    tipColor: 'var(--function-gold6-color)',
+    lineBackground: 'var(--function-gold1-color)',
   },
 };

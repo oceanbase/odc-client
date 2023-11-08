@@ -77,9 +77,9 @@ export const ConnectTypeText = {
 
   [ConnectType.OB_MYSQL]: 'OceanBase MySQL',
   [ConnectType.OB_ORACLE]: 'OceanBase Oracle',
-  [ConnectType.CLOUD_OB_MYSQL]: 'OceanBase MySQL Cloud',
-  [ConnectType.CLOUD_OB_ORACLE]: 'OceanBase Oracle Cloud',
-  [ConnectType.ODP_SHARDING_OB_MYSQL]: 'OceanBase MySQL Sharding',
+  [ConnectType.CLOUD_OB_MYSQL]: 'OB Cloud MySQL',
+  [ConnectType.CLOUD_OB_ORACLE]: 'OB Cloud Oracle',
+  [ConnectType.ODP_SHARDING_OB_MYSQL]: 'OB Sharding MySQL',
   [ConnectType.MYSQL]: 'MySQL',
 };
 

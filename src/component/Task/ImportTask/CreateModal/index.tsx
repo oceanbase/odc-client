@@ -517,12 +517,14 @@ class CreateModal extends React.Component<IProps, IState> {
                 formData={formData}
                 projectId={projectId}
                 onFormValueChange={(values) => {
-                  this.setState({
-                    isFormChanged: true,
-                    formData: {
-                      ...this.state.formData,
-                      ...values,
-                    },
+                  this.setState((state) => {
+                    return {
+                      isFormChanged: true,
+                      formData: {
+                        ...state.formData,
+                        ...values,
+                      },
+                    };
                   });
                 }}
                 ref={this._formRef}

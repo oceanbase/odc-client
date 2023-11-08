@@ -44,8 +44,6 @@ const FlowModal: React.FC<IProps> = function (props) {
   const [task, setTask] = useState(null);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
-  const isOwner = user?.id === task?.creator?.id;
-  const isApprovable = task?.approvable;
   const getTask = async function (id) {
     setLoading(true);
     const data = await getTaskDetail(id);
@@ -72,8 +70,7 @@ const FlowModal: React.FC<IProps> = function (props) {
       /*审批记录*/ destroyOnClose
       className={styles.flowDrawer}
       footer={
-        isOwner &&
-        isApprovable && (
+        task?.approvable && (
           <Space>
             <Button
               type="primary"

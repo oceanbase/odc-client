@@ -306,7 +306,7 @@ export default inject('userStore')(
                       style={{
                         display: !isEdit ? 'block' : 'none',
                       }}
-                      rules={[requiredRule]}
+                      rules={isEdit ? [] : [requiredRule]}
                       name={['ssoParameter', 'secret']}
                       label="Client Secret"
                       messageVariables={{
@@ -633,7 +633,7 @@ export default inject('userStore')(
                       style={{
                         display: !isEdit ? 'block' : 'none',
                       }}
-                      rules={[requiredRule]}
+                      rules={isEdit ? [] : [requiredRule]}
                       name={['ssoParameter', 'secret']}
                       label="Client Secret"
                     >

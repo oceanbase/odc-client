@@ -241,7 +241,7 @@ const CommonTable: <RecordType extends object = any>(
       pageSize,
     });
   }
-  function handleCascaderValueChangee(value: string[]) {
+  function handleCascaderValueChange(value: string[]) {
     setCascaderValue(value);
     setPagination(null);
     onChange?.({
@@ -301,6 +301,7 @@ const CommonTable: <RecordType extends object = any>(
   async function handleReload(
     args: ITableLoadOptions = {
       searchValue,
+      cascaderValue,
       filters,
       sorter,
       pagination,
@@ -374,7 +375,7 @@ const CommonTable: <RecordType extends object = any>(
               ? {
                   ...cascaderContent,
                   onChange: (value, selectedOptions) => {
-                    handleCascaderValueChangee(value);
+                    handleCascaderValueChange(value);
                   },
                 }
               : null

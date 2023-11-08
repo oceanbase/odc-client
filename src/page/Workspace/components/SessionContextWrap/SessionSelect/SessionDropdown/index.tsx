@@ -34,6 +34,7 @@ import { IDatabase } from '@/d.ts/database';
 import { toInteger } from 'lodash';
 import { useParams } from '@umijs/max';
 import { tree } from 'antlr4';
+import { EnvColorMap } from '@/constant';
 interface IProps {
   dialectTypes?: ConnectionMode[];
 }
@@ -148,6 +149,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                 component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
                 style={{
                   fontSize: 14,
+                  color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
                 }}
               />
             ),
@@ -176,6 +178,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                   component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
                   style={{
                     fontSize: 14,
+                    color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
                   }}
                 />
               ),
@@ -191,7 +194,9 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                     title: (
                       <>
                         {db.name}
-                        <Badge color={db?.environment?.style} />
+                        <Badge
+                          color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor}
+                        />
                       </>
                     ),
                     key: `db:${db.id}`,
@@ -202,6 +207,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                         component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
                         style={{
                           fontSize: 14,
+                          color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
                         }}
                       />
                     ),
@@ -237,7 +243,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                   title: (
                     <>
                       {db.name}
-                      <Badge color={db?.environment?.style} />
+                      <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
                     </>
                   ),
                   key: `db:${db.id}`,
@@ -250,6 +256,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                       }
                       style={{
                         fontSize: 14,
+                        color: getDataSourceStyleByConnectType(db?.dataSource?.type)?.icon?.color,
                       }}
                     />
                   ),
@@ -301,6 +308,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
       open={isOpen}
       showArrow={false}
       onOpenChange={onOpen}
+      overlayStyle={{ paddingTop: 2 }}
       content={
         <Spin spinning={loading}>
           <div className={styles.main}>

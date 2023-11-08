@@ -27,11 +27,13 @@ import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MonacoEditor from '../MonacoEditor';
 import LintDrawer from '../SQLLintResult/Drawer';
+import login from '@/store/login';
 
 interface IProps {
   sessionStore: SessionStore;
   sql: string;
   tip?: string;
+  theme?: 'dark' | 'white';
   onSave: (sql?: string) => Promise<boolean | void>;
   visible: boolean;
   onCancel: () => void;
@@ -40,7 +42,7 @@ interface IProps {
 }
 
 const ExecuteSQLModal: React.FC<IProps> = (props) => {
-  const { tip, sql, visible, readonly, sessionStore, onCancel, onSave } = props;
+  const { tip, theme, sql, visible, readonly, sessionStore, onCancel, onSave } = props;
   const [loading, setLoading] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
   const [lintVisible, setLintVisible] = useState(false);
@@ -116,13 +118,15 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         onOk={handleSubmit}
         onCancel={onCancel}
         footer={[
-          <Button key="lint" onClick={handleLint}>
-            {
-              formatMessage({
-                id: 'odc.component.ExecuteSQLModal.SqlCheck',
-              }) /*SQL 检查*/
-            }
-          </Button>,
+          login.isPrivateSpace() ? null : (
+            <Button key="lint" onClick={handleLint}>
+              {
+                formatMessage({
+                  id: 'odc.component.ExecuteSQLModal.SqlCheck',
+                }) /*SQL 检查*/
+              }
+            </Button>
+          ),
           <Button key="format" onClick={handleFormat}>
             {
               formatMessage({
@@ -152,7 +156,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           <Button key="submit" type="primary" onClick={handleSubmit} loading={loading}>
             <FormattedMessage id="app.button.execute" />
           </Button>,
-        ]}
+        ].filter(Boolean)}
       >
         {tip && <Alert message={tip} type="info" showIcon={true} style={{ marginBottom: 4 }} />}
         <div
@@ -166,6 +170,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           }}
         >
           <MonacoEditor
+            theme={theme}
             sessionStore={sessionStore}
             readOnly={readonly && !isFormatting}
             defaultValue={sql}

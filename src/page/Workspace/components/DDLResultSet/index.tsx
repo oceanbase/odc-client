@@ -706,7 +706,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   let filterRowIdx;
   if (selectedCellRowsKey.length === 1) {
     selectedRowIdx = rows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
-    filterRowIdx = gridRef.current?.selectedRange?.rowIdx;
+    filterRowIdx = filterRows.findIndex((row) => row._rowIndex == selectedCellRowsKey[0]);
   }
   const rgdColumns = useColumns(
     columnsToDisplay,

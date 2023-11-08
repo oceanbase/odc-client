@@ -154,12 +154,14 @@ const CreateProcedureModal: React.FC<IProps> = inject(
                 id: 'workspace.window.createFunction.params',
               })}
             >
-              <ProcedureParam
-                session={session}
-                mode={DbObjectType.procedure}
-                dbMode={session?.connection?.dialectType}
-                paramsRef={paramsRef}
-              />
+              {session ? (
+                <ProcedureParam
+                  session={session}
+                  mode={DbObjectType.procedure}
+                  dbMode={session?.connection?.dialectType}
+                  paramsRef={paramsRef}
+                />
+              ) : null}
             </Form.Item>
           </Form>
         </Spin>

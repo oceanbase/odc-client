@@ -418,6 +418,8 @@ export enum AuditEventType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   // 项目权限申请
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  // SQL 安全规则管理
+  SQL_SECURITY_RULE_MANAGEMENT = 'SQL_SECURITY_RULE_MANAGEMENT',
 }
 
 export enum AuditEventActionType {
@@ -559,6 +561,8 @@ export enum AuditEventActionType {
   APPROVE_APPLY_PROJECT_PERMISSION_TASK = 'APPROVE_APPLY_PROJECT_PERMISSION_TASK',
   REJECT_APPLY_PROJECT_PERMISSION_TASK = 'REJECT_APPLY_PROJECT_PERMISSION_TASK',
   STOP_APPLY_PROJECT_PERMISSION_TASK = 'STOP_APPLY_PROJECT_PERMISSION_TASK',
+  // SQL 安全规则管理
+  UPDATE_SQL_SECURITY_RULE = 'UPDATE_SQL_SECURITY_RULE',
 }
 
 export enum AuditEventDialectType {
@@ -1082,6 +1086,8 @@ export enum ColumnShowType {
   DATETIME = 'DATETIME',
   YEAR = 'YEAR',
   MONTH = 'MONTH',
+  ENUM = 'ENUM', // 枚举类型
+  SET = 'SET', // 集合类型
 }
 
 // 索引
@@ -1563,6 +1569,7 @@ export interface ISQLExplain {
   tree: ISQLExplainTreeNode[];
   outline: string;
   originalText: string;
+  showFormatInfo?: boolean;
 }
 
 export interface ISQLExecuteDetail {
@@ -2194,6 +2201,10 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  rateLimit?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
   tables: {
     conditionExpression: string;
     tableName: string;
@@ -2211,6 +2222,10 @@ export interface IDataClearJobParameters {
   sourceDatabaseName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
+  rateLimit?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
   tables: {
     conditionExpression: string;
     tableName: string;
@@ -2252,6 +2267,11 @@ export interface ICycleTaskRecord<T> {
   nodeList?: ITaskFlowNode[];
   triggerConfig?: ICycleTaskTriggerConfig;
   connection: {
+    id: number;
+    name: string;
+    dbMode: ConnectionMode;
+  };
+  datasource?: {
     id: number;
     name: string;
     dbMode: ConnectionMode;

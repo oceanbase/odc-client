@@ -36,6 +36,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import { mbToKb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -44,6 +45,7 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
+import ThrottleFormItem from '../../component/ThrottleFormItem';
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
@@ -73,6 +75,8 @@ const defaultValue = {
   variables: [variable],
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
+  rowLimit: 100,
+  dataSizeLimit: 1,
 };
 interface IProps {
   modalStore?: ModalStore;
@@ -216,6 +220,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           migrationInsertAction,
           archiveRange,
           description,
+          rowLimit,
+          dataSizeLimit,
         } = values;
         const parameters = {
           type: TaskType.MIGRATION,
@@ -236,6 +242,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                 : _tables,
             deleteAfterMigration,
             migrationInsertAction,
+            rateLimit: {
+              rowLimit,
+              dataSizeLimit: mbToKb(dataSizeLimit),
+            },
           },
           triggerConfig: {
             triggerStrategy,
@@ -476,6 +486,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           >
             <Radio.Group options={InsertActionOptions} />
           </Form.Item>
+          <ThrottleFormItem />
         </FormItemPanel>
         <DescriptionInput />
       </Form>

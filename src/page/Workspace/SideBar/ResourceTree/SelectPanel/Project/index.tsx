@@ -25,7 +25,10 @@ import styles from './index.less';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import ProjectSvg from '@/svgr/project_space.svg';
 
-export default forwardRef(function ProjectTree(props, ref) {
+export default forwardRef(function ProjectTree(
+  { closeSelectPanel }: { closeSelectPanel: () => void },
+  ref,
+) {
   const [searchKey, setSearchKey] = useState('');
   const context = useContext(ResourceTreeContext);
   const { projectList } = context;
@@ -67,6 +70,7 @@ export default forwardRef(function ProjectTree(props, ref) {
         <div className={styles.container}>
           <div className={styles.search}>
             <Input.Search
+              allowClear
               onSearch={(v) => {
                 setSearchKey(v);
               }}
@@ -82,7 +86,14 @@ export default forwardRef(function ProjectTree(props, ref) {
               <Tree
                 showIcon
                 selectedKeys={selectKeys}
-                onSelect={(keys) => {
+                onSelect={(keys, info) => {
+                  if (!info.selected) {
+                    /**
+                     * disable unselect
+                     */
+                    closeSelectPanel();
+                    return;
+                  }
                   setSelectKeys(keys);
                 }}
                 selectable

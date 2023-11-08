@@ -61,30 +61,6 @@ const ParseURLItem: React.FC<IProps> = function (props) {
               delete newData[key];
             }
           });
-          const { clusterName, tenantName, host, port, username, password } = newData;
-          if (autoType && tenantName && host && port && username && password) {
-            /**
-             * 具备测试连接的必要条件，去主动获取一下数据库类型
-             */
-            const res = await testConnection(
-              {
-                clusterName,
-                tenantName,
-                host,
-                port,
-                username,
-                password,
-                sslConfig: {
-                  enabled: false,
-                },
-              },
-              AccountType.MAIN,
-              true,
-            );
-            if (res?.data?.type) {
-              newData.type = res?.data?.type;
-            }
-          }
           newData = {
             password: '',
             clusterName: '',
