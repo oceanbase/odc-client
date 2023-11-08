@@ -91,6 +91,7 @@ async function buildClient(target) {
     try {
       await electronBuilder.build({
         targets: c.targets,
+        publish: "never"
       });
     } catch (e) {
       console.error('构建失败！', e)
