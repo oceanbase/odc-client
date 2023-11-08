@@ -14,9 +14,7 @@ const config = {
     entitlementsInherit: "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist",
     gatekeeperAssess: false,
     target: 'dmg',
-    notarize: {
-      teamId: process.env.APPLE_TEAM_ID
-    }
+    notarize: false
   },
   dmg: {
     artifactName: 'odc_${version}${env.ENV}.${ext}',
