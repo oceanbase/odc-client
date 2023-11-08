@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { BrowserWindowConstructorOptions } from 'electron';
+import path from 'path';
+
 export const defaultMainWebWidth = 1250;
 
 export const defaultMainWebHeight = 760;
@@ -24,16 +27,16 @@ export const maxJDKVersion = '1.8.0';
 
 export const minJDKReleaseVersion = 200;
 
-export const mainWebWindowConfig = {
+export const mainWebWindowConfig: BrowserWindowConstructorOptions = {
   height: defaultMainWebHeight,
   width: defaultMainWebWidth,
   center: true,
   show: false,
   webPreferences: {
-    nodeIntegration: true,
-    nodeIntegrationInWorker: false,
-    enableRemoteModule: true,
-    contextIsolation: false,
-    plugins: true,
+    preload: path.join(
+      process.env.NODE_ENV === 'development' ? process.cwd() : process.resourcesPath || '',
+      'libraries/script',
+      'preload.js',
+    ),
   },
 };

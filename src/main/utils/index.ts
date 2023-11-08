@@ -190,6 +190,10 @@ export function getJavaDBPath() {
 }
 
 export function getJavaLogPath() {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  if (isDevelopment) {
+    return path.join(process.cwd());
+  }
   return path.join(app.getPath('userData'), 'logs/server');
 }
 
