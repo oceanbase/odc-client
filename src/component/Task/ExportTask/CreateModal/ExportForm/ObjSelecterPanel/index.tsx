@@ -142,6 +142,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnec
                   onlyTable={exportContent === EXPORT_CONTENT.DATA}
                   databaseId={databaseId}
                   connectionId={connectionId}
+                  dialectType={connection?.dialectType}
                 />
               </FormItem>
             </>

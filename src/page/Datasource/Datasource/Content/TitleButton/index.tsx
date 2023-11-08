@@ -34,6 +34,7 @@ const TitleButton: React.FC<IProps> = function (props) {
       <Space>
         <Acess {...createPermission(IManagerResourceType.resource, actionTypes.create)}>
           <NewDatasourceButton
+            disableTheme
             onSuccess={() => {
               props.onReload();
             }}

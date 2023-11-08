@@ -67,19 +67,3 @@ export const DetectRuleTypeMap = {
   REGEX: formatMessage({ id: 'odc.Project.Sensitive.interface.Regular' }), //正则
   GROOVY: formatMessage({ id: 'odc.Project.Sensitive.interface.Script' }), //脚本
 };
-
-export enum EColumnType {
-  NUMBER = 'NUMBER',
-  VARCHAR2 = 'VARCHAR2',
-  BLOB = 'BLOB',
-  DATE = 'DATE',
-  CHAR = 'CHAR',
-  NCHAR = 'NCHAR',
-  CLOB = 'CLOB',
-  TIMESTAMP = 'TIMESTAMP',
-  TIMESTAMP_WITH_TIME_ZONE = 'TIMESTAMP WITH TIME ZONE',
-  TIMESTAMP_WITH_LOCAL_TIME_ZONE = 'TIMESTAMP WITH LOCAL TIME ZONE',
-  RAW = 'RAW',
-  INTERVAL_DAY_TO_SECOND = 'INTERVAL DAY TO SECOND',
-  INTERVAL_YEAR_TO_MONTH = 'INTERVAL YEAR TO MONTH',
-}

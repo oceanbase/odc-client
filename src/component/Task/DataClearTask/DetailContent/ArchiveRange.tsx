@@ -16,6 +16,7 @@
 
 import DisplayTable from '@/component/DisplayTable';
 import { formatMessage } from '@/util/intl';
+import { Tooltip } from 'antd';
 import React from 'react';
 
 const columns = [
@@ -30,6 +31,9 @@ const columns = [
     title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.FilterConditions' }), //过滤条件
     ellipsis: true,
     width: 150,
+    render: (value) => {
+      return <Tooltip title={value}>{value || '-'}</Tooltip>;
+    },
   },
 ];
 

@@ -80,7 +80,7 @@ export class SessionManagerStore {
       if (!datasource) {
         return false;
       }
-      this.connection.set(connectionId, datasource);
+      this.connection.set(toInteger(connectionId), datasource);
       return true;
     }
   }

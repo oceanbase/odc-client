@@ -68,8 +68,8 @@ const ExecPlan: React.FC<IProps> = function (props) {
       placement="right"
       closable
       onClose={onClose}
-      visible={visible}
-      width={1200}
+      open={visible}
+      width={960}
       className={styles.explainDrawer}
       bodyStyle={{
         paddingBottom: 50,

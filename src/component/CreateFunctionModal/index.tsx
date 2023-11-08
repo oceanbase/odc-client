@@ -48,7 +48,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
     const dbId = modalStore?.createFunctionModalData?.databaseId;
     const dbName = modalStore?.createFunctionModalData?.dbName;
     const { session, loading } = useDBSession(dbId);
-    const dbMode = session?.connection?.dialectType || ConnectionMode.OB_MYSQL;
+    const dbMode = session?.connection?.dialectType;
     const [form] = useForm();
     const visible = modalStore.createFunctionModalVisible;
     const paramsRef = useRef<{
@@ -121,7 +121,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
       if (visible) {
         form.resetFields();
       }
-    }, [visible]);
+    }, [visible, session]);
     return (
       <Modal
         centered={true}
@@ -203,12 +203,14 @@ const CreateFunctionModal: React.FC<IProps> = inject(
               })}
               /* 参数 */ required
             >
-              <FunctionOrProcedureParams
-                session={session}
-                dbMode={dbMode}
-                mode={DbObjectType.function}
-                paramsRef={paramsRef}
-              />
+              {session ? (
+                <FunctionOrProcedureParams
+                  session={session}
+                  dbMode={dbMode}
+                  mode={DbObjectType.function}
+                  paramsRef={paramsRef}
+                />
+              ) : null}
             </Form.Item>
           </Form>
         </Spin>

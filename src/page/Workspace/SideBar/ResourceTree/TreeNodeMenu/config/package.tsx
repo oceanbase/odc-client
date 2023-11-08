@@ -36,6 +36,7 @@ import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { isSupportExport } from './helper';
 
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageRoot]: [
@@ -138,6 +139,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       ellipsis: true,
       hasDivider: true,
+      isHide: (session) => {
+        return !isSupportExport(session);
+      },
       async run(session, node) {
         const pkgInfo: IPackage = node.data;
         const pkgBodyList = await getExportObjects(

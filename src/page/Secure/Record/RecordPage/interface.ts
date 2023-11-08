@@ -126,6 +126,8 @@ export const AuditEventMetaMap = {
   }), //'导出结果集'
   // 申请项目权限
   [AuditEventActionType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
+  // SQL安全规则管理
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -544,6 +546,8 @@ export const AuditEventActionMap = {
   [AuditEventActionType.APPROVE_APPLY_PROJECT_PERMISSION_TASK]: '同意申请项目权限',
   [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: '拒绝申请项目权限',
   [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: '停止申请项目权限',
+  // SQL安全规则管理
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '更新SQL安全规则',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =

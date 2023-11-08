@@ -67,10 +67,12 @@ const ExtraConfig: React.FC<IProps> = function () {
       <Collapse.Panel
         key="1"
         header={
-          formatMessage({
-            id:
-              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.AdvancedSettings',
-          }) /* 高级设置 */
+          <span style={{ fontWeight: 'bold' }}>
+            {formatMessage({
+              id:
+                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.AdvancedSettings',
+            })}
+          </span> /* 高级设置 */
         }
         forceRender
       >

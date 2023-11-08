@@ -17,6 +17,12 @@
 import { formatMessage } from '@/util/intl';
 import { Col, Drawer, message, Row, Spin } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import * as echarts from 'echarts/core';
+import { TooltipComponent, GridComponent, LegendComponent } from 'echarts/components';
+import { BarChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+
+echarts.use([TooltipComponent, GridComponent, LegendComponent, BarChart, CanvasRenderer]);
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
@@ -26,6 +32,7 @@ import BasicInfo from './BasicInfo';
 import TimeStatistics from './TimeStatistics';
 import IOStatistics from './IOStatistics';
 import SQLExplain from '../../SQLExplain';
+import setting from '@/store/setting';
 
 interface IProps {
   visible: boolean;
@@ -42,7 +49,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
     null,
   );
   const [sqlExecuteDetailToShow, setSqlExecuteDetailToShow] = useState<ISQLExecuteDetail>(null);
-  const stackBarPlot = useRef(null);
+  const stackBarPlot = useRef<echarts.ECharts>(null);
   const stackBarBox = useRef<HTMLDivElement>(null);
 
   const fetchExecDetail = useCallback(
@@ -96,96 +103,74 @@ const ExecDetail: React.FC<IProps> = function (props) {
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.otherTime',
         });
 
-        const data = [
-          {
-            name: formatMessage({
-              id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
-            }),
+        const values = [execTime, queueTime, totalTime - queueTime - execTime];
+        const names = [execTimeLabel, queueTimeLabel, otherTimeLabel];
 
-            label: otherTimeLabel,
-            value: totalTime - queueTime - execTime,
-          },
+        const newValues = setMinValues(values);
 
-          {
-            name: formatMessage({
-              id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
-            }),
-
-            label: execTimeLabel,
-            value: execTime,
-          },
-
-          {
-            name: formatMessage({
-              id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
-            }),
-
-            label: queueTimeLabel,
-            value: queueTime,
-          },
-        ];
+        const data = newValues.map((newValue, index) => {
+          return {
+            name: names[index],
+            type: 'bar',
+            stack: 'total',
+            label: {
+              show: true,
+              formatter() {
+                return values[index];
+              },
+            },
+            emphasis: {
+              focus: 'series',
+            },
+            barWidth: '30px',
+            data: [newValue],
+            tooltip: {
+              valueFormatter() {
+                return values[index];
+              },
+            },
+          };
+        });
         if (!stackBarPlot.current) {
-          const StackedBar = (await import('@antv/g2plot')).StackedBar;
-          stackBarPlot.current = new StackedBar(stackBarBox.current, {
-            forceFit: true,
-            height: 140,
-            data,
-            colorField: 'label',
-            color: (label: string) => {
-              if (label === queueTimeLabel) {
-                return '#EC7F66';
-              }
-              if (label === execTimeLabel) {
-                return '#76DCB3';
-              }
-              return '#F8C64A';
-            },
-            barSize: 24,
-            yField: 'name',
-            xField: 'value',
-            stackField: 'label',
-            xAxis: {
-              visible: false,
-              tickLine: {
-                visible: false,
-              },
-
-              title: {
-                visible: false,
-              },
-
-              grid: {
-                visible: false,
-              },
-            },
-
-            yAxis: {
-              tickLine: {
-                visible: false,
-              },
-
-              label: {
-                visible: false,
-              },
-
-              title: {
-                visible: false,
-              },
-            },
-
-            title: {
-              visible: false,
-              text: '',
-            },
-
-            legend: {
-              position: 'bottom-center',
-            },
-          });
-          stackBarPlot.current.render();
-        } else {
-          stackBarPlot.current.changeData(data);
+          stackBarPlot.current = echarts.init(stackBarBox.current, setting.theme?.chartsTheme);
         }
+        stackBarPlot.current.setOption({
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow',
+            },
+            textStyle: {
+              fontSize: 12,
+            },
+          },
+          legend: {
+            bottom: 0,
+            itemWidth: 14,
+          },
+          grid: {
+            // containLabel: true,
+            top: 40,
+            bottom: 40,
+            left: 0,
+            right: 0,
+            backgroundColor: 'transparent',
+          },
+          xAxis: {
+            show: false,
+          },
+          yAxis: {
+            show: false,
+            // type: "log",
+            data: [
+              formatMessage({
+                id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
+              }),
+            ],
+          },
+          series: data,
+          backgroundColor: 'transparent',
+        });
       } else {
         message.error(
           formatMessage({
@@ -203,11 +188,23 @@ const ExecDetail: React.FC<IProps> = function (props) {
     }
     return () => {
       if (stackBarPlot.current) {
-        stackBarPlot.current?.destroy();
+        stackBarPlot.current.dispose();
         stackBarPlot.current = null;
       }
     };
   }, [sql, traceId, visible]);
+
+  useEffect(() => {
+    function resize() {
+      setTimeout(() => {
+        stackBarPlot.current?.resize?.();
+      }, 500);
+    }
+    window.addEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
   return (
     <Drawer
@@ -272,3 +269,13 @@ const ExecDetail: React.FC<IProps> = function (props) {
 };
 
 export default ExecDetail;
+
+function setMinValues(values: number[]) {
+  const sum = values.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue;
+  }, 0);
+  const newValues = values.map((value, index) => {
+    return Math.floor(value * 0.7 + sum * 0.1);
+  });
+  return newValues;
+}

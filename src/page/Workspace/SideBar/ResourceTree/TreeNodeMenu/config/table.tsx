@@ -33,6 +33,7 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import tracert from '@/util/tracert';
+import { isSupportExport } from './helper';
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
     {
@@ -143,12 +144,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       ellipsis: true,
       isHide: (session) => {
-        return (
-          !setting.enableDBExport ||
-          !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
-            TaskType.EXPORT,
-          )
-        );
+        return !isSupportExport(session);
       },
       run(session, node) {
         const table = node.data as ITableModel;

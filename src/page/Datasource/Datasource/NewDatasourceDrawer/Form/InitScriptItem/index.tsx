@@ -16,9 +16,10 @@
 
 import CommonIDE from '@/component/CommonIDE';
 import { Form } from 'antd';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import styles from './index.less';
+import DatasourceFormContext from '../context';
 
 interface IProps {
   value?: string;
@@ -29,7 +30,7 @@ const InitScriptItem: React.FC<{}> = function () {
   return (
     <Form.Item
       className={styles.sqlContent}
-      style={{ height: 370 }}
+      style={{ height: 370, marginTop: 12 }}
       name={'sessionInitScript'}
       label=""
     >
@@ -39,11 +40,13 @@ const InitScriptItem: React.FC<{}> = function () {
 };
 
 function Editor({ value, onChange }: IProps) {
+  const context = useContext(DatasourceFormContext);
   return (
     <CommonIDE
       bordered
       editorProps={{
         value,
+        theme: context.disableTheme ? 'obwhite' : null,
       }}
       initialSQL={value}
       language={'sql'}

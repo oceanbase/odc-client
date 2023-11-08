@@ -50,79 +50,61 @@ import { IDatasource } from '@/d.ts/datasource';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import login from '@/store/login';
-import { toInteger, toNumber } from 'lodash';
+import { toInteger, toNumber, throttle } from 'lodash';
 import { ConnectType, IConnectionStatus } from '@/d.ts';
 import { PlusOutlined } from '@ant-design/icons';
 import StatusIcon from './StatusIcon';
 import classNames from 'classnames';
 import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
+import { EnvColorMap } from '@/constant';
+import { useDataSourceStatus } from './useDataSourceStatus';
 
 interface IProps {
   filters: {
     envs: number[];
     connectTypes: ConnectType[];
   };
+  closeSelectPanel: () => void;
 }
 
-export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
+export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }: IProps, ref) {
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [addDSVisiable, setAddDSVisiable] = useState(false);
-  const [loopCount, setLoopCount] = useState<number>(0);
   const [searchKey, setSearchKey] = useState('');
-  const loopStatusRef = useRef<any>(null);
-  const update = useUpdate();
-  const unmountRef = useUnmountedRef();
+  const [wrapperHeight, setWrapperHeight] = useState(0);
+  console.log('wrapperHeight', wrapperHeight);
+  const treeWrapperRef = useRef<HTMLDivElement>();
+  const { fetchStatus, statusMap, reload } = useDataSourceStatus();
 
   const context = useContext(ResourceTreeContext);
   let { datasourceList } = context;
 
-  datasourceList = datasourceList?.filter((item) => !item.temp);
+  datasourceList = useMemo(() => {
+    return datasourceList?.filter((item) => !item.temp);
+  }, [datasourceList]);
 
   const selectKeys = [context.selectDatasourceId].filter(Boolean);
   function setSelectKeys(keys) {
     return context.setSelectDatasourceId(keys?.[0]);
   }
 
-  async function loopStatus(count: number = loopCount) {
-    if (loopStatusRef?.current) {
-      console.log('clear');
-      clearTimeout(loopStatusRef?.current);
-      loopStatusRef.current = null;
-    }
-    loopStatusRef.current = setTimeout(async () => {
-      if (unmountRef.current) {
-        console.log('unmount');
-        return;
-      }
-      const ids = datasourceList
-        ?.map((item) => (item.status?.status === IConnectionStatus.TESTING ? item.id : null))
-        .filter(Boolean);
-      if (!ids?.length) {
-        console.log('not found');
-        return;
-      }
-      const map = await batchTest(ids);
-      if (unmountRef.current) {
-        return;
-      }
-      datasourceList?.forEach((item) => {
-        const status = map[item.id];
-        if (status) {
-          item.status = status;
-        }
-      });
-      setLoopCount(count + 1);
-      update();
-      loopStatus(count + 1);
-    }, 2000);
-  }
+  useEffect(() => {
+    const resizeHeight = throttle(() => {
+      setWrapperHeight(treeWrapperRef?.current?.offsetHeight);
+    }, 500);
+    setWrapperHeight(treeWrapperRef.current?.clientHeight);
+    window.addEventListener('resize', resizeHeight);
+    return () => {
+      window.removeEventListener('resize', resizeHeight);
+    };
+  }, []);
 
   useEffect(() => {
     /**
      * 获取数据源状态
      */
     if (datasourceList?.length && login.isPrivateSpace()) {
-      loopStatus();
+      reload();
     }
   }, [datasourceList]);
 
@@ -156,6 +138,8 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
            */
           return null;
         }
+        const status = statusMap?.[item.id];
+        item = status ? { ...item, status } : item;
         return {
           title: item.name,
           selectable: login.isPrivateSpace()
@@ -166,7 +150,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
         };
       })
       .filter(Boolean);
-  }, [datasourceList, searchKey, loopCount, filters?.envs, filters?.connectTypes]);
+  }, [datasourceList, searchKey, statusMap, filters?.envs, filters?.connectTypes]);
 
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
@@ -231,12 +215,15 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
               </NewDatasourceButton>
             ) : null}
           </div>
-          <div className={styles.list}>
+          <div className={styles.list} ref={treeWrapperRef}>
             {datasource?.length ? (
               <Tree
                 className={styles.tree}
+                // 设置一个最小值，可以避免height为0的时候，出现全量渲染
+                height={wrapperHeight || 100}
                 titleRender={(node) => {
                   const dataSource = datasourceList?.find((d) => d.id == node.key);
+                  fetchStatus(dataSource?.id);
                   return (
                     <>
                       <Popover
@@ -291,7 +278,11 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
                               [styles.envTipPersonal]: login.isPrivateSpace(),
                             })}
                           >
-                            <Badge color={dataSource?.environmentStyle?.toLowerCase()} />
+                            <Badge
+                              color={
+                                EnvColorMap[dataSource?.environmentStyle?.toUpperCase()]?.tipColor
+                              }
+                            />
                           </div>
                           {login.isPrivateSpace() && (
                             <div className={styles.actions}>
@@ -327,6 +318,7 @@ export default forwardRef(function DatasourceTree({ filters }: IProps, ref) {
                     /**
                      * disable unselect
                      */
+                    closeSelectPanel();
                     return;
                   }
                   setSelectKeys(keys);

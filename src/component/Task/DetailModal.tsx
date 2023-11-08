@@ -133,54 +133,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     });
   };
 
-  if ([TaskType.IMPORT, TaskType.EXPORT].includes(task?.type)) {
-    taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.PARTITION_PLAN) {
-    taskContent = (
-      <PartitionTaskContent
-        task={task as TaskDetail<IPartitionPlanParams>}
-        result={result}
-        hasFlow={hasFlow}
-        partitionPlans={partitionPlan?.tablePartitionPlans}
-        onPartitionPlansChange={handlePartitionPlansChange}
-      />
-    );
-  } else if (task?.type === TaskType.ASYNC) {
-    taskContent = (
-      <AsyncTaskContent
-        task={task as TaskDetail<IAsyncTaskParams>}
-        result={result}
-        hasFlow={hasFlow}
-      />
-    );
-  } else if (task?.type === TaskType.DATA_ARCHIVE) {
-    taskContent = (
-      <DataArchiveTaskContent
-        task={task as CycleTaskDetail<IDataArchiveJobParameters>}
-        hasFlow={hasFlow}
-      />
-    );
-  } else if (task?.type === TaskType.DATA_DELETE) {
-    taskContent = (
-      <DataClearTaskContent
-        task={task as CycleTaskDetail<IDataClearJobParameters>}
-        hasFlow={hasFlow}
-      />
-    );
-  } else if (task?.type === TaskType.SQL_PLAN) {
-    taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.APPLY_PROJECT_PERMISSION) {
-    taskContent = (
-      <ApplyPermissionTaskContent
-        task={task as TaskDetail<IApplyPermissionTaskParams>}
-        result={result}
-        hasFlow={hasFlow}
-      />
-    );
-  } else {
-    getItems = taskContentMap[task?.type]?.getItems;
-  }
-
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
     setLoading(false);
@@ -379,6 +331,48 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     setApprovalVisible(visible);
     setApprovalStatus(approvalStatus);
   };
+
+  if ([TaskType.IMPORT, TaskType.EXPORT].includes(task?.type)) {
+    taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
+  } else if (task?.type === TaskType.PARTITION_PLAN) {
+    taskContent = (
+      <PartitionTaskContent
+        task={task as TaskDetail<IPartitionPlanParams>}
+        result={result}
+        hasFlow={hasFlow}
+        partitionPlans={partitionPlan?.tablePartitionPlans}
+        onPartitionPlansChange={handlePartitionPlansChange}
+      />
+    );
+  } else if (task?.type === TaskType.ASYNC) {
+    taskContent = (
+      <AsyncTaskContent
+        task={task as TaskDetail<IAsyncTaskParams>}
+        result={result}
+        hasFlow={hasFlow}
+      />
+    );
+  } else if (task?.type === TaskType.DATA_ARCHIVE) {
+    taskContent = (
+      <DataArchiveTaskContent
+        task={task as CycleTaskDetail<IDataArchiveJobParameters>}
+        hasFlow={hasFlow}
+        onReload={handleReloadData}
+      />
+    );
+  } else if (task?.type === TaskType.DATA_DELETE) {
+    taskContent = (
+      <DataClearTaskContent
+        task={task as CycleTaskDetail<IDataClearJobParameters>}
+        hasFlow={hasFlow}
+        onReload={handleReloadData}
+      />
+    );
+  } else if (task?.type === TaskType.SQL_PLAN) {
+    taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
+  } else {
+    getItems = taskContentMap[task?.type]?.getItems;
+  }
 
   const modalProps = {
     result,

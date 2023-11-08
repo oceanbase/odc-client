@@ -84,7 +84,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           <div className={styles.sql}>
             <Tooltip title={sql}>SQL: {sql}</Tooltip>
           </div>
-          {haveText && (
+          {haveText && (explain as ISQLExplain)?.showFormatInfo && (
             // 切换显示方式
             <span
               style={{

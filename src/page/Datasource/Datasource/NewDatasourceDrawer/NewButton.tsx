@@ -56,6 +56,7 @@ const getResultByFiles = (files: UploadFile[]) => {
 };
 const NewDatasourceButton: React.FC<{
   onSuccess: () => void;
+  disableTheme?: boolean;
 }> = function NewDatasourceButton(props) {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState<ConnectType>(null);
@@ -95,30 +96,32 @@ const NewDatasourceButton: React.FC<{
         ),
       };
     });
-    results.push({
-      type: 'divider',
-    });
-    results = results.concat(
-      mysqlConnectTypes.map((item) => {
-        return {
-          label: ConnectTypeText[item],
-          key: item,
-          icon: (
-            <Icon
-              component={getDataSourceStyleByConnectType(item)?.icon?.component}
-              style={{
-                color: getDataSourceStyleByConnectType(item)?.icon?.color,
-                fontSize: '16px',
-              }}
-            />
-          ),
-        };
-      }),
-    );
-    results.push({
-      type: 'divider',
-    });
+    if (mysqlConnectTypes?.length) {
+      results.push({
+        type: 'divider',
+      });
+      results = results.concat(
+        mysqlConnectTypes.map((item) => {
+          return {
+            label: ConnectTypeText[item],
+            key: item,
+            icon: (
+              <Icon
+                component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                  fontSize: '16px',
+                }}
+              />
+            ),
+          };
+        }),
+      );
+    }
     if (!haveOCP()) {
+      results.push({
+        type: 'divider',
+      });
       results = results.concat({
         label: formatMessage({
           id: 'odc.component.BatchImportButton.BatchImport',
@@ -250,6 +253,7 @@ const NewDatasourceButton: React.FC<{
         onSubmit={handleBatchImportSubmit}
       />
       <NewDatasourceDrawer
+        disableTheme={props.disableTheme}
         type={type}
         visible={visible}
         close={() => setVisible(false)}

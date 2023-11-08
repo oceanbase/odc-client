@@ -36,7 +36,7 @@ import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
 import { getDataSourceModeConfig } from '../datasource';
 
-function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: boolean) {
+function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
   const userId = userStore?.user?.id;
   const params: Partial<IConnection> = {
@@ -45,12 +45,12 @@ function generateConnectionParams(formData: Partial<IDatasource>, isHiden?: bool
     name: formData.name,
     username: formData.username,
     password: encrypt(formData.password),
-    sysTenantUsername: formData.sysTenantUsername,
+    sysTenantUsername: formData?.useSys ? formData.sysTenantUsername : null,
     sslConfig: formData.sslConfig || { enabled: false },
     /**
      * 逻辑同 pwd
      */
-    sysTenantPassword: encrypt(formData.sysTenantPassword),
+    sysTenantPassword: formData?.useSys ? encrypt(formData.sysTenantPassword) : null,
     queryTimeoutSeconds: formData.queryTimeoutSeconds,
     properties: formData.properties,
     passwordSaved: formData.passwordSaved,
@@ -215,10 +215,8 @@ export async function batchTest(
     }
   >
 > {
-  const res = await request.get('/api/v2/datasource/datasources/status', {
-    params: {
-      id: cids,
-    },
+  const res = await request.post('/api/v2/datasource/datasources/status', {
+    data: cids,
   });
   return res?.data;
 }

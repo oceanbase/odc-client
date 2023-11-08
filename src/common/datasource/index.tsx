@@ -62,7 +62,14 @@ function register(
   dataSourceType: IDataSourceType,
   items: Partial<Record<ConnectType, IDataSourceModeConfig>>,
 ) {
-  const connectTypes: ConnectType[] = Object.keys(items) as ConnectType[];
+  const connectTypes: ConnectType[] = Object.entries(items)
+    .map(([key, value]) => {
+      if (value?.disable) {
+        return null;
+      }
+      return key;
+    })
+    .filter(Boolean) as ConnectType[];
   const obj = _types.get(dataSourceType) || {
     connectTypes: [],
     config: {},

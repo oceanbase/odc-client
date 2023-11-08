@@ -21,9 +21,9 @@ import request from '@/util/request';
 export async function updateRiskDetectRule(
   id: number,
   data: {
-  riskLevelId: number,
-  riskLevel: IRiskLevel,
-  rootNode: RootNode
+    riskLevelId: number;
+    riskLevel: IRiskLevel;
+    rootNode: RootNode;
   },
 ): Promise<boolean> {
   const res = await request.put(`/api/v2/regulation/riskDetectRules/${id}`, {
@@ -42,11 +42,6 @@ export async function listRiskDetectRules(
     params,
   });
   return ret?.data?.contents?.[0];
-}
-
-export async function detailRiskDetectRule(id: number): Promise<IRiskDetectRule> {
-  const ret = await request.get(`/api/v2/regulation/riskDetectRules/${id}`);
-  return ret?.data;
 }
 
 export async function deleteRiskDetectRule(id: number): Promise<boolean> {

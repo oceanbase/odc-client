@@ -28,17 +28,15 @@ import classNames from 'classnames';
 import DatasourceFilter from '../DatasourceFilter';
 import { ConnectType } from '@/d.ts';
 import Reload from '@/component/Button/Reload';
-
+import { Tooltip } from 'antd';
 interface IProps {
   userStore?: UserStore;
   onClose: () => void;
 }
-
 enum PanelType {
   DataSource = 'datasource',
   Project = 'project',
 }
-
 const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
   const resourcetreeContext = useContext(ResourceTreeContext);
   const { selectProjectId, selectDatasourceId } = resourcetreeContext;
@@ -48,12 +46,23 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
   const sourceRef = useRef<any>();
   const projectRef = useRef<any>();
   const isPersonal = userStore?.isPrivateSpace();
-
   const datasource: ITab = {
-    title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.DataSource' }), //数据源
+    title: formatMessage({
+      id: 'odc.SideBar.ResourceTree.Container.DataSource',
+    }),
+    //数据源
     key: PanelType.DataSource,
     render() {
-      return <DataSourceTree filters={{ envs, connectTypes }} ref={sourceRef} />;
+      return (
+        <DataSourceTree
+          closeSelectPanel={onClose}
+          filters={{
+            envs,
+            connectTypes,
+          }}
+          ref={sourceRef}
+        />
+      );
     },
     groupSize: 3,
     actions: [
@@ -61,7 +70,9 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         render() {
           return (
             <DatasourceFilter
-              iconStyle={{ verticalAlign: 'text-top' }}
+              iconStyle={{
+                verticalAlign: 'text-top',
+              }}
               onClear={() => {
                 setEnvs([]);
                 setConnectTypes([]);
@@ -88,10 +99,13 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
     ].filter(Boolean),
   };
   const project: ITab = {
-    title: formatMessage({ id: 'odc.SideBar.ResourceTree.Container.Project' }), //项目
+    title: formatMessage({
+      id: 'odc.SideBar.ResourceTree.Container.Project',
+    }),
+    //项目
     key: PanelType.Project,
     render() {
-      return <ProjectTree ref={projectRef} />;
+      return <ProjectTree closeSelectPanel={onClose} ref={projectRef} />;
     },
     actions: [
       {
@@ -107,7 +121,6 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
       },
     ],
   };
-
   useEffect(() => {
     if (selectProjectId) {
       setSelectPanel(PanelType.Project);
@@ -125,16 +138,28 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         }}
         tabs={isPersonal ? [datasource] : [datasource, project]}
         leftAction={
-          <Icon
-            disabled={!isSelected}
-            component={CloseOutlined}
-            className={classNames(styles.closeBtn, { [styles.closeBtnDisable]: !isSelected })}
-            onClick={!isSelected ? null : () => onClose()}
-          />
+          <Tooltip
+            title={
+              isSelected
+                ? null
+                : formatMessage({
+                    id:
+                      'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.PleaseSelectTheDataSource',
+                  }) //'请选择数据源或项目'
+            }
+          >
+            <Icon
+              disabled={!isSelected}
+              component={CloseOutlined}
+              className={classNames(styles.closeBtn, {
+                [styles.closeBtnDisable]: !isSelected,
+              })}
+              onClick={!isSelected ? null : () => onClose()}
+            />
+          </Tooltip>
         }
       />
     </>
   );
 };
-
 export default inject('userStore')(observer(SelectPanel));

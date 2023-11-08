@@ -46,6 +46,7 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  theme?: 'dark' | 'white';
 }
 enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
@@ -60,7 +61,7 @@ export enum ClearStrategy {
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, theme } = props;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -340,6 +341,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           }}
         >
           <CommonIDE
+            editorProps={{
+              theme,
+            }}
             language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             onSQLChange={handleSqlChange}
           />

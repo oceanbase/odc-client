@@ -30,7 +30,7 @@ import ApplyPermissionCreateModal from './ApplyPermission';
 
 interface IProps {
   projectId?: number;
-  theme?: string;
+  theme?: 'dark' | 'white';
 }
 
 const CreateModals: React.FC<IProps> = (props) => {
@@ -46,8 +46,8 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ShadowSyncTaskCreateModal projectId={projectId} />
       <DataArchiveTaskCreateModal projectId={projectId} />
       <DataClearTaskCreateModal projectId={projectId} />
-      <AlterDDLTaskCreateModal projectId={projectId} />
       <ApplyPermissionCreateModal projectId={projectId} />
+      <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
       <ResultSetExportTask projectId={projectId} theme={theme} />
     </>
   );

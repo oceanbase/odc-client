@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SettingStore } from '@/store/setting';
+import { EThemeConfigKey, SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { Menu } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -38,7 +38,7 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
       small
       menu={
         <Menu selectedKeys={[currentTheme]}>
-          <Menu.Item onClick={() => onClick('odc-white')} key="odc-white">
+          <Menu.Item onClick={() => onClick(EThemeConfigKey.ODC_WHITE)} key="odc-white">
             {
               formatMessage({
                 id: 'odc.component.ThemeBtn.DefaultTheme',
@@ -46,7 +46,7 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
               /*默认主题*/
             }
           </Menu.Item>
-          <Menu.Item onClick={() => onClick('odc-dark')} key="odc-dark">
+          <Menu.Item onClick={() => onClick(EThemeConfigKey.ODC_DARK)} key="odc-dark">
             {
               formatMessage({
                 id: 'odc.component.ThemeBtn.DarkTheme',

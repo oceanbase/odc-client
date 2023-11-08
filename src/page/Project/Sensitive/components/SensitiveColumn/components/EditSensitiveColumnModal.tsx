@@ -19,13 +19,15 @@ import { formatMessage } from '@/util/intl';
 import { Form, message, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import styles from './index.less';
-
-const EditModal = ({
+import { MaskRyleTypeMap } from '@/d.ts';
+import { PopoverContainer } from '..';
+const EditSensitiveColumnModal = ({
   projectId,
   tableRef,
   maskingAlgorithmId = 1,
   sensitiveColumnIds = [],
   maskingAlgorithmOptions = [],
+  maskingAlgorithms,
   modalVisible,
   setModalVisible,
   initSensitiveColumn,
@@ -49,6 +51,7 @@ const EditModal = ({
           id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.UpdatedSuccessfully',
         }), //更新成功
       );
+
       setModalVisible(false);
       tableRef.current?.reload();
       tableRef.current?.resetSelectedRows();
@@ -61,13 +64,14 @@ const EditModal = ({
       );
     }
   };
+
   return (
     <Modal
       width={400}
       title={formatMessage({
         id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.EditSensitiveColumns',
-      })} /*编辑敏感列*/
-      open={modalVisible}
+      })}
+      /*编辑敏感列*/ open={modalVisible}
       onCancel={onCancel}
       afterClose={afterClose}
       className={styles.modal}
@@ -99,13 +103,49 @@ const EditModal = ({
                 id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.PleaseSelect',
               }) //请选择
             }
-            style={{ width: '368px' }}
-            options={maskingAlgorithmOptions}
-          />
+            optionLabelProp="label"
+          >
+            {maskingAlgorithmOptions?.map((option, index) => {
+              const target = maskingAlgorithms?.find(
+                (maskingAlgorithm) => maskingAlgorithm?.id === option?.value,
+              );
+              return (
+                <Select.Option value={option?.value} key={index} label={option?.label}>
+                  <PopoverContainer
+                    key={index}
+                    title={option?.label}
+                    descriptionsData={[
+                      {
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                        }), //'脱敏方式'
+                        value: MaskRyleTypeMap?.[target?.type],
+                      },
+                      {
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                        }), //'测试数据'
+                        value: target?.sampleContent,
+                      },
+                      {
+                        label: formatMessage({
+                          id:
+                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                        }), //'结果预览'
+                        value: target?.maskedContent,
+                      },
+                    ]}
+                    children={() => <div>{option?.label}</div>}
+                  />
+                </Select.Option>
+              );
+            })}
+          </Select>
         </Form.Item>
       </Form>
     </Modal>
   );
 };
-
-export default EditModal;
+export default EditSensitiveColumnModal;

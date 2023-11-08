@@ -64,7 +64,6 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
         (type) =>
           ![
             TaskType.SHADOW,
-            TaskType.SQL_PLAN,
             TaskType.DATA_ARCHIVE,
             TaskType.DATA_DELETE,
             TaskType.PARTITION_PLAN,

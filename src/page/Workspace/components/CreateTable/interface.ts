@@ -123,6 +123,10 @@ export interface TableIndex {
    */
   visible: boolean;
   ordinalPosition: number;
+  /**
+   *  是否有效
+   */
+  available?: boolean;
 }
 
 export type TableConstraint =
@@ -168,6 +172,7 @@ export enum TableIndexMehod {
   NONE = 'NONE',
   BTREE = 'BTREE',
   HASH = 'HASH',
+  FULLTEXT = 'FULLTEXT',
 }
 
 export enum TableIndexType {

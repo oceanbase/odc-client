@@ -27,7 +27,7 @@ export default {
     data: {
       id: 69,
       name: 'admin',
-      email: 'admin@alibaba-inc.com',
+      email: 'admin@oceanbase1024.com',
       password: 'admin',
       role: null,
       status: 1,

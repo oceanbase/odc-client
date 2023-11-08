@@ -68,6 +68,7 @@ export function useColumns(
     //空
     [TableIndexMehod.HASH]: 'HASH',
     [TableIndexMehod.BTREE]: 'BTREE',
+    [TableIndexMehod.FULLTEXT]: 'FULLTEXT',
   };
   const visibleCheckbox = useMemo(() => {
     return WrapReverseCheckboxFormatetr('visible');

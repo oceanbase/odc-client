@@ -27,7 +27,7 @@ import TaskSvg from '@/svgr/icon_task.svg';
 import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
 import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
 import { openNewDefaultPLPage, openNewSQLPage } from '@/store/helper/page';
-import setting from '@/store/setting';
+import setting, { EThemeConfigKey } from '@/store/setting';
 import ConsolePLSvg from '@/svgr/Console-PL.svg';
 import { useContext, useEffect } from 'react';
 import tracert from '@/util/tracert';
@@ -99,7 +99,11 @@ export default function DefaultPage() {
       <div
         onClick={() => {
           tracert.click('a3112.b41896.c330987.d367620');
-          setting.setTheme(setting.theme?.key === 'odc-white' ? 'odc-dark' : 'odc-white');
+          setting.setTheme(
+            setting.theme?.key === EThemeConfigKey.ODC_WHITE
+              ? EThemeConfigKey.ODC_DARK
+              : EThemeConfigKey.ODC_WHITE,
+          );
         }}
         className={styles.item}
       >

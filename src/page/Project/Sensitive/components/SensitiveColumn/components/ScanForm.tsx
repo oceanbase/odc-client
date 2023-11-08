@@ -38,6 +38,7 @@ import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import TableOutlined from '@/svgr/menuTable.svg';
 import ViewSvg from '@/svgr/menuView.svg';
 import { MaskRyleTypeMap } from '@/d.ts';
+import { PopoverContainer } from '..';
 const ScanForm = ({
   formRef,
   _formRef,
@@ -378,6 +379,7 @@ const ScanForm = ({
                                         ?.toLowerCase()
                                         .includes(input.toLowerCase())
                                     }
+                                    optionLabelProp="label"
                                   >
                                     {sensitiveContext?.maskingAlgorithmOptions?.map(
                                       (option, index) => {
@@ -386,52 +388,39 @@ const ScanForm = ({
                                             maskingAlgorithm?.id === option?.value,
                                         );
                                         return (
-                                          <Select.Option value={option?.value} key={index}>
-                                            <Popover
-                                              placement="left"
+                                          <Select.Option
+                                            value={option?.value}
+                                            key={index}
+                                            label={option?.label}
+                                          >
+                                            <PopoverContainer
+                                              key={index}
                                               title={option?.label}
-                                              content={
-                                                <Descriptions
-                                                  column={1}
-                                                  style={{
-                                                    width: '250px',
-                                                  }}
-                                                >
-                                                  <Descriptions.Item
-                                                    label={
-                                                      formatMessage({
-                                                        id:
-                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
-                                                      }) /* 脱敏方式 */
-                                                    }
-                                                  >
-                                                    {MaskRyleTypeMap?.[target?.type]}
-                                                  </Descriptions.Item>
-                                                  <Descriptions.Item
-                                                    label={
-                                                      formatMessage({
-                                                        id:
-                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
-                                                      }) /* 测试数据 */
-                                                    }
-                                                  >
-                                                    {target?.sampleContent}
-                                                  </Descriptions.Item>
-                                                  <Descriptions.Item
-                                                    label={
-                                                      formatMessage({
-                                                        id:
-                                                          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
-                                                      }) /* 结果预览 */
-                                                    }
-                                                  >
-                                                    {target?.maskedContent}
-                                                  </Descriptions.Item>
-                                                </Descriptions>
-                                              }
-                                            >
-                                              {option?.label}
-                                            </Popover>
+                                              descriptionsData={[
+                                                {
+                                                  label: formatMessage({
+                                                    id:
+                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                                                  }) /* 脱敏方式 */,
+                                                  value: MaskRyleTypeMap?.[target?.type],
+                                                },
+                                                {
+                                                  label: formatMessage({
+                                                    id:
+                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                                                  }) /* 测试数据 */,
+                                                  value: target?.sampleContent,
+                                                },
+                                                {
+                                                  label: formatMessage({
+                                                    id:
+                                                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                                                  }) /* 结果预览 */,
+                                                  value: target?.maskedContent,
+                                                },
+                                              ]}
+                                              children={() => <div>{option?.label}</div>}
+                                            />
                                           </Select.Option>
                                         );
                                       },

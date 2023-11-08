@@ -28,7 +28,7 @@ import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
 import { useUpdate } from 'ahooks';
-import Icon, { DownOutlined } from '@ant-design/icons';
+import Icon, { SwapOutlined } from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import DatasourceFilter from './DatasourceFilter';
 import { ConnectType, DbObjectType } from '@/d.ts';
@@ -124,9 +124,12 @@ const ResourceTree: React.FC<IProps> = function ({
           const dbSession =
             sessionManagerStore.sessionMap.get(sessionIds[dbId]) ||
             (await sessionManagerStore.createSession(null, data?.id, true));
-          if (dbSession !== 'NotFound') {
+          if (dbSession && dbSession !== 'NotFound') {
             setSessionId(dbId, dbSession?.sessionId);
             update();
+          } else {
+            throw new Error("load database's session failed");
+            return;
           }
           break;
         }
@@ -165,9 +168,9 @@ const ResourceTree: React.FC<IProps> = function ({
             {title}
           </Space>
         ) : (
-          <Space size={2} onClick={() => onTitleClick?.()} className={styles.label}>
+          <Space size={4} onClick={() => onTitleClick?.()} className={styles.label}>
             {title}
-            <Icon style={{ verticalAlign: 'text-bottom' }} component={DownOutlined} />
+            <Icon style={{ verticalAlign: 'middle' }} component={SwapOutlined} />
           </Space>
         )}
         <span className={styles.titleAction}>
@@ -186,7 +189,7 @@ const ResourceTree: React.FC<IProps> = function ({
                 onTypesChange={(v) => {
                   setConnectTypes(v);
                 }}
-                iconStyle={{ verticalAlign: 'text-bottom' }}
+                iconStyle={{ verticalAlign: 'text-top' }}
               />
             ) : null}
             <Reload
