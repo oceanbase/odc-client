@@ -28,6 +28,8 @@ import React, { PureComponent } from 'react';
 
 import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
 
+const MAX_SNIPPRT_SIZE = 100000;
+
 const { Option } = Select;
 const { TextArea } = Input;
 interface IProps {
@@ -295,12 +297,8 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                         // 请输入语法
                       },
                       {
-                        max: 2000,
-                        message: formatMessage({
-                          id: 'odc.component.SnippetForm.TheSyntaxCannotExceedCharacters',
-                        }),
-
-                        // 语法长度不能超过 2000 个字符
+                        max: MAX_SNIPPRT_SIZE,
+                        message: `语法长度不能超过 ${MAX_SNIPPRT_SIZE} 个字符`,
                       },
                     ]}
                   >
