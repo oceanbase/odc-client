@@ -100,6 +100,7 @@
     "blueimp-md5": "^2.19.0",
     "cherio": "^1.0.0-rc.2",
     "classnames": "^2.2.6",
+    "concurrently": "^8.2.1",
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3",
     "cpx": "^1.5.0",
