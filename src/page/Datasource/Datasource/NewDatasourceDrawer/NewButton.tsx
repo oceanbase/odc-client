@@ -96,30 +96,32 @@ const NewDatasourceButton: React.FC<{
         ),
       };
     });
-    results.push({
-      type: 'divider',
-    });
-    results = results.concat(
-      mysqlConnectTypes.map((item) => {
-        return {
-          label: ConnectTypeText[item],
-          key: item,
-          icon: (
-            <Icon
-              component={getDataSourceStyleByConnectType(item)?.icon?.component}
-              style={{
-                color: getDataSourceStyleByConnectType(item)?.icon?.color,
-                fontSize: '16px',
-              }}
-            />
-          ),
-        };
-      }),
-    );
-    results.push({
-      type: 'divider',
-    });
+    if (mysqlConnectTypes?.length) {
+      results.push({
+        type: 'divider',
+      });
+      results = results.concat(
+        mysqlConnectTypes.map((item) => {
+          return {
+            label: ConnectTypeText[item],
+            key: item,
+            icon: (
+              <Icon
+                component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                  fontSize: '16px',
+                }}
+              />
+            ),
+          };
+        }),
+      );
+    }
     if (!haveOCP()) {
+      results.push({
+        type: 'divider',
+      });
       results = results.concat({
         label: formatMessage({
           id: 'odc.component.BatchImportButton.BatchImport',

@@ -25,7 +25,7 @@ import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
-import { TaskPageType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import modalStore from '@/store/modal';
@@ -39,6 +39,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 import tracert from '@/util/tracert';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import {
+  getDataSourceModeConfig,
+  getDataSourceModeConfigByConnectionMode,
+} from '@/common/datasource';
 interface IProps {
   id: string;
 }
@@ -205,31 +209,36 @@ const Database: React.FC<IProps> = ({ id }) => {
           {
             title: formatMessage({ id: 'odc.Project.Database.Operation' }), //操作
             dataIndex: 'name',
-            width: 180,
+            width: 200,
             render(_, record) {
               if (!record.existed) {
                 return '-';
               }
+              const config = getDataSourceModeConfig(record?.dataSource?.type);
               return (
                 <Action.Group size={3}>
-                  <Action.Link
-                    key={'export'}
-                    onClick={() => {
-                      tracert.click('a3112.b64002.c330858.d367383');
-                      handleMenuClick(TaskPageType.EXPORT, record.id);
-                    }}
-                  >
-                    {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
-                  </Action.Link>
-                  <Action.Link
-                    key={'import'}
-                    onClick={() => {
-                      tracert.click('a3112.b64002.c330858.d367384');
-                      handleMenuClick(TaskPageType.IMPORT, record.id);
-                    }}
-                  >
-                    {formatMessage({ id: 'odc.Project.Database.Import' }) /*导入*/}
-                  </Action.Link>
+                  {config?.features?.task?.includes(TaskType.EXPORT) && (
+                    <Action.Link
+                      key={'export'}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367383');
+                        handleMenuClick(TaskPageType.EXPORT, record.id);
+                      }}
+                    >
+                      {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
+                    </Action.Link>
+                  )}
+                  {config?.features?.task?.includes(TaskType.IMPORT) && (
+                    <Action.Link
+                      key={'import'}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367384');
+                        handleMenuClick(TaskPageType.IMPORT, record.id);
+                      }}
+                    >
+                      {formatMessage({ id: 'odc.Project.Database.Import' }) /*导入*/}
+                    </Action.Link>
+                  )}
                   <Action.Link
                     key={'ddl'}
                     onClick={() => {

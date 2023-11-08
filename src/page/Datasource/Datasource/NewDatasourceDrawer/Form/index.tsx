@@ -190,28 +190,30 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             />
           </Form.Item>
         ) : null}
-        <Typography>
-          <Typography.Paragraph>
-            <Space size={4}>
-              <span>
-                {
-                  formatMessage({
-                    id:
-                      'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
-                  }) /* 数据源类型: */
-                }
-              </span>
-              <Icon
-                component={getDataSourceStyleByConnectType(type)?.icon?.component}
-                style={{
-                  color: getDataSourceStyleByConnectType(type)?.icon?.color,
-                  fontSize: 14,
-                }}
-              />
-              {ConnectTypeText[type] || ''}
-            </Space>
-          </Typography.Paragraph>
-        </Typography>
+        {haveOCP() ? null : (
+          <Typography>
+            <Typography.Paragraph>
+              <Space size={4}>
+                <span>
+                  {
+                    formatMessage({
+                      id:
+                        'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
+                    }) /* 数据源类型: */
+                  }
+                </span>
+                <Icon
+                  component={getDataSourceStyleByConnectType(type)?.icon?.component}
+                  style={{
+                    color: getDataSourceStyleByConnectType(type)?.icon?.color,
+                    fontSize: 14,
+                  }}
+                />
+                {ConnectTypeText[type] || ''}
+              </Space>
+            </Typography.Paragraph>
+          </Typography>
+        )}
         {/* <DBTypeItem /> */}
         <Form.Item
           rules={[

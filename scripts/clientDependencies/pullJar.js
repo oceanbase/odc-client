@@ -27,8 +27,13 @@ exports.run = async function () {
     return true;
   }
   const plugins = await oss.getOSSFolderFiles(pluginUrl)
+  console.log(plugins)
   for (let plugin of plugins) {
+    console.log(plugins)
     const pluginFileName = path.relative(pluginUrl, plugin.name);
+    if (!pluginFileName) {
+      continue;
+    }
     const isSuccess = await oss.download(plugin.name, 'libraries/java/plugins', pluginFileName);
     if (!isSuccess) {
       console.error('Download plugin failed', pluginFileName)
@@ -41,6 +46,9 @@ exports.run = async function () {
   const starters = await oss.getOSSFolderFiles(startersUrl)
   for (let starter of starters) {
     const fileName = path.relative(startersUrl, starter.name);
+    if (!fileName) {
+      continue;
+    }
     const isSuccess = await oss.download(starter.name, 'libraries/java/starters', fileName);
     if (!isSuccess) {
       console.error('Download starters failed', fileName)
