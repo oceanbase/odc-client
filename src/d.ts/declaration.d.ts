@@ -48,6 +48,7 @@ interface Window {
   currentEnv: string;
   route: any;
   haveOCP: boolean;
+  ODCClient: any;
 }
 
 declare let window: Window;
