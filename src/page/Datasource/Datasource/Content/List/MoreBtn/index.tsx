@@ -20,6 +20,7 @@ import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import {
+  CopyOutlined,
   DeleteOutlined,
   EditOutlined,
   EllipsisOutlined,
@@ -39,6 +40,7 @@ enum Actions {
   EDIT = 'edit',
   COPY = 'copy',
   REMOVE = 'remove',
+  CLONE = 'clone',
 }
 const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   const context = useContext(ParamContext);
@@ -103,6 +105,13 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
           icon: <EditOutlined />,
         }
       : null,
+    connection.permittedActions?.includes(actionTypes.update)
+      ? {
+          label: '克隆',
+          key: Actions.CLONE,
+          icon: <CopyOutlined />,
+        }
+      : null,
     connection.permittedActions?.includes(actionTypes.delete)
       ? {
           label: formatMessage({
@@ -144,6 +153,10 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
             }
             case Actions.REMOVE: {
               remove();
+              return;
+            }
+            case Actions.CLONE: {
+              context.setCopyDatasourceId?.(connection?.id);
               return;
             }
           }

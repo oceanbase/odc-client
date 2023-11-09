@@ -69,6 +69,7 @@ interface IProps {
 
 export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }: IProps, ref) {
   const [editDatasourceId, setEditDatasourceId] = useState(null);
+  const [copyDatasourceId, setCopyDatasourceId] = useState<number>(null);
   const [addDSVisiable, setAddDSVisiable] = useState(false);
   const [searchKey, setSearchKey] = useState('');
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -247,6 +248,14 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                             menu={{
                               items: [
                                 {
+                                  label: '克隆',
+                                  key: 'clone',
+                                  onClick: (e) => {
+                                    e.domEvent?.stopPropagation();
+                                    setCopyDatasourceId(toInteger(node.key));
+                                  },
+                                },
+                                {
                                   label: formatMessage({
                                     id: 'odc.ResourceTree.Datasource.Edit',
                                   }), //编辑
@@ -287,6 +296,14 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                           {login.isPrivateSpace() && (
                             <div className={styles.actions}>
                               <Action.Group ellipsisIcon="vertical" size={0}>
+                                <Action.Link
+                                  onClick={() => {
+                                    setCopyDatasourceId(toInteger(node.key));
+                                  }}
+                                  key={'clone'}
+                                >
+                                  克隆
+                                </Action.Link>
                                 <Action.Link
                                   onClick={() => {
                                     setEditDatasourceId(node.key);
@@ -346,6 +363,18 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
             close={() => {
               setEditDatasourceId(null);
               setAddDSVisiable(false);
+            }}
+            onSuccess={() => {
+              context?.reloadDatasourceList();
+            }}
+          />
+          <NewDatasourceDrawer
+            isEdit={false}
+            isCopy={true}
+            id={copyDatasourceId}
+            visible={!!copyDatasourceId}
+            close={() => {
+              setCopyDatasourceId(null);
             }}
             onSuccess={() => {
               context?.reloadDatasourceList();

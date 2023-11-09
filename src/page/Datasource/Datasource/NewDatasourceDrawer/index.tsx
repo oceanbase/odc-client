@@ -26,9 +26,9 @@ import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
-import { ConnectType } from '@/d.ts';
+import { ConnectType, IConnection } from '@/d.ts';
 
 interface IProps {
   visible: boolean;
@@ -37,6 +37,7 @@ interface IProps {
   id?: number;
   disableTheme?: boolean;
   type?: ConnectType;
+  isCopy?: boolean;
   close: () => void;
   onSuccess: () => void;
 }
@@ -44,6 +45,7 @@ interface IProps {
 export default function NewDatasourceDrawer({
   visible,
   isEdit,
+  isCopy,
   type,
   id,
   disableTheme,
@@ -56,12 +58,22 @@ export default function NewDatasourceDrawer({
     manual: true,
   });
 
+  function getOriginDatasource(data: IConnection, isCopy: boolean) {
+    return isCopy
+      ? { ...data, id: null, creatorId: null, name: null, password: '', sysTenantPassword: '' }
+      : data;
+  }
+
+  const originDatasource = useMemo(() => {
+    return getOriginDatasource(data, isCopy);
+  }, [data, isCopy]);
+
   async function getDataSource(id: number) {
     const data = await run(id);
     if (!data) {
       return;
     }
-    formRef.current?.form?.setFieldsValue(data);
+    formRef.current?.form?.setFieldsValue(getOriginDatasource(data, isCopy));
   }
 
   useEffect(() => {
@@ -194,8 +206,8 @@ export default function NewDatasourceDrawer({
       <Spin spinning={loading}>
         <DatasourceForm
           disableTheme={disableTheme}
-          type={data?.type || type}
-          originDatasource={data}
+          type={originDatasource?.type || type}
+          originDatasource={originDatasource}
           isEdit={isEdit}
           key={visible + ''}
           ref={formRef}
