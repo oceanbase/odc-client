@@ -31,11 +31,13 @@
 .textNull {
   color: var(--text-color-secondary);
 }
-.contenttext {
+.contenttext,
+.contenttext-disabled {
   flex: 1;
   padding: 8px;
   background: #f8f9fb;
   border: none;
+  white-space: pre;
   &:focus {
     box-shadow: none;
   }
@@ -44,4 +46,11 @@
     background-color: #f8f9fb;
     cursor: unset;
   }
+}
+.contenttext-disabled {
+  border: 1px solid #d9d9d9;
+  overflow-y: scroll;
+  color: rgba(0, 0, 0, 0.85);
+  background-color: #f8f9fb;
+  cursor: unset;
 }
