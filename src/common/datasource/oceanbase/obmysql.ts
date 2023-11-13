@@ -138,7 +138,6 @@ const items: Record<
       language: 'obmysql',
       escapeChar: '`',
     },
-    disable: true,
   },
 };
 if (haveOCP()) {

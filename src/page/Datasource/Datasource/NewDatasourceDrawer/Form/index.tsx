@@ -87,6 +87,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'sslConfig',
         'sessionInitScript',
         'jdbcUrlParameters',
+        'defaultSchema',
       ]);
     } catch (e) {}
     if (!values) {
@@ -259,6 +260,11 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
               <>
                 {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
                 <AddressItems />
+                {dsc?.defaultSchema ? (
+                  <Form.Item label="默认数据库" rules={[{ required: true }]} name={'defaultSchema'}>
+                    <Input style={{ width: 208 }} />
+                  </Form.Item>
+                ) : null}
                 <Account isEdit={isEdit} />
                 <Form.Item
                   rules={[

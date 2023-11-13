@@ -42,6 +42,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
   const params: Partial<IConnection> = {
     creatorId: userId,
     type: formData.type,
+    defaultSchema: formData?.defaultSchema,
     name: formData.name,
     username: formData.username,
     password: encrypt(formData.password),

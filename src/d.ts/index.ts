@@ -712,6 +712,7 @@ export interface IConnection {
   errorMessage?: string;
   jdbcUrlParameters?: Record<string, string>;
   sessionInitScript?: string;
+  defaultSchema?: string;
 }
 
 export interface IConnectionLabel {
