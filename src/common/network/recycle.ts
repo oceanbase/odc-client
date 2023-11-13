@@ -46,9 +46,9 @@ export async function updateRecycleConfig(
 
 export async function getPurgeAllSQL(sessionId: string, dbName: string) {
   const result = await request.patch(
-    `/api/v1/recyclebin/getPurgeAllSql/${generateDatabaseSid(dbName, sessionId)}`,
+    `/api/v1/recyclebin/purgeAll/${generateDatabaseSid(dbName, sessionId)}`,
   );
-  return result?.data?.sql;
+  return !!result?.data;
 }
 
 export async function getDeleteSQL(
@@ -57,10 +57,10 @@ export async function getDeleteSQL(
   dbName: string,
 ) {
   const sid = generateDatabaseSid(dbName, sessionId);
-  const result = await request.patch(`/api/v1/recyclebin/getDeleteSql/${sid}`, {
+  const result = await request.patch(`/api/v1/recyclebin/purge/${sid}`, {
     data: recycleObjects,
   });
-  return result?.data?.sql;
+  return !!result?.data;
 }
 
 export async function getUpdateSQL(
@@ -69,8 +69,8 @@ export async function getUpdateSQL(
   dbName: string,
 ) {
   const sid = generateDatabaseSid(dbName, sessionId);
-  const result = await request.patch(`/api/v1/recyclebin/getUpdateSql/${sid}`, {
+  const result = await request.patch(`/api/v1/recyclebin/flashback/${sid}`, {
     data: recycleObjects,
   });
-  return result?.data?.sql;
+  return !!result?.data;
 }

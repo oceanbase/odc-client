@@ -21,15 +21,12 @@ import {
   getUpdateSQL,
   updateRecycleConfig,
 } from '@/common/network/recycle';
-import { executeSQL } from '@/common/network/sql';
-import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import MiniTable from '@/component/Table/MiniTable';
 import Toolbar from '@/component/Toolbar';
-import { IRecycleConfig, IRecycleObject, ISqlExecuteResultStatus } from '@/d.ts';
+import { IRecycleConfig, IRecycleObject } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
 import { sortString } from '@/util/utils';
 import { ExclamationCircleFilled, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { FormattedMessage } from '@umijs/max';
@@ -61,10 +58,8 @@ class RecycleBin extends Component<
   IProps,
   {
     showEditModal: boolean;
-    showExecuteSQLModal: boolean;
     searchKey: string;
     listLoading: boolean;
-    updateDML: string;
     selectedObjectNames: Set<string>;
     selectAll: boolean;
     showDeleteDrawer: boolean;
@@ -74,10 +69,8 @@ class RecycleBin extends Component<
 > {
   public readonly state = {
     showEditModal: false,
-    showExecuteSQLModal: false,
     searchKey: '',
     listLoading: false,
-    updateDML: '',
     selectedObjectNames: new Set<string>(),
     selectAll: false,
     showDeleteDrawer: false,
@@ -106,6 +99,14 @@ class RecycleBin extends Component<
     await this.session.getRecycleObjectList();
     this.setState({ listLoading: false });
   }
+
+  public onSuccess = async () => {
+    await this.session.getRecycleObjectList();
+    this.setState({
+      selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
+    });
+    message.success(formatMessage({ id: 'workspace.window.recyclebin.success' }));
+  };
 
   /**
    * 打开清空回收站确认框
@@ -139,11 +140,10 @@ class RecycleBin extends Component<
    * 清空全部
    */
   public handleSubmitPurgeAll = async () => {
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = await getPurgeAllSQL(this.session.sessionId, this.session?.database?.dbName);
-    // TODO: 获取修改对应的 SQL
-    this.setState({ updateDML });
+    const isSuccess = await getPurgeAllSQL(this.session.sessionId, this.session?.database?.dbName);
+    if (isSuccess) {
+      await this.onSuccess();
+    }
   };
 
   public handleDelete = async () => {
@@ -153,14 +153,17 @@ class RecycleBin extends Component<
       selectedObjectNames.has(r.uniqueId),
     );
 
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = await getDeleteSQL(
+    const isSuccess = await getDeleteSQL(
       selectedObjects,
       this.session.sessionId,
       this.session?.database?.dbName,
     );
-    this.setState({ updateDML });
+    if (isSuccess) {
+      await this.onSuccess();
+      this.setState({
+        showDeleteDrawer: false,
+      });
+    }
   };
 
   public handleRestore = async () => {
@@ -170,64 +173,16 @@ class RecycleBin extends Component<
       selectedObjectNames.has(r.uniqueId),
     );
 
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = await getUpdateSQL(
+    const isSuccess = await getUpdateSQL(
       selectedObjects,
       this.session.sessionId,
       this.session?.database?.dbName,
     );
-    this.setState({ updateDML });
-  };
-
-  /**
-   * 执行 SQL
-   */
-  public handleExecuteUpdateDML = async () => {
-    const { updateDML } = this.state;
-
-    // 执行 DML
-    const result = await executeSQL(
-      updateDML,
-      this.session?.sessionId,
-      this.session?.database?.dbName,
-    );
-    if (!result) {
-      return;
-    }
-    if (result?.invalid) {
+    if (isSuccess) {
+      await this.onSuccess();
       this.setState({
-        showExecuteSQLModal: false,
-        showDeleteDrawer: false,
         showRestoreDrawer: false,
-        updateDML: '',
-        selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
       });
-      return;
-    }
-
-    if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
-      // 刷新
-      await this.session.getRecycleObjectList();
-      // if (updateDML.toUpperCase().indexOf('FLASHBACK DATABASE') > -1) {
-      //   /**
-      //    * 重新刷新一下数据库
-      //    */
-      //   await this.session.getDatabaseList();
-      // }
-
-      // 关闭已打开的 drawer、modal
-      this.setState({
-        showExecuteSQLModal: false,
-        showDeleteDrawer: false,
-        showRestoreDrawer: false,
-        updateDML: '',
-        selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
-      });
-
-      message.success(formatMessage({ id: 'workspace.window.recyclebin.success' }));
-    } else {
-      notification.error(result?.executeResult?.[0]);
     }
   };
 
@@ -294,10 +249,8 @@ class RecycleBin extends Component<
     const {
       showDeleteDrawer,
       showRestoreDrawer,
-      showExecuteSQLModal,
       searchKey,
       listLoading,
-      updateDML,
       selectedObjectNames,
       recycleConfig,
     } = this.state;
@@ -515,16 +468,6 @@ class RecycleBin extends Component<
             />
           </div>
         </Spin>
-        <ExecuteSQLModal
-          sessionStore={this.session}
-          sql={updateDML}
-          theme={theme}
-          visible={showExecuteSQLModal}
-          onSave={this.handleExecuteUpdateDML}
-          onCancel={() => this.setState({ showExecuteSQLModal: false, updateDML: '' })}
-          onChange={(sql) => this.setState({ updateDML: sql })}
-        />
-
         <Drawer
           title={formatMessage({
             id: 'workspace.window.recyclebin.drawer.delete.title',
