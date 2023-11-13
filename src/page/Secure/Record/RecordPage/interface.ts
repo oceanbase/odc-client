@@ -547,7 +547,7 @@ export const AuditEventActionMap = {
   [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: '拒绝申请项目权限',
   [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: '停止申请项目权限',
   // SQL安全规则管理
-  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '更新SQL安全规则',
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '修改SQL安全规则',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =
