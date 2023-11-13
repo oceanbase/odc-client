@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import { getSubTask } from '@/common/network/task';
+import { getSubTask, swapTableName } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import { TaskDetail, TaskRecordParameters } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Space } from 'antd';
+import { Drawer, Space, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
-const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
+const getColumns = (params: {
+  onOpenDetail: (id: number) => void;
+  onSwapTable: (id: number) => void;
+}) => {
   return [
     {
       dataIndex: 'resultJson',
@@ -52,16 +55,28 @@ const getColumns = (params: { onOpenDetail: (id: number) => void }) => {
       dataIndex: 'action',
       title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.Operation' }), //操作
       ellipsis: true,
-      width: 92,
+      width: 120,
       render: (_, record) => {
+        const resultJson = JSON.parse(record?.resultJson);
         return (
-          <Action.Link
-            onClick={async () => {
-              params?.onOpenDetail(record?.id);
-            }}
-          >
-            {formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.View' }) /*查看*/}
-          </Action.Link>
+          <>
+            <Action.Link
+              onClick={async () => {
+                params?.onOpenDetail(record?.id);
+              }}
+            >
+              {formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.View' }) /*查看*/}
+            </Action.Link>
+            {resultJson?.manualSwapTableEnabled && (
+              <Action.Link
+                onClick={async () => {
+                  params?.onSwapTable(record?.id);
+                }}
+              >
+                表名切换
+              </Action.Link>
+            )}
+          </>
         );
       },
     },
@@ -81,6 +96,14 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const loadData = async () => {
     const res = await getSubTask(task.id);
     setSubTasks(res?.contents?.[0].tasks);
+  };
+
+  const handleSwapTable = async (id: number) => {
+    const res = await swapTableName(id);
+    if (res) {
+      message.success('开始表名切换');
+      loadData();
+    }
   };
 
   useEffect(() => {
@@ -105,6 +128,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
         rowKey="id"
         columns={getColumns({
           onOpenDetail: handleDetailVisible,
+          onSwapTable: handleSwapTable,
         })}
         dataSource={subTasks}
         expandable={{
