@@ -56,6 +56,12 @@ enum SqlType {
   CREATE = 'CREATE',
   ALTER = 'ALTER',
 }
+
+export enum SwapTableType {
+  AUTO = 'AUTO',
+  MANUAL = 'MANUAL',
+}
+
 export enum ClearStrategy {
   ORIGIN_TABLE_RENAME_AND_RESERVED = 'ORIGIN_TABLE_RENAME_AND_RESERVED',
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
@@ -105,6 +111,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlType,
           sqlContent,
           swapTableNameRetryTimes,
+          swapTableType,
           lockTableTimeOutSeconds,
           originTableCleanStrategy,
           errorStrategy,
@@ -121,6 +128,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           swapTableNameRetryTimes,
           originTableCleanStrategy,
           lockUsers,
+          swapTableType,
         };
         const data = {
           projectId,
@@ -505,6 +513,22 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                   }) /*忽略错误继续任务*/
                 }
               </Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label="表名切换方式"
+            name="swapTableType"
+            initialValue={SwapTableType.AUTO}
+            rules={[
+              {
+                required: true,
+                message: '请选择表名切换方式',
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value={SwapTableType.AUTO}>自动切换</Radio>
+              <Radio value={SwapTableType.MANUAL}>手工切换</Radio>
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>
