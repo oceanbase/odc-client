@@ -24,7 +24,7 @@ import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
 import { Typography } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { ClearStrategy } from '../CreateModal';
+import { ClearStrategy, SwapTableType } from '../CreateModal';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -40,6 +40,7 @@ interface IDDLAlterParamters {
   lockTableTimeOutSeconds: number;
   swapTableNameRetryTimes: number;
   originTableCleanStrategy: ClearStrategy;
+  swapTableType: SwapTableType;
 }
 const ErrorStrategyText = {
   ABORT: formatMessage({
@@ -59,6 +60,11 @@ const ClearStrategyMap = {
   [ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED]: formatMessage({
     id: 'odc.AlterDdlTask.DetailContent.RenameNotProcessed',
   }), //重命名不处理
+};
+
+const SwapTableTypeMap = {
+  [SwapTableType.AUTO]: '自动切换',
+  [SwapTableType.MANUAL]: '手工切换',
 };
 
 const SQLContentSection = ({ task }) => {
@@ -199,6 +205,7 @@ export function getItems(
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
         ],
+        ['表名切换方式', SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-'],
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({
