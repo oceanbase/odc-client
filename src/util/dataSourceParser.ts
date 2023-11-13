@@ -187,7 +187,7 @@ export const parser = new Parser([
     type: String,
   },
   {
-    name: 'database',
+    name: 'defaultSchema',
     param: ['-D', '--database'],
     type: String,
   },
