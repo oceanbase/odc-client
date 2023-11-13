@@ -442,6 +442,14 @@ export async function getSubTask(id: number): Promise<IResponseData<ISubTaskReco
   return res?.data;
 }
 
+/*
+ * 切换表名
+ */
+export async function swapTableName(taskId: number): Promise<boolean> {
+  const res = await request.post(`/api/v2/osc/swapTable/${taskId}`);
+  return !!res?.data;
+}
+
 /**
  * 获取数据源用户列表
  */

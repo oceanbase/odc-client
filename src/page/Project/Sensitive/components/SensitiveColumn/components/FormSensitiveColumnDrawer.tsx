@@ -30,10 +30,10 @@ import { Button, Drawer, message, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import ManualForm from './ManualForm';
 import ScanForm from './ScanForm';
 import tracert from '@/util/tracert';
 import SensitiveRule from '../../SensitiveRule';
+import { merge } from 'lodash';
 const defaultScanTableData: Array<ScanTableData> = [];
 const checkResult = (resData: Array<ScanTableData> = []) =>
   resData?.length > 0 ? resData : defaultScanTableData;
@@ -116,7 +116,7 @@ const FormSensitiveColumnDrawer = ({
     setSearchText('');
     clearTimeout(timer.current);
   };
-  const handleScanTableDataChange = (
+  const handleScanTableDataChange = async (
     key: string,
     columnName: string,
     maskingAlgorithmId: number,
@@ -141,8 +141,6 @@ const FormSensitiveColumnDrawer = ({
           });
         }
       });
-      setScanTableData(checkResult(resData));
-      setOriginScanTableData(checkResult(resData));
     } else {
       const newDataSource = sensitiveColumnMap.get(key).dataSource.map((item) => {
         if (item.columnName === columnName) {
@@ -154,10 +152,20 @@ const FormSensitiveColumnDrawer = ({
       sensitiveColumnMap?.forEach((ds) => {
         resData.push(ds);
       });
-      setScanTableData(checkResult(resData));
-      setOriginScanTableData(checkResult(resData));
     }
+    setScanTableData(checkResult(resData));
+    setOriginScanTableData(checkResult(resData));
     setSensitiveColumnMap(sensitiveColumnMap);
+    const fieldsValue = await _formRef.getFieldsValue();
+    await _formRef.setFieldsValue(
+      merge(fieldsValue, {
+        scanTableData: {
+          [`${key}`]: {
+            [`${columnName}`]: maskingAlgorithmId,
+          },
+        },
+      }),
+    );
   };
   const handleScanTableDataDelete = (database: string, tableName: string, columnName: string) => {
     const key = `${database}_${tableName}`;

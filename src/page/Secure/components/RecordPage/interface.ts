@@ -539,7 +539,7 @@ export const AuditEventActionMap = {
     id: 'odc.src.page.Secure.components.RecordPage.StopExportResultsSetTask',
   }), //'停止导出结果集任务'
   // SQL安全规则管理
-  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '更新SQL安全规则',
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '修改SQL安全规则',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =
