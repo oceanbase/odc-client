@@ -19,8 +19,10 @@ import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Button, Col, Form, message, Modal, Row, Select, Tag } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Select, Space, Tag } from 'antd';
 import { useState } from 'react';
+import Icon from '@ant-design/icons';
+import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   projectId: number;
@@ -114,7 +116,16 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                   onChange={() => form.setFieldsValue({ databaseIds: [] })}
                 >
                   {dataSourceList?.contents?.map((item) => {
-                    return <Select.Option key={item.id}>{item.name}</Select.Option>;
+                    const icon = getDataSourceStyleByConnectType(item.type);
+                    return (
+                      <Select.Option key={item.id}>
+                        <Icon
+                          component={icon?.icon?.component}
+                          style={{ color: icon?.icon?.color, fontSize: 16, marginRight: 4 }}
+                        />
+                        {item.name}
+                      </Select.Option>
+                    );
                   })}
                 </Select>
               </Form.Item>
