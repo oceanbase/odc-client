@@ -18,6 +18,7 @@ import { listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
+import Icon from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
 import MiniTable from '@/component/Table/MiniTable';
@@ -42,6 +43,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import {
   getDataSourceModeConfig,
   getDataSourceModeConfigByConnectionMode,
+  getDataSourceStyleByConnectType,
 } from '@/common/datasource';
 interface IProps {
   id: string;
@@ -166,6 +168,21 @@ const Database: React.FC<IProps> = ({ id }) => {
             title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
+            render(value, record, index) {
+              /**
+               * return datasource icon + label
+               */
+              const style = getDataSourceStyleByConnectType(record.dataSource?.type);
+              return (
+                <Space size={4}>
+                  <Icon
+                    component={style?.icon?.component}
+                    style={{ color: style?.icon?.color, fontSize: 16 }}
+                  />
+                  {value}
+                </Space>
+              );
+            },
           },
           {
             title: formatMessage({ id: 'odc.Project.Database.Environment' }), //环境
