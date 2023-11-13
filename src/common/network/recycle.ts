@@ -22,12 +22,12 @@ import { generateDatabaseSid, generateSessionSid } from './pathUtil';
  * 获取回收站保留时间
  */
 export async function getRecyleKeepTime() {
-  const res = await request.get(`/api/v1/recyclebin/getExpireTime/${generateSessionSid()}`);
+  const res = await request.get(`/api/v2/recyclebin/getExpireTime/${generateSessionSid()}`);
   return res?.data;
 }
 
 export async function getRecycleConfig(sessionId: string): Promise<IRecycleConfig> {
-  const res = await request.get(`/api/v1/recyclebin/settings/${generateSessionSid(sessionId)}`);
+  const res = await request.get(`/api/v2/recyclebin/settings/${generateSessionSid(sessionId)}`);
   return res?.data;
 }
 
@@ -35,7 +35,7 @@ export async function updateRecycleConfig(
   config: Partial<IRecycleConfig>,
   sessionId: string,
 ): Promise<boolean> {
-  const res = await request.patch(`/api/v1/recyclebin/settings`, {
+  const res = await request.patch(`/api/v2/recyclebin/settings`, {
     data: {
       sessionIds: [sessionId],
       settings: config,
@@ -46,7 +46,7 @@ export async function updateRecycleConfig(
 
 export async function getPurgeAllSQL(sessionId: string, dbName: string) {
   const result = await request.patch(
-    `/api/v1/recyclebin/purgeAll/${generateDatabaseSid(dbName, sessionId)}`,
+    `/api/v2/recyclebin/purgeAll/${generateDatabaseSid(dbName, sessionId)}`,
   );
   return !!result?.data;
 }
@@ -57,7 +57,7 @@ export async function getDeleteSQL(
   dbName: string,
 ) {
   const sid = generateDatabaseSid(dbName, sessionId);
-  const result = await request.patch(`/api/v1/recyclebin/purge/${sid}`, {
+  const result = await request.patch(`/api/v2/recyclebin/purge/${sid}`, {
     data: recycleObjects,
   });
   return !!result?.data;
@@ -69,7 +69,7 @@ export async function getUpdateSQL(
   dbName: string,
 ) {
   const sid = generateDatabaseSid(dbName, sessionId);
-  const result = await request.patch(`/api/v1/recyclebin/flashback/${sid}`, {
+  const result = await request.patch(`/api/v2/recyclebin/flashback/${sid}`, {
     data: recycleObjects,
   });
   return !!result?.data;
