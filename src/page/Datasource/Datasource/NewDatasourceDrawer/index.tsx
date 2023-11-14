@@ -60,7 +60,15 @@ export default function NewDatasourceDrawer({
 
   function getOriginDatasource(data: IConnection, isCopy: boolean) {
     return isCopy
-      ? { ...data, id: null, creatorId: null, name: null, password: '', sysTenantPassword: '' }
+      ? {
+          ...data,
+          id: null,
+          creatorId: null,
+          name: null,
+          password: '',
+          sysTenantPassword: '',
+          projectId: null,
+        }
       : data;
   }
 

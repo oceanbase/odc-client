@@ -46,6 +46,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     name: formData.name,
     username: formData.username,
     password: encrypt(formData.password),
+    projectId: formData?.projectId,
     sysTenantUsername: formData?.useSys ? formData.sysTenantUsername : null,
     sslConfig: formData.sslConfig || { enabled: false },
     /**
