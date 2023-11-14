@@ -29,6 +29,7 @@
     https://ur.alipay.com*
     http://editorconfig.org*
     http://www.apache.org*
+    https://dev.mysql.com*
 
 --------------------------------------------------------
 # Should use GLOB wildcard to config and analysis the ignored folder
