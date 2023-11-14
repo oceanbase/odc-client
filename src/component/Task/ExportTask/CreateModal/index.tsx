@@ -40,6 +40,7 @@ import React from 'react';
 import ExportForm, { FormType } from './ExportForm';
 import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
@@ -147,7 +148,6 @@ class CreateModal extends React.Component<IProps, IState> {
           this.setState({
             submitting: true,
           });
-
           const formData = {
             ...this.state.formData,
             ...values,
@@ -162,19 +162,25 @@ class CreateModal extends React.Component<IProps, IState> {
           switch (exportContent) {
             case EXPORT_CONTENT.DATA_AND_STRUCT: {
               formData.mergeSchemaFiles = false;
-              formData.exportFileMaxSize =
-                exportFileMaxSize === formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }) //无限制
-                  ? -1
-                  : parseInt(exportFileMaxSize as string);
+              if (formData.exportFileMaxSize) {
+                formData.exportFileMaxSize =
+                  exportFileMaxSize ===
+                  formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }) //无限制
+                    ? -1
+                    : parseInt(exportFileMaxSize as string);
+              }
               break;
             }
             case EXPORT_CONTENT.DATA: {
               formData.withDropDDL = false;
               formData.mergeSchemaFiles = false;
-              formData.exportFileMaxSize =
-                exportFileMaxSize === formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }) //无限制
-                  ? -1
-                  : parseInt(exportFileMaxSize as string);
+              if (formData.exportFileMaxSize) {
+                formData.exportFileMaxSize =
+                  exportFileMaxSize ===
+                  formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }) //无限制
+                    ? -1
+                    : parseInt(exportFileMaxSize as string);
+              }
               break;
             }
             case EXPORT_CONTENT.STRUCT: {

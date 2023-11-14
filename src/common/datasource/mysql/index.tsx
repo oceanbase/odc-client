@@ -79,6 +79,10 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       obclient: true,
       recycleBin: false,
       sqlExplain: true,
+      export: {
+        fileLimit: false,
+        snapshot: false,
+      },
     },
     schema: {
       table: tableConfig,

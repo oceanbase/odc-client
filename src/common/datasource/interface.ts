@@ -129,6 +129,10 @@ export interface IDataSourceModeConfig {
     plEdit?: boolean;
     anonymousBlock?: boolean;
     supportOBProxy?: boolean;
+    export: {
+      fileLimit: boolean;
+      snapshot: boolean;
+    };
   };
   schema: {
     table: ICreateTableConfig;

@@ -75,6 +75,10 @@ const items: Record<
       recycleBin: true,
       sqlExplain: true,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: tableConfig,
@@ -101,6 +105,10 @@ const items: Record<
       recycleBin: true,
       sqlExplain: true,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: tableConfig,
@@ -128,6 +136,10 @@ const items: Record<
       recycleBin: false,
       sqlExplain: false,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: tableConfig,

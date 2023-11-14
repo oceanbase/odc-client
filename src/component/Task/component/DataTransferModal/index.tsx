@@ -26,6 +26,7 @@ import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
+import { getDataSourceModeConfig } from '@/common/datasource';
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;

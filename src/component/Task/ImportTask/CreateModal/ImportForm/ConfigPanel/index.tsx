@@ -30,6 +30,7 @@ import DatabaseSelect from '../../../../component/DatabaseSelect';
 import CsvMapping from '../../csvMapping';
 import CsvProvider from '../CsvProvider';
 import StructDataFormItem from '../formitem/StructDataFormItem';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 const FormItem = Form.Item;
 
@@ -53,6 +54,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
   const databaseName = database?.name;
   const dataTypes = session?.dataTypes ?? [];
   const isOracle = connection?.dialectType === ConnectionMode.OB_ORACLE;
+  const config = getDataSourceModeConfig(connection?.type);
   async function fetchTable(dbName: string) {
     const tables = await getTableListByDatabaseName(session?.sessionId, dbName);
     setTables(tables);
@@ -218,7 +220,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
           );
         }}
       </FormItem>
-      {odc.appConfig.connection.sys && odc.appConfig.task.sys && (
+      {odc.appConfig.connection.sys && odc.appConfig.task.sys && config?.connection?.sys && (
         <SysFormItem
           tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
             if (!useSys) {
