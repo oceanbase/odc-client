@@ -17,7 +17,7 @@
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
-import { AccountType, ConnectType, ConnectionMode, IConnectionTestErrorType } from '@/d.ts';
+import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -27,10 +27,7 @@ import { forwardRef, useImperativeHandle, useState } from 'react';
 import Account from './Account';
 import AddressItems from './AddressItems';
 import DatasourceFormContext from './context';
-import DBTypeItem from './DBTypeItem';
 import ParseURLItem from './ParseURLItem';
-import SSLItem from './SSLItem';
-import SysForm from './SysForm';
 import { ConnectTypeText } from '@/constant/label';
 import {
   getAllConnectTypes,
@@ -39,8 +36,9 @@ import {
   getDsByConnectType,
 } from '@/common/datasource';
 import ExtraConfig from './ExtraConfig';
-import JDBCParamsItem from './JDBCParamsItem';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import ProjectItem from './ProjectItem';
+import login from '@/store/login';
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -292,6 +290,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     })}
                   </Select>
                 </Form.Item>
+                {!login.isPrivateSpace() && <ProjectItem />}
                 {!haveOCP() && <ExtraConfig />}
               </>
             );

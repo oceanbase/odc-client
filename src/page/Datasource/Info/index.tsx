@@ -27,9 +27,10 @@ import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Button, Input, message, Popconfirm, Space } from 'antd';
+import { Button, Input, message, Popconfirm, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useRef, useState } from 'react';
+import Icon, { EditOutlined } from '@ant-design/icons';
 import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
 interface IProps {
@@ -165,6 +166,50 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             title: formatMessage({ id: 'odc.Datasource.Info.Project' }), //所属项目
             dataIndex: ['project', 'name'],
             width: 160,
+            render(value, record, index) {
+              const bindProjectName = record.dataSource?.projectName;
+              let tip = null;
+              if (bindProjectName) {
+                tip = `当前数据源所属项目 ${bindProjectName}，无法修改。可通过编辑数据源修改所属项目`;
+              } else if (!canUpdate) {
+                tip = '无当前数据源权限';
+              }
+              return (
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <div
+                    style={{
+                      color: value ? null : 'var(--text-color-hint)',
+                      flex: 1,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {value || '未分配项目'}
+                  </div>
+                  <Tooltip title={tip}>
+                    <a
+                      style={{
+                        flexShrink: 0,
+                        flexGrow: 0,
+                        color: tip ? 'var(--text-color-hint)' : null,
+                      }}
+                      onClick={() => {
+                        if (tip) {
+                          return;
+                        }
+                        setVisible(true);
+                        setDatabase(record);
+                      }}
+                    >
+                      <Icon component={EditOutlined} style={{ fontSize: 14 }} />
+                    </a>
+                  </Tooltip>
+                </div>
+              );
+            },
           },
           {
             title: formatMessage({ id: 'odc.Datasource.Info.LastSynchronizationTime' }), //最近一次同步时间
@@ -181,19 +226,6 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             render(_, record) {
               return (
                 <Action.Group size={3}>
-                  {canUpdate && (
-                    <Action.Link
-                      disabled={!record.existed}
-                      onClick={() => {
-                        setVisible(true);
-                        setDatabase(record);
-                      }}
-                      key={'transfer'}
-                    >
-                      {formatMessage({ id: 'odc.Datasource.Info.TransferProject' }) /*转移项目*/}
-                    </Action.Link>
-                  )}
-
                   {canDelete && (
                     <Popconfirm
                       title={formatMessage({
