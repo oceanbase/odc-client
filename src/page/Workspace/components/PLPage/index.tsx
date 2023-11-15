@@ -871,7 +871,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const { pageStore, params, onChangeSaved, pageKey, page } = this.props;
     const plSchema = this.getFormatPLSchema();
     const { plName, plType, packageName } = plSchema;
-    const newPLEntryName = getPLEntryName(params.scriptText);
+    const newPLEntryName = await getPLEntryName(params.scriptText);
     if (!this.isPackageProgram()) {
       /** 暂时还检测不了程序包内的函数等 */
       const plChanged = checkPLNameChanged(

@@ -33,7 +33,6 @@ import PjSvg from '@/svgr/project_space.svg';
 import { IDatabase } from '@/d.ts/database';
 import { toInteger } from 'lodash';
 import { useParams } from '@umijs/max';
-import { tree } from 'antlr4';
 import { EnvColorMap } from '@/constant';
 interface IProps {
   dialectTypes?: ConnectionMode[];
