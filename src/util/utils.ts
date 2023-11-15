@@ -131,7 +131,7 @@ export async function getCurrentSQL(
       splitSqls[splitSqls.length - 2] + 1,
       splitSqls[splitSqls.length - 1] + 1,
     );
-    const isEmpty = isSqlEmpty(lastSql, isMysql);
+    const isEmpty = await isSqlEmpty(lastSql, isMysql);
 
     if (isEmpty) {
       splitSqls.pop();
@@ -147,7 +147,7 @@ export async function getCurrentSQL(
        */
       let sql = rawSQL.substring(beginIndex, sqlOffset);
 
-      if (isSqlEmpty(sql, isMysql, true)) {
+      if (await isSqlEmpty(sql, isMysql, true)) {
         /**
          * 假如没什么东西，就不需要执行了，返回null给上层
          */

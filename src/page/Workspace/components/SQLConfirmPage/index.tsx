@@ -72,15 +72,15 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
     return ![PageType.CREATE_SYNONYM, PageType.CREATE_SEQUENCE].includes(this.props.params?.type);
   };
 
-  private getNameBySQL = (sql: string) => {
+  private getNameBySQL = async (sql: string) => {
     const { session } = this.props;
     const isOracle = session.connection.dialectType === ConnectionMode.OB_ORACLE;
     let name;
     if (!this.isPL()) {
       // 同义词不处于 PL 文件中，需要用 SQL 来解析
-      name = getSQLEntryName(sql) || '';
+      name = (await getSQLEntryName(sql)) || '';
     } else {
-      name = getPLEntryName(sql) || '';
+      name = (await getPLEntryName(sql)) || '';
     }
     if (isOracle) {
       name = name.startsWith('"') ? name : name.toUpperCase();
@@ -134,7 +134,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
     try {
       const { isSuccess, errMsg } = await this.execute(sql, type);
       if (isSuccess) {
-        const name = this.getNameBySQL(sql);
+        const name = await this.getNameBySQL(sql);
         pageStore.close(pageKey); // todo 改为配置的方式
         switch (type) {
           case PageType.CREATE_TRIGGER_SQL: {

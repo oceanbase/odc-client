@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { PLLexer as MySQLLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/mysql/PLLexer';
-import { PlSqlLexer as OracleLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { CommonTokenStream, Token } from 'antlr4';
 import { CaseInsensitiveStream } from '../common';
 
 /**
  * 把PLSQL转换成 Tokens 数组
  */
-export function getSQLTokens(sql, isMysql: boolean) {
+export async function getSQLTokens(sql, isMysql: boolean) {
   if (!sql) {
     return [];
   }
@@ -30,7 +28,13 @@ export function getSQLTokens(sql, isMysql: boolean) {
    * 不加换行的话，单行注释会被OB-Lexer当作一个单独的字段
    */
   sql = sql + '\n';
-  const Lexer = isMysql ? MySQLLexer : OracleLexer;
+  const Lexer = isMysql
+    ? await import('@oceanbase-odc/ob-parser-js/lib/parser/mysql/PLLexer').then(
+        (module) => module.PLLexer,
+      )
+    : await import('@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer').then(
+        (module) => module.PlSqlLexer,
+      );
   const now = performance.now();
   const chars = new CaseInsensitiveStream(sql);
   const lexer = new Lexer(chars);
@@ -44,11 +48,14 @@ export function getSQLTokens(sql, isMysql: boolean) {
   });
 }
 
-export function getSQLEntryName(sql: string) {
-  const tokens = getSQLTokens(sql, false);
+export async function getSQLEntryName(sql: string) {
+  const tokens = await getSQLTokens(sql, false);
   if (!tokens?.length) {
     return '';
   }
+  const OracleLexer = await import('@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer').then(
+    (module) => module.PlSqlLexer,
+  );
   let name = [];
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { PlSqlLexer as OraclePLLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { CommonTokenStream, Token } from 'antlr4';
 import { CaseInsensitiveStream } from '../common';
 
 /**
  * 把PLSQL转换成 Tokens 数组
  */
-export function getPLTokens(sql) {
+export async function getPLTokens(sql) {
   if (!sql) {
     return [];
   }
+  const OraclePLLexer = await import(
+    '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer'
+  ).then((module) => module.PlSqlLexer);
   const now = performance.now();
   const chars = new CaseInsensitiveStream(sql);
   const lexer = new OraclePLLexer(chars);
