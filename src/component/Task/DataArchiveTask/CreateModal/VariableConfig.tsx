@@ -25,8 +25,12 @@ import styles from './index.less';
 
 export const timeUnitOptions = [
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points' }), //分
+    label: '秒',
     value: 's',
+  },
+  {
+    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points' }), //分
+    value: 'm',
   },
   {
     label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Hours' }), //小时
@@ -42,7 +46,7 @@ export const timeUnitOptions = [
   },
   {
     label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Month' }), //月
-    value: 'm',
+    value: 'M',
   },
   {
     label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Year' }), //年
