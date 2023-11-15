@@ -23,6 +23,7 @@ import { TaskDetail, TaskRecordParameters } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Drawer, Space, message } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useRequest } from 'ahooks';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
@@ -90,13 +91,17 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const [subTasks, setSubTasks] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [open, setOpen] = useState(false);
+  const { run: loadData } = useRequest(
+    async () => {
+      const res = await getSubTask(task.id);
+      setSubTasks(res?.contents?.[0].tasks);
+    },
+    {
+      pollingInterval: 3000,
+    },
+  );
   const subTask = subTasks?.find((item) => item.id === detailId);
   const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
-
-  const loadData = async () => {
-    const res = await getSubTask(task.id);
-    setSubTasks(res?.contents?.[0].tasks);
-  };
 
   const handleSwapTable = async (id: number) => {
     const res = await swapTableName(id);
