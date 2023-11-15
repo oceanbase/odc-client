@@ -27,11 +27,19 @@ import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
 
 interface IProps {
   dataSourceId: string;
+  projectId: number;
+  projectName: string;
   onSuccess: () => void;
   mode: ConnectionMode;
 }
 
-export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IProps) {
+export default function NewDataBaseButton({
+  dataSourceId,
+  projectId,
+  projectName,
+  onSuccess,
+  mode,
+}: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [form] = Form.useForm<
     Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & { projectId: number }
@@ -53,6 +61,11 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
   useEffect(() => {
     if (open) {
       form.resetFields();
+      if (projectId) {
+        form.setFieldsValue({
+          projectId: projectId,
+        });
+      }
     }
     switch (mode) {
       case ConnectionMode.OB_MYSQL:
@@ -152,7 +165,11 @@ export default function NewDataBaseButton({ dataSourceId, onSuccess, mode }: IPr
             name={'projectId'}
             label={formatMessage({ id: 'odc.Info.NewDataBaseButton.Project' })} /*所属项目*/
           >
-            <ProjectSelect projects={project?.contents} currentDatabase={null} />
+            <ProjectSelect
+              disabled={!!projectId}
+              projects={project?.contents}
+              currentDatabase={null}
+            />
           </Form.Item>
         </Form>
       </Modal>

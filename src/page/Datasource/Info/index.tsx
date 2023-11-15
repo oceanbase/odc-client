@@ -106,6 +106,8 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               mode={datasource?.dialectType}
               onSuccess={() => reload()}
               dataSourceId={id}
+              projectId={datasource?.projectId}
+              projectName={datasource?.projectName}
             />
 
             <Button loading={syncLoading} onClick={sync}>
