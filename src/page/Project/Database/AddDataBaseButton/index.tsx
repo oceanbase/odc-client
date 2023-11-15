@@ -19,7 +19,7 @@ import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Button, Col, Form, message, Modal, Row, Select, Space, Tag } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Select, Space, Tag, Tooltip } from 'antd';
 import { useState } from 'react';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
@@ -117,13 +117,19 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                 >
                   {dataSourceList?.contents?.map((item) => {
                     const icon = getDataSourceStyleByConnectType(item.type);
+                    const isDisabled = !!item?.projectId;
+
                     return (
-                      <Select.Option key={item.id}>
-                        <Icon
-                          component={icon?.icon?.component}
-                          style={{ color: icon?.icon?.color, fontSize: 16, marginRight: 4 }}
-                        />
-                        {item.name}
+                      <Select.Option key={item.id} disabled={isDisabled}>
+                        <Tooltip
+                          title={isDisabled ? `该数据源已绑定项目：${item?.projectName}` : null}
+                        >
+                          <Icon
+                            component={icon?.icon?.component}
+                            style={{ color: icon?.icon?.color, fontSize: 16, marginRight: 4 }}
+                          />
+                          {item.name}
+                        </Tooltip>
                       </Select.Option>
                     );
                   })}
