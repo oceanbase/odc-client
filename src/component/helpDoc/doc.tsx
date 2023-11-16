@@ -470,6 +470,8 @@ export default {
       }
     </p>
   ),
+  projectSA: <p>只允许管理项目的敏感列和参与审批</p>,
+  participant: <p>只允许参与审批</p>,
   dataArchiveTimeDoc: (
     <p>
       {

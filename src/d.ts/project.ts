@@ -18,6 +18,8 @@ export enum ProjectRole {
   DEVELOPER = 'DEVELOPER',
   DBA = 'DBA',
   OWNER = 'OWNER',
+  SECURITY_ADMINISTRATOR = 'SECURITY_ADMINISTRATOR',
+  PARTICIPANT = 'PARTICIPANT',
 }
 
 export interface ProjectUser {

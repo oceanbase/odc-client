@@ -22,23 +22,34 @@ import styles from './index.less';
 export const getTitleByParams = (params: { type: TaskPageType }) => {
   const { type } = params;
   let title = '';
-  if (type === TaskPageType.CREATED_BY_CURRENT_USER) {
-    title = formatMessage({
-      id: 'odc.src.page.Workspace.components.TaskPage.WorkersIInitiated',
-    }); //'工单-我发起的'
-  } else if (type === TaskPageType.APPROVE_BY_CURRENT_USER) {
-    title = formatMessage({
-      id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderWaitingForMe',
-    }); //'工单-待我审批的'
-  } else {
-    title = formatMessage(
-      {
-        id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderTaskTypeMaptype',
-      },
-      {
-        TaskTypeMapType: TaskTypeMap[type],
-      },
-    ); //`工单-${TaskTypeMap[type]}`
+  switch (type) {
+    case TaskPageType.ALL: {
+      title = '工单-所有工单';
+      break;
+    }
+    case TaskPageType.CREATED_BY_CURRENT_USER: {
+      title = formatMessage({
+        id: 'odc.src.page.Workspace.components.TaskPage.WorkersIInitiated',
+      }); //'工单-我发起的'
+      break;
+    }
+    case TaskPageType.APPROVE_BY_CURRENT_USER: {
+      title = formatMessage({
+        id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderWaitingForMe',
+      }); //'工单-待我审批的'
+      break;
+    }
+    default: {
+      title = formatMessage(
+        {
+          id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderTaskTypeMaptype',
+        },
+        {
+          TaskTypeMapType: TaskTypeMap[type],
+        },
+      ); //`工单-${TaskTypeMap[type]}`
+      break;
+    }
   }
   return title;
 };

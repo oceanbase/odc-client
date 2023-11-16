@@ -62,6 +62,11 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
       groupName: '',
       group: [
         {
+          label: '所有工单',
+          value: TaskPageType.ALL,
+          enabled: !isClient(),
+        },
+        {
           label: formatMessage({
             id: 'odc.component.TaskPopover.IInitiated',
           }),
