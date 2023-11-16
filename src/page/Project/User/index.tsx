@@ -33,12 +33,18 @@ export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({ id: 'odc.User.AddUserModal.Administrator' }),
   [ProjectRole.DEVELOPER]: formatMessage({ id: 'odc.User.AddUserModal.CommonMember' }),
   [ProjectRole.DBA]: 'DBA',
+  [ProjectRole.SECURITY_ADMINISTRATOR]: '安全管理员',
+  [ProjectRole.PARTICIPANT]: '参与者',
 };
 interface IProps {
   id: string;
 }
 const User: React.FC<IProps> = ({ id }) => {
   const context = useContext(ProjectContext);
+  const { project } = context;
+  const disabled =
+    project?.currentUserResourceRoles?.filter((roles) => [ProjectRole.OWNER]?.includes(roles))
+      ?.length === 0;
 
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
 
@@ -84,7 +90,7 @@ const User: React.FC<IProps> = ({ id }) => {
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)}>
+        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={disabled}>
           {formatMessage({ id: 'odc.Project.User.AddMembers' }) /*添加成员*/}
         </Button>
       }
@@ -119,16 +125,24 @@ const User: React.FC<IProps> = ({ id }) => {
             dataIndex: 'name',
             width: 135,
             render(_, record) {
+              const disabled =
+                project?.currentUserResourceRoles?.filter((roles) =>
+                  [ProjectRole.OWNER]?.includes(roles),
+                )?.length === 0;
               return (
                 <Action.Group size={3}>
-                  <Action.Link onClick={() => updateUser(record.id)} key={'export'}>
+                  <Action.Link
+                    onClick={() => updateUser(record.id)}
+                    key={'export'}
+                    disabled={disabled}
+                  >
                     {formatMessage({ id: 'odc.Project.User.Edit' }) /*编辑*/}
                   </Action.Link>
                   <Popconfirm
                     title={formatMessage({ id: 'odc.Project.User.AreYouSureYouWant' })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
-                    <Action.Link key={'import'}>
+                    <Action.Link key={'import'} disabled={disabled}>
                       {formatMessage({ id: 'odc.Project.User.Remove' }) /*移除*/}
                     </Action.Link>
                   </Popconfirm>
