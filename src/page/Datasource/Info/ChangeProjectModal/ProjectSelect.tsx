@@ -23,11 +23,18 @@ import { isNull } from 'lodash';
 interface IProps {
   value?: any;
   onChange?: (v: any) => void;
+  disabled?: boolean;
   projects: IProject[];
   currentDatabase: IDatabase;
 }
 
-export default function ProjectSelect({ projects, value, currentDatabase, onChange }: IProps) {
+export default function ProjectSelect({
+  projects,
+  value,
+  disabled,
+  currentDatabase,
+  onChange,
+}: IProps) {
   const isProjectNotFound = !projects?.find((item) => item.id === currentDatabase?.project?.id);
   const _isNull = isNull(value);
   return (
@@ -38,7 +45,7 @@ export default function ProjectSelect({ projects, value, currentDatabase, onChan
         onChange={(v) => {
           onChange(v);
         }}
-        disabled={_isNull}
+        disabled={_isNull || disabled}
       >
         {projects?.map((item) => {
           return (
@@ -55,6 +62,7 @@ export default function ProjectSelect({ projects, value, currentDatabase, onChan
       </Select>
       <Checkbox
         checked={_isNull}
+        disabled={disabled}
         onChange={(e) => (e.target.checked ? onChange(null) : onChange(undefined))}
       >
         {

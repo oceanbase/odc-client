@@ -76,7 +76,7 @@ export default ({
       })
     : [children];
 
-  const visibleActionsSort = visibleActions.slice(0);
+  const visibleActionsSort = visibleActions.slice(0).filter(Boolean);
 
   visibleActionsSort.sort((a, b) => {
     const orderA = getOrder(a.props);
@@ -86,7 +86,7 @@ export default ({
   });
 
   const fixedSize = visibleActionsSort.filter(
-    (action) => action.props.type === 'primary' || action.props.fixed,
+    (action) => action?.props.type === 'primary' || action?.props.fixed,
   ).length;
   const realSize = max([fixedSize, size]);
 

@@ -713,6 +713,8 @@ export interface IConnection {
   jdbcUrlParameters?: Record<string, string>;
   sessionInitScript?: string;
   defaultSchema?: string;
+  projectId?: number;
+  readonly projectName?: string;
 }
 
 export interface IConnectionLabel {
