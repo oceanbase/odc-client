@@ -24,6 +24,7 @@ import { Button, Drawer, message, Modal, Radio, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import odc from '@/plugins/odc';
 import { ResourceContext } from '../../../context';
 import { resourceManagementActionMap } from '../../../utils';
 import { SystemAction, systemActionMap } from '../ResourceSelector/const';
@@ -330,13 +331,17 @@ const FormModal: React.FC<IProps> = (props) => {
           systemActionMap,
         );
         if (createAbleResource?.length) {
-          createAbleResource?.forEach((type) => {
-            formData.resourceManagementPermissions?.push({
-              resourceType: type,
-              resourceId: null,
-              actions: ['create'],
+          createAbleResource
+            ?.filter((resourceType) =>
+              odc.appConfig.manage.user.create ? true : resourceType !== IManagerResourceType.user,
+            )
+            ?.forEach((type) => {
+              formData.resourceManagementPermissions?.push({
+                resourceType: type,
+                resourceId: null,
+                actions: ['create'],
+              });
             });
-          });
         }
 
         if (
