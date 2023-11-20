@@ -15,7 +15,7 @@
  */
 
 import { decrypt } from '@/common/network/other';
-import { IRemoteCustomConnectionData } from '@/d.ts';
+import { AccountType, IRemoteCustomConnectionData } from '@/d.ts';
 import { resolveUnionDbUser } from '@/util/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -28,7 +28,7 @@ import login from '@/store/login';
 import { SpaceType } from '@/d.ts/_index';
 import { IDatasource } from '@/d.ts/datasource';
 import { listEnvironments } from '@/common/network/env';
-import { createConnection } from '@/common/network/connection';
+import { createConnection, testConnection, testExsitConnection } from '@/common/network/connection';
 import { gotoSQLWorkspace } from '@/util/route';
 import { listDatabases } from '@/common/network/database';
 import { listProjects } from '@/common/network/project';
@@ -180,6 +180,16 @@ export const action = async (config: ICustomConnectAction) => {
     ...(data as IRemoteCustomConnectionData),
     projectId: project?.id,
   });
+  /**
+   * test connection
+   * 失败的链接不会展示在数据源列表中，必须提前test
+   */
+
+  const res = await testConnection(params, AccountType.MAIN, false);
+  const isTestSuccess = res?.data?.active;
+  if (!isTestSuccess) {
+    return 'Connection Test Failed';
+  }
   const createResult = await newConnection(params);
 
   if (createResult) {
