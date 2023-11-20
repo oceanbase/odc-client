@@ -54,7 +54,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
      */
     sysTenantPassword: formData?.useSys ? encrypt(formData.sysTenantPassword) : null,
     queryTimeoutSeconds: formData.queryTimeoutSeconds,
-    properties: formData.properties,
+    properties: formData.properties || null,
     passwordSaved: formData.passwordSaved,
     environmentId: formData.environmentId,
     jdbcUrlParameters: formData.jdbcUrlParameters || {},

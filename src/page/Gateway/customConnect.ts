@@ -31,6 +31,7 @@ import { listEnvironments } from '@/common/network/env';
 import { createConnection } from '@/common/network/connection';
 import { gotoSQLWorkspace } from '@/util/route';
 import { listDatabases } from '@/common/network/database';
+import { listProjects } from '@/common/network/project';
 
 async function getDefaultSchema(dsId: number, userName: string) {
   const res = await listDatabases(null, dsId, 1, 999);
@@ -155,17 +156,29 @@ export const action = async (config: ICustomConnectAction) => {
   if (!login.organizations?.length) {
     return 'Get User Failed';
   }
-  const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
-  if (!personalOrganization) {
+  const org = login.organizations?.find((item) => item.type === SpaceType.SYNERGY);
+  if (!org) {
     return formatMessage({ id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist' }); //个人空间不存在！
   }
-  const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
+  const isSuccess = await login.switchCurrentOrganization(org?.id);
   if (!isSuccess) {
     return 'Switch Organization Failed';
+  }
+  /**
+   * get default project
+   */
+
+  const projectName = login.user?.accountName;
+
+  const project = (await listProjects(projectName, 1, 20))?.contents?.[0];
+
+  if (!project || project?.name !== projectName) {
+    return 'User Project Not Fount';
   }
 
   const params = resolveRemoteData({
     ...(data as IRemoteCustomConnectionData),
+    projectId: project?.id,
   });
   const createResult = await newConnection(params);
 
