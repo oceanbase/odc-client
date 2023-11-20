@@ -139,9 +139,9 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
         rowKey="key"
         bordered={false}
         minHeight="100%"
-        columns={gridColumns}
+        initialColumns={gridColumns}
         enableFilterRow
-        rows={rows as any[]}
+        initialRows={rows as any[]}
         enableRowRecord={true}
         enableColumnRecord={false}
         enableSortRow={false}
@@ -153,7 +153,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
           );
         }}
         gridRef={gridRef}
-        onRowsChange={(rows, data) => {
+        onRowsChange={(rows) => {
           const newRows: any[] = clone(rows);
           tableContext.setIndexes(removeGridParams(newRows));
           console.log('set new Indexes');

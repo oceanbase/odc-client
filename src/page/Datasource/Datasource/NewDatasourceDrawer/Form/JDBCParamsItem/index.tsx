@@ -213,8 +213,8 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
           enableFilterRow={false}
           enableSortRow={false}
           minHeight="370px"
-          columns={columns}
-          rows={rows}
+          initialColumns={columns}
+          initialRows={rows}
         />
       </Space>
     </>

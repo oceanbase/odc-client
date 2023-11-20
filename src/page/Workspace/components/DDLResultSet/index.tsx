@@ -262,10 +262,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
    */
   const setSelectedRowIndex = useCallback((rowIdx: number) => {
     gridRef.current?.selectCell?.({
-      idx: 1,
-      endIdx: 1,
       rowIdx,
-      endRowIdx: rowIdx,
+      columnIdx: 1,
     });
     setTimeout(() => {
       /**
@@ -314,86 +312,25 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     setSelectedCellRowsKey(keys);
   }, []);
 
+  const handleCancel = () => {
+    setIsEditing(false);
+    gridRef.current?.setRows(originRows);
+  };
   /**
    * 添加一行
    */
   const handleAddRow = useCallback(() => {
-    const newRow = {
+    const row = {
       _rowIndex: generateUniqKey(),
       _created: true,
     };
-
-    const selectRows = gridRef.current?.selectedRows;
-    const rowIdx = Math.max(
-      ...rows
-        .map((row, idx) => (selectRows.has(row._rowIndex) ? idx : null))
-        .filter((a) => a !== null),
-    );
-
-    const newRows = [...rows];
-    if (rowIdx > -1) {
-      newRows.splice(rowIdx + 1, 0, newRow);
-    } else {
-      newRows.push(newRow);
-    }
-    setEditRows(newRows);
-
-    setTimeout(() => {
-      if (rowIdx <= -1) {
-        gridRef.current.scrollToRow(rows.length);
-      }
-    });
+    gridRef.current?.addRows([row]);
   }, [columns, rows]);
   /**
    * 删除一行
    */
   const handleDeleteRows = useCallback(() => {
-    const selectRange = gridRef.current?.selectedRange;
-    const selectRows = _editableRef.current?.selectedRows;
-
-    const newRows = [...editRows];
-    if (selectRows?.size) {
-      /**
-       * 选中行
-       */
-      newRows.forEach((row, i) => {
-        const key = row._rowIndex;
-        if (selectRows.has(key)) {
-          if (row._created) {
-            newRows[i] = null;
-          } else {
-            newRows[i] = {
-              ...row,
-              modified: false,
-              _deleted: true,
-              _originRow: null,
-            };
-          }
-        }
-      });
-    } else if (selectRange?.rowIdx !== -1) {
-      /**
-       * 选中单元格
-       */
-      const begin = Math.min(selectRange.rowIdx, selectRange.endRowIdx);
-      const end = Math.max(selectRange.rowIdx, selectRange.endRowIdx);
-      for (let i = begin; i <= end; i++) {
-        const row = newRows[i];
-        if (row._created) {
-          newRows[i] = null;
-        } else {
-          newRows[i] = {
-            ...row,
-            modified: false,
-            _deleted: true,
-            _originRow: null,
-          };
-        }
-      }
-    } else {
-      return;
-    }
-    setEditRows(newRows.filter(Boolean));
+    gridRef.current?.deleteRows();
   }, [_editableRef, editRows]);
   /**
    * 复制一行
@@ -417,20 +354,15 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         }
       });
 
-      const newRows = [...rows];
-      newRows.push({
+      const row = {
         ...clonedRow,
         _created: true,
         _deleted: false,
         modified: false,
         _originRow: null,
         _rowIndex: generateUniqKey(),
-      });
-
-      setEditRows(newRows);
-      setTimeout(() => {
-        gridRef.current.scrollToRow(rows.length);
-      });
+      };
+      gridRef.current?.addRows([row]);
     }
   }, [columns, rows, selectedCellRowsKey, gridRef]);
 
@@ -475,10 +407,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const getMenus = useCallback(
     (row: any, rowColumn: CalculatedColumn<any, any>) => {
       const { key: columnKey } = rowColumn;
-      const selectedRange = gridRef.current.selectedRange;
+      const selectedRange = gridRef.current?.selectedRange;
       const isSingleSelected =
-        selectedRange.idx === selectedRange.endIdx &&
-        selectedRange.rowIdx === selectedRange.endRowIdx;
+        selectedRange?.columnIdx === selectedRange?.endColumnIdx &&
+        selectedRange?.rowIdx === selectedRange?.endRowIdx;
       const tableColumns: Partial<ITableColumn>[] = table?.columns;
       const columnName = getColumnNameByColumnKey(columnKey, columns);
       const column: Partial<ResultSetColumn> = columns?.find((column) => {
@@ -784,9 +716,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   })}
                   icon={<CloseOutlined />}
                   isShowText
-                  onClick={() => {
-                    setIsEditing(false);
-                  }}
+                  onClick={handleCancel}
                 />
 
                 <ToolbarDivider />
@@ -1197,10 +1127,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             gridRef={gridRef}
             rowKey="_rowIndex"
             minHeight={'100%'}
-            columns={rgdColumns}
+            initialColumns={rgdColumns}
             readonly={!isEditing}
             bordered={false}
-            rows={rows}
+            initialRows={rows}
             enableRowRecord={false}
             searchKey={searchKey}
             onRowsChange={handleEditPropertyInCell}

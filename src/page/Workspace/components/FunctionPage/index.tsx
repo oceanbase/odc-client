@@ -273,8 +273,8 @@ class FunctionPage extends Component<
                 <EditableTable
                   minHeight={'calc(100vh - 106px)'}
                   rowKey={'paramName'}
-                  columns={tableColumns}
-                  rows={func.params || []}
+                  initialColumns={tableColumns}
+                  initialRows={func.params || []}
                   bordered={false}
                   readonly={true}
                 />

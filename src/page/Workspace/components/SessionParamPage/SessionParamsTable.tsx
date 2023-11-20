@@ -220,10 +220,10 @@ function SessionParamsTable(props: {
             <EditableTable
               bordered={!bordered}
               minHeight={`100%`}
-              columns={columns}
+              initialColumns={columns}
               rowKey="key"
               enableFilterRow={false}
-              rows={filteredRows as any}
+              initialRows={filteredRows as any}
               readonly={true}
               onSelectChange={(keys) => {
                 const idx = filteredRows.findIndex((c) => keys.includes(c.key));

@@ -90,7 +90,7 @@ const Columns: React.FC<IProps> = function ({}) {
     [rows],
   );
 
-  const onRowsChange = useCallback((rows, data) => {
+  const onRowsChange = useCallback((rows) => {
     let newRows: any[] = cloneDeep(rows);
     newRows.forEach((row) => {
       /**
@@ -193,9 +193,9 @@ const Columns: React.FC<IProps> = function ({}) {
           <EditableTable
             bordered={false}
             minHeight="100%"
-            columns={gridColumns}
+            initialColumns={gridColumns}
             enableFilterRow
-            rows={rows as any[]}
+            initialRows={rows as any[]}
             rowKey={'key'}
             /**
              * 编辑状态下不允许调整字端顺序
