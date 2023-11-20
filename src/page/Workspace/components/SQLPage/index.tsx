@@ -277,7 +277,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     this.editor.addAction({
       id: 'sql_executeSql',
       label: 'execute',
-      keybindings: [monaco.KeyCode.F8],
+      keybindings: [monaco.KeyCode.F8, monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
       run: () => this.handleExecuteSQL(),
     });
     this.editor.addAction({

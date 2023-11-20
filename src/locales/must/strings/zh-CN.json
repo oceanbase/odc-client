@@ -134,7 +134,7 @@
   "portal.connection.form.test.success.cloud": "测试成功，保存后单击连接名称即可登录使用啦!",
   "odc.components.ConnectionCardList.TheTagHasBeenModified": "修改标签成功",
   "login.account.valid": "支持英文、数字、下划线和特殊字符（._+@#$%）的组合，长度为 4~48 个字符",
-  "odc.EditorToolBar.actions.sql.RunF": "运行 F8",
+  "odc.EditorToolBar.actions.sql.RunF": "运行 F8/Ctrl+Enter",
   "password.label.confirm1": "确认密码",
   "odc.TreeNodeMenu.config.table.SingleTableExport": "单表导出",
   "odc.ImportDrawer.ImportForm.Mode": "模式",
