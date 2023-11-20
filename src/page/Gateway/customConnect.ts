@@ -15,7 +15,7 @@
  */
 
 import { decrypt } from '@/common/network/other';
-import { IRemoteCustomConnectionData } from '@/d.ts';
+import { AccountType, IRemoteCustomConnectionData } from '@/d.ts';
 import { resolveUnionDbUser } from '@/util/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -28,15 +28,16 @@ import login from '@/store/login';
 import { SpaceType } from '@/d.ts/_index';
 import { IDatasource } from '@/d.ts/datasource';
 import { listEnvironments } from '@/common/network/env';
-import { createConnection } from '@/common/network/connection';
+import { createConnection, testConnection, testExsitConnection } from '@/common/network/connection';
 import { gotoSQLWorkspace } from '@/util/route';
 import { listDatabases } from '@/common/network/database';
+import { listProjects } from '@/common/network/project';
 
 async function getDefaultSchema(dsId: number, userName: string) {
   const res = await listDatabases(null, dsId, 1, 999);
   const databases = res?.contents;
-  const informationSchema = databases.find((d) => d.name === 'information_schema');
-  const sameName = databases.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  const informationSchema = databases?.find((d) => d.name === 'information_schema');
+  const sameName = databases?.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
   return informationSchema?.id || sameName?.id || databases?.[0]?.id;
 }
 
@@ -155,18 +156,40 @@ export const action = async (config: ICustomConnectAction) => {
   if (!login.organizations?.length) {
     return 'Get User Failed';
   }
-  const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
-  if (!personalOrganization) {
+  const org = login.organizations?.find((item) => item.type === SpaceType.SYNERGY);
+  if (!org) {
     return formatMessage({ id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist' }); //个人空间不存在！
   }
-  const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
+  const isSuccess = await login.switchCurrentOrganization(org?.id);
   if (!isSuccess) {
     return 'Switch Organization Failed';
+  }
+  /**
+   * get default project
+   */
+
+  const projectName = login.user?.accountName;
+
+  const project = (await listProjects(projectName, 1, 20))?.contents?.[0];
+
+  if (!project || project?.name !== projectName) {
+    return 'User Project Not Fount';
   }
 
   const params = resolveRemoteData({
     ...(data as IRemoteCustomConnectionData),
+    projectId: project?.id,
   });
+  /**
+   * test connection
+   * 失败的链接不会展示在数据源列表中，必须提前test
+   */
+
+  const res = await testConnection(params, AccountType.MAIN, false);
+  const isTestSuccess = res?.data?.active;
+  if (!isTestSuccess) {
+    return 'Connection Test Failed';
+  }
   const createResult = await newConnection(params);
 
   if (createResult) {

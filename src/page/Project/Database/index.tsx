@@ -34,7 +34,7 @@ import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Input, Space, Tag } from 'antd';
+import { Input, Space, Tag, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
@@ -306,9 +306,17 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setVisible(true);
                       setDatabase(record);
                     }}
-                    disabled={disabled}
+                    disabled={disabled || !!record?.dataSource?.projectId}
                   >
-                    {formatMessage({ id: 'odc.Project.Database.TransferProject' }) /*转移项目*/}
+                    <Tooltip
+                      title={
+                        !!record?.dataSource?.projectId
+                          ? `所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
+                          : null
+                      }
+                    >
+                      修改所属项目
+                    </Tooltip>
                   </Action.Link>
                 </Action.Group>
               );
