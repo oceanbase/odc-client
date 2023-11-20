@@ -55,7 +55,7 @@ export const timeUnitOptions = [
 ];
 
 const ENABLE_PATTERN_OPERATOR = false;
-const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
+const timeFormatOptions = ['yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
   value: item,
 }));
