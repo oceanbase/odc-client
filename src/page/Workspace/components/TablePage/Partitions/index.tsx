@@ -112,11 +112,6 @@ const TablePartitions: React.FC<IProps> = function ({}) {
     },
   ];
 
-  const onRowsChange = useCallback((rows, data) => {
-    //@ts-ignore
-    // setEditPartitions([...rows]);
-  }, []);
-
   async function handleAddColumn() {
     const values = await addPartitionRef.current?.addNewPartitions();
     if (values) {
@@ -356,10 +351,9 @@ const TablePartitions: React.FC<IProps> = function ({}) {
             <EditableTable
               minHeight={`calc(100vh - ${48 + 34 + 39 + 50 + 40}px)`}
               rowKey={'key'}
-              columns={rdgColumns}
-              rows={rows as any}
+              initialColumns={rdgColumns}
+              initialRows={rows as any}
               onSelectChange={handleSelectCell}
-              onRowsChange={onRowsChange}
             />
           </TableCardLayout>
           <AddPartitionModal ref={addPartitionRef} />

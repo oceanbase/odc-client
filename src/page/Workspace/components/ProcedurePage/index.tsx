@@ -272,8 +272,8 @@ class ProcedurePage extends Component<
                 <EditableTable
                   minHeight={'calc(100vh - 106px)'}
                   rowKey={'paramName'}
-                  columns={tableColumns}
-                  rows={procedure.params || []}
+                  initialColumns={tableColumns}
+                  initialRows={procedure.params || []}
                   bordered={false}
                   readonly={true}
                 />

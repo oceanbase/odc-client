@@ -96,7 +96,7 @@ export default class CreateTableColumnForm extends Component<
     return defaultEditable;
   };
 
-  public onUpdate = (rows: ITableColumn[], data: RowsChangeData<RowType<any>>) => {};
+  public onUpdate = (rows: ITableColumn[]) => {};
 
   public render() {
     const {
@@ -175,9 +175,9 @@ export default class CreateTableColumnForm extends Component<
           </Toolbar>
           <EditableTable
             minHeight={tableHeight || '200px'}
-            columns={tableColumns}
+            initialColumns={tableColumns}
             enableFilterRow
-            rows={columns}
+            initialRows={columns}
             rowKey={'key'}
             readonly={true}
             enableRowRecord={enableRowRecord}

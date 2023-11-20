@@ -241,8 +241,8 @@ export default class CreateTableIndexForm extends Component<
           <EditableTable
             // emptyContent={formatMessage({ id: 'workspace.window.createTable.index.empty' })}
             minHeight={tableHeight || '200px'}
-            columns={tableColumns}
-            rows={indexes}
+            initialColumns={tableColumns}
+            initialRows={indexes}
             rowKey="key"
             onSelectChange={this.handleSelect}
             // @ts-ignore

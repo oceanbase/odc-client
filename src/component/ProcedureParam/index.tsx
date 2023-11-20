@@ -151,82 +151,37 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
 
   const addParam = useCallback(
     (idx?: number | any) => {
-      const newRows = [...rows];
       const newData = {
         ...getDefaultRowData(),
         paramMode: defaultParamMode,
         key: generateUniqKey(),
       };
-
-      if (typeof idx !== 'number') {
-        const selectedRows = gridRef.current?.selectedRows;
-        if (selectedRows.size !== 1) {
-          idx = rows.length;
-        } else {
-          idx = rows.findIndex((row) => {
-            return selectedRows.has(row.key);
-          });
-          if (idx !== -1) {
-            idx++;
-          } else {
-            idx = rows.length;
-          }
-        }
-      }
-      newRows.splice(idx, 0, newData);
-      setRows(newRows);
+      gridRef.current?.addRows([newData]);
     },
-    [rows, gridRef, getDefaultRowData],
+    [gridRef, getDefaultRowData],
   );
 
   const deleteParam = useCallback(() => {
-    let selectedKeys: ReadonlySet<React.Key>;
-    if (gridRef.current?.selectedRows?.size) {
-      selectedKeys = gridRef.current?.selectedRows;
-    } else if (gridRef.current?.selectedRange.rowIdx != -1) {
-      const maxIdx = Math.max(
-        gridRef.current?.selectedRange.rowIdx,
-        gridRef.current?.selectedRange.endRowIdx,
-      );
-      const minIdx = Math.min(
-        gridRef.current?.selectedRange.rowIdx,
-        gridRef.current?.selectedRange.endRowIdx,
-      );
-      selectedKeys = new Set(rows.slice(minIdx, maxIdx + 1).map((row) => row.key));
-    }
-    if (!selectedKeys?.size) {
-      return;
-    }
-    const newRows = [...rows].filter((row) => {
-      return !selectedKeys.has(row.key);
-    });
-    setRows(newRows);
-  }, [rows, gridRef]);
+    gridRef.current?.deleteRows();
+  }, [gridRef]);
+
   const moveUpParam = useCallback(() => {
-    const newRows = [...rows];
     const idx = rows.findIndex((row) => {
       return gridRef.current.selectedRows.has(row.key);
     });
     if (idx <= 0) {
       return;
     }
-    const row = newRows[idx];
-    newRows[idx] = newRows[idx - 1];
-    newRows[idx - 1] = row;
-    setRows(newRows);
+    gridRef.current?.onRowReorder(idx, idx - 1);
   }, [rows, gridRef]);
   const moveDownParam = useCallback(() => {
-    const newRows = [...rows];
     const idx = rows.findIndex((row) => {
       return gridRef.current.selectedRows.has(row.key);
     });
-    if (idx === newRows.length - 1 || idx < 0) {
+    if (idx === rows.length - 1 || idx < 0) {
       return;
     }
-    const row = newRows[idx];
-    newRows[idx] = newRows[idx + 1];
-    newRows[idx + 1] = row;
-    setRows(newRows);
+    gridRef.current?.onRowReorder(idx, idx + 1);
   }, [rows, gridRef]);
 
   const onRowsChange = useCallback((newRows: RowData[]) => {
@@ -291,8 +246,8 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
         rowKey={'key'}
         gridRef={gridRef}
         minHeight={`${rows.length * 24 + 126}px`}
-        rows={rows}
-        columns={columns as any}
+        initialRows={rows}
+        initialColumns={columns as any}
         onRowsChange={onRowsChange}
         enableColumnRecord={false}
         enableRowRecord={true}

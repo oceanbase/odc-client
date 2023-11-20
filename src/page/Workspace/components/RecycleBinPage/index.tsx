@@ -480,9 +480,9 @@ class RecycleBin extends Component<
         >
           <EditableTable
             minHeight="calc(100vh - 34px - 130px)"
-            columns={columnsInDeleteDrawer}
+            initialColumns={columnsInDeleteDrawer}
             rowKey="uniqueId"
-            rows={selectedObjects as any}
+            initialRows={selectedObjects as any}
             readonly={true}
             theme={theme}
           />
@@ -511,9 +511,9 @@ class RecycleBin extends Component<
         >
           <EditableTable
             minHeight="calc(100vh - 34px - 130px)"
-            columns={columnsInRestoreDrawer}
+            initialColumns={columnsInRestoreDrawer}
             rowKey="uniqueId"
-            rows={selectedObjects as any}
+            initialRows={selectedObjects as any}
             theme={theme}
             onRowsChange={this.handleEditPropertyInCell}
           />

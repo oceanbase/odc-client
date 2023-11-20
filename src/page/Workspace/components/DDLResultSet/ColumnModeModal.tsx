@@ -157,8 +157,8 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       >
         <EditableTable
           rowKey="columnName"
-          rows={dataInColumnMode}
-          columns={tableColumns}
+          initialRows={dataInColumnMode}
+          initialColumns={tableColumns}
           enableFilterRow={false}
           enableColumnRecord={false}
           enableRowRecord={false}
