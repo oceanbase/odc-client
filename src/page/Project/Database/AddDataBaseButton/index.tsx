@@ -20,9 +20,11 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Col, Form, message, Modal, Row, Select, Space, Tag } from 'antd';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
+import ProjectContext from '../../ProjectContext';
+import { ProjectRole } from '@/d.ts/project';
 
 interface IProps {
   projectId: number;
@@ -31,6 +33,7 @@ interface IProps {
 
 export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
+  const { project } = useContext(ProjectContext);
   const [form] = Form.useForm<{ databaseIds: number[] }>();
   const { run, loading } = useRequest(updateDataBase, {
     manual: true,
@@ -73,10 +76,17 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
       onSuccess();
     }
   }
-
   return (
     <>
-      <Button onClick={() => setOpen(true)} type="primary">
+      <Button
+        onClick={() => setOpen(true)}
+        type="primary"
+        disabled={
+          project?.currentUserResourceRoles?.filter((roles) =>
+            [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
+          )?.length === 0
+        }
+      >
         {formatMessage({ id: 'odc.Database.AddDataBaseButton.AddDatabase' }) /*添加数据库*/}
       </Button>
       <Modal

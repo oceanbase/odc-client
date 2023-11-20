@@ -36,7 +36,7 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import { Input, Space, Tag } from 'antd';
 import { toInteger } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 import tracert from '@/util/tracert';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -45,10 +45,14 @@ import {
   getDataSourceModeConfigByConnectionMode,
   getDataSourceStyleByConnectType,
 } from '@/common/datasource';
+import { ProjectRole } from '@/d.ts/project';
+import ProjectContext from '../ProjectContext';
+import styles from './index.less';
 interface IProps {
   id: string;
 }
 const Database: React.FC<IProps> = ({ id }) => {
+  const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
 
@@ -139,8 +143,15 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
+              const currentUserResourceRoles = project?.currentUserResourceRoles || [];
+              const disabled =
+                currentUserResourceRoles?.filter((roles) =>
+                  [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
+                )?.length === 0;
               if (!record.existed) {
-                return (
+                return disabled ? (
+                  <div className={styles.disable}>{name}</div>
+                ) : (
                   <HelpDoc
                     leftText
                     isTip={false}
@@ -152,7 +163,9 @@ const Database: React.FC<IProps> = ({ id }) => {
                   </HelpDoc>
                 );
               }
-              return (
+              return disabled ? (
+                <div className={styles.disable}>{name}</div>
+              ) : (
                 <a
                   onClick={() => {
                     tracert.click('a3112.b64002.c330858.d367382');
@@ -232,6 +245,10 @@ const Database: React.FC<IProps> = ({ id }) => {
                 return '-';
               }
               const config = getDataSourceModeConfig(record?.dataSource?.type);
+              const disabled =
+                project?.currentUserResourceRoles?.filter((roles) =>
+                  [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
+                )?.length === 0;
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && (
@@ -241,6 +258,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         tracert.click('a3112.b64002.c330858.d367383');
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
+                      disabled={disabled}
                     >
                       {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
                     </Action.Link>
@@ -252,6 +270,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         tracert.click('a3112.b64002.c330858.d367384');
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
+                      disabled={disabled}
                     >
                       {formatMessage({ id: 'odc.Project.Database.Import' }) /*导入*/}
                     </Action.Link>
@@ -262,6 +281,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367385');
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
+                    disabled={disabled}
                   >
                     {formatMessage({ id: 'odc.Project.Database.DatabaseChanges' }) /*数据库变更*/}
                   </Action.Link>
@@ -271,6 +291,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
+                    disabled={disabled}
                   >
                     {
                       formatMessage({
@@ -285,6 +306,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setVisible(true);
                       setDatabase(record);
                     }}
+                    disabled={disabled}
                   >
                     {formatMessage({ id: 'odc.Project.Database.TransferProject' }) /*转移项目*/}
                   </Action.Link>

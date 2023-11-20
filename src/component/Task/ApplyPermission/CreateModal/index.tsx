@@ -26,6 +26,7 @@ import { Button, Drawer, Form, Modal, Select, Space, Input, message } from 'antd
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import { projectRoleTextMap } from '@/page/Project/User';
 
 interface IProps {
   sqlStore?: SQLStore;
@@ -47,7 +48,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     value: id,
   }));
   const rolesOptions = roles?.map(({ roleName, id }) => ({
-    label: roleName,
+    label: projectRoleTextMap?.[roleName],
+    name: roleName,
     value: id,
   }));
 
@@ -100,8 +102,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         const project = projectOptions?.find(({ value }) => value === projectId);
         const resourceRoles = rolesOptions
           ?.filter(({ value }) => resourceRoleIds?.includes(value))
-          ?.map(({ value, label }) => ({
-            name: label,
+          ?.map(({ value, name }) => ({
+            name: name,
             id: value,
           }));
         const parameters = {

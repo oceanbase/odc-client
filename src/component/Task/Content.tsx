@@ -37,6 +37,8 @@ import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
 import styles from './index.less';
 import tracert from '@/util/tracert';
+import { getProject } from '@/common/network/project';
+import { ProjectRole } from '@/d.ts/project';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -46,6 +48,7 @@ interface IProps {
   tabHeight?: number;
   projectId?: number;
   isMultiPage?: boolean;
+  inProject?: boolean;
 }
 
 interface IState {
@@ -54,6 +57,7 @@ interface IState {
   detailVisible: boolean;
   partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
+  disabledOpt: boolean;
   tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
@@ -67,6 +71,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailId: props.taskStore?.defaultOpenTaskId,
       detailType: props.taskStore?.defauleOpenTaskType,
       detailVisible: !!props.taskStore?.defaultOpenTaskId,
+      disabledOpt: null,
       partitionPlan: null,
       tasks: null,
       cycleTasks: null,
@@ -103,13 +108,13 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       TaskPageType.CREATED_BY_CURRENT_USER,
       TaskPageType.APPROVE_BY_CURRENT_USER,
     ].includes(taskTabType);
-
+    const isAll = taskTabType === TaskPageType.ALL;
     if (!pageSize) {
       return;
     }
     const params = {
       fuzzySearchKeyword: id ? id : undefined,
-      taskType: isAllScope ? taskTabType : undefined,
+      taskType: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
       projectId,
       status,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
@@ -126,6 +131,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       approveByCurrentUser: isAllScope
         ? true
         : taskTabType === TaskPageType.APPROVE_BY_CURRENT_USER,
+      containsAll: isAll || isAllScope,
     };
 
     if (executeTime !== 'custom' && typeof executeTime === 'number') {
@@ -154,13 +160,13 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       TaskPageType.CREATED_BY_CURRENT_USER,
       TaskPageType.APPROVE_BY_CURRENT_USER,
     ].includes(taskTabType);
-
+    const isAll = taskTabType === TaskPageType.ALL;
     if (!pageSize) {
       return;
     }
     const params = {
       id: id ? id : undefined,
-      type: isAllScope ? taskTabType : undefined,
+      type: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
       projectId,
       status,
       candidateApprovers,
@@ -172,6 +178,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       sort: column?.dataIndex,
       page: current,
       size: pageSize,
+      containsAll: isAll || isAllScope,
     };
 
     if (executeTime !== 'custom' && typeof executeTime === 'number') {
@@ -258,6 +265,23 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       default:
     }
   };
+  async fetchProject(projectId: number) {
+    const data = await getProject(projectId);
+    const currentUserResourceRoles = data?.currentUserResourceRoles || [];
+    const disabled =
+      currentUserResourceRoles?.filter((roles) =>
+        [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
+      )?.length === 0;
+    this.setState({
+      disabledOpt: disabled,
+    });
+  }
+  componentDidMount(): void {
+    const { inProject, projectId } = this.props;
+    if (inProject && projectId) {
+      this.fetchProject(projectId);
+    }
+  }
 
   private hasCreate = (key: string) => {
     const taskTypes = Object.values(TaskType);
@@ -266,13 +290,22 @@ class TaskManaerContent extends React.Component<IProps, IState> {
 
   render() {
     const { pageKey, taskStore, isMultiPage = false } = this.props;
-    const { detailId, detailType, detailVisible, partitionPlan, cycleTasks, tasks } = this.state;
+    const {
+      detailId,
+      detailType,
+      detailVisible,
+      partitionPlan,
+      cycleTasks,
+      tasks,
+      disabledOpt,
+    } = this.state;
     const taskTabType = pageKey || taskStore?.taskPageType;
     const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
     return (
       <>
         <div className={styles.content}>
           <TaskTable
+            disabledOpt={disabledOpt}
             tableRef={this.tableRef}
             taskTabType={taskTabType}
             taskList={taskList}

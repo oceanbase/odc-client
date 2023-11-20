@@ -45,6 +45,26 @@ export enum TraceTabsType {
   Trace = 'Trace',
   List = 'List',
 }
+export function randomUUID(len = 0, radix = 16) {
+  const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+  const uuid = [];
+  let i: number;
+  const currentRadix = radix || characters.length;
+  if (len) {
+    for (i = 0; i < len; i++) uuid[i] = characters[0 | (Math.random() * currentRadix)];
+  } else {
+    let r: number;
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+    uuid[14] = '4';
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | (Math.random() * 16);
+        uuid[i] = characters[i === 19 ? (r & 0x3) | 0x8 : r];
+      }
+    }
+  }
+  return uuid.join('');
+}
 export type ExpandTraceSpan = TraceSpan & {
   isExpand: boolean;
   uuid: string;
@@ -185,7 +205,7 @@ const Trace: React.FC<{
     if (Array.isArray(node) && node.length === 0) {
       return [];
     }
-    const key = crypto.randomUUID();
+    const key = randomUUID();
     _data_.push({
       title: node.title,
       span: node.title,
