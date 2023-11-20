@@ -36,8 +36,8 @@ import { listProjects } from '@/common/network/project';
 async function getDefaultSchema(dsId: number, userName: string) {
   const res = await listDatabases(null, dsId, 1, 999);
   const databases = res?.contents;
-  const informationSchema = databases.find((d) => d.name === 'information_schema');
-  const sameName = databases.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  const informationSchema = databases?.find((d) => d.name === 'information_schema');
+  const sameName = databases?.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
   return informationSchema?.id || sameName?.id || databases?.[0]?.id;
 }
 
