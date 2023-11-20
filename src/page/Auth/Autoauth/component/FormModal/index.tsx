@@ -48,6 +48,7 @@ import ConditionSelect from './conditionSelect';
 import styles from './index.less';
 import ProjectRoleSelect from './projectRoleSelect';
 import tracert from '@/util/tracert';
+import { projectRoleTextMap } from '@/page/Project/User';
 interface IProps {
   visible: boolean;
   editId?: number;
@@ -72,7 +73,7 @@ const FormModal: React.FC<IProps> = (props) => {
   const [events, setEvents] = useState([]);
   const [variableExpression, setVariableExpression] = useState<VariableExpression>({});
   const projectRoleOptions = projectRoles?.map((item) => ({
-    label: item.roleName,
+    label: projectRoleTextMap?.[item?.roleName],
     value: item.id,
   }));
   const projectOptions = projects?.map((item) => ({

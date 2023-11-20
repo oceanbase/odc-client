@@ -37,11 +37,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
     users: number[];
   }>();
 
-  const {
-    data: userList,
-    run,
-    loading,
-  } = useRequest(getUserSummaryList, {
+  const { data: userList, run, loading } = useRequest(getUserSummaryList, {
     manual: true,
   });
   const addedUsers = new Set(project?.members?.map((m) => m.id) || []);
@@ -131,6 +127,24 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
                 ),
 
                 value: ProjectRole.DEVELOPER,
+              },
+              {
+                label: (
+                  <HelpDoc leftText doc="projectSA">
+                    {projectRoleTextMap[ProjectRole.SECURITY_ADMINISTRATOR]}
+                  </HelpDoc>
+                ),
+
+                value: ProjectRole.SECURITY_ADMINISTRATOR,
+              },
+              {
+                label: (
+                  <HelpDoc leftText doc="participant">
+                    {projectRoleTextMap[ProjectRole.PARTICIPANT]}
+                  </HelpDoc>
+                ),
+
+                value: ProjectRole.PARTICIPANT,
               },
             ]}
           />

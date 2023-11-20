@@ -18,6 +18,7 @@ import { getIntegrationList, getResourceRoles } from '@/common/network/manager';
 import { useEffect, useState } from 'react';
 import FormModal from '../../Approval/component/FormModal';
 import { IntegrationType } from '@/d.ts';
+import { projectRoleTextMap } from '@/page/Project/User';
 
 const CreateApproval = ({ editId, formModalVisible, setFormModalVisible, reloadData }) => {
   const [roles, setRoles] = useState([]);
@@ -26,7 +27,7 @@ const CreateApproval = ({ editId, formModalVisible, setFormModalVisible, reloadD
   const loadRoles = async () => {
     const res = await getResourceRoles();
     const roles = res?.contents.map(({ roleName, id }) => ({
-      name: roleName,
+      name: projectRoleTextMap?.[roleName],
       id,
     }));
     setRoles(roles);

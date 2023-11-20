@@ -144,6 +144,7 @@ interface IProps {
     | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
   >;
   isMultiPage?: boolean;
+  disabledOpt?: boolean;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -155,7 +156,15 @@ const TaskTable: React.FC<IProps> = inject(
   'pageStore',
 )(
   observer((props) => {
-    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
+    const {
+      taskStore,
+      pageStore,
+      taskTabType,
+      tableRef,
+      taskList,
+      isMultiPage,
+      disabledOpt,
+    } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
     const currentTask = taskList;
@@ -403,6 +412,7 @@ const TaskTable: React.FC<IProps> = inject(
       loadData(listParams);
     };
     const isAll = [
+      TaskPageType.ALL,
       TaskPageType.APPROVE_BY_CURRENT_USER,
       TaskPageType.CREATED_BY_CURRENT_USER,
     ].includes(taskTabType);
@@ -429,6 +439,7 @@ const TaskTable: React.FC<IProps> = inject(
                       <DownOutlined />
                     </Button>
                   ),
+                  disabled: disabledOpt,
                   overlay: (
                     <Menu
                       onClick={({ key }) => {

@@ -69,14 +69,14 @@ interface IProps {
   projectId?: number;
 }
 const TaskManaerPage = (props) => {
-  const { projectId } = props;
+  const { projectId, inProject } = props;
   return (
     <>
       <div className={styles.task}>
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content projectId={projectId} />
+        <Content projectId={projectId} inProject={inProject} />
         <CreateModals projectId={projectId} theme="white" />
       </div>
     </>
