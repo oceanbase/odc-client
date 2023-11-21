@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import FormItemPanel from '@/component/FormItemPanel';
-import HelpDoc from '@/component/helpDoc';
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, Select, Space, Typography } from 'antd';
 import classNames from 'classnames';
 import { IArchiveRange } from './index';
+import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
 
 const { Text } = Typography;
@@ -44,20 +43,20 @@ const ArchiveRange: React.FC<IProps> = (props) => {
         required
       >
         <Radio.Group>
-          <Radio.Button value={IArchiveRange.PORTION}>
+          <Radio value={IArchiveRange.PORTION}>
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PartialArchive',
               }) /*部分归档*/
             }
-          </Radio.Button>
-          <Radio.Button value={IArchiveRange.ALL}>
+          </Radio>
+          <Radio value={IArchiveRange.ALL}>
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
               }) /*整库归档*/
             }
-          </Radio.Button>
+          </Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item shouldUpdate noStyle>
@@ -67,35 +66,27 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             return null;
           }
           return (
-            <FormItemPanel keepExpand>
               <Space direction="vertical">
                 <Space className={styles.infoLabel}>
-                  <div style={{ width: '220px' }}>
-                    {
-                      formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.TableName',
-                      }) /*表名*/
-                    }
-                  </div>
+                  <div style={{ width: '220px' }}>归档表</div>
                   <div style={{ width: '460px' }}>
-                    <HelpDoc leftText isTip doc="dataArchiveFilterDoc">
-                      <Space>
-                        <span>
-                          {
-                            formatMessage({
-                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
-                            }) /*过滤条件*/
-                          }
-                        </span>
-                        <Text type="secondary">
-                          {
-                            formatMessage({
-                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
-                            }) /*(可选)*/
-                          }
-                        </Text>
-                      </Space>
-                    </HelpDoc>
+                    <Space>
+                      <span>
+                        {
+                          formatMessage({
+                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
+                          }) /*过滤条件*/
+                        }
+                      </span>
+                      <Text type="secondary">
+                        {
+                          formatMessage({
+                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                          }) /*(可选)*/
+                        }
+                      </Text>
+                      <ArchiveRangeTip label='归档' />
+                    </Space>
                   </div>
                 </Space>
                 <Form.List name="tables">
@@ -114,9 +105,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             rules={[
                               {
                                 required: true,
-                                message: formatMessage({
-                                  id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
-                                }), //请选择
+                                message: '请选择表'
                               },
                             ]}
                           >
@@ -154,7 +143,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   )}
                 </Form.List>
               </Space>
-            </FormItemPanel>
           );
         }}
       </Form.Item>

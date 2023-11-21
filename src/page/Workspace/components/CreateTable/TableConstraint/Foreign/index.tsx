@@ -76,6 +76,10 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
     });
   }, [tableContext.foreignConstraints]);
 
+  useEffect(() => {
+    gridRef.current?.setRows(rows);
+  }, [rows]);
+
   return (
     <TableCardLayout
       toolbar={

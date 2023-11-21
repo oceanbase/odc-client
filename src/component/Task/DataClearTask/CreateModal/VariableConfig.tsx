@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
+import type { FormInstance } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
@@ -76,20 +76,17 @@ const timeUnitOptions = [
     value: 'y',
   },
 ];
-interface IProps {}
+interface IProps {
+  form: FormInstance;
+}
 const VariableConfig: React.FC<IProps> = (props) => {
-  //
-  return (
-    <FormItemPanel
-      keepExpand
-      label={
-        <Space>
-          {
-            formatMessage({
-              id: 'odc.DataClearTask.CreateModal.VariableConfig.VariableConfiguration',
-            }) /*变量配置*/
-          }
+  
+  const variables = Form.useWatch('variables', props.form);
 
+  return (
+      <Space direction="vertical" style={{ width: '100%'}}>
+      <Space>
+        自定义变量
           <span className={styles.desc}>
             <HelpDoc leftText isTip doc="dataClearVariablesDoc">
               {
@@ -102,10 +99,9 @@ const VariableConfig: React.FC<IProps> = (props) => {
             </HelpDoc>
           </span>
         </Space>
-      }
-    >
-      <Space direction="vertical">
-        <Space className={styles.infoLabel}>
+        {
+          !!variables?.length &&
+          <Space className={styles.infoLabel}>
           <div
             style={{
               width: '194px',
@@ -134,14 +130,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
             }}
           >
             <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
-              {
-                formatMessage({
-                  id: 'odc.DataClearTask.CreateModal.VariableConfig.TimeOperation',
-                }) /*时间运算*/
-              }
+              时间偏移
             </HelpDoc>
           </div>
         </Space>
+        }
         <Form.List name="variables">
           {(fields, { add, remove }) => (
             <div className={styles.infoBlock}>
@@ -149,7 +142,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <div
                   key={key}
                   className={classNames(styles.variables, {
-                    [styles.delete]: fields?.length > 1,
+                    [styles.delete]: true,
                   })}
                 >
                   <Form.Item
@@ -230,14 +223,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
                       );
                     }}
                   </Form.List>
-                  {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
+                  <DeleteOutlined onClick={() => remove(name)} />
                 </div>
               ))}
               <Form.Item
-                style={{
-                  marginBottom: 0,
-                  width: '100%',
-                }}
+                style={{ width: '100%' }}
               >
                 <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
                   {
@@ -251,7 +241,6 @@ const VariableConfig: React.FC<IProps> = (props) => {
           )}
         </Form.List>
       </Space>
-    </FormItemPanel>
   );
 };
 export default VariableConfig;

@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
 import EditableTable from '../../../EditableTable';
 import EditToolbar from '../../EditToolbar';
 import { removeGridParams } from '../../helper';
@@ -53,6 +53,10 @@ const CheckConstraint: React.FC<IProps> = function ({ modified }) {
       };
     });
   }, [tableContext.checkConstraints]);
+
+  useEffect(() => {
+    gridRef.current?.setRows(rows);
+  }, [rows]);
 
   return (
     <TableCardLayout

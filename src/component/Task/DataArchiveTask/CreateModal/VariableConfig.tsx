@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
+import type { FormInstance } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
@@ -56,21 +56,17 @@ const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   value: item,
 }));
 const operatorOptions = ['+', '-'].map((item) => ({ label: item, value: item }));
-interface IProps {}
+interface IProps {
+  form: FormInstance;
+}
 
 const VariableConfig: React.FC<IProps> = (props) => {
-  //
+  const variables = Form.useWatch('variables', props.form);
+  
   return (
-    <FormItemPanel
-      keepExpand
-      label={
+      <Space direction="vertical" style={{ width: '100%'}}>
         <Space>
-          {
-            formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableConfiguration',
-            }) /*变量配置*/
-          }
-
+          自定义变量
           <span className={styles.desc}>
             <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
               {
@@ -81,34 +77,30 @@ const VariableConfig: React.FC<IProps> = (props) => {
             </HelpDoc>
           </span>
         </Space>
-      }
-    >
-      <Space direction="vertical">
-        <Space className={styles.infoLabel}>
-          <div style={{ width: '194px' }}>
-            {
-              formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableName',
-              }) /*变量名*/
-            }
-          </div>
-          <div style={{ width: '170px' }}>
-            {
-              formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeFormat',
-              }) /*时间格式*/
-            }
-          </div>
-          <div style={{ width: '305px' }}>
-            <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
+        {
+          !!variables?.length &&
+          <Space style={{ width: '100%'}}>
+            <div style={{ width: '194px' }}>
               {
                 formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeOperation',
-                }) /*时间运算*/
+                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableName',
+                }) /*变量名*/
               }
-            </HelpDoc>
-          </div>
-        </Space>
+            </div>
+            <div style={{ width: '170px' }}>
+              {
+                formatMessage({
+                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeFormat',
+                }) /*时间格式*/
+              }
+            </div>
+            <div style={{ width: '305px' }}>
+              <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
+                时间偏移
+              </HelpDoc>
+            </div>
+          </Space>
+        }
         <Form.List name="variables">
           {(fields, { add, remove }) => (
             <div className={styles.infoBlock}>
@@ -116,7 +108,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <div
                   key={key}
                   className={classNames(styles.variables, {
-                    [styles.delete]: fields?.length > 1,
+                    [styles.delete]: true,
                   })}
                 >
                   <Form.Item {...restField} name={[name, 'name']}>
@@ -170,22 +162,12 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               </Form.Item>
                               {ENABLE_PATTERN_OPERATOR && (
                                 <>
-                                  <Tooltip
-                                    title={formatMessage({
-                                      id:
-                                        'odc.DataArchiveTask.CreateModal.VariableConfig.AddTimeOperation',
-                                    })} /*添加时间运算*/
-                                  >
+                                  <Tooltip title='添加时间偏移'>
                                     <Button type="text" disabled={disabledAdd}>
                                       <PlusOutlined onClick={() => _add()} />
                                     </Button>
                                   </Tooltip>
-                                  <Tooltip
-                                    title={formatMessage({
-                                      id:
-                                        'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteTimeOperation',
-                                    })} /*删除时间运算*/
-                                  >
+                                  <Tooltip title='删除时间偏移'>
                                     <Button type="text">
                                       <MinusOutlined
                                         onClick={() => {
@@ -202,18 +184,16 @@ const VariableConfig: React.FC<IProps> = (props) => {
                       );
                     }}
                   </Form.List>
-                  {fields?.length > 1 && (
-                    <Tooltip
-                      title={formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
-                      })} /*删除变量*/
-                    >
-                      <DeleteOutlined onClick={() => remove(name)} />
-                    </Tooltip>
-                  )}
+                  <Tooltip
+                    title={formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
+                    })} /*删除变量*/
+                  >
+                    <DeleteOutlined onClick={() => remove(name)} />
+                  </Tooltip>
                 </div>
               ))}
-              <Form.Item style={{ marginBottom: 0, width: '100%' }}>
+              <Form.Item style={{ width: '100%' }}>
                 <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
                   {
                     formatMessage({
@@ -226,7 +206,6 @@ const VariableConfig: React.FC<IProps> = (props) => {
           )}
         </Form.List>
       </Space>
-    </FormItemPanel>
   );
 };
 

@@ -58,7 +58,6 @@ export const variable = {
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
-  variables: [variable],
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
@@ -345,8 +344,10 @@ const CreateModal: React.FC<IProps> = (props) => {
             /*源端数据库*/ projectId={projectId}
           />
         </Space>
-        <VariableConfig />
-        <ArchiveRange tables={tables} />
+        <Space direction='vertical' size={24}>
+          <ArchiveRange tables={tables} />
+          <VariableConfig form={form} />
+        </Space>
         <Form.Item
           label={formatMessage({
             id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
