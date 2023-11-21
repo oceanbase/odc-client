@@ -18,7 +18,7 @@ import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../EditableTable';
 import TableContext from '../TableContext';
 import { useColumns } from './columns';
@@ -75,6 +75,10 @@ const Columns: React.FC<IProps> = function ({}) {
       };
     });
   }, [displayColumns]);
+
+  useEffect(() => {
+    gridRef.current?.setRows(rows);
+  }, [rows]);
 
   const focusRowIdx = selectedRowsIdx?.length === 1 ? selectedRowsIdx?.[0] : -1;
   const ColumnExtraComponent = config.ColumnExtraComponent;
