@@ -24,6 +24,7 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { Button, Descriptions, Divider, Drawer } from 'antd';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import styles from './index.less';
+import { CommonTableMode } from '@/component/CommonTable/interface';
 
 const renderByType = (type: SensitiveRuleType, params?: any) => {
   switch (type) {
@@ -117,13 +118,10 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
           >
             &nbsp;
           </Descriptions.Item>
-          <div
-            style={{
-              width: '500px',
-            }}
-          >
+          <div className={styles.viewDrawerTable}>
             <CommonTable
               titleContent={null}
+              mode={CommonTableMode.SMALL}
               showToolbar={false}
               filterContent={{
                 searchPlaceholder: formatMessage({
@@ -160,6 +158,7 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
                 dataSource: dataSource,
                 rowKey: 'id',
                 pagination: {
+                  hideOnSinglePage: true,
                   pageSize: 4,
                 },
                 scroll: {
