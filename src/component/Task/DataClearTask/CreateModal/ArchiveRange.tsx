@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import FormItemPanel from '@/component/FormItemPanel';
-import HelpDoc from '@/component/helpDoc';
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import classNames from 'classnames';
 import { IArchiveRange } from './index';
+import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
 
 interface IProps {
@@ -42,20 +41,20 @@ const ArchiveRange: React.FC<IProps> = (props) => {
         required
       >
         <Radio.Group>
-          <Radio.Button value={IArchiveRange.PORTION}>
+          <Radio value={IArchiveRange.PORTION}>
             {
               formatMessage({
                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.PartialCleaning',
               }) /*部分清理*/
             }
-          </Radio.Button>
-          <Radio.Button value={IArchiveRange.ALL}>
+          </Radio>
+          <Radio value={IArchiveRange.ALL}>
             {
               formatMessage({
                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleanUpTheEntireDatabase',
               }) /*整库清理*/
             }
-          </Radio.Button>
+          </Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item shouldUpdate noStyle>
@@ -65,7 +64,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             return null;
           }
           return (
-            <FormItemPanel keepExpand>
               <Space direction="vertical">
                 <Space className={styles.infoLabel}>
                   <div style={{ width: '220px' }}>
@@ -76,13 +74,14 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     }
                   </div>
                   <div style={{ width: '460px' }}>
-                    <HelpDoc leftText isTip doc="dataClearFilterDoc">
+                    <Space>
                       {
                         formatMessage({
                           id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
                         }) /*清理条件*/
                       }
-                    </HelpDoc>
+                      <ArchiveRangeTip label='清理' />
+                    </Space>
                   </div>
                 </Space>
                 <Form.List name="tables">
@@ -142,7 +141,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   )}
                 </Form.List>
               </Space>
-            </FormItemPanel>
           );
         }}
       </Form.Item>
