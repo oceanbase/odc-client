@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { mainWebWindowConfig } from '../../../main/config';
 import log from '../../utils/log';
 
@@ -62,9 +62,29 @@ export function newWindowEvent(mainWindow: BrowserWindow) {
     log.error(`webcontent unresponsive, url: ${mainWindow.webContents.getURL()}`);
     log.error(e);
   });
-  mainWindow.addListener('close', (e) => {
+  mainWindow.on('close', (e) => {
     log.warn(`webcontent close, url: ${mainWindow.webContents.getURL()}`);
-    log.warn(e);
+    const url = mainWindow.webContents?.getURL();
+    if (url.includes('localhost') && !url.includes('help-doc')) {
+      /**
+       * odc workspace confirm
+       */
+      e.preventDefault();
+      const choice = dialog.showMessageBoxSync(mainWindow, {
+        type: 'question',
+        buttons: ['关闭', '取消'],
+        title: '关闭 ODC',
+        message: '确定关闭 ODC，您的SQL 窗口内容将会保留',
+      });
+
+      // 根据用户的选择进行处理
+      if (choice === 0) {
+        // 用户点击了“是”
+        // 主动关闭窗口
+        mainWindow.destroy();
+      }
+      return;
+    }
   });
   mainWindow.addListener('closed', (e) => {
     log.warn(`webcontent closed`);
