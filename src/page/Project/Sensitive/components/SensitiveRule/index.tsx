@@ -249,7 +249,9 @@ const getColumns: (columnsFunction: {
 };
 const SensitiveRule = ({ projectId }) => {
   const tableRef = useRef<ITableInstance>();
-  const { maskingAlgorithmIdMap, maskingAlgorithms } = useContext(SensitiveContext);
+  const { maskingAlgorithmIdMap, maskingAlgorithms, setSensitiveRuleIdMap } = useContext(
+    SensitiveContext,
+  );
   const [selectedRecord, setSelectedRecord] = useState<ISensitiveRule>();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [formDrawerVisible, setFormDrawerVisible] = useState<boolean>(false);
@@ -304,6 +306,11 @@ const SensitiveRule = ({ projectId }) => {
     data.enabled = enabled?.length ? enabled : undefined;
     data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const rawData = await listSensitiveRules(projectId, data);
+    const map = {};
+    rawData?.contents?.forEach((d) => {
+      map[d.id] = d.name;
+    });
+    setSensitiveRuleIdMap(map);
     setSensitiveRules(rawData);
   };
   const handleFormDrawerClose = (fn?: () => void) => {
