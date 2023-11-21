@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone, cloneDeep } from 'lodash';
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
 import EditableTable from '../../EditableTable';
 import TablePageContext from '../../TablePage/context';
 import EditToolbar from '../EditToolbar';
@@ -64,6 +64,10 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
       };
     });
   }, [tableContext.indexes]);
+
+  useEffect(() => {
+    gridRef.current?.setRows(rows);
+  }, [rows]);
 
   return (
     <TableCardLayout
