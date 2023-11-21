@@ -16,12 +16,6 @@
 
 import { formatMessage } from '@/util/intl';
 import { FormattedMessage } from '@umijs/max';
-const dataArchiveFilterDoc = formatMessage({
-  id: 'odc.src.component.helpDoc.CanConfigureTheFilteringConditions',
-}); //"可使用常量或引用上文中定义的变量来配置过滤条件。样例1：gmt_create <=  '2023-01-01' ，样例2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为归档表中的字段。"
-const dataClearFilterDoc = formatMessage({
-  id: 'odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1',
-}); //"可使用常量或引用上文中定义的变量来配置过滤条件。样例1：gmt_create <=  '2023-01-01' ，样例2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为清理表中的字段。"
 const dataArchiveVariablesDoc = formatMessage({
   id: 'odc.src.component.helpDoc.DefineVariablesSetTime',
 }); //'定义变量、设置时间偏移量并在下文的过滤条件中引用'
@@ -481,8 +475,6 @@ export default {
       }
     </p>
   ),
-  dataArchiveFilterDoc: <p>{dataArchiveFilterDoc}</p>,
-  dataClearFilterDoc: <p>{dataClearFilterDoc}</p>,
   dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (

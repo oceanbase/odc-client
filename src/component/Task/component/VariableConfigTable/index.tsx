@@ -38,7 +38,7 @@ const columns = [
   },
   {
     dataIndex: 'opration',
-    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeOperation' }), //时间运算
+    title: '时间偏移',
     width: 160,
     render: (opration) => {
       let oprationLabel = opration;
