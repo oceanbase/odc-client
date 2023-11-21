@@ -25,6 +25,7 @@ import ParameterSvg from '@/svgr/Parameter.svg';
 
 import { IDatabase } from '@/d.ts/database';
 import ProcedureSvg from '@/svgr/menuProcedure.svg';
+import { openPackageViewPage, openProcedureViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-2)';
 
@@ -108,7 +109,17 @@ export function ProcedureTreeNodeData(
         }}
       />
     ),
-
+    doubleClick(session, node, databaseFrom) {
+      pkg
+        ? openPackageViewPage(pkg.packageName, null, false, session?.database?.databaseId)
+        : openProcedureViewPage(
+            proc.proName,
+            undefined,
+            undefined,
+            session?.database?.databaseId,
+            null,
+          );
+    },
     sessionId: dbSession?.sessionId,
     packageName: packageName,
     data: proc,

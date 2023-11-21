@@ -251,11 +251,20 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.Size',
               }), //大小 //大小
-              content:
-                table?.info?.tableSize ||
-                formatMessage({
-                  id: 'odc.components.ShowTableBaseInfoForm.Empty',
-                }),
+              content: (
+                <HelpDoc
+                  {...{
+                    doc: 'tableSizeToolTip',
+                    leftText: true,
+                    isTip: true,
+                  }}
+                >
+                  {table?.info?.tableSize ||
+                    formatMessage({
+                      id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                    })}
+                </HelpDoc>
+              ),
               // 空
             },
           ]}

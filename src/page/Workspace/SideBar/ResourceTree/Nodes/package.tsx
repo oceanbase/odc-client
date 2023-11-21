@@ -28,6 +28,7 @@ import PackageBodySvg from '@/svgr/Package-body.svg';
 
 import { IDatabase } from '@/d.ts/database';
 import ParameterSvg from '@/svgr/Parameter.svg';
+import { openPackageViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-3)';
 
@@ -240,7 +241,9 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             }}
           />
         ),
-
+        doubleClick(session, node, databaseFrom) {
+          openPackageViewPage(pkg.packageName, undefined, undefined, session?.database?.databaseId);
+        },
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: haveData ? [headRoot, bodyRoot].filter(Boolean) : null,
