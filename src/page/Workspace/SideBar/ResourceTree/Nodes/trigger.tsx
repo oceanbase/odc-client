@@ -22,6 +22,7 @@ import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { ResourceNodeType, TreeDataNode } from '../type';
+import { openTriggerViewPage } from '@/store/helper/page';
 
 enum THEME {
   TRIGGER_ENABLE = 'var(--icon-color-3)',
@@ -63,6 +64,15 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
       return {
         title: trigger.triggerName,
         key,
+        doubleClick(session, node, databaseFrom) {
+          openTriggerViewPage(
+            trigger.triggerName,
+            undefined,
+            trigger.enableState,
+            undefined,
+            session?.database?.databaseId,
+          );
+        },
         type: ResourceNodeType.Trigger,
         dbObjectType: DbObjectType.trigger,
         data: trigger,

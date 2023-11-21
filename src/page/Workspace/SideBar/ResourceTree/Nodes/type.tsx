@@ -26,6 +26,7 @@ import TypeSvg from '@/svgr/menuType.svg';
 import { IDatabase } from '@/d.ts/database';
 import ParameterSvg from '@/svgr/Parameter.svg';
 import { ProcedureTreeNodeData } from './procedure';
+import { openTypeViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-4)';
 
@@ -130,7 +131,9 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
             }}
           />
         ),
-
+        doubleClick(session, node, databaseFrom) {
+          openTypeViewPage(type.typeName, undefined, session?.database?.databaseId);
+        },
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: [variablesRoot, programRoot].filter(Boolean),

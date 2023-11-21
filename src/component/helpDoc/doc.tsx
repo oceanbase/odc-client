@@ -425,6 +425,7 @@ export default {
       }
     </p>
   ),
+  tableSizeToolTip: <p>由于该数据是通过静态基线数据得到的，因此会有延迟，可能出现不准确的情况</p>,
   exportFileMaxSize: (
     <p>
       {

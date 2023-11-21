@@ -353,7 +353,7 @@ export function openSequenceViewPage(
   sequenceName: string,
   propsTab: SequencePropsTab = SequencePropsTab.INFO,
   databaseId: number,
-  dbName: string,
+  dbName?: string,
 ) {
   page.openPage(new SequencePage(databaseId, sequenceName, propsTab));
 }
@@ -524,7 +524,7 @@ export function openSynonymViewPage(
   synonymName: string,
   synonymType: SynonymType,
   databaseId: number,
-  dbName: string,
+  dbName?: string,
 ) {
   page.openPage(new SynonymPage(databaseId, synonymName, synonymType));
 }
@@ -546,7 +546,7 @@ export function openTypeViewPage(
   typeName: string,
   propsTab: TypePropsTab = TypePropsTab.DDL,
   databaseId: number,
-  dbName: string,
+  dbName?: string,
 ) {
   page.openPage(new TypePage(databaseId, typeName, propsTab));
 }
