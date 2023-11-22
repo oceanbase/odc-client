@@ -482,6 +482,7 @@ const SensitiveColumn = ({
               }), //删除失败
             );
           }
+
           const { page } = sensitiveColumn;
           const newCurrent = Math.ceil((page?.totalElements - ids?.length) / page?.size);
           tableRef.current?.reload?.({

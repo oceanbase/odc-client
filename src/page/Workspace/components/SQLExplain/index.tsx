@@ -25,6 +25,7 @@ import { Component } from 'react';
 import { getSqlExplainColumns } from './column';
 import styles from './index.less';
 import { SQLExplainProps, SQLExplainState } from './interface';
+import { randomUUID } from '../Trace';
 
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
@@ -73,7 +74,25 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
 
   public render() {
     const { explain, sql, haveText, traceId, session } = this.props;
-    console.log(session);
+    function injectKey2TreeData(root) {
+      if (Array.isArray(root)) {
+        root.forEach((node) => {
+          if (node?.children) {
+            if (Array.isArray(node?.children)) {
+              injectKey2TreeData(node?.children);
+              node.key = randomUUID();
+            } else {
+              node.key = randomUUID();
+            }
+          } else {
+            node.key = randomUUID();
+          }
+        });
+      } else {
+        root.key = randomUUID();
+      }
+      return root;
+    }
     const { onlyText, tableHeight, showExplainText } = this.state;
     const columns = getSqlExplainColumns({
       handleShowOutputFilter: this.handleShowOutputFilter,
@@ -162,19 +181,23 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                       <Empty />
                     </>
                   ) : (
-                    <DisplayTable
-                      key={sql}
-                      rowKey="operator"
-                      bordered={true}
-                      defaultExpandAllRows={true}
-                      scroll={{
-                        x: 1400,
-                        y: tableHeight,
-                      }}
-                      columns={columns}
-                      dataSource={explain && explain.tree ? explain.tree : []}
-                      disablePagination={true}
-                    />
+                    (explain as ISQLExplain)?.tree && (
+                      <DisplayTable
+                        key={sql}
+                        rowKey="key"
+                        bordered={true}
+                        expandable={{
+                          defaultExpandAllRows: true,
+                        }}
+                        scroll={{
+                          x: 1400,
+                          y: tableHeight,
+                        }}
+                        columns={columns}
+                        dataSource={explain && explain.tree ? injectKey2TreeData(explain.tree) : []}
+                        disablePagination={true}
+                      />
+                    )
                   )}
                 </>
               )}
