@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import { formatMessage } from '@/util/intl';
 export enum AddSensitiveColumnType {
   Manual,
@@ -38,6 +39,8 @@ export interface ScanTableData {
   header: {
     database: string;
     tableName: string;
+    type: ESensitiveColumnType;
+    databaseId: string;
   };
   dataSource: ScanTableDataItem[];
 }
