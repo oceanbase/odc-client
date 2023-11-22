@@ -291,7 +291,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   </Select>
                 </Form.Item>
                 {!login.isPrivateSpace() && <ProjectItem />}
-                {!haveOCP() && <ExtraConfig />}
+                <ExtraConfig />
               </>
             );
           }}

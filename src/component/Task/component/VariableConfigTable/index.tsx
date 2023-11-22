@@ -19,7 +19,7 @@ import { timeUnitOptions } from '@/component/Task/DataArchiveTask/CreateModal/Va
 import { formatMessage } from '@/util/intl';
 import React from 'react';
 
-const oprationReg = /^[-+]\d+[shdwmy]$/;
+const oprationReg = /^[-+]\d+[shdwmMy]$/;
 
 const columns = [
   {

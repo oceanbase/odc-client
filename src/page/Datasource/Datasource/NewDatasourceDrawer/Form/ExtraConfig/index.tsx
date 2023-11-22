@@ -24,6 +24,7 @@ import SSLItem from '../SSLItem';
 import styles from './index.less';
 import InitScriptItem from '../InitScriptItem';
 import JDBCParamsItem from '../JDBCParamsItem';
+import { haveOCP } from '@/util/env';
 interface IProps {}
 const ExtraConfig: React.FC<IProps> = function () {
   const context = useContext(DatasourceFormContext);
@@ -84,12 +85,16 @@ const ExtraConfig: React.FC<IProps> = function () {
               <Tabs
                 size="small"
                 type="card"
-                items={[
-                  config?.sys && sysItem,
-                  config?.ssl && sslItem,
-                  initScriptItem,
-                  jdbcItem,
-                ].filter(Boolean)}
+                items={
+                  !haveOCP()
+                    ? [
+                        config?.sys && sysItem,
+                        config?.ssl && sslItem,
+                        initScriptItem,
+                        jdbcItem,
+                      ].filter(Boolean)
+                    : [initScriptItem]
+                }
               />
             );
           }}
