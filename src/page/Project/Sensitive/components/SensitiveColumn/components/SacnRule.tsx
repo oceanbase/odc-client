@@ -23,9 +23,6 @@ import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
-import HelpDoc from '@/component/helpDoc';
-import { ProjectRole } from '@/d.ts/project';
-import { projectRoleTextMap } from '@/page/Project/User';
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);

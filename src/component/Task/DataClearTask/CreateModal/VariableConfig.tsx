@@ -22,9 +22,10 @@ import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
+import { timeUnitOptions } from '../../DataArchiveTask/CreateModal/VariableConfig';
 const ENABLE_PATTERN_OPERATOR = false;
 
-const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
+const timeFormatOptions = ['yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
   value: item,
 }));
@@ -32,50 +33,7 @@ const operatorOptions = ['+', '-'].map((item) => ({
   label: item,
   value: item,
 }));
-const timeUnitOptions = [
-  {
-    label: formatMessage({
-      id: 'odc.DataClearTask.CreateModal.VariableConfig.Points',
-    }),
-    //分
-    value: 's',
-  },
-  {
-    label: formatMessage({
-      id: 'odc.DataClearTask.CreateModal.VariableConfig.Hours',
-    }),
-    //小时
-    value: 'h',
-  },
-  {
-    label: formatMessage({
-      id: 'odc.DataClearTask.CreateModal.VariableConfig.Day',
-    }),
-    //日
-    value: 'd',
-  },
-  {
-    label: formatMessage({
-      id: 'odc.DataClearTask.CreateModal.VariableConfig.Zhou',
-    }),
-    //周
-    value: 'w',
-  },
-  {
-    label: formatMessage({
-      id: 'odc.DataClearTask.CreateModal.VariableConfig.Month',
-    }),
-    //月
-    value: 'm',
-  },
-  {
-    label: formatMessage({
-      id: 'odc.DataClearTask.CreateModal.VariableConfig.Year',
-    }),
-    //年
-    value: 'y',
-  },
-];
+
 interface IProps {}
 const VariableConfig: React.FC<IProps> = (props) => {
   //

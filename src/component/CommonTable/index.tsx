@@ -189,7 +189,7 @@ const CommonTable: <RecordType extends object = any>(
       (tableProps?.pagination as TablePaginationConfig)?.pageSize ??
       Math.max(
         Math.floor(
-          (tableRef.current.offsetHeight -
+          (tableRef.current?.offsetHeight -
             TOOLBAR_HEIGHT -
             TABLE_HEAD_HEIGHT -
             INFO_BAR_HEIGHT -
@@ -200,7 +200,7 @@ const CommonTable: <RecordType extends object = any>(
         1,
       );
     setPageSize(computedPageSize);
-    setWrapperHeight(tableRef.current.offsetHeight);
+    setWrapperHeight(tableRef.current?.offsetHeight);
   }
 
   function computeTableScrollHeight() {
