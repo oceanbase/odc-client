@@ -26,6 +26,7 @@ export enum DatabaseSyncStatus {
 
 export interface IDatabase {
   id: number;
+  databaseId?: string;
   name: string;
   project: IProject;
   dataSource: IDatasource;
