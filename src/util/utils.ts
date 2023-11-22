@@ -23,7 +23,7 @@ import {
   IPartitionType,
 } from '@/d.ts';
 import setting from '@/store/setting';
-import intl, { formatMessage } from '@/util/intl';
+import getIntl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
 import { JSEncrypt } from 'jsencrypt';
 import { isNil } from 'lodash';
@@ -296,7 +296,7 @@ export function getLocalFormatDateTime(time: number) {
   if (time <= 0) {
     return '';
   }
-  return new Date(time).toLocaleString(intl.locale, {
+  return new Date(time).toLocaleString(getIntl()?.locale, {
     hour12: false,
     month: 'short',
     year: 'numeric',

@@ -22,6 +22,7 @@ import registerPlugins from './plugins/register';
 import { isClient } from './util/env';
 import logger from './util/logger';
 import { getRoute } from './util/tracert/userRoutes';
+import { initIntl } from './util/intl';
 if (isClient()) {
   import('@sentry/electron').then((Sentry) => {
     Sentry.init({
@@ -55,6 +56,7 @@ export const qiankun = {
 };
 
 export async function render(oldRender: () => void) {
+  await initIntl();
   registerPlugins();
   await initMetaStore();
   oldRender();
