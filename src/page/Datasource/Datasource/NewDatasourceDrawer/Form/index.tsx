@@ -286,7 +286,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     })}
                   </Select>
                 </Form.Item>
-                {!haveOCP() && <ExtraConfig />}
+                <ExtraConfig />
               </>
             );
           }}
