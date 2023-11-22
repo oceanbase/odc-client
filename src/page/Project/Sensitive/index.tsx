@@ -161,6 +161,7 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
         maskingAlgorithmIdMap,
         maskingAlgorithmOptions,
         sensitiveRuleIdMap,
+        setSensitiveRuleIdMap,
       }}
     >
       <div className={styles.sensitive}>

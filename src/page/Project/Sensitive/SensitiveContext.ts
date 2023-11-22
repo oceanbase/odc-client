@@ -43,6 +43,11 @@ interface ISensitiveContext {
   sensitiveRuleIdMap: {
     [key in any]: string;
   };
+  setSensitiveRuleIdMap: (
+    sensitiveRuleIdMap: {
+      [key in any]: string;
+    },
+  ) => void;
 }
 
 const SensitiveContext = React.createContext<Partial<ISensitiveContext>>({
@@ -58,6 +63,7 @@ const SensitiveContext = React.createContext<Partial<ISensitiveContext>>({
   tables: [],
   sensitiveRules: [],
   sensitiveRuleIdMap: {},
+  setSensitiveRuleIdMap: (sensitiveRuleIdMap = {}) => {},
 });
 
 export default SensitiveContext;

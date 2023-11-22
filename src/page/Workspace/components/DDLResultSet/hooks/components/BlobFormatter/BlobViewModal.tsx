@@ -23,7 +23,7 @@ import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { formatBytes, getBlobValueKey } from '@/util/utils';
 import type { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
-import { Alert, Button, Image, Input, Modal, Radio, Row, Space, Spin } from 'antd';
+import { Alert, Button, Image, Input, Modal, Radio, Row, Space, Spin, Typography } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
@@ -92,10 +92,7 @@ const CreateFileLoader = (params: { request: Request; callback: Callback }) => {
         fileLoader(size);
         if (isFinish) {
           callback({
-            content: contents
-              ?.slice(1)
-              ?.map((item) => item?.content)
-              ?.join(''),
+            content: contents?.map((item) => item?.content)?.join(''),
             size,
           });
         }
@@ -241,7 +238,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
       case DISPLAY_MODE.TEXT:
       case DISPLAY_MODE.HEXTEXT: {
         const maxSizeText = formatBytes(maxTextSize);
-
+        const disabled = !isModeEditable || !resultContext.isEditing;
         return (
           <Spin spinning={loading}>
             <div style={{ display: 'flex', flexDirection: 'column', height: 500 }}>
@@ -260,19 +257,25 @@ const BlobViewModal: React.FC<IProps> = (props) => {
               )}
               {mode === DISPLAY_MODE.HEXTEXT ? (
                 <HexEditor
-                  disabled={!isModeEditable || !resultContext.isEditing}
+                  disabled={disabled}
                   value={hexText}
                   onChange={(v) => {
                     setHexText(v);
                   }}
                 />
+              ) : disabled ? (
+                <div className={styles['contenttext-disabled']}>
+                  <Typography.Text disabled>
+                    {mode == DISPLAY_MODE.TEXT ? text : hexText}
+                  </Typography.Text>
+                </div>
               ) : (
                 <Input.TextArea
                   className={styles.contenttext}
                   style={{ resize: 'none', wordBreak: 'break-all' }}
                   autoSize={false}
                   value={mode == DISPLAY_MODE.TEXT ? text : hexText}
-                  disabled={!isModeEditable || !resultContext.isEditing}
+                  disabled={disabled}
                   onChange={(e) => {
                     if (mode === DISPLAY_MODE.TEXT) {
                       setText(e.target.value);

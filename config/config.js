@@ -61,17 +61,17 @@ const config = {
   proxy: {
     // 本地开发或者对内 Site 应用的开发环境的代理配置
     '/api/v1/webSocket/obclient': {
-      target: 'http://11.162.218.70:7001/proxy/96',
+      target: 'http://dev.odc-local.net:7001/proxy/96',
       ws: true,
     },
     '/api/': {
-      target: 'http://11.162.218.70:7001/proxy/96',
+      target: 'http://dev.odc-local.net:7001/proxy/96',
     },
     '/oauth2/': {
-      target: 'http://11.162.218.70:7001/proxy/96',
+      target: 'http://dev.odc-local.net:7001/proxy/96',
     },
     '/login/': {
-      target: 'http://11.162.218.70:7001/proxy/96',
+      target: 'http://dev.odc-local.net:7001/proxy/96',
     }
   },
 
