@@ -18,7 +18,8 @@ import PageLoading from '@/component/PageLoading';
 import { UserStore } from '@/store/login';
 import { Outlet, useLocation, useNavigate } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { PageLoadingContext } from './PageLoadingWrapper';
 
 interface IProps {
   userStore?: UserStore;
@@ -31,6 +32,18 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
   const isSwitching = userStore?.isSwitchingOrganization;
   const location = useLocation();
   const navigate = useNavigate();
+  const loadingContext = useContext(PageLoadingContext);
+
+  useEffect(() => {
+    if (isSwitching) {
+      loadingContext?.setTask({
+        tip: '正在切换空间',
+        showError: false,
+      });
+    } else {
+      loadingContext?.removeTask();
+    }
+  }, [isSwitching]);
 
   useEffect(() => {
     const isPersonal = userStore.isPrivateSpace();
@@ -43,7 +56,7 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
   }, [location.pathname, organizationId, userStore.organizations]);
 
   return isSwitching ? (
-    <PageLoading showError={false} />
+    <></>
   ) : (
     <>
       <Outlet />

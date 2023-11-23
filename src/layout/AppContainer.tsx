@@ -32,11 +32,12 @@ import { isClient } from '@/util/env';
 import { useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ContainerQuery } from 'react-container-query';
 import { Helmet, history, Outlet } from '@umijs/max';
 import Context from './MenuContext';
 import StoreProvider from './StoreProvider';
+import { PageLoadingContext } from './PageLoadingWrapper';
 
 // // TODO：支持英文版
 // setLocale('zh-CN');
@@ -156,6 +157,20 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
     };
   }, []);
 
+  const pageLoadingContext = useContext(PageLoadingContext);
+
+  useEffect(() => {
+    if (isReady) {
+      pageLoadingContext?.removeTask();
+    } else {
+      pageLoadingContext?.setTask({
+        tip: isServerReady ? '正在获取配置信息' : '正在检查服务状态',
+        showError: settingStore.settingLoadStatus === 'failed',
+        queue: waitNumber > -1 ? { waitNumber } : null,
+      });
+    }
+  }, [isReady, isServerReady, waitNumber, settingStore.settingLoadStatus]);
+
   return (
     <React.Fragment>
       {
@@ -173,10 +188,7 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
                 <Outlet />
               </div>
             ) : (
-              <PageLoading
-                queue={waitNumber > -1 ? { waitNumber } : null}
-                showError={settingStore.settingLoadStatus === 'failed'}
-              />
+              <></>
             )}
           </Context.Provider>
         )}

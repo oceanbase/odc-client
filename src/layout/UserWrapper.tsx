@@ -22,8 +22,9 @@ import { formatMessage } from '@/util/intl';
 import { Outlet, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { history } from '@umijs/max';
+import { PageLoadingContext } from './PageLoadingWrapper';
 
 interface IProps {
   userStore: UserStore;
@@ -40,6 +41,7 @@ enum STATUS_TYPE {
 const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingStore }) {
   const [status, setStatus] = useState<STATUS_TYPE>(STATUS_TYPE.INIT);
   const location = useLocation();
+  const pageContext = useContext(PageLoadingContext);
 
   async function checkLoginStatus() {
     setStatus(STATUS_TYPE.LOADING);
@@ -111,6 +113,36 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
     checkLoginStatus();
   }, []);
 
+  useEffect(() => {
+    switch (status) {
+      case STATUS_TYPE.DONE: {
+        pageContext?.removeTask();
+        break;
+      }
+      case STATUS_TYPE.LOADING: {
+        pageContext?.setTask({
+          tip: '正在获取用户信息',
+          showError: false,
+        });
+        break;
+      }
+      case STATUS_TYPE.ERROR: {
+        pageContext?.setTask({
+          tip: null,
+          showError: true,
+        });
+        break;
+      }
+      default: {
+        pageContext?.setTask({
+          tip: '正在检查用户状态',
+          showError: false,
+        });
+        break;
+      }
+    }
+  }, [status]);
+
   switch (status) {
     case STATUS_TYPE.DONE: {
       return (
@@ -118,12 +150,6 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
           <Outlet />
         </>
       );
-    }
-    case STATUS_TYPE.LOADING: {
-      return <PageLoading showError={false} />;
-    }
-    case STATUS_TYPE.ERROR: {
-      return <PageLoading showError />;
     }
     default: {
       return <></>;
