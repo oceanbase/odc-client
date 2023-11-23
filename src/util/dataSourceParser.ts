@@ -23,7 +23,7 @@ function unifiedStr(value: string) {
 export function getOBUser(value) {
   let [username, tenantName = null, clusterName = null] = value?.split(/\@|#|:/);
   if (clusterName) {
-    const [start, end] = value?.split(clusterName);
+    const end = value?.split(clusterName)?.pop();
     if (end) {
       clusterName = clusterName += end;
     }
