@@ -6,6 +6,7 @@ module.exports = [
     },
     {
       path: '/',
+      wrappers: ["@/layout/PageLoadingWrapper"],
       component: '../layout/AppContainer',
       routes: [
         { path: '/odc/gateway/*', redirect: '/gateway/*'},

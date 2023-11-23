@@ -79,17 +79,30 @@ export default (api: IApi) => {
                 width: 100%;
                 padding: 0px;
                 margin: 0px;
+                left: 0px;
+                top: 0px;
                 display: flex;
+                background: #fff;
                 justify-content: center;
                 align-items: center;
-                background-color: #ffffff;
+                font-size: 12px;
+                font-family: Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC,
+    Hiragino Sans GB, Microsoft YaHei, RareWord, Helvetica Neue, Helvetica, Arial, sans-serif,
+    monospace;
             }
-
+            .loading-tip {
+              position: fixed;
+              left: calc(50% + 20px);
+              top: calc(50% + 60px);
+              transform: translateX(-50%);
+              color: rgba(0, 0, 0, 0.3);
+            }
             #ob-loading-icon {
                 position: fixed;
                 bottom: 50px;
                 margin-left: 50%;
                 transform: translateX(-50%);
+                left: 0px;
             }
 
             .dot-box {
@@ -101,7 +114,6 @@ export default (api: IApi) => {
 
             .dot-item {
                 display: block;
-                float: left;
                 height: 50px;
                 position: absolute;
             }
@@ -231,6 +243,7 @@ export default (api: IApi) => {
             </div>
         </div>
         <img src="/img/odc_icon.svg" width="90px" />
+        <span class='loading-tip'>Downloading</span>
     </div>`,
       `<img id="ob-loading-icon" src="/img/ob_logo.svg" />`,
     ]);
