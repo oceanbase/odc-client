@@ -33,7 +33,6 @@ import { selectFolder } from '@/util/client';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
-import { FormattedMessage } from '@umijs/max';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -395,7 +394,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 marginRight: 8,
               }}
             >
-              <FormattedMessage id="app.button.cancel" />
+              {formatMessage({ id: 'app.button.cancel' })}
             </Button>
             {prevStep ? (
               <Button
@@ -433,7 +432,7 @@ class CreateModal extends React.Component<IProps, IState> {
             ) : null}
             {!nextStep ? (
               <Button loading={submitting} onClick={this.submit} type="primary">
-                <FormattedMessage id="workspace.header.tools.export" />
+                {formatMessage({ id: 'workspace.header.tools.export' })}
               </Button>
             ) : null}
           </Space>

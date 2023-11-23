@@ -31,7 +31,6 @@ import { Button, Collapse, Layout, message, Tabs } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import { PropsTab, TopTab } from '../ViewPage';
@@ -460,10 +459,10 @@ class CreateViewPage extends Component<
         >
           <div className={styles.result}>
             <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
-            <FormattedMessage id="workspace.window.sql.result.failure" />
+            {formatMessage({ id: 'workspace.window.sql.result.failure' })}
             <div className={styles.executedSQL}>{executeSql}</div>
             <div className={styles.failReason}>
-              <FormattedMessage id="workspace.window.sql.result.failureReason" />
+              {formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
             </div>
             <div className={styles.track}>{errStack}</div>
           </div>

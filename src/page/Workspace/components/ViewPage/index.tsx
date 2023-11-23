@@ -21,7 +21,6 @@ import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IResultSet, IView } from '@/d.ts';
-import { ConnectionMode } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import { ViewPage as ViewPageModel } from '@/store/helper/page/pages';
 import { ModalStore } from '@/store/modal';
@@ -33,7 +32,6 @@ import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { generateUniqKey } from '@/util/utils';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 import { Layout, message, Radio, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
@@ -44,6 +42,7 @@ import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { formatMessage } from '@/util/intl';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -385,10 +384,10 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
               className={styles.topbar}
             >
               <Radio.Button value={TopTab.PROPS}>
-                <FormattedMessage id="workspace.window.table.toptab.props" />
+                {formatMessage({ id: 'workspace.window.table.toptab.props' })}
               </Radio.Button>
               <Radio.Button value={TopTab.DATA}>
-                <FormattedMessage id="workspace.window.table.toptab.data" />
+                {formatMessage({ id: 'workspace.window.table.toptab.data' })}
               </Radio.Button>
             </Radio.Group>
 

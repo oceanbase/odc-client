@@ -19,9 +19,9 @@ import Icon from '@ant-design/icons';
 import { Menu } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { PureComponent } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import ProcedureSvg from '@/svgr/Stored-procedure.svg';
+import { formatMessage } from '@/util/intl';
 
 enum MenuKey {
   BROWSER_SCHEMA = 'BROWSER_SCHEMA',
@@ -69,15 +69,15 @@ export default class ProcedureTreeNode extends PureComponent<{
         onMenuClick={this.handleMenuClick}
       >
         <Menu.Item key={MenuKey.BROWSER_SCHEMA}>
-          <FormattedMessage id="workspace.tree.procedure.browserSchema" />
+          {formatMessage({ id: 'workspace.tree.procedure.browserSchema' })}
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key={MenuKey.CREATE_PROCEDURE}>
-          <FormattedMessage id="workspace.tree.procedure.create" />
+          {formatMessage({ id: 'workspace.tree.procedure.create' })}
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key={MenuKey.DELETE_TABLE}>
-          <FormattedMessage id="workspace.tree.table.delete" />
+          {formatMessage({ id: 'workspace.tree.table.delete' })}
         </Menu.Item>
       </Node>
     );

@@ -264,7 +264,7 @@ class ProcedurePage extends Component<
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadProcedure.bind(this, procedure.proName)}
                   />
@@ -282,7 +282,7 @@ class ProcedurePage extends Component<
                 <Toolbar>
                   <ToolbarButton
                     disabled={!getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit}
-                    text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                     icon={<EditOutlined />}
                     onClick={this.editProcedure.bind(this, procedure.proName)}
                   />
@@ -304,7 +304,7 @@ class ProcedurePage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.search" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.search' })}
                     icon={<FileSearchOutlined />}
                     onClick={this.showSearchWidget.bind(this)}
                   />
@@ -328,7 +328,7 @@ class ProcedurePage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadProcedure.bind(this, procedure.proName)}
                   />

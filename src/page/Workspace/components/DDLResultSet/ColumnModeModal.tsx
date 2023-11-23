@@ -17,7 +17,6 @@
 import { formatMessage } from '@/util/intl';
 import { Button, Modal } from 'antd';
 import React, { useContext, useMemo } from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 import type { ResultSetColumn } from '@/d.ts';
 import { LeftSquareOutlined, RightSquareOutlined } from '@ant-design/icons';
@@ -144,7 +143,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       onCancel={() => onClose()}
       footer={[
         <Button key="close" type="primary" onClick={() => onClose()}>
-          <FormattedMessage id="app.button.close" />
+          {formatMessage({ id: 'app.button.close' })}
         </Button>,
       ]}
     >
@@ -168,19 +167,19 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
 
       <footer className={styles.columnModeFooter}>
         <span>
-          <FormattedMessage
-            id="workspace.window.sql.result.pagination.current"
-            values={{
+          {formatMessage(
+            { id: 'workspace.window.sql.result.pagination.current' },
+            {
               current: currentIdx + 1,
-            }}
-          />
+            },
+          )}
           /
-          <FormattedMessage
-            id="workspace.window.sql.result.pagination.total"
-            values={{
+          {formatMessage(
+            { id: 'workspace.window.sql.result.pagination.total' },
+            {
               total,
-            }}
-          />
+            },
+          )}
         </span>
         <span>
           <LeftSquareOutlined

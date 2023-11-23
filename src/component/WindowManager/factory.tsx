@@ -18,9 +18,9 @@ import { IPage } from '@/d.ts';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { Component, ReactNode } from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 
 export default function withConfirmModal(WrappedComponent: any) {
   return class extends Component<
@@ -68,7 +68,7 @@ export default function withConfirmModal(WrappedComponent: any) {
     public readonly state = {
       unsavedModalTitle: '',
       unsavedModalContent: '',
-      unsavedModalSaveButtonText: <FormattedMessage id="app.button.save" />,
+      unsavedModalSaveButtonText: formatMessage({ id: 'app.button.save' }),
       disableUnsavedModalCloseUnsaveButton: false,
       closeImmediately: false,
     };
@@ -136,11 +136,11 @@ export default function withConfirmModal(WrappedComponent: any) {
               footer={[
                 !disableUnsavedModalCloseUnsaveButton && (
                   <Button key="close" onClick={() => onCloseUnsavedModal(pageKey)}>
-                    <FormattedMessage id="app.button.dontsave" />
+                    {formatMessage({ id: 'app.button.dontsave' })}
                   </Button>
                 ),
                 <Button key="back" onClick={onCancelUnsavedModal}>
-                  <FormattedMessage id="app.button.cancel" />
+                  {formatMessage({ id: 'app.button.cancel' })}
                 </Button>,
                 <Button
                   key="submit"

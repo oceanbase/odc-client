@@ -15,7 +15,6 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { FormattedMessage } from '@umijs/max';
 const dataArchiveVariablesDoc = formatMessage({
   id: 'odc.src.component.helpDoc.DefineVariablesSetTime',
 }); //'定义变量、设置时间偏移量并在下文的过滤条件中引用'
@@ -34,21 +33,9 @@ export default {
       }
     </p>
   ),
-  connectType: () => (
-    <p>
-      <FormattedMessage id="portal.connection.form.connectType.desc" />
-    </p>
-  ),
-  dbMode: () => (
-    <p>
-      <FormattedMessage id="portal.connection.form.mode.desc" />
-    </p>
-  ),
-  configUrl: () => (
-    <p>
-      <FormattedMessage id="portal.connection.form.configUrl.desc" />
-    </p>
-  ),
+  connectType: () => <p>{formatMessage({ id: 'portal.connection.form.connectType.desc' })}</p>,
+  dbMode: () => <p>{formatMessage({ id: 'portal.connection.form.mode.desc' })}</p>,
+  configUrl: () => <p>{formatMessage({ id: 'portal.connection.form.configUrl.desc' })}</p>,
   sessionTimeTip: (
     <p>
       {formatMessage({

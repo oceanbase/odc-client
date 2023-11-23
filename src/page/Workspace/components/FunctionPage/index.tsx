@@ -30,7 +30,6 @@ import {
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
@@ -49,6 +48,7 @@ import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -265,7 +265,7 @@ class FunctionPage extends Component<
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />
@@ -283,7 +283,7 @@ class FunctionPage extends Component<
                 <Toolbar>
                   {getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit && (
                     <ToolbarButton
-                      text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                      text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                       icon={<EditOutlined />}
                       onClick={this.editFunction.bind(this, func.funName)}
                     />
@@ -302,7 +302,7 @@ class FunctionPage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.search" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.search' })}
                     icon={<FileSearchOutlined />}
                     onClick={this.showSearchWidget.bind(this)}
                   />
@@ -326,7 +326,7 @@ class FunctionPage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />

@@ -16,7 +16,6 @@
 
 import { formatMessage } from '@/util/intl';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // compatible
 import { runSQLLint } from '@/common/network/sql';
 import { ConnectionMode } from '@/d.ts';
@@ -146,15 +145,13 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
               );
             }}
           >
-            <Button>
-              <FormattedMessage id="app.button.copy" />
-            </Button>
+            <Button>{formatMessage({ id: 'app.button.copy' })}</Button>
           </CopyToClipboard>,
           <Button key="back" onClick={onCancel}>
-            <FormattedMessage id="app.button.cancel" />
+            {formatMessage({ id: 'app.button.cancel' })}
           </Button>,
           <Button key="submit" type="primary" onClick={handleSubmit} loading={loading}>
-            <FormattedMessage id="app.button.execute" />
+            {formatMessage({ id: 'app.button.execute' })}
           </Button>,
         ].filter(Boolean)}
       >

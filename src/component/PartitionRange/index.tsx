@@ -15,7 +15,6 @@
  */
 
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 // compatible
@@ -25,6 +24,7 @@ import update from 'immutability-helper';
 import PartitionValueInput from './PartitionValueInput';
 // @ts-ignore
 import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 
 export interface ISinglePartitionRule {
   name: string;
@@ -188,7 +188,7 @@ export default class PartitionRange extends Component<IProps> {
           size="small"
           onClick={this.handleAdd}
         >
-          <FormattedMessage id="workspace.window.createTable.partition.button.add" />
+          {formatMessage({ id: 'workspace.window.createTable.partition.button.add' })}
         </Button>
       </>
     );
