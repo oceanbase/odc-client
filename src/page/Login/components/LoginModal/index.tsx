@@ -17,12 +17,11 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 // compatible
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import { IUser } from '@/d.ts';
 import { UserStore } from '@/store/login';
-import { getLocalImg } from '@/util/intl';
+import { formatMessage, getLocalImg } from '@/util/intl';
 import { Alert, Button, Form, Input, message } from 'antd';
 import RegisterModal from '../RegisterModal';
 import styles from './index.less';
@@ -156,14 +155,14 @@ class LoginModal extends Component<
             className={styles.bottomButton}
             onClick={() => this.setState({ showChangePasswordModal: true })}
           >
-            <FormattedMessage id="login.button.changePassword" />
+            {formatMessage({ id: 'login.button.changePassword' })}
           </a>
           <span className={styles.divider} />
           <a
             className={styles.bottomButton}
             onClick={() => this.setState({ showRegisterModal: true })}
           >
-            <FormattedMessage id="login.button.register" />
+            {formatMessage({ id: 'login.button.register' })}
           </a>
         </div>
         <ChangePasswordModal

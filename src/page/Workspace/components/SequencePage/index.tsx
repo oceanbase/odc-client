@@ -38,7 +38,6 @@ import {
 import { Layout, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
@@ -175,13 +174,13 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
             >
               <Toolbar>
                 <Toolbar.Button
-                  text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                  text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                   icon={<EditOutlined />}
                   onClick={this.showSequenceEditModal}
                 />
 
                 <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                   icon={<SyncOutlined />}
                   onClick={this.reloadSequence.bind(this, params.sequenceName)}
                 />
@@ -302,7 +301,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                 />
 
                 <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                   icon={<SyncOutlined />}
                   onClick={this.reloadSequence.bind(this, params.sequenceName)}
                 />

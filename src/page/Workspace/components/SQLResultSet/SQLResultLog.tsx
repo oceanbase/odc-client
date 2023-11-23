@@ -25,7 +25,6 @@ import {
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
@@ -45,18 +44,18 @@ function getSuccessLog(type: SqlType, total: number) {
     case SqlType.replace: {
       return (
         <>
-          <FormattedMessage id="workspace.window.sql.result.success" />
-          <FormattedMessage
-            id="workspace.window.sql.result.affected"
-            values={{
+          {formatMessage({ id: 'workspace.window.sql.result.success' })}
+          {formatMessage(
+            { id: 'workspace.window.sql.result.affected' },
+            {
               num: total,
-            }}
-          />
+            },
+          )}
         </>
       );
     }
     default: {
-      return <FormattedMessage id="workspace.window.sql.result.success" />;
+      return formatMessage({ id: 'workspace.window.sql.result.success' });
     }
   }
 }
@@ -163,25 +162,21 @@ const SQLResultLog: React.FC<IProps> = function (props) {
         <>
           <Space>
             <CloseCircleFilled style={{ color: '#F5222D' }} />
-            {isCanceled ? (
-              formatMessage({
-                id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',
-              })
-            ) : (
-              // SQL 执行被取消
-              <FormattedMessage id="workspace.window.sql.result.failure" />
-            )}
+            {isCanceled
+              ? formatMessage({
+                  id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',
+                })
+              : // SQL 执行被取消
+                formatMessage({ id: 'workspace.window.sql.result.failure' })}
           </Space>
           <MultiLineOverflowText className={styles.executedSQL} content={logData.executeSql} />
           <div className={styles.failReason}>
-            {isCanceled ? (
-              formatMessage({
-                id: 'odc.components.SQLResultSet.SQLResultLog.ReasonForCancellation',
-              })
-            ) : (
-              // 取消原因
-              <FormattedMessage id="workspace.window.sql.result.failureReason" />
-            )}
+            {isCanceled
+              ? formatMessage({
+                  id: 'odc.components.SQLResultSet.SQLResultLog.ReasonForCancellation',
+                })
+              : // 取消原因
+                formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
           </div>
           <div className={styles.track}>{logData.track}</div>
         </>

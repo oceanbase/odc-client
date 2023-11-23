@@ -186,7 +186,7 @@ function SessionParamsTable(props: {
             <div className="tools-left">
               <ToolbarButton
                 isShowText
-                text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                 icon={<EditOutlined />}
                 onClick={handleOpenEditModal}
                 // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
@@ -204,7 +204,7 @@ function SessionParamsTable(props: {
                 className={styles.search}
               />
               <ToolbarButton
-                text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                 icon={<SyncOutlined />}
                 onClick={handleRefresh}
               />

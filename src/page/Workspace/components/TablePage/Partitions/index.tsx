@@ -20,7 +20,6 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { Form, Input, InputNumber, Space } from 'antd';
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import { partitionNameMap } from '../../CreateTable/Partition/CreateTablePartitionRuleForm';
 import TablePageContext from '../context';
 
@@ -290,7 +289,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.header.create" />}
+                    text={formatMessage({ id: 'workspace.header.create' })}
                     icon={<PlusOutlined />}
                     onClick={handleAddColumn}
                   />

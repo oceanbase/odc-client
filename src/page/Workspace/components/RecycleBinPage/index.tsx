@@ -29,7 +29,6 @@ import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { sortString } from '@/util/utils';
 import { ExclamationCircleFilled, SettingOutlined, SyncOutlined } from '@ant-design/icons';
-import { FormattedMessage } from '@umijs/max';
 import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import classNames from 'classnames';
@@ -368,7 +367,7 @@ class RecycleBin extends Component<
                   <ToolbarButton
                     type="BUTTON"
                     disabled={!selectedObjectNames.size}
-                    text={<FormattedMessage id="workspace.window.recyclebin.button.restore" />}
+                    text={formatMessage({ id: 'workspace.window.recyclebin.button.restore' })}
                     onClick={() => this.setState({ showRestoreDrawer: true })}
                   />
 
@@ -417,7 +416,7 @@ class RecycleBin extends Component<
                   </RecycleConfig>
                 </RecyleConfigContext.Provider>
                 <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                   icon={<SyncOutlined />}
                   onClick={this.handleRefresh}
                 />
@@ -492,10 +491,10 @@ class RecycleBin extends Component<
               onClick={() => this.setState({ showDeleteDrawer: false })}
               style={{ marginRight: 8 }}
             >
-              <FormattedMessage id="app.button.cancel" />
+              {formatMessage({ id: 'app.button.cancel' })}
             </Button>
             <Button onClick={this.handleDelete} danger ghost>
-              <FormattedMessage id="workspace.window.recyclebin.button.clean" />
+              {formatMessage({ id: 'workspace.window.recyclebin.button.clean' })}
             </Button>
           </div>
         </Drawer>
@@ -520,10 +519,10 @@ class RecycleBin extends Component<
 
           <div className={styles.drawerFooter}>
             <Button onClick={this.handleCancelRestore} style={{ marginRight: 8 }}>
-              <FormattedMessage id="app.button.cancel" />
+              {formatMessage({ id: 'app.button.cancel' })}
             </Button>
             <Button onClick={this.handleRestore} type="primary">
-              <FormattedMessage id="workspace.window.recyclebin.button.restore" />
+              {formatMessage({ id: 'workspace.window.recyclebin.button.restore' })}
             </Button>
           </div>
         </Drawer>

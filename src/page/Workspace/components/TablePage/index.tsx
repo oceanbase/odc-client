@@ -24,7 +24,6 @@ import { Layout, Radio, Space, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import { ITableModel } from '../CreateTable/interface';
 import TableColumns from './Columns';
 import TableConstraints from './Constraints';
@@ -174,10 +173,10 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
-              <FormattedMessage id="workspace.window.table.toptab.props" />
+              {formatMessage({ id: 'workspace.window.table.toptab.props' })}
             </Radio.Button>
             <Radio.Button value={TopTab.DATA}>
-              <FormattedMessage id="workspace.window.table.toptab.data" />
+              {formatMessage({ id: 'workspace.window.table.toptab.data' })}
             </Radio.Button>
           </Radio.Group>
           <Space>

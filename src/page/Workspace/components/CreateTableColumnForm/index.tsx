@@ -20,11 +20,11 @@ import { SyncOutlined } from '@ant-design/icons';
 import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid';
 import memoizeOne from 'memoize-one';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 import EditableTable, { RowType } from '../EditableTable';
 import { WrapAutoCompleteEditor } from '../EditableTable/Editors/AutoComplete';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -167,7 +167,7 @@ export default class CreateTableColumnForm extends Component<
           <Toolbar>
             {allowRefresh && (
               <ToolbarButton
-                text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                 icon={<SyncOutlined />}
                 onClick={this.handleRefreshColumn}
               />

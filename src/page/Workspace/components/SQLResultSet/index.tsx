@@ -162,10 +162,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         }}
       >
         <Menu.Item key={MenuKey.LOCK}>
-          <FormattedMessage id="workspace.window.sql.record.column.lock" />
+          {formatMessage({ id: 'workspace.window.sql.record.column.lock' })}
         </Menu.Item>
         <Menu.Item key={MenuKey.UNLOCK}>
-          <FormattedMessage id="workspace.window.sql.record.column.unlock" />
+          {formatMessage({ id: 'workspace.window.sql.record.column.unlock' })}
         </Menu.Item>
       </Menu>
     );

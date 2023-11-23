@@ -54,7 +54,6 @@ import { useControllableValue, useUpdate } from 'ahooks';
 import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import styles from './index.less';
@@ -727,20 +726,20 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               (isEditing ? (
                 <>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.add" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.add' })}
                     icon={<PlusOutlined />}
                     onClick={handleAddRow}
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.delete" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.delete' })}
                     icon={<MinusOutlined />}
                     onClick={handleDeleteRows}
                   />
 
                   <ToolbarButton
                     disabled={!rows[selectedRowIdx]}
-                    text={<FormattedMessage id="workspace.window.sql.button.copy" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.copy' })}
                     icon={<CopyOutlined />}
                     onClick={handleCopyRow}
                   />
@@ -750,7 +749,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               ) : (
                 <>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.edit.enable' })}
                     icon={<EditOutlined />}
                     onClick={() => {
                       setIsEditing(true);
@@ -814,21 +813,21 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 <>
                   <ToolbarButton
                     disabled={!isEditing}
-                    text={<FormattedMessage id="workspace.window.sql.button.edit.add" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.edit.add' })}
                     icon={<PlusOutlined />}
                     onClick={handleAddRow}
                   />
 
                   <ToolbarButton
                     disabled={!isEditing}
-                    text={<FormattedMessage id="workspace.window.sql.button.edit.delete" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.edit.delete' })}
                     icon={<MinusOutlined />}
                     onClick={handleDeleteRows}
                   />
 
                   <ToolbarButton
                     disabled={!isEditing || !rows[selectedRowIdx]}
-                    text={<FormattedMessage id="workspace.window.sql.button.copy" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.copy' })}
                     icon={<CopyOutlined />}
                     onClick={handleCopyRow}
                   />
@@ -837,7 +836,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </>
               ) : (
                 <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.sql.button.edit.enable" />}
+                  text={formatMessage({ id: 'workspace.window.sql.button.edit.enable' })}
                   icon={<EditOutlined />}
                   onClick={handleToggleEditable}
                 />
@@ -994,7 +993,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
 
             {/* <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                  text={formatMessage({ id: "workspace.window.session.button.refresh" })}
                   icon={<Icon type="sync" />}
                   onClick={onRefresh.bind(this, this.state.limit || 1000)}
                   /> */}
@@ -1003,7 +1002,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             <span className={styles.limit}>
               {isTableData || isViewData ? (
                 <>
-                  <FormattedMessage id="workspace.window.sql.limit" />
+                  {formatMessage({ id: 'workspace.window.sql.limit' })}
                   <InputNumber
                     onInput={(limit) => {
                       if (limit == '' || isNil(limit)) {
@@ -1078,16 +1077,16 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   </Row>
                 </Checkbox.Group>
               }
-              title={<FormattedMessage id="workspace.window.sql.button.columnFilter.title" />}
+              title={formatMessage({ id: 'workspace.window.sql.button.columnFilter.title' })}
             >
               <ToolbarButton
-                text={<FormattedMessage id="workspace.window.sql.button.columnFilter" />}
+                text={formatMessage({ id: 'workspace.window.sql.button.columnFilter' })}
                 icon={<FilterOutlined />}
               />
             </Popover>
             <ToolbarButton
               disabled={!rows[selectedRowIdx]}
-              text={<FormattedMessage id="workspace.window.sql.button.columnMode" />}
+              text={formatMessage({ id: 'workspace.window.sql.button.columnMode' })}
               icon={<BarsOutlined />}
               onClick={() => {
                 setShowColumnMode(true);
@@ -1099,7 +1098,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
              */}
             {!isEditing && onRefresh ? (
               <ToolbarButton
-                text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                 icon={<SyncOutlined />}
                 onClick={onRefresh.bind(this, limit || 1000)}
               />

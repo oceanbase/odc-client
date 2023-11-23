@@ -17,7 +17,6 @@
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Col, Input, Row } from 'antd';
 import React from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import classNames from 'classnames';
 import { ISinglePartitionRule } from '.';
@@ -26,6 +25,7 @@ import styles from './index.less';
 // @ts-ignore
 import DragSvg from '@/svgr/drag.svg';
 import PartitionValueInput from './PartitionValueInput';
+import { formatMessage } from '@/util/intl';
 
 export interface IDragableParamProps extends IDragable {
   deletable: boolean;
@@ -124,7 +124,7 @@ class DragableRule extends React.PureComponent<{ props: IDragableParamProps }> {
               <Icon component={DragSvg} className={styles.dragHandler} />
             </span>
             <span className="ant-form-item-required">
-              <FormattedMessage id="workspace.window.createTable.partition.name" />：
+              {formatMessage({ id: 'workspace.window.createTable.partition.name' })}：
             </span>
             <Input
               value={rule.name}
