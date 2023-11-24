@@ -24,7 +24,7 @@ export default function setAboutPanelOptions(app: App) {
     applicationVersion: packageJson.version,
     copyright: packageJson.copyright,
     version: packageJson.version,
-    credits: 'A SQL Client for OceanBase',
+    credits: 'OceanBase Developer Center',
     // iconPath: path.join(process.resourcesPath || '', 'libraries', 'splash-screen', 'img', 'ob_logo.png'),
   });
 }
