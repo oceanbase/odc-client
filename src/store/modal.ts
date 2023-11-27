@@ -113,6 +113,9 @@ export class ModalStore {
   public dataArchiveVisible: boolean = false;
 
   @observable
+  public dataArchiveEditId: number = null;
+
+  @observable
   public dataClearVisible: boolean = false;
 
   @observable
@@ -319,8 +322,9 @@ export class ModalStore {
   }
 
   @action
-  public changeDataArchiveModal(isShow: boolean = true) {
+  public changeDataArchiveModal(isShow: boolean = true, id?: number) {
     this.dataArchiveVisible = isShow;
+    this.dataArchiveEditId = isShow ? id : null;
   }
 
   @action

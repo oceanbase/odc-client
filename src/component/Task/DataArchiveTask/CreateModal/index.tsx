@@ -15,9 +15,9 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask } from '@/common/network/task';
+import { createTask, getCycleTaskDetail } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
-import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
@@ -30,22 +30,25 @@ import {
   TaskPageScope,
   TaskPageType,
   TaskType,
+  IDataArchiveJobParameters,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb } from '@/util/utils';
+import { mbToKb, kbToMb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
+import moment from 'moment';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
+import { timeUnitOptions } from './VariableConfig';
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
@@ -67,7 +70,13 @@ export const InsertActionOptions = [
 export const variable = {
   name: '',
   format: '',
-  pattern: [null],
+  pattern: [
+    {
+      operator: '',
+      step: '',
+      unit: '',
+    },
+  ],
 };
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
@@ -98,7 +107,7 @@ const getVariables = (
     try {
       _pattern = pattern
         ?.map((item) => {
-          return `${item.operator}${item.step}${item.unit}`;
+          return `${item.operator}${item.step ?? 0}${item.unit}`;
         })
         ?.join(' ');
     } catch (error) {}
@@ -108,9 +117,41 @@ const getVariables = (
     };
   });
 };
+
+const getVariableValue = (
+  value: {
+    name: string;
+    pattern: string;
+  }[],
+) => {
+  var reg = /([+-])?(\d+)?(.+)?/;
+  return value?.map(({ name, pattern }) => {
+    const [format, _pattern] = pattern?.split('|');
+    let patternValue = {
+      operator: '',
+      step: '',
+      unit: '',
+    };
+    if (_pattern) {
+      const res = _pattern?.match(reg);
+      const operator = res[1] ?? '';
+      const step = res[2] ?? '';
+      const unit = timeUnitOptions.map((item) => item.value).includes(res[3]) ? res[3] : '';
+      patternValue = {
+        operator,
+        step,
+        unit,
+      };
+    }
+    return {
+      name,
+      format,
+      pattern: [patternValue],
+    };
+  });
+};
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
-  const [formData, setFormData] = useState(null);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
@@ -127,15 +168,57 @@ const CreateModal: React.FC<IProps> = (props) => {
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-  const { dataArchiveVisible, SQLPlanEditId } = modalStore;
-  const isEdit = !!SQLPlanEditId;
-  const setFormStatus = (fieldName: string, errorMessage: string) => {
-    form.setFields([
-      {
-        name: [fieldName],
-        errors: errorMessage ? [errorMessage] : [],
-      },
-    ]);
+  const { dataArchiveVisible, dataArchiveEditId } = modalStore;
+  const isEdit = !!dataArchiveEditId;
+  const loadEditData = async (editId: number) => {
+    const data = await getCycleTaskDetail<IDataArchiveJobParameters>(editId);
+    const {
+      jobParameters,
+      description,
+      triggerConfig: { triggerStrategy, cronExpression, hours, days, startAt },
+    } = data;
+
+    const {
+      targetDataBaseId,
+      sourceDatabaseId,
+      deleteAfterMigration,
+      migrationInsertAction,
+      rateLimit,
+      tables,
+      variables,
+    } = jobParameters;
+
+    const formData = {
+      databaseId: sourceDatabaseId,
+      targetDatabase: targetDataBaseId,
+      rowLimit: rateLimit?.rowLimit,
+      dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
+      deleteAfterMigration,
+      migrationInsertAction,
+      tables,
+      variables: getVariableValue(variables),
+      archiveRange: IArchiveRange.PORTION,
+      triggerStrategy,
+      startAt: undefined,
+      description,
+    };
+
+    if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
+      formData.triggerStrategy = TaskExecStrategy.TIMER;
+      const crontab = {
+        mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        dateType: triggerStrategy as any,
+        cronString: cronExpression,
+        hour: hours,
+        dayOfMonth: days,
+        dayOfWeek: days,
+      };
+      setCrontab(crontab);
+    }
+    if (triggerStrategy === TaskExecStrategy.START_AT) {
+      formData.startAt = moment(startAt);
+    }
+    form.setFieldsValue(formData);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -226,7 +309,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const parameters = {
           type: TaskType.MIGRATION,
           operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
-          taskId: SQLPlanEditId,
+          taskId: dataArchiveEditId,
           scheduleTaskParameters: {
             sourceDatabaseId: databaseId,
             targetDataBaseId: targetDatabase,
@@ -289,7 +372,6 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(true);
   };
   const handleReset = () => {
-    setFormData(null);
     form?.resetFields();
     crontabRef.current?.resetFields();
   };
@@ -301,9 +383,18 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (database?.id) {
       loadTables();
-      form.setFieldValue('tables', [null]);
+      if (!isEdit) {
+        form.setFieldValue('tables', [null]);
+      }
     }
   }, [database?.id]);
+
+  useEffect(() => {
+    if (dataArchiveEditId) {
+      loadEditData(dataArchiveEditId);
+    }
+  }, [dataArchiveEditId]);
+
   return (
     <Drawer
       destroyOnClose
@@ -360,6 +451,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Space align="start">
           <DatabaseSelect
             type={TaskType.DATA_ARCHIVE}
+            disabled={isEdit}
             label={formatMessage({
               id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
             })}
