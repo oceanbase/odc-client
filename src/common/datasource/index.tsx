@@ -19,11 +19,14 @@ import { IDataSourceModeConfig } from './interface';
 import { IDataSourceType } from '@/d.ts/datasource';
 import obOracle from './oceanbase/oboracle';
 import obMySQL from './oceanbase/obmysql';
+import oracle from './oracle';
 import MySQL from './mysql';
 import OBSvg from '@/svgr/source_ob.svg';
 import DBOBSvg from '@/svgr/database_oceanbase.svg';
 import MySQLSvg from '@/svgr/mysql.svg';
 import DBMySQLSvg from '@/svgr/database_mysql.svg';
+import OracleSvg from '@/svgr/oracle.svg';
+import DBOracleSvg from '@/svgr/database_oracle.svg';
 
 const _types: Map<
   IDataSourceType,
@@ -54,6 +57,15 @@ const _styles = {
       component: DBMySQLSvg,
     },
   },
+  [IDataSourceType.Oracle]: {
+    icon: {
+      component: OracleSvg,
+      color: "#ed1d25"
+    },
+    dbIcon: {
+      component: DBOracleSvg
+    }
+  }
 };
 
 const connectType2Ds: Map<ConnectType, IDataSourceType> = new Map();
@@ -92,6 +104,7 @@ function register(
 register(IDataSourceType.OceanBase, obOracle);
 register(IDataSourceType.OceanBase, obMySQL);
 register(IDataSourceType.MySQL, MySQL);
+register(IDataSourceType.Oracle, oracle)
 
 function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   if (!ds) {

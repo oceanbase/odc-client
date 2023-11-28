@@ -714,6 +714,9 @@ export interface IConnection {
   sessionInitScript?: string;
   defaultSchema?: string;
   projectId?: number;
+  sid?: string;
+  serverName?: string;
+  userRole?: string;
   readonly projectName?: string;
 }
 
@@ -2916,6 +2919,7 @@ export enum ConnectType {
   CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
+  ORACLE = 'ORACLE'
 }
 
 export enum DragInsertType {
