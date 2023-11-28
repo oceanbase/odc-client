@@ -59,6 +59,7 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       role: true,
       sys: false,
       ssl: false,
+      jdbcDoc: "https://docs.oracle.com/en/database/oracle/oracle-database/21/jajdb/oracle/jdbc/OracleConnection.html"
     },
     features: {
       task: Object.values(TaskType).filter(
