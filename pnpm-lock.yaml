@@ -100,6 +100,9 @@ devDependencies:
   '@umijs/max':
     specifier: ^4.0.66
     version: 4.0.66(@babel/core@7.23.3)(@types/node@9.6.61)(@types/react-dom@16.9.18)(@types/react@16.14.35)(dva@2.5.0-beta.2)(postcss@8.4.31)(prettier@2.2.1)(prop-types@15.8.1)(rc-field-form@1.40.0)(react-dom@17.0.2)(react@17.0.2)(styled-components@6.1.1)(typescript@4.9.5)(webpack@4.46.0)
+  '@umijs/yorkie':
+    specifier: ^2.0.0
+    version: 2.0.5
   adm-zip:
     specifier: ^0.5.5
     version: 0.5.10
@@ -328,9 +331,6 @@ devDependencies:
   xterm-addon-fit:
     specifier: ^0.4.0
     version: 0.4.0(xterm@4.19.0)
-  yorkie:
-    specifier: ^2.0.0
-    version: 2.0.0
 
 packages:
 
@@ -4373,7 +4373,7 @@ packages:
     resolution: {integrity: sha512-hy8b7Y1J8OGe6LbAjj3xniQrj3v6lsivCcrmf4TzSgPzLkhIeKgc5IZnT7ReIqmEuodjfO8EYAuoFvIrHi/+jQ==}
     deprecated: This is a stub types definition. history provides its own type definitions, so you do not need this installed.
     dependencies:
-      history: 4.10.1
+      history: 5.3.0
     dev: true
 
   /@types/hoist-non-react-statics@3.3.1:
@@ -5374,7 +5374,7 @@ packages:
       axios: 0.27.2
       babel-plugin-import: 1.13.6
       dayjs: 1.11.7
-      dva-core: 2.0.4(redux@3.7.2)
+      dva-core: 2.0.4(redux@4.2.1)
       dva-immer: 1.0.0(dva@2.5.0-beta.2)
       dva-loading: 3.0.23(dva-core@2.0.4)
       event-emitter: 0.3.5
@@ -5551,6 +5551,17 @@ packages:
       valtio: 1.9.0(react@17.0.2)
     transitivePeerDependencies:
       - react
+    dev: true
+
+  /@umijs/yorkie@2.0.5:
+    resolution: {integrity: sha512-vgu4U7/pvG73vY0GGQftXht2t6YAecS8P1cUHIj9VfUHzXIKuRXiaewxxasYgr3gBNrY3GpGiVnmJsHDG6Q3+g==}
+    engines: {node: '>=4'}
+    requiresBuild: true
+    dependencies:
+      execa: 0.8.0
+      is-ci: 1.2.1
+      normalize-path: 1.0.0
+      strip-indent: 2.0.0
     dev: true
 
   /@umijs/zod2ts@4.0.66:
@@ -8323,7 +8334,7 @@ packages:
       warning: 3.0.0
     dev: true
 
-  /dva-core@2.0.4(redux@3.7.2):
+  /dva-core@2.0.4(redux@4.2.1):
     resolution: {integrity: sha512-Zh39llFyItu9HKXKfCZVf9UFtDTcypdAjGBew1S+wK8BGVzFpm1GPTdd6uIMeg7O6STtCvt2Qv+RwUut1GFynA==}
     peerDependencies:
       redux: 4.x
@@ -8333,7 +8344,7 @@ packages:
       global: 4.4.0
       invariant: 2.2.4
       is-plain-object: 2.0.4
-      redux: 3.7.2
+      redux: 4.2.1
       redux-saga: 0.16.2
       warning: 3.0.0
     dev: true
@@ -8354,7 +8365,7 @@ packages:
       dva-core: ^1.1.0 || ^1.5.0-0 || ^1.6.0-0
     dependencies:
       '@babel/runtime': 7.23.2
-      dva-core: 2.0.4(redux@3.7.2)
+      dva-core: 2.0.4(redux@4.2.1)
     dev: true
 
   /dva@2.5.0-beta.2(react-dom@17.0.2)(react@17.0.2):
@@ -15416,7 +15427,7 @@ packages:
   /react-redux@8.0.5(@types/react-dom@16.9.18)(@types/react@16.14.35)(react-dom@17.0.2)(react@17.0.2)(redux@4.2.1):
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
-      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react': ^16.0.0
       '@types/react-dom': ^16.8 || ^17.0 || ^18.0
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
@@ -18611,17 +18622,6 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-    dev: true
-
-  /yorkie@2.0.0:
-    resolution: {integrity: sha512-jcKpkthap6x63MB4TxwCyuIGkV0oYP/YRyuQU5UO0Yz/E/ZAu+653/uov+phdmO54n6BcvFRyyt0RRrWdN2mpw==}
-    engines: {node: '>=4'}
-    requiresBuild: true
-    dependencies:
-      execa: 0.8.0
-      is-ci: 1.2.1
-      normalize-path: 1.0.0
-      strip-indent: 2.0.0
     dev: true
 
   /zip-stream@4.1.0:

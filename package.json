@@ -165,7 +165,7 @@
     "webpack-node-externals": "^2.5.0",
     "xterm": "^4.9.0",
     "xterm-addon-fit": "^0.4.0",
-    "yorkie": "^2.0.0"
+    "@umijs/yorkie": "^2.0.0"
   },
   "appName": "OceanBase Developer Center",
   "build": {
