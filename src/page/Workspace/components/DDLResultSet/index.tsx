@@ -917,7 +917,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   />
                 </Tooltip>
               ))}
-            {obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1 ? (
+            {obVersion?.startsWith('4.') && parseInt(obVersion?.[2]) >= 1 ? (
               <ToolbarButton
                 text={withFullLinkTrace ? '全链路 Trace' : traceEmptyReason}
                 disabled={!withFullLinkTrace}
