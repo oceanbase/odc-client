@@ -36,7 +36,7 @@
     "pack-client:windows": "node ./scripts/client/build.js win",
     "updateDoc": "node ./scripts/pulldoc.js",
     "postinstall": "node scripts/plugin/initPlugins.js && max setup",
-    "prepare": "husky install && husky add .husky/pre-commit \"npm run precommit\""
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx,less,md,json}": [
