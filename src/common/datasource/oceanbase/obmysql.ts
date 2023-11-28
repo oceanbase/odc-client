@@ -74,6 +74,7 @@ const items: Record<
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
+      sessionManage: true,
       supportOBProxy: true,
       export: {
         fileLimit: true,
@@ -103,6 +104,7 @@ const items: Record<
       task: Object.values(TaskType),
       obclient: true,
       recycleBin: true,
+      sessionManage: true,
       sqlExplain: true,
       supportOBProxy: true,
       export: {
@@ -134,6 +136,7 @@ const items: Record<
       task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.EXPORT_RESULT_SET],
       obclient: false,
       recycleBin: false,
+      sessionManage: true,
       sqlExplain: false,
       supportOBProxy: true,
       export: {

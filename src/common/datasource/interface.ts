@@ -111,9 +111,10 @@ export interface IDataSourceModeConfig {
   priority?: number;
   connection: {
     address: {
-      items: ('ip' | 'port' | 'cluster' | 'tenant')[];
+      items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid')[];
     };
     account: boolean;
+    role?: boolean;
     sys: boolean;
     ssl: boolean;
     defaultSchema?: boolean;
@@ -125,6 +126,7 @@ export interface IDataSourceModeConfig {
     obclient?: boolean;
     recycleBin?: boolean;
     sqlExplain?: boolean;
+    sessionManage: boolean;
     compile?: boolean;
     plEdit?: boolean;
     anonymousBlock?: boolean;

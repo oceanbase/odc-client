@@ -124,6 +124,9 @@ const tabs = [
     }),
     //会话
     key: IPageType.Datasource_session,
+    isHide(datasource: IDatasource) {
+      return !getDataSourceModeConfig(datasource?.type)?.features?.sessionManage;
+    },
   },
   {
     tab: formatMessage({

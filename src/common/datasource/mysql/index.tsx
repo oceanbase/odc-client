@@ -78,6 +78,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       ],
       obclient: true,
       recycleBin: false,
+      sessionManage: true,
       sqlExplain: true,
       export: {
         fileLimit: false,
