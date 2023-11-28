@@ -29,6 +29,7 @@ import { toInteger } from 'lodash';
 interface IProps {
   type: TaskType;
   label?: string;
+  disabled?: boolean;
   name?: string;
   projectId?: number;
   extra?: string;
@@ -47,6 +48,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     projectId,
     extra = '',
     width = '320px',
+    disabled = false,
     onChange,
   } = props;
   const [databases, setDatabases] = useState<IDatabase[]>([]);
@@ -160,6 +162,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     >
       <Select
         showSearch
+        disabled={disabled}
         filterOption={(input, option) =>
           (option?.label?.props?.['data-label'] ?? '').toLowerCase().includes(input.toLowerCase())
         }
