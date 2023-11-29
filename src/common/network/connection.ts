@@ -44,7 +44,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     type: formData.type,
     defaultSchema: formData?.defaultSchema,
     sid: formData?.sid,
-    serverName: formData?.serverName,
+    serviceName: formData?.serviceName,
     userRole: formData?.userRole,
     name: formData.name,
     username: formData.username,
