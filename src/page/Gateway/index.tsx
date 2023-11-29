@@ -19,7 +19,7 @@
  */
 import { Layout, Spin, Tag } from 'antd'; // @ts-ignore
 import React, { useEffect, useState } from 'react';
-import { formatMessage, history } from '@umijs/max';
+import { history } from '@umijs/max';
 
 import { decrypt } from '@/common/network/other';
 import { UserStore } from '@/store/login';
@@ -36,6 +36,7 @@ import { action as newCloudConnectionAction, INewCloudConnection } from './newCl
 import { apply as ssoLoginAction, ISSOLogin } from './ssoLogin';
 import { action as taskAction, ITaskAction } from './task';
 import { action as tutorialAction, ITutorialAction } from './tutorial';
+import { formatMessage } from '@/util/intl';
 const { Content } = Layout;
 
 interface IRemoteStartData {
