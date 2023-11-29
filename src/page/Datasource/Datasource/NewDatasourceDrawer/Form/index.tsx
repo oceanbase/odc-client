@@ -86,9 +86,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'sessionInitScript',
         'jdbcUrlParameters',
         'defaultSchema',
-        "sid",
-        "serverName",
-        "userRole"
+        'sid',
+        'serviceName',
+        'userRole',
       ]);
     } catch (e) {}
     if (!values) {
@@ -167,8 +167,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
       <Form
         initialValues={{
           type,
-          userRole: "NORMAL",
-          sid: ""
+          userRole: 'NORMAL',
+          sid: '',
         }}
         layout="vertical"
         form={form}
