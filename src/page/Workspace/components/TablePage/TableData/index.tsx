@@ -28,13 +28,13 @@ import type { SQLStore } from '@/store/sql';
 import notification from '@/util/notification';
 import { generateSelectSql } from '@/util/sql';
 import { generateUniqKey } from '@/util/utils';
-import { formatMessage } from '@umijs/max';
 import { message, Spin } from 'antd';
 import { isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import DDLResultSet from '../../DDLResultSet';
 import { wrapRow } from '../../DDLResultSet/util';
+import { formatMessage } from '@/util/intl';
 const GLOBAL_HEADER_HEIGHT = 40;
 const TABBAR_HEIGHT = 46;
 interface ITableDataProps {
