@@ -470,6 +470,7 @@ const ActionBar: React.FC<IProps> = inject(
           case TaskStatus.ROLLBACK_FAILED:
           case TaskStatus.ROLLBACK_SUCCEEDED:
           case TaskStatus.CANCELLED:
+          case TaskStatus.PRE_CHECK_FAILED:
           case TaskStatus.COMPLETED: {
             if (isOwner || (isOwner && isApprovable)) {
               tools = [reTryBtn];
