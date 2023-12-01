@@ -38,6 +38,7 @@ import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import { useRequest } from 'ahooks';
 import HelpItem from './HelpItem';
 import styles from './index.less';
 import Logo from './Logo';
@@ -64,9 +65,15 @@ const Sider: React.FC<IProps> = function (props) {
     _setCollapsed(v);
   }
 
+  const { run } = useRequest(props.taskStore?.getTaskMetaInfo, {
+    pollingInterval: 5000,
+  });
+
   useEffect(() => {
-    props.taskStore?.getTaskMetaInfo();
-    tracert.expo('a3112.b46782.c330851');
+    if (!isClient()) {
+      run();
+      tracert.expo('a3112.b46782.c330851');
+    }
   }, []);
 
   return (

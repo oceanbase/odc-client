@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import type { IApplyPermissionTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
+import type { IApplyPermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider } from 'antd';
 
 interface IProps {
   task: TaskDetail<IApplyPermissionTaskParams>;
-  result: ITaskResult;
-  hasFlow: boolean;
 }
 const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
   const { task } = props;
