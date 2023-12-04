@@ -476,6 +476,7 @@ const TaskTable: React.FC<IProps> = inject(
                       activeTaskLabel: activeTaskLabel,
                     },
                   ), //`新建${activeTaskLabel}`
+                  disabled: disabledOpt,
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskTabType);
