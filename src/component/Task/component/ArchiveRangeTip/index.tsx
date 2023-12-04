@@ -19,12 +19,12 @@ import styles from './index.less';
 
 const { Text, Link } = Typography;
 
-const example1 = "create_time<’2023-01-01’";
-const example2 = "过滤条件：create_time<‘${自定义变量名}’";
+const example1 = 'create_time<’2023-01-01’';
+const example2 = '过滤条件：create_time<‘${bizdate}’';
 
 const Content: React.FC<{
   label: string;
-}> = ({ label }) =>{
+}> = ({ label }) => {
   return (
     <Space direction="vertical" size={20}>
       <Space direction="vertical" size={5}>
@@ -33,12 +33,13 @@ const Content: React.FC<{
           <Text type="secondary">{example1}</Text>
         </div>
       </Space>
-      <Space direction="vertical" style={{ width: '100%'}}>
+      <Space direction="vertical" style={{ width: '100%' }}>
         <Text>如选择定期{label} 7 天前的数据，可设置：</Text>
-        <Space className={styles.blockCard} direction='vertical' size={12}>
+        <Space className={styles.blockCard} direction="vertical" size={12}>
           <Text type="secondary">{example2}</Text>
-          <Space direction='vertical' size={4}>
-            <Text type="secondary">自定义变量：</Text>
+          <Space direction="vertical" size={4}>
+            <Text type="secondary">自定义变量设置</Text>
+            <Text type="secondary">变量名称：bizdate</Text>
             <Text type="secondary">时间格式：yyyy-mm-dd</Text>
             <Text type="secondary">时间偏移：减 7 日</Text>
           </Space>
@@ -46,7 +47,7 @@ const Content: React.FC<{
       </Space>
     </Space>
   );
-}
+};
 
 interface IProps {
   label: string;
@@ -54,7 +55,11 @@ interface IProps {
 
 const ArchiveRangeTip: React.FC<IProps> = (props) => {
   return (
-    <Popover placement="bottom" content={<Content label={props.label} />} trigger={["click", "hover"]}>
+    <Popover
+      placement="bottom"
+      content={<Content label={props.label} />}
+      trigger={['click', 'hover']}
+    >
       <Link>场景示例</Link>
     </Popover>
   );

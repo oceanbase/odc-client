@@ -18,7 +18,7 @@ import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration } from '@/d.ts';
 import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
-import { Button, Checkbox, Descriptions, Drawer, Form, Radio } from 'antd';
+import { Button, Checkbox, Col, Descriptions, Drawer, Form, Radio, Row } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
@@ -205,12 +205,30 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           }
           name={'appliedDialectTypes'}
         >
-          <Checkbox.Group>
-            {rule?.metadata?.supportedDialectTypes?.map((sdt, index) => (
-              <Checkbox value={sdt} key={index}>
-                {sdt}
-              </Checkbox>
-            ))}
+          <Checkbox.Group style={{ width: '100%' }}>
+            {Array.from({
+              length: Math.ceil(rule?.metadata?.supportedDialectTypes?.length / 2),
+            })?.map((_, index) => {
+              const sdt1 = rule?.metadata?.supportedDialectTypes[2 * index];
+              const sdt2 = rule?.metadata?.supportedDialectTypes[2 * index + 1];
+              const inRange = 2 * index + 1 < rule?.metadata?.supportedDialectTypes?.length; // inRange 为false，已经超出数组长度，不渲染多余的空checkbox
+              return (
+                <Row>
+                  <Col span={12}>
+                    <Checkbox value={sdt1} key={2 * index}>
+                      {sdt1}
+                    </Checkbox>
+                  </Col>
+                  {inRange && (
+                    <Col span={12}>
+                      <Checkbox value={sdt2} key={2 * index + 1}>
+                        {sdt2}
+                      </Checkbox>
+                    </Col>
+                  )}
+                </Row>
+              );
+            })}
           </Checkbox.Group>
         </Form.Item>
 

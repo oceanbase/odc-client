@@ -370,6 +370,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     );
   } else if (task?.type === TaskType.SQL_PLAN) {
     taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
+  } else if (task?.type === TaskType.APPLY_PROJECT_PERMISSION) {
+    taskContent = <ApplyPermissionTaskContent task={task as any} />;
   } else {
     getItems = taskContentMap[task?.type]?.getItems;
   }
