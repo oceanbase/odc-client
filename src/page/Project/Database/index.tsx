@@ -48,6 +48,7 @@ import {
 import { ProjectRole } from '@/d.ts/project';
 import ProjectContext from '../ProjectContext';
 import styles from './index.less';
+import setting from '@/store/setting';
 interface IProps {
   id: string;
 }
@@ -251,7 +252,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                 )?.length === 0;
               return (
                 <Action.Group size={3}>
-                  {config?.features?.task?.includes(TaskType.EXPORT) && (
+                  {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
                     <Action.Link
                       key={'export'}
                       onClick={() => {
@@ -263,7 +264,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
                     </Action.Link>
                   )}
-                  {config?.features?.task?.includes(TaskType.IMPORT) && (
+                  {config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && (
                     <Action.Link
                       key={'import'}
                       onClick={() => {
