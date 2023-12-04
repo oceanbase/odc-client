@@ -15,6 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
+import { Button, Result } from 'antd';
 import React from 'react';
 
 export default class ErrorBoundary extends React.Component {
@@ -43,6 +44,22 @@ export default class ErrorBoundary extends React.Component {
   }
 
   public render() {
+    const isChunkError = this.state.errorStack?.toString().includes('ChunkLoadError');
+    if (isChunkError) {
+      return <Result
+        status="404"
+        title="系统正在升级中"
+        subTitle="当前 ODC 版本已过期，请刷新重试"
+        extra={<Button
+          onClick={() => {
+            window.location.href = `${location.origin}${location.pathname}`;
+          }}
+          type="primary"
+        >
+          {formatMessage({ id: 'odc.component.ErrorBoundary.Reload' })}
+        </Button>}
+      />
+    }
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
