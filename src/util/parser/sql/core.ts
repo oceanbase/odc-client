@@ -29,10 +29,10 @@ export async function getSQLTokens(sql, isMysql: boolean) {
    */
   sql = sql + '\n';
   const Lexer = isMysql
-    ? await import('@oceanbase-odc/ob-parser-js/lib/parser/mysql/PLLexer').then(
+    ? await import('@oceanbase-odc/ob-parser-js/esm/parser/obmysql/PLLexer').then(
         (module) => module.PLLexer,
       )
-    : await import('@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer').then(
+    : await import('@oceanbase-odc/ob-parser-js/esm/parser/oracle/PlSqlLexer').then(
         (module) => module.PlSqlLexer,
       );
   const now = performance.now();
@@ -53,7 +53,7 @@ export async function getSQLEntryName(sql: string) {
   if (!tokens?.length) {
     return '';
   }
-  const OracleLexer = await import('@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer').then(
+  const OracleLexer = await import('@oceanbase-odc/ob-parser-js/esm/parser/oracle/PlSqlLexer').then(
     (module) => module.PlSqlLexer,
   );
   let name = [];

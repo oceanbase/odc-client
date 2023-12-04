@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import CommonIDE from '@/component/CommonIDE';
 import { TAB_HEADER_HEIGHT, WORKSPACE_HEADER_HEIGHT } from '@/constant';
+import { ConnectionMode } from '@/d.ts';
 import { SQLResultSetPage } from '@/store/helper/page/pages';
 import React from 'react';
 
@@ -24,8 +26,8 @@ interface IProps {
 }
 
 const SQLResultSetViewPage: React.FC<IProps> = (props) => {
-  const isMySQL = false;
   const otherHeight = WORKSPACE_HEADER_HEIGHT + TAB_HEADER_HEIGHT;
+  const config = getDataSourceModeConfigByConnectionMode(ConnectionMode.MYSQL)
   return (
     <div
       style={{
@@ -35,7 +37,7 @@ const SQLResultSetViewPage: React.FC<IProps> = (props) => {
     >
       <CommonIDE
         session={null}
-        language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+        language={config?.sql?.language}
         initialSQL={props.params?.resultSets
           ?.map((r) => {
             return r.originSql;

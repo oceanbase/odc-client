@@ -18,7 +18,7 @@ import { getPLTokens } from './core';
 
 export async function getPLEntryName(sql: string) {
   const OraclePLLexer = await import(
-    '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer'
+    '@oceanbase-odc/ob-parser-js/esm/parser/oracle/PlSqlLexer'
   ).then((module) => module.PlSqlLexer);
   const tokens = await getPLTokens(sql);
   let i = 0;
