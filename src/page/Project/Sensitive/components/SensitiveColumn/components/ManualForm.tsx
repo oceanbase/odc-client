@@ -99,7 +99,7 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     });
     setDatabaseOptions(resData);
   };
-  const handleDatabaseSelect = debounce(async (value: number, args) => {
+  const handleDatabaseSelect = async (value: number) => {
     if (value === -1) {
       setDatabaseIds(databaseOptions?.map((option) => option.value as number));
       return;
@@ -107,7 +107,10 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     if (!databaseIds?.includes(value)) {
       setDatabaseIds(databaseIds.concat(value));
     }
-  }, 500);
+  };
+  const handleDatabaseClear = () => {
+    setDatabaseIds([]);
+  };
   const handleDatabaseDeselect = debounce(async (value: number) => {
     setDatabaseIds(databaseIds.filter((id) => id !== value));
   }, 500);
@@ -205,6 +208,7 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
               }
               onSelect={handleDatabaseSelect}
               onDeselect={handleDatabaseDeselect}
+              onClear={handleDatabaseClear}
               optionLabelProp="label"
               allowClear={true}
             >
@@ -831,7 +835,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       </Collapse>
     );
   }, [defaultActiveKey, data]);
-  useEffect(() => {
+  const handleDatabaseChange = debounce(() => {
     setAllColumns(0);
     setCheckedColumns(0);
     setCheckedKeys([]);
@@ -850,6 +854,9 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       setOriginData([]);
       setFormData({});
     }
+  }, 500);
+  useEffect(() => {
+    handleDatabaseChange();
   }, [databaseIds]);
   useEffect(() => {
     handleCheckedKeysChange();

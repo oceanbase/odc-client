@@ -23,11 +23,13 @@ import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
+import { useWatch } from 'antd/es/form/Form';
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
   const [databaseId, setDatabaseId] = useState<number>(0);
+  const databaseIds = useWatch('databaseIds', formRef);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
   const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
@@ -203,11 +205,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             }) //请选择
           }
           maxTagCount="responsive"
-          disabled={
-            databaseIdsOptions?.length === 1 ||
-            dataSourceOptions?.length === 0 ||
-            dataSourceId === -1
-          }
+          disabled={databaseIdsOptions?.length === 1 || dataSourceId === -1}
           style={{
             width: '262px',
           }}
@@ -240,7 +238,11 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           options={sensitiveOptions}
           onSelect={handleSensitiveRuleIdsSelect}
           disabled={
-            databaseIdsOptions?.length === 1 || sensitiveOptions?.length === 1 || databaseId === 0
+            dataSourceId === -1 ||
+            databaseIdsOptions?.length === 1 ||
+            databaseIds?.length === 0 ||
+            databaseId === 0 ||
+            sensitiveOptions?.length === 1
           }
           maxTagCount="responsive"
           placeholder={
