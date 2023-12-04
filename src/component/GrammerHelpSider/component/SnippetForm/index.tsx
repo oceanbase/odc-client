@@ -28,7 +28,7 @@ import React, { PureComponent } from 'react';
 
 import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
 
-const MAX_SNIPPRT_SIZE = 100000;
+const MAX_SNIPPRT_SIZE = 10000;
 
 const { Option } = Select;
 const { TextArea } = Input;
