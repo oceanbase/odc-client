@@ -61,6 +61,7 @@ import SQLResultSet, { recordsTabKey, sqlLintTabKey } from '../SQLResultSet';
 import styles from './index.less';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
 import Trace from '../Trace';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -912,7 +913,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       params,
     } = this.props;
     const session = this.getSession();
-    const isMySQL = isConnectionModeBeMySQLType(session?.connection?.dialectType);
+    const config = getDataSourceModeConfigByConnectionMode(session?.connection?.dialectType)
     const {
       initialSQL,
       showSaveSQLModal,
@@ -937,7 +938,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         <ScriptPage
           session={session}
           ctx={this}
-          language={`${isMySQL ? 'obmysql' : 'oboracle'}`}
+          language={config?.sql?.language}
           toolbar={{
             loading: pageLoading,
             actionGroupKey: 'SQL_DEFAULT_ACTION_GROUP',

@@ -90,7 +90,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       proc: procedureConfig,
     },
     sql: {
-      language: 'obmysql',
+      language: 'mysql',
       escapeChar: '`',
     },
   },

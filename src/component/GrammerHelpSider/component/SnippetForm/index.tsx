@@ -27,6 +27,8 @@ import type { FormInstance } from 'antd/lib/form';
 import React, { PureComponent } from 'react';
 
 import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { ConnectType } from '@/d.ts';
 
 const MAX_SNIPPRT_SIZE = 10000;
 
@@ -154,7 +156,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
       return null;
     }
 
-    const isMySQL = false;
+    const config = getDataSourceModeConfig(ConnectType.MYSQL)
     const actionItem = SNIPPET_ACTIONS.find((actionItem) => actionItem.key === action);
     const initialValues = {
       prefix: snippet?.prefix,
@@ -304,7 +306,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                   >
                     <MonacoEditor
                       defaultValue={snippet?.body}
-                      language={isMySQL ? 'obmysql' : 'oboracle'}
+                      language={config?.sql?.language}
                       onEditorCreated={(editor: IEditor) => {
                         this.editor = editor;
                       }}

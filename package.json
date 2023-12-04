@@ -69,9 +69,9 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.0.0",
-    "@oceanbase-odc/monaco-plugin-ob": "~0.0.24",
+    "@oceanbase-odc/monaco-plugin-ob": "^0.1.0",
     "@oceanbase-odc/ob-intl-cli": "^1.0.0",
-    "@oceanbase-odc/ob-parser-js": "~2.0.6",
+    "@oceanbase-odc/ob-parser-js": "^3.0.0",
     "@oceanbase-odc/ob-react-data-grid": "^3.0.2",
     "@svgr/webpack": "^6.5.1",
     "@testing-library/react": "^11.2.2",

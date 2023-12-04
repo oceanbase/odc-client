@@ -25,7 +25,7 @@ export async function getPLTokens(sql) {
     return [];
   }
   const OraclePLLexer = await import(
-    '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer'
+    '@oceanbase-odc/ob-parser-js/esm/parser/oracle/PlSqlLexer'
   ).then((module) => module.PlSqlLexer);
   const now = performance.now();
   const chars = new CaseInsensitiveStream(sql);

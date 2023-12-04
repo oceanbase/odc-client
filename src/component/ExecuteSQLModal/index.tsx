@@ -27,6 +27,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MonacoEditor from '../MonacoEditor';
 import LintDrawer from '../SQLLintResult/Drawer';
 import login from '@/store/login';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
   sessionStore: SessionStore;
@@ -50,7 +51,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
 
   const connectionMode = sessionStore?.connection?.dialectType;
-  const isMySQL = connectionMode === ConnectionMode.MYSQL;
+  const config =  getDataSourceModeConfigByConnectionMode(connectionMode);
 
   useEffect(() => {
     if (sql !== editorRef?.current?.getValue()) {
@@ -171,7 +172,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
             sessionStore={sessionStore}
             readOnly={readonly && !isFormatting}
             defaultValue={sql}
-            language={isMySQL ? 'obmysql' : 'oboracle'}
+            language={config?.sql?.language}
             onValueChange={handleSQLChanged}
             onEditorCreated={(editor) => {
               editorRef.current = editor;
