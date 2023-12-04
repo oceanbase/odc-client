@@ -17,7 +17,7 @@
 import { Tooltip } from 'antd';
 
 const TooltipContent: React.FC<{ content: string; maxWdith?: number }> = ({
-  content,
+  content = '-',
   maxWdith = 80,
 }) => {
   return (
