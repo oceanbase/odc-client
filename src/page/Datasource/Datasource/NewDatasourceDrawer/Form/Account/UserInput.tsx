@@ -17,7 +17,7 @@
 import { ClusterStore } from '@/store/cluster';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { Empty, Input, Select } from 'antd';
+import { AutoComplete, Empty, Input, Select } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useState } from 'react';
 
@@ -54,33 +54,25 @@ const UserInput: React.FC<IProps> = forwardRef(function (props, ref) {
   }, [tenantId, clusterId, clusterStore]);
   const users = clusterStore.userListMap[tenantId];
   return haveOCP() ? (
-    <Select
+    <AutoComplete
       placeholder={placeholder}
       style={{
         width: baseWidth,
       }}
       ref={ref as any}
       value={value}
+      filterOption={(inputValue, option) => {
+        return !inputValue || option?.value?.toLowerCase()?.indexOf(inputValue?.toLowerCase()) !== -1;
+      }}
       onChange={onChange}
-      showSearch
-      loading={userLoading}
-      notFoundContent={
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={formatMessage({
-            id: 'odc.AddConnectionForm.Account.UserInput.NoDatabaseAccountIsAvailable',
-          })} /*暂无数据库账号，请在租户工作台创建*/
-        />
-      }
-    >
-      {users?.map((user) => {
-        return (
-          <Option value={user.userName} key={user.userName}>
-            {user.userName}
-          </Option>
-        );
+      options={users?.map((user) => {
+        return {
+          value: user.userName,
+          label: user.userName,
+        };
       })}
-    </Select>
+      showSearch
+    />
   ) : (
     <Input
       ref={ref as any}
