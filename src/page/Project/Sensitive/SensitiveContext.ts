@@ -21,7 +21,7 @@ import { SelectItemProps } from './interface';
 
 import React from 'react';
 
-interface ISensitiveContext {
+export interface ISensitiveContext {
   projectId: number;
 
   maskingAlgorithms: IMaskingAlgorithm[];
