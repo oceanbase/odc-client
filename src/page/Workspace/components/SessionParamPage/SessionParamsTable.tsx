@@ -29,11 +29,12 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { EditOutlined, SyncOutlined } from '@ant-design/icons';
 import { Alert, Input, Layout, message, Spin } from 'antd';
 import { debounce } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { FormattedMessage } from '@umijs/max';
 import EditableTable, { RowType } from '../EditableTable';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
@@ -71,6 +72,7 @@ function SessionParamsTable(props: {
   const [searchKey, setSearchKey] = useState('');
   const [connectionProperty, setConnectionProperty] = useState([]);
   const [rows, setRows] = useState<IRowConnectionProperty[]>([]);
+  const gridRef = useRef<DataGridRef>();
   const session = sessionManagerStore.sessionMap.get(sessionId);
 
   const loadData = async function () {
@@ -175,6 +177,10 @@ function SessionParamsTable(props: {
     [filteredRows, selectedRowIndex],
   );
 
+  useEffect(() => {
+    gridRef.current?.setRows(filteredRows);
+  }, [filteredRows]);
+
   return (
     <>
       <Spin wrapperClassName={styles.spin} spinning={listLoading}>
@@ -218,6 +224,7 @@ function SessionParamsTable(props: {
           {tip ? <Alert showIcon message={tip} /> : null}
           <div className={styles.table}>
             <EditableTable
+              gridRef={gridRef}
               bordered={!bordered}
               minHeight={`100%`}
               initialColumns={columns}
