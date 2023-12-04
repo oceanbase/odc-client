@@ -575,7 +575,6 @@ const SensitiveColumn = ({
     <>
       <CommonTable
         ref={tableRef}
-        // mode={CommonTableMode.SMALL}
         titleContent={null}
         showToolbar={true}
         filterContent={{
