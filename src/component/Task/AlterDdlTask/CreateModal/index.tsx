@@ -238,15 +238,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         }
         description={
           <div>
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1TheMySQLMode',
-              }) /* 
             1. MySQL 模式 OB 版本小于 4.3 及 Oracle 模式 OB 版本小于
-            4.0，表名切换之前会锁定数据库账号，并 kill 该账号对应的
-            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
-             */
-            }
+            4.0，表名切换之前如果选择锁定数据库账号，会 kill 该账号对应的
+            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行，如果选择不锁定数据库账户,
+            在 rename 期间如有数据写入表，会有数据丢失风险；
             <br />
             {
               formatMessage({
@@ -286,17 +281,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </Col>
           {lockDatabaseUserRequired && (
             <Col span={12}>
-              <Form.Item
-                label="锁定用户"
-                name="lockUsers"
-                required
-                rules={[
-                  {
-                    required: true,
-                    message: '请选择用户',
-                  },
-                ]}
-              >
+              <Form.Item label="锁定用户" name="lockUsers" required>
                 <Select
                   showSearch
                   mode="multiple"
