@@ -27,6 +27,7 @@ const ProjectItem: React.FC<IProps> = function () {
     if (projectId) {
       return (
         <Alert
+          style={{ marginTop: -8 }}
           showIcon
           icon={icon}
           type="error"
@@ -36,6 +37,7 @@ const ProjectItem: React.FC<IProps> = function () {
     }
     return (
       <Alert
+        style={{ marginTop: -8 }}
         showIcon
         icon={icon}
         type="error"

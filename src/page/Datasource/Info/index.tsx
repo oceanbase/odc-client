@@ -174,13 +174,16 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               const innerSchema =
                 getDataSourceModeConfig(record.dataSource?.type)?.schema?.innerSchema || [];
               const isInnerSchema = innerSchema.includes(record?.name);
-              let tip = null;
+              let tip = "修改所属项目";
+              let editable = true;
               if (isInnerSchema) {
-                tip = null;
+                editable = true;
               } else if (bindProjectName) {
                 tip = `当前数据源所属项目 ${bindProjectName}，无法修改。可通过编辑数据源修改所属项目`;
+                editable = false;
               } else if (!canUpdate) {
                 tip = '无当前数据源权限';
+                editable = false;
               }
               return (
                 <div
@@ -202,10 +205,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                       style={{
                         flexShrink: 0,
                         flexGrow: 0,
-                        color: tip ? 'var(--text-color-hint)' : null,
+                        color: !editable ? 'var(--icon-color-disable)' : null,
                       }}
                       onClick={() => {
-                        if (tip) {
+                        if (!editable) {
                           return;
                         }
                         setVisible(true);

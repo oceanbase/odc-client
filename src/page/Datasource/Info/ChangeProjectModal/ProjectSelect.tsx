@@ -18,7 +18,7 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import { IProject } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
-import { Checkbox, Select, Space } from 'antd';
+import { Checkbox, Select, Space, Tooltip } from 'antd';
 import { isNull } from 'lodash';
 
 interface IProps {
@@ -26,6 +26,7 @@ interface IProps {
   onChange?: (v: any) => void;
   disabled?: boolean;
   projects: IProject[];
+  disabledTip?: string;
   currentDatabase: IDatabase;
 }
 
@@ -34,50 +35,55 @@ export default function ProjectSelect({
   value,
   disabled,
   currentDatabase,
+  disabledTip,
   onChange,
 }: IProps) {
   const isProjectNotFound = !projects?.find((item) => item.id === currentDatabase?.project?.id);
   const bindProjectId = currentDatabase?.dataSource?.projectId;
   const _isNull = isNull(value);
   return (
-    <Space>
-      <Select
-        value={value}
-        style={{ width: 230 }}
-        onChange={(v) => {
-          onChange(v);
-        }}
-        disabled={_isNull || disabled}
-      >
-        {projects
-          ?.map((item) => {
-            if (bindProjectId && item.id !== bindProjectId) {
-              return null;
-            }
-            return (
-              <Select.Option value={item.id} key={item.id}>
-                {item.name}
-              </Select.Option>
-            );
-          })
-          .filter(Boolean)}
-        {isProjectNotFound && currentDatabase?.project?.id ? (
-          <Select.Option value={currentDatabase?.project?.id} key={currentDatabase?.project?.id}>
-            {currentDatabase?.project?.name}
-          </Select.Option>
-        ) : null}
-      </Select>
-      <Checkbox
-        checked={_isNull}
-        disabled={disabled}
-        onChange={(e) => (e.target.checked ? onChange(null) : onChange(undefined))}
-      >
-        {
-          formatMessage({
-            id: 'odc.Info.ChangeProjectModal.ProjectSelect.DoNotAssignProjects',
-          }) /*不分配项目*/
-        }
-      </Checkbox>
-    </Space>
+    <Tooltip
+      placement='right'
+      title={disabledTip ? disabledTip : null}>
+      <Space>
+        <Select
+          value={value}
+          style={{ width: 230 }}
+          onChange={(v) => {
+            onChange(v);
+          }}
+          disabled={_isNull || disabled}
+        >
+          {projects
+            ?.map((item) => {
+              if (bindProjectId && item.id !== bindProjectId) {
+                return null;
+              }
+              return (
+                <Select.Option value={item.id} key={item.id}>
+                  {item.name}
+                </Select.Option>
+              );
+            })
+            .filter(Boolean)}
+          {isProjectNotFound && currentDatabase?.project?.id ? (
+            <Select.Option value={currentDatabase?.project?.id} key={currentDatabase?.project?.id}>
+              {currentDatabase?.project?.name}
+            </Select.Option>
+          ) : null}
+        </Select>
+        <Checkbox
+          checked={_isNull}
+          disabled={disabled}
+          onChange={(e) => (e.target.checked ? onChange(null) : onChange(undefined))}
+        >
+          {
+            formatMessage({
+              id: 'odc.Info.ChangeProjectModal.ProjectSelect.DoNotAssignProjects',
+            }) /*不分配项目*/
+          }
+        </Checkbox>
+      </Space>
+    </Tooltip>
   );
 }
