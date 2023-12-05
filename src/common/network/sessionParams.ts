@@ -22,16 +22,16 @@ import { generateVarSid } from './pathUtil';
 /**
  * 根据函数获取ddl sql
  */
-export async function getVariableUpdateDML(
+export async function updateVariable(
   newData: IConnectionProperty,
   type: ConnectionPropertyType,
   sessionId?: string,
-) {
+): Promise<boolean> {
   const sid = generateVarSid(type, sessionId);
   const { key, value } = newData;
-  const url = `/api/v1/variables/getUpdateSql/${sid}`;
+  const url = `/api/v2/variables/update/${sid}`;
 
-  const result = await request.patch(url, {
+  const result = await request.post(url, {
     data: {
       changed: true,
       key,
@@ -39,35 +39,14 @@ export async function getVariableUpdateDML(
     },
   });
 
-  return result?.data?.sql;
-}
-
-export async function executeVariableUpdateDML(
-  sql: string,
-  type: ConnectionPropertyType,
-  sessionId: string,
-) {
-  const sid = generateVarSid(type, sessionId);
-  const url = `/api/v1/variables/execute/${sid}`;
-
-  const result = await request.patch(url, {
-    params: {
-      wantCatchError: true,
-    },
-    data: {
-      sid,
-      sql,
-    },
-  });
-
-  return result?.data?.status;
+  return result?.data;
 }
 
 export async function fetchVariableList(type: ConnectionPropertyType, sessionId: string) {
   const sid = generateVarSid(type, sessionId);
-  const res = await request.get(`/api/v1/variables/list/${sid}`);
+  const res = await request.get(`/api/v2/variables/list/${sid}`);
   return (
-    res?.data?.map((p: IConnectionProperty) => {
+    res?.data?.contents?.map((p: IConnectionProperty) => {
       return {
         ...p,
         initialValue: p.value,
