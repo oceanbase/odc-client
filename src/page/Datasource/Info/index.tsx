@@ -33,6 +33,7 @@ import React, { useRef, useState } from 'react';
 import Icon, { EditOutlined } from '@ant-design/icons';
 import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
+import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
   id: string;
   datasource: IDatasource;
@@ -170,8 +171,12 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             width: 160,
             render(value, record, index) {
               const bindProjectName = record.dataSource?.projectName;
+              const innerSchema = getDataSourceModeConfig(record.dataSource?.type)?.schema?.innerSchema || [];
+              const isInnerSchema = innerSchema.includes(record?.name)
               let tip = null;
-              if (bindProjectName) {
+              if (isInnerSchema) {
+                tip = null;
+              } else if (bindProjectName) {
                 tip = `当前数据源所属项目 ${bindProjectName}，无法修改。可通过编辑数据源修改所属项目`;
               } else if (!canUpdate) {
                 tip = '无当前数据源权限';

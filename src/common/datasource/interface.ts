@@ -138,6 +138,7 @@ export interface IDataSourceModeConfig {
     table: ICreateTableConfig;
     func: IFunctionConfig;
     proc: IProcedureConfig;
+    innerSchema: string[];
   };
   sql: {
     language: string;
