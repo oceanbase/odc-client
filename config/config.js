@@ -19,40 +19,24 @@ let publicPath = '/';
 const define = defineConfig();
 
 const config = {
-  // singular: true,
   mock: false,
-  // dynamicImport: {
-  //   loading: "@/component/Loading"
-  // },
-  // dynamicImportSyntax: {},
   publicPath,
   esbuildMinifyIIFE: true,
   runtimePublicPath: {},
   hash: true,
   esbuildMinifyIIFE: true,
-  // tracert: {
-  //   spmAPos: 'a3112',
-  //   bizType: 'lu',
-  //   type: 'manual',
-  //   ifInjectManualScript: false,
-  //   ifRouterNeedPv: true
-  // },
   targets: {
     chrome: 76,
     firefox: 60,
     edge: 79,
   },
-  // esbuild: {},
   metas: [
     {
       name: 'version',
       content: version,
     },
   ],
-  // nodeModulesTransform: {
-  //   type: 'none',
-  //   exclude: [],
-  // },
+
   antd: {
     import: true,
   },
@@ -126,15 +110,7 @@ const config = {
   outputPath: './dist/renderer',
 
   define,
-
-  // qiankun: {
-  //   slave: {},
-  // },
-
-  // 路由配置
   routes: routes,
-  // ? undefined
-  // : routes
 };
 if (disableBrowserUpdate) {
   delete config.browserUpdate;

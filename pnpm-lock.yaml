@@ -41,14 +41,14 @@ devDependencies:
     specifier: ^4.0.0
     version: 4.8.0(react-dom@17.0.2)(react@17.0.2)
   '@oceanbase-odc/monaco-plugin-ob':
-    specifier: ^0.1.0
-    version: 0.1.0(monaco-editor@0.36.1)
+    specifier: ^0.1.1
+    version: 0.1.1(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
     specifier: ^1.0.0
     version: 1.0.3
   '@oceanbase-odc/ob-parser-js':
-    specifier: ^3.0.0
-    version: 3.0.0
+    specifier: ^3.0.1
+    version: 3.0.1
   '@oceanbase-odc/ob-react-data-grid':
     specifier: ^3.0.2
     version: 3.0.2(antd@4.24.14)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2)
@@ -3747,12 +3747,12 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@oceanbase-odc/monaco-plugin-ob@0.1.0(monaco-editor@0.36.1):
-    resolution: {integrity: sha512-xp2Hx1LWZ/pGZ92NapUNlsnYnAwMQb4ojK6MGmeq7Bsyos9RCdHSgJLyyAxoG8Xb/PuumLPiHhFD3wM+3YNjEA==}
+  /@oceanbase-odc/monaco-plugin-ob@0.1.1(monaco-editor@0.36.1):
+    resolution: {integrity: sha512-P9wgRNIb724NgXZOqKaXNLG+W8QB6m62vvHX+Z4EC4zb/dTZfy9pb8bXDWW8D0Rt7m7CqAhoO/Pkk9OR8Jnd8Q==}
     peerDependencies:
       monaco-editor: ^0.34.1
     dependencies:
-      '@oceanbase-odc/ob-parser-js': 3.0.0
+      '@oceanbase-odc/ob-parser-js': 3.0.1
       antlr4: 4.8.0
       comlink: 4.4.1
       monaco-editor: 0.36.1
@@ -3792,8 +3792,8 @@ packages:
       - supports-color
     dev: true
 
-  /@oceanbase-odc/ob-parser-js@3.0.0:
-    resolution: {integrity: sha512-DXEPQDEykr2urzeB8IcD9XLkLcv2g858NUZ5K5FylM8319Ep6riZnFOUy3iSkYeOGbcevhFqRs3m2sHznLRn4g==}
+  /@oceanbase-odc/ob-parser-js@3.0.1:
+    resolution: {integrity: sha512-7IAdAmwB3ufaKvDDOzmdvwpYaSXaq/+AAwykjSfB7vO80x4gvMKlg3YYkAoSpl3JCAK884dRMqNxg3ESE6VmIA==}
     dependencies:
       antlr4: 4.8.0
       lodash: 4.17.21
@@ -4385,7 +4385,7 @@ packages:
     resolution: {integrity: sha512-hy8b7Y1J8OGe6LbAjj3xniQrj3v6lsivCcrmf4TzSgPzLkhIeKgc5IZnT7ReIqmEuodjfO8EYAuoFvIrHi/+jQ==}
     deprecated: This is a stub types definition. history provides its own type definitions, so you do not need this installed.
     dependencies:
-      history: 5.3.0
+      history: 4.10.1
     dev: true
 
   /@types/hoist-non-react-statics@3.3.1:
@@ -4504,6 +4504,10 @@ packages:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
     dev: true
 
+  /@types/prop-types@15.7.11:
+    resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}
+    dev: true
+
   /@types/prop-types@15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
@@ -4524,7 +4528,7 @@ packages:
     resolution: {integrity: sha512-eFajSUASYbPHg2BDM1G8Btx+YqGgvROPIg6sBhl3O4kbDdYXdFdfrgQFf/pcBuQVObjfT9AL/dd15jilR5DIEA==}
     dependencies:
       '@types/history': 5.0.0
-      '@types/react': 16.14.35
+      '@types/react': 16.14.52
       '@types/react-router': 5.1.20
     dev: true
 
@@ -4535,6 +4539,15 @@ packages:
       '@types/react': 16.14.35
       '@types/react-router': 5.1.20
       redux: 4.2.1
+    dev: true
+
+  /@types/react-router-redux@5.0.25:
+    resolution: {integrity: sha512-D7gtxg/Assg2T3FWq7iKPGldYbx0QXi3tXww220nT4oLmocsD7IBi66nR6m44Zo1T1rPl4nHO0AveYn/hVeu+w==}
+    dependencies:
+      '@types/history': 4.7.11
+      '@types/react': 16.14.52
+      '@types/react-router': 5.1.20
+      redux: 3.7.2
     dev: true
 
   /@types/react-router@5.1.20:
@@ -4559,6 +4572,14 @@ packages:
       csstype: 3.1.1
     dev: true
 
+  /@types/react@16.14.52:
+    resolution: {integrity: sha512-4+ZN73hgRW3Gang3QMqWjrqPPkf+lWZYiyG4uXtUbpd+7eiBDw6Gemila6rXDd8DorADupTiIERL6Mb5BQTF2w==}
+    dependencies:
+      '@types/prop-types': 15.7.11
+      '@types/scheduler': 0.16.8
+      csstype: 3.1.2
+    dev: true
+
   /@types/request@2.48.8:
     resolution: {integrity: sha512-whjk1EDJPcAR2kYHRbFl/lKeeKYTi05A15K9bnLInCVroNDCtXce57xKdI0/rQaA3K+6q0eFyUBPmqfSndUZdQ==}
     dependencies:
@@ -4576,6 +4597,10 @@ packages:
 
   /@types/scheduler@0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
+    dev: true
+
+  /@types/scheduler@0.16.8:
+    resolution: {integrity: sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==}
     dev: true
 
   /@types/semver@7.3.13:
@@ -6785,7 +6810,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001566
-      electron-to-chromium: 1.4.601
+      electron-to-chromium: 1.4.603
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.22.2)
     dev: true
@@ -8378,7 +8403,7 @@ packages:
       '@babel/runtime': 7.23.5
       '@types/isomorphic-fetch': 0.0.34
       '@types/react-router-dom': 4.3.5
-      '@types/react-router-redux': 5.0.21
+      '@types/react-router-redux': 5.0.25
       dva-core: 1.5.0-beta.2(redux@3.7.2)
       global: 4.4.0
       history: 4.10.1
@@ -8486,8 +8511,8 @@ packages:
     resolution: {integrity: sha512-YyE8+GKyGtPEP1/kpvqsdhD6rA/TP1DUFDN4uiU/YI52NzDxmwHkEb3qjId8hLBa5siJvG0sfC3O66501jMruQ==}
     dev: true
 
-  /electron-to-chromium@1.4.601:
-    resolution: {integrity: sha512-SpwUMDWe9tQu8JX5QCO1+p/hChAi9AE9UpoC3rcHVc+gdCGlbT3SGb5I1klgb952HRIyvt9wZhSz9bNBYz9swA==}
+  /electron-to-chromium@1.4.603:
+    resolution: {integrity: sha512-Dvo5OGjnl7AZTU632dFJtWj0uJK835eeOVQIuRcmBmsFsTNn3cL05FqOyHAfGQDIoHfLhyJ1Tya3PJ0ceMz54g==}
     dev: true
 
   /electron@22.3.27:
@@ -13274,6 +13299,12 @@ packages:
       isarray: 0.0.1
     dev: true
 
+  /path-to-regexp@1.8.0:
+    resolution: {integrity: sha512-n43JRhlUKUAlibEJhPeir1ncUID16QnEjNpwzNdO3Lm4ywrBpBZ5oLD0I6br9evr1Y9JTqwRtAh7JLoOzAQdVA==}
+    dependencies:
+      isarray: 0.0.1
+    dev: true
+
   /path-to-regexp@2.4.0:
     resolution: {integrity: sha512-G6zHoVqC6GGTQkZwF4lkuEyMbVOjoBKAEybQUypI1WTkqinCOrq2x6U2+phkJ1XsEMTy4LjtwPI7HW+NVrRR2w==}
     dev: true
@@ -15535,7 +15566,7 @@ packages:
       hoist-non-react-statics: 2.5.5
       invariant: 2.2.4
       loose-envify: 1.4.0
-      path-to-regexp: 1.7.0
+      path-to-regexp: 1.8.0
       prop-types: 15.8.1
       react: 17.0.2
       warning: 4.0.3
