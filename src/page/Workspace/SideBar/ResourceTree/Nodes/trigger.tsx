@@ -17,7 +17,7 @@
 import { DbObjectType, TriggerState } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
-import TriggerSvg from '@/svgr/menuTrigger.svg';
+import { ReactComponent as TriggerSvg  } from '@/svgr/menuTrigger.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Tooltip } from 'antd';

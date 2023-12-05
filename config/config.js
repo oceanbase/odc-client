@@ -70,37 +70,16 @@ const config = {
   externals: {
     electron: 'commonjs electron',
   },
-  svgr: false,
-  svgo: false,
   alias: {
     "@@node_modules": path.resolve(process.cwd(), 'node_modules')
   },
   chainWebpack(config) {
-    config.performance.hints('warning');
-    config.module.rules.delete('svg');
-    config.module.rule('asset').oneOf('fallback').exclude.add(/.svg/);
     config.plugin('monaco').use(MonacoWebpackPlugin, [
       {
         filename: '[name].worker.js',
         languages: ['yaml', 'json']
       }
     ])
-    config.module
-      .rule('svg')
-      .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)
-      .use([
-        {
-          loader: 'babel-loader',
-        },
-        {
-          loader: '@svgr/webpack',
-          options: {
-            babel: false,
-            icon: true,
-          },
-        },
-      ])
-      .loader(require.resolve('@svgr/webpack'));
   },
 
   history: {

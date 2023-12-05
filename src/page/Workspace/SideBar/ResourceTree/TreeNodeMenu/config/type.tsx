@@ -22,7 +22,7 @@ import { DbObjectType, IType, PageType, TypePropsTab } from '@/d.ts';
 import { openBatchCompilePLPage, openTypeViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
-import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
+import { ReactComponent as BatchCompileSvg  } from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';

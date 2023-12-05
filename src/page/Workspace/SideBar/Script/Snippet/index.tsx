@@ -24,7 +24,7 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'r
 import ListItem from '../../components/ListItem';
 import styles from './index.less';
 
-import CodeSvg from '@/svgr/Snippet.svg';
+import { ReactComponent as CodeSvg  } from '@/svgr/Snippet.svg';
 import { formatMessage } from '@/util/intl';
 import { getWrapedSnippetBody } from '@/util/snippet';
 import copyToCB from 'copy-to-clipboard';

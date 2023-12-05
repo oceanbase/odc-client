@@ -21,10 +21,10 @@ import { formatMessage } from '@/util/intl';
 import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
-import ParameterSvg from '@/svgr/Parameter.svg';
+import { ReactComponent as ParameterSvg  } from '@/svgr/Parameter.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import ProcedureSvg from '@/svgr/menuProcedure.svg';
+import { ReactComponent as ProcedureSvg  } from '@/svgr/menuProcedure.svg';
 import { openPackageViewPage, openProcedureViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-2)';

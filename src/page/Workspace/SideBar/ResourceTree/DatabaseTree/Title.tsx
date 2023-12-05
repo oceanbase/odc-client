@@ -18,7 +18,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IDatasource } from '@/d.ts/datasource';
 import { IProject } from '@/d.ts/project';
 import Icon from '@ant-design/icons';
-import ProjectSvg from '@/svgr/project_space.svg';
+import { ReactComponent as ProjectSvg  } from '@/svgr/project_space.svg';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 export default function TreeTitle({

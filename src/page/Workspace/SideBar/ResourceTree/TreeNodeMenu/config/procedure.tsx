@@ -27,7 +27,7 @@ import {
 } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
-import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
+import { ReactComponent as BatchCompileSvg  } from '@/svgr/batch-compile-all.svg';
 import { triggerActionAfterPLPageCreated } from '@/util/events';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';

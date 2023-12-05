@@ -16,9 +16,9 @@
 
 import { MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import styles from './index.less';
-import OBServerSvg from '@/svgr/OBServer.svg';
-import OBProxySvg from '@/svgr/OBProxy.svg';
-import JDBCSvg from '@/svgr/JDBC.svg';
+import { ReactComponent as OBServerSvg  } from '@/svgr/OBServer.svg';
+import { ReactComponent as OBProxySvg  } from '@/svgr/OBProxy.svg';
+import { ReactComponent as JDBCSvg  } from '@/svgr/JDBC.svg';
 import { TraceSpanNode } from '@/d.ts';
 
 export const getIconByNodeType = (nodeType: TraceSpanNode) => {

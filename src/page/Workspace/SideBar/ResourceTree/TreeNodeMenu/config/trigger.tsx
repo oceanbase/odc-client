@@ -31,7 +31,7 @@ import { getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
-import BatchCompileSvg from '@/svgr/batch-compile-all.svg';
+import { ReactComponent as BatchCompileSvg  } from '@/svgr/batch-compile-all.svg';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';

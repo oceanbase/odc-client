@@ -15,7 +15,7 @@
  */
 
 import Dragable, { IDragable } from '@/component/Dragable';
-import DragSvg from '@/svgr/DragItem.svg';
+import { ReactComponent as DragSvg  } from '@/svgr/DragItem.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Col, Row, Select, Space } from 'antd';

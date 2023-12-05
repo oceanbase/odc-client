@@ -30,8 +30,8 @@ import {
 import modal from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
-import SubmitSvg from '@/svgr/Submit.svg';
-import TraceSvg from '@/svgr/Trace.svg';
+import { ReactComponent as SubmitSvg  } from '@/svgr/Submit.svg';
+import { ReactComponent as TraceSvg  } from '@/svgr/Trace.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, {
   BarsOutlined,
@@ -58,12 +58,12 @@ import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import styles from './index.less';
 // @ts-ignore
-import RollbackSvg from '@/svgr/Roll-back.svg';
+import { ReactComponent as RollbackSvg  } from '@/svgr/Roll-back.svg';
 // @ts-ignore
 import { uploadTableObject } from '@/common/network/sql';
 import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
 import SessionStore from '@/store/sessionManager/session';
-import MockSvg from '@/svgr/mock_toolbar.svg';
+import { ReactComponent as MockSvg  } from '@/svgr/mock_toolbar.svg';
 import { getNlsValueKey, isObjectColumn } from '@/util/column';
 import { generateUniqKey, getBlobValueKey } from '@/util/utils';
 import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';

@@ -15,19 +15,19 @@
  */
 
 import SessionStore from '@/store/sessionManager/session';
-import PackageSvg from '@/svgr/menuPkg.svg';
+import { ReactComponent as PackageSvg  } from '@/svgr/menuPkg.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeNodeData } from './function';
 import { ProcedureTreeNodeData } from './procedure';
 
-import PackageHeadSvg from '@/svgr/Package-header.svg';
+import { ReactComponent as PackageHeadSvg  } from '@/svgr/Package-header.svg';
 
-import PackageBodySvg from '@/svgr/Package-body.svg';
+import { ReactComponent as PackageBodySvg  } from '@/svgr/Package-body.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import ParameterSvg from '@/svgr/Parameter.svg';
+import { ReactComponent as ParameterSvg  } from '@/svgr/Parameter.svg';
 import { openPackageViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-3)';

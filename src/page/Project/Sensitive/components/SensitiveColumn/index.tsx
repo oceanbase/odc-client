@@ -42,8 +42,8 @@ import EditSensitiveColumnModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
 import tracert from '@/util/tracert';
 import ManualForm from './components/ManualForm';
-import TableOutlined from '@/svgr/menuTable.svg';
-import ViewSvg from '@/svgr/menuView.svg';
+import { ReactComponent as TableOutlined  } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg  } from '@/svgr/menuView.svg';
 import styles from './index.less';
 
 export const PopoverContainer: React.FC<{

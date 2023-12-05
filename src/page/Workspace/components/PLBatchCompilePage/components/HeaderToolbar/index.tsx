@@ -15,8 +15,8 @@
  */
 
 import Toolbar from '@/component/Toolbar';
-import CompileAllSvg from '@/svgr/batch-compile-all.svg';
-import CompileSvg from '@/svgr/batch-compile.svg';
+import { ReactComponent as CompileAllSvg  } from '@/svgr/batch-compile-all.svg';
+import { ReactComponent as CompileSvg  } from '@/svgr/batch-compile.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { BorderOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';

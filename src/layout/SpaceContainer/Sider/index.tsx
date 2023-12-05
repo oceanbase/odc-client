@@ -19,8 +19,8 @@ import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import odc from '@/plugins/odc';
 import { TaskStore } from '@/store/task';
-import LinkOutlined from '@/svgr/icon_connection.svg';
-import TaskSvg from '@/svgr/icon_task.svg';
+import { ReactComponent as LinkOutlined  } from '@/svgr/icon_connection.svg';
+import { ReactComponent as TaskSvg  } from '@/svgr/icon_task.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon, {

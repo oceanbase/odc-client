@@ -17,7 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 
-import ODCColorSvg from '@/svgr/odc_logo_color.svg';
+import { ReactComponent as ODCColorSvg  } from '@/svgr/odc_logo_color.svg';
 
 export default function ({ collapsed }) {
   if (collapsed) {
