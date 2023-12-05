@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import { IProject } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
@@ -36,6 +37,7 @@ export default function ProjectSelect({
   onChange,
 }: IProps) {
   const isProjectNotFound = !projects?.find((item) => item.id === currentDatabase?.project?.id);
+  const bindProjectId = currentDatabase?.dataSource?.projectId;
   const _isNull = isNull(value);
   return (
     <Space>
@@ -48,12 +50,15 @@ export default function ProjectSelect({
         disabled={_isNull || disabled}
       >
         {projects?.map((item) => {
+          if (bindProjectId && item.id !== bindProjectId) {
+            return null;
+          }
           return (
             <Select.Option value={item.id} key={item.id}>
               {item.name}
             </Select.Option>
           );
-        })}
+        }).filter(Boolean)}
         {isProjectNotFound && currentDatabase?.project?.id ? (
           <Select.Option value={currentDatabase?.project?.id} key={currentDatabase?.project?.id}>
             {currentDatabase?.project?.name}
