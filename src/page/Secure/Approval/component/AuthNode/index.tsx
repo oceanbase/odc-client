@@ -51,25 +51,43 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                 key={field.key}
               >
                 <Space direction="vertical">
-                  <Space>
-                    <span>
-                      {formatMessage({ id: 'odc.component.AuthNode.ApprovalNode' }) /*审批节点*/}
-                      {index + 1}
-                    </span>
-                    <Form.Item
-                      name={[field.name, 'externalApproval']}
-                      valuePropName="checked"
-                      noStyle
-                    >
-                      <Checkbox>
-                        {
-                          formatMessage({
-                            id: 'odc.component.AuthNode.ExternalApproval',
-                          }) /*外部审批*/
-                        }
-                      </Checkbox>
-                    </Form.Item>
-                  </Space>
+                  <Form.Item noStyle shouldUpdate>
+                    {({ setFieldValue }) => {
+                      const fieldkey = ['nodes', field.name];
+                      return (
+                        <Space>
+                          <span>
+                            {
+                              formatMessage({
+                                id: 'odc.component.AuthNode.ApprovalNode',
+                              }) /*审批节点*/
+                            }
+                            {index + 1}
+                          </span>
+                          <Form.Item
+                            name={[field.name, 'externalApproval']}
+                            valuePropName="checked"
+                            noStyle
+                            shouldUpdate
+                          >
+                            <Checkbox
+                              onChange={(e) => {
+                                if (!e.target.checked) {
+                                  setFieldValue(fieldkey, null);
+                                }
+                              }}
+                            >
+                              {
+                                formatMessage({
+                                  id: 'odc.component.AuthNode.ExternalApproval',
+                                }) /*外部审批*/
+                              }
+                            </Checkbox>
+                          </Form.Item>
+                        </Space>
+                      );
+                    }}
+                  </Form.Item>
                   <Space>
                     <Form.Item noStyle shouldUpdate>
                       {({ getFieldValue }) => {
