@@ -198,7 +198,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
           label: '申请项目权限',
-          enabled: true,
+          enabled: !isClient() && !isPersonal,
         },
       ],
     },
