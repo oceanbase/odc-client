@@ -17,7 +17,7 @@
 import Icon, { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
 import { PureComponent } from 'react';
 // @ts-ignore
-import ViewSvg from '@/svgr/View.svg';
+import { ReactComponent as ViewSvg  } from '@/svgr/View.svg';
 
 interface IProps {
   title: any;

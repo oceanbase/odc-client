@@ -20,7 +20,7 @@ import { Menu } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { PureComponent } from 'react';
 // @ts-ignore
-import FunctionSvg from '@/svgr/Function.svg';
+import { ReactComponent as FunctionSvg  } from '@/svgr/Function.svg';
 import { formatMessage } from '@/util/intl';
 
 enum MenuKey {

@@ -28,7 +28,7 @@ import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
 
-import DatabaseSvg from '@/svgr/database.svg';
+import { ReactComponent as DatabaseSvg  } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { DbObjectType } from '@/d.ts';

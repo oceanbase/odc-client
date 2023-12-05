@@ -16,7 +16,7 @@
 
 import { IConnection, IConnectionStatus } from '@/d.ts';
 import { Tooltip } from 'antd';
-import OBSvg from '@/svgr/source_ob.svg';
+import { ReactComponent as OBSvg  } from '@/svgr/source_ob.svg';
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
 

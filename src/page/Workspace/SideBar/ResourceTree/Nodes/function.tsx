@@ -21,10 +21,10 @@ import { formatMessage } from '@/util/intl';
 import Icon, { InfoOutlined, NumberOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
-import ParameterSvg from '@/svgr/Parameter.svg';
+import { ReactComponent as ParameterSvg  } from '@/svgr/Parameter.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import FunctionSvg from '@/svgr/menuFunc.svg';
+import { ReactComponent as FunctionSvg  } from '@/svgr/menuFunc.svg';
 import {
   openFunctionViewPage,
   openPackageHeadPage,

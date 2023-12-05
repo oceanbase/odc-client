@@ -15,7 +15,7 @@
  */
 
 import Dragable, { IDragable } from '@/component/Dragable';
-import DragSvg from '@/svgr/DragItem.svg';
+import { ReactComponent as DragSvg  } from '@/svgr/DragItem.svg';
 import { formatMessage } from '@/util/intl';
 import { encodeRegexpStr } from '@/util/utils';
 import Icon, { DeleteOutlined, LoadingOutlined, PaperClipOutlined } from '@ant-design/icons';

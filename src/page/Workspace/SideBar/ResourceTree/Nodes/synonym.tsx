@@ -17,7 +17,7 @@
 import { DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
-import SynonymSvg from '@/svgr/menuSynonym.svg';
+import { ReactComponent as SynonymSvg  } from '@/svgr/menuSynonym.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
