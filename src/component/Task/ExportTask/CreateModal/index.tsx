@@ -199,11 +199,7 @@ class CreateModal extends React.Component<IProps, IState> {
           }
           const data = await createBatchExportTask(formData);
           if (data) {
-            message.success(
-              formatMessage({
-                id: 'odc.components.ExportDrawer.CreatedAndExportedSuccessfully',
-              }),
-            );
+            message.success('导出成功！');
 
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();

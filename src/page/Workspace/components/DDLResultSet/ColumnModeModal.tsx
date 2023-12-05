@@ -16,11 +16,11 @@
 
 import { formatMessage } from '@/util/intl';
 import { Button, Modal } from 'antd';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 
 import type { ResultSetColumn } from '@/d.ts';
 import { LeftSquareOutlined, RightSquareOutlined } from '@ant-design/icons';
-import type { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
+import type { FormatterProps, DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import TextFormatter from './hooks/components/TextFormatter';
@@ -74,6 +74,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
   } = props;
 
   const resultContext = useContext(ResultContext);
+  const gridRef = useRef<DataGridRef>();
 
   const tableColumns = useMemo(() => {
     return [
@@ -107,12 +108,6 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
     ];
   }, []);
 
-  const columnsInColumnMode: {
-    title: string;
-    dataIndex: string;
-    render?: any;
-    width?: number;
-  }[] = [];
   let dataInColumnMode: DataInColumnMode[] = [];
 
   if (selectedRow) {
@@ -129,6 +124,12 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       };
     });
   }
+
+  useEffect(() => {
+    if (dataInColumnMode && visible) {
+      gridRef.current?.setRows(dataInColumnMode);
+    }
+  }, [dataInColumnMode, visible]);
 
   return (
     <Modal
@@ -155,6 +156,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
         }}
       >
         <EditableTable
+          gridRef={gridRef}
           rowKey="columnName"
           initialRows={dataInColumnMode}
           initialColumns={tableColumns}
