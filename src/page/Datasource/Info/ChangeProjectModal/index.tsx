@@ -49,7 +49,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
 
   return (
     <Modal
-      title={formatMessage({ id: 'odc.Info.ChangeProjectModal.TransferProject' })} /*转移项目*/
+      title={"修改所属项目"}
       open={visible}
       onCancel={close}
       onOk={async () => {
@@ -85,8 +85,8 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
               },
             },
           ]}
-          label={formatMessage({ id: 'odc.Info.ChangeProjectModal.Project' })}
-          /*所属项目*/ name={'project'}
+          label={"项目"}
+          name={'project'}
         >
           <ProjectSelect projects={data?.contents} currentDatabase={database} />
         </Form.Item>

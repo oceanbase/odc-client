@@ -20,7 +20,7 @@ import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Button, Form, Input, message, Modal, Space } from 'antd';
+import { Button, Form, Input, message, Modal, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
@@ -161,16 +161,17 @@ export default function NewDataBaseButton({
               </Form.Item>
             </Space>
           )}
-          <Form.Item
-            name={'projectId'}
-            label={formatMessage({ id: 'odc.Info.NewDataBaseButton.Project' })} /*所属项目*/
-          >
-            <ProjectSelect
-              disabled={!!projectId}
-              projects={project?.contents}
-              currentDatabase={null}
-            />
-          </Form.Item>
+            <Form.Item
+              name={'projectId'}
+              label={"项目"}
+            >
+              <ProjectSelect
+                disabled={!!projectId}
+                disabledTip={`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`}
+                projects={project?.contents}
+                currentDatabase={null}
+              />
+            </Form.Item>
         </Form>
       </Modal>
     </>
