@@ -15,9 +15,7 @@
  */
 
 import {
-  executeVariableUpdateDML,
-  fetchVariableList,
-  getVariableUpdateDML,
+  fetchVariableList, updateVariable
 } from '@/common/network/sessionParams';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
@@ -43,7 +41,7 @@ const ToolbarButton = Toolbar.Button;
 const Search = Input.Search;
 const { Content } = Layout;
 
-interface IRowConnectionProperty extends RowType, IConnectionProperty {}
+interface IRowConnectionProperty extends RowType, IConnectionProperty { }
 
 function SessionParamsTable(props: {
   sqlStore?: SQLStore;
@@ -65,8 +63,6 @@ function SessionParamsTable(props: {
     showDatasource,
   } = props;
   const [listLoading, setListLoading] = useState(false);
-  const [showExecuteSQLModal, setShowExecuteSQLModal] = useState(false);
-  const [updateDML, setupdateDML] = useState('');
   const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [searchKey, setSearchKey] = useState('');
@@ -110,25 +106,6 @@ function SessionParamsTable(props: {
     [],
   );
 
-  const handleExecuteUpdateDML = useCallback(async () => {
-    if (!session) {
-      return;
-    }
-    const success = await executeVariableUpdateDML(updateDML, connectionPropertyType, sessionId);
-
-    if (success) {
-      // 刷新
-      await loadData();
-      await session.initSessionStatus();
-      setShowExecuteSQLModal(false);
-      message.success(
-        formatMessage({
-          id: 'workspace.window.session.modal.sql.execute.success',
-        }),
-      ); // 更新页面标题 & url
-    }
-  }, [session, updateDML, rows, connectionPropertyType, loadData, sessionId]);
-
   const columns = [
     {
       key: 'key',
@@ -157,8 +134,7 @@ function SessionParamsTable(props: {
       const oldVlaue = filteredRows?.[selectedRowIndex]?.value;
       let modified = newValue !== oldVlaue;
       if (modified) {
-        setShowExecuteSQLModal(true);
-        const updateDML = await getVariableUpdateDML(
+        const isSuccess = await updateVariable(
           {
             ...filteredRows?.[selectedRowIndex],
             value: newValue,
@@ -166,8 +142,14 @@ function SessionParamsTable(props: {
           connectionPropertyType,
           sessionId,
         );
-        setupdateDML(updateDML);
-        if (updateDML) {
+        if (isSuccess) {
+          await loadData();
+          await session.initSessionStatus();
+          message.success(
+            formatMessage({
+              id: 'workspace.window.session.modal.sql.execute.success',
+            }),
+          );
           setShowEditModal(false);
         }
       } else {
@@ -195,7 +177,7 @@ function SessionParamsTable(props: {
                 text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                 icon={<EditOutlined />}
                 onClick={handleOpenEditModal}
-                // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
+              // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
               />
             </div>
             <div className="tools-right">
@@ -245,20 +227,6 @@ function SessionParamsTable(props: {
         onSave={handleSaveProperty}
         onCancel={() => setShowEditModal(false)}
         model={filteredRows?.[selectedRowIndex] || {}}
-      />
-      <ExecuteSQLModal
-        sessionStore={session}
-        key="key"
-        tip={formatMessage({
-          id: 'odc.components.SessionParamPage.ThisModificationWillTakeEffect',
-        })}
-        /*本次修改将对本连接的所有窗口生效，请仔细确认*/
-        sql={updateDML}
-        visible={showExecuteSQLModal}
-        onSave={handleExecuteUpdateDML}
-        onCancel={() => setShowExecuteSQLModal(false)}
-        onChange={(sql) => setupdateDML(sql)}
-        readonly={true}
       />
     </>
   );
