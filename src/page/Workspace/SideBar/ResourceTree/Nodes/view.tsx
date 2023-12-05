@@ -21,7 +21,7 @@ import { PropsTab, TopTab } from '@/page/Workspace/components/ViewPage';
 import { openViewViewPage } from '@/store/helper/page';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { ReactComponent as ViewSvg  } from '@/svgr/menuView.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import Icon, { FolderOpenFilled } from '@ant-design/icons';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactComponent as ODCBlackSvg  } from '@/svgr/odc_logo_color.svg';
+import { ReactComponent as ODCBlackSvg } from '@/svgr/odc_logo_color.svg';
 import Icon from '@ant-design/icons';
 
 export default function Logo() {

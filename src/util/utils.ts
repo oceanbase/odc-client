@@ -572,6 +572,14 @@ export function formatTimeTemplate(time: number) {
     return `${BigNumber(timeNumber.toFixed(2)).toString()} ${unit?.[0]}`;
   }
 }
+/**
+ *
+ * @param time 传入微秒级时间戳，
+ * @returns 返回最大单位时间, 例: 6000us => 6ms
+ */
+export function formatTimeTemplatMicroSeconds(time: number): string {
+  return formatTimeTemplate(BigNumber(time).div(1000000).toNumber());
+}
 
 export const hourToSeconds = (hour: number) => {
   const seconds = hour ? hour * 60 * 60 : undefined;

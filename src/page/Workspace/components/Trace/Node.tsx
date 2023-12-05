@@ -16,9 +16,9 @@
 
 import { MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import styles from './index.less';
-import { ReactComponent as OBServerSvg  } from '@/svgr/OBServer.svg';
-import { ReactComponent as OBProxySvg  } from '@/svgr/OBProxy.svg';
-import { ReactComponent as JDBCSvg  } from '@/svgr/JDBC.svg';
+import { ReactComponent as OBServerSvg } from '@/svgr/OBServer.svg';
+import { ReactComponent as OBProxySvg } from '@/svgr/OBProxy.svg';
+import { ReactComponent as JDBCSvg } from '@/svgr/JDBC.svg';
 import { TraceSpanNode } from '@/d.ts';
 
 export const getIconByNodeType = (nodeType: TraceSpanNode) => {
@@ -52,7 +52,7 @@ const Node = ({
     <div
       className={styles.node}
       style={{
-        borderBottom: lastOne ? '1px solid var(--odc-border-color)' : 'transparent',
+        borderBottom: lastOne ? '1px solid var(--odc-border-color)' : '1px solid transparent',
       }}
     >
       {isRoot && !isExpand ? (
@@ -86,6 +86,7 @@ const Node = ({
           style={{
             width: '24px',
             height: '24px',
+            flex: '0 0 24px',
           }}
         ></div>
       ))}
@@ -156,7 +157,7 @@ const Node = ({
               style={{
                 position: 'absolute',
                 zIndex: 1,
-                right: 0,
+                right: 6,
               }}
             >
               <line
@@ -174,9 +175,9 @@ const Node = ({
           </div>
         )}
       </div>
-      <div className={styles.nodeTitle}>
+      <div className={styles.nodeTreeTitle}>
         <div style={{ width: '16px', height: '16px' }}>{getIconByNodeType(node)}</div>
-        {title}
+        <div className={styles.nodeTitleContent}>{title}</div>
       </div>
     </div>
   );

@@ -35,9 +35,8 @@ import styles from './index.less';
 import ScanRule from './SacnRule';
 import classnames from 'classnames';
 import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
-import { ReactComponent as TableOutlined  } from '@/svgr/menuTable.svg';
-import { ReactComponent as ViewSvg  } from '@/svgr/menuView.svg';
-import { MaskRyleTypeMap } from '@/d.ts';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { PopoverContainer } from '..';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
@@ -49,6 +48,7 @@ import {
 import ProjectContext from '@/page/Project/ProjectContext';
 import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
 import React from 'react';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 interface IScanFormProps {
   formRef: FormInstance<any>;
   _formRef: FormInstance<any>;
@@ -579,7 +579,7 @@ const getColumns = (
                             id:
                               'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
                           }) /* 脱敏方式 */,
-                          value: MaskRyleTypeMap?.[target?.type],
+                          value: maskRuleTypeMap?.[target?.type],
                         },
                         {
                           label: formatMessage({

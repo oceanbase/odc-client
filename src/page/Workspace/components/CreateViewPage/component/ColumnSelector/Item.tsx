@@ -22,7 +22,7 @@ import classNames from 'classnames';
 import { parse } from 'query-string';
 import { PureComponent } from 'react';
 // @ts-ignore
-import { ReactComponent as DragSvg  } from '@/svgr/DragItem.svg';
+import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import EditableText from '../EditableText';
 import ObjectName, { EnumObjectType } from '../ObjectName';
 // @ts-ignore

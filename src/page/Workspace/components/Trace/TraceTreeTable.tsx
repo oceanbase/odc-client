@@ -18,13 +18,14 @@ import styles from './index.less';
 import TraceTree from './TraceTree';
 import TraceTable from './TraceTable';
 import { ExpandTraceSpan } from '.';
+import { formatTimeTemplatMicroSeconds } from '@/util/utils';
 
 const TraceTreeTable: React.FC<{
   innerTreeData: ExpandTraceSpan[];
   treeData: ExpandTraceSpan[];
   totalStartTimestamp: number;
   totalEndTimestamp: number;
-  elapseMicroSeconds: number;
+  totalElapseMicroSeconds: number;
   handleNodeExpand: (key: string) => void;
   countStepBySameParentKey: (prev: string, next: string) => number;
 }> = ({
@@ -32,7 +33,7 @@ const TraceTreeTable: React.FC<{
   treeData,
   totalEndTimestamp,
   totalStartTimestamp,
-  elapseMicroSeconds,
+  totalElapseMicroSeconds,
   handleNodeExpand,
   countStepBySameParentKey,
 }) => {
@@ -43,12 +44,16 @@ const TraceTreeTable: React.FC<{
           <span className={styles.headerSpanIDSpan}>Span</span>
         </div>
         <div className={styles.stepContainer}>
-          <div className={styles.timeStep}>{0}us</div>
-          <div className={styles.timeStep}>{Math.floor(0.25 * elapseMicroSeconds)}us</div>
-          <div className={styles.timeStep}>{Math.floor(0.5 * elapseMicroSeconds)}us</div>
+          <div className={styles.timeStep}>0 us</div>
           <div className={styles.timeStep}>
-            <span>{Math.floor(0.75 * elapseMicroSeconds)}us</span>
-            <span>{elapseMicroSeconds}us</span>
+            {formatTimeTemplatMicroSeconds(Math.floor(0.25 * totalElapseMicroSeconds))}
+          </div>
+          <div className={styles.timeStep}>
+            {formatTimeTemplatMicroSeconds(Math.floor(0.5 * totalElapseMicroSeconds))}
+          </div>
+          <div className={styles.timeStep}>
+            <span>{formatTimeTemplatMicroSeconds(Math.floor(0.75 * totalElapseMicroSeconds))}</span>
+            <span>{formatTimeTemplatMicroSeconds(totalElapseMicroSeconds)}</span>
           </div>
         </div>
       </div>
@@ -63,8 +68,8 @@ const TraceTreeTable: React.FC<{
           />
           <TraceTable
             innerTreeData={innerTreeData}
+            totalElapseMicroSeconds={totalElapseMicroSeconds}
             totalStartTimestamp={totalStartTimestamp}
-            totalEndTimestamp={totalEndTimestamp}
           />
         </div>
       </div>

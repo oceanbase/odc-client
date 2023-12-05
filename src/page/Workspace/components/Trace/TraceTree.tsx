@@ -35,6 +35,7 @@ const TraceTree: React.FC<
         border: '1px solid var(--odc-border-color)',
         borderTop: 'none',
         borderBottom: 'none',
+        overflow: 'scroll hidden',
       }}
     >
       {treeData.length > 0 &&

@@ -28,7 +28,7 @@ import {
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
+import { IResponseData } from '@/d.ts';
 import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import { formatMessage } from '@/util/intl';
 import Icon, { DownOutlined } from '@ant-design/icons';
@@ -42,9 +42,10 @@ import EditSensitiveColumnModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
 import tracert from '@/util/tracert';
 import ManualForm from './components/ManualForm';
-import { ReactComponent as TableOutlined  } from '@/svgr/menuTable.svg';
-import { ReactComponent as ViewSvg  } from '@/svgr/menuView.svg';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import styles from './index.less';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 
 export const PopoverContainer: React.FC<{
   title: string;
@@ -76,7 +77,6 @@ export const PopoverContainer: React.FC<{
         </Descriptions>
       }
     >
-      {' '}
       {children?.()}
     </Popover>
   );
@@ -193,7 +193,7 @@ const getColumns: ({
                   id:
                     'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
                 }) /* 脱敏方式 */,
-                value: MaskRyleTypeMap?.[target?.type],
+                value: maskRuleTypeMap?.[target?.type],
               },
               {
                 label: formatMessage({

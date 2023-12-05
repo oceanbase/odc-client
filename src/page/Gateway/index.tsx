@@ -25,7 +25,7 @@ import { decrypt } from '@/common/network/other';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
-import { ReactComponent as Logo  } from '@/svgr/LogoOB.svg';
+import { ReactComponent as Logo } from '@/svgr/LogoOB.svg';
 import { isClient } from '@/util/env';
 import { useMatch } from '@umijs/max';
 import { Base64 } from 'js-base64';

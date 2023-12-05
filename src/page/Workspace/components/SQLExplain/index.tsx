@@ -151,10 +151,11 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'flex-end',
+                  justifyContent: 'space-between',
                   marginBottom: '8px',
                 }}
               >
+                <div className={styles.subTitle}>计划统计</div>
                 <div>
                   <Checkbox
                     checked={onlyText}

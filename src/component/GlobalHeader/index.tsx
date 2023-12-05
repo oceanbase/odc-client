@@ -23,7 +23,7 @@ import odc from '@/plugins/odc';
 import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
-import { ReactComponent as ODCBlackSvg  } from '@/svgr/odc_black.svg';
+import { ReactComponent as ODCBlackSvg } from '@/svgr/odc_black.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { inject, observer } from 'mobx-react';

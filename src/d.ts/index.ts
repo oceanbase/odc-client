@@ -16,7 +16,6 @@
 
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
-import { formatMessage } from '@/util/intl';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 
@@ -2966,16 +2965,6 @@ export enum MaskRuleType {
   // 置空
   NULL = 'NULL',
 }
-
-export const MaskRyleTypeMap = {
-  // 掩盖
-  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp' }), //掩盖 // 替换
-  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace' }), //替换 // 保留格式
-  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat' }), //保留格式 // 哈希
-  HASH: formatMessage({ id: 'odc.src.d.ts.Hash' }), //哈希 // 取整
-  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding' }), //取整 // 置空
-  NULL: formatMessage({ id: 'odc.src.d.ts.Empty' }), //置空
-};
 
 export enum MaskRuleCustomSegmentsType {
   // 位数

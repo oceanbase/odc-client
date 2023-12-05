@@ -84,7 +84,7 @@ const items: Record<
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
-      innerSchema: ["test", "mysql", "oceanbase", "information_schema"]
+      innerSchema: ['test', 'mysql', 'oceanbase', 'information_schema'],
     },
     sql: {
       language: 'obmysql',
@@ -115,7 +115,7 @@ const items: Record<
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
-      innerSchema: ["test", "mysql", "oceanbase", "information_schema"]
+      innerSchema: ['test', 'mysql', 'oceanbase', 'information_schema'],
     },
     sql: {
       language: 'obmysql',
@@ -147,7 +147,7 @@ const items: Record<
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
-      innerSchema: ["test", "mysql", "oceanbase", "information_schema"]
+      innerSchema: ['test', 'mysql', 'oceanbase', 'information_schema'],
     },
     sql: {
       language: 'obmysql',

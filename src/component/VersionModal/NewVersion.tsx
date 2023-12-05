@@ -22,8 +22,8 @@ import styles from './index.less';
 import config from './newVersionConfig';
 
 import setting, { EThemeConfigKey } from '@/store/setting';
-import { ReactComponent as WelComeSvg  } from '@/svgr/emoji_welcome.svg';
-import { ReactComponent as NewOpenSvg  } from '@/svgr/newopen.svg';
+import { ReactComponent as WelComeSvg } from '@/svgr/emoji_welcome.svg';
+import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
 import { getLocalImg } from '@/util/intl';
 
 const newVersionModalKey = 'new-version-modal-key-odc';

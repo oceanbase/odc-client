@@ -18,11 +18,11 @@ import { formatMessage } from '@/util/intl';
 import { FileSearchOutlined, OneToOneOutlined } from '@ant-design/icons';
 import * as monaco from 'monaco-editor';
 // @ts-ignore
-import { ReactComponent as RedoSvg  } from '@/svgr/Redo.svg'; // @ts-ignore
+import { ReactComponent as RedoSvg } from '@/svgr/Redo.svg'; // @ts-ignore
 
 import { IEditor } from '@/component/MonacoEditor';
 import SessionStore from '@/store/sessionManager/session';
-import { ReactComponent as UndoSvg  } from '@/svgr/Undo.svg';
+import { ReactComponent as UndoSvg } from '@/svgr/Undo.svg';
 import { textExpaste } from '@/util/sql';
 import type { ToolBarActions } from '..';
 import { getStatus } from './pl';

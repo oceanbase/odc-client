@@ -20,7 +20,7 @@ import { Menu } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { PureComponent } from 'react';
 // @ts-ignore
-import { ReactComponent as ProcedureSvg  } from '@/svgr/Stored-procedure.svg';
+import { ReactComponent as ProcedureSvg } from '@/svgr/Stored-procedure.svg';
 import { formatMessage } from '@/util/intl';
 
 enum MenuKey {

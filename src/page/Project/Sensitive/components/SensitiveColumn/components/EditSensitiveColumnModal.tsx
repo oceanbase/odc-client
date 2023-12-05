@@ -19,7 +19,7 @@ import { formatMessage } from '@/util/intl';
 import { Form, message, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import styles from './index.less';
-import { MaskRyleTypeMap } from '@/d.ts';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { PopoverContainer } from '..';
 const EditSensitiveColumnModal = ({
   projectId,
@@ -120,7 +120,7 @@ const EditSensitiveColumnModal = ({
                           id:
                             'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
                         }), //'脱敏方式'
-                        value: MaskRyleTypeMap?.[target?.type],
+                        value: maskRuleTypeMap?.[target?.type],
                       },
                       {
                         label: formatMessage({

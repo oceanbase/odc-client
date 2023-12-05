@@ -171,8 +171,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             width: 160,
             render(value, record, index) {
               const bindProjectName = record.dataSource?.projectName;
-              const innerSchema = getDataSourceModeConfig(record.dataSource?.type)?.schema?.innerSchema || [];
-              const isInnerSchema = innerSchema.includes(record?.name)
+              const innerSchema =
+                getDataSourceModeConfig(record.dataSource?.type)?.schema?.innerSchema || [];
+              const isInnerSchema = innerSchema.includes(record?.name);
               let tip = null;
               if (isInnerSchema) {
                 tip = null;

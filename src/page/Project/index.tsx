@@ -246,13 +246,6 @@ const Index: React.FC<IProps> = function () {
           v && tracert.expo('a3112.b64002.c330857');
         },
       }}
-      containerWrapStyle={
-        [IPageType.Sensitive].includes(page)
-          ? {
-              padding: '0px 12px',
-            }
-          : {}
-      }
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
       tabList={displayTabs}
       tabActiveKey={page}

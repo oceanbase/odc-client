@@ -21,14 +21,14 @@ import Icon, { FormatPainterFilled } from '@ant-design/icons';
 
 import styles from './DefaultPage.less';
 
-import { ReactComponent as ConsoleSQLSvg  } from '@/svgr/Console-SQL.svg';
-import { ReactComponent as TaskSvg  } from '@/svgr/icon_task.svg';
+import { ReactComponent as ConsoleSQLSvg } from '@/svgr/Console-SQL.svg';
+import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 
 import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
 import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
 import { openNewDefaultPLPage, openNewSQLPage } from '@/store/helper/page';
 import setting, { EThemeConfigKey } from '@/store/setting';
-import { ReactComponent as ConsolePLSvg  } from '@/svgr/Console-PL.svg';
+import { ReactComponent as ConsolePLSvg } from '@/svgr/Console-PL.svg';
 import { useContext, useEffect } from 'react';
 import tracert from '@/util/tracert';
 

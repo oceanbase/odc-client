@@ -21,8 +21,8 @@ import classNames from 'classnames';
 import React, { forwardRef } from 'react';
 import styles from './index.less';
 
-import { ReactComponent as ProjectSvg  } from '@/svgr/project_space.svg';
-import { ReactComponent as UserSvg  } from '@/svgr/user.svg';
+import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
+import { ReactComponent as UserSvg } from '@/svgr/user.svg';
 
 interface IProps {
   data: IProject;
