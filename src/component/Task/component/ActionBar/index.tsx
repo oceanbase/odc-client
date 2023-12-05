@@ -188,7 +188,11 @@ const ActionBar: React.FC<IProps> = inject(
 
     const editCycleTask = async () => {
       props?.onClose?.();
-      props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
+      if (task?.type === TaskType.DATA_ARCHIVE) {
+        props.modalStore.changeDataArchiveModal(true, task?.id);
+      } else {
+        props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
+      }
     };
 
     const disableCycleTask = async () => {
@@ -529,7 +533,8 @@ const ActionBar: React.FC<IProps> = inject(
 
                 _executeBtn.tooltip = formatMessage(
                   {
-                    id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+                    id:
+                      'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
                   },
 
                   { executionTime: executionTime },
@@ -694,8 +699,8 @@ const ActionBar: React.FC<IProps> = inject(
       } else {
         tools = [viewBtn];
       }
-      // 仅 sql 计划支持编辑
-      if (task?.type !== TaskType.SQL_PLAN) {
+      // 仅 sql 计划 & 数据归档支持编辑
+      if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(task?.type)) {
         tools = tools.filter((item) => item.key !== 'edit');
       }
       return tools;

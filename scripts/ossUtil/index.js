@@ -128,17 +128,6 @@ class OSSUtil {
     /**
      * 
      * @param {*} ossPath 
-     * @returns 
-     * {
-      name: 'front-test/help-doc/en-us/data/.DS_Store',
-      url: 'http://antsys-obodc-build.cn-hangzhou-alipay-b-internal.oss-internal.aliyun-inc.com/front-test/help-doc/en-us/data/.DS_Store',
-      lastModified: '2022-11-16T11:25:44.000Z',
-      etag: '"C918CFA464B8DAAB7CAFDBF33AB231BC"',
-      type: 'Normal',
-      size: 6148,
-      storageClass: 'Standard',
-      owner: null
-      }
      */
     async getOSSFolderFiles(ossPath, nextToken) {
         const realOSSPath = path.relative('/', ossPath);
