@@ -24,7 +24,7 @@ import { ColumnIcon, IIndexColumn } from '.';
 import Dragable, { IDragable } from '../Dragable';
 import styles from './index.less';
 // @ts-ignore
-import { ReactComponent as DragSvg  } from '@/svgr/drag.svg';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 
 export interface IDragableColumnProps extends IDragable {
   column: Partial<IIndexColumn>;

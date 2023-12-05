@@ -180,13 +180,13 @@ export async function getFullLinkTrace(
   return res;
 }
 /**
- * 获取要导出的JSON文件
+ * 获取要导出的JSON文件的下载链接
  * @param sessionId
  * @param dbName
  * @param data
  * @returns
  */
-export async function getFullLinkTraceJson(
+export async function getFullLinkTraceDownloadUrl(
   sessionId: string,
   dbName: string,
   data?: Partial<{
@@ -200,10 +200,10 @@ export async function getFullLinkTraceJson(
   }>,
 ): Promise<string> {
   const sid = generateDatabaseSid(dbName, sessionId);
-  const res = await request.post(`/api/v1/diagnose/getFullLinkTraceJson/${sid}`, {
+  const res = await request.post(`/api/v1/diagnose/getFullLinkTraceDownloadUrl/${sid}`, {
     data,
   });
-  return res?.data || '';
+  return res?.data;
 }
 export enum IDataFormmater {
   TEXT = 'TXT',

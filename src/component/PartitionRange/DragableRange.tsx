@@ -23,7 +23,7 @@ import { ISinglePartitionRule } from '.';
 import Dragable, { IDragable } from '../Dragable';
 import styles from './index.less';
 // @ts-ignore
-import { ReactComponent as DragSvg  } from '@/svgr/drag.svg';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 import PartitionValueInput from './PartitionValueInput';
 import { formatMessage } from '@/util/intl';
 

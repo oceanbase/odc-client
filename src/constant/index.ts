@@ -18,37 +18,37 @@ import { ColumnShowType, DbObjectType } from '@/d.ts'; // @ts-ignore
 
 import { formatMessage } from '@/util/intl';
 
-import { ReactComponent as binarySvg  } from '@/svgr/Field-Binary.svg'; // @ts-ignore
+import { ReactComponent as binarySvg } from '@/svgr/Field-Binary.svg'; // @ts-ignore
 
-import { ReactComponent as numberSvg  } from '@/svgr/Field-number.svg'; // @ts-ignore
+import { ReactComponent as numberSvg } from '@/svgr/Field-number.svg'; // @ts-ignore
 
-import { ReactComponent as stringSvg  } from '@/svgr/Field-String.svg'; // @ts-ignore
+import { ReactComponent as stringSvg } from '@/svgr/Field-String.svg'; // @ts-ignore
 
-import { ReactComponent as TableOutlined  } from '@/svgr/menuTable.svg';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 
-import { ReactComponent as FunctionSvg  } from '@/svgr/menuFunc.svg'; // @ts-ignore
+import { ReactComponent as FunctionSvg } from '@/svgr/menuFunc.svg'; // @ts-ignore
 
-import { ReactComponent as ViewSvg  } from '@/svgr/menuView.svg'; // @ts-ignore
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg'; // @ts-ignore
 
-import { ReactComponent as ProcedureSvg  } from '@/svgr/menuProcedure.svg'; // @ts-ignore
+import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg'; // @ts-ignore
 
-import { ReactComponent as SequenceSvg  } from '@/svgr/menuSequence.svg'; // @ts-ignore
+import { ReactComponent as SequenceSvg } from '@/svgr/menuSequence.svg'; // @ts-ignore
 
-import { ReactComponent as PackageSvg  } from '@/svgr/menuPkg.svg'; // @ts-ignore
+import { ReactComponent as PackageSvg } from '@/svgr/menuPkg.svg'; // @ts-ignore
 
-import { ReactComponent as SynonymSvg  } from '@/svgr/menuSynonym.svg'; // @ts-ignore
+import { ReactComponent as SynonymSvg } from '@/svgr/menuSynonym.svg'; // @ts-ignore
 
-import { ReactComponent as TriggerSvg  } from '@/svgr/menuTrigger.svg'; // @ts-ignore
+import { ReactComponent as TriggerSvg } from '@/svgr/menuTrigger.svg'; // @ts-ignore
 
-import { ReactComponent as FileSvg  } from '@/svgr/File.svg'; // @ts-ignore
+import { ReactComponent as FileSvg } from '@/svgr/File.svg'; // @ts-ignore
 
-import { ReactComponent as TypeSvg  } from '@/svgr/menuType.svg';
+import { ReactComponent as TypeSvg } from '@/svgr/menuType.svg';
 
-import { ReactComponent as EnumSvg  } from '@/svgr/Enum.svg'; // 枚举类型 icon
+import { ReactComponent as EnumSvg } from '@/svgr/Enum.svg'; // 枚举类型 icon
 
-import { ReactComponent as SetSvg  } from '@/svgr/Set.svg'; // 集合类型 icon
+import { ReactComponent as SetSvg } from '@/svgr/Set.svg'; // 集合类型 icon
 
-import { ReactComponent as timeSvg  } from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
+import { ReactComponent as timeSvg } from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 
 export const PASSWORD_REGEX = /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
 

@@ -15,7 +15,7 @@
  */
 
 import Dragable, { IDragable } from '@/component/Dragable';
-import { ReactComponent as DragSvg  } from '@/svgr/DragItem.svg';
+import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Col, Row, Select, Space } from 'antd';
@@ -55,8 +55,14 @@ interface IProps extends IDragable {
 
 class Item extends PureComponent<IProps> {
   render() {
-    const { index, dataKey, isDragging, isLast, connectDragSource, handleDelete } =
-      this.props.props;
+    const {
+      index,
+      dataKey,
+      isDragging,
+      isLast,
+      connectDragSource,
+      handleDelete,
+    } = this.props.props;
     const params = parse(dataKey);
     const { d, v, t, uid } = params;
     return connectDragSource(

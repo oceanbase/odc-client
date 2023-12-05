@@ -21,10 +21,10 @@ import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { FunctionTreeNodeData } from './function';
 
-import { ReactComponent as TypeSvg  } from '@/svgr/menuType.svg';
+import { ReactComponent as TypeSvg } from '@/svgr/menuType.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import { ReactComponent as ParameterSvg  } from '@/svgr/Parameter.svg';
+import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 import { ProcedureTreeNodeData } from './procedure';
 import { openTypeViewPage } from '@/store/helper/page';
 

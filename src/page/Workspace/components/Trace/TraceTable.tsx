@@ -23,6 +23,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ExpandTraceSpan, InfoRender } from '.';
 import { getIconByNodeType } from './Node';
 import { TraceSpanNode } from '@/d.ts';
+import { formatTimeTemplatMicroSeconds } from '@/util/utils';
 
 const getColorByType = (type: TraceSpanNode) => {
   switch (type) {
@@ -39,15 +40,14 @@ const getColorByType = (type: TraceSpanNode) => {
 };
 const TraceTable: React.FC<{
   innerTreeData: ExpandTraceSpan[];
+  totalElapseMicroSeconds: number;
   totalStartTimestamp: number;
-  totalEndTimestamp: number;
-}> = ({ innerTreeData, totalStartTimestamp, totalEndTimestamp }) => {
+}> = ({ innerTreeData, totalElapseMicroSeconds, totalStartTimestamp }) => {
   return (
     <div className={styles.traceTable}>
       {innerTreeData?.map((node, index) => {
-        const total = totalEndTimestamp - totalStartTimestamp;
-        const other = (node.startTimestamp - totalStartTimestamp) / total;
-        const percent = (node.endTimestamp - node.startTimestamp) / total;
+        const other = (node.startTimestamp - totalStartTimestamp) / totalElapseMicroSeconds;
+        const percent = (node.endTimestamp - node.startTimestamp) / totalElapseMicroSeconds;
         const dataSource = [];
         node?.tags?.forEach((obj) => {
           Object.keys(obj).forEach((key) => {
@@ -65,13 +65,14 @@ const TraceTable: React.FC<{
             }}
             key={index}
           >
-            <div className={styles.timeStepItem}></div>
-            <div className={styles.timeStepItem}></div>
-            <div className={styles.timeStepItem}></div>
-            <div className={styles.timeStepItem}></div>
+            <div className={styles.timeStepItem} style={{ left: `${142 * 1}px` }}></div>
+            <div className={styles.timeStepItem} style={{ left: `${143 * 2}px` }}></div>
+            <div className={styles.timeStepItem} style={{ left: `${143 * 3 + 1}px` }}></div>
+            <div className={styles.timeStepItem} style={{ left: `${143 * 4 + 3}px` }}></div>
             <div className={styles.progressBar} style={{ color: 'var(--text-color-primary)' }}>
               <div style={{ width: `${other * 100}%` }}></div>
               <Popover
+                overlayClassName={styles.tracePopover}
                 content={
                   <div
                     style={{
@@ -84,7 +85,7 @@ const TraceTable: React.FC<{
                           title: '节点',
                           render: () => (
                             <div className={styles.nodeTitle}>
-                              <div style={{ width: '16px', height: '16px' }}>
+                              <div style={{ width: '14px', height: '14px' }}>
                                 {getIconByNodeType(node?.node)}
                               </div>
                               {node?.node} {node?.host}
@@ -103,11 +104,7 @@ const TraceTable: React.FC<{
                                   marginLeft: '8px',
                                 }}
                                 onCopy={() => {
-                                  message.success(
-                                    formatMessage({
-                                      id: 'workspace.window.session.modal.sql.copied',
-                                    }),
-                                  );
+                                  message.success('复制成功');
                                 }}
                               >
                                 <CopyOutlined />
@@ -125,13 +122,13 @@ const TraceTable: React.FC<{
                         },
                         {
                           title: '耗时',
-                          render: () => <>{node?.elapseMicroSeconds}us</>,
+                          render: () => formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds),
                         },
                       ]}
                     />
-                    {node?.tags && (
+                    {node?.tags && node?.tags?.length && (
                       <>
-                        <div style={{ margin: '16px 0px 8px' }}>Tags</div>
+                        <div style={{ margin: '8px 0px' }}>Tags</div>
                         <DisplayTable
                           bordered={true}
                           expandable={{
@@ -162,25 +159,134 @@ const TraceTable: React.FC<{
                     )}
                   </div>
                 }
-                title={'sql_execute'}
+                title={node?.title}
               >
                 <div
                   style={{
-                    width: `${percent * 100}%`,
+                    width: percent > 0 ? `${percent * 100}%` : '0px',
                     height: '14px',
                     lineHeight: '14px',
 
                     backgroundColor: `${getColorByType(node.node)}`,
-                    paddingRight: '2px',
                   }}
                   className={styles.traceBar}
                 >
-                  {percent + other >= 0.9 ? `${node?.elapseMicroSeconds}us` : ''}
+                  {percent + other >= 0.9
+                    ? formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds)
+                    : ''}
                 </div>
               </Popover>
-              <div style={percent + other < 0.9 ? { marginLeft: '2px' } : {}}>
-                {percent + other < 0.9 ? `${node?.elapseMicroSeconds}us` : ''}
-              </div>
+              {percent <= 0.05 ? (
+                <Popover
+                  overlayClassName={styles.tracePopover}
+                  content={
+                    <div
+                      style={{
+                        width: '400px',
+                      }}
+                    >
+                      <InfoRender
+                        infos={[
+                          {
+                            title: '节点',
+                            render: () => (
+                              <div className={styles.nodeTitle}>
+                                <div style={{ width: '14px', height: '14px' }}>
+                                  {getIconByNodeType(node?.node)}
+                                </div>
+                                {node?.node} {node?.host}
+                              </div>
+                            ),
+                          },
+                          {
+                            title: 'Span ID',
+                            render: () => (
+                              <>
+                                {node?.spanId}
+                                <CopyToClipboard
+                                  key="copy"
+                                  text={node?.spanId}
+                                  style={{
+                                    marginLeft: '8px',
+                                  }}
+                                  onCopy={() => {
+                                    message.success('复制成功');
+                                  }}
+                                >
+                                  <CopyOutlined />
+                                </CopyToClipboard>
+                              </>
+                            ),
+                          },
+                          {
+                            title: '开始时间',
+                            render: () => node?.originStartTimestamp,
+                          },
+                          {
+                            title: '结束时间',
+                            render: () => node?.originEndTimestamp,
+                          },
+                          {
+                            title: '耗时',
+                            render: () => formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds),
+                          },
+                        ]}
+                      />
+                      {node?.tags && (
+                        <>
+                          <div style={{ margin: '8px 0px' }}>Tags</div>
+                          <DisplayTable
+                            bordered={true}
+                            expandable={{
+                              defaultExpandAllRows: true,
+                            }}
+                            disablePagination={true}
+                            showHeader={false}
+                            columns={[
+                              {
+                                title: 'label',
+                                dataIndex: 'label',
+                                key: 'label',
+                              },
+                              {
+                                title: 'value',
+                                dataIndex: 'value',
+                                key: 'value',
+                                render: (text) => (
+                                  <Tooltip title={text}>
+                                    <div className={styles.valueElliscape}>{text}</div>
+                                  </Tooltip>
+                                ),
+                              },
+                            ]}
+                            dataSource={dataSource}
+                          />
+                        </>
+                      )}
+                    </div>
+                  }
+                  title={node?.title}
+                >
+                  <div style={{ cursor: 'pointer' }}>
+                    {' '}
+                    {percent + other < 0.9
+                      ? formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds)
+                      : ''}
+                  </div>
+                </Popover>
+              ) : (
+                <div
+                  style={
+                    percent + other < 0.9
+                      ? { marginLeft: '2px', cursor: 'pointer' }
+                      : { cursor: 'pointer' }
+                  }
+                >
+                  {percent + other < 0.9
+                    ? formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds)
+                    : ''}
+                </div>
+              )}
             </div>
           </div>
         );

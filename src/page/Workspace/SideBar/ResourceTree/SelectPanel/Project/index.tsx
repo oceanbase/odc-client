@@ -23,7 +23,7 @@ import { forwardRef, useContext, useImperativeHandle, useMemo, useState } from '
 import styles from './index.less';
 
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { ReactComponent as ProjectSvg  } from '@/svgr/project_space.svg';
+import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 
 export default forwardRef(function ProjectTree(
   { closeSelectPanel }: { closeSelectPanel: () => void },

@@ -188,13 +188,15 @@ const Database: React.FC<IProps> = ({ id }) => {
                * return datasource icon + label
                */
               const style = getDataSourceStyleByConnectType(record.dataSource?.type);
-              return <>
-                <Icon
-                  component={style?.icon?.component}
-                  style={{ color: style?.icon?.color, fontSize: 16, marginRight: 4 }}
-                />
-                <span title={value}>{value}</span>
-              </>
+              return (
+                <>
+                  <Icon
+                    component={style?.icon?.component}
+                    style={{ color: style?.icon?.color, fontSize: 16, marginRight: 4 }}
+                  />
+                  <span title={value}>{value}</span>
+                </>
+              );
             },
           },
           {

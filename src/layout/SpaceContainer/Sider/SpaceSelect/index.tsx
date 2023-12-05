@@ -17,8 +17,8 @@
 import { IOrganization } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
 import { UserStore } from '@/store/login';
-import { ReactComponent as PersonalSvg  } from '@/svgr/personal_space.svg';
-import { ReactComponent as GroupSvg  } from '@/svgr/project_space.svg';
+import { ReactComponent as PersonalSvg } from '@/svgr/personal_space.svg';
+import { ReactComponent as GroupSvg } from '@/svgr/project_space.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { CheckOutlined, ExclamationCircleFilled, SwapOutlined } from '@ant-design/icons';
 import { Checkbox, Modal, Select, Space, Typography } from 'antd';

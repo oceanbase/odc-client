@@ -48,12 +48,12 @@ import { listDatabases } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { batchCreateSensitiveColumns, listColumns } from '@/common/network/sensitiveColumn';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { ReactComponent as DBSvg  } from '@/svgr/database_outline.svg';
-import { ReactComponent as TableOutlined  } from '@/svgr/menuTable.svg';
-import { ReactComponent as ViewSvg  } from '@/svgr/menuView.svg';
+import { ReactComponent as DBSvg } from '@/svgr/database_outline.svg';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
-import { MaskRyleTypeMap } from '@/d.ts';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { debounce, cloneDeep, merge } from 'lodash';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import {
@@ -799,7 +799,7 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                                           id:
                                             'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
                                         }) /* 脱敏方式 */,
-                                        value: MaskRyleTypeMap?.[target?.type],
+                                        value: maskRuleTypeMap?.[target?.type],
                                       },
                                       {
                                         label: formatMessage({

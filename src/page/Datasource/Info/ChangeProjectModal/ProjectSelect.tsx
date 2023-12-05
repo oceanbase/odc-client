@@ -49,16 +49,18 @@ export default function ProjectSelect({
         }}
         disabled={_isNull || disabled}
       >
-        {projects?.map((item) => {
-          if (bindProjectId && item.id !== bindProjectId) {
-            return null;
-          }
-          return (
-            <Select.Option value={item.id} key={item.id}>
-              {item.name}
-            </Select.Option>
-          );
-        }).filter(Boolean)}
+        {projects
+          ?.map((item) => {
+            if (bindProjectId && item.id !== bindProjectId) {
+              return null;
+            }
+            return (
+              <Select.Option value={item.id} key={item.id}>
+                {item.name}
+              </Select.Option>
+            );
+          })
+          .filter(Boolean)}
         {isProjectNotFound && currentDatabase?.project?.id ? (
           <Select.Option value={currentDatabase?.project?.id} key={currentDatabase?.project?.id}>
             {currentDatabase?.project?.name}

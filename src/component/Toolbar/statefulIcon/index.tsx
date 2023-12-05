@@ -24,43 +24,43 @@ import { ComponentClass, FunctionComponent } from 'react';
 import commonIcon from './commonIcon';
 
 //@ts-ignore
-import { ReactComponent as StartSvg  } from '@/svgr/Automaticoperation.svg';
+import { ReactComponent as StartSvg } from '@/svgr/Automaticoperation.svg';
 //@ts-ignore
-import { ReactComponent as SubmitSvg  } from '@/svgr/Submit.svg';
+import { ReactComponent as SubmitSvg } from '@/svgr/Submit.svg';
 //@ts-ignore
-import { ReactComponent as RollbackSvg  } from '@/svgr/Roll-back.svg';
+import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
 // @ts-ignore
-import { ReactComponent as TerminationSvg  } from '@/svgr/Termination.svg';
+import { ReactComponent as TerminationSvg } from '@/svgr/Termination.svg';
 // @ts-ignore
-import { ReactComponent as LowercaseSvg  } from '@/svgr/Lowercase.svg';
+import { ReactComponent as LowercaseSvg } from '@/svgr/Lowercase.svg';
 // @ts-ignore
-import { ReactComponent as CapitalizedSvg  } from '@/svgr/Capitalized.svg';
+import { ReactComponent as CapitalizedSvg } from '@/svgr/Capitalized.svg';
 // @ts-ignore
-import { ReactComponent as UppercasingSvg  } from '@/svgr/Uppercasing.svg';
+import { ReactComponent as UppercasingSvg } from '@/svgr/Uppercasing.svg';
 // @ts-ignore
-import { ReactComponent as AddNoteSvg  } from '@/svgr/Add_notes.svg';
+import { ReactComponent as AddNoteSvg } from '@/svgr/Add_notes.svg';
 // @ts-ignore
-import { ReactComponent as DeleleNoteSvg  } from '@/svgr/Delete_notes.svg';
+import { ReactComponent as DeleleNoteSvg } from '@/svgr/Delete_notes.svg';
 // @ts-ignore
-import { ReactComponent as AutomaticRunSvg  } from '@/svgr/AutomaticRun.svg';
+import { ReactComponent as AutomaticRunSvg } from '@/svgr/AutomaticRun.svg';
 // @ts-ignore
-import { ReactComponent as StepInSvg  } from '@/svgr/Step_in.svg';
+import { ReactComponent as StepInSvg } from '@/svgr/Step_in.svg';
 // @ts-ignore
-import { ReactComponent as StepOutSvg  } from '@/svgr/Step_out.svg';
+import { ReactComponent as StepOutSvg } from '@/svgr/Step_out.svg';
 // @ts-ignore
-import { ReactComponent as StepOverSvg  } from '@/svgr/Step_over.svg';
+import { ReactComponent as StepOverSvg } from '@/svgr/Step_over.svg';
 // @ts-ignore
-import { ReactComponent as ExecuteSectionSvg  } from '@/svgr/execute.svg';
+import { ReactComponent as ExecuteSectionSvg } from '@/svgr/execute.svg';
 // @ts-ignore
-import { ReactComponent as DeleteSectionSvg  } from '@/svgr/DeleteSection.svg';
+import { ReactComponent as DeleteSectionSvg } from '@/svgr/DeleteSection.svg';
 // @ts-ignore
-import { ReactComponent as AddSectionSvg  } from '@/svgr/AddSection.svg';
-import { ReactComponent as SnippetSvg  } from '@/svgr/Snippet.svg';
+import { ReactComponent as AddSectionSvg } from '@/svgr/AddSection.svg';
+import { ReactComponent as SnippetSvg } from '@/svgr/Snippet.svg';
 
-import { ReactComponent as CompileSvg  } from '@/svgr/Compile.svg';
-import { ReactComponent as ExpainSvg  } from '@/svgr/Expain.svg';
-import { ReactComponent as FormatSvg  } from '@/svgr/Format.svg';
-import { ReactComponent as LintSvg  } from '@/svgr/lintIcon.svg';
+import { ReactComponent as CompileSvg } from '@/svgr/Compile.svg';
+import { ReactComponent as ExpainSvg } from '@/svgr/Expain.svg';
+import { ReactComponent as FormatSvg } from '@/svgr/Format.svg';
+import { ReactComponent as LintSvg } from '@/svgr/lintIcon.svg';
 
 export enum IConStatus {
   INIT,

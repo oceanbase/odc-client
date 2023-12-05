@@ -22,7 +22,7 @@ import classNames from 'classnames';
 import { IViewParam } from '.';
 import Dragable, { IDragable } from '../Dragable';
 import styles from './index.less';
-import { ReactComponent as DragSvg  } from '@/svgr/drag.svg';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 import { formatMessage } from '@/util/intl';
 
 export interface IDragableViewParamProps extends IDragable {

@@ -25,8 +25,8 @@ import { history } from '@umijs/max';
 import styles from './index.less';
 
 import { SpaceType } from '@/d.ts/_index';
-import { ReactComponent as PersonalSvg  } from '@/svgr/personal_space.svg';
-import { ReactComponent as GroupSvg  } from '@/svgr/project_space.svg';
+import { ReactComponent as PersonalSvg } from '@/svgr/personal_space.svg';
+import { ReactComponent as GroupSvg } from '@/svgr/project_space.svg';
 
 interface IProps {
   userStore?: UserStore;

@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { Button, Col, Descriptions, Drawer, Input, Radio, Row, message } from 'antd';
+import { Button, Col, Descriptions, Drawer, Input, Radio, Row, Tooltip, message } from 'antd';
 import React, { useEffect } from 'react';
-import { CopyOutlined } from '@ant-design/icons';
-import { formatMessage } from '@/util/intl';
+import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import styles from './index.less';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import TraceList from './TraceList';
 import TraceTreeTable from './TraceTreeTable';
-import { getFullLinkTrace, getFullLinkTraceJson } from '@/common/network/sql';
-import { generateAndDownloadFile } from '@/util/utils';
+import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/sql';
+import { downloadFile, formatTimeTemplatMicroSeconds } from '@/util/utils';
 import { TraceSpan } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 
@@ -94,9 +93,10 @@ const Trace: React.FC<{
   const [originTreeData, setOriginTreeData] = useState<ExpandTraceSpan[]>([]);
   const [tabName, setTabName] = useState<string>(TraceTabsType.Trace);
   const [originStartTimestamp, setOriginStartTimestamp] = useState<string>('');
-  const [elapseMicroSeconds, setElapseMicroSeconds] = useState<number>(0);
+  // const [elapseMicroSeconds, setElapseMicroSeconds] = useState<number>(0);
   const [totalEndTimestamp, setTotalEndTimestamp] = useState<number>(0);
   const [totalStartTimestamp, setTotalStartTimestamp] = useState<number>(0);
+  const [totalElapseMicroSeconds, setTotalElapseMicroSeconds] = useState<number>();
   const [treeData, setTreeData] = useState<ExpandTraceSpan[]>([]);
   const [openNodes, setOpenNodes] = useState<string[]>([]);
   const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
@@ -175,7 +175,7 @@ const Trace: React.FC<{
       setInnerTreeData(d);
 
       setOriginStartTimestamp(rawData?.data?.startTimestamp);
-      setElapseMicroSeconds(rawData?.data?.elapseMicroSeconds);
+      setTotalElapseMicroSeconds(rawData?.data?.elapseMicroSeconds);
       setTotalStartTimestamp(resData.startTimestamp);
       setTotalEndTimestamp(resData.endTimestamp);
     }
@@ -246,15 +246,13 @@ const Trace: React.FC<{
 
   async function handleJsonDownload() {
     setDownloadLoading(true);
-    const downloadContent = await getFullLinkTraceJson(
-      session?.sessionId,
-      session?.database?.dbName,
-      {
-        sql: sql,
-        tag: traceId,
-      },
-    );
-    await generateAndDownloadFile(`${traceId}.json`, downloadContent);
+    const url = await getFullLinkTraceDownloadUrl(session?.sessionId, session?.database?.dbName, {
+      sql: sql,
+      tag: traceId,
+    });
+    if (url) {
+      await downloadFile(url);
+    }
     setDownloadLoading(false);
   }
   return (
@@ -283,11 +281,7 @@ const Trace: React.FC<{
                 marginLeft: '8px',
               }}
               onCopy={() => {
-                message.success(
-                  formatMessage({
-                    id: 'workspace.window.session.modal.sql.copied',
-                  }),
-                );
+                message.success('复制成功');
               }}
             >
               <CopyOutlined />
@@ -300,7 +294,9 @@ const Trace: React.FC<{
 
           <Col span={4} className={styles.info}>
             <span className={styles.infoLabel}>持续时间: </span>
-            <span className={styles.infoValue}>{elapseMicroSeconds}us</span>
+            <span className={styles.infoValue}>
+              {formatTimeTemplatMicroSeconds(totalElapseMicroSeconds)}
+            </span>
           </Col>
         </Row>
       </div>
@@ -314,20 +310,26 @@ const Trace: React.FC<{
           <Button loading={downloadLoading} disabled={downloadLoading} onClick={handleJsonDownload}>
             导出 Json
           </Button>
+          <Tooltip
+            placement="left"
+            title={'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'}
+          >
+            <QuestionCircleOutlined style={{ marginRight: '8px', cursor: 'pointer' }} />
+          </Tooltip>
         </div>
       </div>
       {tabName === TraceTabsType.Trace && (
         <TraceTreeTable
           innerTreeData={innerTreeData}
           treeData={treeData}
-          elapseMicroSeconds={elapseMicroSeconds}
+          totalElapseMicroSeconds={totalElapseMicroSeconds}
           totalEndTimestamp={totalEndTimestamp}
           totalStartTimestamp={totalStartTimestamp}
           handleNodeExpand={handleNodeExpand}
           countStepBySameParentKey={countStepBySameParentKey}
         />
       )}
-      {tabName === TraceTabsType.List && <TraceList innerTreeData={innerTreeData} />}
+      {tabName === TraceTabsType.List && <TraceList innerTreeData={treeData} />}
     </Drawer>
   );
 };

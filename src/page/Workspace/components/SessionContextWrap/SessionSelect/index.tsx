@@ -24,7 +24,7 @@ import { Dropdown, Popover, Space, Spin, Tag } from 'antd';
 import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
-import { ReactComponent as PjSvg  } from '@/svgr/project_space.svg';
+import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import classNames from 'classnames';
 import SelectModal from './modal';
 import tracert from '@/util/tracert';

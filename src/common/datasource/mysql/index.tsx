@@ -88,7 +88,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
-      innerSchema: ["information_schema", "test", "mysql"]
+      innerSchema: ['information_schema', 'test', 'mysql'],
     },
     sql: {
       language: 'mysql',

@@ -24,9 +24,9 @@ import styles from './index.less';
 import { Space } from 'antd';
 import SideTabs from '../components/SideTabs';
 
-import { ReactComponent as TabRecycleSvg  } from '@/svgr/tabRecycle.svg';
-import { ReactComponent as SettingOutlined  } from '@/svgr/tabSession.svg';
-import { ReactComponent as VariableSvg  } from '@/svgr/variable.svg';
+import { ReactComponent as TabRecycleSvg } from '@/svgr/tabRecycle.svg';
+import { ReactComponent as SettingOutlined } from '@/svgr/tabSession.svg';
+import { ReactComponent as VariableSvg } from '@/svgr/variable.svg';
 import tracert from '@/util/tracert';
 import { useParams } from '@umijs/max';
 import { toInteger } from 'lodash';

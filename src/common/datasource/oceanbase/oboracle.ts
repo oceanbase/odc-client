@@ -85,7 +85,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       table: oracleTableConfig,
       func: functionConfig,
       proc: functionConfig,
-      innerSchema: ["SYS"]
+      innerSchema: ['SYS'],
     },
     sql: {
       language: 'oboracle',
@@ -128,7 +128,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       table: oracleTableConfig,
       func: functionConfig,
       proc: functionConfig,
-      innerSchema: ["SYS"]
+      innerSchema: ['SYS'],
     },
     sql: {
       language: 'oboracle',
