@@ -34,7 +34,7 @@ import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Input, Space, Tag, Tooltip } from 'antd';
+import { Input, Space, Tag, Tooltip, Typography } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
@@ -182,20 +182,19 @@ const Database: React.FC<IProps> = ({ id }) => {
             title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
+            ellipsis: true,
             render(value, record, index) {
               /**
                * return datasource icon + label
                */
               const style = getDataSourceStyleByConnectType(record.dataSource?.type);
-              return (
-                <Space size={4}>
-                  <Icon
-                    component={style?.icon?.component}
-                    style={{ color: style?.icon?.color, fontSize: 16 }}
-                  />
-                  {value}
-                </Space>
-              );
+              return <>
+                <Icon
+                  component={style?.icon?.component}
+                  style={{ color: style?.icon?.color, fontSize: 16, marginRight: 4 }}
+                />
+                <span title={value}>{value}</span>
+              </>
             },
           },
           {
