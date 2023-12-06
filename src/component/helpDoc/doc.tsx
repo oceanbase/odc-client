@@ -33,9 +33,27 @@ export default {
       }
     </p>
   ),
-  connectType: () => <p>{formatMessage({ id: 'portal.connection.form.connectType.desc' })}</p>,
-  dbMode: () => <p>{formatMessage({ id: 'portal.connection.form.mode.desc' })}</p>,
-  configUrl: () => <p>{formatMessage({ id: 'portal.connection.form.configUrl.desc' })}</p>,
+  connectType: () => (
+    <p>
+      {formatMessage({
+        id: 'portal.connection.form.connectType.desc',
+      })}
+    </p>
+  ),
+  dbMode: () => (
+    <p>
+      {formatMessage({
+        id: 'portal.connection.form.mode.desc',
+      })}
+    </p>
+  ),
+  configUrl: () => (
+    <p>
+      {formatMessage({
+        id: 'portal.connection.form.configUrl.desc',
+      })}
+    </p>
+  ),
   sessionTimeTip: (
     <p>
       {formatMessage({
@@ -406,7 +424,15 @@ export default {
       }
     </p>
   ),
-  tableSizeToolTip: <p>由于该数据是通过静态基线数据得到的，因此会有延迟，可能出现不准确的情况</p>,
+  tableSizeToolTip: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.BecauseTheDataIsObtained',
+        }) /* 由于该数据是通过静态基线数据得到的，因此会有延迟，可能出现不准确的情况 */
+      }
+    </p>
+  ),
   exportFileMaxSize: (
     <p>
       {
@@ -452,8 +478,24 @@ export default {
       }
     </p>
   ),
-  projectSA: <p>只允许管理项目的敏感列和参与审批</p>,
-  participant: <p>只允许参与审批</p>,
+  projectSA: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.OnlyAllowTheSensitiveColumns',
+        }) /* 只允许管理项目的敏感列和参与审批 */
+      }
+    </p>
+  ),
+  participant: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.OnlyAllowParticipationInApproval',
+        }) /* 只允许参与审批 */
+      }
+    </p>
+  ),
   dataArchiveTimeDoc: (
     <p>
       {

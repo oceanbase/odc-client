@@ -73,7 +73,8 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ),
       content: formatMessage({
         id: 'odc.src.page.Datasource.AfterDeletingYouWill',
-      }), //'删除后将无法访问该数据源'
+      }),
+      //'删除后将无法访问该数据源'
       okText: formatMessage({
         id: 'app.button.ok',
       }),
@@ -107,7 +108,9 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       : null,
     connection.permittedActions?.includes(actionTypes.update)
       ? {
-          label: '克隆',
+          label: formatMessage({
+            id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Clone',
+          }), //'克隆'
           key: Actions.CLONE,
           icon: <CopyOutlined />,
         }
@@ -116,7 +119,8 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ? {
           label: formatMessage({
             id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Delete',
-          }), //'删除'
+          }),
+          //'删除'
           key: Actions.REMOVE,
           icon: <DeleteOutlined />,
         }

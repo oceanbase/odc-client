@@ -24,7 +24,9 @@ export const getTitleByParams = (params: { type: TaskPageType }) => {
   let title = '';
   switch (type) {
     case TaskPageType.ALL: {
-      title = '工单-所有工单';
+      title = formatMessage({
+        id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderAllWorkOrders',
+      }); //'工单-所有工单'
       break;
     }
     case TaskPageType.CREATED_BY_CURRENT_USER: {

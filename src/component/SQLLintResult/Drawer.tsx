@@ -24,7 +24,6 @@ interface IProps {
   visible: boolean;
   closePage: () => void;
 }
-
 const LintDrawer: React.FC<IProps> = function ({ data, visible, closePage }) {
   return (
     <Drawer
@@ -34,10 +33,16 @@ const LintDrawer: React.FC<IProps> = function ({ data, visible, closePage }) {
       open={visible}
       title={formatMessage({
         id: 'odc.component.SQLLintResult.Drawer.CheckResult',
-      })} /*检查结果*/
-      footer={
-        <Space style={{ float: 'right' }}>
-          <Button onClick={closePage}>关闭</Button>
+      })}
+      /*检查结果*/ footer={
+        <Space
+          style={{
+            float: 'right',
+          }}
+        >
+          <Button onClick={closePage}>
+            {formatMessage({ id: 'odc.src.component.SQLLintResult.Closure' }) /* 关闭 */}
+          </Button>
         </Space>
       }
       onClose={() => {
@@ -48,5 +53,4 @@ const LintDrawer: React.FC<IProps> = function ({ data, visible, closePage }) {
     </Drawer>
   );
 };
-
 export default LintDrawer;

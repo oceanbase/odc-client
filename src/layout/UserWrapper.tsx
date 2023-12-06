@@ -25,27 +25,25 @@ import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { history } from '@umijs/max';
 import { PageLoadingContext } from './PageLoadingWrapper';
-
 interface IProps {
   userStore: UserStore;
   settingStore: SettingStore;
 }
-
 enum STATUS_TYPE {
   INIT,
   LOADING,
   DONE,
   ERROR,
 }
-
 const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingStore }) {
   const [status, setStatus] = useState<STATUS_TYPE>(STATUS_TYPE.INIT);
   const location = useLocation();
   const pageContext = useContext(PageLoadingContext);
-
   async function checkLoginStatus() {
     setStatus(STATUS_TYPE.LOADING);
-    const query: { [key: string]: any } = new URLSearchParams(location.search);
+    const query: {
+      [key: string]: any;
+    } = new URLSearchParams(location.search);
     if (query.has('accountVerifyToken') && !isClient()) {
       /**
        * 存在token的时候，直接跳到登录页面做自动登录处理
@@ -71,6 +69,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
             id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
           }), //[getCurrentUser]初始化信息失败
         );
+
         setStatus(STATUS_TYPE.ERROR);
         return;
       }
@@ -90,7 +89,6 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
           ),
         );
       }
-
       history.replace({
         pathname: '/login',
         search: searchParamsObj.toString(),
@@ -108,11 +106,9 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
     }
     setStatus(STATUS_TYPE.DONE);
   }
-
   useEffect(() => {
     checkLoginStatus();
   }, []);
-
   useEffect(() => {
     switch (status) {
       case STATUS_TYPE.DONE: {
@@ -121,7 +117,9 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
       }
       case STATUS_TYPE.LOADING: {
         pageContext?.setTask({
-          tip: '正在获取用户信息',
+          tip: formatMessage({
+            id: 'odc.src.layout.GetUserInformation',
+          }), //'正在获取用户信息'
           showError: false,
         });
         break;
@@ -135,14 +133,15 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
       }
       default: {
         pageContext?.setTask({
-          tip: '正在检查用户状态',
+          tip: formatMessage({
+            id: 'odc.src.layout.UserStatusIsBeingChecked',
+          }), //'正在检查用户状态'
           showError: false,
         });
         break;
       }
     }
   }, [status]);
-
   switch (status) {
     case STATUS_TYPE.DONE: {
       return (

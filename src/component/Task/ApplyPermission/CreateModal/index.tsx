@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -27,39 +28,53 @@ import { Button, Drawer, Form, Modal, Select, Space, Input, message, Typography,
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
-
 const { Text } = Typography;
-
 const projectRoleMap = {
   [ProjectRole.OWNER]: {
-    label: '管理员',
-    description: '拥有项目内的所有权限',
+    label: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.Administrator',
+    }), //'管理员'
+    description: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.HavingOwnershipInTheProject',
+    }), //'拥有项目内的所有权限'
   },
   [ProjectRole.DEVELOPER]: {
-    label: '普通成员',
-    description: '允许登录数据库、执行 SQL、提交工单等，通常是开发人员',
+    label: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OrdinaryMember',
+    }), //'普通成员'
+    description: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.AllowingLoginDatabaseExecution',
+    }), //'允许登录数据库、执行 SQL、提交工单等，通常是开发人员'
   },
   [ProjectRole.DBA]: {
     label: 'DBA',
-    description: '在普通成员的基础上，还可以管理敏感列、添加/转移数据库等',
+    description: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnTheBasisOfOrdinary',
+    }), //'在普通成员的基础上，还可以管理敏感列、添加/转移数据库等'
   },
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
-    label: '安全管理员',
-    description: '在参与者的基础上还可以管理敏感列',
+    label: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.SecurityAdministrator',
+    }), //'安全管理员'
+    description: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnTheBasisOfParticipants',
+    }), //'在参与者的基础上还可以管理敏感列'
   },
   [ProjectRole.PARTICIPANT]: {
-    label: '参与者',
-    description: '只允许参与审批',
+    label: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.Participant',
+    }), //'参与者'
+    description: formatMessage({
+      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnlyAllowParticipationInApproval',
+    }), //'只允许参与审批'
   },
 };
-
 interface IProps {
   sqlStore?: SQLStore;
   taskStore?: TaskStore;
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
   const [form] = Form.useForm();
@@ -85,36 +100,32 @@ const CreateModal: React.FC<IProps> = (props) => {
       value: id,
     };
   });
-
   const loadProjects = async () => {
     const res = await getProjectList(false);
     setProjects(res?.contents);
   };
-
   const loadRoles = async () => {
     const roles = await getResourceRoles();
     setRoles(roles?.contents);
   };
-
   useEffect(() => {
     if (applyPermissionVisible) {
       loadProjects();
       loadRoles();
     }
   }, [applyPermissionVisible]);
-
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
-
   const hadleReset = () => {
     form.resetFields(null);
   };
-
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '权限申请',
+        title: formatMessage({
+          id: 'odc.src.component.Task.ApplyPermission.CreateModal.AccessRequest',
+        }), //'权限申请'
         centered: true,
         onOk: () => {
           modalStore.changeApplyPermissionModal(false);
@@ -126,7 +137,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       hadleReset();
     }
   };
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -156,9 +166,13 @@ const CreateModal: React.FC<IProps> = (props) => {
         const res = await createTask(data);
         handleCancel(false);
         setConfirmLoading(false);
-
         if (res) {
-          message.success('申请项目权限成功！');
+          message.success(
+            formatMessage({
+              id:
+                'odc.src.component.Task.ApplyPermission.CreateModal.SuccessfulApplicationForProjectPermissions',
+            }), //'申请项目权限成功！'
+          );
           openTasksPage(
             TaskPageType.APPLY_PROJECT_PERMISSION,
             TaskPageScope.CREATED_BY_CURRENT_USER,
@@ -169,13 +183,16 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
-
   return (
     <Drawer
       destroyOnClose
       className={styles.applyPermission}
       width={520}
-      title="申请项目权限"
+      title={
+        formatMessage({
+          id: 'odc.src.component.Task.ApplyPermission.CreateModal.ApplicationProjectPermissions',
+        }) /* 申请项目权限 */
+      }
       footer={
         <Space>
           <Button
@@ -183,10 +200,22 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
+            {
+              formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.Cancel',
+              }) /* 
             取消
+           */
+            }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+            {
+              formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.NewlyBuilt',
+              }) /* 
             新建
+           */
+            }
           </Button>
         </Space>
       }
@@ -207,33 +236,61 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         <Form.Item
-          label="项目"
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.CreateModal.Project',
+            }) /* 项目 */
+          }
           name="projectId"
           rules={[
             {
               required: true,
-              message: '请选择项目',
+              message: formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseSelectTheProject',
+              }), //'请选择项目'
             },
           ]}
         >
-          <Select style={{ width: 240 }} options={projectOptions} placeholder="请选择" />
+          <Select
+            style={{
+              width: 240,
+            }}
+            options={projectOptions}
+            placeholder={
+              formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose',
+              }) /* 请选择 */
+            }
+          />
         </Form.Item>
         <Form.Item
-          label="项目角色"
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.CreateModal.ProjectRole',
+            }) /* 项目角色 */
+          }
           name="resourceRoleIds"
           rules={[
             {
               required: true,
-              message: '请选择项目角色',
+              message: formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseSelectTheProjectRole',
+              }), //'请选择项目角色'
             },
           ]}
         >
           <Select
             mode="multiple"
             dropdownMatchSelectWidth={false}
-            style={{ width: 240 }}
+            style={{
+              width: 240,
+            }}
             options={rolesOptions}
-            placeholder="请选择"
+            placeholder={
+              formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose.1',
+              }) /* 请选择 */
+            }
             tagRender={(props) => {
               const { closable, onClose } = props;
               const labelText = (props?.label as any)?.props?.['data-label'];
@@ -246,24 +303,40 @@ const CreateModal: React.FC<IProps> = (props) => {
           />
         </Form.Item>
         <Form.Item
-          label="申请原因"
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.CreateModal.Cause',
+            }) /* 申请原因 */
+          }
           name="applyReason"
           rules={[
             {
               required: true,
-              message: '请输入原因描述',
+              message: formatMessage({
+                id:
+                  'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription',
+              }), //'请输入原因描述'
             },
             {
               max: 200,
-              message: '申请原因不超过 200 个字符',
+              message: formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.TheReasonForTheApplication',
+              }), //'申请原因不超过 200 个字符'
             },
           ]}
         >
-          <Input.TextArea rows={6} placeholder="请输入原因描述" />
+          <Input.TextArea
+            rows={6}
+            placeholder={
+              formatMessage({
+                id:
+                  'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription.1',
+              }) /* 请输入原因描述 */
+            }
+          />
         </Form.Item>
       </Form>
     </Drawer>
   );
 };
-
 export default inject('sqlStore', 'taskStore', 'modalStore')(observer(CreateModal));

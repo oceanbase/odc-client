@@ -26,7 +26,6 @@ import { getSqlExplainColumns } from './column';
 import styles from './index.less';
 import { SQLExplainProps, SQLExplainState } from './interface';
 import { randomUUID } from '../Trace';
-
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
 export default class SQLExplain extends Component<SQLExplainProps, SQLExplainState> {
@@ -38,7 +37,6 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
       showExplainText: !!props.haveText,
     };
   }
-
   public componentDidMount() {
     if (!this.state.tableHeight) {
       const tableHeight = window.innerHeight - 170;
@@ -47,7 +45,6 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
       });
     }
   }
-
   public handleShowOutputFilter = (filterContent: string) => {
     Modal.info({
       width: 720,
@@ -64,14 +61,12 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
           {filterContent}
         </div>
       ),
-
       maskClosable: true,
       okText: formatMessage({
         id: 'app.button.ok',
       }),
     });
   };
-
   public render() {
     const { explain, sql, haveText, traceId, session } = this.props;
     function injectKey2TreeData(root) {
@@ -155,7 +150,13 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                   marginBottom: '8px',
                 }}
               >
-                <div className={styles.subTitle}>计划统计</div>
+                <div className={styles.subTitle}>
+                  {
+                    formatMessage({
+                      id: 'odc.src.page.Workspace.components.SQLExplain.PlanStatistics',
+                    }) /* 计划统计 */
+                  }
+                </div>
                 <div>
                   <Checkbox
                     checked={onlyText}
@@ -209,7 +210,6 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
     );
   }
 }
-
 const ViewPlanText: React.FC<{
   onClick: () => void;
 }> = ({ onClick }) => {

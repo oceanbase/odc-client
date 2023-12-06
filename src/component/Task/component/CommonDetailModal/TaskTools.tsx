@@ -29,7 +29,6 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-
 interface IProps {
   taskStore?: TaskStore;
   settingStore?: SettingStore;
@@ -46,7 +45,6 @@ interface IProps {
   onLogVisible: (recordId: number, visible: boolean) => void;
   onClose?: () => void;
 }
-
 const ActionBar: React.FC<IProps> = inject(
   'taskStore',
   'settingStore',
@@ -55,29 +53,31 @@ const ActionBar: React.FC<IProps> = inject(
   observer((props) => {
     const { isDetailModal, record, taskId, showRollback, showLog, onLogVisible } = props;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
-
     const resetActiveBtnKey = () => {
       setActiveBtnKey(null);
     };
-
     const _stopTask = async () => {
       setActiveBtnKey('stop');
       const res = await stopDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success(
-          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.CanceledSuccessfully' }), //取消成功
+          formatMessage({
+            id: 'odc.component.CommonDetailModal.TaskTools.CanceledSuccessfully',
+          }), //取消成功
         );
+
         props.onReloadList();
       }
     };
-
     const confirmRollback = async () => {
       setActiveBtnKey('rollback');
       const res = await rollbackDataArchiveSubTask(taskId, record.id);
       if (res) {
         props.onReloadList();
         message.success(
-          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.RollbackSucceeded' }), //回滚成功
+          formatMessage({
+            id: 'odc.component.CommonDetailModal.TaskTools.RollbackSucceeded',
+          }), //回滚成功
         );
       }
     };
@@ -87,69 +87,85 @@ const ActionBar: React.FC<IProps> = inject(
         resetActiveBtnKey();
       }
     }, [record?.status]);
-
     const handleRollback = async () => {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.AreYouSureYouWant' }), //确定回滚任务吗？
+        title: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.AreYouSureYouWant',
+        }),
+        //确定回滚任务吗？
         icon: <ExclamationCircleOutlined />,
         content: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.TasksThatHaveBeenExecuted',
-        }), //任务回滚后已执行的任务将重置
-        okText: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Confirm' }), //确认
-        cancelText: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Cancel' }), //取消
+        }),
+        //任务回滚后已执行的任务将重置
+        okText: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Confirm',
+        }),
+        //确认
+        cancelText: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Cancel',
+        }),
+        //取消
         onOk: confirmRollback,
       });
     };
-
     const handleExecute = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success(
-          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.SuccessfulExecution' }), //执行成功
+          formatMessage({
+            id: 'odc.component.CommonDetailModal.TaskTools.SuccessfulExecution',
+          }), //执行成功
         );
+
         props.onReloadList();
       }
     };
-
     const handleReTry = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success(
-          formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.RetrySucceeded' }), //重试成功
+          formatMessage({
+            id: 'odc.component.CommonDetailModal.TaskTools.RetrySucceeded',
+          }), //重试成功
         );
+
         props.onReloadList();
       }
     };
-
     const handleLogVisible = async () => {
       onLogVisible(record.id, true);
     };
-
     const getTaskTools = (_task) => {
       let tools = [];
-
       if (!_task) {
         return [];
       }
       const { status } = _task;
-
       const rollbackBtn = {
         key: 'rollback',
-        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Rollback' }), //回滚
+        text: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Rollback',
+        }),
+        //回滚
         action: handleRollback,
         type: 'button',
       };
-
       const stopBtn = {
         key: 'stop',
-        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Termination' }), //终止
+        text: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Termination',
+        }),
+        //终止
         action: _stopTask,
         type: 'button',
       };
-
       const executeBtn = {
         key: 'execute',
-        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Execute' }), //执行
+        text: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Execute',
+        }),
+        //执行
         type: 'button',
         action: handleExecute,
         isOpenBtn: true,
@@ -157,21 +173,23 @@ const ActionBar: React.FC<IProps> = inject(
         disabled: false,
         tooltip: '',
       };
-
       const reTryBtn = {
         key: 'reTry',
-        text: formatMessage({ id: 'odc.component.CommonDetailModal.TaskTools.Retry' }), //重试
+        text: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Retry',
+        }),
+        //重试
         type: 'button',
         action: handleReTry,
       };
-
       const logBtn = {
         key: 'log',
-        text: '查看日志',
+        text: formatMessage({
+          id: 'odc.src.component.Task.component.CommonDetailModal.ViewLog',
+        }), //'查看日志'
         action: handleLogVisible,
         type: 'button',
       };
-
       switch (status) {
         case SubTaskStatus.PREPARING: {
           tools = [];
@@ -197,12 +215,10 @@ const ActionBar: React.FC<IProps> = inject(
       }
       return tools;
     };
-
     const btnTools = getTaskTools(record)
       ?.filter((item) => item?.type === 'button')
       ?.filter((item) => (!showRollback ? item.key !== 'rollback' : true))
       ?.filter((item) => (!showLog ? item.key !== 'log' : true));
-
     const renderTool = (tool) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
       const disabled = activeBtnKey === tool?.key || tool?.disabled;
@@ -213,7 +229,6 @@ const ActionBar: React.FC<IProps> = inject(
           </Popconfirm>
         );
       }
-
       if (tool.download) {
         return (
           <ActionButton disabled={disabled} onClick={tool.download}>
@@ -221,7 +236,6 @@ const ActionBar: React.FC<IProps> = inject(
           </ActionButton>
         );
       }
-
       return (
         <ActionButton
           type={tool.isPrimary ? 'primary' : 'default'}
@@ -235,11 +249,9 @@ const ActionBar: React.FC<IProps> = inject(
         </ActionButton>
       );
     };
-
     if (!btnTools?.length) {
       return <span>-</span>;
     }
-
     return (
       <Action.Group size={!isDetailModal ? 4 : 6}>
         {btnTools?.map((tool) => {
@@ -249,5 +261,4 @@ const ActionBar: React.FC<IProps> = inject(
     );
   }),
 );
-
 export default ActionBar;

@@ -158,9 +158,26 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
           }}
         >
           <span>
+            {
+              formatMessage({
+                id: 'odc.src.page.Secure.MaskingAlgorithm.components.TestData',
+              }) /* 
             测试数据
-            <Tooltip title="最长长度 <= 128">
-              <QuestionCircleOutlined style={{ marginLeft: '8px', cursor: 'pointer' }} />
+             */
+            }
+            <Tooltip
+              title={
+                formatMessage({
+                  id: 'odc.src.page.Secure.MaskingAlgorithm.components.TheMaximumLength',
+                }) /* 最长长度 <= 128 */
+              }
+            >
+              <QuestionCircleOutlined
+                style={{
+                  marginLeft: '8px',
+                  cursor: 'pointer',
+                }}
+              />
             </Tooltip>
           </span>
           <div

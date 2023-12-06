@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -17,17 +18,20 @@ import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import { Space, Popover, Button } from 'antd';
 import utils, { IEditor } from '@/util/editor';
 import { levelMap } from '@/page/Secure/interface';
-
 const getColumns = (showLocate: boolean, ctx: IEditor) => {
   return [
     {
-      title: '序号',
+      title: formatMessage({
+        id: 'odc.src.page.Workspace.components.SQLResultSet.SerialNumber',
+      }), //'序号'
       dataIndex: 'row',
       key: 'row',
       width: 60,
     },
     {
-      title: 'SQL 语句',
+      title: formatMessage({
+        id: 'odc.src.page.Workspace.components.SQLResultSet.SQLStatement',
+      }), //'SQL 语句'
       dataIndex: 'sql',
       key: 'sql',
       ellipsis: {
@@ -35,20 +39,28 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
       },
     },
     {
-      title: '违反规则',
+      title: formatMessage({
+        id: 'odc.src.page.Workspace.components.SQLResultSet.AgainstTheRules',
+      }), //'违反规则'
       dataIndex: 'rules',
       key: 'rules',
       filters: [
         {
-          text: '必须改进',
+          text: formatMessage({
+            id: 'odc.src.page.Workspace.components.SQLResultSet.MustBeImproved',
+          }), //'必须改进'
           value: 2,
         },
         {
-          text: '需要审批',
+          text: formatMessage({
+            id: 'odc.src.page.Workspace.components.SQLResultSet.NeedApproval',
+          }), //'需要审批'
           value: 1,
         },
         {
-          text: '无需改进',
+          text: formatMessage({
+            id: 'odc.src.page.Workspace.components.SQLResultSet.NoNeedToImprove',
+          }), //'无需改进'
           value: 0,
         },
       ],
@@ -91,7 +103,13 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
                                 );
                               }}
                             >
+                              {
+                                formatMessage({
+                                  id: 'odc.src.page.Workspace.components.SQLResultSet.Position',
+                                }) /* 
                               定位
+                             */
+                              }
                             </Button>
                           )}
                         </div>
@@ -99,7 +117,11 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
                     </div>
                   }
                 >
-                  <div style={{ cursor: 'pointer' }}>
+                  <div
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                  >
                     <RenderLevel level={key} extra={`(${rules?.[key]?.length})`} />
                   </div>
                 </Popover>
@@ -111,5 +133,4 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
     },
   ];
 };
-
 export default getColumns;

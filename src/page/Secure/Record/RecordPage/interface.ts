@@ -123,11 +123,16 @@ export const AuditEventMetaMap = {
   // 审计事件
   [AuditEventType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.ExportResultSet',
-  }), //'导出结果集'
+  }),
+  //'导出结果集'
   // 申请项目权限
-  [AuditEventActionType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
+  [AuditEventActionType.APPLY_PROJECT_PERMISSION]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.ApplicationProjectPermissions',
+  }), //'申请项目权限'
   // SQL安全规则管理
-  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.SQLSecurityRulesManagement',
+  }), //'SQL安全规则管理'
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -527,27 +532,44 @@ export const AuditEventActionMap = {
   // 审计事件操作
   [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.CreateTheExportResultsSet',
-  }), //'创建导出结果集任务'
+  }),
+  //'创建导出结果集任务'
   [AuditEventActionType.APPROVE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.AgreeToExportResultsSet',
-  }), //'同意导出结果集任务'
+  }),
+  //'同意导出结果集任务'
   [AuditEventActionType.REJECT_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.RejectTheExportResultsSet',
-  }), //'拒绝导出结果集任务'
+  }),
+  //'拒绝导出结果集任务'
   [AuditEventActionType.EXECUTE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.ExecutionResultsSetTask',
-  }), //'执行结果集任务'
+  }),
+  //'执行结果集任务'
   [AuditEventActionType.STOP_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.StopExportResultsSetTask',
-  }), //'停止导出结果集任务'
+  }),
+  //'停止导出结果集任务'
   // 申请项目权限
-  [AuditEventActionType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
-  [AuditEventActionType.CREATE_APPLY_PROJECT_PERMISSION_TASK]: '创建申请项目权限',
-  [AuditEventActionType.APPROVE_APPLY_PROJECT_PERMISSION_TASK]: '同意申请项目权限',
-  [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: '拒绝申请项目权限',
-  [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: '停止申请项目权限',
+  [AuditEventActionType.APPLY_PROJECT_PERMISSION]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.ApplicationProjectPermissions.1',
+  }), //'申请项目权限'
+  [AuditEventActionType.CREATE_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.CreateApplicationProjectPermissions',
+  }), //'创建申请项目权限'
+  [AuditEventActionType.APPROVE_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.AgreeToApplyForProject',
+  }), //'同意申请项目权限'
+  [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.RefuseToApplyForProject',
+  }), //'拒绝申请项目权限'
+  [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.StopApplyForProjectPermissions',
+  }), //'停止申请项目权限'
   // SQL安全规则管理
-  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '修改SQL安全规则',
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.ModifySQLSecurityRules',
+  }), //'修改SQL安全规则'
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =

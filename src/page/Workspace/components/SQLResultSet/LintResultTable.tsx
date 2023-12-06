@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -21,7 +22,6 @@ import styles from './index.less';
 import { ModalStore } from '@/store/modal';
 import getColumns from './columns';
 import { groupByPropertyName } from '@/util/utils';
-
 const LintResultTable: React.FC<{
   ctx?: any;
   session?: any;
@@ -30,7 +30,6 @@ const LintResultTable: React.FC<{
   pageSize?: number;
   showLocate?: boolean;
   lintResultSet?: ISQLLintReuslt[];
-
   modalStore?: ModalStore;
 }> = ({
   ctx,
@@ -40,7 +39,6 @@ const LintResultTable: React.FC<{
   pageSize = 0,
   showLocate = true,
   lintResultSet,
-
   modalStore,
 }) => {
   const dataSource =
@@ -61,9 +59,20 @@ const LintResultTable: React.FC<{
         maxHeight: resultHeight || '100%',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {hasExtraOpt && (
-          <div style={{ padding: '12px', display: 'flex', gap: '8px' }}>
+          <div
+            style={{
+              padding: '12px',
+              display: 'flex',
+              gap: '8px',
+            }}
+          >
             <Button
               type="primary"
               onClick={() => {
@@ -73,7 +82,13 @@ const LintResultTable: React.FC<{
                 });
               }}
             >
+              {
+                formatMessage({
+                  id: 'odc.src.page.Workspace.components.SQLResultSet.InitiateApproval',
+                }) /* 
               发起审批
+             */
+              }
             </Button>
           </div>
         )}
@@ -114,5 +129,4 @@ const LintResultTable: React.FC<{
     </div>
   );
 };
-
 export default LintResultTable;

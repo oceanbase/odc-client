@@ -40,12 +40,10 @@ import CsvProvider from './ImportForm/CsvProvider';
 import FormConfigContext from './ImportForm/FormConfigContext';
 import { MAX_FILE_SIZE } from './ImportForm/helper';
 import styles from './index.less';
-
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 export interface IState {
   stepIndex: number;
   csvColumnMappings: CsvColumnMapping[];
@@ -62,14 +60,11 @@ export interface IState {
   submitting: boolean;
   isSaveDefaultConfig: boolean;
 }
-
 @inject('modalStore')
 @observer
 class CreateModal extends React.Component<IProps, IState> {
   private _formRef = React.createRef<any>();
-
   private defaultConfig: IState['formData'] = null;
-
   constructor(props: IProps) {
     super(props);
     this.setDefaultConfig();
@@ -84,16 +79,17 @@ class CreateModal extends React.Component<IProps, IState> {
       formData: this.getDefaultFormData(),
     };
   }
-
   private steps: {
     key: 'fileSelecter' | 'config';
     label: string;
   }[] = [
     {
-      label: formatMessage({ id: 'odc.components.ImportDrawer.UploadFiles' }), //上传文件
+      label: formatMessage({
+        id: 'odc.components.ImportDrawer.UploadFiles',
+      }),
+      //上传文件
       key: 'fileSelecter',
     },
-
     {
       label: formatMessage({
         id: 'odc.components.ImportDrawer.ImportSettings',
@@ -102,7 +98,6 @@ class CreateModal extends React.Component<IProps, IState> {
       key: 'config',
     },
   ];
-
   private closeSelf = () => {
     if (!this.state.isFormChanged) {
       this.props.modalStore.changeImportModal(false);
@@ -112,7 +107,6 @@ class CreateModal extends React.Component<IProps, IState> {
       title: formatMessage({
         id: 'odc.components.ImportDrawer.AreYouSureYouWant',
       }),
-
       centered: true,
       onOk: () => {
         this.resetFormData();
@@ -123,7 +117,10 @@ class CreateModal extends React.Component<IProps, IState> {
   private checkCsv = () => {
     const csvColumns = this.state.csvColumnMappings
       ?.map((column, i) => {
-        return { ...column, index: i };
+        return {
+          ...column,
+          index: i,
+        };
       })
       .filter((column) => {
         return column.isSelected;
@@ -132,7 +129,6 @@ class CreateModal extends React.Component<IProps, IState> {
       errorIndex: number;
       errorMsg: string;
     }[] = [];
-
     if (!csvColumns?.length) {
       errors.push({
         errorIndex: -1,
@@ -177,18 +173,14 @@ class CreateModal extends React.Component<IProps, IState> {
         }
       });
     }
-
     if (errors.length) {
       this.setState({
         csvMappingErrors: errors,
       });
-
       return false;
     }
-
     return true;
   };
-
   private nextStep = async () => {
     this._formRef.current.valid(async (haveError, values) => {
       if (!haveError) {
@@ -201,12 +193,10 @@ class CreateModal extends React.Component<IProps, IState> {
            * 处理csv
            */
           const error = await this.resolveCsvFile();
-
           if (error) {
             return;
           }
         }
-
         this.setState({
           stepIndex: this.state.stepIndex + 1,
         });
@@ -231,7 +221,6 @@ class CreateModal extends React.Component<IProps, IState> {
         this.setState({
           submitting: true,
         });
-
         try {
           const result = await createBatchImportTask(
             data,
@@ -240,9 +229,12 @@ class CreateModal extends React.Component<IProps, IState> {
               return column.isSelected;
             }),
           );
-
           if (result) {
-            message.success('导入成功！');
+            message.success(
+              formatMessage({
+                id: 'odc.src.component.Task.ImportTask.CreateModal.SuccessfullyIntroduced',
+              }), //'导入成功！'
+            );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
             }
@@ -280,19 +272,16 @@ class CreateModal extends React.Component<IProps, IState> {
       skipHeader,
       fileName: importFileName?.[0].response.data?.fileName,
     });
-
     if (!fileInfo) {
       message.warn(
         formatMessage({
           id: 'odc.components.ImportDrawer.AnErrorOccurredWhileParsing',
         }),
       );
-
       return formatMessage({
         id: 'odc.components.ImportDrawer.TheCsvFileTypeIs',
       });
     }
-
     const tableName = this.state.formData.tableName;
     if (tableName) {
       const columns = await getTableColumnList(
@@ -325,7 +314,6 @@ class CreateModal extends React.Component<IProps, IState> {
       });
     }
   };
-
   private resolveTableColumnsToCsv = async (tableName: string) => {
     const { sessionId, databaseName } = this.state.sessionData ?? {};
     if (!tableName) {
@@ -340,7 +328,6 @@ class CreateModal extends React.Component<IProps, IState> {
           };
         }),
       });
-
       return;
     }
     const columns = await getTableColumnList(tableName, databaseName, sessionId);
@@ -356,7 +343,6 @@ class CreateModal extends React.Component<IProps, IState> {
       }),
     });
   };
-
   private isSingleImport = () => {
     const { modalStore } = this.props;
     return !!modalStore.importModalData?.table;
@@ -371,7 +357,6 @@ class CreateModal extends React.Component<IProps, IState> {
       csvMappingErrors: null,
     });
   };
-
   private saveCurrentConfig = () => {
     const userId = login.user?.id;
     const key = `importFormConfig-${userId}`;
@@ -385,7 +370,6 @@ class CreateModal extends React.Component<IProps, IState> {
       this.defaultConfig = safeParseJson(data);
     }
   };
-
   private getDefaultFormData = () => {
     return {
       useSys: false,
@@ -409,14 +393,12 @@ class CreateModal extends React.Component<IProps, IState> {
       tableName: this.props.modalStore.importModalData?.table?.tableName,
     };
   };
-
   private resetFormData = () => {
     this.setState({
       stepIndex: 0,
       formData: this.getDefaultFormData(),
     });
   };
-
   static getDerivedStateFromProps(props, state) {
     const nextDatabaseId = props.modalStore.importModalData?.databaseId;
     const preDatabaseId = state.formData.databaseId;
@@ -430,13 +412,11 @@ class CreateModal extends React.Component<IProps, IState> {
     }
     return null;
   }
-
   private handleSessionChange = (sessionData: { sessionId: string; databaseName: string }) => {
     this.setState({
       sessionData,
     });
   };
-
   render() {
     const { modalStore, projectId } = this.props;
     const {
@@ -452,7 +432,6 @@ class CreateModal extends React.Component<IProps, IState> {
     const currentStep = this.steps[stepIndex],
       prevStep = this.steps[stepIndex - 1],
       nextStep = this.steps[stepIndex + 1];
-
     const isNextStepDisabled =
       nextStep?.key === 'config' &&
       (!this.state.formData.importFileName?.length ||
@@ -467,7 +446,9 @@ class CreateModal extends React.Component<IProps, IState> {
       <Drawer
         title={
           !isSingleImport
-            ? formatMessage({ id: 'odc.components.ImportDrawer.CreateImport' }) //新建导入
+            ? formatMessage({
+                id: 'odc.components.ImportDrawer.CreateImport',
+              }) //新建导入
             : formatMessage({
                 id: 'workspace.tree.table.importSingleTable',
               })
@@ -490,8 +471,9 @@ class CreateModal extends React.Component<IProps, IState> {
                   {
                     id: 'odc.components.ImportDrawer.TheMaximumSizeOfData',
                   },
-
-                  { size },
+                  {
+                    size,
+                  },
                 )
 
                 // `数据最大不能超过 ${size}，如需导入大量数据，请使用导数工具 OBLOADER`
@@ -505,7 +487,11 @@ class CreateModal extends React.Component<IProps, IState> {
               csvMappingErrors,
             }}
           >
-            <FormConfigContext.Provider value={{ dfaultConfig: this.defaultConfig }}>
+            <FormConfigContext.Provider
+              value={{
+                dfaultConfig: this.defaultConfig,
+              }}
+            >
               <ImportForm
                 formType={currentStep?.key}
                 formData={formData}
@@ -532,7 +518,11 @@ class CreateModal extends React.Component<IProps, IState> {
         <div className={styles.drawerFooter}>
           <Checkbox
             checked={isSaveDefaultConfig}
-            onChange={(e) => this.setState({ isSaveDefaultConfig: e.target.checked })}
+            onChange={(e) =>
+              this.setState({
+                isSaveDefaultConfig: e.target.checked,
+              })
+            }
           >
             {
               formatMessage({
@@ -549,7 +539,9 @@ class CreateModal extends React.Component<IProps, IState> {
                 marginRight: 8,
               }}
             >
-              {formatMessage({ id: 'app.button.cancel' })}
+              {formatMessage({
+                id: 'app.button.cancel',
+              })}
             </Button>
             {prevStep ? (
               <Button
@@ -599,5 +591,4 @@ class CreateModal extends React.Component<IProps, IState> {
     );
   }
 }
-
 export default CreateModal;

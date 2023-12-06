@@ -63,10 +63,13 @@ const ClearStrategyMap = {
 };
 
 const SwapTableTypeMap = {
-  [SwapTableType.AUTO]: '自动切换',
-  [SwapTableType.MANUAL]: '手工切换',
+  [SwapTableType.AUTO]: formatMessage({
+    id: 'odc.src.component.Task.AlterDdlTask.DetailContent.AutomaticSwitch',
+  }), //'自动切换'
+  [SwapTableType.MANUAL]: formatMessage({
+    id: 'odc.src.component.Task.AlterDdlTask.DetailContent.ManualSwitch',
+  }), //'手工切换'
 };
-
 const SQLContentSection = ({ task }) => {
   return (
     <SimpleTextItem
@@ -125,7 +128,6 @@ export function getItems(
     getFormatDateTime(task?.executionTime),
   ];
   const lockUsers = parameters?.lockUsers?.join(', ');
-
   return [
     {
       // @ts-ignore
@@ -156,14 +158,23 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
-          }), //'所属数据源'
+          }),
+          //'所属数据源'
           task?.connection?.name || '-',
         ],
         hasFlow ? riskItem : null,
         lockUsers
           ? [
-              '锁定用户',
-              <Text ellipsis={true} title={lockUsers} style={{ width: '240px' }}>
+              formatMessage({
+                id: 'odc.src.component.Task.AlterDdlTask.DetailContent.LockUsers',
+              }), //'锁定用户'
+              <Text
+                ellipsis={true}
+                title={lockUsers}
+                style={{
+                  width: '240px',
+                }}
+              >
                 {lockUsers}
               </Text>,
             ]
@@ -205,7 +216,12 @@ export function getItems(
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
         ],
-        ['表名切换方式', SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-'],
+        [
+          formatMessage({
+            id: 'odc.src.component.Task.AlterDdlTask.DetailContent.TableNameSwitchingMethod',
+          }), //'表名切换方式'
+          SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-',
+        ],
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({

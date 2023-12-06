@@ -56,12 +56,10 @@ enum SqlType {
   CREATE = 'CREATE',
   ALTER = 'ALTER',
 }
-
 export enum SwapTableType {
   AUTO = 'AUTO',
   MANUAL = 'MANUAL',
 }
-
 export enum ClearStrategy {
   ORIGIN_TABLE_RENAME_AND_RESERVED = 'ORIGIN_TABLE_RENAME_AND_RESERVED',
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
@@ -80,7 +78,6 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     label: name,
     value: name,
   }));
-
   const hadleReset = () => {
     form.resetFields(null);
   };
@@ -165,33 +162,27 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const handleFieldsChange = (changedFields) => {
     setHasEdit(true);
   };
-
   const handleDatabaseChange = () => {
     form.setFieldValue('lockUsers', []);
   };
-
   const loadDatasourceUsers = async (datasourceId: number) => {
     const res = await getDatasourceUsers(datasourceId);
     setDatasourceUser(res?.contents);
   };
-
   const checkLockDatabaseUserRequired = async (databaseId: number) => {
     const res = await getLockDatabaseUserRequired(databaseId);
     setLockDatabaseUserRequired(res?.lockDatabaseUserRequired);
   };
-
   useEffect(() => {
     if (connection?.id && lockDatabaseUserRequired) {
       loadDatasourceUsers(connection.id);
     }
   }, [connection?.id]);
-
   useEffect(() => {
     if (databaseId) {
       checkLockDatabaseUserRequired(databaseId);
     }
   }, [databaseId]);
-
   return (
     <Drawer
       destroyOnClose
@@ -234,29 +225,37 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         type="warning"
         showIcon
         message={
-          formatMessage({ id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice' }) /* 注意 */
+          formatMessage({
+            id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
+          }) /* 注意 */
         }
         description={
           <div>
+            {
+              formatMessage({
+                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1TheMySQLMode.1',
+              }) /* 
             1. MySQL 模式 OB 版本小于 4.3 及 Oracle 模式 OB 版本小于
             4.0，表名切换之前如果选择锁定数据库账号，会 kill 该账号对应的
             session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行，如果选择不锁定数据库账户,
             在 rename 期间如有数据写入表，会有数据丢失风险；
+             */
+            }
             <br />
             {
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2BeforePerformingThe',
               }) /* 
-            2. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；
-             */
+         2. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；
+         */
             }
             <br />
             {
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3ItIsRecommended',
               }) /* 
-            3. 创建工单时建议选择保留原表；
-           */
+         3. 创建工单时建议选择保留原表；
+         */
             }
           </div>
         }
@@ -281,14 +280,26 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </Col>
           {lockDatabaseUserRequired && (
             <Col span={12}>
-              <Form.Item label="锁定用户" name="lockUsers" required>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers',
+                  }) /* 锁定用户 */
+                }
+                name="lockUsers"
+                required
+              >
                 <Select
                   showSearch
                   mode="multiple"
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
-                  placeholder="请选择"
+                  placeholder={
+                    formatMessage({
+                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
+                    }) /* 请选择 */
+                  }
                   options={datasourceUserOptions}
                 />
               </Form.Item>
@@ -501,19 +512,37 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Radio.Group>
           </Form.Item>
           <Form.Item
-            label="表名切换方式"
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.TableNameSwitchingMethod',
+              }) /* 表名切换方式 */
+            }
             name="swapTableType"
             initialValue={SwapTableType.AUTO}
             rules={[
               {
                 required: true,
-                message: '请选择表名切换方式',
+                message: formatMessage({
+                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseSelectTheTableName',
+                }), //'请选择表名切换方式'
               },
             ]}
           >
             <Radio.Group>
-              <Radio value={SwapTableType.AUTO}>自动切换</Radio>
-              <Radio value={SwapTableType.MANUAL}>手工切换</Radio>
+              <Radio value={SwapTableType.AUTO}>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.AutomaticSwitch',
+                  }) /* 自动切换 */
+                }
+              </Radio>
+              <Radio value={SwapTableType.MANUAL}>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.ManualSwitch',
+                  }) /* 手工切换 */
+                }
+              </Radio>
             </Radio.Group>
           </Form.Item>
         </FormItemPanel>

@@ -24,7 +24,6 @@ import { Button, Form, Input, message, Modal, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
-
 interface IProps {
   dataSourceId: string;
   projectId: number;
@@ -32,7 +31,6 @@ interface IProps {
   onSuccess: () => void;
   mode: ConnectionMode;
 }
-
 export default function NewDataBaseButton({
   dataSourceId,
   projectId,
@@ -42,22 +40,21 @@ export default function NewDataBaseButton({
 }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [form] = Form.useForm<
-    Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & { projectId: number }
+    Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & {
+      projectId: number;
+    }
   >();
   const { run, loading } = useRequest(createDataBase, {
     manual: true,
   });
   const haveCharset = ![ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(mode);
-
   const { data: project, loading: projectListLoading } = useRequest(listProjects, {
     defaultParams: [null, 1, 99999],
   });
-
   function close() {
     setOpen(false);
     form.resetFields();
   }
-
   useEffect(() => {
     if (open) {
       form.resetFields();
@@ -82,7 +79,6 @@ export default function NewDataBaseButton({
       }
     }
   }, [mode, open]);
-
   async function submit() {
     const formData = await form.validateFields();
     if (!formData) {
@@ -101,31 +97,43 @@ export default function NewDataBaseButton({
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.Info.NewDataBaseButton.New' }), //新建成功
+        formatMessage({
+          id: 'odc.Info.NewDataBaseButton.New',
+        }), //新建成功
       );
+
       setOpen(false);
       onSuccess();
     }
   }
-
   return (
     <>
       <Button onClick={() => setOpen(true)} type="primary">
-        {formatMessage({ id: 'odc.Info.NewDataBaseButton.CreateADatabase' }) /*新建数据库*/}
+        {
+          formatMessage({
+            id: 'odc.Info.NewDataBaseButton.CreateADatabase',
+          }) /*新建数据库*/
+        }
       </Button>
       <Modal
         open={open}
-        title={formatMessage({ id: 'odc.Info.NewDataBaseButton.CreateADatabase' })}
+        title={formatMessage({
+          id: 'odc.Info.NewDataBaseButton.CreateADatabase',
+        })}
         /*新建数据库*/ onOk={submit}
         onCancel={close}
       >
         <Form form={form} initialValues={{}} layout="vertical">
           <Form.Item
             name={'name'}
-            label={formatMessage({ id: 'odc.Info.NewDataBaseButton.DatabaseName' })} /*数据库名称*/
+            label={formatMessage({
+              id: 'odc.Info.NewDataBaseButton.DatabaseName',
+            })} /*数据库名称*/
           >
             <Input
-              style={{ width: 320 }}
+              style={{
+                width: 320,
+              }}
               placeholder={formatMessage({
                 id: 'odc.Info.NewDataBaseButton.PleaseEnter',
               })} /*请输入*/
@@ -140,7 +148,9 @@ export default function NewDataBaseButton({
                 })} /*字符编码*/
               >
                 <Input
-                  style={{ width: 200 }}
+                  style={{
+                    width: 200,
+                  }}
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
                   })} /*请输入*/
@@ -153,7 +163,9 @@ export default function NewDataBaseButton({
                 })} /*排序规则*/
               >
                 <Input
-                  style={{ width: 200 }}
+                  style={{
+                    width: 200,
+                  }}
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
                   })} /*请输入*/
@@ -161,10 +173,26 @@ export default function NewDataBaseButton({
               </Form.Item>
             </Space>
           )}
-          <Form.Item name={'projectId'} label={'项目'}>
+          <Form.Item
+            name={'projectId'}
+            label={
+              formatMessage({
+                id: 'odc.src.page.Datasource.Info.NewDataBaseButton.Project',
+              }) //'项目'
+            }
+          >
             <ProjectSelect
               disabled={!!projectId}
-              disabledTip={`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`}
+              disabledTip={
+                formatMessage(
+                  {
+                    id: 'odc.src.page.Datasource.Info.NewDataBaseButton.CurrentDataSourceProject',
+                  },
+                  {
+                    projectName: projectName,
+                  },
+                ) //`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`
+              }
               projects={project?.contents}
               currentDatabase={null}
             />

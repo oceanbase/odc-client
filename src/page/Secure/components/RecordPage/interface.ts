@@ -123,9 +123,12 @@ export const AuditEventMetaMap = {
   // 审计事件
   [AuditEventType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.ExportResultSet',
-  }), //'导出结果集'
+  }),
+  //'导出结果集'
   // SQL安全规则管理
-  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.SQLSecurityRulesManagement',
+  }), //'SQL安全规则管理'
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -525,21 +528,28 @@ export const AuditEventActionMap = {
   // 审计事件操作
   [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.CreateTheExportResultsSet',
-  }), //'创建导出结果集任务'
+  }),
+  //'创建导出结果集任务'
   [AuditEventActionType.APPROVE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.AgreeToExportResultsSet',
-  }), //'同意导出结果集任务'
+  }),
+  //'同意导出结果集任务'
   [AuditEventActionType.REJECT_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.RejectTheExportResultsSet',
-  }), //'拒绝导出结果集任务'
+  }),
+  //'拒绝导出结果集任务'
   [AuditEventActionType.EXECUTE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.ExecutionResultsSetTask',
-  }), //'执行结果集任务'
+  }),
+  //'执行结果集任务'
   [AuditEventActionType.STOP_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.StopExportResultsSetTask',
-  }), //'停止导出结果集任务'
+  }),
+  //'停止导出结果集任务'
   // SQL安全规则管理
-  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '修改SQL安全规则',
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.ModifySQLSecurityRules',
+  }), //'修改SQL安全规则'
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -21,7 +22,6 @@ import type { ILog } from '@/component/Task/component/Log';
 import { Drawer } from 'antd';
 import { useRequest } from 'ahooks';
 import React, { useEffect, useState } from 'react';
-
 interface IProps {
   scheduleId: number;
   recordId: number;
@@ -33,7 +33,6 @@ const LogModal: React.FC<IProps> = function (props) {
   const [logType, setLogType] = useState<CommonTaskLogType>(CommonTaskLogType.ALL);
   const [loading, setLoading] = useState(false);
   const [log, setLog] = useState<ILog>(null);
-
   const { run: getLog, cancel } = useRequest(
     async (scheduleId, recordId, logType) => {
       if (scheduleId && recordId && logType) {
@@ -49,15 +48,12 @@ const LogModal: React.FC<IProps> = function (props) {
       pollingInterval: 3000,
     },
   );
-
   const handleLogTypeChange = (type: CommonTaskLogType) => {
     setLogType(type);
   };
-
   useEffect(() => {
     getLog(scheduleId, recordId, logType);
   }, [scheduleId, recordId, visible, logType]);
-
   useEffect(() => {
     if (visible) {
       setLoading(true);
@@ -69,9 +65,17 @@ const LogModal: React.FC<IProps> = function (props) {
       }
     };
   }, [visible]);
-
   return (
-    <Drawer open={visible} width={520} onClose={onClose} title="日志" destroyOnClose footer={null}>
+    <Drawer
+      open={visible}
+      width={520}
+      onClose={onClose}
+      title={
+        formatMessage({ id: 'odc.src.component.Task.component.CommonDetailModal.Log' }) /* 日志 */
+      }
+      destroyOnClose
+      footer={null}
+    >
       <TaskLog
         log={log}
         logType={logType}

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -22,7 +23,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ExpandTraceSpan, InfoRender } from '.';
 import { getIconByNodeType } from './Node';
 import { formatTimeTemplatMicroSeconds } from '@/util/utils';
-
 const TraceList: React.FC<{
   innerTreeData: ExpandTraceSpan[];
 }> = ({ innerTreeData }) => {
@@ -54,7 +54,13 @@ const TraceList: React.FC<{
         },
         render: (text) => (
           <Tooltip title={text}>
-            <span style={{ cursor: 'pointer' }}>{text}</span>
+            <span
+              style={{
+                cursor: 'pointer',
+              }}
+            >
+              {text}
+            </span>
           </Tooltip>
         ),
       },
@@ -88,10 +94,17 @@ const TraceList: React.FC<{
                   <InfoRender
                     infos={[
                       {
-                        title: '节点',
+                        title: formatMessage({
+                          id: 'odc.src.page.Workspace.components.Trace.Node',
+                        }), //'节点'
                         render: () => (
                           <div className={styles.nodeTitle}>
-                            <div style={{ width: '14px', height: '14px' }}>
+                            <div
+                              style={{
+                                width: '14px',
+                                height: '14px',
+                              }}
+                            >
                               {getIconByNodeType(record?.node)}
                             </div>
                             {record?.node} {record?.host}
@@ -110,7 +123,11 @@ const TraceList: React.FC<{
                                 marginLeft: '8px',
                               }}
                               onCopy={() => {
-                                message.success('复制成功');
+                                message.success(
+                                  formatMessage({
+                                    id: 'odc.src.page.Workspace.components.Trace.Replication.1',
+                                  }), //'复制成功'
+                                );
                               }}
                             >
                               <CopyOutlined />
@@ -119,22 +136,34 @@ const TraceList: React.FC<{
                         ),
                       },
                       {
-                        title: '开始时间',
+                        title: formatMessage({
+                          id: 'odc.src.page.Workspace.components.Trace.StartingTime.1',
+                        }), //'开始时间'
                         render: () => record?.originStartTimestamp,
                       },
                       {
-                        title: '结束时间',
+                        title: formatMessage({
+                          id: 'odc.src.page.Workspace.components.Trace.EndTime',
+                        }), //'结束时间'
                         render: () => record?.originEndTimestamp,
                       },
                       {
-                        title: '耗时',
+                        title: formatMessage({
+                          id: 'odc.src.page.Workspace.components.Trace.TimeConsuming',
+                        }), //'耗时'
                         render: () => formatTimeTemplatMicroSeconds(record?.elapseMicroSeconds),
                       },
                     ]}
                   />
                   {record?.tags && (
                     <>
-                      <div style={{ margin: '8px 0px' }}>Tags</div>
+                      <div
+                        style={{
+                          margin: '8px 0px',
+                        }}
+                      >
+                        Tags
+                      </div>
                       <DisplayTable
                         bordered={true}
                         expandable={{
@@ -173,7 +202,9 @@ const TraceList: React.FC<{
         },
       },
       {
-        title: '节点',
+        title: formatMessage({
+          id: 'odc.src.page.Workspace.components.Trace.Node.1',
+        }), //'节点'
         dataIndex: 'node',
         key: 'node',
         width: 120,
@@ -182,13 +213,22 @@ const TraceList: React.FC<{
         onFilter: (value: string, record) => record.node === value,
         render: (text, record) => (
           <div className={styles.nodeTitle}>
-            <div style={{ width: '16px', height: '16px' }}>{getIconByNodeType(record?.node)}</div>
+            <div
+              style={{
+                width: '16px',
+                height: '16px',
+              }}
+            >
+              {getIconByNodeType(record?.node)}
+            </div>
             {record?.node}
           </div>
         ),
       },
       {
-        title: '开始时间',
+        title: formatMessage({
+          id: 'odc.src.page.Workspace.components.Trace.StartingTime.2',
+        }), //'开始时间'
         dataIndex: 'originStartTimestamp',
         key: 'originStartTimestamp',
         width: 200,
@@ -197,7 +237,9 @@ const TraceList: React.FC<{
         sortDirections: ['ascend', 'descend'],
       },
       {
-        title: '耗时',
+        title: formatMessage({
+          id: 'odc.src.page.Workspace.components.Trace.TimeConsuming.1',
+        }), //'耗时'
         dataIndex: 'elapseMicroSeconds',
         key: 'elapseMicroSeconds',
         width: 100,

@@ -34,18 +34,25 @@ import ListItem from './ListItem';
 import { setDefaultProject } from '@/service/projectHistory';
 import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
 const { Title, Text } = Typography;
-
-const titleOptions: { label: string; value: 'all' | 'deleted' }[] = [
+const titleOptions: {
+  label: string;
+  value: 'all' | 'deleted';
+}[] = [
   {
-    label: formatMessage({ id: 'odc.Project.Project.AllProjects' }), //全部项目
+    label: formatMessage({
+      id: 'odc.Project.Project.AllProjects',
+    }),
+    //全部项目
     value: 'all',
   },
   {
-    label: formatMessage({ id: 'odc.Project.Project.ArchiveProject' }), //归档项目
+    label: formatMessage({
+      id: 'odc.Project.Project.ArchiveProject',
+    }),
+    //归档项目
     value: 'deleted',
   },
 ];
-
 const Project = () => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
@@ -54,9 +61,7 @@ const Project = () => {
   const [projectType, setProjectType] = useState<'all' | 'deleted'>('all');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const isProjectDeleted = projectType === 'deleted';
-
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
     try {
@@ -69,7 +74,6 @@ const Project = () => {
          */
         const existIds = new Set();
         dataSource.forEach((item) => existIds.add(item.id));
-
         setDataSource(dataSource.concat(res?.contents.filter((item) => !existIds.has(item.id))));
       }
     } catch (e) {
@@ -78,23 +82,19 @@ const Project = () => {
       setLoading(false);
     }
   };
-
   function reload(newProjectType?: string, projectSearchName?: string) {
     setCurrentPage(0);
     setDataSource([]);
     appendData(0, [], newProjectType || projectType, projectSearchName);
   }
-
   useEffect(() => {
     appendData(currentPage, dataSource, projectType, projectSearchName);
   }, []);
-
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
       appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
-
   return (
     <PageContainer
       titleProps={{
@@ -120,7 +120,14 @@ const Project = () => {
                 <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
               </Acess>
               {!!dataSource?.length && (
-                <ApplyPermissionButton disabled={isProjectDeleted} label="加入项目" />
+                <ApplyPermissionButton
+                  disabled={isProjectDeleted}
+                  label={
+                    formatMessage({
+                      id: 'odc.src.page.Project.Project.JoinTheProject',
+                    }) /* 加入项目 */
+                  }
+                />
               )}
             </Space>
             <Space size={12}>
@@ -131,7 +138,10 @@ const Project = () => {
                 }}
                 searchTypes={[
                   {
-                    label: formatMessage({ id: 'odc.Project.Project.ProjectName' }), //项目名称
+                    label: formatMessage({
+                      id: 'odc.Project.Project.ProjectName',
+                    }),
+                    //项目名称
                     value: 'projectName',
                   },
                 ]}
@@ -144,7 +154,12 @@ const Project = () => {
           </div>
         }
       >
-        <div ref={domRef} style={{ height: '100%' }}>
+        <div
+          ref={domRef}
+          style={{
+            height: '100%',
+          }}
+        >
           {dataSource?.length ? (
             <VirtualList
               data={dataSource}
@@ -172,12 +187,31 @@ const Project = () => {
                 <Empty
                   description={
                     <Space direction="vertical" size={0}>
-                      <Title level={4}>暂无新项目</Title>
-                      <Text type="secondary">当前暂无可使用项目，可以通过申请获得项目权限</Text>
+                      <Title level={4}>
+                        {
+                          formatMessage({
+                            id: 'odc.src.page.Project.Project.NoNewProject',
+                          }) /* 暂无新项目 */
+                        }
+                      </Title>
+                      <Text type="secondary">
+                        {
+                          formatMessage({
+                            id: 'odc.src.page.Project.Project.ItIsCurrentlyUnavailableFor',
+                          }) /* 当前暂无可使用项目，可以通过申请获得项目权限 */
+                        }
+                      </Text>
                     </Space>
                   }
                 >
-                  <ApplyPermissionButton label="申请项目权限" type="primary" />
+                  <ApplyPermissionButton
+                    label={
+                      formatMessage({
+                        id: 'odc.src.page.Project.Project.ApplicationProjectPermissions',
+                      }) /* 申请项目权限 */
+                    }
+                    type="primary"
+                  />
                 </Empty>
               </Space>
             </Spin>
@@ -187,5 +221,4 @@ const Project = () => {
     </PageContainer>
   );
 };
-
 export default Project;

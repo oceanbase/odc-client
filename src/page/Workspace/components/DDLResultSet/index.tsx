@@ -84,13 +84,11 @@ const ToolbarButton = Toolbar.Button;
 const ToolbarDivider = Toolbar.Divider;
 export const DATASET_INDEX_KEY = '_datasetIdx';
 const ExpainSvg = icon.EXPAIN;
-
 export enum ColumnOrder {
   ASC = 'ASC',
   DESC = 'DESC',
   NONE = 'NONE',
 }
-
 interface IProps {
   sqlStore?: SQLStore;
   settingStore?: SettingStore;
@@ -149,7 +147,6 @@ interface IProps {
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
 }
-
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
     isTableData,
@@ -273,7 +270,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       update();
     });
   }, []);
-
   const rowsRef = useRef<any[]>();
 
   /**
@@ -282,7 +278,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const rows: any[] = useMemo(() => {
     return editRows || originRows;
   }, [originRows, editRows]);
-
   rowsRef.current = rows;
   /**
    * 表格实际展示的rows，比如过滤后的rows。
@@ -312,7 +307,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     setSelectedCellColumnsKey(columnKeys);
     setSelectedCellRowsKey(keys);
   }, []);
-
   const handleCancel = () => {
     setIsEditing(false);
     gridRef.current?.setRows(originRows);
@@ -345,7 +339,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       return row._rowIndex === rowKey;
     });
     const selectedRow = rows[rowIdx];
-
     if (selectedRow) {
       const clonedRow = cloneDeep(selectedRow); // 需要将大对象类型列置空
 
@@ -354,7 +347,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           clonedRow[c.key] = clonedRow[c.key] ? '' : null;
         }
       });
-
       const row = {
         ...clonedRow,
         _created: true,
@@ -366,22 +358,18 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       gridRef.current?.addRows([row]);
     }
   }, [columns, rows, selectedCellRowsKey, gridRef]);
-
   const scrollToTop = useCallback(() => {
     gridRef.current?.scrollToRow(0);
   }, [gridRef]);
-
   const handleExport = useCallback(() => {
     onExport(limit || 1000);
   }, [onExport, limit]);
-
   const handleEditPropertyInCell = useCallback(
     (newRows) => {
       setEditRows(newRows);
     },
     [rows],
   );
-
   const handleToggleEditable = useCallback(async () => {
     setIsEditing(true);
   }, [setIsEditing]);
@@ -429,18 +417,18 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         children: [
           {
             key: 'clip-sql',
-            text: 'SQL', // SQL 文件
+            text: 'SQL',
+            // SQL 文件
             onClick: clipSQL,
           },
-
           {
             key: 'clip-csv',
-            text: 'CSV', // CSV 文件
+            text: 'CSV',
+            // CSV 文件
             onClick: clipCsv,
           },
         ],
       };
-
       function copy() {
         defaultOnCopy(gridRef.current);
       }
@@ -464,7 +452,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             text: formatMessage({
               id: 'odc.components.ConnectionCardList.Copy',
             }),
-
             onClick: copy,
           },
           clipMenu,
@@ -479,24 +466,27 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         isSingleSelected &&
         settingStore.enableDataExport &&
         !isMasked;
-
       return [
         {
           key: 'copy',
-          text: formatMessage({ id: 'odc.components.ConnectionCardList.Copy' }),
+          text: formatMessage({
+            id: 'odc.components.ConnectionCardList.Copy',
+          }),
           onClick: copy,
         },
         clipMenu,
         isEditing && {
           key: 'setnull',
-          text: formatMessage({ id: 'odc.components.DDLResultSet.SetToNull' }), // 设置为 Null
+          text: formatMessage({
+            id: 'odc.components.DDLResultSet.SetToNull',
+          }),
+          // 设置为 Null
           disabled: isNull(row[columnKey]) || column.readonly,
           onClick: () => {
             const newRows = [...rows];
             const targetRowIndex = newRows.findIndex(
               (newRow) => newRow._rowIndex === row._rowIndex,
             );
-
             newRows[targetRowIndex] = {
               ...newRows[targetRowIndex],
               [columnKey]: null,
@@ -506,11 +496,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
               }),
             };
-
             handleEditPropertyInCell(newRows);
           },
         },
-
         isEditing && {
           key: 'setDefault',
           text: formatMessage({
@@ -523,7 +511,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             const targetRowIndex = newRows.findIndex(
               (newRow) => newRow._rowIndex === row._rowIndex,
             );
-
             newRows[targetRowIndex] = {
               ...newRows[targetRowIndex],
               [columnKey]: undefined,
@@ -532,17 +519,14 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
               }),
             };
-
             handleEditPropertyInCell(newRows);
           },
         },
-
         showDownload && {
           key: 'download',
           text: formatMessage({
             id: 'odc.components.DDLResultSet.DownloadAndView',
           }),
-
           // 下载查看
           disabled:
             isNil(row[columnKey]) ||
@@ -552,13 +536,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             downloadObjectData(columnKey, row);
           },
         },
-
         showUpload && {
           key: 'upload',
           text: formatMessage({
             id: 'odc.components.DDLResultSet.UploadAndModify',
           }),
-
           onClick: () => {
             const upload = document.createElement('input');
             upload.setAttribute('type', 'file');
@@ -573,7 +555,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   const targetRowIndex = newRows.findIndex(
                     (newRow) => newRow._rowIndex === row._rowIndex,
                   );
-
                   newRows[targetRowIndex] = {
                     ...newRows[targetRowIndex],
                     [columnKey]: serverFileName,
@@ -582,9 +563,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                       return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
                     }),
                   };
-
                   handleEditPropertyInCell(newRows);
-
                   message.success(
                     `${file.name} ${formatMessage({
                       id: 'workspace.window.table.object.upload.success',
@@ -611,14 +590,12 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     },
     [table, columns, isEditing, gridRef, downloadObjectData, rows, sessionId],
   );
-
   const getContextMenuConfig = useCallback(
     function (row: any, column: CalculatedColumn<any, any>) {
       return getMenus(row, column);
     },
     [getMenus],
   );
-
   const setSearchKey = useCallback(
     debounce(
       (v) => {
@@ -626,9 +603,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         _setSearchKey(v);
       },
       500,
-      { leading: false, trailing: true },
+      {
+        leading: false,
+        trailing: true,
+      },
     ),
-
     [],
   );
 
@@ -672,7 +651,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   );
   const isInTransaction = session?.transState?.transState === TransState.IDLE;
   return (
-    <div style={{ height: resultHeight, display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        height: resultHeight,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Spin spinning={false}>
         <Toolbar compact>
           <div className={styles.toolsLeft}>
@@ -728,20 +713,26 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               (isEditing ? (
                 <>
                   <ToolbarButton
-                    text={formatMessage({ id: 'workspace.window.sql.button.add' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.add',
+                    })}
                     icon={<PlusOutlined />}
                     onClick={handleAddRow}
                   />
 
                   <ToolbarButton
-                    text={formatMessage({ id: 'workspace.window.sql.button.delete' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.delete',
+                    })}
                     icon={<MinusOutlined />}
                     onClick={handleDeleteRows}
                   />
 
                   <ToolbarButton
                     disabled={!rows[selectedRowIdx]}
-                    text={formatMessage({ id: 'workspace.window.sql.button.copy' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.copy',
+                    })}
                     icon={<CopyOutlined />}
                     onClick={handleCopyRow}
                   />
@@ -751,7 +742,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               ) : (
                 <>
                   <ToolbarButton
-                    text={formatMessage({ id: 'workspace.window.sql.button.edit.enable' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.edit.enable',
+                    })}
                     icon={<EditOutlined />}
                     onClick={() => {
                       setIsEditing(true);
@@ -815,21 +808,27 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 <>
                   <ToolbarButton
                     disabled={!isEditing}
-                    text={formatMessage({ id: 'workspace.window.sql.button.edit.add' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.edit.add',
+                    })}
                     icon={<PlusOutlined />}
                     onClick={handleAddRow}
                   />
 
                   <ToolbarButton
                     disabled={!isEditing}
-                    text={formatMessage({ id: 'workspace.window.sql.button.edit.delete' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.edit.delete',
+                    })}
                     icon={<MinusOutlined />}
                     onClick={handleDeleteRows}
                   />
 
                   <ToolbarButton
                     disabled={!isEditing || !rows[selectedRowIdx]}
-                    text={formatMessage({ id: 'workspace.window.sql.button.copy' })}
+                    text={formatMessage({
+                      id: 'workspace.window.sql.button.copy',
+                    })}
                     icon={<CopyOutlined />}
                     onClick={handleCopyRow}
                   />
@@ -838,7 +837,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </>
               ) : (
                 <ToolbarButton
-                  text={formatMessage({ id: 'workspace.window.sql.button.edit.enable' })}
+                  text={formatMessage({
+                    id: 'workspace.window.sql.button.edit.enable',
+                  })}
                   icon={<EditOutlined />}
                   onClick={handleToggleEditable}
                 />
@@ -885,7 +886,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               props?.traceId ? (
                 <ToolbarButton
                   text={
-                    formatMessage({ id: 'odc.components.DDLResultSet.Plan' }) // 计划
+                    formatMessage({
+                      id: 'odc.components.DDLResultSet.Plan',
+                    }) // 计划
                   }
                   icon={<ExpainSvg status={IConStatus.INIT} />}
                   onClick={() => {
@@ -918,7 +921,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             {showTrace &&
               (compare(obVersion, '4.1.0', '>=') ? (
                 <ToolbarButton
-                  text={withFullLinkTrace ? '全链路 Trace' : traceEmptyReason}
+                  text={
+                    withFullLinkTrace
+                      ? formatMessage({
+                          id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
+                        }) //'全链路 Trace'
+                      : traceEmptyReason
+                  }
                   disabled={!withFullLinkTrace}
                   icon={<TraceSvg />}
                   onClick={() => {
@@ -946,7 +955,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
 
                     // 回到开始
                   }
-                  icon={<VerticalRightOutlined style={{ transform: 'rotate(90deg)' }} />}
+                  icon={
+                    <VerticalRightOutlined
+                      style={{
+                        transform: 'rotate(90deg)',
+                      }}
+                    />
+                  }
                   onClick={() => scrollToTop()}
                 />
 
@@ -984,7 +999,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
 
                     // 跳至底部
                   }
-                  icon={<VerticalLeftOutlined style={{ transform: 'rotate(90deg)' }} />}
+                  icon={
+                    <VerticalLeftOutlined
+                      style={{
+                        transform: 'rotate(90deg)',
+                      }}
+                    />
+                  }
                   onClick={() => gridRef.current.scrollToRow(rows.length - 1)}
                 />
               </>
@@ -1000,7 +1021,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             <span className={styles.limit}>
               {isTableData || isViewData ? (
                 <>
-                  {formatMessage({ id: 'workspace.window.sql.limit' })}
+                  {formatMessage({
+                    id: 'workspace.window.sql.limit',
+                  })}
                   <InputNumber
                     onInput={(limit) => {
                       if (limit == '' || isNil(limit)) {
@@ -1075,16 +1098,22 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   </Row>
                 </Checkbox.Group>
               }
-              title={formatMessage({ id: 'workspace.window.sql.button.columnFilter.title' })}
+              title={formatMessage({
+                id: 'workspace.window.sql.button.columnFilter.title',
+              })}
             >
               <ToolbarButton
-                text={formatMessage({ id: 'workspace.window.sql.button.columnFilter' })}
+                text={formatMessage({
+                  id: 'workspace.window.sql.button.columnFilter',
+                })}
                 icon={<FilterOutlined />}
               />
             </Popover>
             <ToolbarButton
               disabled={!rows[selectedRowIdx]}
-              text={formatMessage({ id: 'workspace.window.sql.button.columnMode' })}
+              text={formatMessage({
+                id: 'workspace.window.sql.button.columnMode',
+              })}
               icon={<BarsOutlined />}
               onClick={() => {
                 setShowColumnMode(true);
@@ -1096,7 +1125,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
              */}
             {!isEditing && onRefresh ? (
               <ToolbarButton
-                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                text={formatMessage({
+                  id: 'workspace.window.session.button.refresh',
+                })}
                 icon={<SyncOutlined />}
                 onClick={onRefresh.bind(this, limit || 1000)}
               />
@@ -1160,5 +1191,4 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     </div>
   );
 };
-
 export default inject('sqlStore', 'settingStore')(observer(DDLResultSet));

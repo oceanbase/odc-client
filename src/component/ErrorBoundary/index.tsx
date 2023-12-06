@@ -17,22 +17,25 @@
 import { formatMessage } from '@/util/intl';
 import { Button, Result } from 'antd';
 import React from 'react';
-
 export default class ErrorBoundary extends React.Component {
   public static getDerivedStateFromError(error: any) {
-    return { hasError: true };
+    return {
+      hasError: true,
+    };
   }
   public state = {
     hasError: false,
     errorComponent: null,
     errorStack: null,
   };
-
   constructor(props: any) {
     super(props);
-    this.state = { hasError: false, errorComponent: null, errorStack: null };
+    this.state = {
+      hasError: false,
+      errorComponent: null,
+      errorStack: null,
+    };
   }
-
   public componentDidCatch(error: any, errorInfo) {
     // You can also log the error to an error reporting service
     console.log('error', error?.stack, errorInfo);
@@ -42,15 +45,22 @@ export default class ErrorBoundary extends React.Component {
       errorStack: error?.stack,
     });
   }
-
   public render() {
     const isChunkError = this.state.errorStack?.toString().includes('ChunkLoadError');
     if (isChunkError) {
       return (
         <Result
           status="404"
-          title="系统正在升级中"
-          subTitle="当前 ODC 版本已过期，请刷新重试"
+          title={
+            formatMessage({
+              id: 'odc.src.component.ErrorBoundary.TheSystemIsBeingUpgraded',
+            }) /* 系统正在升级中 */
+          }
+          subTitle={
+            formatMessage({
+              id: 'odc.src.component.ErrorBoundary.TheCurrentODCVersionHas',
+            }) /* 当前 ODC 版本已过期，请刷新重试 */
+          }
           extra={
             <Button
               onClick={() => {
@@ -58,7 +68,9 @@ export default class ErrorBoundary extends React.Component {
               }}
               type="primary"
             >
-              {formatMessage({ id: 'odc.component.ErrorBoundary.Reload' })}
+              {formatMessage({
+                id: 'odc.component.ErrorBoundary.Reload',
+              })}
             </Button>
           }
         />
@@ -85,19 +97,31 @@ export default class ErrorBoundary extends React.Component {
                 window.location.href = `${location.origin}${location.pathname}`;
               }}
             >
-              {formatMessage({ id: 'odc.component.ErrorBoundary.Reload' })}
+              {formatMessage({
+                id: 'odc.component.ErrorBoundary.Reload',
+              })}
             </a>
           </div>
-          <pre style={{ padding: 20, color: 'red' }}>
+          <pre
+            style={{
+              padding: 20,
+              color: 'red',
+            }}
+          >
             <h3>Stack</h3>
             {this.state.errorStack}
-            <h3 style={{ marginTop: 10 }}>Component</h3>
+            <h3
+              style={{
+                marginTop: 10,
+              }}
+            >
+              Component
+            </h3>
             {this.state.errorComponent}
           </pre>
         </div>
       );
     }
-
     return this.props.children;
   }
 }

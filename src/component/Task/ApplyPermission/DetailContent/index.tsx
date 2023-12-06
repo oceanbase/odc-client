@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -17,7 +18,6 @@
 import type { IApplyPermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider } from 'antd';
-
 interface IProps {
   task: TaskDetail<IApplyPermissionTaskParams>;
 }
@@ -28,11 +28,55 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
   return (
     <>
       <Descriptions column={2}>
-        <Descriptions.Item label="任务编号">{task?.id}</Descriptions.Item>
-        <Descriptions.Item label="任务类型">申请项目权限</Descriptions.Item>
-        <Descriptions.Item label="申请项目">{parameters?.project?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="申请项目角色">{roleLabels || '-'}</Descriptions.Item>
-        <Descriptions.Item span={2} label="申请原因">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.TaskNumber',
+            }) /* 任务编号 */
+          }
+        >
+          {task?.id}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.Type',
+            }) /* 任务类型 */
+          }
+        >
+          {
+            formatMessage({
+              id:
+                'odc.src.component.Task.ApplyPermission.DetailContent.ApplicationProjectPermissions',
+            }) /* 申请项目权限 */
+          }
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.ApplicationProject',
+            }) /* 申请项目 */
+          }
+        >
+          {parameters?.project?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.ApplicationProjectRole',
+            }) /* 申请项目角色 */
+          }
+        >
+          {roleLabels || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.Cause',
+            }) /* 申请原因 */
+          }
+        >
           {parameters?.applyReason}
         </Descriptions.Item>
       </Descriptions>
@@ -42,8 +86,22 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
         }}
       />
       <Descriptions column={2}>
-        <Descriptions.Item label="创建人">{task?.creator?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.Founder',
+            }) /* 创建人 */
+          }
+        >
+          {task?.creator?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.CreationTime',
+            }) /* 创建时间 */
+          }
+        >
           {getFormatDateTime(task?.createTime)}
         </Descriptions.Item>
       </Descriptions>
