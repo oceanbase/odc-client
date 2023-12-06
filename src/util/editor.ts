@@ -17,8 +17,38 @@
 import { isNil } from 'lodash';
 import * as monaco from 'monaco-editor';
 
-type IEditor = monaco.editor.IStandaloneCodeEditor;
+export type IEditor = monaco.editor.IStandaloneCodeEditor;
 
+export enum EHighLight {
+  ERROR = 'error',
+  INFO = 'info',
+  DEFAULT = 'default',
+  SUGGEST = 'suggest',
+  MUST = 'must',
+}
+
+export function getClassNameByType(type: EHighLight) {
+  switch (type) {
+    case EHighLight.ERROR: {
+      return 'editor-selection-stmt-error';
+    }
+    case EHighLight.INFO: {
+      return 'editor-selection-stmt-info';
+    }
+    case EHighLight.DEFAULT: {
+      return 'editor-selection-stmt-default';
+    }
+    case EHighLight.SUGGEST: {
+      return 'editor-selection-stmt-suggest';
+    }
+    case EHighLight.MUST: {
+      return 'editor-selection-stmt-must';
+    }
+    default: {
+      return '';
+    }
+  }
+}
 const getMonaco = async function () {
   return monaco;
 };
@@ -151,14 +181,13 @@ const utils = {
     }
     codeEditor.deltaDecorations(ids, []);
   },
-  async addHighlight(editor: IEditor, begin: number, end: number, type: 'error' | 'info') {
+  async addHighlight(editor: IEditor, begin: number, end: number, type: EHighLight) {
     const monaco = await getMonaco();
 
     const beginPosition = editor.getModel().getPositionAt(begin);
     const endPosition = editor.getModel().getPositionAt(end + 1);
 
-    const className =
-      type === 'error' ? 'editor-selection-stmt-error' : 'editor-selection-stmt-info';
+    const className = getClassNameByType(type);
 
     editor.deltaDecorations(
       [],
@@ -175,7 +204,7 @@ const utils = {
       ],
     );
   },
-  async removeHightlight(editor: IEditor) {
+  async removeHighlight(editor: IEditor) {
     const codeEditor = editor;
     const model = codeEditor.getModel();
     if (!model) {

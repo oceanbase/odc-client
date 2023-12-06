@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  fetchVariableList, updateVariable
-} from '@/common/network/sessionParams';
+import { fetchVariableList, updateVariable } from '@/common/network/sessionParams';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
@@ -41,7 +39,7 @@ const ToolbarButton = Toolbar.Button;
 const Search = Input.Search;
 const { Content } = Layout;
 
-interface IRowConnectionProperty extends RowType, IConnectionProperty { }
+interface IRowConnectionProperty extends RowType, IConnectionProperty {}
 
 function SessionParamsTable(props: {
   sqlStore?: SQLStore;
@@ -177,7 +175,7 @@ function SessionParamsTable(props: {
                 text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                 icon={<EditOutlined />}
                 onClick={handleOpenEditModal}
-              // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
+                // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
               />
             </div>
             <div className="tools-right">

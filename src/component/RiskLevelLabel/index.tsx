@@ -19,11 +19,12 @@ import { RiskLevelMap } from '../../page/Secure/interface';
 import styles from './index.less';
 import { EnvColorMap } from '@/constant';
 
-const RiskLevelLabel: React.FC<{ level?: number; color: string; content?: string }> = ({
-  level = -1,
-  color = 'grey',
-  content = '',
-}) => {
+const RiskLevelLabel: React.FC<{
+  level?: number;
+  color: string;
+  content?: string;
+  extra?: string;
+}> = ({ level = -1, color = 'grey', content = '', extra = '' }) => {
   return level === -1 && !content?.length ? (
     <span>-</span>
   ) : (
@@ -36,6 +37,7 @@ const RiskLevelLabel: React.FC<{ level?: number; color: string; content?: string
         color={''}
       >
         {level !== -1 ? RiskLevelMap[level] : content}
+        {extra}
       </Tag>
     </div>
   );

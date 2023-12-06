@@ -42,9 +42,7 @@ export default function ProjectSelect({
   const bindProjectId = currentDatabase?.dataSource?.projectId;
   const _isNull = isNull(value);
   return (
-    <Tooltip
-      placement='right'
-      title={disabledTip ? disabledTip : null}>
+    <Tooltip placement="right" title={disabledTip ? disabledTip : null}>
       <Space>
         <Select
           value={value}

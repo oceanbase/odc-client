@@ -49,7 +49,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
 
   return (
     <Modal
-      title={"修改所属项目"}
+      title={'修改所属项目'}
       open={visible}
       onCancel={close}
       onOk={async () => {
@@ -85,7 +85,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
               },
             },
           ]}
-          label={"项目"}
+          label={'项目'}
           name={'project'}
         >
           <ProjectSelect projects={data?.contents} currentDatabase={database} />

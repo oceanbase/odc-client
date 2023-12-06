@@ -207,7 +207,7 @@ export default async function executeSQL(
       modal.changeCreateAsyncTaskModal(true, {
         sql: serverParams.sql,
         databaseId: session?.database?.databaseId,
-        rules: violatedRules,
+        rules: taskInfo?.sqls,
       });
     return {
       invalid: true,

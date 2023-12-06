@@ -174,7 +174,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               const innerSchema =
                 getDataSourceModeConfig(record.dataSource?.type)?.schema?.innerSchema || [];
               const isInnerSchema = innerSchema.includes(record?.name);
-              let tip = "修改所属项目";
+              let tip = '修改所属项目';
               let editable = true;
               if (isInnerSchema) {
                 editable = true;

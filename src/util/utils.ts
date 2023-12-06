@@ -600,3 +600,19 @@ export const mbToKb = (value: number) => {
 export const kbToMb = (value: number) => {
   return value / 1024;
 };
+
+/**
+ * https://tc39.es/proposal-array-grouping/#sec-object.groupby
+ * @param array object array => [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}]
+ * @param property object key => 'level'
+ * @returns group by object key
+ * @example groupByPropertyName([{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}], 'level')
+ * @example return { 1: [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}], 3: [{ level: 3, name: 'test3'}]}
+ */
+export function groupByPropertyName(array, property): Object {
+  return array.reduce((group, cur) => {
+    group[cur[`${property}`]] ??= [];
+    group[cur[`${property}`]].push(cur);
+    return group;
+  }, {});
+}

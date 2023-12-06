@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { ISQLExecuteTaskSQL } from '@/common/network/sql/executeSQL';
 import { DbObjectType, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
-import { IRule } from '@/d.ts/rule';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -47,7 +47,7 @@ interface AsyncData {
   /**
    * 违反的校验规则
    */
-  rules?: IRule[];
+  rules?: ISQLExecuteTaskSQL[];
 }
 
 interface ResultSetExportData {

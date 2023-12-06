@@ -161,17 +161,14 @@ export default function NewDataBaseButton({
               </Form.Item>
             </Space>
           )}
-            <Form.Item
-              name={'projectId'}
-              label={"项目"}
-            >
-              <ProjectSelect
-                disabled={!!projectId}
-                disabledTip={`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`}
-                projects={project?.contents}
-                currentDatabase={null}
-              />
-            </Form.Item>
+          <Form.Item name={'projectId'} label={'项目'}>
+            <ProjectSelect
+              disabled={!!projectId}
+              disabledTip={`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`}
+              projects={project?.contents}
+              currentDatabase={null}
+            />
+          </Form.Item>
         </Form>
       </Modal>
     </>
