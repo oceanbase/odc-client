@@ -34,6 +34,13 @@ export interface IRule {
   organizationId: number;
   createTime: number;
   updateTime: number;
+  violation?: {
+    level: number;
+    localizedMessage: string;
+    offset: number;
+    start: number;
+    stop: number;
+  };
 }
 
 export interface IRuleSet {

@@ -64,15 +64,7 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         </Descriptions.Item>
         {showReslut && (
           <Descriptions.Item>
-            <Descriptions
-              column={1}
-              title={
-                formatMessage({
-                  id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.ProcessResult',
-                }) /* 处理结果: */
-              }
-              className={styles['result-desc']}
-            >
+            <Descriptions column={1}>
               {showCount ? (
                 <Descriptions.Item
                   label={

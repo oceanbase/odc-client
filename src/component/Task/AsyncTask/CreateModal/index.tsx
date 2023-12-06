@@ -19,11 +19,9 @@ import { isReadonlyPublicConnection } from '@/component/Acess';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
-import RuleResult from '@/component/SQLLintResult/RuleResult';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
-  ConnectionMode,
   RollbackType,
   SQLContentType,
   TaskExecStrategy,
@@ -40,6 +38,7 @@ import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
+  Alert,
   AutoComplete,
   Button,
   Checkbox,
@@ -51,14 +50,19 @@ import {
   Modal,
   Radio,
   Space,
+  Tooltip,
 } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { runSQLLint } from '@/common/network/sql';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
+import utils from '@/util/editor';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -93,12 +97,17 @@ const getFilesByIds = (ids: string[], names: string[]) => {
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
   const [form] = Form.useForm();
+  const editorRef = useRef<CommonIDE>();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [rollbackContentType, setRollbackContentType] = useState(SQLContentType.TEXT);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
-  const { database } = useDBSession(databaseId);
+  const sqlContent = Form.useWatch('sqlContent', form);
+  const { database, session } = useDBSession(databaseId);
+  const [preCheckLoading, setPreLoading] = useState<boolean>(false);
+  const [hasPreCheck, setHasPreCheck] = useState<boolean>(false);
+  const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
   const { asyncTaskData } = modalStore;
@@ -164,10 +173,21 @@ const CreateModal: React.FC<IProps> = (props) => {
       sqlFiles: formData.sqlFiles,
     });
   };
-
   useEffect(() => {
     if (asyncTaskData?.task) {
       loadRollbackData();
+    }
+    if (asyncTaskData?.rules) {
+      const newLintResultSet = asyncTaskData?.rules?.reduce((pre, cur) => {
+        return pre.concat({
+          sql: cur?.sqlTuple?.executedSql,
+          violations: cur?.violatedRules?.map((item) => item?.violation),
+        });
+      }, []);
+      if (newLintResultSet?.length > 0) {
+        setLintResultSet(newLintResultSet);
+        setHasPreCheck(true);
+      }
     }
   }, [asyncTaskData]);
 
@@ -276,6 +296,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       rollbackSqlFiles: [],
       sqlFiles: [],
     });
+    setLintResultSet([]);
+    setHasPreCheck(false);
   };
 
   const handleCancel = (hasEdit: boolean) => {
@@ -291,6 +313,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           modalStore.changeCreateAsyncTaskModal(false);
           hadleReset();
         },
+        okText: '确认',
+        cancelText: '取消',
       });
     } else {
       modalStore.changeCreateAsyncTaskModal(false);
@@ -410,6 +434,19 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
 
+  const preCheck = async () => {
+    utils.removeHighlight(editorRef?.current?.editor);
+    const { sqlContent, delimiter, databaseId } = await form?.getFieldsValue();
+    if (databaseId && sqlContent && session?.sessionId) {
+      setLintResultSet([]);
+      setPreLoading(true);
+      setHasPreCheck(false);
+      const result = await runSQLLint(session?.sessionId, delimiter, sqlContent);
+      setHasPreCheck(true);
+      setPreLoading(false);
+      setLintResultSet(result);
+    }
+  };
   useEffect(() => {
     if (initSqlContent) {
       handleSqlChange('sqlContent', initSqlContent);
@@ -421,12 +458,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       databaseId: asyncTaskData?.databaseId,
     });
   }, [asyncTaskData?.databaseId]);
-
   return (
     <Drawer
       destroyOnClose
       className={styles.asyncTask}
-      width={520}
+      width={905}
       title={formatMessage({
         id: 'odc.components.CreateAsyncTaskModal.CreateDatabaseChanges',
       })}
@@ -473,17 +509,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        {asyncTaskData?.rules?.length ? (
-          <Form.Item
-            requiredMark={false}
-            label={formatMessage({
-              id: 'odc.AsyncTask.CreateModal.ThisOperationHasBeenBlocked',
-            })} /*该操作已被以下规则拦截，请发起审批*/
-          >
-            <RuleResult data={asyncTaskData?.rules} />
-            <Divider style={{ margin: '8px 0px' }} />
-          </Form.Item>
-        ) : null}
         <DatabaseSelect type={TaskType.ASYNC} projectId={projectId} />
         <Form.Item
           label={formatMessage({
@@ -546,6 +571,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           style={{ height: '280px' }}
         >
           <CommonIDE
+            ref={editorRef}
             initialSQL={initSqlContent}
             language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             onSQLChange={(sql) => {
@@ -597,6 +623,42 @@ const CreateModal: React.FC<IProps> = (props) => {
             </p>
           </ODCDragger>
         </Form.Item>
+        <Tooltip
+          title={
+            sqlContentType === SQLContentType.FILE
+              ? '请使用 SQL 录入，上传附件暂不支持 SQL 检查'
+              : ''
+          }
+        >
+          <Button
+            style={{
+              marginBottom: '12px',
+            }}
+            onClick={preCheck}
+            disabled={!databaseId || !sqlContent || sqlContentType === SQLContentType.FILE}
+            loading={preCheckLoading}
+          >
+            {preCheckLoading ? '检查中' : 'SQL 检查'}
+          </Button>
+        </Tooltip>
+        {hasPreCheck && (
+          <Alert
+            closable
+            message={`预检查完成，${lintResultSet.length} 处语句违反 SQL 开发规范。`}
+            type={lintResultSet?.length === 0 ? 'success' : 'warning'}
+            showIcon
+            style={{ marginBottom: '8px' }}
+          />
+        )}
+        {lintResultSet?.length > 0 && (
+          <LintResultTable
+            ctx={editorRef?.current?.editor}
+            pageSize={10}
+            hasExtraOpt={false}
+            lintResultSet={lintResultSet}
+          />
+        )}
+        <Divider />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateAsyncTaskModal.RollbackScheme',

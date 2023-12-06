@@ -20,8 +20,8 @@ import { Badge, Dropdown, Menu, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
+// @ts-ignore
 import { LockResultSetHint } from '@/component/LockResultSetHint';
-import SQLLintResult from '@/component/SQLLintResult';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
@@ -33,19 +33,22 @@ import DDLResultSet from '../DDLResultSet';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import SQLResultLog from './SQLResultLog';
+import { ModalStore } from '@/store/modal';
+import LintResultTable from './LintResultTable';
 
 const { TabPane } = Tabs;
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
-
-enum MenuKey {
+export const enum MenuKey {
   LOCK = 'LOCK',
   UNLOCK = 'UNLOCK',
 }
 
 interface IProps {
   sqlStore?: SQLStore;
+  modalStore?: ModalStore;
+  ctx: any;
   pageKey: string;
   activeKey: string;
   resultHeight: number;
@@ -76,6 +79,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const {
     activeKey,
     sqlStore: { resultSets: r },
+    ctx,
+    modalStore,
     pageKey,
     resultHeight,
     editingMap,
@@ -253,16 +258,13 @@ const SQLResultSet: React.FC<IProps> = function (props) {
             }
             key={sqlLintTabKey}
           >
-            <div
-              style={{
-                height: '100%',
-                overflow: 'auto',
-                overflowX: 'hidden',
-                maxHeight: resultHeight - TAB_HEADER_HEIGHT,
-              }}
-            >
-              <SQLLintResult data={lintResultSet} />
-            </div>
+            <LintResultTable
+              session={session}
+              resultHeight={resultHeight}
+              modalStore={modalStore}
+              ctx={ctx?.editor}
+              lintResultSet={lintResultSet}
+            />
           </TabPane>
         ) : null}
         {resultSets
@@ -433,4 +435,4 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject('sqlStore', 'userStore', 'pageStore')(observer(SQLResultSet));
+export default inject('sqlStore', 'userStore', 'pageStore', 'modalStore')(observer(SQLResultSet));

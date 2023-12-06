@@ -43,7 +43,7 @@ import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
-import utils from '@/util/editor';
+import utils, { EHighLight } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { splitSql } from '@/util/sql';
@@ -462,6 +462,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (!value) {
       return;
     }
+    utils.removeHighlight(this.editor);
     const result = await runSQLLint(
       this.getSession()?.sessionId,
       this.getSession()?.params?.delimiter,
@@ -817,7 +818,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sectionRange?: { begin: number; end: number },
   ) => {
     const editor = this.editor;
-    utils.removeHightlight(editor);
+    utils.removeHighlight(editor);
     const value = editor.getValue();
     const MAX_LIMIT = 10000 * 500;
     if (!value) {
@@ -837,7 +838,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     }
     if (sectionRange) {
-      utils.addHighlight(editor, sectionRange.begin, sectionRange.end, type);
+      utils.addHighlight(editor, sectionRange.begin, sectionRange.end, type as EHighLight);
       return;
     }
     const offset = editor.getModel().getOffsetAt(editor.getPosition());
@@ -852,8 +853,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     }
     const { sql, begin, end } = result;
-    console.log(begin, end);
-    utils.addHighlight(editor, begin, end, type);
+    utils.addHighlight(editor, begin, end, type as EHighLight);
   };
 
   public debounceHighlightSelectionLine = debounce(this.highlightSelectionLine, 200);
@@ -959,6 +959,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
             <Spin wrapperClassName={styles.spinWidth100} spinning={runningPageKey.has(pageKey)}>
               <SQLResultSet
                 pageKey={pageKey}
+                ctx={this}
                 resultHeight={resultHeight}
                 activeKey={resultSetTabActiveKey}
                 onChangeResultSetTab={this.handleChangeResultSetTab}
@@ -1069,7 +1070,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.sessionId,
       this.getSession()?.database?.dbName,
     );
-    if (results?.invalid || !results) {
+    if (!results || results?.invalid) {
       return;
     }
     this.getSession()?.initSessionStatus();
