@@ -159,6 +159,23 @@ export async function getTaskLog(id: number, logType: CommonTaskLogType): Promis
   });
   return res?.data;
 }
+
+/**
+ * 查询周期任务日志
+ */
+export async function getCycleTaskLog(
+  scheduleId: number,
+  taskId: number,
+  logType: CommonTaskLogType,
+): Promise<string> {
+  const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log`, {
+    params: {
+      logType,
+    },
+  });
+  return res?.data;
+}
+
 /**
  * 回滚任务
  */

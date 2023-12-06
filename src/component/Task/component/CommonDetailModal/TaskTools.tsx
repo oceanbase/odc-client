@@ -21,7 +21,6 @@ import {
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import { ITaskResult, SubTaskStatus, TaskDetail, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
@@ -32,7 +31,6 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 
 interface IProps {
-  userStore?: UserStore;
   taskStore?: TaskStore;
   settingStore?: SettingStore;
   modalStore?: ModalStore;
@@ -42,27 +40,20 @@ interface IProps {
   record: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
   disabledSubmit?: boolean;
   result?: ITaskResult;
+  showLog?: boolean;
   onReloadList: () => void;
   onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
+  onLogVisible: (recordId: number, visible: boolean) => void;
   onClose?: () => void;
 }
 
 const ActionBar: React.FC<IProps> = inject(
   'taskStore',
-  'userStore',
   'settingStore',
   'modalStore',
 )(
   observer((props) => {
-    const {
-      userStore: { user },
-      isDetailModal,
-      record,
-      taskId,
-      showRollback,
-    } = props;
-    // const isOwner = user?.id === task?.creator?.id;
-    const isOwner = true;
+    const { isDetailModal, record, taskId, showRollback, showLog, onLogVisible } = props;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
 
     const resetActiveBtnKey = () => {
@@ -130,6 +121,10 @@ const ActionBar: React.FC<IProps> = inject(
       }
     };
 
+    const handleLogVisible = async () => {
+      onLogVisible(record.id, true);
+    };
+
     const getTaskTools = (_task) => {
       let tools = [];
 
@@ -170,33 +165,32 @@ const ActionBar: React.FC<IProps> = inject(
         action: handleReTry,
       };
 
+      const logBtn = {
+        key: 'log',
+        text: '查看日志',
+        action: handleLogVisible,
+        type: 'button',
+      };
+
       switch (status) {
         case SubTaskStatus.PREPARING: {
           tools = [];
           break;
         }
         case SubTaskStatus.RUNNING: {
-          if (isOwner) {
-            tools = [stopBtn];
-          }
+          tools = [stopBtn, logBtn];
           break;
         }
         case SubTaskStatus.CANCELED: {
-          if (isOwner) {
-            tools = [executeBtn];
-          }
+          tools = [executeBtn, logBtn];
           break;
         }
         case SubTaskStatus.DONE: {
-          if (isOwner) {
-            tools = [rollbackBtn];
-          }
+          tools = [rollbackBtn, logBtn];
           break;
         }
         case SubTaskStatus.FAILED: {
-          if (isOwner) {
-            tools = [reTryBtn, rollbackBtn];
-          }
+          tools = [reTryBtn, rollbackBtn, logBtn];
           break;
         }
         default:
@@ -206,7 +200,8 @@ const ActionBar: React.FC<IProps> = inject(
 
     const btnTools = getTaskTools(record)
       ?.filter((item) => item?.type === 'button')
-      ?.filter((item) => (!showRollback ? item.key !== 'rollback' : true));
+      ?.filter((item) => (!showRollback ? item.key !== 'rollback' : true))
+      ?.filter((item) => (!showLog ? item.key !== 'log' : true));
 
     const renderTool = (tool) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
