@@ -299,6 +299,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
                     showExplain={session?.supportFeature?.enableSQLExplain}
                     showPagination={true}
+                    showTrace={true}
                     columns={set.columns}
                     session={session}
                     sqlId={set.sqlId}

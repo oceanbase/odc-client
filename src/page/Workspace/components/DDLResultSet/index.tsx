@@ -116,6 +116,7 @@ interface IProps {
   shouldWrapDownload?: boolean;
   showMock?: boolean;
   showExplain?: boolean;
+  showTrace?: boolean; // 是否展示trace功能
   showPagination?: boolean;
   columns: ResultSetColumn[];
   /**
@@ -130,8 +131,8 @@ interface IProps {
   traceId?: string;
   enableRowId?: boolean;
   autoCommit: boolean;
-  withFullLinkTrace?: boolean;
-  traceEmptyReason?: string;
+  withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
+  traceEmptyReason?: string; // 若不支持时要展示的Tooltip文本
   /**
    * db 查询耗时
    */
@@ -160,6 +161,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     sqlStore,
     settingStore,
     showExplain,
+    showTrace = false,
     showMock,
     table,
     resultHeight,
@@ -913,26 +915,26 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   />
                 </Tooltip>
               ))}
-            {compare(obVersion, '4.1.0', '>=') ? (
-              <ToolbarButton
-                text={withFullLinkTrace ? '全链路 Trace' : traceEmptyReason}
-                disabled={!withFullLinkTrace}
-                icon={<TraceSvg />}
-                onClick={() => {
-                  onShowTrace?.();
-                }}
-              />
-            ) : (
-              <ToolbarButton
-                text={traceEmptyReason}
-                disabled={true}
-                icon={<TraceSvg />}
-                onClick={() => {
-                  onShowTrace?.();
-                }}
-              />
-            )}
-
+            {showTrace &&
+              (compare(obVersion, '4.1.0', '>=') ? (
+                <ToolbarButton
+                  text={withFullLinkTrace ? '全链路 Trace' : traceEmptyReason}
+                  disabled={!withFullLinkTrace}
+                  icon={<TraceSvg />}
+                  onClick={() => {
+                    onShowTrace?.();
+                  }}
+                />
+              ) : (
+                <ToolbarButton
+                  text={traceEmptyReason}
+                  disabled={true}
+                  icon={<TraceSvg />}
+                  onClick={() => {
+                    onShowTrace?.();
+                  }}
+                />
+              ))}
             {showPagination && rows.length ? (
               <>
                 <ToolbarDivider />
