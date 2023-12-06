@@ -972,10 +972,30 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
 }
 
 export interface IColumnMetaData {
-  columnLabel: string;
+  autoIncrement: boolean;
+  caseSensitive: boolean;
+  catalogName: string;
+  columnClassName: string;
   columnComment: string;
-  readonly: boolean;
-  [key: string]: any;
+  columnsDisplaySize: number;
+  columnLabel: string;
+  columnName: string;
+  columnType: number;
+  columnTypeName: string;
+  currency: boolean;
+  definitelyWritable: boolean;
+  editable: boolean;
+  internal: boolean;
+  masked: boolean;
+  nullable: number;
+  precision: number;
+  readOnly: boolean;
+  scale: number;
+  schemaName: string;
+  searchable: boolean;
+  signed: boolean;
+  tableName: string;
+  writeable: boolean;
 }
 
 /** 日志相关 */
@@ -1455,11 +1475,24 @@ export interface IResultTimerStage {
 }
 
 export interface ISqlExecuteResult {
+  allowExport: boolean;
+  columnLabels: string[];
   columns?: string[];
+  errorCode: number;
   executeSql: string;
+  existSensitiveData: boolean;
+  existWarnings: boolean;
+  originSql: string;
+  resultSetMetaData: {
+    columnList: any[];
+    dbColumnList: any[];
+    editable: boolean;
+    fieldMetaDataList: IColumnMetaData[];
+    table: any;
+  };
   dbmsOutput?: string;
   messages?: string;
-  rows?: any[];
+  rows?: string[][];
   status: ISqlExecuteResultStatus;
   total?: number;
   // 是否含有告警信息
@@ -1472,7 +1505,9 @@ export interface ISqlExecuteResult {
   id?: string;
   requestId?: string | number;
   sqlId?: string;
-  types?: any;
+  types?: {
+    [key: string]: string | number;
+  };
   sqlType: SqlType;
   dbObjectType?: DbObjectType;
   dbObjectName?: string;
@@ -1482,6 +1517,7 @@ export interface ISqlExecuteResult {
    */
   whereColumns?: string[];
   timer: {
+    name: string;
     stages: IResultTimerStage[];
     startTimeMillis: number; // 开始时间
     totalDurationMicroseconds: number; // 总耗时

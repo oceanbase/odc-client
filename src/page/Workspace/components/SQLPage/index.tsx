@@ -90,8 +90,6 @@ interface ISQLPageState {
   };
 
   lintResultSet: ISQLLintReuslt[];
-  withFullLinkTrace: boolean;
-  traceEmptyReason?: string;
 }
 
 interface IProps {
@@ -138,8 +136,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     editingMap: {},
     lintResultSet: null,
     isSavingScript: false,
-    withFullLinkTrace: false,
-    traceEmptyReason: '',
   };
 
   public editor: IEditor;
@@ -913,7 +909,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       params,
     } = this.props;
     const session = this.getSession();
-    const config = getDataSourceModeConfigByConnectionMode(session?.connection?.dialectType)
+    const config = getDataSourceModeConfigByConnectionMode(session?.connection?.dialectType);
     const {
       initialSQL,
       showSaveSQLModal,
@@ -930,8 +926,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       editingMap,
       pageLoading,
       lintResultSet,
-      withFullLinkTrace,
-      traceEmptyReason,
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
@@ -980,8 +974,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 session={session}
                 lintResultSet={lintResultSet}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}
-                withFullLinkTrace={withFullLinkTrace}
-                traceEmptyReason={traceEmptyReason}
               />
             </Spin>
           }
@@ -1096,8 +1088,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
     this.setState({
       resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
-      withFullLinkTrace: results?.executeResult?.[0]?.withFullLinkTrace || false,
-      traceEmptyReason: results?.executeResult?.[0]?.traceEmptyReason || '',
     });
 
     // TODO: 刷新左侧资源树
