@@ -156,7 +156,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
       return null;
     }
 
-    const config = getDataSourceModeConfig(ConnectType.MYSQL)
+    const config = getDataSourceModeConfig(ConnectType.MYSQL);
     const actionItem = SNIPPET_ACTIONS.find((actionItem) => actionItem.key === action);
     const initialValues = {
       prefix: snippet?.prefix,

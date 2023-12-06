@@ -63,7 +63,8 @@ const getPartitionPlanStr = (value: IPartitionPlanRecordDetail) => {
       desc.push(
         formatMessage(
           {
-            id: 'odc.components.PartitionPolicyTable.PartitionIntervalPartitionintervalPartitionintervalunitlabel',
+            id:
+              'odc.components.PartitionPolicyTable.PartitionIntervalPartitionintervalPartitionintervalunitlabel',
           },
           {
             partitionInterval: partitionInterval,
@@ -76,7 +77,8 @@ const getPartitionPlanStr = (value: IPartitionPlanRecordDetail) => {
       desc.push(
         formatMessage(
           {
-            id: 'odc.components.PartitionPolicyTable.RetentionDurationExpireperiodExpireperiodunitlabel',
+            id:
+              'odc.components.PartitionPolicyTable.RetentionDurationExpireperiodExpireperiodunitlabel',
           },
           {
             expirePeriod: expirePeriod,
@@ -301,7 +303,8 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
                               id: 'odc.components.PartitionPolicyTable.OnlyTablesThatAreNot',
                             }) //仅显示未设置的表
                           : formatMessage({
-                              id: 'odc.components.PartitionPolicyTable.OnlyModifiedTablesAreDisplayed',
+                              id:
+                                'odc.components.PartitionPolicyTable.OnlyModifiedTablesAreDisplayed',
                             }) //仅显示修改的表
                       }
                     </Checkbox>

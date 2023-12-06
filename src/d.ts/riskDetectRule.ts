@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { EBooleanOperator, EConditionType } from '@/page/Secure/RiskLevel/components/InnerRiskLevel';
+import {
+  EBooleanOperator,
+  EConditionType,
+} from '@/page/Secure/RiskLevel/components/InnerRiskLevel';
 import { ProjectUser } from './project';
 import { IRiskLevel } from './riskLevel';
 import { Expression } from '@/page/Secure/RiskLevel/interface';

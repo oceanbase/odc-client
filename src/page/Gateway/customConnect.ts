@@ -168,7 +168,7 @@ export const action = async (config: ICustomConnectAction) => {
    * get default project
    */
 
-  const projectName = "USER_PROJECT_" + login.user?.accountName;
+  const projectName = 'USER_PROJECT_' + login.user?.accountName;
 
   const project = (await listProjects(projectName, 1, 20))?.contents?.[0];
 

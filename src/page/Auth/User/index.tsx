@@ -384,8 +384,15 @@ class UserPage extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
-      this.state;
+    const {
+      formModalVisible,
+      detailModalVisible,
+      editId,
+      detailId,
+      users,
+      roles,
+      user,
+    } = this.state;
     const disabledOp = this.isAdminOrMe(user);
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
@@ -483,7 +490,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                 {
                                                   formatMessage(
                                                     {
-                                                      id: 'odc.components.UserPage.AccountItemaccountname',
+                                                      id:
+                                                        'odc.components.UserPage.AccountItemaccountname',
                                                     },
                                                     { itemAccountName: item.accountName },
                                                   ) /*账号：{itemAccountName}*/

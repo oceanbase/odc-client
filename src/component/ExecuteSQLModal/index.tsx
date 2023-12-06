@@ -51,7 +51,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
 
   const connectionMode = sessionStore?.connection?.dialectType;
-  const config =  getDataSourceModeConfigByConnectionMode(connectionMode);
+  const config = getDataSourceModeConfigByConnectionMode(connectionMode);
 
   useEffect(() => {
     if (sql !== editorRef?.current?.getValue()) {

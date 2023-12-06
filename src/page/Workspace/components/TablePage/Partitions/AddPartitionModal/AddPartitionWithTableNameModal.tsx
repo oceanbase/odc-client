@@ -61,9 +61,7 @@ const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function ({ sessi
               let newValues;
               switch (partType) {
                 case IPartitionType.LIST: {
-                  (newPartitions as ITableListPartition).partitions = (
-                    newPartitions as ITableListPartition
-                  ).partitions.concat(
+                  (newPartitions as ITableListPartition).partitions = (newPartitions as ITableListPartition).partitions.concat(
                     values.partitions?.map((part) =>
                       Object.assign({ key: generateUniqKey() }, part),
                     ),
@@ -72,9 +70,7 @@ const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function ({ sessi
                   break;
                 }
                 case IPartitionType.RANGE: {
-                  (newPartitions as ITableRangePartition).partitions = (
-                    newPartitions as ITableRangePartition
-                  ).partitions.concat(
+                  (newPartitions as ITableRangePartition).partitions = (newPartitions as ITableRangePartition).partitions.concat(
                     values.partitions?.map((part) =>
                       Object.assign({ key: generateUniqKey() }, part),
                     ),
@@ -83,9 +79,7 @@ const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function ({ sessi
                   break;
                 }
                 case IPartitionType.LIST_COLUMNS: {
-                  (newPartitions as ITableListColumnsPartition).partitions = (
-                    newPartitions as ITableListColumnsPartition
-                  ).partitions.concat(
+                  (newPartitions as ITableListColumnsPartition).partitions = (newPartitions as ITableListColumnsPartition).partitions.concat(
                     values.partitions?.map((part) =>
                       Object.assign({ key: generateUniqKey() }, part),
                     ),
@@ -94,9 +88,7 @@ const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function ({ sessi
                   break;
                 }
                 case IPartitionType.RANGE_COLUMNS: {
-                  (newPartitions as ITableRangeColumnsPartition).partitions = (
-                    newPartitions as ITableRangeColumnsPartition
-                  ).partitions.concat(
+                  (newPartitions as ITableRangeColumnsPartition).partitions = (newPartitions as ITableRangeColumnsPartition).partitions.concat(
                     values.partitions?.map((part) =>
                       Object.assign({ key: generateUniqKey() }, part),
                     ),

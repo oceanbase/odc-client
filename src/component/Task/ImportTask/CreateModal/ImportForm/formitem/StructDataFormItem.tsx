@@ -133,7 +133,8 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                   <HelpDoc leftText isTip doc="existAction">
                     {
                       formatMessage({
-                        id: 'odc.ImportForm.formitem.StructDataFormItem.ImportStructureSettingsWhenThe',
+                        id:
+                          'odc.ImportForm.formitem.StructDataFormItem.ImportStructureSettingsWhenThe',
                       }) /* 导入结构设置：结构已存在时 */
                     }
                   </HelpDoc>
