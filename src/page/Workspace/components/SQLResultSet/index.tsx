@@ -20,8 +20,6 @@ import { Badge, Dropdown, Menu, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
-// @ts-ignore
 import { LockResultSetHint } from '@/component/LockResultSetHint';
 import SQLLintResult from '@/component/SQLLintResult';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
@@ -54,8 +52,6 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
-  withFullLinkTrace: boolean;
-  traceEmptyReason?: string;
 
   onCloseResultSet: (resultSetKey: string) => void;
   onChangeResultSetTab?: (tabKey: string) => void;
@@ -85,8 +81,6 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
-    withFullLinkTrace,
-    traceEmptyReason,
     onSubmitRows,
     onExportResultSet,
     onChangeResultSetTab,
@@ -340,8 +334,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     }
                     onUpdateEditing={(editing) => onUpdateEditing(i, editing)}
                     isEditing={editingMap[set.uniqKey]}
-                    withFullLinkTrace={withFullLinkTrace}
-                    traceEmptyReason={traceEmptyReason}
+                    withFullLinkTrace={set?.withFullLinkTrace}
+                    traceEmptyReason={set?.traceEmptyReason}
                   />
                 </TabPane>
               );
