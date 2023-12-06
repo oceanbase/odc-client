@@ -638,7 +638,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   id: 'odc.src.component.Task.AsyncTask.CreateModal.ThePreExaminationIs',
                 },
                 {
-                  lintResultSetLength: lintResultSet.length,
+                  lintResultSetLength: lintResultSet?.length || 0,
                 },
               ) //`预检查完成，${lintResultSet.length} 处语句违反 SQL 开发规范。`
             }

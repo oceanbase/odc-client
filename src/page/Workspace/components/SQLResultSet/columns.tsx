@@ -18,6 +18,8 @@ import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import { Space, Popover, Button } from 'antd';
 import utils, { IEditor } from '@/util/editor';
 import { levelMap } from '@/page/Secure/interface';
+import styles from './index.less';
+
 const getColumns = (showLocate: boolean, ctx: IEditor) => {
   return [
     {
@@ -75,6 +77,7 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
             {Object.keys(rules).map((key) => {
               return (
                 <Popover
+                  trigger={'click'}
                   content={
                     <div>
                       <RenderLevel level={key} />
@@ -83,6 +86,7 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',
+                            gap: '8px',
                             alignItems: 'baseline',
                           }}
                           key={index}
@@ -93,6 +97,7 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
                           {showLocate && (
                             <Button
                               type="link"
+                              style={{ padding: '0px' }}
                               onClick={() => {
                                 utils.removeHighlight(ctx);
                                 utils.addHighlight(

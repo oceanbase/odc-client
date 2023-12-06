@@ -194,21 +194,11 @@ export default async function executeSQL(
      */
     const session = sessionManager.sessionMap.get(sessionId);
     const isBan = violatedRules?.find((rule) => rule.level === 2);
-    if (isBan) {
-      Modal.error({
-        title: formatMessage({
-          id: 'odc.network.sql.executeSQL.ThisOperationHasBeenBlocked',
-        }),
-        //该操作已被以下规则拦截
-        content: <RuleResult data={violatedRules} />,
-      });
-    }
-    !isBan &&
-      modal.changeCreateAsyncTaskModal(true, {
-        sql: serverParams.sql,
-        databaseId: session?.database?.databaseId,
-        rules: taskInfo?.sqls,
-      });
+    modal.changeCreateAsyncTaskModal(true, {
+      sql: serverParams.sql,
+      databaseId: session?.database?.databaseId,
+      rules: taskInfo?.sqls,
+    });
     return {
       invalid: true,
       executeSuccess: false,
