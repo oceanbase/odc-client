@@ -165,8 +165,11 @@ class LoginMenus extends React.PureComponent<IProps, IState> {
       settingStore,
       modalStore,
     } = this.props;
-    const { changePasswordModalVisible, changeLockPwdModalVisible, changePasswordLoading } =
-      this.state;
+    const {
+      changePasswordModalVisible,
+      changeLockPwdModalVisible,
+      changePasswordLoading,
+    } = this.state;
     const isThridPartyLogin = !!settingStore.serverSystemInfo?.ssoLoginEnabled;
     return (
       <>

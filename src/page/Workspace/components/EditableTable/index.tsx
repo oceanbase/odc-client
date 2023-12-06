@@ -96,8 +96,8 @@ export default inject('settingStore')(
       const innerGridRef = useRef<DataGridRef>(null);
       const innerColumns = [SelectColumn].concat(initialColumns);
 
-      if(innerColumns?.length <= 1){
-        return null
+      if (innerColumns?.length <= 1) {
+        return null;
       }
 
       return (
@@ -114,7 +114,7 @@ export default inject('settingStore')(
             enableColumnRecord,
             theme: theme || (settingStore.theme.sheetTheme as any),
             searchKey,
-            rowHeight: 24
+            rowHeight: 24,
           }}
           style={{
             height: minHeight,

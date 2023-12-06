@@ -27,7 +27,7 @@ interface IProps {
 
 const SQLResultSetViewPage: React.FC<IProps> = (props) => {
   const otherHeight = WORKSPACE_HEADER_HEIGHT + TAB_HEADER_HEIGHT;
-  const config = getDataSourceModeConfigByConnectionMode(ConnectionMode.MYSQL)
+  const config = getDataSourceModeConfigByConnectionMode(ConnectionMode.MYSQL);
   return (
     <div
       style={{

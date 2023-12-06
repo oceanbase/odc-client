@@ -66,83 +66,84 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             return null;
           }
           return (
-              <Space direction="vertical">
-                <Space className={styles.infoLabel}>
-                  <div style={{ width: '220px' }}>归档表</div>
-                  <div style={{ width: '460px' }}>
-                    <Space>
-                      <span>
-                        {
-                          formatMessage({
-                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
-                          }) /*过滤条件*/
-                        }
-                      </span>
-                      <Text type="secondary">
-                        {
-                          formatMessage({
-                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
-                          }) /*(可选)*/
-                        }
-                      </Text>
-                      <ArchiveRangeTip label='归档' />
-                    </Space>
-                  </div>
-                </Space>
-                <Form.List name="tables">
-                  {(fields, { add, remove }) => (
-                    <div className={styles.infoBlock}>
-                      {fields.map(({ key, name, ...restField }: any, index) => (
-                        <div
-                          key={key}
-                          className={classNames(styles.tables, {
-                            [styles.delete]: fields?.length > 1,
-                          })}
-                        >
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'tableName']}
-                            rules={[
-                              {
-                                required: true,
-                                message: '请选择表'
-                              },
-                            ]}
-                          >
-                            <Select
-                              showSearch
-                              placeholder={formatMessage({
-                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
-                              })} /*请选择*/
-                              options={tablesOptions}
-                              filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                              }
-                            />
-                          </Form.Item>
-                          <Form.Item {...restField} name={[name, 'conditionExpression']}>
-                            <Input
-                              placeholder={formatMessage({
-                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
-                              })} /*请输入过滤条件*/
-                            />
-                          </Form.Item>
-                          {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
-                        </div>
-                      ))}
-                      <Form.Item style={{ marginBottom: 0 }}>
-                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                          {
-                            formatMessage({
-                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
-                            }) /*添加*/
-                          }
-                        </Button>
-                      </Form.Item>
-                    </div>
-                  )}
-                </Form.List>
+            <Space direction="vertical">
+              <Space className={styles.infoLabel}>
+                <div style={{ width: '220px' }}>归档表</div>
+                <div style={{ width: '460px' }}>
+                  <Space>
+                    <span>
+                      {
+                        formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
+                        }) /*过滤条件*/
+                      }
+                    </span>
+                    <Text type="secondary">
+                      {
+                        formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                        }) /*(可选)*/
+                      }
+                    </Text>
+                    <ArchiveRangeTip label="归档" />
+                  </Space>
+                </div>
               </Space>
+              <Form.List name="tables">
+                {(fields, { add, remove }) => (
+                  <div className={styles.infoBlock}>
+                    {fields.map(({ key, name, ...restField }: any, index) => (
+                      <div
+                        key={key}
+                        className={classNames(styles.tables, {
+                          [styles.delete]: fields?.length > 1,
+                        })}
+                      >
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'tableName']}
+                          rules={[
+                            {
+                              required: true,
+                              message: '请选择表',
+                            },
+                          ]}
+                        >
+                          <Select
+                            showSearch
+                            placeholder={formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
+                            })} /*请选择*/
+                            options={tablesOptions}
+                            filterOption={(input, option) =>
+                              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                            }
+                          />
+                        </Form.Item>
+                        <Form.Item {...restField} name={[name, 'conditionExpression']}>
+                          <Input
+                            placeholder={formatMessage({
+                              id:
+                                'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
+                            })} /*请输入过滤条件*/
+                          />
+                        </Form.Item>
+                        {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
+                      </div>
+                    ))}
+                    <Form.Item style={{ marginBottom: 0 }}>
+                      <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                        {
+                          formatMessage({
+                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
+                          }) /*添加*/
+                        }
+                      </Button>
+                    </Form.Item>
+                  </div>
+                )}
+              </Form.List>
+            </Space>
           );
         }}
       </Form.Item>

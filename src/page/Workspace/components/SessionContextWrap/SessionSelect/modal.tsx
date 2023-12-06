@@ -38,21 +38,19 @@ export default inject('userStore')(
     const context = useContext(SessionContext);
     const [form] = Form.useForm();
     const isPersonal = userStore?.isPrivateSpace();
-    const {
-      data: project,
-      loading: projectLoading,
-      run: fetchProjects,
-    } = useRequest(listProjects, {
-      manual: true,
-    });
+    const { data: project, loading: projectLoading, run: fetchProjects } = useRequest(
+      listProjects,
+      {
+        manual: true,
+      },
+    );
 
-    const {
-      data: datasourceList,
-      loading: datasourceLoading,
-      run: fetchDatasource,
-    } = useRequest(getDataSourceGroupByProject, {
-      manual: true,
-    });
+    const { data: datasourceList, loading: datasourceLoading, run: fetchDatasource } = useRequest(
+      getDataSourceGroupByProject,
+      {
+        manual: true,
+      },
+    );
 
     const {
       data: allDatasourceList,
@@ -62,14 +60,12 @@ export default inject('userStore')(
       manual: true,
     });
 
-    const {
-      data: databases,
-      loading: databaseLoading,
-      run: fetchDatabase,
-      reset,
-    } = useRequest(listDatabases, {
-      manual: true,
-    });
+    const { data: databases, loading: databaseLoading, run: fetchDatabase, reset } = useRequest(
+      listDatabases,
+      {
+        manual: true,
+      },
+    );
 
     useEffect(() => {
       if (visible) {
