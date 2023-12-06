@@ -77,6 +77,7 @@ import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { compare } from 'compare-versions';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -167,8 +168,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     sqlId,
     autoCommit,
     dbTotalDurationMicroseconds,
-    withFullLinkTrace,
-    traceEmptyReason,
+    withFullLinkTrace = false,
+    traceEmptyReason = '',
     onUpdateEditing,
     onRefresh,
     onShowExecuteDetail,
@@ -234,7 +235,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     },
     [_setColumnsToDisplay],
   );
-
   /**
    * 设置编辑态
    */
@@ -901,14 +901,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                         formatMessage({
                           id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
                         })
-
                     // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
                   }
                 >
                   <ToolbarButton
-                    text={
-                      formatMessage({ id: 'odc.components.DDLResultSet.Plan' }) // 计划
-                    }
                     icon={<ExpainSvg status={IConStatus.INIT} />}
                     onClick={() => {
                       onShowExecuteDetail?.();
@@ -917,7 +913,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   />
                 </Tooltip>
               ))}
-            {obVersion.startsWith('4.') && parseInt(obVersion?.[2]) >= 1 ? (
+            {compare(obVersion, '4.1.0', '>=') ? (
               <ToolbarButton
                 text={withFullLinkTrace ? '全链路 Trace' : traceEmptyReason}
                 disabled={!withFullLinkTrace}
@@ -928,7 +924,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             ) : (
               <ToolbarButton
-                text={traceEmptyReason || '数据库版本低于 4.0 ，暂不支持查看全链路 Trace'}
+                text={traceEmptyReason}
                 disabled={true}
                 icon={<TraceSvg />}
                 onClick={() => {

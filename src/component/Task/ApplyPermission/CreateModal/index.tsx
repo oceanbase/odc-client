@@ -22,11 +22,36 @@ import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import { Button, Drawer, Form, Modal, Select, Space, Input, message } from 'antd';
+import { ProjectRole } from '@/d.ts/project';
+import { Button, Drawer, Form, Modal, Select, Space, Input, message, Typography, Tag } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
-import { projectRoleTextMap } from '@/page/Project/User';
+
+const { Text } = Typography;
+
+const projectRoleMap = {
+  [ProjectRole.OWNER]: {
+    label: '管理员',
+    description: '拥有项目内的所有权限',
+  },
+  [ProjectRole.DEVELOPER]: {
+    label: '普通成员',
+    description: '允许登录数据库、执行 SQL、提交工单等，通常是开发人员',
+  },
+  [ProjectRole.DBA]: {
+    label: 'DBA',
+    description: '在普通成员的基础上，还可以管理敏感列、添加/转移数据库等',
+  },
+  [ProjectRole.SECURITY_ADMINISTRATOR]: {
+    label: '安全管理员',
+    description: '在参与者的基础上还可以管理敏感列',
+  },
+  [ProjectRole.PARTICIPANT]: {
+    label: '参与者',
+    description: '只允许参与审批',
+  },
+};
 
 interface IProps {
   sqlStore?: SQLStore;
@@ -47,11 +72,19 @@ const CreateModal: React.FC<IProps> = (props) => {
     label: name,
     value: id,
   }));
-  const rolesOptions = roles?.map(({ roleName, id }) => ({
-    label: projectRoleTextMap?.[roleName],
-    name: roleName,
-    value: id,
-  }));
+  const rolesOptions = roles?.map(({ roleName, id }) => {
+    const role = projectRoleMap?.[roleName];
+    return {
+      label: (
+        <div data-label={role?.label}>
+          <div>{role?.label}</div>
+          <Text type="secondary">{role?.description}</Text>
+        </div>
+      ),
+      name: roleName,
+      value: id,
+    };
+  });
 
   const loadProjects = async () => {
     const res = await getProjectList(false);
@@ -197,9 +230,19 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <Select
             mode="multiple"
+            dropdownMatchSelectWidth={false}
             style={{ width: 240 }}
             options={rolesOptions}
             placeholder="请选择"
+            tagRender={(props) => {
+              const { closable, onClose } = props;
+              const labelText = (props?.label as any)?.props?.['data-label'];
+              return (
+                <Tag closable={closable} onClose={onClose}>
+                  {labelText}
+                </Tag>
+              );
+            }}
           />
         </Form.Item>
         <Form.Item
