@@ -52,7 +52,6 @@ import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 interface IScanFormProps {
   formRef: FormInstance<any>;
   _formRef: FormInstance<any>;
-
   setSensitiveColumns: React.Dispatch<React.SetStateAction<ISensitiveColumn[]>>;
   setFormData: React.Dispatch<React.SetStateAction<Object>>;
   setManageSensitiveRuleDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -91,11 +90,9 @@ const ScanForm = (props: IScanFormProps, ref) => {
     setOriginScanTableData([]);
     setActiveKeys(['0']);
     setSensitiveColumnMap(new Map());
-
     setFormData({});
     setSensitiveColumns([]);
   };
-
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
@@ -198,7 +195,6 @@ const ScanForm = (props: IScanFormProps, ref) => {
       );
       setScanTableData(rawFormData);
       setOriginScanTableData(rawFormData);
-
       const scanTableData = {};
       const newScanTableDataMap = {};
       rawFormData?.forEach(({ dataSource = [], header = {} }) => {
@@ -242,7 +238,6 @@ const ScanForm = (props: IScanFormProps, ref) => {
       }, 500);
     }
   };
-
   const handleScanTableDataDelete = (
     database: string,
     type: string,
@@ -322,7 +317,6 @@ const ScanForm = (props: IScanFormProps, ref) => {
     setScanTableData(checkResult(resData));
     setSensitiveColumnMap(sensitiveColumnMap);
   };
-
   useImperativeHandle(ref, () => {
     return {
       getColumnMap: () => {
@@ -339,7 +333,6 @@ const ScanForm = (props: IScanFormProps, ref) => {
       clearTimeout(timer.current);
     };
   }, [taskId, scanStatus]);
-
   useEffect(() => {
     if (successful && searchText === '') {
       const resData = [];
@@ -408,7 +401,6 @@ const ScanForm = (props: IScanFormProps, ref) => {
     </>
   );
 };
-
 const EmptyOrSpin: React.FC<{
   empty?: boolean;
   isSearch?: boolean;
@@ -419,15 +411,25 @@ const EmptyOrSpin: React.FC<{
 }> = ({ empty = false, isSearch = false, scanLoading, hasScan, percent, successful }) => {
   const gentDescription = () => {
     if (hasScan && isSearch && isSearch) {
-      return '扫描结果中的敏感列不包含搜索内容';
+      return formatMessage({
+        id:
+          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSensitiveColumnsInThe',
+      }); //'扫描结果中的敏感列不包含搜索内容'
     }
     if (hasScan && successful && empty) {
-      return '选中数据库目前暂无可选敏感列';
+      return formatMessage({
+        id:
+          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectingTheDatabaseIsCurrently',
+      }); //'选中数据库目前暂无可选敏感列'
     }
     if (hasScan && !successful) {
-      return '扫描失败';
+      return formatMessage({
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ScanFailure',
+      }); //'扫描失败'
     }
-    return '暂无数据';
+    return formatMessage({
+      id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.NoData',
+    }); //'暂无数据'
   };
   return (
     <div
@@ -640,7 +642,6 @@ const PreviewHeader: React.FC<{
   searchText: string;
   scanTableData: ScanTableData[];
   originScanTableData: ScanTableData[];
-
   onSearch: () => void;
   resetSearch: () => void;
   handleSearchChange: (e: any) => void;
@@ -827,7 +828,6 @@ const EmptyCollapse: React.FC<{
     </Collapse>
   );
 };
-
 const CollapseItemContent: React.FC<{
   activeKeys: string[];
   scanTableData: ScanTableData[];
@@ -897,5 +897,4 @@ const CollapseItemContent: React.FC<{
     </Collapse>
   );
 };
-
 export default forwardRef(ScanForm);

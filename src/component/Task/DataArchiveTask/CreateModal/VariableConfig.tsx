@@ -22,55 +22,85 @@ import type { FormInstance } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
-
 export const timeUnitOptions = [
   {
-    label: '秒',
+    label: formatMessage({
+      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.Second',
+    }), //'秒'
     value: 's',
   },
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points' }), //分
+    label: formatMessage({
+      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points',
+    }),
+    //分
     value: 'm',
   },
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Hours' }), //小时
+    label: formatMessage({
+      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Hours',
+    }),
+    //小时
     value: 'h',
   },
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Day' }), //日
+    label: formatMessage({
+      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Day',
+    }),
+    //日
     value: 'd',
   },
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Zhou' }), //周
+    label: formatMessage({
+      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Zhou',
+    }),
+    //周
     value: 'w',
   },
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Month' }), //月
+    label: formatMessage({
+      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Month',
+    }),
+    //月
     value: 'M',
   },
   {
-    label: formatMessage({ id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Year' }), //年
+    label: formatMessage({
+      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Year',
+    }),
+    //年
     value: 'y',
   },
 ];
-
 const ENABLE_PATTERN_OPERATOR = false;
 const timeFormatOptions = ['yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
   value: item,
 }));
-const operatorOptions = ['+', '-'].map((item) => ({ label: item, value: item }));
+const operatorOptions = ['+', '-'].map((item) => ({
+  label: item,
+  value: item,
+}));
 interface IProps {
   form: FormInstance;
 }
-
 const VariableConfig: React.FC<IProps> = (props) => {
   const variables = Form.useWatch('variables', props.form);
-
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space
+      direction="vertical"
+      style={{
+        width: '100%',
+      }}
+    >
       <Space>
+        {
+          formatMessage({
+            id: 'odc.src.component.Task.DataArchiveTask.CreateModal.CustomVariable',
+          }) /* 
         自定义变量
+         */
+        }
         <span className={styles.desc}>
           <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
             {
@@ -82,24 +112,46 @@ const VariableConfig: React.FC<IProps> = (props) => {
         </span>
       </Space>
       {!!variables?.length && (
-        <Space style={{ width: '100%' }}>
-          <div style={{ width: '194px' }}>
+        <Space
+          style={{
+            width: '100%',
+          }}
+        >
+          <div
+            style={{
+              width: '194px',
+            }}
+          >
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableName',
               }) /*变量名*/
             }
           </div>
-          <div style={{ width: '170px' }}>
+          <div
+            style={{
+              width: '170px',
+            }}
+          >
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeFormat',
               }) /*时间格式*/
             }
           </div>
-          <div style={{ width: '305px' }}>
+          <div
+            style={{
+              width: '305px',
+            }}
+          >
             <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.DataArchiveTask.CreateModal.Shift',
+                }) /* 
               时间偏移
+             */
+              }
             </HelpDoc>
           </div>
         </Space>
@@ -140,8 +192,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
-                                })} /*请选择*/
-                                options={operatorOptions}
+                                })}
+                                /*请选择*/ options={operatorOptions}
                               />
                             </Form.Item>
                             <Form.Item {...restField} name={[name, 'step']}>
@@ -156,18 +208,32 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
-                                })} /*请选择*/
-                                options={timeUnitOptions}
+                                })}
+                                /*请选择*/ options={timeUnitOptions}
                               />
                             </Form.Item>
                             {ENABLE_PATTERN_OPERATOR && (
                               <>
-                                <Tooltip title="添加时间偏移">
+                                <Tooltip
+                                  title={
+                                    formatMessage({
+                                      id:
+                                        'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
+                                    }) /* 添加时间偏移 */
+                                  }
+                                >
                                   <Button type="text" disabled={disabledAdd}>
                                     <PlusOutlined onClick={() => _add()} />
                                   </Button>
                                 </Tooltip>
-                                <Tooltip title="删除时间偏移">
+                                <Tooltip
+                                  title={
+                                    formatMessage({
+                                      id:
+                                        'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
+                                    }) /* 删除时间偏移 */
+                                  }
+                                >
                                   <Button type="text">
                                     <MinusOutlined
                                       onClick={() => {
@@ -193,7 +259,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 </Tooltip>
               </div>
             ))}
-            <Form.Item style={{ width: '100%' }}>
+            <Form.Item
+              style={{
+                width: '100%',
+              }}
+            >
               <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
                 {
                   formatMessage({
@@ -208,5 +278,4 @@ const VariableConfig: React.FC<IProps> = (props) => {
     </Space>
   );
 };
-
 export default VariableConfig;

@@ -114,10 +114,12 @@ export const TaskTypeMap = {
   //无锁结构变更
   [TaskType.DATA_DELETE]: formatMessage({
     id: 'odc.component.TaskTable.DataCleansing',
-  }), //数据清理
-  [TaskType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
+  }),
+  //数据清理
+  [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
+    id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
+  }), //'申请项目权限'
 };
-
 export const getStatusFilters = (status: {
   [key: string]: {
     text: string;
@@ -475,7 +477,8 @@ const TaskTable: React.FC<IProps> = inject(
                     {
                       activeTaskLabel: activeTaskLabel,
                     },
-                  ), //`新建${activeTaskLabel}`
+                  ),
+                  //`新建${activeTaskLabel}`
                   disabled: disabledOpt,
                   isPrimary: true,
                   onClick: () => {

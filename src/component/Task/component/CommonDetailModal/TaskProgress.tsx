@@ -27,7 +27,6 @@ import { useRequest } from 'ahooks';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-
 const getColumns = (params: {
   onOpenDetail: (id: number) => void;
   onSwapTable: (id: number) => void;
@@ -35,7 +34,10 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'resultJson',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.SourceTable' }), //源表
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskProgress.SourceTable',
+      }),
+      //源表
       ellipsis: true,
       render: (resultJson) => {
         return <span>{JSON.parse(resultJson ?? '{}')?.originTableName}</span>;
@@ -43,7 +45,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'status',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.ExecutionStatus' }), //执行状态
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskProgress.ExecutionStatus',
+      }),
+      //执行状态
       ellipsis: true,
       width: 140,
       render: (status, record) => {
@@ -54,7 +59,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'action',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.Operation' }), //操作
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskProgress.Operation',
+      }),
+      //操作
       ellipsis: true,
       width: 120,
       render: (_, record) => {
@@ -66,7 +74,11 @@ const getColumns = (params: {
                 params?.onOpenDetail(record?.id);
               }}
             >
-              {formatMessage({ id: 'odc.component.CommonDetailModal.TaskProgress.View' }) /*查看*/}
+              {
+                formatMessage({
+                  id: 'odc.component.CommonDetailModal.TaskProgress.View',
+                }) /*查看*/
+              }
             </Action.Link>
             {resultJson?.manualSwapTableEnabled && (
               <Action.Link
@@ -74,7 +86,13 @@ const getColumns = (params: {
                   params?.onSwapTable(record?.id);
                 }}
               >
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.CommonDetailModal.WatchNameSwitch',
+                  }) /* 
                 表名切换
+               */
+                }
               </Action.Link>
             )}
           </>
@@ -102,15 +120,17 @@ const TaskProgress: React.FC<IProps> = (props) => {
   );
   const subTask = subTasks?.find((item) => item.id === detailId);
   const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
-
   const handleSwapTable = async (id: number) => {
     const res = await swapTableName(id);
     if (res) {
-      message.success('开始表名切换');
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.component.CommonDetailModal.StartTheNameSwitching',
+        }), //'开始表名切换'
+      );
       loadData();
     }
   };
-
   useEffect(() => {
     loadData();
   }, []);
@@ -121,11 +141,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
     setOpen(true);
     setDetailId(id);
   };
-
   const handleClose = () => {
     setOpen(false);
   };
-
   return (
     <>
       <DisplayTable
@@ -140,7 +158,13 @@ const TaskProgress: React.FC<IProps> = (props) => {
           expandedRowRender: (record) => {
             const resultJson = JSON.parse(record?.resultJson);
             return (
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 8px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '0 8px',
+                }}
+              >
                 <span>
                   {
                     formatMessage({
@@ -180,13 +204,22 @@ const TaskProgress: React.FC<IProps> = (props) => {
         onClose={handleClose}
         open={open}
       >
-        <Space direction="vertical" style={{ display: 'flex' }}>
+        <Space
+          direction="vertical"
+          style={{
+            display: 'flex',
+          }}
+        >
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.component.CommonDetailModal.TaskProgress.NewTableDdl',
-            })} /*新表 DDL*/
-            content={
-              <div style={{ marginTop: '8px' }}>
+            })}
+            /*新表 DDL*/ content={
+              <div
+                style={{
+                  marginTop: '8px',
+                }}
+              >
                 <SQLContent
                   sqlContent={resultJson?.newTableDdl}
                   sqlObjectIds={null}
@@ -204,9 +237,13 @@ const TaskProgress: React.FC<IProps> = (props) => {
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.component.CommonDetailModal.TaskProgress.SourceTableDdl',
-            })} /*源表 DDL*/
-            content={
-              <div style={{ marginTop: '8px' }}>
+            })}
+            /*源表 DDL*/ content={
+              <div
+                style={{
+                  marginTop: '8px',
+                }}
+              >
                 <SQLContent
                   sqlContent={resultJson?.originTableDdl}
                   sqlObjectIds={null}

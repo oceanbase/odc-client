@@ -22,11 +22,9 @@ import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-
 interface IProps {
   tables: ITable[];
 }
-
 const ArchiveRange: React.FC<IProps> = (props) => {
   const { tables } = props;
   const tablesOptions = tables?.map((item) => ({
@@ -36,7 +34,9 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   return (
     <>
       <Form.Item
-        label={formatMessage({ id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningRange' })}
+        label={formatMessage({
+          id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningRange',
+        })}
         /*清理范围*/ name="archiveRange"
         required
       >
@@ -66,21 +66,35 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           return (
             <Space direction="vertical">
               <Space className={styles.infoLabel}>
-                <div style={{ width: '220px' }}>
+                <div
+                  style={{
+                    width: '220px',
+                  }}
+                >
                   {
                     formatMessage({
                       id: 'odc.DataClearTask.CreateModal.ArchiveRange.TableName',
                     }) /*表名*/
                   }
                 </div>
-                <div style={{ width: '460px' }}>
+                <div
+                  style={{
+                    width: '460px',
+                  }}
+                >
                   <Space>
                     {
                       formatMessage({
                         id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
                       }) /*清理条件*/
                     }
-                    <ArchiveRangeTip label="清理" />
+                    <ArchiveRangeTip
+                      label={
+                        formatMessage({
+                          id: 'odc.src.component.Task.DataClearTask.CreateModal.CleanUp',
+                        }) /* 清理 */
+                      }
+                    />
                   </Space>
                 </div>
               </Space>
@@ -110,8 +124,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             showSearch
                             placeholder={formatMessage({
                               id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
-                            })} /*请选择*/
-                            options={tablesOptions}
+                            })}
+                            /*请选择*/ options={tablesOptions}
                             filterOption={(input, option) =>
                               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                             }
@@ -128,7 +142,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
                       </div>
                     ))}
-                    <Form.Item style={{ marginBottom: 0 }}>
+                    <Form.Item
+                      style={{
+                        marginBottom: 0,
+                      }}
+                    >
                       <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                         {
                           formatMessage({
@@ -147,5 +165,4 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     </>
   );
 };
-
 export default ArchiveRange;

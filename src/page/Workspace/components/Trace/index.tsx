@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -26,7 +27,6 @@ import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/
 import { downloadFile, formatTimeTemplatMicroSeconds } from '@/util/utils';
 import { TraceSpan } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-
 export const InfoRender = ({ infos }) => {
   return (
     <Descriptions column={1}>
@@ -134,7 +134,6 @@ const Trace: React.FC<{
         1 || 0
     );
   };
-
   const onSearch = (value: string) => {
     let newInnerTreeData = [];
     if (value) {
@@ -163,17 +162,14 @@ const Trace: React.FC<{
       const resData = await parseTraceTree(rawData?.data);
       // @ts-ignore
       resData.isRoot = true;
-
       const d = parseToTreeData(resData, 0, 0, null, [], 0, true);
       setOriginTreeData(d);
       const newOpenNodes = d
         .filter((_d) => (_d.isParent && _d.isExpand) || _d.isRoot)
         ?.map((_d) => _d.uuid);
-
       setOpenNodes(newOpenNodes);
       setTreeData(d);
       setInnerTreeData(d);
-
       setOriginStartTimestamp(rawData?.data?.startTimestamp);
       setTotalElapseMicroSeconds(rawData?.data?.elapseMicroSeconds);
       setTotalStartTimestamp(resData.startTimestamp);
@@ -184,7 +180,6 @@ const Trace: React.FC<{
     if (open) {
       getTraceData(traceId, sql, session);
     }
-
     return () => {
       setOriginTreeData([]);
       setOpenNodes([]);
@@ -192,7 +187,6 @@ const Trace: React.FC<{
       setInnerTreeData([]);
     };
   }, [open]);
-
   function parseToTreeData(
     node,
     level,
@@ -243,7 +237,6 @@ const Trace: React.FC<{
     }
     return _data_;
   }
-
   async function handleJsonDownload() {
     setDownloadLoading(true);
     const url = await getFullLinkTraceDownloadUrl(session?.sessionId, session?.database?.dbName, {
@@ -259,7 +252,11 @@ const Trace: React.FC<{
     <Drawer
       open={open}
       width={912}
-      title={'全链路 Trace 详情'}
+      title={
+        formatMessage({
+          id: 'odc.src.page.Workspace.components.Trace.FullLinkTraceDetails',
+        }) //'全链路 Trace 详情'
+      }
       destroyOnClose={true}
       onClose={() => setOpen()}
     >
@@ -281,19 +278,35 @@ const Trace: React.FC<{
                 marginLeft: '8px',
               }}
               onCopy={() => {
-                message.success('复制成功');
+                message.success(
+                  formatMessage({
+                    id: 'odc.src.page.Workspace.components.Trace.Replication',
+                  }), //'复制成功'
+                );
               }}
             >
               <CopyOutlined />
             </CopyToClipboard>
           </Col>
           <Col span={8} className={styles.info}>
-            <span className={styles.infoLabel}>开始时间: </span>
+            <span className={styles.infoLabel}>
+              {
+                formatMessage({
+                  id: 'odc.src.page.Workspace.components.Trace.StartingTime',
+                }) /* 开始时间:  */
+              }
+            </span>
             <span className={styles.infoValue}>{originStartTimestamp}</span>
           </Col>
 
           <Col span={4} className={styles.info}>
-            <span className={styles.infoLabel}>持续时间: </span>
+            <span className={styles.infoLabel}>
+              {
+                formatMessage({
+                  id: 'odc.src.page.Workspace.components.Trace.Duration',
+                }) /* 持续时间:  */
+              }
+            </span>
             <span className={styles.infoValue}>
               {formatTimeTemplatMicroSeconds(totalElapseMicroSeconds)}
             </span>
@@ -302,19 +315,56 @@ const Trace: React.FC<{
       </div>
       <div className={styles.optContainer}>
         <Radio.Group value={tabName} onChange={(e) => setTabName(e.target.value)}>
-          <Radio.Button value={TraceTabsType.Trace}>Trace 视图</Radio.Button>
-          <Radio.Button value={TraceTabsType.List}>列表视图</Radio.Button>
+          <Radio.Button value={TraceTabsType.Trace}>
+            {
+              formatMessage({
+                id: 'odc.src.page.Workspace.components.Trace.TraceView',
+              }) /* Trace 视图 */
+            }
+          </Radio.Button>
+          <Radio.Button value={TraceTabsType.List}>
+            {
+              formatMessage({
+                id: 'odc.src.page.Workspace.components.Trace.ListView',
+              }) /* 列表视图 */
+            }
+          </Radio.Button>
         </Radio.Group>
         <div className={styles.rightSide}>
-          <Input.Search style={{ width: '256px' }} placeholder="搜索关键字" onSearch={onSearch} />
+          <Input.Search
+            style={{
+              width: '256px',
+            }}
+            placeholder={
+              formatMessage({
+                id: 'odc.src.page.Workspace.components.Trace.SearchForTheKeyword',
+              }) /* 搜索关键字 */
+            }
+            onSearch={onSearch}
+          />
           <Button loading={downloadLoading} disabled={downloadLoading} onClick={handleJsonDownload}>
+            {
+              formatMessage({
+                id: 'odc.src.page.Workspace.components.Trace.ExportJson',
+              }) /* 
             导出 Json
+           */
+            }
           </Button>
           <Tooltip
             placement="left"
-            title={'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'}
+            title={
+              formatMessage({
+                id: 'odc.src.page.Workspace.components.Trace.ExportTheJSONFileThat',
+              }) //'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'
+            }
           >
-            <QuestionCircleOutlined style={{ marginRight: '8px', cursor: 'pointer' }} />
+            <QuestionCircleOutlined
+              style={{
+                marginRight: '8px',
+                cursor: 'pointer',
+              }}
+            />
           </Tooltip>
         </div>
       </div>
@@ -334,7 +384,6 @@ const Trace: React.FC<{
   );
 };
 export default Trace;
-
 export const combineNodeAndHost = (node?: string, host?: string) => {
   if (node && host) {
     return `${node}, ${host}`;

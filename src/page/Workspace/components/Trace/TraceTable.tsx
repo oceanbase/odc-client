@@ -24,7 +24,6 @@ import { ExpandTraceSpan, InfoRender } from '.';
 import { getIconByNodeType } from './Node';
 import { TraceSpanNode } from '@/d.ts';
 import { formatTimeTemplatMicroSeconds } from '@/util/utils';
-
 const getColorByType = (type: TraceSpanNode) => {
   switch (type) {
     case TraceSpanNode.OBServer: {
@@ -65,12 +64,41 @@ const TraceTable: React.FC<{
             }}
             key={index}
           >
-            <div className={styles.timeStepItem} style={{ left: `${142 * 1}px` }}></div>
-            <div className={styles.timeStepItem} style={{ left: `${143 * 2}px` }}></div>
-            <div className={styles.timeStepItem} style={{ left: `${143 * 3 + 1}px` }}></div>
-            <div className={styles.timeStepItem} style={{ left: `${143 * 4 + 3}px` }}></div>
-            <div className={styles.progressBar} style={{ color: 'var(--text-color-primary)' }}>
-              <div style={{ width: `${other * 100}%` }}></div>
+            <div
+              className={styles.timeStepItem}
+              style={{
+                left: `${142 * 1}px`,
+              }}
+            ></div>
+            <div
+              className={styles.timeStepItem}
+              style={{
+                left: `${143 * 2}px`,
+              }}
+            ></div>
+            <div
+              className={styles.timeStepItem}
+              style={{
+                left: `${143 * 3 + 1}px`,
+              }}
+            ></div>
+            <div
+              className={styles.timeStepItem}
+              style={{
+                left: `${143 * 4 + 3}px`,
+              }}
+            ></div>
+            <div
+              className={styles.progressBar}
+              style={{
+                color: 'var(--text-color-primary)',
+              }}
+            >
+              <div
+                style={{
+                  width: `${other * 100}%`,
+                }}
+              ></div>
               <Popover
                 overlayClassName={styles.tracePopover}
                 content={
@@ -82,10 +110,17 @@ const TraceTable: React.FC<{
                     <InfoRender
                       infos={[
                         {
-                          title: '节点',
+                          title: formatMessage({
+                            id: 'odc.src.page.Workspace.components.Trace.Node.2',
+                          }), //'节点'
                           render: () => (
                             <div className={styles.nodeTitle}>
-                              <div style={{ width: '14px', height: '14px' }}>
+                              <div
+                                style={{
+                                  width: '14px',
+                                  height: '14px',
+                                }}
+                              >
                                 {getIconByNodeType(node?.node)}
                               </div>
                               {node?.node} {node?.host}
@@ -104,7 +139,11 @@ const TraceTable: React.FC<{
                                   marginLeft: '8px',
                                 }}
                                 onCopy={() => {
-                                  message.success('复制成功');
+                                  message.success(
+                                    formatMessage({
+                                      id: 'odc.src.page.Workspace.components.Trace.Replication.2',
+                                    }), //'复制成功'
+                                  );
                                 }}
                               >
                                 <CopyOutlined />
@@ -113,22 +152,34 @@ const TraceTable: React.FC<{
                           ),
                         },
                         {
-                          title: '开始时间',
+                          title: formatMessage({
+                            id: 'odc.src.page.Workspace.components.Trace.StartingTime.3',
+                          }), //'开始时间'
                           render: () => node?.originStartTimestamp,
                         },
                         {
-                          title: '结束时间',
+                          title: formatMessage({
+                            id: 'odc.src.page.Workspace.components.Trace.EndTime.1',
+                          }), //'结束时间'
                           render: () => node?.originEndTimestamp,
                         },
                         {
-                          title: '耗时',
+                          title: formatMessage({
+                            id: 'odc.src.page.Workspace.components.Trace.TimeConsuming.2',
+                          }), //'耗时'
                           render: () => formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds),
                         },
                       ]}
                     />
                     {node?.tags && node?.tags?.length && (
                       <>
-                        <div style={{ margin: '8px 0px' }}>Tags</div>
+                        <div
+                          style={{
+                            margin: '8px 0px',
+                          }}
+                        >
+                          Tags
+                        </div>
                         <DisplayTable
                           bordered={true}
                           expandable={{
@@ -166,7 +217,6 @@ const TraceTable: React.FC<{
                     width: percent > 0 ? `${percent * 100}%` : '0px',
                     height: '14px',
                     lineHeight: '14px',
-
                     backgroundColor: `${getColorByType(node.node)}`,
                   }}
                   className={styles.traceBar}
@@ -188,10 +238,17 @@ const TraceTable: React.FC<{
                       <InfoRender
                         infos={[
                           {
-                            title: '节点',
+                            title: formatMessage({
+                              id: 'odc.src.page.Workspace.components.Trace.Node.3',
+                            }), //'节点'
                             render: () => (
                               <div className={styles.nodeTitle}>
-                                <div style={{ width: '14px', height: '14px' }}>
+                                <div
+                                  style={{
+                                    width: '14px',
+                                    height: '14px',
+                                  }}
+                                >
                                   {getIconByNodeType(node?.node)}
                                 </div>
                                 {node?.node} {node?.host}
@@ -210,7 +267,11 @@ const TraceTable: React.FC<{
                                     marginLeft: '8px',
                                   }}
                                   onCopy={() => {
-                                    message.success('复制成功');
+                                    message.success(
+                                      formatMessage({
+                                        id: 'odc.src.page.Workspace.components.Trace.Replication.3',
+                                      }), //'复制成功'
+                                    );
                                   }}
                                 >
                                   <CopyOutlined />
@@ -219,22 +280,34 @@ const TraceTable: React.FC<{
                             ),
                           },
                           {
-                            title: '开始时间',
+                            title: formatMessage({
+                              id: 'odc.src.page.Workspace.components.Trace.StartingTime.4',
+                            }), //'开始时间'
                             render: () => node?.originStartTimestamp,
                           },
                           {
-                            title: '结束时间',
+                            title: formatMessage({
+                              id: 'odc.src.page.Workspace.components.Trace.EndTime.2',
+                            }), //'结束时间'
                             render: () => node?.originEndTimestamp,
                           },
                           {
-                            title: '耗时',
+                            title: formatMessage({
+                              id: 'odc.src.page.Workspace.components.Trace.TimeConsuming.3',
+                            }), //'耗时'
                             render: () => formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds),
                           },
                         ]}
                       />
                       {node?.tags && (
                         <>
-                          <div style={{ margin: '8px 0px' }}>Tags</div>
+                          <div
+                            style={{
+                              margin: '8px 0px',
+                            }}
+                          >
+                            Tags
+                          </div>
                           <DisplayTable
                             bordered={true}
                             expandable={{
@@ -267,7 +340,11 @@ const TraceTable: React.FC<{
                   }
                   title={node?.title}
                 >
-                  <div style={{ cursor: 'pointer' }}>
+                  <div
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                  >
                     {' '}
                     {percent + other < 0.9
                       ? formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds)
@@ -278,8 +355,13 @@ const TraceTable: React.FC<{
                 <div
                   style={
                     percent + other < 0.9
-                      ? { marginLeft: '2px', cursor: 'pointer' }
-                      : { cursor: 'pointer' }
+                      ? {
+                          marginLeft: '2px',
+                          cursor: 'pointer',
+                        }
+                      : {
+                          cursor: 'pointer',
+                        }
                   }
                 >
                   {percent + other < 0.9

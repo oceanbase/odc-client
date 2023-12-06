@@ -44,7 +44,6 @@ export const isCycleTaskPage = (type: TaskPageType) => {
     type,
   );
 };
-
 interface ITaskGroupLabel {
   groupName: string;
   icon?: React.ReactNode;
@@ -54,7 +53,6 @@ interface ITaskGroupLabel {
     enabled: boolean;
   }[];
 }
-
 export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
   const isPersonal = login?.isPrivateSpace();
   return [
@@ -62,7 +60,9 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
       groupName: '',
       group: [
         {
-          label: '所有工单',
+          label: formatMessage({
+            id: 'odc.src.component.Task.AllWorkOrders',
+          }), //'所有工单'
           value: TaskPageType.ALL,
           enabled: !isClient(),
         },
@@ -100,7 +100,8 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.EXPORT_RESULT_SET,
           label: formatMessage({
             id: 'odc.src.component.Task.ExportResultSet',
-          }), //'导出结果集'
+          }),
+          //'导出结果集'
           enabled: settingStore.enableDBExport,
         },
       ],
@@ -193,11 +194,15 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
       ],
     },
     {
-      groupName: '权限申请',
+      groupName: formatMessage({
+        id: 'odc.src.component.Task.AccessRequest',
+      }), //'权限申请'
       group: [
         {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
-          label: '申请项目权限',
+          label: formatMessage({
+            id: 'odc.src.component.Task.ApplicationProjectPermissions',
+          }), //'申请项目权限'
           enabled: !isClient() && !isPersonal,
         },
       ],
@@ -218,11 +223,9 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
 export function getTaskLabels() {
   return flatten(getTaskGroupLabels()?.map((item) => item?.group));
 }
-
 export function getFirstEnabledTask() {
   return getTaskLabels()?.find((item) => item?.enabled);
 }
-
 export function getTaskLabelByType(type: TaskPageType) {
   return getTaskLabels()?.find((item) => item.value === type)?.label;
 }

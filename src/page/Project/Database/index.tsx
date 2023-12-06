@@ -56,24 +56,18 @@ const Database: React.FC<IProps> = ({ id }) => {
   const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
-
   const [data, setData] = useState<IDatabase[]>([]);
-
   const [visible, setVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
-
   const params = useRef({
     pageSize: 0,
     current: 0,
     environmentId: null,
   });
-
   const { data: envList } = useRequest(listEnvironments);
-
   useEffect(() => {
     tracert.expo('a3112.b64002.c330858');
   }, []);
-
   const loadData = async (pageSize, current, environmentId, name: string = searchValue) => {
     params.current.pageSize = pageSize;
     params.current.current = current;
@@ -84,11 +78,9 @@ const Database: React.FC<IProps> = ({ id }) => {
       setTotal(res?.page?.totalElements);
     }
   };
-
   function reload(name: string = searchValue) {
     loadData(params.current.pageSize, params.current.current, params.current.environmentId, name);
   }
-
   const handleMenuClick = (type: TaskPageType, databaseId: number) => {
     switch (type) {
       case TaskPageType.IMPORT:
@@ -109,7 +101,6 @@ const Database: React.FC<IProps> = ({ id }) => {
       default:
     }
   };
-
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
@@ -122,8 +113,10 @@ const Database: React.FC<IProps> = ({ id }) => {
             }}
             placeholder={formatMessage({
               id: 'odc.Project.Database.SearchDatabase',
-            })} /*搜索数据库*/
-            style={{ width: 200 }}
+            })}
+            /*搜索数据库*/ style={{
+              width: 200,
+            }}
           />
 
           <FilterIcon onClick={() => reload()}>
@@ -139,7 +132,10 @@ const Database: React.FC<IProps> = ({ id }) => {
         }}
         columns={[
           {
-            title: formatMessage({ id: 'odc.Project.Database.DatabaseName' }), //数据库名称
+            title: formatMessage({
+              id: 'odc.Project.Database.DatabaseName',
+            }),
+            //数据库名称
             dataIndex: 'name',
             fixed: 'left',
             ellipsis: true,
@@ -179,7 +175,10 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
+            title: formatMessage({
+              id: 'odc.Project.Database.DataSource',
+            }),
+            //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
             ellipsis: true,
@@ -192,7 +191,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                 <>
                   <Icon
                     component={style?.icon?.component}
-                    style={{ color: style?.icon?.color, fontSize: 16, marginRight: 4 }}
+                    style={{
+                      color: style?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
                   />
                   <span title={value}>{value}</span>
                 </>
@@ -200,7 +203,10 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.Environment' }), //环境
+            title: formatMessage({
+              id: 'odc.Project.Database.Environment',
+            }),
+            //环境
             dataIndex: 'environmentId',
             filters: envList?.map((env) => {
               return {
@@ -220,18 +226,27 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
+            title: formatMessage({
+              id: 'odc.Project.Database.CharacterEncoding',
+            }),
+            //字符编码
             dataIndex: 'charsetName',
             width: 120,
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
+            title: formatMessage({
+              id: 'odc.Project.Database.SortingRules',
+            }),
+            //排序规则
             dataIndex: 'collationName',
             width: 120,
             ellipsis: true,
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.LastSynchronizationTime' }), //上一次同步时间
+            title: formatMessage({
+              id: 'odc.Project.Database.LastSynchronizationTime',
+            }),
+            //上一次同步时间
             dataIndex: 'lastSyncTime',
             width: 170,
             render(v) {
@@ -239,7 +254,10 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.Operation' }), //操作
+            title: formatMessage({
+              id: 'odc.Project.Database.Operation',
+            }),
+            //操作
             dataIndex: 'name',
             width: 200,
             render(_, record) {
@@ -262,7 +280,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }}
                       disabled={disabled}
                     >
-                      {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
+                      {
+                        formatMessage({
+                          id: 'odc.Project.Database.Export',
+                        }) /*导出*/
+                      }
                     </Action.Link>
                   )}
                   {config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && (
@@ -274,7 +296,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }}
                       disabled={disabled}
                     >
-                      {formatMessage({ id: 'odc.Project.Database.Import' }) /*导入*/}
+                      {
+                        formatMessage({
+                          id: 'odc.Project.Database.Import',
+                        }) /*导入*/
+                      }
                     </Action.Link>
                   )}
                   <Action.Link
@@ -285,7 +311,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                     }}
                     disabled={disabled}
                   >
-                    {formatMessage({ id: 'odc.Project.Database.DatabaseChanges' }) /*数据库变更*/}
+                    {
+                      formatMessage({
+                        id: 'odc.Project.Database.DatabaseChanges',
+                      }) /*数据库变更*/
+                    }
                   </Action.Link>
                   <Action.Link
                     key={'login'}
@@ -313,11 +343,19 @@ const Database: React.FC<IProps> = ({ id }) => {
                     <Tooltip
                       title={
                         !!record?.dataSource?.projectId
-                          ? `所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
+                          ? formatMessage({
+                              id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                            }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
                           : null
                       }
                     >
+                      {
+                        formatMessage({
+                          id: 'odc.src.page.Project.Database.ModifyTheProject',
+                        }) /* 
                       修改所属项目
+                     */
+                      }
                     </Tooltip>
                   </Action.Link>
                 </Action.Group>
@@ -349,5 +387,4 @@ const Database: React.FC<IProps> = ({ id }) => {
     </TableCard>
   );
 };
-
 export default Database;

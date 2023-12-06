@@ -1,11 +1,14 @@
+import { formatMessage } from '@/util/intl';
 import { Select, SelectProps } from 'antd';
-
 export default function ProjectSelect({ value, onChange, options, ...rest }: SelectProps) {
   value = value || -999;
   options = []
     .concat([
       {
-        label: '不绑定项目',
+        label: formatMessage({
+          id:
+            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonBindingProject',
+        }), //'不绑定项目'
         value: -999,
       },
     ])

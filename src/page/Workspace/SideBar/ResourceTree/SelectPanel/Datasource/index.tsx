@@ -30,7 +30,6 @@ import {
   TreeDataNode,
 } from 'antd';
 import ResourceLayout from '../../Layout';
-
 import { batchTest, deleteConnection } from '@/common/network/connection';
 import { useUnmountedRef, useUpdate } from 'ahooks';
 import {
@@ -43,7 +42,6 @@ import {
   useState,
 } from 'react';
 import styles from './index.less';
-
 import Action from '@/component/Action';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
@@ -58,7 +56,6 @@ import classNames from 'classnames';
 import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
 import { EnvColorMap } from '@/constant';
 import { useDataSourceStatus } from './useDataSourceStatus';
-
 interface IProps {
   filters: {
     envs: number[];
@@ -66,7 +63,6 @@ interface IProps {
   };
   closeSelectPanel: () => void;
 }
-
 export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }: IProps, ref) {
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [copyDatasourceId, setCopyDatasourceId] = useState<number>(null);
@@ -76,19 +72,15 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
   console.log('wrapperHeight', wrapperHeight);
   const treeWrapperRef = useRef<HTMLDivElement>();
   const { fetchStatus, statusMap, reload } = useDataSourceStatus();
-
   const context = useContext(ResourceTreeContext);
   let { datasourceList } = context;
-
   datasourceList = useMemo(() => {
     return datasourceList?.filter((item) => !item.temp);
   }, [datasourceList]);
-
   const selectKeys = [context.selectDatasourceId].filter(Boolean);
   function setSelectKeys(keys) {
     return context.setSelectDatasourceId(keys?.[0]);
   }
-
   useEffect(() => {
     const resizeHeight = throttle(() => {
       setWrapperHeight(treeWrapperRef?.current?.offsetHeight);
@@ -99,7 +91,6 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
       window.removeEventListener('resize', resizeHeight);
     };
   }, []);
-
   useEffect(() => {
     /**
      * 获取数据源状态
@@ -108,7 +99,6 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
       reload();
     }
   }, [datasourceList]);
-
   useImperativeHandle(
     ref,
     () => {
@@ -120,7 +110,6 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
     },
     [context],
   );
-
   const datasource: TreeDataNode[] = useMemo(() => {
     return datasourceList
       ?.map((item) => {
@@ -140,7 +129,12 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
           return null;
         }
         const status = statusMap?.[item.id];
-        item = status ? { ...item, status } : item;
+        item = status
+          ? {
+              ...item,
+              status,
+            }
+          : item;
         return {
           title: item.name,
           selectable: login.isPrivateSpace()
@@ -152,7 +146,6 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
       })
       .filter(Boolean);
   }, [datasourceList, searchKey, statusMap, filters?.envs, filters?.connectTypes]);
-
   const datasourceMap = useMemo(() => {
     const map = new Map<number, IDatasource>();
     datasourceList?.forEach((c) => {
@@ -160,15 +153,17 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
     });
     return map;
   }, [datasourceList]);
-
   function deleteDataSource(name: string, key: string) {
     Modal.confirm({
       title: formatMessage(
         {
           id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
         },
-        { name: name },
-      ), //`确认删除数据源 ${name}?`
+        {
+          name: name,
+        },
+      ),
+      //`确认删除数据源 ${name}?`
       async onOk() {
         const isSuccess = await deleteConnection(key as any);
         if (isSuccess) {
@@ -177,6 +172,7 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
               id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
             }), //删除成功
           );
+
           if (selectKeys.includes(toInteger(key))) {
             setSelectKeys([]);
           }
@@ -197,8 +193,12 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
               allowClear
               placeholder={formatMessage({
                 id: 'odc.ResourceTree.Datasource.SearchForDataSources',
-              })} /*搜索数据源*/
-              style={{ width: '100%', flexGrow: 1, flexShrink: 1 }}
+              })}
+              /*搜索数据源*/ style={{
+                width: '100%',
+                flexGrow: 1,
+                flexShrink: 1,
+              }}
               size="small"
             />
             {login.isPrivateSpace() ? (
@@ -248,7 +248,10 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                             menu={{
                               items: [
                                 {
-                                  label: '克隆',
+                                  label: formatMessage({
+                                    id:
+                                      'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+                                  }), //'克隆'
                                   key: 'clone',
                                   onClick: (e) => {
                                     e.domEvent?.stopPropagation();
@@ -258,7 +261,8 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                                 {
                                   label: formatMessage({
                                     id: 'odc.ResourceTree.Datasource.Edit',
-                                  }), //编辑
+                                  }),
+                                  //编辑
                                   key: 'edit',
                                   onClick: (e) => {
                                     e.domEvent?.stopPropagation();
@@ -269,7 +273,8 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                                 {
                                   label: formatMessage({
                                     id: 'odc.ResourceTree.Datasource.Delete',
-                                  }), //删除
+                                  }),
+                                  //删除
                                   key: 'delete',
                                   onClick: (e) => {
                                     e.domEvent?.stopPropagation();
@@ -302,7 +307,14 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                                   }}
                                   key={'clone'}
                                 >
+                                  {
+                                    formatMessage({
+                                      id:
+                                        'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                    }) /* 
                                   克隆
+                                 */
+                                  }
                                 </Action.Link>
                                 <Action.Link
                                   onClick={() => {
@@ -311,7 +323,9 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                                   }}
                                   key={'edit'}
                                 >
-                                  {formatMessage({ id: 'odc.ResourceTree.Datasource.Edit' })}
+                                  {formatMessage({
+                                    id: 'odc.ResourceTree.Datasource.Edit',
+                                  })}
                                 </Action.Link>
                                 <Action.Link
                                   onClick={() =>
@@ -319,7 +333,9 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                                   }
                                   key={'delete'}
                                 >
-                                  {formatMessage({ id: 'odc.ResourceTree.Datasource.Delete' })}
+                                  {formatMessage({
+                                    id: 'odc.ResourceTree.Datasource.Delete',
+                                  })}
                                 </Action.Link>
                               </Action.Group>
                             </div>

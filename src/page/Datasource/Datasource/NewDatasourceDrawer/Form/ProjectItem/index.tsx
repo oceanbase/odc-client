@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { listProjects } from '@/common/network/project';
 import { useRequest } from 'ahooks';
 import { Alert, Form, Space, Tooltip } from 'antd';
@@ -6,9 +7,7 @@ import DatasourceFormContext from '../context';
 import ProjectSelect from './ProjectSelect';
 import { ProjectRole } from '@/d.ts/project';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-
 interface IProps {}
-
 const ProjectItem: React.FC<IProps> = function () {
   const context = useContext(DatasourceFormContext);
   const projectId = Form.useWatch('projectId', context.form);
@@ -27,21 +26,35 @@ const ProjectItem: React.FC<IProps> = function () {
     if (projectId) {
       return (
         <Alert
-          style={{ marginTop: -8 }}
+          style={{
+            marginTop: -8,
+          }}
           showIcon
           icon={icon}
           type="error"
-          message="修改项目后，此数据源下的所有数据库将绑定新的项目"
+          message={
+            formatMessage({
+              id:
+                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterModifyingTheProject',
+            }) /* 修改项目后，此数据源下的所有数据库将绑定新的项目 */
+          }
         />
       );
     }
     return (
       <Alert
-        style={{ marginTop: -8 }}
+        style={{
+          marginTop: -8,
+        }}
         showIcon
         icon={icon}
         type="error"
-        message="不绑定项目后，此数据源下的所有数据库将从原项目中移出"
+        message={
+          formatMessage({
+            id:
+              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterTheProjectIsNot',
+          }) /* 不绑定项目后，此数据源下的所有数据库将从原项目中移出 */
+        }
       />
     );
   }, [context?.isEdit, context?.originDatasource, projectId]);
@@ -64,7 +77,10 @@ const ProjectItem: React.FC<IProps> = function () {
             !item.currentUserResourceRoles?.includes(ProjectRole.DBA) &&
             !item.currentUserResourceRoles?.includes(ProjectRole.OWNER)
           ) {
-            disabledInfo = '非项目管理员或 DBA，无法将数据源加入此项目';
+            disabledInfo = formatMessage({
+              id:
+                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonProjectAdministratorsOr',
+            }); //'非项目管理员或 DBA，无法将数据源加入此项目'
           }
           return {
             label: (
@@ -83,9 +99,18 @@ const ProjectItem: React.FC<IProps> = function () {
     <Space direction="vertical" size={1}>
       <Form.Item
         name={'projectId'}
-        label="项目"
+        label={
+          formatMessage({
+            id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.Project',
+          }) /* 项目 */
+        }
         requiredMark={false}
-        extra={'绑定项目后，数据源内的所有数据库将移入此项目'}
+        extra={
+          formatMessage({
+            id:
+              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterBindingTheProject',
+          }) //'绑定项目后，数据源内的所有数据库将移入此项目'
+        }
       >
         <ProjectSelect
           loading={loading}
@@ -101,5 +126,4 @@ const ProjectItem: React.FC<IProps> = function () {
     </Space>
   );
 };
-
 export default ProjectItem;

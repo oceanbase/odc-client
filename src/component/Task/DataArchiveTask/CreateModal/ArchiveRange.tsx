@@ -22,13 +22,10 @@ import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-
 const { Text } = Typography;
-
 interface IProps {
   tables: ITable[];
 }
-
 const ArchiveRange: React.FC<IProps> = (props) => {
   const { tables } = props;
   const tablesOptions = tables?.map((item) => ({
@@ -38,7 +35,9 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   return (
     <>
       <Form.Item
-        label={formatMessage({ id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveScope' })}
+        label={formatMessage({
+          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveScope',
+        })}
         /*归档范围*/ name="archiveRange"
         required
       >
@@ -68,8 +67,22 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           return (
             <Space direction="vertical">
               <Space className={styles.infoLabel}>
-                <div style={{ width: '220px' }}>归档表</div>
-                <div style={{ width: '460px' }}>
+                <div
+                  style={{
+                    width: '220px',
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.ArchiveTable',
+                    }) /* 归档表 */
+                  }
+                </div>
+                <div
+                  style={{
+                    width: '460px',
+                  }}
+                >
                   <Space>
                     <span>
                       {
@@ -85,7 +98,13 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         }) /*(可选)*/
                       }
                     </Text>
-                    <ArchiveRangeTip label="归档" />
+                    <ArchiveRangeTip
+                      label={
+                        formatMessage({
+                          id: 'odc.src.component.Task.DataArchiveTask.CreateModal.Archive',
+                        }) /* 归档 */
+                      }
+                    />
                   </Space>
                 </div>
               </Space>
@@ -105,7 +124,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           rules={[
                             {
                               required: true,
-                              message: '请选择表',
+                              message: formatMessage({
+                                id:
+                                  'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectTheTable',
+                              }), //'请选择表'
                             },
                           ]}
                         >
@@ -113,8 +135,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             showSearch
                             placeholder={formatMessage({
                               id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
-                            })} /*请选择*/
-                            options={tablesOptions}
+                            })}
+                            /*请选择*/ options={tablesOptions}
                             filterOption={(input, option) =>
                               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                             }
@@ -131,7 +153,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
                       </div>
                     ))}
-                    <Form.Item style={{ marginBottom: 0 }}>
+                    <Form.Item
+                      style={{
+                        marginBottom: 0,
+                      }}
+                    >
                       <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                         {
                           formatMessage({
@@ -150,5 +176,4 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     </>
   );
 };
-
 export default ArchiveRange;

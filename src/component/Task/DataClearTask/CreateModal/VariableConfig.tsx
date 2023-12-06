@@ -24,7 +24,6 @@ import { variable } from './index';
 import styles from './index.less';
 import { timeUnitOptions } from '../../DataArchiveTask/CreateModal/VariableConfig';
 const ENABLE_PATTERN_OPERATOR = false;
-
 const timeFormatOptions = ['yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
   value: item,
@@ -36,22 +35,31 @@ const operatorOptions = ['+', '-'].map((item) => ({
 interface IProps {
   form: FormInstance;
 }
-
 interface IProps {}
 const VariableConfig: React.FC<IProps> = (props) => {
   const variables = Form.useWatch('variables', props.form);
-
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space
+      direction="vertical"
+      style={{
+        width: '100%',
+      }}
+    >
       <Space>
+        {
+          formatMessage({
+            id: 'odc.src.component.Task.DataClearTask.CreateModal.CustomVariable',
+          }) /* 
         自定义变量
+         */
+        }
         <span className={styles.desc}>
           <HelpDoc leftText isTip doc="dataClearVariablesDoc">
             {
               formatMessage({
                 id: 'odc.src.component.Task.DataClearTask.CreateModal.VariablesCanBeReferencedIn',
               }) /* 
-              变量可在清理范围的清理条件中引用 (可选)
+             变量可在清理范围的清理条件中引用 (可选)
              */
             }
           </HelpDoc>
@@ -87,7 +95,13 @@ const VariableConfig: React.FC<IProps> = (props) => {
             }}
           >
             <HelpDoc leftText isTip doc="dataArchiveTimeDoc">
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.DataClearTask.CreateModal.Shift',
+                }) /* 
               时间偏移
+             */
+              }
             </HelpDoc>
           </div>
         </Space>
@@ -183,7 +197,11 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <DeleteOutlined onClick={() => remove(name)} />
               </div>
             ))}
-            <Form.Item style={{ width: '100%' }}>
+            <Form.Item
+              style={{
+                width: '100%',
+              }}
+            >
               <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
                 {
                   formatMessage({

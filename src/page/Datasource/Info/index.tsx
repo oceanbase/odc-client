@@ -41,17 +41,13 @@ interface IProps {
 const Info: React.FC<IProps> = ({ id, datasource }) => {
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
-
   const [visible, setVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
-
   const lastParams = useRef({
     pageSize: 0,
     current: 0,
   });
-
   const [data, setData] = useState<IDatabase[]>([]);
-
   const loadData = async (pageSize, current, name: string = searchValue) => {
     lastParams.current.pageSize = pageSize;
     lastParams.current.current = current;
@@ -61,43 +57,42 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
       setTotal(res?.page?.totalElements);
     }
   };
-
   const { loading: deleteLoading, run: runDeleteDB } = useRequest(deleteDatabase, {
     manual: true,
   });
-
   const { loading: syncLoading, run: runSync } = useRequest(syncDatasource, {
     manual: true,
   });
-
   function reload(name: string = searchValue) {
     loadData(lastParams?.current?.pageSize, lastParams?.current?.current, name);
   }
-
   async function deleteDB(id: number) {
     const isSuccess = await runDeleteDB([id]);
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.Datasource.Info.DeletedSuccessfully' }), //删除成功
+        formatMessage({
+          id: 'odc.Datasource.Info.DeletedSuccessfully',
+        }), //删除成功
       );
+
       reload();
     }
   }
-
   async function sync() {
     const isSuccess = await runSync(toInteger(id));
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.Datasource.Info.SynchronizationSucceeded' }), //同步成功
+        formatMessage({
+          id: 'odc.Datasource.Info.SynchronizationSucceeded',
+        }), //同步成功
       );
+
       reload();
     }
   }
-
   const canCreate = datasource?.permittedActions?.includes(actionTypes.create);
   const canDelete = datasource?.permittedActions?.includes(actionTypes.delete);
   const canUpdate = datasource?.permittedActions?.includes(actionTypes.update);
-
   return (
     <TableCard
       title={
@@ -112,7 +107,11 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             />
 
             <Button loading={syncLoading} onClick={sync}>
-              {formatMessage({ id: 'odc.Datasource.Info.SynchronizeDatabases' }) /*同步数据库*/}
+              {
+                formatMessage({
+                  id: 'odc.Datasource.Info.SynchronizeDatabases',
+                }) /*同步数据库*/
+              }
             </Button>
           </Space>
         )
@@ -124,8 +123,12 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               setSearchValue(v);
               reload(v);
             }}
-            placeholder={formatMessage({ id: 'odc.Datasource.Info.SearchDatabase' })} /*搜索数据库*/
-            style={{ width: 200 }}
+            placeholder={formatMessage({
+              id: 'odc.Datasource.Info.SearchDatabase',
+            })}
+            /*搜索数据库*/ style={{
+              width: 200,
+            }}
           />
 
           <Reload onClick={() => reload()} />
@@ -136,7 +139,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
         rowKey={'id'}
         columns={[
           {
-            title: formatMessage({ id: 'odc.Datasource.Info.DatabaseName' }), //数据库名称
+            title: formatMessage({
+              id: 'odc.Datasource.Info.DatabaseName',
+            }),
+            //数据库名称
             dataIndex: 'name',
             render: (name, record) => {
               if (!record.existed) {
@@ -156,17 +162,26 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Datasource.Info.CharacterEncoding' }), //字符编码
+            title: formatMessage({
+              id: 'odc.Datasource.Info.CharacterEncoding',
+            }),
+            //字符编码
             dataIndex: 'charsetName',
             width: 120,
           },
           {
-            title: formatMessage({ id: 'odc.Datasource.Info.SortingRules' }), //排序规则
+            title: formatMessage({
+              id: 'odc.Datasource.Info.SortingRules',
+            }),
+            //排序规则
             dataIndex: 'collationName',
             width: 120,
           },
           {
-            title: formatMessage({ id: 'odc.Datasource.Info.Project' }), //所属项目
+            title: formatMessage({
+              id: 'odc.Datasource.Info.Project',
+            }),
+            //所属项目
             dataIndex: ['project', 'name'],
             width: 160,
             render(value, record, index) {
@@ -174,20 +189,35 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               const innerSchema =
                 getDataSourceModeConfig(record.dataSource?.type)?.schema?.innerSchema || [];
               const isInnerSchema = innerSchema.includes(record?.name);
-              let tip = '修改所属项目';
+              let tip = formatMessage({
+                id: 'odc.src.page.Datasource.Info.ModifyTheProject',
+              }); //'修改所属项目'
               let editable = true;
               if (isInnerSchema) {
                 editable = true;
               } else if (bindProjectName) {
-                tip = `当前数据源所属项目 ${bindProjectName}，无法修改。可通过编辑数据源修改所属项目`;
+                tip = formatMessage(
+                  {
+                    id: 'odc.src.page.Datasource.Info.TheCurrentDataSourceProject',
+                  },
+                  {
+                    bindProjectName: bindProjectName,
+                  },
+                ); //`当前数据源所属项目 ${bindProjectName}，无法修改。可通过编辑数据源修改所属项目`
                 editable = false;
               } else if (!canUpdate) {
-                tip = '无当前数据源权限';
+                tip = formatMessage({
+                  id: 'odc.src.page.Datasource.Info.NoCurrentDataSourcePermissions',
+                }); //'无当前数据源权限'
                 editable = false;
               }
               return (
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
                 >
                   <div
                     style={{
@@ -198,7 +228,12 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {value || '未分配项目'}
+                    {
+                      value ||
+                        formatMessage({
+                          id: 'odc.src.page.Datasource.Info.UnpabledItems',
+                        }) //'未分配项目'
+                    }
                   </div>
                   <Tooltip title={tip}>
                     <a
@@ -215,7 +250,12 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                         setDatabase(record);
                       }}
                     >
-                      <Icon component={EditOutlined} style={{ fontSize: 14 }} />
+                      <Icon
+                        component={EditOutlined}
+                        style={{
+                          fontSize: 14,
+                        }}
+                      />
                     </a>
                   </Tooltip>
                 </div>
@@ -223,7 +263,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Datasource.Info.LastSynchronizationTime' }), //最近一次同步时间
+            title: formatMessage({
+              id: 'odc.Datasource.Info.LastSynchronizationTime',
+            }),
+            //最近一次同步时间
             dataIndex: 'lastSyncTime',
             width: 200,
             render(v) {
@@ -231,7 +274,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Datasource.Info.Operation' }), //操作
+            title: formatMessage({
+              id: 'odc.Datasource.Info.Operation',
+            }),
+            //操作
             dataIndex: 'name',
             width: 110,
             render(_, record) {
@@ -241,14 +287,18 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                     <Popconfirm
                       title={formatMessage({
                         id: 'odc.Datasource.Info.AreYouSureYouWant',
-                      })} /*确认删除吗？*/
-                      disabled={record.existed}
+                      })}
+                      /*确认删除吗？*/ disabled={record.existed}
                       onConfirm={() => {
                         return deleteDB(record.id);
                       }}
                     >
                       <Action.Link disabled={record.existed} key={'delete'}>
-                        {formatMessage({ id: 'odc.Datasource.Info.Delete' }) /*删除*/}
+                        {
+                          formatMessage({
+                            id: 'odc.Datasource.Info.Delete',
+                          }) /*删除*/
+                        }
                       </Action.Link>
                     </Popconfirm>
                   )}
@@ -277,5 +327,4 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
     </TableCard>
   );
 };
-
 export default Info;

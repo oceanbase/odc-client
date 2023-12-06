@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -16,43 +17,93 @@
 
 import { Space, Typography, Popover } from 'antd';
 import styles from './index.less';
-
 const { Text, Link } = Typography;
-
 const example1 = 'create_time<’2023-01-01’';
-const example2 = '过滤条件：create_time<‘${bizdate}’';
-
+const example2 = formatMessage({
+  id: 'odc.src.component.Task.component.ArchiveRangeTip.FilterConditionCreateTime',
+}); //'过滤条件：create_time<‘${bizdate}’'
 const Content: React.FC<{
   label: string;
 }> = ({ label }) => {
   return (
     <Space direction="vertical" size={20}>
       <Space direction="vertical" size={5}>
-        <Text>如选择{label} 2023 年 01 月 01 日前的数据，可设置：</Text>
+        <Text>
+          {
+            formatMessage({
+              id: 'odc.src.component.Task.component.ArchiveRangeTip.SuchAsChoice',
+            }) /* 如选择 */
+          }
+          {label}
+          {
+            formatMessage({
+              id: 'odc.src.component.Task.component.ArchiveRangeTip.DataBeforeJanuary01',
+            }) /*  2023 年 01 月 01 日前的数据，可设置： */
+          }
+        </Text>
         <div className={styles.blockCard}>
           <Text type="secondary">{example1}</Text>
         </div>
       </Space>
-      <Space direction="vertical" style={{ width: '100%' }}>
-        <Text>如选择定期{label} 7 天前的数据，可设置：</Text>
+      <Space
+        direction="vertical"
+        style={{
+          width: '100%',
+        }}
+      >
+        <Text>
+          {
+            formatMessage({
+              id: 'odc.src.component.Task.component.ArchiveRangeTip.IfYouChooseRegular',
+            }) /* 如选择定期 */
+          }
+          {label}
+          {
+            formatMessage({
+              id: 'odc.src.component.Task.component.ArchiveRangeTip.Data7DaysAgo',
+            }) /*  7 天前的数据，可设置： */
+          }
+        </Text>
         <Space className={styles.blockCard} direction="vertical" size={12}>
           <Text type="secondary">{example2}</Text>
           <Space direction="vertical" size={4}>
-            <Text type="secondary">自定义变量设置</Text>
-            <Text type="secondary">变量名称：bizdate</Text>
-            <Text type="secondary">时间格式：yyyy-mm-dd</Text>
-            <Text type="secondary">时间偏移：减 7 日</Text>
+            <Text type="secondary">
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.ArchiveRangeTip.CustomVariableSettings',
+                }) /* 自定义变量设置 */
+              }
+            </Text>
+            <Text type="secondary">
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.ArchiveRangeTip.VariableNameBizdate',
+                }) /* 变量名称：bizdate */
+              }
+            </Text>
+            <Text type="secondary">
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.ArchiveRangeTip.TimeFormatYyyyMm',
+                }) /* 时间格式：yyyy-mm-dd */
+              }
+            </Text>
+            <Text type="secondary">
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.ArchiveRangeTip.TimeOffsetMinus7',
+                }) /* 时间偏移：减 7 日 */
+              }
+            </Text>
           </Space>
         </Space>
       </Space>
     </Space>
   );
 };
-
 interface IProps {
   label: string;
 }
-
 const ArchiveRangeTip: React.FC<IProps> = (props) => {
   return (
     <Popover
@@ -60,9 +111,14 @@ const ArchiveRangeTip: React.FC<IProps> = (props) => {
       content={<Content label={props.label} />}
       trigger={['click', 'hover']}
     >
-      <Link>场景示例</Link>
+      <Link>
+        {
+          formatMessage({
+            id: 'odc.src.component.Task.component.ArchiveRangeTip.SceneExample',
+          }) /* 场景示例 */
+        }
+      </Link>
     </Popover>
   );
 };
-
 export default ArchiveRangeTip;

@@ -25,43 +25,43 @@ import Icon from '@ant-design/icons';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
 import { ProjectRole } from '@/d.ts/project';
-
 interface IProps {
   projectId: number;
   onSuccess: () => void;
 }
-
 export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
-  const [form] = Form.useForm<{ databaseIds: number[] }>();
+  const [form] = Form.useForm<{
+    databaseIds: number[];
+  }>();
   const { run, loading } = useRequest(updateDataBase, {
     manual: true,
   });
-
   const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
-    defaultParams: [{ size: 99999, page: 1 }],
+    defaultParams: [
+      {
+        size: 99999,
+        page: 1,
+      },
+    ],
   });
-
   const { data: dataSource, loading: dataSourceLoading, run: fetchDataSource } = useRequest(
     getConnectionDetail,
     {
       manual: true,
     },
   );
-
   const { data: databases, loading: databasesListLoading, run: fetchDatabases } = useRequest(
     listDatabases,
     {
       manual: true,
     },
   );
-
   function close() {
     setOpen(false);
     form.resetFields();
   }
-
   async function submit() {
     const formData = await form.validateFields();
     if (!formData) {
@@ -70,8 +70,11 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     const isSuccess = await run(formData?.databaseIds, projectId);
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.Database.AddDataBaseButton.AddedSuccessfully' }), //添加成功
+        formatMessage({
+          id: 'odc.Database.AddDataBaseButton.AddedSuccessfully',
+        }), //添加成功
       );
+
       setOpen(false);
       onSuccess();
     }
@@ -87,11 +90,17 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
           )?.length === 0
         }
       >
-        {formatMessage({ id: 'odc.Database.AddDataBaseButton.AddDatabase' }) /*添加数据库*/}
+        {
+          formatMessage({
+            id: 'odc.Database.AddDataBaseButton.AddDatabase',
+          }) /*添加数据库*/
+        }
       </Button>
       <Modal
         open={open}
-        title={formatMessage({ id: 'odc.Database.AddDataBaseButton.AddDatabase' })}
+        title={formatMessage({
+          id: 'odc.Database.AddDataBaseButton.AddDatabase',
+        })}
         /*添加数据库*/ onOk={submit}
         onCancel={close}
       >
@@ -109,7 +118,11 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
           <Row>
             <Col span={18}>
               <Form.Item
-                rules={[{ required: true }]}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
                 name={'dataSourceId'}
                 label={formatMessage({
                   id: 'odc.Database.AddDataBaseButton.DataSource',
@@ -119,24 +132,45 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                   showSearch
                   optionFilterProp="children"
                   loading={dataSourceListLoading || dataSourceLoading}
-                  style={{ width: 'calc(100% - 10px)' }}
+                  style={{
+                    width: 'calc(100% - 10px)',
+                  }}
                   placeholder={formatMessage({
                     id: 'odc.Database.AddDataBaseButton.PleaseSelect',
-                  })} /*请选择*/
-                  onChange={() => form.setFieldsValue({ databaseIds: [] })}
+                  })}
+                  /*请选择*/ onChange={() =>
+                    form.setFieldsValue({
+                      databaseIds: [],
+                    })
+                  }
                 >
                   {dataSourceList?.contents?.map((item) => {
                     const icon = getDataSourceStyleByConnectType(item.type);
                     const isDisabled = !!item?.projectId;
-
                     return (
                       <Select.Option key={item.id} disabled={isDisabled}>
                         <Tooltip
-                          title={isDisabled ? `该数据源已绑定项目：${item?.projectName}` : null}
+                          title={
+                            isDisabled
+                              ? formatMessage(
+                                  {
+                                    id:
+                                      'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
+                                  },
+                                  {
+                                    itemProjectName: item?.projectName,
+                                  },
+                                ) //`该数据源已绑定项目：${item?.projectName}`
+                              : null
+                          }
                         >
                           <Icon
                             component={icon?.icon?.component}
-                            style={{ color: icon?.icon?.color, fontSize: 16, marginRight: 4 }}
+                            style={{
+                              color: icon?.icon?.color,
+                              fontSize: 16,
+                              marginRight: 4,
+                            }}
                           />
                           {item.name}
                         </Tooltip>
@@ -149,7 +183,9 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             <Col span={6}>
               <Form.Item
                 requiredMark={false}
-                label={formatMessage({ id: 'odc.Database.AddDataBaseButton.Environment' })} /*环境*/
+                label={formatMessage({
+                  id: 'odc.Database.AddDataBaseButton.Environment',
+                })} /*环境*/
               >
                 <RiskLevelLabel
                   color={dataSource?.environmentStyle}
@@ -159,16 +195,24 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             </Col>
           </Row>
           <Form.Item
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
             name={'databaseIds'}
-            label={formatMessage({ id: 'odc.Database.AddDataBaseButton.Database' })} /*数据库*/
+            label={formatMessage({
+              id: 'odc.Database.AddDataBaseButton.Database',
+            })} /*数据库*/
           >
             <Select
               mode="multiple"
               placeholder={formatMessage({
                 id: 'odc.Database.AddDataBaseButton.SelectAnUnassignedDatabase',
-              })} /*请选择未分配项目的数据库*/
-              style={{ width: '100%' }}
+              })}
+              /*请选择未分配项目的数据库*/ style={{
+                width: '100%',
+              }}
               loading={databasesListLoading}
               optionFilterProp="children"
             >
