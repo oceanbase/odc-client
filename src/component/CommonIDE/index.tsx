@@ -81,8 +81,6 @@ interface ICommonIDEProps {
    */
   bordered?: boolean;
   session?: SessionStore;
-  withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
-  traceEmptyReason?: string; // 若不支持时要展示的Tooltip文本
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -144,8 +142,6 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
       resultSets,
       toolbarActions,
       session,
-      withFullLinkTrace,
-      traceEmptyReason,
     } = this.props;
 
     const { resultHeight } = this.state;
@@ -227,8 +223,6 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                             isEditing={false}
                             disableEdit={true}
                             onExport={null}
-                            withFullLinkTrace={withFullLinkTrace}
-                            traceEmptyReason={traceEmptyReason}
                           />
                         ) : (
                           <SQLResultLog resultHeight={resultHeight} resultSet={set} />
