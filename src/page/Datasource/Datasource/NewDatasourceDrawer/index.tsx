@@ -69,7 +69,7 @@ export default function NewDatasourceDrawer({
           sysTenantPassword: '',
           projectId: null,
         }
-      : data;
+      : { ...data, password: null, sysTenantPassword: null };
   }
 
   const originDatasource = useMemo(() => {

@@ -164,6 +164,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
       <Form
         initialValues={{
           type,
+          password: '',
+          sysTenantPassword: '',
         }}
         layout="vertical"
         form={form}
