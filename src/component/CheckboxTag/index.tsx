@@ -35,13 +35,14 @@ interface IProps {
 const CheckboxTag: React.FC<IProps> = function ({ options, value, onChange }) {
   return (
     <Space size={8} wrap>
-      {options.map((option) => {
+      {options.map((option, index) => {
         const isSelected = value?.includes?.(option.value);
         return (
           <span
             className={classNames(styles.tag, {
               [styles.selected]: isSelected,
             })}
+            key={index}
             onClick={(v) => {
               let newValue = clone(value);
               if (isSelected) {

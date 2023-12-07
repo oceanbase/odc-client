@@ -70,6 +70,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         render() {
           return (
             <DatasourceFilter
+              key="SelectPanelDatasourceFilter"
               iconStyle={{
                 verticalAlign: 'text-top',
               }}
@@ -89,6 +90,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         render() {
           return (
             <Reload
+              key="DataSourceReload"
               onClick={async () => {
                 return await sourceRef.current?.reload?.();
               }}
@@ -112,6 +114,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         render() {
           return (
             <Reload
+              key="ProjectReload"
               onClick={async () => {
                 return await projectRef.current?.reload?.();
               }}
@@ -132,6 +135,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
   return (
     <>
       <SideTabs
+        key="SelectPanelSideTabs"
         selectTabKey={selectPanel}
         setSelectTabKey={(v) => {
           setSelectPanel(v as PanelType);

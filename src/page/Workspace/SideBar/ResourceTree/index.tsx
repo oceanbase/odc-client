@@ -177,6 +177,7 @@ const ResourceTree: React.FC<IProps> = function ({
           <Space size={4}>
             {enableFilter ? (
               <DatasourceFilter
+                key="ResourceTreeDatasourceFilter"
                 envs={envs}
                 types={connectTypes}
                 onClear={() => {
@@ -193,6 +194,7 @@ const ResourceTree: React.FC<IProps> = function ({
               />
             ) : null}
             <Reload
+              key="ResourceTreeReload"
               onClick={() => {
                 return reloadDatabase();
               }}

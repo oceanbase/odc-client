@@ -38,6 +38,7 @@ const Manager: React.FC<{}> = function () {
   }, []);
   return (
     <SideTabs
+      key="Manager"
       tabs={[
         {
           title: formatMessage({ id: 'odc.SideBar.Manager.DatabaseOM' }), //数据库运维
@@ -46,7 +47,7 @@ const Manager: React.FC<{}> = function () {
           render() {
             return (
               <div className={styles.manager}>
-                <Space style={{ width: '100%' }} direction="vertical">
+                <Space style={{ width: '100%' }} direction="vertical" key="manager">
                   <ListItem
                     key="sessionManager"
                     title={formatMessage({

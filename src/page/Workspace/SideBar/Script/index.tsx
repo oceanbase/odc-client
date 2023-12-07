@@ -85,6 +85,7 @@ const Script: React.FC<{}> = function () {
         </OSSUpload>
       </div>
       <SideTabs
+        key="Script"
         tabs={[
           {
             title: formatMessage({ id: 'odc.SideBar.Script.Script' }), //脚本
