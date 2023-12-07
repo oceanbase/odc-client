@@ -101,6 +101,19 @@ async function run() {
   // fs.unlinkSync(path.join(outputPath, 'strings/index.js'));
 }
 
+async function clear() {
+  await must.clear(config, true);
+  // languages.forEach((language) => {
+  //   const jsonPath = path.join(outputPath, 'strings', language + '.json');
+  //   if (fs.existsSync(jsonPath)) {
+  //     cpx(jsonPath, localePath);
+  //   }
+  // });
+  // fs.unlinkSync(path.join(outputPath, 'index.ts'));
+  // fs.unlinkSync(path.join(outputPath, 'strings/index.d.ts'));
+  // fs.unlinkSync(path.join(outputPath, 'strings/index.js'));
+}
+
 async function online() {
   await must.import.run({
     type: 'json',
@@ -167,6 +180,8 @@ if (mode === 'online') {
   online();
 } else if (mode === 'check') {
   medusaCheck();
+} else if (mode === 'clear') {
+  clear()
 } else if (mode) {
   console.error(`${mode} is invalid`)
   process.exit(1);
