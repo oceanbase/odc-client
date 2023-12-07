@@ -90,6 +90,8 @@ interface ISQLPageState {
   };
 
   lintResultSet: ISQLLintReuslt[];
+  executeOrPreCheckSql: string;
+  sqlChanged: boolean;
 }
 
 interface IProps {
@@ -135,6 +137,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     resultSetIndex: 0,
     editingMap: {},
     lintResultSet: null,
+    executeOrPreCheckSql: null,
+    sqlChanged: false,
     isSavingScript: false,
   };
 
@@ -284,6 +288,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       run: () => this.handleExecuteSelectedSQL(),
     });
     this.debounceHighlightSelectionLine();
+    //  编辑光标位置变化事件
     this.editor.onDidChangeCursorPosition(() => {
       this.debounceHighlightSelectionLine();
     });
@@ -291,10 +296,20 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleSQLChanged = (sql: string) => {
     const { pageKey, onUnsavedChange, isSaved } = this.props;
+    const { executeOrPreCheckSql } = this.state;
     debounceUpdatePageScriptText(pageKey, sql);
     this.debounceHighlightSelectionLine();
     if (isSaved) {
       onUnsavedChange(pageKey);
+    }
+    if (executeOrPreCheckSql && executeOrPreCheckSql !== sql) {
+      this.setState({
+        sqlChanged: true,
+      });
+    } else {
+      this.setState({
+        sqlChanged: false,
+      });
     }
   };
 
@@ -308,6 +323,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
+    this.setState({
+      executeOrPreCheckSql: sqlToExecute,
+      sqlChanged: false,
+    });
   }; // 执行选中的 SQL
 
   public handleExecuteSelectedSQL = async () => {
@@ -468,7 +487,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.params?.delimiter,
       value,
     );
-
+    this.setState({
+      executeOrPreCheckSql: value,
+      sqlChanged: false,
+    });
     if (result) {
       if (!result.length) {
         /**
@@ -926,6 +948,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       editingMap,
       pageLoading,
       lintResultSet,
+      sqlChanged,
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
@@ -974,6 +997,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 editingMap={editingMap}
                 session={session}
                 lintResultSet={lintResultSet}
+                sqlChanged={sqlChanged}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}
               />
             </Spin>

@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { Button, Table } from 'antd';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import styles from './index.less';
 import { ModalStore } from '@/store/modal';
@@ -30,6 +30,7 @@ const LintResultTable: React.FC<{
   pageSize?: number;
   showLocate?: boolean;
   lintResultSet?: ISQLLintReuslt[];
+  sqlChanged?: boolean;
   modalStore?: ModalStore;
 }> = ({
   ctx,
@@ -39,6 +40,7 @@ const LintResultTable: React.FC<{
   pageSize = 0,
   showLocate = true,
   lintResultSet,
+  sqlChanged,
   modalStore,
 }) => {
   const dataSource =
@@ -49,7 +51,7 @@ const LintResultTable: React.FC<{
         rules: groupByPropertyName(resultSet?.violations, 'level'),
       };
     }) || [];
-  const columns = getColumns(showLocate, ctx);
+  const columns = getColumns(showLocate, sqlChanged, ctx);
   return (
     <div
       style={{
@@ -99,7 +101,7 @@ const LintResultTable: React.FC<{
           }}
         >
           <Table
-            rowKey="id"
+            rowKey="row"
             className="o-table--no-lr-border"
             bordered={true}
             columns={columns}

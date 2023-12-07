@@ -116,6 +116,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     rollbackSqlFiles: [],
     sqlFiles: [],
   });
+  const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
+  const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const loadRollbackData = async () => {
     const { task, type, objectId } = asyncTaskData;
     const { parameters, projectId, databaseId, description, executionStrategy } = task;
@@ -180,6 +182,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         setLintResultSet(newLintResultSet);
         setHasPreCheck(true);
       }
+    }
+    if (asyncTaskData?.sql) {
+      setExecuteOrPreCheckSql(asyncTaskData?.sql);
+      setSqlChanged(false);
     }
   }, [asyncTaskData]);
   const getFileIdAndNames = (files: UploadFile[]) => {
@@ -422,6 +428,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       setPreLoading(true);
       setHasPreCheck(false);
       const result = await runSQLLint(session?.sessionId, delimiter, sqlContent);
+      setExecuteOrPreCheckSql(sqlContent);
+      setSqlChanged(false);
       setHasPreCheck(true);
       setPreLoading(false);
       setLintResultSet(result);
@@ -555,6 +563,11 @@ const CreateModal: React.FC<IProps> = (props) => {
             language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             onSQLChange={(sql) => {
               handleSqlChange('sqlContent', sql);
+              if (executeOrPreCheckSql !== sql) {
+                setSqlChanged(true);
+              } else {
+                setSqlChanged(false);
+              }
             }}
           />
         </Form.Item>
@@ -656,6 +669,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             pageSize={10}
             hasExtraOpt={false}
             lintResultSet={lintResultSet}
+            sqlChanged={sqlChanged}
           />
         )}
         <Divider />

@@ -15,12 +15,11 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
-import { Space, Popover, Button } from 'antd';
+import { Space, Popover, Button, Tooltip } from 'antd';
 import utils, { IEditor } from '@/util/editor';
 import { levelMap } from '@/page/Secure/interface';
-import styles from './index.less';
 
-const getColumns = (showLocate: boolean, ctx: IEditor) => {
+const getColumns = (showLocate: boolean, sqlChanged: boolean, ctx: IEditor) => {
   return [
     {
       title: formatMessage({
@@ -74,13 +73,13 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
         const { rules = {} } = record;
         return (
           <Space>
-            {Object.keys(rules).map((key) => {
+            {Object.keys(rules).map((key, index) => {
               return (
                 <Popover
-                  trigger={'click'}
+                  key={index}
                   content={
                     <div>
-                      <RenderLevel level={key} />
+                      <RenderLevel level={key} key={`PopoverContentRenderLevel${index}`} />
                       {rules?.[key]?.map((rule, index) => (
                         <div
                           style={{
@@ -89,33 +88,42 @@ const getColumns = (showLocate: boolean, ctx: IEditor) => {
                             gap: '8px',
                             alignItems: 'baseline',
                           }}
-                          key={index}
+                          key={`${index}-${index}`}
                         >
                           <div>
                             {index + 1}. {rule?.localizedMessage}
                           </div>
                           {showLocate && (
-                            <Button
-                              type="link"
-                              style={{ padding: '0px' }}
-                              onClick={() => {
-                                utils.removeHighlight(ctx);
-                                utils.addHighlight(
-                                  ctx,
-                                  rule?.start + rule?.offset,
-                                  rule?.stop + rule?.offset,
-                                  levelMap?.[key],
-                                );
-                              }}
+                            <Tooltip
+                              title={
+                                sqlChanged
+                                  ? 'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
+                                  : ''
+                              }
                             >
-                              {
-                                formatMessage({
-                                  id: 'odc.src.page.Workspace.components.SQLResultSet.Position',
-                                }) /* 
+                              <Button
+                                type="link"
+                                style={{ padding: '0px' }}
+                                disabled={sqlChanged}
+                                onClick={() => {
+                                  utils.removeHighlight(ctx);
+                                  utils.addHighlight(
+                                    ctx,
+                                    rule?.start + rule?.offset,
+                                    rule?.stop + rule?.offset,
+                                    levelMap?.[key],
+                                  );
+                                }}
+                              >
+                                {
+                                  formatMessage({
+                                    id: 'odc.src.page.Workspace.components.SQLResultSet.Position',
+                                  }) /* 
                               定位
                              */
-                              }
-                            </Button>
+                                }
+                              </Button>
+                            </Tooltip>
                           )}
                         </div>
                       ))}

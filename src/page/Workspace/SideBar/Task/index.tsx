@@ -29,6 +29,7 @@ const Task: React.FC<IProps> = () => {
   }, []);
   return (
     <SideTabs
+      key="Task"
       tabs={[
         {
           title: formatMessage({ id: 'odc.SideBar.Task.Ticket' }), //工单

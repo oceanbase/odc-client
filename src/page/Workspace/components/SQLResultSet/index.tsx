@@ -55,6 +55,7 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
+  sqlChanged?: boolean;
 
   onCloseResultSet: (resultSetKey: string) => void;
   onChangeResultSetTab?: (tabKey: string) => void;
@@ -86,6 +87,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
+    sqlChanged,
     onSubmitRows,
     onExportResultSet,
     onChangeResultSetTab,
@@ -264,6 +266,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               modalStore={modalStore}
               ctx={ctx?.editor}
               lintResultSet={lintResultSet}
+              sqlChanged={sqlChanged}
             />
           </TabPane>
         ) : null}
