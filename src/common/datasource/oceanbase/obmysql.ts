@@ -133,7 +133,7 @@ const items: Record<
       defaultSchema: true,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.EXPORT_RESULT_SET],
+      task: [TaskType.ASYNC, TaskType.SQL_PLAN],
       obclient: false,
       recycleBin: false,
       sqlExplain: false,
