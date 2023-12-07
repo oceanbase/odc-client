@@ -212,14 +212,16 @@ export default function NewDatasourceDrawer({
       }
     >
       <Spin spinning={loading}>
-        {visible && <DatasourceForm
-          disableTheme={disableTheme}
-          type={originDatasource?.type || type}
-          originDatasource={originDatasource}
-          isEdit={isEdit}
-          key={visible + ''}
-          ref={formRef}
-        />}
+        {visible && (
+          <DatasourceForm
+            disableTheme={disableTheme}
+            type={originDatasource?.type || type}
+            originDatasource={originDatasource}
+            isEdit={isEdit}
+            key={visible + ''}
+            ref={formRef}
+          />
+        )}
       </Spin>
     </Drawer>
   );

@@ -18,13 +18,17 @@ import { formatMessage } from '@/util/intl';
 import type { IApplyPermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider } from 'antd';
+import { projectRoleMap } from '../CreateModal';
+
 interface IProps {
   task: TaskDetail<IApplyPermissionTaskParams>;
 }
 const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
   const { task } = props;
   const parameters = task?.parameters;
-  const roleLabels = parameters?.resourceRoles?.map(({ name }) => name)?.join(', ');
+  const roleLabels = parameters?.resourceRoles
+    ?.map(({ name }) => projectRoleMap[name]?.label)
+    ?.join(', ');
   return (
     <>
       <Descriptions column={2}>

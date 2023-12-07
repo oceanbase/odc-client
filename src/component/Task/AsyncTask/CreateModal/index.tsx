@@ -279,6 +279,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       rollbackSqlFiles: [],
       sqlFiles: [],
     });
+    setHasEdit(false);
     setLintResultSet([]);
     setHasPreCheck(false);
   };

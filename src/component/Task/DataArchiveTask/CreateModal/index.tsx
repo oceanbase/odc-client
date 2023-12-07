@@ -373,6 +373,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleReset = () => {
     form?.resetFields();
     crontabRef.current?.resetFields();
+    setHasEdit(false);
   };
   useEffect(() => {
     if (!dataArchiveVisible) {

@@ -75,6 +75,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
         TaskType.DATA_DELETE,
         TaskType.IMPORT,
         TaskType.EXPORT,
+        TaskType.EXPORT_RESULT_SET,
       ],
       obclient: true,
       recycleBin: false,
