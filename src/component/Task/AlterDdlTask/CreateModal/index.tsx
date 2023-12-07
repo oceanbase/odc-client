@@ -80,6 +80,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   }));
   const hadleReset = () => {
     form.resetFields(null);
+    setHasEdit(false);
+    setLockDatabaseUserRequired(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -231,32 +233,17 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         }
         description={
           <div>
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1TheMySQLMode.1',
-              }) /* 
-            1. MySQL 模式 OB 版本小于 4.3 及 Oracle 模式 OB 版本小于
-            4.0，表名切换之前如果选择锁定数据库账号，会 kill 该账号对应的
-            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行，如果选择不锁定数据库账户,
-            在 rename 期间如有数据写入表，会有数据丢失风险；
-             */
-            }
+            1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
             <br />
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2BeforePerformingThe',
-              }) /* 
-         2. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；
-         */
-            }
-            <br />
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3ItIsRecommended',
-              }) /* 
-         3. 创建工单时建议选择保留原表；
-         */
-            }
+            2、创建工单选择源表清理策略时建议选择保留源表；
+            {lockDatabaseUserRequired && (
+              <>
+                <br />
+                3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
+                4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
+                session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
+              </>
+            )}
           </div>
         }
       />
@@ -282,9 +269,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             <Col span={12}>
               <Form.Item
                 label={
-                  formatMessage({
-                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers',
-                  }) /* 锁定用户 */
+                  <HelpDoc leftText isTip doc="AlterDdlTaskLockUsersTip">
+                    锁定用户
+                  </HelpDoc>
                 }
                 name="lockUsers"
                 required

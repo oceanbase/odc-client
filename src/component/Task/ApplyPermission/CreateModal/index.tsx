@@ -29,7 +29,8 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 const { Text } = Typography;
-const projectRoleMap = {
+
+export const projectRoleMap = {
   [ProjectRole.OWNER]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Administrator',
@@ -119,13 +120,12 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   const hadleReset = () => {
     form.resetFields(null);
+    setHasEdit(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: formatMessage({
-          id: 'odc.src.component.Task.ApplyPermission.CreateModal.AccessRequest',
-        }), //'权限申请'
+        title: '确认取消申请项目权限吗？',
         centered: true,
         onOk: () => {
           modalStore.changeApplyPermissionModal(false);
@@ -252,14 +252,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           ]}
         >
           <Select
-            style={{
-              width: 240,
-            }}
+            style={{ width: 240 }}
             options={projectOptions}
-            placeholder={
-              formatMessage({
-                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose',
-              }) /* 请选择 */
+            placeholder="请选择"
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
           />
         </Form.Item>

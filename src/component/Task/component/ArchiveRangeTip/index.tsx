@@ -18,10 +18,10 @@ import { formatMessage } from '@/util/intl';
 import { Space, Typography, Popover } from 'antd';
 import styles from './index.less';
 const { Text, Link } = Typography;
-const example1 = 'create_time<’2023-01-01’';
-const example2 = formatMessage({
-  id: 'odc.src.component.Task.component.ArchiveRangeTip.FilterConditionCreateTime',
-}); //'过滤条件：create_time<‘${bizdate}’'
+
+const example1 = "create_time<'2023-01-01'";
+const example2 = "过滤条件：create_time<'${bizdate}'";
+
 const Content: React.FC<{
   label: string;
 }> = ({ label }) => {

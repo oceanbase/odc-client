@@ -126,9 +126,8 @@ export const AuditEventMetaMap = {
   }),
   //'导出结果集'
   // SQL安全规则管理
-  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: formatMessage({
-    id: 'odc.src.page.Secure.components.RecordPage.SQLSecurityRulesManagement',
-  }), //'SQL安全规则管理'
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
+  [AuditEventType.APPLY_PROJECT_PERMISSION]: '申请项目权限',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -149,6 +148,10 @@ export const AuditEventActionMap = {
   [AuditEventActionType.SET_PASSWORD]: formatMessage({
     id: 'odc.components.RecordPage.SetPassword',
   }),
+  [AuditEventActionType.CREATE_APPLY_PROJECT_PERMISSION_TASK]: '新建',
+  [AuditEventActionType.APPROVE_APPLY_PROJECT_PERMISSION_TASK]: '审批',
+  [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: '拒绝',
+  [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: '终止',
   // 连接管理
   [AuditEventActionType.CREATE_CONNECTION]: formatMessage({
     id: 'odc.components.RecordPage.CreateConnection',

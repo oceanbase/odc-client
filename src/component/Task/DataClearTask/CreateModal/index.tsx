@@ -270,6 +270,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setFormData(null);
     form?.resetFields();
     crontabRef.current?.resetFields();
+    setHasEdit(false);
   };
   useEffect(() => {
     if (!dataClearVisible) {
