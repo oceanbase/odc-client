@@ -130,7 +130,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               >
                 <Select
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp='title'
                   loading={dataSourceListLoading || dataSourceLoading}
                   style={{
                     width: 'calc(100% - 10px)',
@@ -146,9 +146,9 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                 >
                   {dataSourceList?.contents?.map((item) => {
                     const icon = getDataSourceStyleByConnectType(item.type);
-                    const isDisabled = !!item?.projectId;
+                    const isDisabled = !!item?.projectId && projectId !== item?.projectId;
                     return (
-                      <Select.Option key={item.id} disabled={isDisabled}>
+                      <Select.Option title={item.name} key={item.id} disabled={isDisabled}>
                         <Tooltip
                           title={
                             isDisabled
