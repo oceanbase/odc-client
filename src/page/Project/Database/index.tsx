@@ -258,7 +258,7 @@ const Database: React.FC<IProps> = ({ id }) => {
               id: 'odc.Project.Database.Operation',
             }),
             //操作
-            dataIndex: 'name',
+            dataIndex: 'actions',
             width: 200,
             render(_, record) {
               if (!record.existed) {
@@ -269,6 +269,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                 project?.currentUserResourceRoles?.filter((roles) =>
                   [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
                 )?.length === 0;
+              const disableTransfer = !!record?.dataSource?.projectId && !config?.schema?.innerSchema?.includes(record?.name);
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -338,11 +339,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setVisible(true);
                       setDatabase(record);
                     }}
-                    disabled={disabled || !!record?.dataSource?.projectId}
+                    disabled={disabled || disableTransfer}
                   >
                     <Tooltip
                       title={
-                        !!record?.dataSource?.projectId
+                        disableTransfer
                           ? formatMessage({
                               id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
                             }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
