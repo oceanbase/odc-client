@@ -483,20 +483,12 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           // 设置为 Null
           disabled: isNull(row[columnKey]) || column.readonly,
           onClick: () => {
-            const newRows = [...rows];
-            const targetRowIndex = newRows.findIndex(
-              (newRow) => newRow._rowIndex === row._rowIndex,
-            );
-            newRows[targetRowIndex] = {
-              ...newRows[targetRowIndex],
+            const targetRowIndex = rows.findIndex((newRow) => newRow._rowIndex === row._rowIndex);
+            gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
               [columnKey]: null,
               [getBlobValueKey(columnKey)]: null,
               [getNlsValueKey(columnKey)]: null,
-              _originRow: originRows.find((row) => {
-                return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
-              }),
-            };
-            handleEditPropertyInCell(newRows);
+            });
           },
         },
         isEditing && {
@@ -507,19 +499,11 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           // 设置为默认值
           disabled: isUndefined(row[columnKey]) || column.readonly,
           onClick: () => {
-            const newRows = [...rows];
-            const targetRowIndex = newRows.findIndex(
-              (newRow) => newRow._rowIndex === row._rowIndex,
-            );
-            newRows[targetRowIndex] = {
-              ...newRows[targetRowIndex],
+            const targetRowIndex = rows.findIndex((newRow) => newRow._rowIndex === row._rowIndex);
+            gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
               [columnKey]: undefined,
               [getBlobValueKey(columnKey)]: null,
-              _originRow: originRows.find((row) => {
-                return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
-              }),
-            };
-            handleEditPropertyInCell(newRows);
+            });
           },
         },
         showDownload && {
@@ -551,19 +535,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               if (file) {
                 const serverFileName = await uploadTableObject(file, sessionId);
                 if (serverFileName) {
-                  const newRows = [...rowsRef.current];
-                  const targetRowIndex = newRows.findIndex(
+                  const targetRowIndex = rowsRef.current?.findIndex(
                     (newRow) => newRow._rowIndex === row._rowIndex,
                   );
-                  newRows[targetRowIndex] = {
-                    ...newRows[targetRowIndex],
+                  gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
                     [columnKey]: serverFileName,
                     [getBlobValueKey(columnKey)]: new LobExt(serverFileName, RSModifyDataType.FILE),
-                    _originRow: originRows.find((row) => {
-                      return row._rowIndex === newRows[targetRowIndex]?._rowIndex;
-                    }),
-                  };
-                  handleEditPropertyInCell(newRows);
+                  });
                   message.success(
                     `${file.name} ${formatMessage({
                       id: 'workspace.window.table.object.upload.success',
@@ -627,6 +605,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     originRows,
     session?.connection?.dialectType,
   );
+
+  useEffect(() => {
+    if (rgdColumns?.length) {
+      gridRef.current.setColumns(rgdColumns);
+    }
+  }, [rgdColumns]);
+
   const pasteFormatter = useCallback(
     function pasteFormatter(
       row: RowType<any>,

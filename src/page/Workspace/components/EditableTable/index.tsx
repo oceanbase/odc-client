@@ -57,6 +57,7 @@ interface IProps<R extends RowType<R>, SR> extends PickDataGridProps<R, SR> {
   enableFilterRow?: boolean;
   enableSortRow?: boolean;
   enableFrozenRow?: boolean;
+  enableFlushDelete?: boolean;
   searchKey?: string;
   /**
    * 只要cell或者rows选择改变，都会触发。
@@ -84,6 +85,7 @@ export default inject('settingStore')(
         bordered = true,
         enableColumnRecord = true,
         enableFrozenRow,
+        enableFlushDelete,
         searchKey,
         settingStore,
         theme,
@@ -112,6 +114,7 @@ export default inject('settingStore')(
             readonly,
             enableFrozenRow,
             enableColumnRecord,
+            enableFlushDelete,
             theme: theme || (settingStore.theme.sheetTheme as any),
             searchKey,
             rowHeight: 24,

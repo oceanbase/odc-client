@@ -171,6 +171,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
           enableColumnRecord={false}
           enableFilterRow={false}
           enableSortRow={false}
+          enableFlushDelete={true}
           minHeight="370px"
           initialColumns={columns}
           initialRows={initialRows as RowType<any>[]}
