@@ -22,7 +22,7 @@ const path = require('path');
 const urlMap = {
   'linux_x86': `library/obclient/2_2_4/x86/obclient.tar.gz`,
   'win64': `library/obclient/2_2_4/windows/obclient.tar.gz`,
-  'linux_aarch64': `library/obclient/2_2_4/aarch/obclient.tar.gz`,
+  'linux_aarch64': `library/obclient/2_2_4/aarch64/obclient.tar.gz`,
 }
 
 const baseUrl = "https://obodc-front.oss-cn-beijing.aliyuncs.com/";
