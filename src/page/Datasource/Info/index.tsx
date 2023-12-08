@@ -193,7 +193,13 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                 id: 'odc.src.page.Datasource.Info.ModifyTheProject',
               }); //'修改所属项目'
               let editable = true;
-              if (isInnerSchema) {
+              if (!canUpdate) {
+                tip = formatMessage({
+                  id: 'odc.src.page.Datasource.Info.NoCurrentDataSourcePermissions',
+                }); //'无当前数据源权限'
+                editable = false;
+              }
+              else if (isInnerSchema) {
                 editable = true;
               } else if (bindProjectName) {
                 tip = formatMessage(
@@ -204,11 +210,6 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                     bindProjectName: bindProjectName,
                   },
                 ); //`当前数据源所属项目 ${bindProjectName}，无法修改。可通过编辑数据源修改所属项目`
-                editable = false;
-              } else if (!canUpdate) {
-                tip = formatMessage({
-                  id: 'odc.src.page.Datasource.Info.NoCurrentDataSourcePermissions',
-                }); //'无当前数据源权限'
                 editable = false;
               }
               return (
@@ -230,9 +231,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                   >
                     {
                       value ||
-                        formatMessage({
-                          id: 'odc.src.page.Datasource.Info.UnpabledItems',
-                        }) //'未分配项目'
+                      formatMessage({
+                        id: 'odc.src.page.Datasource.Info.UnpabledItems',
+                      }) //'未分配项目'
                     }
                   </div>
                   <Tooltip title={tip}>

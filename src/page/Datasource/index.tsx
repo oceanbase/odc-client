@@ -124,6 +124,9 @@ const tabs = [
     }),
     //会话
     key: IPageType.Datasource_session,
+    isHide(datasource: IDatasource) {
+      return !datasource?.permittedActions?.includes(actionTypes.update);
+    },
   },
   {
     tab: formatMessage({
@@ -132,7 +135,7 @@ const tabs = [
     //回收站
     key: IPageType.Datasource_recycle,
     isHide(datasource: IDatasource) {
-      return !getDataSourceModeConfig(datasource?.type)?.features?.recycleBin;
+      return !getDataSourceModeConfig(datasource?.type)?.features?.recycleBin || !datasource?.permittedActions?.includes(actionTypes.update);
     },
   },
   {
@@ -143,7 +146,7 @@ const tabs = [
     key: IPageType.Datasource_obclient,
     isHide(datasource) {
       return (
-        !setting.enableOBClient || !getDataSourceModeConfig(datasource?.type)?.features?.obclient
+        !setting.enableOBClient || !getDataSourceModeConfig(datasource?.type)?.features?.obclient || !datasource?.permittedActions?.includes(actionTypes.update)
       );
     },
   },
