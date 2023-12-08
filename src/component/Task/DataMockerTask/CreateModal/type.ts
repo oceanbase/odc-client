@@ -84,7 +84,7 @@ const _columnTypeToRuleMap = {
     BLOB: RuleItem.CHAR,
     MEDIUMBLOB: RuleItem.CHAR,
     LONGBLOB: RuleItem.CHAR,
-    BIT: RuleItem.CHAR,
+    BIT: RuleItem.NUMBER,
     BINARY: RuleItem.CHAR,
     VARBINARY: RuleItem.CHAR,
   },
