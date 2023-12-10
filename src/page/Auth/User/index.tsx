@@ -308,6 +308,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
       page: current,
       size: pageSize,
       sort: column?.dataIndex,
+      minPrivilege: 'read',
     };
 
     // roleIds filter

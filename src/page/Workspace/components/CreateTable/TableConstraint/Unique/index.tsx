@@ -21,6 +21,7 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
 import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
+import { generateUniqKey } from '@/util/utils';
 import EditableTable from '../../../EditableTable';
 import EditToolbar from '../../EditToolbar';
 import { removeGridParams } from '../../helper';
@@ -61,6 +62,10 @@ const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
     gridRef.current?.setRows(rows);
   }, [rows]);
 
+  useEffect(() => {
+    gridRef.current?.setColumns(gridColumns);
+  }, [gridColumns]);
+
   return (
     <TableCardLayout
       toolbar={
@@ -70,9 +75,12 @@ const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
               text={formatMessage({ id: 'workspace.header.create' })}
               icon={PlusOutlined}
               onClick={() => {
-                tableContext.setUniqueConstraints(
-                  tableContext.uniqueConstraints.concat(defaultUniqueConstraints),
-                );
+                const row = {
+                  ...defaultUniqueConstraints,
+                  key: generateUniqKey(),
+                  _created: true,
+                };
+                gridRef.current?.addRows([row]);
               }}
             />
 
@@ -83,10 +91,7 @@ const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
               icon={DeleteOutlined}
               disabled={!selectedRowsIdx?.length}
               onClick={() => {
-                let newRows = [...rows]?.filter((row, index) => {
-                  return !selectedRowsIdx?.includes(index);
-                });
-                tableContext.setUniqueConstraints(removeGridParams(newRows));
+                gridRef.current?.deleteRows();
               }}
             />
           </Toolbar>
