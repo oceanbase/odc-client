@@ -395,6 +395,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   };
   const getMenus = useCallback(
     (row: any, rowColumn: CalculatedColumn<any, any>) => {
+      if (!row) {
+        return [];
+      }
       const { key: columnKey } = rowColumn;
       const selectedRange = gridRef.current?.selectedRange;
       const isSingleSelected =

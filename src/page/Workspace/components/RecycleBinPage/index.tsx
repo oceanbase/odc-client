@@ -33,6 +33,7 @@ import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import classNames from 'classnames';
 import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import EditableTable from '../EditableTable';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import SessionContextWrap from '../SessionContextWrap';
@@ -79,12 +80,32 @@ class RecycleBin extends Component<
 
   private session: SessionStore;
 
+  // 当前选中的对象列表初始值
+  private initialSelectedObjects = [];
+
   public tableList: React.RefObject<HTMLDivElement> = React.createRef();
+
+  public restoreGridRef: React.RefObject<DataGridRef> = React.createRef();
+
+  public deleteGridRef: React.RefObject<DataGridRef> = React.createRef();
 
   public async componentDidMount() {
     this.session = this.props.session;
     this.getRecycleObjectList();
     this.getRecycleConfig();
+  }
+
+  componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
+    const { selectedObjectNames, showRestoreDrawer, showDeleteDrawer } = this.state;
+    const selectedObjects = this.session?.recycleObjects.filter((r) =>
+      selectedObjectNames.has(r.uniqueId),
+    );
+    if (showRestoreDrawer && prevState.showRestoreDrawer !== showRestoreDrawer) {
+      this.restoreGridRef.current?.setRows?.(selectedObjects);
+    }
+    if (showDeleteDrawer && prevState.showDeleteDrawer !== showDeleteDrawer) {
+      this.deleteGridRef.current?.setRows?.(selectedObjects);
+    }
   }
 
   public getRecycleConfig = async () => {
@@ -334,11 +355,6 @@ class RecycleBin extends Component<
       },
     ];
 
-    // 当前选中的对象列表
-    const selectedObjects = this.session?.recycleObjects.filter((r) =>
-      selectedObjectNames.has(r.uniqueId),
-    );
-
     // 查找原名称和对象名称，忽略大小写
     const filteredRows = this.session?.recycleObjects.filter(
       (p) =>
@@ -478,10 +494,11 @@ class RecycleBin extends Component<
           width={500}
         >
           <EditableTable
+            gridRef={this.deleteGridRef}
             minHeight="calc(100vh - 34px - 130px)"
             initialColumns={columnsInDeleteDrawer}
             rowKey="uniqueId"
-            initialRows={selectedObjects as any}
+            initialRows={this.initialSelectedObjects as any}
             readonly={true}
             theme={theme}
           />
@@ -509,10 +526,11 @@ class RecycleBin extends Component<
           width={886}
         >
           <EditableTable
+            gridRef={this.restoreGridRef}
             minHeight="calc(100vh - 34px - 130px)"
             initialColumns={columnsInRestoreDrawer}
             rowKey="uniqueId"
-            initialRows={selectedObjects as any}
+            initialRows={this.initialSelectedObjects as any}
             theme={theme}
             onRowsChange={this.handleEditPropertyInCell}
           />

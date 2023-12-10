@@ -19,7 +19,8 @@ import { IPartitionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { Form, Input, InputNumber, Space } from 'antd';
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { partitionNameMap } from '../../CreateTable/Partition/CreateTablePartitionRuleForm';
 import TablePageContext from '../context';
 
@@ -69,6 +70,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
   const addPartitionRef = useRef<{
     addNewPartitions: () => Promise<Partial<TablePartition>>;
   }>();
+  const gridRef = useRef<DataGridRef>();
   const table = tableContext?.table;
   const partitions = editPartitions || table?.partitions;
   const { partType } = partitions || {};
@@ -87,7 +89,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       resizable: true,
       sortable: false,
       editor: TextEditor,
-      editable: (row) => row?.isNew,
+      editable: (row) => !!row?.isNew,
     },
 
     {
@@ -106,7 +108,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       name: getTitleByPartType(partType),
       resizable: true,
       sortable: false,
-      editable: (row) => row?.isNew,
+      editable: (row) => !!row?.isNew,
       editor: TextEditor,
     },
   ];
@@ -169,6 +171,11 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       }),
     );
   };
+
+  useEffect(() => {
+    const rows = getRowsByPartType(partType, partitions);
+    gridRef.current?.setRows(rows);
+  }, [partType, partitions]);
 
   switch (partType) {
     case IPartitionType.KEY: {
@@ -348,6 +355,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
               </Space>
             </div>
             <EditableTable
+              gridRef={gridRef}
               minHeight={`calc(100vh - ${48 + 34 + 39 + 50 + 40}px)`}
               rowKey={'key'}
               initialColumns={rdgColumns}
