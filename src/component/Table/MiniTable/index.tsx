@@ -43,7 +43,7 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
         domRef.current.removeEventListener('resize', resize);
       };
     }
-  }, [domRef.current]);
+  });
 
   useEffect(() => {
     if (pageSize > 0) {
