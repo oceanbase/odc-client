@@ -208,9 +208,6 @@ devDependencies:
   mobx-react:
     specifier: ^6.3.1
     version: 6.3.1(mobx@5.15.7)(react-dom@17.0.2)(react@17.0.2)
-  mockjs:
-    specifier: ^1.1.0
-    version: 1.1.0
   moment:
     specifier: ^2.29.0
     version: 2.29.4
@@ -4344,6 +4341,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -4353,6 +4351,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -4362,6 +4361,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -4371,6 +4371,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -5665,7 +5666,7 @@ packages:
       axios: 0.27.2
       babel-plugin-import: 1.13.6
       dayjs: 1.11.7
-      dva-core: 2.0.4(redux@3.7.2)
+      dva-core: 2.0.4(redux@4.2.1)
       dva-immer: 1.0.0(dva@2.5.0-beta.2)
       dva-loading: 3.0.23(dva-core@2.0.4)
       event-emitter: 0.3.5
@@ -7596,11 +7597,6 @@ packages:
     resolution: {integrity: sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==}
     dev: true
 
-  /commander@10.0.0:
-    resolution: {integrity: sha512-zS5PnTI22FIRM6ylNW8G4Ap0IEOyk62fhLSD0+uHRT9McRCLGpkVNvao4bjimpK/GShynyQkFFxHhwMcETmduA==}
-    engines: {node: '>=14'}
-    dev: true
-
   /commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
     dev: true
@@ -8650,7 +8646,7 @@ packages:
       warning: 3.0.0
     dev: true
 
-  /dva-core@2.0.4(redux@3.7.2):
+  /dva-core@2.0.4(redux@4.2.1):
     resolution: {integrity: sha512-Zh39llFyItu9HKXKfCZVf9UFtDTcypdAjGBew1S+wK8BGVzFpm1GPTdd6uIMeg7O6STtCvt2Qv+RwUut1GFynA==}
     peerDependencies:
       redux: 4.x
@@ -8660,7 +8656,7 @@ packages:
       global: 4.4.0
       invariant: 2.2.4
       is-plain-object: 2.0.4
-      redux: 3.7.2
+      redux: 4.2.1
       redux-saga: 0.16.2
       warning: 3.0.0
     dev: true
@@ -8681,7 +8677,7 @@ packages:
       dva-core: ^1.1.0 || ^1.5.0-0 || ^1.6.0-0
     dependencies:
       '@babel/runtime': 7.23.2
-      dva-core: 2.0.4(redux@3.7.2)
+      dva-core: 2.0.4(redux@4.2.1)
     dev: true
 
   /dva@2.5.0-beta.2(react-dom@17.0.2)(react@17.0.2):
@@ -12868,13 +12864,6 @@ packages:
     resolution: {integrity: sha512-wyM3FghTkhmC+hQjyPGGFdpehrcX1KOXsDuERhfK2YbJemkUhEB+6wzEN639T21onxlfYBmriA1PFnvxTUhcKw==}
     dev: true
 
-  /mockjs@1.1.0:
-    resolution: {integrity: sha512-eQsKcWzIaZzEZ07NuEyO4Nw65g0hdWAyurVol1IPl1gahRwY+svqzfgfey8U8dahLwG44d6/RwEzuK52rSa/JQ==}
-    hasBin: true
-    dependencies:
-      commander: 10.0.0
-    dev: true
-
   /moment@2.29.4:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
     dev: true
@@ -15836,7 +15825,7 @@ packages:
   /react-redux@8.0.5(@types/react-dom@16.9.18)(@types/react@16.14.35)(react-dom@17.0.2)(react@17.0.2)(redux@4.2.1):
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
-      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react': ^16.0.0
       '@types/react-dom': ^16.8 || ^17.0 || ^18.0
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0

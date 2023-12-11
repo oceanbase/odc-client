@@ -37,6 +37,7 @@ import { clone, isNil } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
+import { executePL } from '@/common/network/sql/executePL';
 export enum ExcecuteSQLMode {
   PL = 'PL',
   TABLE = 'TABLE',
@@ -270,7 +271,7 @@ export class SQLStore {
   @action
   public async parsePL(sql: string, sessionId, dbName) {
     const sid = generateDatabaseSid(dbName, sessionId);
-    const res = await request.put(`/api/v1/pl/parsePLNameType/${sid}`, {
+    const res = await request.post(`/api/v2/pl/parsePLNameType/${sid}`, {
       data: {
         sql,
       },
@@ -286,7 +287,7 @@ export class SQLStore {
     dbName,
   ): Promise<IPLCompileResult> {
     const sid = generateDatabaseSid(dbName, sessionId);
-    const res = await request.post(`/api/v1/pl/compile/${sid}`, {
+    const res = await request.post(`/api/v2/pl/compile/${sid}`, {
       data: { obDbObjectType, plName },
     });
     return res && res.data;
@@ -345,25 +346,17 @@ export class SQLStore {
     let res;
     let dbms;
     if (plSchema.plType === PLType.PROCEDURE) {
-      res = await request.put(`/api/v1/pl/callProcedure/${sid}`, {
-        data: {
-          procedure: { ...plSchema?.procedure, params: plSchema?.params },
-          anonymousBlockDdl,
-        },
-        params: {
-          ignoreError,
-        },
-      });
+      res = await executePL({
+        type: PLType.PROCEDURE,
+        procedure: { ...plSchema?.procedure, params: plSchema?.params },
+        anonymousBlockDdl,
+      }, sessionId, ignoreError);
     } else if (plSchema.plType === PLType.FUNCTION) {
-      res = await request.put(`/api/v1/pl/callFunction/${sid}`, {
-        data: {
-          function: { ...plSchema?.function, params: plSchema?.params },
-          anonymousBlockDdl,
-        },
-        params: {
-          ignoreError,
-        },
-      });
+      res = await await executePL({
+        type: PLType.FUNCTION,
+        function: { ...plSchema?.function, params: plSchema?.params },
+        anonymousBlockDdl,
+      }, sessionId, ignoreError);
     } else {
       const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
       if (data?.invalid) {
@@ -417,7 +410,7 @@ export class SQLStore {
       return null;
     }
     const sid = generateDatabaseSid(dbName, sessionId);
-    const res = await request.get(`/api/v1/pl/getLine/${sid}`);
+    const res = await request.get(`/api/v2/pl/getLine/${sid}`);
     return res && res.data;
   }
 
