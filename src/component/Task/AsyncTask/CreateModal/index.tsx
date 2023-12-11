@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { runSQLLint } from '@/common/network/sql';
 import { createTask, getAsyncTaskUploadUrl } from '@/common/network/task';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
@@ -29,12 +32,14 @@ import {
   TaskPageType,
   TaskType,
 } from '@/d.ts';
+import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
+import utils from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
@@ -58,11 +63,6 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { runSQLLint } from '@/common/network/sql';
-import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
-import utils from '@/util/editor';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 interface IProps {
   sqlStore?: SQLStore;
@@ -173,6 +173,9 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
     if (asyncTaskData?.rules) {
       const newLintResultSet = asyncTaskData?.rules?.reduce((pre, cur) => {
+        if (cur?.violatedRules?.length === 0) {
+          return pre;
+        }
         return pre.concat({
           sql: cur?.sqlTuple?.executedSql,
           violations: cur?.violatedRules?.map((item) => item?.violation),
