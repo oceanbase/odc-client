@@ -24,6 +24,8 @@ import { Button, Divider, Form, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
 import { useWatch } from 'antd/es/form/Form';
+import { ConnectionMode } from '@/d.ts';
+
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
@@ -38,7 +40,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     const rawData = await getConnectionList({
       projectId: sensitiveContext.projectId,
     });
-    const resData = rawData?.contents?.map((content) => ({
+    const resData = rawData?.contents?.filter(content => content?.dialectType !== ConnectionMode.MYSQL)?.map((content) => ({
       label: content.name,
       value: content.id,
     }));
