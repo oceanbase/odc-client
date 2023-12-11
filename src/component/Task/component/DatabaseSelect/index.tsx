@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Form, Popover, Select, Space, Tag, Typography } from 'antd';
+import { useParams } from '@umijs/max';
+import { Form, Popover, Select, Space, Typography } from 'antd';
+import { toInteger } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
-import { IDatabase } from '@/d.ts/database';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { useParams } from '@umijs/max';
-import { toInteger } from 'lodash';
 interface IProps {
   type: TaskType;
   label?: string;
@@ -65,7 +65,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           overlayClassName={styles.popover}
           data-label={name}
           placement="right"
-          arrowPointAtCenter={false}
+          showArrow={false}
           content={
             <Space direction="vertical">
               <Space>
