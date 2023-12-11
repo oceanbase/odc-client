@@ -182,6 +182,10 @@ export default function NewDataBaseButton({
             }
           >
             <ProjectSelect
+              defaultProject={{
+                projectName: projectName,
+                projectId: projectId,
+              }}
               disabled={!!projectId}
               disabledTip={
                 formatMessage(

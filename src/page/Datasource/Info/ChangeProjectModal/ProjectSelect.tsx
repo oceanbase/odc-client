@@ -28,6 +28,10 @@ interface IProps {
   projects: IProject[];
   disabledTip?: string;
   currentDatabase: IDatabase;
+  defaultProject?: {
+    projectId: number;
+    projectName: string;
+  }
 }
 
 export default function ProjectSelect({
@@ -36,9 +40,11 @@ export default function ProjectSelect({
   disabled,
   currentDatabase,
   disabledTip,
+  defaultProject,
   onChange,
 }: IProps) {
   const isProjectNotFound = !projects?.find((item) => item.id === currentDatabase?.project?.id);
+  const haveDefaultProject = projects?.find((item) => item.id === defaultProject?.projectId);
   const bindProjectId = currentDatabase?.dataSource?.projectId;
   const _isNull = isNull(value);
   return (
@@ -68,6 +74,11 @@ export default function ProjectSelect({
             <Select.Option value={currentDatabase?.project?.id} key={currentDatabase?.project?.id}>
               {currentDatabase?.project?.name}
             </Select.Option>
+          ) : null}
+          {!haveDefaultProject && defaultProject ? (
+            <Select.Option value={defaultProject?.projectId} key={defaultProject?.projectId}>
+            {defaultProject?.projectName}
+          </Select.Option>
           ) : null}
         </Select>
         <Checkbox
