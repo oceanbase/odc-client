@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import DataGrid, { DataGridRef, SelectColumn } from '@oceanbase-odc/ob-react-data-grid';
+import DataGrid, { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import type { DataGridProps } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import React, { useRef } from 'react';
 import { SettingStore } from '@/store/setting';
@@ -96,16 +96,15 @@ export default inject('settingStore')(
         onSelectChange,
       } = props;
       const innerGridRef = useRef<DataGridRef>(null);
-      const innerColumns = [SelectColumn].concat(initialColumns);
 
-      if (innerColumns?.length <= 1) {
+      if (!initialColumns?.length) {
         return null;
       }
 
       return (
         <DataGrid
           initialRows={initialRows}
-          initialColumns={innerColumns}
+          initialColumns={initialColumns}
           rowKeyName={rowKey}
           options={{
             enableRowRecord,
