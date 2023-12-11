@@ -142,9 +142,9 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   const handleCreate = async (data: Partial<CreateTaskRecord>) => {
     const res = await createTask(data);
-    handleCancel(false);
     setConfirmLoading(false);
     if (res) {
+      handleCancel(false);
       openTasksPage(TaskPageType.DATA_DELETE, TaskPageScope.CREATED_BY_CURRENT_USER);
     }
   };

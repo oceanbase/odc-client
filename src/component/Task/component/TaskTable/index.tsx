@@ -470,14 +470,17 @@ const TaskTable: React.FC<IProps> = inject(
                 }
               : {
                   type: IOperationOptionType.button,
-                  content: formatMessage(
-                    {
-                      id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                    },
-                    {
-                      activeTaskLabel: activeTaskLabel,
-                    },
-                  ),
+                  content:
+                    taskTabType === TaskPageType.APPLY_PROJECT_PERMISSION
+                      ? activeTaskLabel
+                      : formatMessage(
+                          {
+                            id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                          },
+                          {
+                            activeTaskLabel: activeTaskLabel,
+                          },
+                        ),
                   //`新建${activeTaskLabel}`
                   disabled: disabledOpt,
                   isPrimary: true,
