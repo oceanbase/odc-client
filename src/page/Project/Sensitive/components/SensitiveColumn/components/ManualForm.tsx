@@ -83,52 +83,54 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
   const [databaseIds, setDatabaseIds] = useState<number[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<string[]>([]);
 
-  const databaseOptions = databases?.map(({ name, id, environment, dataSource, project }) => ({
-    label: (
-      <Popover
-        showArrow={false}
-        overlayClassName={styles.popover}
-        data-label={name}
-        placement="right"
-        content={
-          <Space direction="vertical">
-            <Space>
-              <RiskLevelLabel color={environment?.style} content={environment?.name} />
-              <Text strong>{name}</Text>
-            </Space>
-            <Text type="secondary">
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DatabaseSelect.DataSource',
-                }) /* 所属数据源:  */
-              }
-              {dataSource?.name ?? '-'}
-            </Text>
-            <Text type="secondary">
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DatabaseSelect.ItSNotPlayed',
-                }) /* 所属项目:  */
-              }
-              {project?.name ?? '-'}
-            </Text>
-          </Space>
-        }
-      >
-        <Space
-          size={2}
+  const databaseOptions = databases
+    ?.filter((content) => content?.dataSource?.dialectType !== ConnectionMode.MYSQL)
+    ?.map(({ name, id, environment, dataSource, project }) => ({
+      label: (
+        <Popover
+          showArrow={false}
+          overlayClassName={styles.popover}
           data-label={name}
-          style={{
-            display: 'flex',
-          }}
+          placement="right"
+          content={
+            <Space direction="vertical">
+              <Space>
+                <RiskLevelLabel color={environment?.style} content={environment?.name} />
+                <Text strong>{name}</Text>
+              </Space>
+              <Text type="secondary">
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.DatabaseSelect.DataSource',
+                  }) /* 所属数据源:  */
+                }
+                {dataSource?.name ?? '-'}
+              </Text>
+              <Text type="secondary">
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.component.DatabaseSelect.ItSNotPlayed',
+                  }) /* 所属项目:  */
+                }
+                {project?.name ?? '-'}
+              </Text>
+            </Space>
+          }
         >
-          <RiskLevelLabel color={environment?.style} content={environment?.name} />
-          <span>{name}</span>
-        </Space>
-      </Popover>
-    ),
-    value: id,
-  }));
+          <Space
+            size={2}
+            data-label={name}
+            style={{
+              display: 'flex',
+            }}
+          >
+            <RiskLevelLabel color={environment?.style} content={environment?.name} />
+            <span>{name}</span>
+          </Space>
+        </Popover>
+      ),
+      value: id,
+    }));
   const initDatabases = async () => {
     const rawData = await listDatabases(projectId);
     const resData = rawData?.contents
