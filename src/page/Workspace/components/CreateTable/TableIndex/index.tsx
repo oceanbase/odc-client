@@ -21,6 +21,7 @@ import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone, cloneDeep } from 'lodash';
 import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
+import { generateUniqKey } from '@/util/utils';
 import EditableTable from '../../EditableTable';
 import TablePageContext from '../../TablePage/context';
 import EditToolbar from '../EditToolbar';
@@ -69,6 +70,10 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
     gridRef.current?.setRows(rows);
   }, [rows]);
 
+  useEffect(() => {
+    gridRef.current?.setColumns(gridColumns);
+  }, [gridColumns]);
+
   return (
     <TableCardLayout
       toolbar={
@@ -109,7 +114,12 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
               text={formatMessage({ id: 'workspace.header.create' })}
               icon={PlusOutlined}
               onClick={() => {
-                tableContext.setIndexes(tableContext.indexes.concat(defaultIndex));
+                const row = {
+                  ...defaultIndex,
+                  key: generateUniqKey(),
+                  _created: true,
+                };
+                gridRef.current?.addRows([row]);
               }}
             />
 
@@ -119,10 +129,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
               }
               icon={DeleteOutlined}
               onClick={() => {
-                let newRows = [...rows]?.filter((row, index) => {
-                  return !selectedRowsIdx?.includes(index);
-                });
-                tableContext.setIndexes(removeGridParams(newRows));
+                gridRef.current?.deleteRows();
               }}
             />
 
