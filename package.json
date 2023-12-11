@@ -125,7 +125,6 @@
     "memoize-one": "^4.0.0",
     "mobx": "^5.9.4",
     "mobx-react": "^6.3.1",
-    "mockjs": "^1.1.0",
     "moment": "^2.29.0",
     "monaco-editor": "^0.36.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
