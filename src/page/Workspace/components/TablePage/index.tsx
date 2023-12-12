@@ -78,7 +78,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
   const [topTab, setTopTab] = useState(TopTab.PROPS);
   const [propsTab, setPropsTab] = useState(PropsTab.INFO);
   const executeRef = useRef<{
-    showExecuteModal: (sql: any, tableName: any) => Promise<boolean>;
+    showExecuteModal: (sql: any, tableName: any, onSuccess, tip) => Promise<boolean>;
   }>();
   const { session } = useContext(SessionContext);
   const dbName = session?.database?.dbName;
@@ -205,7 +205,9 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
           value={{
             table: table,
             onRefresh: refresh,
-            showExecuteModal: executeRef.current?.showExecuteModal,
+            showExecuteModal: function (...args) {
+              return executeRef.current?.showExecuteModal(...args);
+            },
             editMode: true,
             session,
           }}
