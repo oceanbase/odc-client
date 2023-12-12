@@ -200,6 +200,7 @@ const Columns: React.FC<IProps> = function ({}) {
             minHeight="100%"
             initialColumns={gridColumns}
             enableFilterRow
+            enableFlushDelete
             initialRows={rows as any[]}
             rowKey={'key'}
             /**
