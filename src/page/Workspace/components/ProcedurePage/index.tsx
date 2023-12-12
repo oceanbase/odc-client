@@ -29,7 +29,6 @@ import {
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';
@@ -50,6 +49,7 @@ import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
