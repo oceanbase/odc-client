@@ -15,13 +15,13 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Table } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import styles from './index.less';
 import { ModalStore } from '@/store/modal';
-import getColumns from './columns';
 import { groupByPropertyName } from '@/util/utils';
+import { Button, Table } from 'antd';
+import React, { useEffect, useState } from 'react';
+import getColumns from './columns';
+import styles from './index.less';
 const LintResultTable: React.FC<{
   ctx?: any;
   session?: any;
@@ -43,6 +43,7 @@ const LintResultTable: React.FC<{
   sqlChanged,
   modalStore,
 }) => {
+  const [disabled, setDisabled] = useState<boolean>(false);
   const dataSource =
     lintResultSet?.map((resultSet, index) => {
       return {
@@ -52,6 +53,23 @@ const LintResultTable: React.FC<{
       };
     }) || [];
   const columns = getColumns(showLocate, sqlChanged, ctx);
+  useEffect(() => {
+    if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+      const violations = lintResultSet.reduce((pre, cur) => {
+        if (cur?.violations?.length === 0) {
+          return pre;
+        }
+        return pre.concat(...cur?.violations);
+      }, []);
+      if (violations?.some((violation) => violation?.level >= 1)) {
+        setDisabled(false);
+      } else {
+        setDisabled(true);
+      }
+    } else {
+      setDisabled(true);
+    }
+  }, [lintResultSet]);
   return (
     <div
       style={{
@@ -77,6 +95,7 @@ const LintResultTable: React.FC<{
           >
             <Button
               type="primary"
+              disabled={disabled}
               onClick={() => {
                 modalStore.changeCreateAsyncTaskModal(true, {
                   databaseId: session?.odcDatabase?.id,
