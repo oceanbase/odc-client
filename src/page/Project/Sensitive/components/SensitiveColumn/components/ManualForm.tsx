@@ -133,20 +133,6 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     }));
   const initDatabases = async () => {
     const rawData = await listDatabases(projectId);
-    const resData = rawData?.contents
-      ?.filter((content) => content?.dataSource?.dialectType !== ConnectionMode.MYSQL)
-      ?.map((content) => {
-        return {
-          label: content?.name,
-          value: content?.id,
-          environment: {
-            style: content?.environment?.style,
-            content: content?.environment?.name,
-          },
-          dataSourceName: content?.dataSource?.name,
-        };
-      });
-    // setDatabaseOptions(resData);
     setDatabases(rawData?.contents);
   };
   const handleDatabaseSelect = async (value: number) => {
@@ -251,6 +237,11 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
                 formatMessage({
                   id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose.1',
                 }) /* 请选择 */
+              }
+              filterOption={(input, option) =>
+                (option?.label?.props?.['data-label'] ?? '')
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               options={databaseOptions}
               onSelect={handleDatabaseSelect}
