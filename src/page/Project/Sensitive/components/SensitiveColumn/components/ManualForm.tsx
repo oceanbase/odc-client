@@ -156,7 +156,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
   const onClose = () => {
     return Modal.confirm({
       title: formatMessage({
-        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DoYouConfirmThatYou',
+        id:
+          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DoYouConfirmThatYou',
       }),
       //'确认要取消手动添加敏感列吗？'
       onOk: async () => {
@@ -181,7 +182,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
       width={800}
       title={
         formatMessage({
-          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManuallyAddSensitiveColumns',
+          id:
+            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManuallyAddSensitiveColumns',
         }) /* 手动添加敏感列 */
       }
       open={modalOpen}
@@ -198,7 +200,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
             <Button onClick={onClose}>
               {
                 formatMessage({
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Cancel.1',
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Cancel.1',
                 }) /* 取消 */
               }
             </Button>
@@ -235,7 +238,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
               maxTagCount="responsive"
               placeholder={
                 formatMessage({
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose.1',
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose.1',
                 }) /* 请选择 */
               }
               filterOption={(input, option) =>
@@ -254,7 +258,8 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
           <div className={styles.currentProject}>
             {
               formatMessage({
-                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.CurrentProject',
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.CurrentProject',
               }) /* 当前项目： */
             }
             {project?.name}
@@ -340,7 +345,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         if (successful) {
           message.success(
             formatMessage({
-              id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmittedSuccessfully',
+              id:
+                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmittedSuccessfully',
             }), //'提交成功'
           );
 
@@ -349,7 +355,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         } else {
           message.error(
             formatMessage({
-              id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmissionFailed',
+              id:
+                'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SubmissionFailed',
             }), //'提交失败'
           );
         }
@@ -632,7 +639,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
           <Empty
             description={
               formatMessage({
-                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ThereIsNoOptionalSensitive',
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ThereIsNoOptionalSensitive',
               }) //'所选数据库中没有可选的敏感列'
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -643,7 +651,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
           <Empty
             description={
               formatMessage({
-                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.OptionalSensitiveColumnsDoNot',
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.OptionalSensitiveColumnsDoNot',
               }) //'可选的敏感列中不包含搜索关键字'
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -657,7 +666,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
           <Empty
             description={
               formatMessage({
-                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.NoChoiceDatabase',
+                id:
+                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.NoChoiceDatabase',
               }) //'尚未选择数据库'
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -750,7 +760,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                             {
                               required: true,
                               message: formatMessage({
-                                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose',
+                                id:
+                                  'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose',
                               }), //'请选择'
                             },
                           ]}
@@ -778,19 +789,22 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                                     descriptionsData={[
                                       {
                                         label: formatMessage({
-                                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
+                                          id:
+                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod',
                                         }) /* 脱敏方式 */,
                                         value: maskRuleTypeMap?.[target?.type],
                                       },
                                       {
                                         label: formatMessage({
-                                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
+                                          id:
+                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData',
                                         }) /* 测试数据 */,
                                         value: target?.sampleContent,
                                       },
                                       {
                                         label: formatMessage({
-                                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
+                                          id:
+                                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview',
                                         }) /* 结果预览 */,
                                         value: target?.maskedContent,
                                       },
@@ -845,7 +859,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
       <div className={styles.label}>
         {
           formatMessage({
-            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ChooseSensitiveLandscape',
+            id:
+              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ChooseSensitiveLandscape',
           }) /* 选择敏感列 */
         }
       </div>
@@ -855,7 +870,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
             title={
               formatMessage(
                 {
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectColumnCheckColumns',
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectColumnCheckColumns',
                 },
                 {
                   checkedColumns: checkedColumns,
@@ -879,7 +895,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
             title={
               formatMessage(
                 {
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectedCheckColumnsItem',
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectedCheckColumnsItem',
                 },
                 {
                   checkedColumns: checkedColumns,
@@ -895,14 +912,16 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                 placement="left"
                 title={
                   formatMessage({
-                    id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.AreYouSureYouWant',
+                    id:
+                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.AreYouSureYouWant',
                   }) //'确定要清空已选对象吗？'
                 }
               >
                 <a>
                   {
                     formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Empty',
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Empty',
                     }) /* 清空 */
                   }
                 </a>
@@ -919,7 +938,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                 <Empty
                   description={
                     formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.HaveNotCheckedTheSensitive',
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.HaveNotCheckedTheSensitive',
                     }) //'尚未勾选敏感列'
                   }
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -930,7 +950,8 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
                 <Empty
                   description={
                     formatMessage({
-                      id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSelectedSensitiveColumnsDo',
+                      id:
+                        'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSelectedSensitiveColumnsDo',
                     }) //'已勾选的敏感列中不包含搜索关键字'
                   }
                   image={Empty.PRESENTED_IMAGE_SIMPLE}

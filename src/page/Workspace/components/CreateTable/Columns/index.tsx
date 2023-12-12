@@ -147,7 +147,7 @@ const Columns: React.FC<IProps> = function ({}) {
                     await pageContext.onRefresh();
                     setEditColumns(null);
                   },
-                  tip
+                  tip,
                 );
               }}
             >

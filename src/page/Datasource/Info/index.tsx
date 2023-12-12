@@ -198,8 +198,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                   id: 'odc.src.page.Datasource.Info.NoCurrentDataSourcePermissions',
                 }); //'无当前数据源权限'
                 editable = false;
-              }
-              else if (isInnerSchema) {
+              } else if (isInnerSchema) {
                 editable = true;
               } else if (bindProjectName) {
                 tip = formatMessage(
@@ -231,9 +230,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
                   >
                     {
                       value ||
-                      formatMessage({
-                        id: 'odc.src.page.Datasource.Info.UnpabledItems',
-                      }) //'未分配项目'
+                        formatMessage({
+                          id: 'odc.src.page.Datasource.Info.UnpabledItems',
+                        }) //'未分配项目'
                     }
                   </div>
                   <Tooltip title={tip}>

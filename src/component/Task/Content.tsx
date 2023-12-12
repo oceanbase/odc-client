@@ -291,13 +291,11 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     if (defaultTaskId) {
       this.setState({
         detailId: defaultTaskId,
-        detailType:
-        defaultTaskType ||
-          TaskType.ASYNC,
+        detailType: defaultTaskType || TaskType.ASYNC,
         detailVisible: true,
       });
     }
-  }
+  };
 
   private hasCreate = (key: string) => {
     const taskTypes = Object.values(TaskType);

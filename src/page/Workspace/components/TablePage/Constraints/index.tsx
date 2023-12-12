@@ -112,7 +112,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
                   setEditCheckConstraints(null);
                   setEditForeignConstraints(null);
                 },
-                tip
+                tip,
               );
             }}
             modified={modified}

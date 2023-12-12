@@ -284,7 +284,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               width: 240,
             }}
             options={rolesOptions}
-            optionFilterProp='name'
+            optionFilterProp="name"
             placeholder={
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose.1',

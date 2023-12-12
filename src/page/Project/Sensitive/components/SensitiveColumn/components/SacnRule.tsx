@@ -40,10 +40,12 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     const rawData = await getConnectionList({
       projectId: sensitiveContext.projectId,
     });
-    const resData = rawData?.contents?.filter(content => content?.dialectType !== ConnectionMode.MYSQL)?.map((content) => ({
-      label: content.name,
-      value: content.id,
-    }));
+    const resData = rawData?.contents
+      ?.filter((content) => content?.dialectType !== ConnectionMode.MYSQL)
+      ?.map((content) => ({
+        label: content.name,
+        value: content.id,
+      }));
     setDataSourceOptions(resData);
   };
   const initDatabases = async (

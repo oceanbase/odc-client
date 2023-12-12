@@ -86,7 +86,12 @@ const TaskManaerPage = (props) => {
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content projectId={projectId} inProject={inProject} defaultTaskType={defaultTaskType} defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null} />
+        <Content
+          projectId={projectId}
+          inProject={inProject}
+          defaultTaskType={defaultTaskType}
+          defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
+        />
         <CreateModals projectId={projectId} theme="white" />
       </div>
     </>

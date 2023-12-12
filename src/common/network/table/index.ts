@@ -128,7 +128,7 @@ export async function generateUpdateTableDDL(
   oldData: Partial<ITableModel>,
   sessionId: string,
   dbName: string,
-): Promise<{ sql: string; tip: string; }> {
+): Promise<{ sql: string; tip: string }> {
   const session = sessionManager.sessionMap.get(sessionId);
   const res = await request.post(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(

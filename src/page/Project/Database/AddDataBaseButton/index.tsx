@@ -130,7 +130,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               >
                 <Select
                   showSearch
-                  optionFilterProp='title'
+                  optionFilterProp="title"
                   loading={dataSourceListLoading || dataSourceLoading}
                   style={{
                     width: 'calc(100% - 10px)',

@@ -291,7 +291,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                       await tableContext.onRefresh();
                       setEditPartitions(null);
                     },
-                    tip
+                    tip,
                   );
                 }}
               >

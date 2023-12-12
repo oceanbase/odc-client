@@ -160,7 +160,7 @@ export function getColumnSizeMapFromColumns(columns: any[]): IColumnSizeMap {
           maxValue: new BigNumber(2).pow(precision).minus(1).toString(),
           minValue: '0',
           scale: 0,
-        }
+        };
         break;
       }
       case 'TINYTEXT':

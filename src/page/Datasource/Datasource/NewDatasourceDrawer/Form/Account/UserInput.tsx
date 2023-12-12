@@ -62,7 +62,9 @@ const UserInput: React.FC<IProps> = forwardRef(function (props, ref) {
       ref={ref as any}
       value={value}
       filterOption={(inputValue, option) => {
-        return !inputValue || option?.value?.toLowerCase()?.indexOf(inputValue?.toLowerCase()) !== -1;
+        return (
+          !inputValue || option?.value?.toLowerCase()?.indexOf(inputValue?.toLowerCase()) !== -1
+        );
       }}
       onChange={onChange}
       options={users?.map((user) => {

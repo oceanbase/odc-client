@@ -106,7 +106,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
                 await pageContext.onRefresh();
                 tableContext.setIndexes(null);
               },
-              tip
+              tip,
             );
           }}
         >
