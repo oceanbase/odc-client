@@ -27,16 +27,18 @@ export default forwardRef<any, { session: SessionStore }>(function TableExecuteM
   const [visible, setVisible] = useState(false);
   const [sql, setSQL] = useState('');
   const [tableName, setTableName] = useState('');
+  const [tip, setTip] = useState<string>(null);
   const promiseResolveRef = useRef<(v: any) => void>();
   const onSuccessRef = useRef<() => Promise<void>>();
   useImperativeHandle(
     ref,
     () => {
       return {
-        showExecuteModal: async (sql, tableName, onSuccess) => {
+        showExecuteModal: async (sql, tableName, onSuccess, tip?: string) => {
           const promise = new Promise(async (resolve) => {
             setSQL(sql);
             setTableName(tableName);
+            setTip(tip);
             promiseResolveRef.current = resolve;
             onSuccessRef.current = onSuccess;
             setVisible(true);
@@ -53,6 +55,7 @@ export default forwardRef<any, { session: SessionStore }>(function TableExecuteM
       visible={visible}
       readonly
       sql={sql}
+      tip={tip}
       onCancel={() => {
         promiseResolveRef.current?.(false);
         promiseResolveRef.current = null;

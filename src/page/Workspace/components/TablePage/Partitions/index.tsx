@@ -270,7 +270,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                   setEditPartitions(null);
                 }}
                 onOk={async () => {
-                  const updateTableDML = await generateUpdateTableDDL(
+                  const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                     {
                       ...tableContext.table,
                       partitions: partitions,
@@ -291,6 +291,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                       await tableContext.onRefresh();
                       setEditPartitions(null);
                     },
+                    tip
                   );
                 }}
               >

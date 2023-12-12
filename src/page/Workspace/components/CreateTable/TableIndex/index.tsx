@@ -84,7 +84,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
           }}
           onOk={async () => {
             const newData = cloneDeep(tableContext.indexes);
-            const updateTableDML = await generateUpdateTableDDL(
+            const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
               {
                 ...pageContext.table,
                 indexes: newData,
@@ -106,6 +106,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
                 await pageContext.onRefresh();
                 tableContext.setIndexes(null);
               },
+              tip
             );
           }}
         >

@@ -97,7 +97,7 @@ const AddPartitionWithTableNameModal = forwardRef<any, IProps>(function ({ sessi
                   break;
                 }
               }
-              const updateTableDML = await generateUpdateTableDDL(
+              const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                 {
                   ...table,
                   partitions: newValues,
