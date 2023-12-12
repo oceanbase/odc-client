@@ -83,7 +83,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   const { collation, character, ...rest } = data;
                   const newData = cloneDeep(table);
                   Object.assign(newData.info, rest);
-                  const updateTableDML = await generateUpdateTableDDL(
+                  const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                     newData,
                     table,
                     session.sessionId,
@@ -121,6 +121,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                       }
                       setIsEditing(false);
                     },
+                    tip
                   );
                 }
               }}

@@ -85,7 +85,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
             }}
             onOk={async () => {
               const newData = cloneDeep(tableContext.table);
-              const updateTableDML = await generateUpdateTableDDL(
+              const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                 {
                   ...tableContext.table,
                   primaryConstraints,
@@ -112,6 +112,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
                   setEditCheckConstraints(null);
                   setEditForeignConstraints(null);
                 },
+                tip
               );
             }}
             modified={modified}

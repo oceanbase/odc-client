@@ -127,7 +127,7 @@ const Columns: React.FC<IProps> = function ({}) {
               }}
               onOk={async () => {
                 const newColumns = cloneDeep(editColumns);
-                const updateTableDML = await generateUpdateTableDDL(
+                const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                   {
                     ...pageContext.table,
                     columns: newColumns,
@@ -147,6 +147,7 @@ const Columns: React.FC<IProps> = function ({}) {
                     await pageContext.onRefresh();
                     setEditColumns(null);
                   },
+                  tip
                 );
               }}
             >
