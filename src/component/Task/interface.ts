@@ -28,6 +28,7 @@ export interface ITaskDetailModalProps {
   taskTools: React.ReactNode;
   isLoading: boolean;
   detailType: TaskDetailType;
+  detailId: number;
   task: TaskDetail<TaskRecordParameters>;
   subTasks: TaskRecord<IAsyncTaskParams>[];
   opRecord: TaskRecord<any>[];
