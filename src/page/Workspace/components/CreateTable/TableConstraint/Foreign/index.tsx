@@ -120,6 +120,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
         minHeight="100%"
         initialColumns={gridColumns}
         enableFilterRow
+        enableFlushDelete
         initialRows={rows as any[]}
         enableRowRecord={true}
         enableColumnRecord={false}
