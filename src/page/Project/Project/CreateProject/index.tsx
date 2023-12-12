@@ -29,6 +29,8 @@ export interface ICreateProjectFormData {
   owner: number[];
   dba: number[];
   developer: number[];
+  securityAdministrator: number[];
+  participant: number[];
   description: string;
 }
 
@@ -121,6 +123,40 @@ export default React.forwardRef<{ form: FormInstance<ICreateProjectFormData> }>(
           label={
             <HelpDoc leftText doc="projectDev">
               {formatMessage({ id: 'odc.Project.CreateProject.CommonMember' }) /*普通成员*/}
+            </HelpDoc>
+          }
+        >
+          <Select
+            loading={loading}
+            mode="multiple"
+            optionFilterProp="label"
+            style={{ width: 240 }}
+            options={userOptions}
+            placeholder={formatMessage({ id: 'odc.Project.CreateProject.PleaseSelect' })} /*请选择*/
+          />
+        </Form.Item>
+        <Form.Item
+          name={'securityAdministrator'}
+          label={
+            <HelpDoc leftText doc="projectSA">
+              安全管理员
+            </HelpDoc>
+          }
+        >
+          <Select
+            loading={loading}
+            mode="multiple"
+            optionFilterProp="label"
+            style={{ width: 240 }}
+            options={userOptions}
+            placeholder={formatMessage({ id: 'odc.Project.CreateProject.PleaseSelect' })} /*请选择*/
+          />
+        </Form.Item>
+        <Form.Item
+          name={'participant'}
+          label={
+            <HelpDoc leftText doc="participant">
+              参与者
             </HelpDoc>
           }
         >
