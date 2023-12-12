@@ -121,7 +121,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                       }
                       setIsEditing(false);
                     },
-                    tip
+                    tip,
                   );
                 }
               }}

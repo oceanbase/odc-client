@@ -346,17 +346,25 @@ export class SQLStore {
     let res;
     let dbms;
     if (plSchema.plType === PLType.PROCEDURE) {
-      res = await executePL({
-        type: PLType.PROCEDURE,
-        procedure: { ...plSchema?.procedure, params: plSchema?.params },
-        anonymousBlockDdl,
-      }, sessionId, ignoreError);
+      res = await executePL(
+        {
+          type: PLType.PROCEDURE,
+          procedure: { ...plSchema?.procedure, params: plSchema?.params },
+          anonymousBlockDdl,
+        },
+        sessionId,
+        ignoreError,
+      );
     } else if (plSchema.plType === PLType.FUNCTION) {
-      res = await await executePL({
-        type: PLType.FUNCTION,
-        function: { ...plSchema?.function, params: plSchema?.params },
-        anonymousBlockDdl,
-      }, sessionId, ignoreError);
+      res = await await executePL(
+        {
+          type: PLType.FUNCTION,
+          function: { ...plSchema?.function, params: plSchema?.params },
+          anonymousBlockDdl,
+        },
+        sessionId,
+        ignoreError,
+      );
     } else {
       const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
       if (data?.invalid) {

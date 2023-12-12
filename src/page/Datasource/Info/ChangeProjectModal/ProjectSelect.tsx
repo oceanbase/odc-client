@@ -31,7 +31,7 @@ interface IProps {
   defaultProject?: {
     projectId: number;
     projectName: string;
-  }
+  };
 }
 
 export default function ProjectSelect({
@@ -77,8 +77,8 @@ export default function ProjectSelect({
           ) : null}
           {!haveDefaultProject && defaultProject ? (
             <Select.Option value={defaultProject?.projectId} key={defaultProject?.projectId}>
-            {defaultProject?.projectName}
-          </Select.Option>
+              {defaultProject?.projectName}
+            </Select.Option>
           ) : null}
         </Select>
         <Checkbox

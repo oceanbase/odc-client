@@ -269,7 +269,9 @@ const Database: React.FC<IProps> = ({ id }) => {
                 project?.currentUserResourceRoles?.filter((roles) =>
                   [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
                 )?.length === 0;
-              const disableTransfer = !!record?.dataSource?.projectId && !config?.schema?.innerSchema?.includes(record?.name);
+              const disableTransfer =
+                !!record?.dataSource?.projectId &&
+                !config?.schema?.innerSchema?.includes(record?.name);
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (

@@ -142,22 +142,29 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
   ].includes(task?.type);
-  function onShare () {
-    const url = location.origin + location.pathname + `#/task?taskId=${detailId}&taskType=${task?.type}&organizationId=${login.organizationId}`;
+  function onShare() {
+    const url =
+      location.origin +
+      location.pathname +
+      `#/task?taskId=${detailId}&taskType=${task?.type}&organizationId=${login.organizationId}`;
     copy(url);
-    message.success("复制成功");
+    message.success('复制成功');
   }
   return (
     <Drawer
       open={visible}
       width={width}
       onClose={onClose}
-      title={<div className={styles.title}>
-        {formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskDetails',
-      })}
-      <a className={styles.share} onClick={onShare}>分享 <ShareAltOutlined /></a>
-      </div>}
+      title={
+        <div className={styles.title}>
+          {formatMessage({
+            id: 'odc.component.CommonTaskDetailModal.TaskDetails',
+          })}
+          <a className={styles.share} onClick={onShare}>
+            分享 <ShareAltOutlined />
+          </a>
+        </div>
+      }
       /* 任务详情 */
       destroyOnClose
       className={styles.detailDrawer}

@@ -49,8 +49,8 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
     endpoint: endpoint,
     region: region,
     httpOptions: {
-      timeout: 60*15*1000
-    }
+      timeout: 60 * 15 * 1000,
+    },
   });
   const isSuccess = await new Promise((resolve) => {
     s3.putObject(
