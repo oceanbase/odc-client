@@ -49,6 +49,8 @@ interface IProps {
   projectId?: number;
   isMultiPage?: boolean;
   inProject?: boolean;
+  defaultTaskId?: number;
+  defaultTaskType?: TaskType;
 }
 
 interface IState {
@@ -280,6 +282,20 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     const { inProject, projectId } = this.props;
     if (inProject && projectId) {
       this.fetchProject(projectId);
+    }
+    this.openDefaultTask();
+  }
+
+  private openDefaultTask = () => {
+    const { defaultTaskId, defaultTaskType } = this.props;
+    if (defaultTaskId) {
+      this.setState({
+        detailId: defaultTaskId,
+        detailType:
+        defaultTaskType ||
+          TaskType.ASYNC,
+        detailVisible: true,
+      });
     }
   }
 

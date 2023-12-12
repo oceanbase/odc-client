@@ -20,7 +20,7 @@ import type { ITaskDetailModalProps } from '@/component/Task/interface';
 import { TaskDetailType } from '@/component/Task/interface';
 import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Radio, Spin } from 'antd';
+import { Drawer, Radio, Spin, message } from 'antd';
 import React from 'react';
 import { isCycleTask } from '../../helper';
 import styles from './index.less';
@@ -31,6 +31,9 @@ import TaskOperationRecord from './TaskOperationRecord';
 import TaskProgress from './TaskProgress';
 import TaskRecord from './TaskRecord';
 import TaskResult from './TaskResult';
+import { ShareAltOutlined } from '@ant-design/icons';
+import login from '@/store/login';
+import copy from 'copy-to-clipboard';
 
 const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
   const {
@@ -111,7 +114,7 @@ interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
 }
 
 const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
-  const { width = 750, visible, task, taskTools, detailType, hasFlow, onClose } = props;
+  const { width = 750, visible, task, taskTools, detailType, detailId, hasFlow, onClose } = props;
   const hasInfo = [
     TaskType.ASYNC,
     TaskType.IMPORT,
@@ -139,14 +142,22 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
   ].includes(task?.type);
+  function onShare () {
+    const url = location.origin + location.pathname + `#/task?taskId=${detailId}&taskType=${task?.type}&organizationId=${login.organizationId}`;
+    copy(url);
+    message.success("复制成功");
+  }
   return (
     <Drawer
       open={visible}
       width={width}
       onClose={onClose}
-      title={formatMessage({
+      title={<div className={styles.title}>
+        {formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskDetails',
       })}
+      <a className={styles.share} onClick={onShare}>分享 <ShareAltOutlined /></a>
+      </div>}
       /* 任务详情 */
       destroyOnClose
       className={styles.detailDrawer}
