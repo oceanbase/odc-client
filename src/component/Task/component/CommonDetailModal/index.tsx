@@ -160,9 +160,9 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           {formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskDetails',
           })}
-          <a className={styles.share} onClick={onShare}>
+          {login.isPrivateSpace() ? <div></div> : <a className={styles.share} onClick={onShare}>
             分享 <ShareAltOutlined />
-          </a>
+          </a>}
         </div>
       }
       /* 任务详情 */
