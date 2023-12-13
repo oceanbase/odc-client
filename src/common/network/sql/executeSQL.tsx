@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import RuleResult from '@/component/SQLLintResult/RuleResult';
-import { ISqlExecuteResultStatus } from '@/d.ts';
 import type { ISqlExecuteResult } from '@/d.ts';
+import { ISqlExecuteResultStatus } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
-import modal from '@/store/modal';
-import sessionManager from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { Modal, message } from 'antd';
+import { message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 export interface IExecuteSQLParams {
   sql: string;
@@ -53,10 +50,12 @@ export interface ISQLExecuteTask {
  * 包含拦截信息和执行结果
  */
 export interface IExecuteTaskResult {
+  hasLintResults?: boolean;
   invalid: boolean;
   executeSuccess: boolean;
   violatedRules: ISQLExecuteTaskSQL['violatedRules'];
   executeResult: ISqlExecuteResult[];
+  lintResults?: ISQLExecuteTaskSQL[];
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -186,24 +185,14 @@ export default async function executeSQL(
       violatedRules: [],
     };
   }
-  if (violatedRules?.length) {
-    /**
-     * 拦截
-     * level = 1: 发起审批
-     * level = 2: 拒绝执行
-     */
-    const session = sessionManager.sessionMap.get(sessionId);
-    const isBan = violatedRules?.find((rule) => rule.level === 2);
-    modal.changeCreateAsyncTaskModal(true, {
-      sql: serverParams.sql,
-      databaseId: session?.database?.databaseId,
-      rules: taskInfo?.sqls,
-    });
+  if (!taskInfo?.requestId && taskInfo?.sqls?.length) {
     return {
+      hasLintResults: true,
       invalid: true,
       executeSuccess: false,
       executeResult: [],
       violatedRules: violatedRules,
+      lintResults: taskInfo?.sqls,
     };
   }
   const requestId = taskInfo?.requestId;

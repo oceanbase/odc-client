@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
@@ -43,6 +44,7 @@ import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 import utils, { EHighLight } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
@@ -55,13 +57,11 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
-import ExecPlan from './ExecPlan';
-import ExecDetail from './ExecDetail';
 import SQLResultSet, { recordsTabKey, sqlLintTabKey } from '../SQLResultSet';
-import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
 import Trace from '../Trace';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import ExecDetail from './ExecDetail';
+import ExecPlan from './ExecPlan';
+import styles from './index.less';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -92,6 +92,7 @@ interface ISQLPageState {
   lintResultSet: ISQLLintReuslt[];
   executeOrPreCheckSql: string;
   sqlChanged: boolean;
+  baseOffset: number;
 }
 
 interface IProps {
@@ -139,6 +140,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     lintResultSet: null,
     executeOrPreCheckSql: null,
     sqlChanged: false,
+    baseOffset: 0,
     isSavingScript: false,
   };
 
@@ -318,20 +320,41 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
-    await this.executeSQL(
+    const result = await this.executeSQL(
       sqlToExecute,
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
-    this.setState({
-      executeOrPreCheckSql: sqlToExecute,
-      sqlChanged: false,
-    });
+    if (result?.hasLintResults) {
+      const lintResultSet = result?.lintResults.reduce((pre, cur) => {
+        if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
+          return pre.concat({
+            sql: cur?.sqlTuple?.executedSql,
+            violations: cur?.violatedRules?.map((item) => item?.violation),
+          });
+        } else {
+          return pre;
+        }
+      }, []);
+      const range = await utils.getCurrentSelectRange(this.editor);
+      this.setState({
+        baseOffset: range.begin === range.end ? 0 : range.begin,
+        resultSetTabActiveKey: sqlLintTabKey,
+        lintResultSet: lintResultSet?.length ? lintResultSet : null,
+        executeOrPreCheckSql: sqlToExecute,
+        sqlChanged: false,
+      });
+    } else {
+      this.setState({
+        baseOffset: 0,
+        lintResultSet: null,
+        executeOrPreCheckSql: sqlToExecute,
+        sqlChanged: false,
+      });
+    }
   }; // 执行选中的 SQL
 
   public handleExecuteSelectedSQL = async () => {
-    const { sqlStore } = this.props;
-
     let selectedSQL = this.editor.getModel().getValueInRange(this.editor.getSelection()); // 如果没有选中，尝试获取当前语句
     let begin, end;
     if (!selectedSQL) {
@@ -406,14 +429,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }; // 保存 SQL
 
   public handleCreateSQL = async (script: ISQLScript) => {
-    const {
-      userStore,
-      pageStore,
-      pageKey,
-      onSetUnsavedModalContent,
-      onChangeSaved,
-      params,
-    } = this.props;
+    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
+      this.props;
     let existedScriptId;
     const newFiles = await newScript(
       [new File([params.scriptText], script.objectName)],
@@ -501,7 +518,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         );
         return;
       }
+      const range = await utils.getCurrentSelectRange(this.editor);
       this.setState({
+        baseOffset: range.begin === range.end ? 0 : range.begin,
         resultSetTabActiveKey: sqlLintTabKey,
         lintResultSet: result,
       });
@@ -949,6 +968,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       pageLoading,
       lintResultSet,
       sqlChanged,
+      baseOffset,
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
@@ -996,6 +1016,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 onUpdateEditing={this.onUpdateEditing}
                 editingMap={editingMap}
                 session={session}
+                baseOffset={baseOffset}
                 lintResultSet={lintResultSet}
                 sqlChanged={sqlChanged}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}
@@ -1094,6 +1115,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.sessionId,
       this.getSession()?.database?.dbName,
     );
+    if (results?.hasLintResults) {
+      return results;
+    }
     if (!results || results?.invalid) {
       return;
     }

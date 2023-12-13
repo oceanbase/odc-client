@@ -25,6 +25,7 @@ import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
+import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
@@ -32,9 +33,8 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
-import SQLResultLog from './SQLResultLog';
-import { ModalStore } from '@/store/modal';
 import LintResultTable from './LintResultTable';
+import SQLResultLog from './SQLResultLog';
 
 const { TabPane } = Tabs;
 
@@ -56,6 +56,7 @@ interface IProps {
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
   sqlChanged?: boolean;
+  baseOffset: number;
 
   onCloseResultSet: (resultSetKey: string) => void;
   onChangeResultSetTab?: (tabKey: string) => void;
@@ -88,6 +89,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     session,
     lintResultSet,
     sqlChanged,
+    baseOffset,
     onSubmitRows,
     onExportResultSet,
     onChangeResultSetTab,
@@ -267,6 +269,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               ctx={ctx?.editor}
               lintResultSet={lintResultSet}
               sqlChanged={sqlChanged}
+              baseOffset={baseOffset}
             />
           </TabPane>
         ) : null}
