@@ -339,6 +339,9 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
           pagination: {
             pageSize: 10,
           },
+          scroll: {
+            x: 650,
+          },
         }}
       />
 

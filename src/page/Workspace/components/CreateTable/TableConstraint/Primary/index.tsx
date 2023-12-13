@@ -63,6 +63,10 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
     gridRef.current?.setRows(rows);
   }, [rows]);
 
+  useEffect(() => {
+    gridRef.current?.setColumns(gridColumns);
+  }, [gridColumns]);
+
   return (
     <TableCardLayout
       toolbar={

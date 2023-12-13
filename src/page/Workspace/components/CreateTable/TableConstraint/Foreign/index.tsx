@@ -97,7 +97,6 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
                 const row = {
                   ...defaultForeignConstraint,
                   key: generateUniqKey(),
-                  _created: true,
                 };
                 gridRef.current?.addRows([row]);
               }}
