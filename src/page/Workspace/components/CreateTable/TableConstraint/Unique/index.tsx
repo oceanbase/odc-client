@@ -78,7 +78,6 @@ const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
                 const row = {
                   ...defaultUniqueConstraints,
                   key: generateUniqKey(),
-                  _created: true,
                 };
                 gridRef.current?.addRows([row]);
               }}

@@ -132,7 +132,9 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
               pagination: {
                 pageSize: 15,
               },
-
+              scroll: {
+                x: 650,
+              },
               dataSource: syncTable,
               columns: syncColumns,
             }}
@@ -154,7 +156,9 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
               pagination: {
                 pageSize: 15,
               },
-
+              scroll: {
+                x: 650,
+              },
               dataSource: unSyncTable,
               columns: unSyncColumns,
             }}

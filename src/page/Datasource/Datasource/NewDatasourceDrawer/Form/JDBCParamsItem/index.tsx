@@ -100,11 +100,9 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
   const onRowsChange = useCallback(
     (rows) => {
       const result = {};
-      rows
-        ?.filter((item) => !item?._deleted)
-        .forEach((row: any) => {
-          result[row.name] = row.value;
-        });
+      rows.forEach((row: any) => {
+        result[row.name] = row.value;
+      });
       onChange(result);
     },
     [onChange],

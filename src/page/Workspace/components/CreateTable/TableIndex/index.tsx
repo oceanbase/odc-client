@@ -118,7 +118,6 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
                 const row = {
                   ...defaultIndex,
                   key: generateUniqKey(),
-                  _created: true,
                 };
                 gridRef.current?.addRows([row]);
               }}

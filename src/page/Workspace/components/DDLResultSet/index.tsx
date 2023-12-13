@@ -317,7 +317,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const handleAddRow = useCallback(() => {
     const row = {
       _rowIndex: generateUniqKey(),
-      _created: true,
     };
     gridRef.current?.addRows([row]);
   }, [columns, rows]);
@@ -349,7 +348,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       });
       const row = {
         ...clonedRow,
-        _created: true,
         _deleted: false,
         modified: false,
         _originRow: null,
