@@ -38,6 +38,7 @@ const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
 
 class SessionStore {
+  public createTime: number;
   /** 数据库元信息 */
   @observable
   public charsets: string[] = [];
@@ -113,7 +114,13 @@ class SessionStore {
   constructor(connection: IDatasource, database: IDatabase) {
     this.connection = connection;
     this.odcDatabase = database;
+    this.createTime = Date.now();
   }
+
+   public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
+    this.connection = connection;
+    this.odcDatabase = database;
+   }
 
   static async createInstance(datasource: IDatasource, database: IDatabase) {
     const session = new SessionStore(datasource, database);
