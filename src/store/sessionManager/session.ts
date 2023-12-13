@@ -103,6 +103,7 @@ class SessionStore {
 
   public sessionId: string;
 
+  @observable.shallow
   public connection: IDatasource = null;
 
   public isAlive: boolean = false;
