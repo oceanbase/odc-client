@@ -159,8 +159,8 @@ class ProcedurePage extends Component<
 
   public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
     const { procedure } = this.state;
-    if (prevState.procedure.params !== procedure.params) {
-      this.gridRef.current?.setRows?.(procedure.params);
+    if (prevState.procedure?.params !== procedure?.params) {
+      this.gridRef.current?.setRows?.(procedure?.params ?? []);
     }
   }
 

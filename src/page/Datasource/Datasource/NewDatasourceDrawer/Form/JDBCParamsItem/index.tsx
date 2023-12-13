@@ -57,7 +57,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
             key: generateUniqKey(),
           };
         }) || [];
-      gridRef.current?.setRows(rows);
+      gridRef.current?.setRows?.(rows);
       setInitialRows(rows);
     }
   }, [value]);

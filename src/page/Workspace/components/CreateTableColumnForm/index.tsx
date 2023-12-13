@@ -104,7 +104,7 @@ export default class CreateTableColumnForm extends Component<
   public componentDidUpdate(prevProps: Readonly<IProps>) {
     const { columns } = this.props;
     if (prevProps.columns !== columns) {
-      this.gridRef.current?.setRows?.(columns);
+      this.gridRef.current?.setRows?.(columns ?? []);
     }
   }
 

@@ -174,7 +174,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
 
   useEffect(() => {
     const rows = getRowsByPartType(partType, partitions);
-    gridRef.current?.setRows(rows);
+    gridRef.current?.setRows?.(rows ?? []);
   }, [partType, partitions]);
 
   switch (partType) {

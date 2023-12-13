@@ -60,11 +60,11 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
   }, [tableContext.primaryConstraints]);
 
   useEffect(() => {
-    gridRef.current?.setRows(rows);
+    gridRef.current?.setRows?.(rows ?? []);
   }, [rows]);
 
   useEffect(() => {
-    gridRef.current?.setColumns(gridColumns);
+    gridRef.current?.setColumns?.(gridColumns ?? []);
   }, [gridColumns]);
 
   return (

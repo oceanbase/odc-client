@@ -127,7 +127,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
 
   useEffect(() => {
     if (dataInColumnMode && visible) {
-      gridRef.current?.setRows(dataInColumnMode);
+      gridRef.current?.setRows?.(dataInColumnMode);
     }
   }, [dataInColumnMode, visible]);
 

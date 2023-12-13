@@ -67,11 +67,11 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
   }, [tableContext.indexes]);
 
   useEffect(() => {
-    gridRef.current?.setRows(rows);
+    gridRef.current?.setRows?.(rows ?? []);
   }, [rows]);
 
   useEffect(() => {
-    gridRef.current?.setColumns(gridColumns);
+    gridRef.current?.setColumns?.(gridColumns ?? []);
   }, [gridColumns]);
 
   return (

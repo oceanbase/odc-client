@@ -77,11 +77,11 @@ const Columns: React.FC<IProps> = function ({}) {
   }, [displayColumns]);
 
   useEffect(() => {
-    gridRef.current?.setRows(rows);
+    gridRef.current?.setRows?.(rows ?? []);
   }, [rows]);
 
   useEffect(() => {
-    gridRef.current?.setColumns(gridColumns);
+    gridRef.current?.setColumns?.(gridColumns ?? []);
   }, [gridColumns]);
 
   const focusRowIdx = selectedRowsIdx?.length === 1 ? selectedRowsIdx?.[0] : -1;

@@ -56,11 +56,11 @@ const CheckConstraint: React.FC<IProps> = function ({ modified }) {
   }, [tableContext.checkConstraints]);
 
   useEffect(() => {
-    gridRef.current?.setRows(rows);
+    gridRef.current?.setRows?.(rows ?? []);
   }, [rows]);
 
   useEffect(() => {
-    gridRef.current?.setColumns(gridColumns);
+    gridRef.current?.setColumns?.(gridColumns ?? []);
   }, [gridColumns]);
 
   return (
