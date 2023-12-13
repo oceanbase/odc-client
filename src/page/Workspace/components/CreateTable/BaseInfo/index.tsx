@@ -38,7 +38,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
   const model = tableContext.info;
   const session = tableContext.session;
   const { collations, charsets } = session;
-  const config = useTableConfig(session.connection.dialectType);
+  const config = useTableConfig(session.connection?.dialectType);
 
   useEffect(() => {
     form.setFieldsValue(model);

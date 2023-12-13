@@ -119,8 +119,8 @@ class SessionStore {
   }
 
    public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
-    this.connection = connection;
-    this.odcDatabase = database;
+    this.connection = connection || this.connection;
+    this.odcDatabase = database || this.odcDatabase;
    }
 
   static async createInstance(datasource: IDatasource, database: IDatabase) {
