@@ -632,7 +632,12 @@ const CreateModal: React.FC<IProps> = (props) => {
               marginBottom: '12px',
             }}
             onClick={preCheck}
-            disabled={!databaseId || !sqlContent || sqlContentType === SQLContentType.FILE}
+            disabled={
+              !session?.sessionId ||
+              !databaseId ||
+              !sqlContent ||
+              sqlContentType === SQLContentType.FILE
+            }
             loading={preCheckLoading}
           >
             {
@@ -673,6 +678,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             hasExtraOpt={false}
             lintResultSet={lintResultSet}
             sqlChanged={sqlChanged}
+            baseOffset={0}
           />
         )}
         <Divider />

@@ -19,9 +19,14 @@ import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ModalStore } from '@/store/modal';
 import { groupByPropertyName } from '@/util/utils';
 import { Button, Table } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import getColumns from './columns';
 import styles from './index.less';
+const LintResultTip = {
+  default: '当前 SQL 可直接执行',
+  suggest: '当前 SQL 存在需要审批项，请发起审批或修改后再执行',
+  must: '当前 SQL 存在必须改进项，请修改后再执行',
+};
 const LintResultTable: React.FC<{
   ctx?: any;
   session?: any;
@@ -30,6 +35,7 @@ const LintResultTable: React.FC<{
   pageSize?: number;
   showLocate?: boolean;
   lintResultSet?: ISQLLintReuslt[];
+  baseOffset?: number;
   sqlChanged?: boolean;
   modalStore?: ModalStore;
 }> = ({
@@ -40,10 +46,12 @@ const LintResultTable: React.FC<{
   pageSize = 0,
   showLocate = true,
   lintResultSet,
+  baseOffset = 0,
   sqlChanged,
   modalStore,
 }) => {
   const [disabled, setDisabled] = useState<boolean>(false);
+  const [tip, setTip] = useState<string>('');
   const dataSource =
     lintResultSet?.map((resultSet, index) => {
       return {
@@ -52,7 +60,6 @@ const LintResultTable: React.FC<{
         rules: groupByPropertyName(resultSet?.violations, 'level'),
       };
     }) || [];
-  const columns = getColumns(showLocate, sqlChanged, ctx);
   useEffect(() => {
     if (Array.isArray(lintResultSet) && lintResultSet?.length) {
       const violations = lintResultSet.reduce((pre, cur) => {
@@ -61,15 +68,51 @@ const LintResultTable: React.FC<{
         }
         return pre.concat(...cur?.violations);
       }, []);
-      if (violations?.some((violation) => violation?.level >= 1)) {
-        setDisabled(false);
-      } else {
+      if (violations?.some((violation) => violation?.level === 2)) {
         setDisabled(true);
+        setTip(LintResultTip.must);
+      } else if (violations?.every((violation) => violation?.level === 2)) {
+        setDisabled(true);
+        setTip(LintResultTip.default);
+      } else {
+        setDisabled(false);
+        setTip(LintResultTip.suggest);
       }
     } else {
       setDisabled(true);
     }
   }, [lintResultSet]);
+  const CallbackTable = useCallback(() => {
+    const columns = getColumns(showLocate, sqlChanged, ctx, baseOffset);
+    return (
+      <Table
+        rowKey="row"
+        className="o-table--no-lr-border"
+        bordered={true}
+        columns={columns}
+        dataSource={dataSource || []}
+        scroll={
+          resultHeight
+            ? {
+                y: resultHeight,
+              }
+            : {}
+        }
+        pagination={
+          pageSize
+            ? {
+                position: ['bottomRight'],
+                pageSize,
+                hideOnSinglePage: true,
+              }
+            : {
+                position: ['bottomRight'],
+                hideOnSinglePage: true,
+              }
+        }
+      />
+    );
+  }, [baseOffset, lintResultSet]);
   return (
     <div
       style={{
@@ -86,20 +129,14 @@ const LintResultTable: React.FC<{
         }}
       >
         {hasExtraOpt && (
-          <div
-            style={{
-              padding: '12px',
-              display: 'flex',
-              gap: '8px',
-            }}
-          >
+          <div className={styles.lintResultTableHeader}>
             <Button
               type="primary"
               disabled={disabled}
               onClick={() => {
                 modalStore.changeCreateAsyncTaskModal(true, {
                   databaseId: session?.odcDatabase?.id,
-                  sql: ctx?.getValue(),
+                  sql: ctx?.getSelectionContent() || ctx?.getValue(),
                 });
               }}
             >
@@ -111,6 +148,7 @@ const LintResultTable: React.FC<{
              */
               }
             </Button>
+            <div className={styles.tip}>{tip}</div>
           </div>
         )}
         <div
@@ -119,32 +157,7 @@ const LintResultTable: React.FC<{
             flexGrow: 1,
           }}
         >
-          <Table
-            rowKey="row"
-            className="o-table--no-lr-border"
-            bordered={true}
-            columns={columns}
-            dataSource={dataSource || []}
-            scroll={
-              resultHeight
-                ? {
-                    y: resultHeight,
-                  }
-                : {}
-            }
-            pagination={
-              pageSize
-                ? {
-                    position: ['bottomRight'],
-                    pageSize,
-                    hideOnSinglePage: true,
-                  }
-                : {
-                    position: ['bottomRight'],
-                    hideOnSinglePage: true,
-                  }
-            }
-          />
+          <CallbackTable />
         </div>
       </div>
     </div>

@@ -321,10 +321,12 @@ const utils = {
     );
   },
 
-  async setPositionAndScroll(editor: IEditor, offset: number) {
+  async setPositionAndScroll(editor: IEditor, offset: number, needUpdatePosition: boolean = true) {
     const codeEditor = editor;
     codeEditor.focus();
-    codeEditor.setPosition(codeEditor.getModel().getPositionAt(offset));
+    if (needUpdatePosition) {
+      codeEditor.setPosition(codeEditor.getModel().getPositionAt(offset));
+    }
     codeEditor.revealPosition(codeEditor.getModel().getPositionAt(offset));
   },
   // snippt - 在编辑器光标处插入 snippt

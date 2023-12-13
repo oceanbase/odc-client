@@ -15,11 +15,16 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
-import { Space, Popover, Button, Tooltip } from 'antd';
-import utils, { IEditor } from '@/util/editor';
 import { levelMap } from '@/page/Secure/interface';
+import utils, { IEditor } from '@/util/editor';
+import { Button, Popover, Space, Tooltip } from 'antd';
 
-const getColumns = (showLocate: boolean, sqlChanged: boolean, ctx: IEditor) => {
+const getColumns = (
+  showLocate: boolean,
+  sqlChanged: boolean,
+  ctx: IEditor,
+  baseOffset?: number,
+) => {
   return [
     {
       title: formatMessage({
@@ -80,53 +85,60 @@ const getColumns = (showLocate: boolean, sqlChanged: boolean, ctx: IEditor) => {
                   content={
                     <div>
                       <RenderLevel level={key} key={`PopoverContentRenderLevel${index}`} />
-                      {rules?.[key]?.map((rule, index) => (
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            gap: '8px',
-                            alignItems: 'baseline',
-                          }}
-                          key={`${index}-${index}`}
-                        >
-                          <div>
-                            {index + 1}. {rule?.localizedMessage}
-                          </div>
-                          {showLocate && (
-                            <Tooltip
-                              title={
-                                sqlChanged
-                                  ? 'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
-                                  : ''
-                              }
-                            >
-                              <Button
-                                type="link"
-                                style={{ padding: '0px' }}
-                                disabled={sqlChanged}
-                                onClick={() => {
-                                  utils.removeHighlight(ctx);
-                                  utils.addHighlight(
-                                    ctx,
-                                    rule?.start + rule?.offset,
-                                    rule?.stop + rule?.offset,
-                                    levelMap?.[key],
-                                  );
-                                }}
+                      <div style={{ overflowY: 'scroll', maxHeight: '350px' }}>
+                        {rules?.[key]?.map((rule, index) => (
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              gap: '8px',
+                              alignItems: 'baseline',
+                            }}
+                            key={`${index}-${index}`}
+                          >
+                            <div>
+                              {index + 1}. {rule?.localizedMessage}
+                            </div>
+                            {showLocate && (
+                              <Tooltip
+                                title={
+                                  sqlChanged
+                                    ? 'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
+                                    : ''
+                                }
                               >
-                                {
-                                  formatMessage({
-                                    id: 'odc.src.page.Workspace.components.SQLResultSet.Position',
-                                  }) /* 
+                                <Button
+                                  type="link"
+                                  style={{ padding: '0px' }}
+                                  disabled={sqlChanged}
+                                  onClick={async () => {
+                                    utils.removeHighlight(ctx);
+                                    utils.addHighlight(
+                                      ctx,
+                                      rule?.start + rule?.offset + baseOffset,
+                                      rule?.stop + rule?.offset + baseOffset,
+                                      levelMap?.[key],
+                                    );
+                                    await utils.setPositionAndScroll(
+                                      ctx,
+                                      rule?.start + rule?.offset + baseOffset,
+                                      false,
+                                    );
+                                  }}
+                                >
+                                  {
+                                    formatMessage({
+                                      id: 'odc.src.page.Workspace.components.SQLResultSet.Position',
+                                    }) /* 
                               定位
                              */
-                                }
-                              </Button>
-                            </Tooltip>
-                          )}
-                        </div>
-                      ))}
+                                  }
+                                </Button>
+                              </Tooltip>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   }
                 >
