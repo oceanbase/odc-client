@@ -29,7 +29,8 @@ import {
 } from '@ant-design/icons';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { Component } from 'react';
+import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
@@ -89,6 +90,8 @@ class FunctionPage extends Component<
   }
 > {
   public editor: IEditor;
+
+  public gridRef: React.RefObject<DataGridRef> = React.createRef();
 
   public readonly state = {
     propsTab: this.props.params.propsTab || PropsTab.INFO,
@@ -153,6 +156,13 @@ class FunctionPage extends Component<
     } = this.props;
 
     await this.reloadFunction(funName);
+  }
+
+  public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
+    const { func } = this.state;
+    if (prevState.func.params !== func.params) {
+      this.gridRef.current?.setRows?.(func.params);
+    }
   }
 
   public async editFunction(funName: string) {
@@ -271,8 +281,9 @@ class FunctionPage extends Component<
                   />
                 </Toolbar>
                 <EditableTable
+                  gridRef={this.gridRef}
                   minHeight={'calc(100vh - 106px)'}
-                  rowKey={'paramName'}
+                  rowKey="paramName"
                   initialColumns={tableColumns}
                   initialRows={func.params || []}
                   bordered={false}

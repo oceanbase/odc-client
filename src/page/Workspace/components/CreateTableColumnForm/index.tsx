@@ -19,7 +19,8 @@ import { IDataType, ITableColumn } from '@/d.ts';
 import { SyncOutlined } from '@ant-design/icons';
 import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid';
 import memoizeOne from 'memoize-one';
-import { Component } from 'react';
+import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import EditableTable, { RowType } from '../EditableTable';
 import { WrapAutoCompleteEditor } from '../EditableTable/Editors/AutoComplete';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
@@ -68,6 +69,8 @@ export default class CreateTableColumnForm extends Component<
 
   public columnKeys: string[] = [];
 
+  public gridRef: React.RefObject<DataGridRef> = React.createRef();
+
   private WrapSelectEditorMemo = memoizeOne((dataTypes) => {
     return WrapAutoCompleteEditor(
       dataTypes?.map((d: IDataType) => d.databaseType).filter(Boolean) || [],
@@ -98,6 +101,13 @@ export default class CreateTableColumnForm extends Component<
 
   public onUpdate = (rows: ITableColumn[]) => {};
 
+  public componentDidUpdate(prevProps: Readonly<IProps>) {
+    const { columns } = this.props;
+    if (prevProps.columns !== columns) {
+      this.gridRef.current?.setRows?.(columns);
+    }
+  }
+
   public render() {
     const {
       hideBorder,
@@ -106,7 +116,6 @@ export default class CreateTableColumnForm extends Component<
       allowRefresh,
       tableHeight,
       enableRowRecord,
-      onCreated,
     } = this.props;
 
     const tableColumns = [
@@ -178,7 +187,7 @@ export default class CreateTableColumnForm extends Component<
             initialColumns={tableColumns}
             enableFilterRow
             initialRows={columns}
-            rowKey={'key'}
+            rowKey="key"
             readonly={true}
             enableRowRecord={enableRowRecord}
             enableColumnRecord={false}
@@ -188,9 +197,7 @@ export default class CreateTableColumnForm extends Component<
               this.setState({ selectedRowIndex: idx });
             }}
             onRowsChange={this.onUpdate}
-            gridRef={(ref) => {
-              onCreated?.(ref);
-            }}
+            gridRef={this.gridRef}
           />
         </div>
         {fixedFooter ? (

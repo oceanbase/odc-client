@@ -75,7 +75,6 @@ const CheckConstraint: React.FC<IProps> = function ({ modified }) {
                 const row = {
                   ...defaultCheckConstraint,
                   key: generateUniqKey(),
-                  _created: true,
                 };
                 gridRef.current?.addRows([row]);
               }}

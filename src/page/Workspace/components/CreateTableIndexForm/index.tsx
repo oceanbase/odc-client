@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// This is a dirty file, no longer used in scenes！！！
+
 import Toolbar from '@/component/Toolbar';
 import { IndexRange, ITableColumn, ITableIndex } from '@/d.ts';
 import { generateUniqKey } from '@/util/utils';

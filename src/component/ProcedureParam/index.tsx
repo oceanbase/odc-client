@@ -185,11 +185,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
   }, [rows, gridRef]);
 
   const onRowsChange = useCallback((newRows: RowData[]) => {
-    setRows(
-      newRows.filter((row) => {
-        return !row._deleted;
-      }),
-    );
+    setRows(newRows);
   }, []);
 
   useEffect(() => {
@@ -251,6 +247,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
         onRowsChange={onRowsChange}
         enableColumnRecord={false}
         enableRowRecord={true}
+        enableFlushDelete
         bordered={false}
         enableFilterRow={false}
         onSelectChange={() => {

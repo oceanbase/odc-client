@@ -28,7 +28,8 @@ import {
 } from '@ant-design/icons';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { Component } from 'react';
+import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';
@@ -91,6 +92,8 @@ class ProcedurePage extends Component<
 > {
   public editor: IEditor;
 
+  public gridRef: React.RefObject<DataGridRef> = React.createRef();
+
   public readonly state = {
     propsTab: this.props.params.propsTab || PropsTab.INFO,
     procedure: null,
@@ -152,6 +155,13 @@ class ProcedurePage extends Component<
     } = this.props;
 
     await this.reloadProcedure(proName);
+  }
+
+  public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
+    const { procedure } = this.state;
+    if (prevState.procedure.params !== procedure.params) {
+      this.gridRef.current?.setRows?.(procedure.params);
+    }
   }
 
   public async editProcedure(proName: string) {
@@ -270,8 +280,9 @@ class ProcedurePage extends Component<
                   />
                 </Toolbar>
                 <EditableTable
+                  gridRef={this.gridRef}
                   minHeight={'calc(100vh - 106px)'}
-                  rowKey={'paramName'}
+                  rowKey="paramName"
                   initialColumns={tableColumns}
                   initialRows={procedure.params || []}
                   bordered={false}
