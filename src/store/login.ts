@@ -292,7 +292,8 @@ export class UserStore {
       await this.gotoLoginPageSSO();
     } else {
       const searchParamsObj = new URLSearchParams();
-      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname));
+      const query = history.location.search || '';
+      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname)+query);
       history.push({
         pathname: '/login',
         search: searchParamsObj.toString(),

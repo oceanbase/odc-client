@@ -15,7 +15,7 @@
  */
 
 import PageLoading from '@/component/PageLoading';
-import { UserStore } from '@/store/login';
+import login, { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -73,26 +73,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         setStatus(STATUS_TYPE.ERROR);
         return;
       }
-      if (
-        !settingStore.serverSystemInfo?.passwordLoginEnabled &&
-        settingStore.serverSystemInfo?.ssoLoginEnabled
-      ) {
-        userStore.gotoLoginPageSSO();
-        return;
-      }
-      const searchParamsObj = new URLSearchParams();
-      if (location.search.includes('redirect')) {
-        searchParamsObj.append(
-          'redirectTo',
-          encodeURIComponent(
-            decodeURIComponent(new URLSearchParams(location.search).get('redirectTo')),
-          ),
-        );
-      }
-      history.replace({
-        pathname: '/login',
-        search: searchParamsObj.toString(),
-      });
+      await login.gotoLoginPage();
     } else if (userStore?.user?.enabled === false) {
       /**
        * 冻结用户
