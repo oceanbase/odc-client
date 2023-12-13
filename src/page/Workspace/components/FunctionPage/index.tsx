@@ -160,8 +160,8 @@ class FunctionPage extends Component<
 
   public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
     const { func } = this.state;
-    if (prevState.func.params !== func.params) {
-      this.gridRef.current?.setRows?.(func.params);
+    if (prevState.func?.params !== func?.params) {
+      this.gridRef.current?.setRows?.(func?.params ?? []);
     }
   }
 

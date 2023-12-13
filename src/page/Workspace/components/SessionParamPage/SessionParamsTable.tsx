@@ -158,7 +158,7 @@ function SessionParamsTable(props: {
   );
 
   useEffect(() => {
-    gridRef.current?.setRows(filteredRows);
+    gridRef.current?.setRows?.(filteredRows ?? []);
   }, [filteredRows]);
 
   return (

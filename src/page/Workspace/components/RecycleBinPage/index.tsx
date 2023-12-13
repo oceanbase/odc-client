@@ -97,9 +97,8 @@ class RecycleBin extends Component<
 
   componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
     const { selectedObjectNames, showRestoreDrawer, showDeleteDrawer } = this.state;
-    const selectedObjects = this.session?.recycleObjects.filter((r) =>
-      selectedObjectNames.has(r.uniqueId),
-    );
+    const selectedObjects =
+      this.session?.recycleObjects?.filter((r) => selectedObjectNames.has(r.uniqueId)) ?? [];
     if (showRestoreDrawer && prevState.showRestoreDrawer !== showRestoreDrawer) {
       this.restoreGridRef.current?.setRows?.(selectedObjects);
     }
