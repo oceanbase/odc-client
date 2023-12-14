@@ -347,6 +347,7 @@ export interface ITaskFlowNode {
   externalApprovalName: string;
   autoApproval: boolean;
   sequenceNumber: number;
+  preCheckOverLimit?: boolean;
 }
 
 interface Encryption {

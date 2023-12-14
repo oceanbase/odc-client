@@ -20,6 +20,10 @@ import settingStore from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
+
+// 423 屏蔽 SysFormItem 配置
+export const ENABLED_SYS_FROM_ITEM = false;
+
 export const isCycleTask = (type: TaskType) => {
   return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
 };

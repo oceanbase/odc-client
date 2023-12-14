@@ -31,6 +31,7 @@ import CsvMapping from '../../csvMapping';
 import CsvProvider from '../CsvProvider';
 import StructDataFormItem from '../formitem/StructDataFormItem';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 
 const FormItem = Form.Item;
 
@@ -220,28 +221,31 @@ const FileSelecterPanel: React.FC<IProps> = function ({
           );
         }}
       </FormItem>
-      {odc.appConfig.connection.sys && odc.appConfig.task.sys && config?.connection?.sys && (
-        <SysFormItem
-          tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
-            if (!useSys) {
-              return '';
-            } else if (existSys) {
-              return formatMessage({
-                id: 'odc.ImportForm.ConfigPanel.TheAccountConfiguredForThe',
-              });
-              //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导入
-            } else {
-              return formatMessage({
-                id: 'odc.ImportForm.ConfigPanel.PleaseConfigureTheSysTenant',
-              });
-              //请配置 sys 租户账号，该账号信息仅用于此次导入
-            }
-          }}
-          randomKey={Math.random()}
-          connection={connection}
-          form={form}
-        />
-      )}
+      {ENABLED_SYS_FROM_ITEM &&
+        odc.appConfig.connection.sys &&
+        odc.appConfig.task.sys &&
+        config?.connection?.sys && (
+          <SysFormItem
+            tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
+              if (!useSys) {
+                return '';
+              } else if (existSys) {
+                return formatMessage({
+                  id: 'odc.ImportForm.ConfigPanel.TheAccountConfiguredForThe',
+                });
+                //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导入
+              } else {
+                return formatMessage({
+                  id: 'odc.ImportForm.ConfigPanel.PleaseConfigureTheSysTenant',
+                });
+                //请配置 sys 租户账号，该账号信息仅用于此次导入
+              }
+            }}
+            randomKey={Math.random()}
+            connection={connection}
+            form={form}
+          />
+        )}
       <DescriptionInput />
     </>
   );
