@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult } from '@/d.ts';
-import { ISqlExecuteResultStatus } from '@/d.ts';
+import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
+import modal from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
+
 export interface IExecuteSQLParams {
   sql: string;
   queryLimit?: number;
@@ -53,9 +57,10 @@ export interface IExecuteTaskResult {
   hasLintResults?: boolean;
   invalid: boolean;
   executeSuccess: boolean;
-  violatedRules: ISQLExecuteTaskSQL['violatedRules'];
+  violatedRules: IRule[];
   executeResult: ISqlExecuteResult[];
-  lintResults?: ISQLExecuteTaskSQL[];
+  lintResultSet?: ISQLLintReuslt[];
+  levels?: number[];
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -142,6 +147,7 @@ export default async function executeSQL(
   params: IExecuteSQLParams | string,
   sessionId: string,
   dbName: string,
+  needModal: boolean = true,
 ): Promise<IExecuteTaskResult> {
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
@@ -158,11 +164,21 @@ export default async function executeSQL(
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
-  const rootViolatedRules = taskInfo?.violatedRules || [];
+  const rootViolatedRules = taskInfo?.violatedRules?.reduce((pre, cur) => {
+    if (cur?.violation) {
+      return pre.concat({
+        sqlTuple: {
+          executedSql: cur?.violation?.text,
+          offset: cur?.violation?.offset,
+          originalSql: cur?.violation?.text,
+        },
+        violatedRules: [cur],
+      });
+    }
+    return pre;
+  }, []);
   const unauthorizedDatabaseNames = taskInfo?.unauthorizedDatabaseNames;
-  const violatedRules = taskInfo?.sqls?.reduce((prev, current) => {
-    return prev.concat(current?.violatedRules || []);
-  }, rootViolatedRules);
+  const violatedRules = rootViolatedRules.concat(taskInfo?.sqls);
   if (unauthorizedDatabaseNames?.length) {
     /**
      * 无权限库
@@ -185,15 +201,52 @@ export default async function executeSQL(
       violatedRules: [],
     };
   }
+  const levels = violatedRules?.map((rule) => rule?.violation?.level) || [];
+  const lintResultSet = violatedRules?.reduce((pre, cur) => {
+    if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
+      return pre.concat({
+        sql: cur?.sqlTuple?.executedSql,
+        violations: cur?.violatedRules?.map((item) => item?.violation),
+      });
+    } else {
+      return pre;
+    }
+  }, []);
   if (!taskInfo?.requestId && taskInfo?.sqls?.length) {
-    return {
-      hasLintResults: true,
-      invalid: true,
-      executeSuccess: false,
-      executeResult: [],
-      violatedRules: violatedRules,
-      lintResults: taskInfo?.sqls,
-    };
+    // 一些场景下不需要弹出SQL确认弹窗
+    if (!needModal) {
+      return {
+        hasLintResults: true,
+        invalid: true,
+        executeSuccess: false,
+        executeResult: [],
+        violatedRules,
+        lintResultSet,
+        levels,
+      };
+    }
+    // 弹出SQL确认弹窗
+    modal.updateWorkSpaceExecuteSQLModalProps({
+      sql: (params as IExecuteSQLParams)?.sql || (params as string),
+      visible: true,
+      sessionId,
+      lintResultSet,
+      status: getStatus(lintResultSet),
+      onSave: () => {
+        // 打开新建数据库变更抽屉
+        modal.updateWorkSpaceExecuteSQLModalProps();
+        modal.changeCreateAsyncTaskModal(true, {
+          sql: (params as IExecuteSQLParams)?.sql || (params as string),
+          databaseId: sessionManager.sessionMap.get(sessionId).odcDatabase?.id,
+          rules: lintResultSet,
+        });
+      },
+      // 关闭SQL确认弹窗
+      onCancel: () =>
+        modal.updateWorkSpaceExecuteSQLModalProps({
+          visible: false,
+        }),
+    });
   }
   const requestId = taskInfo?.requestId;
   const sqls = taskInfo?.sqls;
@@ -214,4 +267,24 @@ export default async function executeSQL(
     executeResult: results || [],
     violatedRules: [],
   };
+}
+
+function getStatus(lintResultSet: ISQLLintReuslt[]) {
+  if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+    const violations = lintResultSet.reduce((pre, cur) => {
+      if (cur?.violations?.length === 0) {
+        return pre;
+      }
+      return pre.concat(...cur?.violations);
+    }, []);
+    if (violations?.some((violation) => violation?.level === 2)) {
+      return EStatus.DISABLED;
+    } else if (violations?.every((violation) => violation?.level === 1)) {
+      return EStatus.SUBMIT;
+    } else {
+      return EStatus.APPROVAL;
+    }
+  } else {
+    return EStatus.DISABLED;
+  }
 }

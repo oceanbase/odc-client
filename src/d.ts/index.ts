@@ -3377,3 +3377,14 @@ export interface INlsObject {
    */
   timestamp: number;
 }
+
+export enum ETheme {
+  DARK = 'dark',
+  WHITE = 'white',
+}
+
+export enum EStatus {
+  SUBMIT = 'submit',
+  APPROVAL = 'approval',
+  DISABLED = 'disabled',
+}

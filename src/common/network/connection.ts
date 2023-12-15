@@ -32,9 +32,9 @@ import { IDatasource } from '@/d.ts/datasource';
 import userStore from '@/store/login';
 import request from '@/util/request';
 import { decrypt, encrypt } from '@/util/utils';
+import { getDataSourceModeConfig } from '../datasource';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
-import { getDataSourceModeConfig } from '../datasource';
 
 function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -204,9 +204,7 @@ export async function testExsitConnection(
   return ret;
 }
 
-export async function batchTest(
-  cids: number[],
-): Promise<
+export async function batchTest(cids: number[]): Promise<
   Record<
     number,
     {
@@ -271,7 +269,7 @@ export async function getConnectionDetailResponse(
 }
 
 export async function changeDelimiter(v, sessionId: string, dbName: string): Promise<boolean> {
-  const data = await executeSQL(`delimiter ${v}`, sessionId, dbName);
+  const data = await executeSQL(`delimiter ${v}`, sessionId, dbName, false);
   return data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
 }
 
@@ -315,9 +313,7 @@ export async function newSessionByDataSource(
   return data;
 }
 
-export async function getSessionStatus(
-  sessionId?: string,
-): Promise<{
+export async function getSessionStatus(sessionId?: string): Promise<{
   settings: {
     autocommit: boolean;
     delimiter: string;
@@ -363,9 +359,7 @@ export async function getConnectionExists(params: { name: string }): Promise<boo
 /**
  * 获取集群 & 租户列表
  */
-export async function getClusterAndTenantList(
-  visibleScope: IConnectionType,
-): Promise<{
+export async function getClusterAndTenantList(visibleScope: IConnectionType): Promise<{
   tenantName: Record<string, string[]>;
   clusterName: Record<string, string[]>;
 }> {

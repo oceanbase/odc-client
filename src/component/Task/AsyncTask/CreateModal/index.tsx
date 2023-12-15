@@ -36,10 +36,12 @@ import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResult
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
+import modal from '@/store/modal';
+import page from '@/store/page';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import utils from '@/util/editor';
+import utils, { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
@@ -167,30 +169,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       sqlFiles: formData.sqlFiles,
     });
   };
-  useEffect(() => {
-    if (asyncTaskData?.task) {
-      loadRollbackData();
-    }
-    if (asyncTaskData?.rules) {
-      const newLintResultSet = asyncTaskData?.rules?.reduce((pre, cur) => {
-        if (cur?.violatedRules?.length === 0) {
-          return pre;
-        }
-        return pre.concat({
-          sql: cur?.sqlTuple?.executedSql,
-          violations: cur?.violatedRules?.map((item) => item?.violation),
-        });
-      }, []);
-      if (newLintResultSet?.length > 0) {
-        setLintResultSet(newLintResultSet);
-        setHasPreCheck(true);
-      }
-    }
-    if (asyncTaskData?.sql) {
-      setExecuteOrPreCheckSql(asyncTaskData?.sql);
-      setSqlChanged(false);
-    }
-  }, [asyncTaskData]);
   const getFileIdAndNames = (files: UploadFile[]) => {
     const ids = [];
     const names = [];
@@ -416,6 +394,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
+          page.close(modal?.asyncTaskData?.activePageKey);
           openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
@@ -438,6 +417,26 @@ const CreateModal: React.FC<IProps> = (props) => {
       setLintResultSet(result);
     }
   };
+  const onEditorAfterCreatedCallback = (editor: IEditor) => {
+    editor.onDidChangeCursorPosition(() => {
+      utils.removeHighlight(editor);
+    });
+  };
+  useEffect(() => {
+    if (asyncTaskData?.task) {
+      loadRollbackData();
+    }
+    if (asyncTaskData?.rules) {
+      if (asyncTaskData?.rules?.length > 0) {
+        setLintResultSet(asyncTaskData?.rules);
+        setHasPreCheck(true);
+      }
+    }
+    if (asyncTaskData?.sql) {
+      setExecuteOrPreCheckSql(asyncTaskData?.sql);
+      setSqlChanged(false);
+    }
+  }, [asyncTaskData]);
   useEffect(() => {
     if (initSqlContent) {
       handleSqlChange('sqlContent', initSqlContent);
@@ -564,6 +563,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             ref={editorRef}
             initialSQL={initSqlContent}
             language={getDataSourceModeConfig(connection?.type)?.sql?.language}
+            onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
             onSQLChange={(sql) => {
               handleSqlChange('sqlContent', sql);
               if (executeOrPreCheckSql !== sql) {

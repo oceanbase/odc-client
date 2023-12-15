@@ -17,9 +17,10 @@ import { formatMessage } from '@/util/intl';
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ModalStore } from '@/store/modal';
+import SessionStore from '@/store/sessionManager/session';
 import { groupByPropertyName } from '@/util/utils';
 import { Button, Table } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import getColumns from './columns';
 import styles from './index.less';
 const LintResultTip = {
@@ -27,9 +28,9 @@ const LintResultTip = {
   suggest: '当前 SQL 存在需要审批项，请发起审批或修改后再执行',
   must: '当前 SQL 存在必须改进项，请修改后再执行',
 };
-const LintResultTable: React.FC<{
+export interface ILintResultTableProps {
   ctx?: any;
-  session?: any;
+  session?: SessionStore;
   resultHeight?: number;
   hasExtraOpt?: boolean;
   pageSize?: number;
@@ -38,7 +39,8 @@ const LintResultTable: React.FC<{
   baseOffset?: number;
   sqlChanged?: boolean;
   modalStore?: ModalStore;
-}> = ({
+}
+const LintResultTable: React.FC<ILintResultTableProps> = ({
   ctx,
   session,
   resultHeight,
@@ -52,36 +54,7 @@ const LintResultTable: React.FC<{
 }) => {
   const [disabled, setDisabled] = useState<boolean>(false);
   const [tip, setTip] = useState<string>('');
-  const dataSource =
-    lintResultSet?.map((resultSet, index) => {
-      return {
-        row: index + 1,
-        sql: resultSet.sql,
-        rules: groupByPropertyName(resultSet?.violations, 'level'),
-      };
-    }) || [];
-  useEffect(() => {
-    if (Array.isArray(lintResultSet) && lintResultSet?.length) {
-      const violations = lintResultSet.reduce((pre, cur) => {
-        if (cur?.violations?.length === 0) {
-          return pre;
-        }
-        return pre.concat(...cur?.violations);
-      }, []);
-      if (violations?.some((violation) => violation?.level === 2)) {
-        setDisabled(true);
-        setTip(LintResultTip.must);
-      } else if (violations?.every((violation) => violation?.level === 2)) {
-        setDisabled(true);
-        setTip(LintResultTip.default);
-      } else {
-        setDisabled(false);
-        setTip(LintResultTip.suggest);
-      }
-    } else {
-      setDisabled(true);
-    }
-  }, [lintResultSet]);
+  const [dataSource, setDataSource] = useState<any>([]);
   const CallbackTable = useCallback(() => {
     const columns = getColumns(showLocate, sqlChanged, ctx, baseOffset);
     return (
@@ -112,7 +85,37 @@ const LintResultTable: React.FC<{
         }
       />
     );
-  }, [baseOffset, lintResultSet]);
+  }, [lintResultSet, ctx, baseOffset, dataSource]);
+  useEffect(() => {
+    if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+      const newDataSource = lintResultSet?.map((resultSet, index) => {
+        return {
+          row: index + 1,
+          sql: resultSet?.sql,
+          rules: groupByPropertyName(resultSet?.violations, 'level'),
+        };
+      });
+      setDataSource(newDataSource);
+      const violations = lintResultSet.reduce((pre, cur) => {
+        if (cur?.violations?.length === 0) {
+          return pre;
+        }
+        return pre.concat(...cur?.violations);
+      }, []);
+      if (violations?.some((violation) => violation?.level === 2)) {
+        setDisabled(true);
+        setTip(LintResultTip.must);
+      } else if (violations?.every((violation) => violation?.level === 2)) {
+        setDisabled(true);
+        setTip(LintResultTip.default);
+      } else {
+        setDisabled(false);
+        setTip(LintResultTip.suggest);
+      }
+    } else {
+      setDisabled(true);
+    }
+  }, [lintResultSet]);
   return (
     <div
       style={{
@@ -137,6 +140,7 @@ const LintResultTable: React.FC<{
                 modalStore.changeCreateAsyncTaskModal(true, {
                   databaseId: session?.odcDatabase?.id,
                   sql: ctx?.getSelectionContent() || ctx?.getValue(),
+                  rules: lintResultSet,
                 });
               }}
             >

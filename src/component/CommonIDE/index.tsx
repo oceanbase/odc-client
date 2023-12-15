@@ -19,6 +19,7 @@ import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
 import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
 import SessionStore from '@/store/sessionManager/session';
+import { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { Tabs, Tooltip } from 'antd';
 import classnames from 'classnames';
@@ -81,6 +82,11 @@ interface ICommonIDEProps {
    */
   bordered?: boolean;
   session?: SessionStore;
+
+  /**
+   * 创建后监听事件
+   */
+  onEditorAfterCreatedCallback?: (editor: IEditor) => void;
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -117,6 +123,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
     } else {
       this.editor.setModel(this.model);
     }
+    this.props?.onEditorAfterCreatedCallback?.(this.editor);
   };
 
   private onSQLChange = (sql: string) => {

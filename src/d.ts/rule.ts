@@ -35,6 +35,7 @@ export interface IRule {
   createTime: number;
   updateTime: number;
   violation?: {
+    text: string;
     level: number;
     localizedMessage: string;
     offset: number;
