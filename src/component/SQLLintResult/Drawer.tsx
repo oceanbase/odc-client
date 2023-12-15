@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Space } from 'antd';
 import React from 'react';
 import { ISQLLintReuslt } from './type';
-import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 interface IProps {
   data: ISQLLintReuslt[];
   visible: boolean;

@@ -31,11 +31,15 @@ import {
 } from './interface';
 import TableContext from './TableContext';
 
+import { runSQLLint } from '@/common/network/sql';
 import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { EStatus } from '@/d.ts';
 import { CreateTablePage } from '@/store/helper/page/pages/create';
+import modal from '@/store/modal';
 import page from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
@@ -72,6 +76,8 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
   const [partitions, setPartitions] = useState<Partial<TablePartition>>(defaultPartitions);
   const [indexes, setIndexes] = useState<ITableIndex[]>([]);
+  const [status, setStatus] = useState<EStatus>(null);
+  const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const [primaryConstraints, setPrimaryConstraints] = useState<TablePrimaryConstraint[]>([]);
   const [uniqueConstraints, setUniqueConstraints] = useState<TableUniqueConstraint[]>([]);
   const [foreignConstraints, setForeignConstraints] = useState<TableForeignConstraint[]>([]);
@@ -83,6 +89,45 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
 
   const { session } = useContext(SessionContext);
 
+  const handleSubmit = async () => {
+    const sql = await runGenerateCreateTableDDL(
+      {
+        info,
+        columns,
+        partitions,
+        indexes,
+        primaryConstraints,
+        uniqueConstraints,
+        foreignConstraints,
+        checkConstraints,
+      },
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
+    if (sql) {
+      const lintResultSet = await runSQLLint(session?.sessionId, ';', sql);
+      setLintResultSet(lintResultSet);
+      modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
+      if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+        const violations = lintResultSet.reduce((pre, cur) => {
+          if (cur?.violations?.length === 0) {
+            return pre;
+          }
+          return pre.concat(...cur?.violations);
+        }, []);
+        if (violations?.some((violation) => violation?.level === 2)) {
+          setStatus(EStatus.DISABLED);
+        } else if (violations?.every((violation) => violation?.level === 1)) {
+          setStatus(EStatus.SUBMIT);
+        } else {
+          setStatus(EStatus.APPROVAL);
+        }
+      } else {
+        setStatus(EStatus.DISABLED);
+      }
+      setDDL(sql);
+    }
+  };
   const isComplete = useMemo(() => {
     return (
       info.tableName &&
@@ -92,7 +137,6 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
       !columns?.find((c) => !c.name || !c.type)
     );
   }, [info, columns]);
-
   if (!session) {
     return <WorkSpacePageLoading />;
   }
@@ -124,31 +168,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                   }) //请填写基本信息和列
             }
           >
-            <Button
-              type="primary"
-              disabled={!isComplete}
-              loading={loading}
-              onClick={async () => {
-                const sql = await runGenerateCreateTableDDL(
-                  {
-                    info,
-                    columns,
-                    partitions,
-                    indexes,
-                    primaryConstraints,
-                    uniqueConstraints,
-                    foreignConstraints,
-                    checkConstraints,
-                  },
-                  session?.sessionId,
-                  session?.odcDatabase?.name,
-                );
-
-                if (sql) {
-                  setDDL(sql);
-                }
-              }}
-            >
+            <Button type="primary" disabled={!isComplete} loading={loading} onClick={handleSubmit}>
               {
                 formatMessage({
                   id: 'odc.components.CreateTable.SubmitAndConfirmSql',
@@ -222,9 +242,16 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           sql={DDL}
           visible={!!DDL}
           readonly
+          status={status}
+          lintResultSet={lintResultSet}
           onCancel={() => setDDL('')}
           onSave={async () => {
-            const results = await executeSQL(DDL, session?.sessionId, session?.odcDatabase?.name);
+            const results = await executeSQL(
+              DDL,
+              session?.sessionId,
+              session?.odcDatabase?.name,
+              false,
+            );
             if (!results) {
               return;
             }

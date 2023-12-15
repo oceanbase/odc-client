@@ -30,6 +30,7 @@ import { SQL_PAGE_RESULT_HEIGHT } from '@/constant';
 import {
   ConnectionMode,
   DbObjectType,
+  EStatus,
   IPage,
   ISqlExecuteResult,
   ISqlExecuteResultStatus,
@@ -88,11 +89,13 @@ interface ISQLPageState {
   editingMap: {
     [key: string]: boolean;
   };
-
+  // SQL拦截开发规则集，传递给LintResultTable以及modalStore.changeCreateAsyncTaskModal使用
   lintResultSet: ISQLLintReuslt[];
+  // 记录当前编辑器中的sql内容
   executeOrPreCheckSql: string;
   sqlChanged: boolean;
   baseOffset: number;
+  status: EStatus;
 }
 
 interface IProps {
@@ -141,6 +144,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     executeOrPreCheckSql: null,
     sqlChanged: false,
     baseOffset: 0,
+    status: null,
     isSavingScript: false,
   };
 
@@ -320,27 +324,19 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
+    const range = await utils.getCurrentSelectRange(this.editor);
     const result = await this.executeSQL(
       sqlToExecute,
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
+    this.setState({
+      baseOffset: selectedSQL ? range.begin - this.editor?.getSelectionContent()?.length : 0,
+    });
     if (result?.hasLintResults) {
-      const lintResultSet = result?.lintResults.reduce((pre, cur) => {
-        if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
-          return pre.concat({
-            sql: cur?.sqlTuple?.executedSql,
-            violations: cur?.violatedRules?.map((item) => item?.violation),
-          });
-        } else {
-          return pre;
-        }
-      }, []);
-      const range = await utils.getCurrentSelectRange(this.editor);
       this.setState({
-        baseOffset: range.begin === range.end ? 0 : range.begin,
         resultSetTabActiveKey: sqlLintTabKey,
-        lintResultSet: lintResultSet?.length ? lintResultSet : null,
+        lintResultSet: result?.lintResultSet,
         executeOrPreCheckSql: sqlToExecute,
         sqlChanged: false,
       });
@@ -499,12 +495,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     }
     utils.removeHighlight(this.editor);
+    const range = await utils.getCurrentSelectRange(this.editor);
     const result = await runSQLLint(
       this.getSession()?.sessionId,
       this.getSession()?.params?.delimiter,
       value,
     );
     this.setState({
+      baseOffset: selectted ? range.begin - this.editor?.getSelectionContent()?.length : 0,
       executeOrPreCheckSql: value,
       sqlChanged: false,
     });
@@ -518,9 +516,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         );
         return;
       }
-      const range = await utils.getCurrentSelectRange(this.editor);
       this.setState({
-        baseOffset: range.begin === range.end ? 0 : range.begin,
         resultSetTabActiveKey: sqlLintTabKey,
         lintResultSet: result,
       });
@@ -534,6 +530,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public hanldeCloseLintPage = () => {
     this.setState({
+      baseOffset: 0,
       lintResultSet: null,
       resultSetTabActiveKey:
         this.state.resultSetTabActiveKey === sqlLintTabKey
@@ -702,6 +699,26 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         sql = sql + '\ncommit;';
       }
 
+      // const lintResultSet = await runSQLLint(session?.sessionId, ';', sql);
+      // setLintResultSet(lintResultSet);
+      // modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
+      // if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+      //   const violations = lintResultSet.reduce((pre, cur) => {
+      //     if (cur?.violations?.length === 0) {
+      //       return pre;
+      //     }
+      //     return pre.concat(...cur?.violations);
+      //   }, []);
+      //   if (violations?.some((violation) => violation?.level === 2)) {
+      //     setStatus(EStatus.DISABLED);
+      //   } else if (violations?.every((violation) => violation?.level === 1)) {
+      //     setStatus(EStatus.SUBMIT);
+      //   } else {
+      //     setStatus(EStatus.APPROVAL);
+      //   }
+      // } else {
+      //   setStatus(EStatus.DISABLED);
+      // }
       this.setState({
         showDataExecuteSQLModal: true,
         updateDataDML: sql,
@@ -720,6 +737,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         this.state.updateDataDML,
         this.getSession()?.sessionId,
         this.getSession()?.database?.dbName,
+        false,
       );
       if (!result) {
         return;
@@ -967,6 +985,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       editingMap,
       pageLoading,
       lintResultSet,
+      status,
       sqlChanged,
       baseOffset,
     } = this.state;
@@ -1068,6 +1087,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
               tip={this.state.tipToShow}
               sql={updateDataDML}
               visible={showDataExecuteSQLModal}
+              status={status}
+              lintResultSet={lintResultSet}
               onSave={this.handleExecuteDataDML}
               onCancel={() => this.setState({ showDataExecuteSQLModal: false })}
               onChange={(sql) => this.setState({ updateDataDML: sql })}
@@ -1114,6 +1135,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       isSection,
       this.getSession()?.sessionId,
       this.getSession()?.database?.dbName,
+      false,
     );
     if (results?.hasLintResults) {
       return results;
