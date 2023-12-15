@@ -16,6 +16,7 @@
 
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
+import { executePL } from '@/common/network/sql/executePL';
 import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { PLType } from '@/constant/plType';
 import {
@@ -37,7 +38,6 @@ import { clone, isNil } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
-import { executePL } from '@/common/network/sql/executePL';
 export enum ExcecuteSQLMode {
   PL = 'PL',
   TABLE = 'TABLE',
@@ -110,7 +110,7 @@ export class SQLStore {
       runInAction(() => {
         this.commitingPageKey.add(pageKey);
       });
-      const data = await executeSQL('commit;', sessionId, dbName);
+      const data = await executeSQL('commit;', sessionId, dbName, false);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
@@ -129,7 +129,7 @@ export class SQLStore {
         return;
       }
       this.rollbackPageKey.add(pageKey);
-      const data = await executeSQL('rollback;', sessionId, dbName);
+      const data = await executeSQL('rollback;', sessionId, dbName, false);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
@@ -164,6 +164,7 @@ export class SQLStore {
     isSection: boolean,
     sessionId: string,
     dbName: string,
+    needModal: boolean = true,
   ): Promise<IExecuteTaskResult> {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
@@ -183,6 +184,7 @@ export class SQLStore {
         },
         sessionId,
         dbName,
+        needModal,
       );
     } catch (e) {
       throw e;

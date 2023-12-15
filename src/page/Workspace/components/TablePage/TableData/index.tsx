@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { executeSQL } from '@/common/network/sql';
+import { executeSQL, runSQLLint } from '@/common/network/sql';
 import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { TAB_HEADER_HEIGHT } from '@/constant';
-import { ConnectionMode, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
+import { EStatus, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
-import { ModalStore } from '@/store/modal';
-import { PageStore } from '@/store/page';
+import modal, { ModalStore } from '@/store/modal';
+import page, { PageStore } from '@/store/page';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
+import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { generateSelectSql } from '@/util/sql';
 import { generateUniqKey } from '@/util/utils';
@@ -34,7 +36,6 @@ import { inject, observer } from 'mobx-react';
 import React from 'react';
 import DDLResultSet from '../../DDLResultSet';
 import { wrapRow } from '../../DDLResultSet/util';
-import { formatMessage } from '@/util/intl';
 const GLOBAL_HEADER_HEIGHT = 40;
 const TABBAR_HEIGHT = 46;
 interface ITableDataProps {
@@ -67,6 +68,8 @@ class TableData extends React.Component<
     showDataExecuteSQLModal: boolean;
     updateDataDML: string;
     tipToShow: string;
+    lintResultSet: ISQLLintReuslt[];
+    status: EStatus;
   }
 > {
   constructor(props) {
@@ -79,6 +82,8 @@ class TableData extends React.Component<
       updateDataDML: '',
       tipToShow: '',
       resultSet: null,
+      lintResultSet: null,
+      status: null,
     };
   }
 
@@ -222,10 +227,33 @@ class TableData extends React.Component<
       sql = sql + (session.params.delimiter === ';' ? '' : session.params.delimiter) + '\ncommit;';
     }
 
+    const lintResultSet = await runSQLLint(session?.sessionId, ';', sql);
+    modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
+    let status = null;
+    if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+      const violations = lintResultSet.reduce((pre, cur) => {
+        if (cur?.violations?.length === 0) {
+          return pre;
+        }
+        return pre.concat(...cur?.violations);
+      }, []);
+      if (violations?.some((violation) => violation?.level === 2)) {
+        status = EStatus.DISABLED;
+      } else if (violations?.every((violation) => violation?.level === 1)) {
+        status = EStatus.SUBMIT;
+      } else {
+        status = EStatus.APPROVAL;
+      }
+    } else {
+      status = EStatus.DISABLED;
+    }
+
     this.setState({
       showDataExecuteSQLModal: true,
       updateDataDML: sql,
       tipToShow,
+      lintResultSet,
+      status,
     });
   };
 
@@ -237,6 +265,7 @@ class TableData extends React.Component<
         this.state.updateDataDML,
         session.sessionId,
         session.database.dbName,
+        false,
       );
       if (!result) {
         return;
@@ -308,6 +337,8 @@ class TableData extends React.Component<
       showDataExecuteSQLModal,
       updateDataDML,
       isEditing,
+      lintResultSet,
+      status,
     } = this.state;
 
     return (
@@ -349,6 +380,8 @@ class TableData extends React.Component<
           sessionStore={session}
           tip={this.state.tipToShow}
           sql={updateDataDML}
+          lintResultSet={lintResultSet}
+          status={status}
           visible={showDataExecuteSQLModal}
           onSave={this.handleExecuteDataDML}
           onCancel={() =>

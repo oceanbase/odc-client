@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import {
   ColumnShowType,
   ConnectionMode,
@@ -30,7 +31,6 @@ import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
@@ -39,9 +39,7 @@ export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
  * @example sid:1000002-1:d:ZJCG:var:session
  */
 
-export function extractResourceId(
-  id: string,
-): {
+export function extractResourceId(id: string): {
   [key: string]: string;
 } {
   const r = {};
@@ -609,10 +607,13 @@ export const kbToMb = (value: number) => {
  * @example groupByPropertyName([{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}], 'level')
  * @example return { 1: [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}], 3: [{ level: 3, name: 'test3'}]}
  */
-export function groupByPropertyName(array, property): Object {
-  return array.reduce((group, cur) => {
-    group[cur[`${property}`]] ??= [];
-    group[cur[`${property}`]].push(cur);
+export function groupByPropertyName(array: any[], property: string): Object {
+  if (!Array.isArray(array)) {
+    return {};
+  }
+  return array?.reduce((group, cur) => {
+    group[cur[property]] ??= [];
+    group?.[cur?.[property]].push(cur);
     return group;
   }, {});
 }

@@ -347,6 +347,7 @@ export interface ITaskFlowNode {
   externalApprovalName: string;
   autoApproval: boolean;
   sequenceNumber: number;
+  preCheckOverLimit?: boolean;
 }
 
 interface Encryption {
@@ -3375,4 +3376,15 @@ export interface INlsObject {
    * 时间戳
    */
   timestamp: number;
+}
+
+export enum ETheme {
+  DARK = 'dark',
+  WHITE = 'white',
+}
+
+export enum EStatus {
+  SUBMIT = 'submit',
+  APPROVAL = 'approval',
+  DISABLED = 'disabled',
 }

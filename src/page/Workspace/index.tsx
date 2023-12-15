@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { getMetaStoreInstance } from '@/common/metaStore';
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import type { IPage } from '@/d.ts';
@@ -24,10 +26,12 @@ import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import type { SessionManagerStore } from '@/store/sessionManager';
+import sessionManager from '@/store/sessionManager';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { history, useLocation, useParams, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
 import { toInteger } from 'lodash';
@@ -39,8 +43,6 @@ import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
-import tracert from '@/util/tracert';
-import { getMetaStoreInstance } from '@/common/metaStore';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -317,6 +319,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
           <GlobalModals />
         </>
       )}
+      <WrapWorkSpaceExecuteSQLModal modalStore={modalStore} />
     </>
   );
 };
@@ -350,3 +353,34 @@ export default inject('userStore')(
     );
   }),
 );
+
+const WorkSpaceExecuteSQLModal: React.FC<{
+  modalStore: ModalStore;
+}> = ({ modalStore }) => {
+  const { workSpaceExecuteSQLModalProps = {} } = modalStore;
+  const {
+    tip,
+    sql = '',
+    visible = false,
+    sessionId = null,
+    onCancel,
+    onSave,
+    status = null,
+    lintResultSet = null,
+  } = workSpaceExecuteSQLModalProps;
+  return (
+    <ExecuteSQLModal
+      tip={tip}
+      sessionStore={sessionManager?.sessionMap?.get(sessionId)}
+      readonly={true}
+      lintResultSet={lintResultSet}
+      status={status}
+      sql={sql}
+      onSave={onSave}
+      visible={visible}
+      onCancel={onCancel}
+    />
+  );
+};
+
+const WrapWorkSpaceExecuteSQLModal = inject('modalStore')(observer(WorkSpaceExecuteSQLModal));

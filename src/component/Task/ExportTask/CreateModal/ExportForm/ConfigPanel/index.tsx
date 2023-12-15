@@ -26,6 +26,7 @@ import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Sele
 import React, { useContext } from 'react';
 import FormContext from '../FormContext';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -505,40 +506,43 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
       >
         <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
       </FormItemPanel>
-      {odc.appConfig.connection.sys && odc.appConfig.task.sys && config?.connection?.sys && (
-        <FormItem noStyle shouldUpdate>
-          {({ getFieldValue }) => {
-            const exportDbObjects = getFieldValue('exportDbObjects');
-            return (
-              <SysFormItem
-                tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
-                  if (!useSys) {
-                    return formatMessage({
-                      id: 'odc.ExportForm.ConfigPanel.IfYouDoNotUse.1',
-                    }); //若不使用 sys 租户账号，导出可能缺少索引
-                  } else if (existSys) {
-                    return formatMessage({
-                      id: 'odc.ExportForm.ConfigPanel.TheAccountConfiguredForThe',
-                    });
+      {ENABLED_SYS_FROM_ITEM &&
+        odc.appConfig.connection.sys &&
+        odc.appConfig.task.sys &&
+        config?.connection?.sys && (
+          <FormItem noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const exportDbObjects = getFieldValue('exportDbObjects');
+              return (
+                <SysFormItem
+                  tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
+                    if (!useSys) {
+                      return formatMessage({
+                        id: 'odc.ExportForm.ConfigPanel.IfYouDoNotUse.1',
+                      }); //若不使用 sys 租户账号，导出可能缺少索引
+                    } else if (existSys) {
+                      return formatMessage({
+                        id: 'odc.ExportForm.ConfigPanel.TheAccountConfiguredForThe',
+                      });
 
-                    //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导出
-                  } else {
-                    return formatMessage({
-                      id: 'odc.ExportForm.ConfigPanel.PleaseConfigureTheSysTenant',
-                    });
+                      //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导出
+                    } else {
+                      return formatMessage({
+                        id: 'odc.ExportForm.ConfigPanel.PleaseConfigureTheSysTenant',
+                      });
 
-                    //请配置 sys 租户账号，该账号信息仅用于此次导出
-                  }
-                }}
-                form={form}
-                randomKey={Math.random()}
-                enforce={false}
-                connection={connection}
-              />
-            );
-          }}
-        </FormItem>
-      )}
+                      //请配置 sys 租户账号，该账号信息仅用于此次导出
+                    }
+                  }}
+                  form={form}
+                  randomKey={Math.random()}
+                  enforce={false}
+                  connection={connection}
+                />
+              );
+            }}
+          </FormItem>
+        )}
       <DescriptionInput />
     </>
   );

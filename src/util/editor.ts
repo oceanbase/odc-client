@@ -377,7 +377,6 @@ const utils = {
     codeEditor.executeEdits('replace-text', [op]);
   },
   async getCurrentSelectRange(editor: IEditor) {
-    const monaco = await getMonaco();
     if (!editor) {
       return;
     }
