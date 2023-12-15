@@ -38,6 +38,7 @@ import type {
   ITaskResult,
   TaskDetail,
   TaskRecord,
+  IIPartitionPlanTaskDetail,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -337,7 +338,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   } else if (task?.type === TaskType.PARTITION_PLAN) {
     taskContent = (
       <PartitionTaskContent
-        task={task as TaskDetail<IPartitionPlanParams>}
+        task={task as IIPartitionPlanTaskDetail<IPartitionPlanParams>}
         result={result}
         hasFlow={hasFlow}
         partitionPlans={partitionPlan?.tablePartitionPlans}
