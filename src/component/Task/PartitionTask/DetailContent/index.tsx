@@ -20,30 +20,40 @@ import {
   enabledInspectTriggerStrategy,
   inspectOptions,
 } from '@/component/Task/PartitionTask/CreateModal';
-import type { IPartitionPlanParams, IPartitionPlanRecord, ITaskResult, TaskDetail } from '@/d.ts';
+import { getTaskExecStrategyMap } from '@/component/Task';
+import { isCycleTriggerStrategy } from '@/component/Task/helper';
+import type {
+  IPartitionPlanParams,
+  IPartitionPlanRecord,
+  ITaskResult,
+  IIPartitionPlanTaskDetail,
+} from '@/d.ts';
 import { TaskNodeStatus, TaskStatus } from '@/d.ts';
 import PartitionPolicyTable from '@/page/Workspace/components/PartitionPolicyTable';
 import type { UserStore } from '@/store/login';
-import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { Col, Divider, Row } from 'antd';
+import { Collapse, Divider, Descriptions, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import styles from './index.less';
+const { Panel } = Collapse;
 
 interface IProps {
   userStore?: UserStore;
-  task: TaskDetail<IPartitionPlanParams>;
+  task: IIPartitionPlanTaskDetail<IPartitionPlanParams>;
   result: ITaskResult;
   hasFlow: boolean;
   partitionPlans: IPartitionPlanRecord[];
   onPartitionPlansChange: (value: IPartitionPlanRecord[]) => void;
 }
 
+const ShowNextFireTimes = false;
+
 const PartitionTaskContent: React.FC<IProps> = (props) => {
   const {
     userStore: { user },
     task,
-    result,
     hasFlow,
     partitionPlans,
     onPartitionPlansChange,
@@ -53,9 +63,14 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
       ? task.nodeList.find((node) => node.status === TaskNodeStatus.WAIT_FOR_CONFIRM)
       : null;
   const enabledEdit = confirmNode?.candidates?.some((item) => item.id === user?.id) ?? false;
-
+  const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
+  const { connectionPartitionPlan } = task?.parameters ?? {};
+  const { triggerConfig } = connectionPartitionPlan ?? {};
+  const isCycleStrategy = isCycleTriggerStrategy(
+    connectionPartitionPlan?.triggerConfig?.triggerStrategy,
+  );
   const inspectTriggerStrategyLabel = inspectOptions?.find(
-    (item) => item.value === task?.parameters?.connectionPartitionPlan?.inspectTriggerStrategy,
+    (item) => item.value === connectionPartitionPlan?.inspectTriggerStrategy,
   )?.label;
 
   const handlePlansConfigChange = (values: IPartitionPlanRecord[]) => {
@@ -68,56 +83,27 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Row>
-        <Col span={12}>
-          <SimpleTextItem
-            label={formatMessage({
-              id: 'odc.component.DetailModal.partition.TaskNumber',
-            })}
-            /*任务编号*/ content={task?.id}
-          />
-        </Col>
-        <Col span={12}>
-          <SimpleTextItem
-            label={formatMessage({
-              id: 'odc.component.DetailModal.partition.TaskType',
-            })}
-            /*任务类型*/ content={
-              formatMessage({
-                id: 'odc.component.DetailModal.partition.PartitionPlan',
-              }) //分区计划
-            }
-          />
-        </Col>
-      </Row>
-      <Row>
-        {enabledInspectTriggerStrategy && (
-          <Col span={12}>
-            <SimpleTextItem
-              label={formatMessage({
-                id: 'odc.component.DetailModal.partition.InspectionCycle',
-              })}
-              /*巡检周期*/ content={inspectTriggerStrategyLabel}
-            />
-          </Col>
-        )}
-      </Row>
-      {hasFlow && (
-        <SimpleTextItem
-          label={formatMessage({
-            id: 'odc.component.DetailModal.partition.RiskLevel',
-          })}
-          /*风险等级*/ content={
+      <Descriptions column={2}>
+        <Descriptions.Item span={2} label="任务编号">
+          {task?.id}
+        </Descriptions.Item>
+        <Descriptions.Item span={2} label="任务类型">
+          分区计划
+        </Descriptions.Item>
+        {hasFlow && (
+          <Descriptions.Item span={2} label="风险等级">
             <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
-          }
-        />
-      )}
-      <SimpleTextItem
-        label={formatMessage({
-          id: 'odc.component.DetailModal.partition.Remarks',
-        })}
-        /*备注*/ content={task?.description || '-'}
-      />
+          </Descriptions.Item>
+        )}
+        {enabledInspectTriggerStrategy && (
+          <Descriptions.Item label="巡检周期" span={2}>
+            {inspectTriggerStrategyLabel}
+          </Descriptions.Item>
+        )}
+        <Descriptions.Item span={2} label="备注">
+          {task?.description || '-'}
+        </Descriptions.Item>
+      </Descriptions>
       <Divider style={{ marginTop: 4 }} />
       <PartitionPolicyTable
         enabledEdit={enabledEdit}
@@ -125,20 +111,45 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
         partitionPlans={partitionPlans}
         onPlansConfigChange={handlePlansConfigChange}
       />
-
+      <Descriptions column={2}>
+        <Descriptions.Item label="执行方式">
+          {taskExecStrategyMap[triggerConfig?.triggerStrategy]}
+        </Descriptions.Item>
+        <Descriptions.Item label="执行策略">{triggerConfig?.cronExpression}</Descriptions.Item>
+        {ShowNextFireTimes && isCycleStrategy && (
+          <Descriptions.Item>
+            <Collapse
+              ghost
+              bordered={false}
+              className={styles['next-time']}
+              expandIcon={({ isActive }) => (
+                <SimpleTextItem
+                  label="下一次执行时间"
+                  content={
+                    <Space>
+                      {getFormatDateTime(task?.nextFireTimes?.[0])}
+                      {isActive ? <UpOutlined /> : <DownOutlined />}
+                    </Space>
+                  }
+                />
+              )}
+            >
+              <Panel key="1" header={null}>
+                <Space direction="vertical" size={0}>
+                  {task?.nextFireTimes?.map((item, index) => {
+                    return index > 0 && <div>{getFormatDateTime(item)}</div>;
+                  })}
+                </Space>
+              </Panel>
+            </Collapse>
+          </Descriptions.Item>
+        )}
+      </Descriptions>
       <Divider style={{ marginTop: 4 }} />
-      <SimpleTextItem
-        label={formatMessage({
-          id: 'odc.component.DetailModal.partition.Founder',
-        })}
-        /*创建人*/ content={task?.creator?.name || '-'}
-      />
-      <SimpleTextItem
-        label={formatMessage({
-          id: 'odc.component.DetailModal.partition.CreationTime',
-        })}
-        /*创建时间*/ content={getFormatDateTime(task.createTime)}
-      />
+      <Descriptions column={2}>
+        <Descriptions.Item label="创建人">{task?.creator?.name || '-'}</Descriptions.Item>
+        <Descriptions.Item label="创建时间">{getFormatDateTime(task.createTime)}</Descriptions.Item>
+      </Descriptions>
     </>
   );
 };

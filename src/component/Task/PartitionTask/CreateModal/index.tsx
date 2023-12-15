@@ -15,16 +15,40 @@
  */
 
 import { checkConnectionPartitionPlan, createTask, getPartitionPlan } from '@/common/network/task';
-import { IPartitionPlanRecord, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import {
+  IPartitionPlanRecord,
+  TaskPageScope,
+  TaskPageType,
+  TaskType,
+  TaskExecStrategy,
+  ICycleTaskTriggerConfig,
+} from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { Button, Drawer, Form, Input, Modal, Select, Space, Tooltip } from 'antd';
+import { isClient } from '@/util/env';
+import {
+  Button,
+  Drawer,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Tooltip,
+  Radio,
+  DatePicker,
+} from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { FieldTimeOutlined } from '@ant-design/icons';
 import PartitionPolicyTable from '../../../../page/Workspace/components/PartitionPolicyTable';
 import DatabaseSelect from '../../component/DatabaseSelect';
+import Crontab from '@/component/Crontab';
+import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import styles from './index.less';
+
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
   FIRST_DAY_OF_MONTH = 'FIRST_DAY_OF_MONTH',
@@ -86,7 +110,12 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [disabledSubmit, setDisabledSubmit] = useState(true);
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
+    const [crontab, setCrontab] = useState<ICrontab>(null);
     const [form] = Form.useForm();
+    const crontabRef = useRef<{
+      setValue: (value: ICrontab) => void;
+      resetFields: () => void;
+    }>();
     const databaseId = Form.useWatch('databaseId', form);
     const loadData = async () => {
       if (!databaseId) {
@@ -101,6 +130,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           id: index,
         })),
       );
+    };
+    const handleReset = () => {
+      form?.resetFields();
+      crontabRef.current?.resetFields();
     };
     const onClose = useCallback(() => {
       form.resetFields();
@@ -121,10 +154,14 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         },
       });
     }, [onClose]);
+    const handleCrontabChange = (crontab) => {
+      setCrontab(crontab);
+    };
+
     const handleSubmit = async () => {
       try {
         const values = await form.validateFields();
-        const { description, databaseId } = values;
+        const { description, databaseId, triggerStrategy, startAt } = values;
         // 4.0.0 禁止设置 巡检周期，保留一个默认值：无需巡检
         const inspectTriggerStrategy = IPartitionPlanInspectTriggerStrategy.NONE;
         const params = {
@@ -138,9 +175,26 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               inspectEnable: inspectTriggerStrategy !== IPartitionPlanInspectTriggerStrategy.NONE,
               inspectTriggerStrategy,
               tablePartitionPlans: partitionPlans,
+              triggerConfig: {
+                triggerStrategy,
+              } as ICycleTaskTriggerConfig,
             },
           },
         };
+        if (triggerStrategy === TaskExecStrategy.TIMER) {
+          const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
+          params.parameters.connectionPartitionPlan.triggerConfig = {
+            triggerStrategy: (mode === 'custom' ? 'CRON' : dateType) as TaskExecStrategy,
+            days: dateType === CrontabDateType.weekly ? dayOfWeek : dayOfMonth,
+            hours: hour,
+            cronExpression: cronString,
+          };
+        } else if (triggerStrategy === TaskExecStrategy.START_AT) {
+          params.parameters.connectionPartitionPlan.triggerConfig = {
+            triggerStrategy: TaskExecStrategy.START_AT,
+            startAt: startAt?.valueOf(),
+          };
+        }
         setConfirmLoading(true);
         const resCount = await createTask(params);
         setConfirmLoading(false);
@@ -163,6 +217,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       const isExist = await checkConnectionPartitionPlan(databaseId);
       setHasPartitionPlan(isExist);
     };
+    useEffect(() => {
+      if (!partitionVisible) {
+        handleReset();
+      }
+    }, [partitionVisible]);
     useEffect(() => {
       if (partitionVisible && databaseId) {
         checkPartitionPlanExist();
@@ -230,6 +289,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           requiredMark="optional"
           initialValues={{
             inspectTriggerStrategy: IPartitionPlanInspectTriggerStrategy.NONE,
+            triggerStrategy: TaskExecStrategy.TIMER,
           }}
         >
           <DatabaseSelect
@@ -271,12 +331,51 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               }}
             </Form.Item>
           )}
-          <Form.Item required>
+          <Form.Item required className={styles.tableWrapper}>
             <PartitionPolicyTable
               partitionPlans={partitionPlans}
               onPlansConfigChange={handlePlansConfigChange}
               onLoad={loadData}
             />
+          </Form.Item>
+          <Form.Item label="执行方式" name="triggerStrategy" required>
+            <Radio.Group>
+              {/**
+                 * <Radio.Button value={TaskExecStrategy.START_NOW}>
+                    立即执行
+                  </Radio.Button>
+                  {!isClient() ? (
+                    <Radio.Button value={TaskExecStrategy.START_AT}>
+                      定时执行
+                    </Radio.Button>
+                  ) : null}
+                 */}
+              <Radio.Button value={TaskExecStrategy.TIMER}>周期执行</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {({ getFieldValue }) => {
+              const triggerStrategy = getFieldValue('triggerStrategy') || [];
+              if (triggerStrategy === TaskExecStrategy.START_AT) {
+                return (
+                  <Form.Item name="startAt" label="执行时间" required>
+                    <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                  </Form.Item>
+                );
+              }
+              if (triggerStrategy === TaskExecStrategy.TIMER) {
+                return (
+                  <Form.Item>
+                    <Crontab
+                      ref={crontabRef}
+                      initialValue={crontab}
+                      onValueChange={handleCrontabChange}
+                    />
+                  </Form.Item>
+                );
+              }
+              return null;
+            }}
           </Form.Item>
           <Form.Item
             name="description"

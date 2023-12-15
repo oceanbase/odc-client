@@ -2555,6 +2555,7 @@ export interface IConnectionPartitionPlan {
   inspectEnable: boolean;
   inspectTriggerStrategy: string;
   tablePartitionPlans: IPartitionPlanRecord[];
+  triggerConfig: ICycleTaskTriggerConfig;
 }
 
 export enum TaskExecStrategy {
@@ -2619,6 +2620,10 @@ export interface ITaskFlowNode {
 }
 
 export type TaskDetail<P> = TaskRecord<P>;
+
+export interface IIPartitionPlanTaskDetail<T> extends TaskDetail<T> {
+  nextFireTimes: number[];
+}
 
 export type CycleTaskDetail<T> = ICycleTaskRecord<T>;
 
