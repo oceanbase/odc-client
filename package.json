@@ -73,6 +73,7 @@
     "@oceanbase-odc/ob-intl-cli": "^1.1.0",
     "@oceanbase-odc/ob-parser-js": "^3.0.1",
     "@oceanbase-odc/ob-react-data-grid": "^3.0.5",
+    "@sentry/react": "^7.88.0",
     "@svgr/webpack": "^6.5.1",
     "@testing-library/react": "^11.2.2",
     "@types/antlr4": "~4.7.2",
