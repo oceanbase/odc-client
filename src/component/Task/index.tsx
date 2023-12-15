@@ -28,6 +28,7 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
     case TaskType.DATA_ARCHIVE:
     case TaskType.DATA_DELETE:
+    case TaskType.PARTITION_PLAN:
       return {
         [TaskExecStrategy.TIMER]: formatMessage({
           id: 'odc.src.component.Task.CycleExecution',
