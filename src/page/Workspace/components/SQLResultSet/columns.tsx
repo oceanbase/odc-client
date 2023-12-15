@@ -112,8 +112,8 @@ const getColumns = (
                                   style={{ padding: '0px' }}
                                   disabled={sqlChanged}
                                   onClick={async () => {
-                                    utils.removeHighlight(ctx);
-                                    utils.addHighlight(
+                                    await utils.removeHighlight(ctx);
+                                    await utils.addHighlight(
                                       ctx,
                                       rule?.start + rule?.offset + baseOffset,
                                       rule?.stop + rule?.offset + baseOffset,
