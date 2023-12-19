@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { executeSQL, runSQLLint } from '@/common/network/sql';
+import { executeSQL } from '@/common/network/sql';
 import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
@@ -22,7 +22,8 @@ import { TAB_HEADER_HEIGHT } from '@/constant';
 import { EStatus, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import modal, { ModalStore } from '@/store/modal';
-import page, { PageStore } from '@/store/page';
+import { PageStore } from '@/store/page';
+import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
@@ -70,6 +71,8 @@ class TableData extends React.Component<
     tipToShow: string;
     lintResultSet: ISQLLintReuslt[];
     status: EStatus;
+    hasExecuted: boolean;
+    allowExport?: boolean;
   }
 > {
   constructor(props) {
@@ -84,6 +87,8 @@ class TableData extends React.Component<
       resultSet: null,
       lintResultSet: null,
       status: null,
+      hasExecuted: false,
+      allowExport: true,
     };
   }
 
@@ -135,6 +140,9 @@ class TableData extends React.Component<
           resultSet,
         });
       }
+      this.setState({
+        allowExport: data?.allowExport ?? true, // 当data.allowExport为null或undefined时赋值为true，即默认为允许导出
+      });
     } catch (e) {
       console.error(e);
     } finally {
@@ -144,7 +152,7 @@ class TableData extends React.Component<
     }
   };
   public handleSaveRowData = async (newRows: any[], limit: number, autoCommit: boolean) => {
-    const { tableName, session } = this.props;
+    const { tableName, session, pageKey } = this.props;
     const { resultSet } = this.state;
     const originRows = resultSet.rows;
     const columns = resultSet.columns;
@@ -227,48 +235,74 @@ class TableData extends React.Component<
       sql = sql + (session.params.delimiter === ';' ? '' : session.params.delimiter) + '\ncommit;';
     }
 
-    const lintResultSet = await runSQLLint(session?.sessionId, ';', sql);
-    modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
-    let status = null;
-    if (Array.isArray(lintResultSet) && lintResultSet?.length) {
-      const violations = lintResultSet.reduce((pre, cur) => {
-        if (cur?.violations?.length === 0) {
-          return pre;
-        }
-        return pre.concat(...cur?.violations);
-      }, []);
-      if (violations?.some((violation) => violation?.level === 2)) {
-        status = EStatus.DISABLED;
-      } else if (violations?.every((violation) => violation?.level === 1)) {
-        status = EStatus.SUBMIT;
-      } else {
-        status = EStatus.APPROVAL;
-      }
-    } else {
-      status = EStatus.DISABLED;
-    }
-
     this.setState({
       showDataExecuteSQLModal: true,
       updateDataDML: sql,
       tipToShow,
-      lintResultSet,
-      status,
     });
   };
 
   public handleExecuteDataDML = async () => {
     const { session, tableName } = this.props;
-
+    const { hasExecuted, updateDataDML, lintResultSet, status } = this.state;
     try {
       const result = await executeSQL(
-        this.state.updateDataDML,
+        updateDataDML,
         session.sessionId,
         session.database.dbName,
         false,
       );
+      if (!hasExecuted) {
+        this.setState({
+          lintResultSet: result?.lintResultSet,
+          status: result?.status,
+          hasExecuted: true,
+        });
+        return;
+      } else {
+        this.setState({
+          lintResultSet: null,
+          status: null,
+          hasExecuted: false,
+        });
+        if (status === EStatus.APPROVAL) {
+          modal.changeCreateAsyncTaskModal(true, {
+            sql: updateDataDML,
+            databaseId: sessionManager.sessionMap.get(session.sessionId).odcDatabase?.id,
+            rules: lintResultSet,
+          });
+        }
+      }
       if (!result) {
         return;
+      }
+      if (!hasExecuted) {
+        /**
+         * status为submit时，即SQL内容没有被拦截，继续执行后续代码，完成相关交互
+         * status为其他情况时，中断操作
+         */
+        if (result?.status !== EStatus.SUBMIT) {
+          this.setState({
+            lintResultSet: result?.lintResultSet,
+            status: result?.status,
+            hasExecuted: true,
+          });
+          return;
+        }
+      } else {
+        // 需要发起审批
+        if (result?.status === EStatus.APPROVAL) {
+          modal.changeCreateAsyncTaskModal(true, {
+            sql: updateDataDML,
+            databaseId: sessionManager.sessionMap.get(session.sessionId).odcDatabase?.id,
+            rules: lintResultSet,
+          });
+        }
+        this.setState({
+          lintResultSet: null,
+          status: null,
+          hasExecuted: false,
+        });
       }
       if (result?.invalid) {
         this.setState({
@@ -339,6 +373,7 @@ class TableData extends React.Component<
       isEditing,
       lintResultSet,
       status,
+      allowExport,
     } = this.state;
 
     return (
@@ -360,6 +395,7 @@ class TableData extends React.Component<
                 isEditing: editing,
               });
             }}
+            allowExport={allowExport}
             onSubmitRows={this.handleSaveRowData}
             isTableData={true}
             columns={resultSet.columns}
@@ -387,8 +423,19 @@ class TableData extends React.Component<
           onCancel={() =>
             this.setState({
               showDataExecuteSQLModal: false,
+              hasExecuted: false,
+              status: null,
+              lintResultSet: null,
             })
           }
+          callback={() => {
+            this.setState({
+              showDataExecuteSQLModal: false,
+              hasExecuted: false,
+              status: null,
+              lintResultSet: null,
+            });
+          }}
           onChange={(sql) =>
             this.setState({
               updateDataDML: sql,

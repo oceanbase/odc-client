@@ -35,6 +35,7 @@ import ShowExecuteModal from './showExecuteModal';
 import ShowTableBaseInfoForm from './ShowTableBaseInfoForm';
 import TableData from './TableData';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import Toolbar from '@/component/Toolbar';
 import { TablePage as TablePageModel } from '@/store/helper/page/pages';
@@ -43,7 +44,6 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const Content = Layout.Content;
 const TabPane = Tabs.TabPane;
@@ -78,13 +78,19 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
   const [topTab, setTopTab] = useState(TopTab.PROPS);
   const [propsTab, setPropsTab] = useState(PropsTab.INFO);
   const executeRef = useRef<{
-    showExecuteModal: (sql: any, tableName: any, onSuccess, tip) => Promise<boolean>;
+    showExecuteModal: (
+      sql: any,
+      tableName: any,
+      onSuccess,
+      tip,
+      callback: () => void,
+    ) => Promise<boolean>;
   }>();
   const { session } = useContext(SessionContext);
   const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
   const enableConstraint = session?.supportFeature?.enableConstraint;
-
+  const callbackRef = useRef<any>();
   async function fetchTable() {
     if (table?.info?.tableName === params.tableName) {
       return;
@@ -206,6 +212,8 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             table: table,
             onRefresh: refresh,
             showExecuteModal: function (...args) {
+              // 后续回调函数
+              callbackRef.current = args?.[4];
               return executeRef.current?.showExecuteModal(...args);
             },
             editMode: true,
@@ -302,7 +310,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
           </Tabs>
         </TablePageContext.Provider>
       </div>
-      <ShowExecuteModal session={session} ref={executeRef} />
+      <ShowExecuteModal session={session} ref={executeRef} callbackRef={callbackRef} />
     </>
   ) : (
     <WorkSpacePageLoading />
