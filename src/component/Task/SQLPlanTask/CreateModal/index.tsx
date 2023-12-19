@@ -434,7 +434,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setFormData(null);
     setSqlContentType(SQLContentType.TEXT);
     form?.resetFields();
-    crontabRef.current?.resetFields();
+    setCrontab(null);
   };
 
   useEffect(() => {

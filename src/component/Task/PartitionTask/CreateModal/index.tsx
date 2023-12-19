@@ -131,12 +131,9 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         })),
       );
     };
-    const handleReset = () => {
-      form?.resetFields();
-      crontabRef.current?.resetFields();
-    };
     const onClose = useCallback(() => {
-      form.resetFields();
+      form?.resetFields();
+      setCrontab(null);
       setDisabledSubmit(true);
       setHasPartitionPlan(false);
       setPartitionPlans([]);
@@ -217,11 +214,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       const isExist = await checkConnectionPartitionPlan(databaseId);
       setHasPartitionPlan(isExist);
     };
-    useEffect(() => {
-      if (!partitionVisible) {
-        handleReset();
-      }
-    }, [partitionVisible]);
     useEffect(() => {
       if (partitionVisible && databaseId) {
         checkPartitionPlanExist();
