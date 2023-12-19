@@ -20,7 +20,7 @@ import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, message, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from '../../index.less';
 
 const { TextArea } = Input;
@@ -40,7 +40,13 @@ interface IProps {
 const ApprovalModal: React.FC<IProps> = inject('taskStore')(
   observer((props) => {
     const { taskStore, type, id, visible, status, approvalStatus, partitionPlan, onCancel } = props;
+    const [confirmLoading, setConfirmLoading] = useState(false);
     const formRef = useRef(null);
+
+    const handleCancel = () => {
+      onCancel();
+      setConfirmLoading(false);
+    };
 
     const handleApprove = async (value: string) => {
       let res = null;
@@ -50,7 +56,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         res = await approveTask(props.id, value);
       }
       props?.onReload();
-      onCancel();
+      handleCancel();
       if (res) {
         taskStore.getTaskMetaInfo();
         message.success(
@@ -62,7 +68,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
     };
     const handleReject = async (value: string) => {
       const res = await rejectTask(props.id, value);
-      onCancel();
+      handleCancel();
       if (res) {
         taskStore.getTaskMetaInfo();
         props?.onReload();
@@ -74,15 +80,12 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
       }
     };
 
-    const handleCancel = () => {
-      onCancel();
-    };
-
     const onSubmit = () => {
       formRef.current
         .validateFields()
         .then((values) => {
           const { comment } = values;
+          setConfirmLoading(true);
           if (approvalStatus) {
             handleApprove(comment);
           } else {
@@ -107,6 +110,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         })} /*处理意见*/
         wrapClassName={styles.approvalModal}
         open={visible}
+        confirmLoading={confirmLoading}
         onOk={onSubmit}
         onCancel={handleCancel}
         zIndex={1001}
