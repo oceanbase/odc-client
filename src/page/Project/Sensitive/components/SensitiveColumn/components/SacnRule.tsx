@@ -21,10 +21,9 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Select } from 'antd';
+import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
-import { useWatch } from 'antd/es/form/Form';
-import { ConnectionMode } from '@/d.ts';
 
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
@@ -40,12 +39,10 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     const rawData = await getConnectionList({
       projectId: sensitiveContext.projectId,
     });
-    const resData = rawData?.contents
-      ?.filter((content) => content?.dialectType !== ConnectionMode.MYSQL)
-      ?.map((content) => ({
-        label: content.name,
-        value: content.id,
-      }));
+    const resData = rawData?.contents?.map((content) => ({
+      label: content.name,
+      value: content.id,
+    }));
     setDataSourceOptions(resData);
   };
   const initDatabases = async (
@@ -223,8 +220,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         }
         tooltip={
           formatMessage({
-            id:
-              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath',
+            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath',
           }) //'可通过路径、正则或Groovy任意一种识别方式，进行脚本批量选择列'
         }
         name="sensitiveRuleIds"
@@ -283,8 +279,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
               >
                 {
                   formatMessage({
-                    id:
-                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
+                    id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
                   }) /* 
              管理识别规则
              */
