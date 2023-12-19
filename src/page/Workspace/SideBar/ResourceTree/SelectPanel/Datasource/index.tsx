@@ -95,7 +95,7 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
     /**
      * 获取数据源状态
      */
-    if (datasourceList?.length && login.isPrivateSpace()) {
+    if (datasourceList?.length) {
       reload();
     }
   }, [datasourceList]);
@@ -137,9 +137,7 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
           : item;
         return {
           title: item.name,
-          selectable: login.isPrivateSpace()
-            ? item.status?.status === IConnectionStatus.ACTIVE
-            : true,
+          selectable: item.status?.status === IConnectionStatus.ACTIVE,
           key: item.id,
           icon: <StatusIcon item={item} />,
         };
