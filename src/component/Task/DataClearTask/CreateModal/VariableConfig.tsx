@@ -24,7 +24,7 @@ import { variable } from './index';
 import styles from './index.less';
 import { timeUnitOptions } from '../../DataArchiveTask/CreateModal/VariableConfig';
 const ENABLE_PATTERN_OPERATOR = false;
-const timeFormatOptions = ['yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
+const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
   value: item,
 }));
@@ -109,7 +109,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
       <Form.List name="variables">
         {(fields, { add, remove }) => (
           <div className={styles.infoBlock}>
-            {fields.map(({ key, name, ...restField }) => (
+            {fields.map(({ key, name, ...restField }, index) => (
               <div
                 key={key}
                 className={classNames(styles.variables, {
@@ -146,11 +146,21 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <Form.List name={[name, 'pattern']}>
                   {(subFields, { add: _add, remove: _remove }) => {
                     const disabledAdd = subFields.length >= 3;
+                    const required = !!Object.values(variables[index].pattern[0])?.join('')?.length;
                     return (
                       <div className={styles.infoBlock}>
                         {subFields.map(({ key, name, ...restField }) => (
                           <div className={styles.pattern}>
-                            <Form.Item {...restField} name={[name, 'operator']}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'operator']}
+                              rules={[
+                                {
+                                  required,
+                                  message: '请选择',
+                                },
+                              ]}
+                            >
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
@@ -158,7 +168,16 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 /*请选择*/ options={operatorOptions}
                               />
                             </Form.Item>
-                            <Form.Item {...restField} name={[name, 'step']}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'step']}
+                              rules={[
+                                {
+                                  required,
+                                  message: '请输入',
+                                },
+                              ]}
+                            >
                               <InputNumber
                                 placeholder={formatMessage({
                                   id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseEnter',
@@ -166,7 +185,16 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 /*请输入*/ min={1}
                               />
                             </Form.Item>
-                            <Form.Item {...restField} name={[name, 'unit']}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'unit']}
+                              rules={[
+                                {
+                                  required,
+                                  message: '请选择',
+                                },
+                              ]}
+                            >
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
