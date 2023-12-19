@@ -73,7 +73,15 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                             <Checkbox
                               onChange={(e) => {
                                 if (!e.target.checked) {
-                                  setFieldValue(fieldkey, null);
+                                  setFieldValue(fieldkey, {
+                                    autoApproval: false,
+                                    externalApproval: false,
+                                  });
+                                } else {
+                                  setFieldValue(fieldkey, {
+                                    autoApproval: false,
+                                    externalApproval: true,
+                                  });
                                 }
                               }}
                             >
@@ -150,7 +158,15 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
             ))}
             <Timeline.Item className={styles.opBtn}>
               <Space split={<span className={styles.desc}>|</span>}>
-                <Button type="link" onClick={() => add({ autoApproval: false })}>
+                <Button
+                  type="link"
+                  onClick={() =>
+                    add({
+                      autoApproval: false,
+                      externalApproval: false,
+                    })
+                  }
+                >
                   {
                     formatMessage({
                       id: 'odc.component.AuthNode.AddAnApprovalNode',
