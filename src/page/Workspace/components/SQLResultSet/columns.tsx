@@ -18,7 +18,6 @@ import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import { levelMap } from '@/page/Secure/interface';
 import utils, { IEditor } from '@/util/editor';
 import { Button, Popover, Space, Tooltip } from 'antd';
-
 const getColumns = (
   showLocate: boolean,
   sqlChanged: boolean,
@@ -29,7 +28,8 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SerialNumber',
-      }), //'序号'
+      }),
+      //'序号'
       dataIndex: 'row',
       key: 'row',
       width: 60,
@@ -37,7 +37,8 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLStatement',
-      }), //'SQL 语句'
+      }),
+      //'SQL 语句'
       dataIndex: 'sql',
       key: 'sql',
       ellipsis: {
@@ -47,26 +48,30 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.AgainstTheRules',
-      }), //'违反规则'
+      }),
+      //'违反规则'
       dataIndex: 'rules',
       key: 'rules',
       filters: [
         {
           text: formatMessage({
             id: 'odc.src.page.Workspace.components.SQLResultSet.MustBeImproved',
-          }), //'必须改进'
+          }),
+          //'必须改进'
           value: 2,
         },
         {
           text: formatMessage({
             id: 'odc.src.page.Workspace.components.SQLResultSet.NeedApproval',
-          }), //'需要审批'
+          }),
+          //'需要审批'
           value: 1,
         },
         {
           text: formatMessage({
             id: 'odc.src.page.Workspace.components.SQLResultSet.NoNeedToImprove',
-          }), //'无需改进'
+          }),
+          //'无需改进'
           value: 0,
         },
       ],
@@ -85,7 +90,12 @@ const getColumns = (
                   content={
                     <div>
                       <RenderLevel level={key} key={`PopoverContentRenderLevel${index}`} />
-                      <div style={{ overflowY: 'scroll', maxHeight: '350px' }}>
+                      <div
+                        style={{
+                          overflowY: 'scroll',
+                          maxHeight: '350px',
+                        }}
+                      >
                         {rules?.[key]?.map((rule, index) => (
                           <div
                             style={{
@@ -103,13 +113,18 @@ const getColumns = (
                               <Tooltip
                                 title={
                                   sqlChanged
-                                    ? 'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
+                                    ? formatMessage({
+                                        id:
+                                          'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
+                                      }) //'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
                                     : ''
                                 }
                               >
                                 <Button
                                   type="link"
-                                  style={{ padding: '0px' }}
+                                  style={{
+                                    padding: '0px',
+                                  }}
                                   disabled={sqlChanged}
                                   onClick={async () => {
                                     await utils.removeHighlight(ctx);
@@ -130,8 +145,8 @@ const getColumns = (
                                     formatMessage({
                                       id: 'odc.src.page.Workspace.components.SQLResultSet.Position',
                                     }) /* 
-                              定位
-                             */
+                       定位
+                       */
                                   }
                                 </Button>
                               </Tooltip>
