@@ -253,19 +253,21 @@ class TableData extends React.Component<
         false,
       );
       if (!hasExecuted) {
-        this.setState({
-          lintResultSet: result?.lintResultSet,
-          status: result?.status,
-          hasExecuted: true,
-        });
-        return;
+        if (result?.status !== EStatus.SUBMIT) {
+          this.setState({
+            lintResultSet: result?.lintResultSet,
+            status: result?.status,
+            hasExecuted: true,
+          });
+          return;
+        }
       } else {
         this.setState({
           lintResultSet: null,
           status: null,
           hasExecuted: false,
         });
-        if (status === EStatus.APPROVAL) {
+        if (result?.status === EStatus.APPROVAL) {
           modal.changeCreateAsyncTaskModal(true, {
             sql: updateDataDML,
             databaseId: sessionManager.sessionMap.get(session.sessionId).odcDatabase?.id,

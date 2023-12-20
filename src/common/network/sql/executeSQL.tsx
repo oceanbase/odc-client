@@ -143,6 +143,14 @@ class TaskManager {
   }
 }
 export const executeTaskManager = new TaskManager();
+/**
+ *
+ * @param params 要执行的SQL内容，可能为string或IExecuteSQLParams类型
+ * @param sessionId 会话ID
+ * @param dbName 数据库名称
+ * @param needModal SQL确认弹窗，默认需要弹出
+ * @returns
+ */
 export default async function executeSQL(
   params: IExecuteSQLParams | string,
   sessionId: string,
