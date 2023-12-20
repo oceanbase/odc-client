@@ -152,6 +152,7 @@ const Columns: React.FC<IProps> = function ({}) {
                     setEditColumns(null);
                   },
                   tip,
+                  () => setEditColumns(null),
                 );
               }}
             >

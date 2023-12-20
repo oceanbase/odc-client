@@ -19,14 +19,14 @@ import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { AddSensitiveColumnType, ScanTableData } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { Button, Drawer, message, Space } from 'antd';
 import { useForm, useWatch } from 'antd/es/form/Form';
+import { merge } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
+import SensitiveRule from '../../SensitiveRule';
 import styles from './index.less';
 import ScanForm from './ScanForm';
-import tracert from '@/util/tracert';
-import SensitiveRule from '../../SensitiveRule';
-import { merge } from 'lodash';
 export const defaultScanTableData: Array<ScanTableData> = [];
 export const checkResult = (resData: Array<ScanTableData> = []) =>
   resData?.length > 0 ? resData : defaultScanTableData;
@@ -55,9 +55,8 @@ const FormSensitiveColumnDrawer = ({
   const context = useContext(ProjectContext);
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [sensitiveColumns, setSensitiveColumns] = useState<ISensitiveColumn[]>([]);
-  const [manageSensitiveRuleDrawerOpen, setManageSensitiveRuleDrawerOpen] = useState<boolean>(
-    false,
-  );
+  const [manageSensitiveRuleDrawerOpen, setManageSensitiveRuleDrawerOpen] =
+    useState<boolean>(false);
   const [formData, setFormData] = useState<Object>({});
 
   const parseData = (rawFormData: Object) => {
@@ -117,7 +116,15 @@ const FormSensitiveColumnDrawer = ({
           id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New',
         }), //新建成功
       );
-      onOk();
+      onOk(async () => {
+        await formRef?.resetFields();
+        await _formRef?.resetFields();
+        setSubmiting(false);
+        setManageSensitiveRuleDrawerOpen(false);
+        setFormData({});
+        ref.current?.reset();
+        ref.current = null;
+      });
       ref.current?.reset();
     } else {
       message.error(
@@ -206,8 +213,7 @@ const FormSensitiveColumnDrawer = ({
         open={manageSensitiveRuleDrawerOpen}
         title={
           formatMessage({
-            id:
-              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules',
+            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules',
           }) //'管理识别规则'
         }
         width={720}

@@ -40,9 +40,9 @@ import {
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
-import { ModalStore } from '@/store/modal';
+import modal, { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
-import { SessionManagerStore } from '@/store/sessionManager';
+import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
@@ -96,6 +96,7 @@ interface ISQLPageState {
   sqlChanged: boolean;
   baseOffset: number;
   status: EStatus;
+  hasExecuted: boolean;
 }
 
 interface IProps {
@@ -145,6 +146,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlChanged: false,
     baseOffset: 0,
     status: null,
+    hasExecuted: false,
     isSavingScript: false,
   };
 
@@ -321,6 +323,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleExecuteSQL = async () => {
     const { params } = this.props;
+    const { hasExecuted } = this.state;
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
@@ -699,26 +702,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         sql = sql + '\ncommit;';
       }
 
-      // const lintResultSet = await runSQLLint(session?.sessionId, ';', sql);
-      // setLintResultSet(lintResultSet);
-      // modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
-      // if (Array.isArray(lintResultSet) && lintResultSet?.length) {
-      //   const violations = lintResultSet.reduce((pre, cur) => {
-      //     if (cur?.violations?.length === 0) {
-      //       return pre;
-      //     }
-      //     return pre.concat(...cur?.violations);
-      //   }, []);
-      //   if (violations?.some((violation) => violation?.level === 2)) {
-      //     setStatus(EStatus.DISABLED);
-      //   } else if (violations?.every((violation) => violation?.level === 1)) {
-      //     setStatus(EStatus.SUBMIT);
-      //   } else {
-      //     setStatus(EStatus.APPROVAL);
-      //   }
-      // } else {
-      //   setStatus(EStatus.DISABLED);
-      // }
       this.setState({
         showDataExecuteSQLModal: true,
         updateDataDML: sql,
@@ -730,11 +713,11 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleExecuteDataDML = async () => {
     const { sqlStore, pageKey } = this.props;
-    const { resultSetIndex } = this.state;
+    const { resultSetIndex, updateDataDML, hasExecuted, status, lintResultSet } = this.state;
 
     try {
       const result = await executeSQL(
-        this.state.updateDataDML,
+        updateDataDML,
         this.getSession()?.sessionId,
         this.getSession()?.database?.dbName,
         false,
@@ -748,8 +731,32 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       const errorResult = result?.executeResult?.find(
         (item) => item.status !== ISqlExecuteResultStatus.SUCCESS,
       );
-      if (!result) {
-        return;
+      if (!hasExecuted) {
+        /**
+         * status为submit时，即SQL内容没有被拦截，继续执行后续代码，完成相关交互
+         * status为其他情况时，中断操作
+         */
+        if (result?.status !== EStatus.SUBMIT) {
+          this.setState({
+            lintResultSet: result?.lintResultSet,
+            status: result?.status,
+            hasExecuted: true,
+          });
+          return;
+        }
+      } else {
+        if (result?.status === EStatus.APPROVAL) {
+          modal.changeCreateAsyncTaskModal(true, {
+            sql: updateDataDML,
+            databaseId: sessionManager.sessionMap.get(this.getSession()?.sessionId).odcDatabase?.id,
+            rules: lintResultSet,
+          });
+        }
+        this.setState({
+          lintResultSet: null,
+          status: null,
+          hasExecuted: false,
+        });
       }
       if (result?.invalid) {
         this.setState({
@@ -1090,7 +1097,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
               status={status}
               lintResultSet={lintResultSet}
               onSave={this.handleExecuteDataDML}
-              onCancel={() => this.setState({ showDataExecuteSQLModal: false })}
+              onCancel={() =>
+                this.setState({
+                  showDataExecuteSQLModal: false,
+                  hasExecuted: false,
+                  status: null,
+                  lintResultSet: null,
+                })
+              }
               onChange={(sql) => this.setState({ updateDataDML: sql })}
             />,
             <Trace

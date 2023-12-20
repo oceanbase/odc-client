@@ -23,7 +23,13 @@ interface ITablePageContext {
   editMode?: boolean;
   session?: SessionStore;
   onRefresh: () => void;
-  showExecuteModal?: (sql: any, tableName: any, onSuccess, tip?: string) => Promise<boolean>;
+  showExecuteModal?: (
+    sql: any,
+    tableName: any,
+    onSuccess,
+    tip?: string,
+    callback?: () => void,
+  ) => Promise<boolean>;
 }
 const TablePageContext = React.createContext<ITablePageContext>({
   table: null,
