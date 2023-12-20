@@ -16,7 +16,6 @@
 
 import { getMetaStoreInstance } from '@/common/metaStore';
 import login from '@/store/login';
-import logger from '@/util/logger';
 import { history } from '@umijs/max';
 import { isNil, throttle } from 'lodash';
 import { IReactionDisposer, reaction } from 'mobx';
@@ -83,7 +82,7 @@ async function updateDB(key, value, propertyDBKey) {
     ...cacheValue,
     [propertyDBKey]: value,
   };
-  logger.debug(JSON.stringify(cacheValue, null, 4), key);
+  // logger.debug(JSON.stringify(cacheValue, null, 4), key);
   modifyCache.set(key, cacheValue);
   saveToDB();
 }

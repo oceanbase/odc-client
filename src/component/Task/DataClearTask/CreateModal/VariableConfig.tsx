@@ -146,7 +146,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <Form.List name={[name, 'pattern']}>
                   {(subFields, { add: _add, remove: _remove }) => {
                     const disabledAdd = subFields.length >= 3;
-                    const required = !!Object.values(variables[index].pattern[0])?.join('')?.length;
+                    const required = !!Object.values(variables[index].pattern?.[0] ?? {})?.join('')
+                      ?.length;
                     return (
                       <div className={styles.infoBlock}>
                         {subFields.map(({ key, name, ...restField }) => (

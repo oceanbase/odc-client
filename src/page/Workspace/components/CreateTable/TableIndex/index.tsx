@@ -17,11 +17,11 @@
 import { generateUpdateTableDDL } from '@/common/network/table';
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone, cloneDeep } from 'lodash';
-import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
-import { generateUniqKey } from '@/util/utils';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../EditableTable';
 import TablePageContext from '../../TablePage/context';
 import EditToolbar from '../EditToolbar';
@@ -107,6 +107,10 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
                 tableContext.setIndexes(null);
               },
               tip,
+              async () => {
+                await pageContext.onRefresh();
+                tableContext.setIndexes(null);
+              },
             );
           }}
         >

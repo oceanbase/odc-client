@@ -28,6 +28,7 @@ import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MonacoEditor from '../MonacoEditor';
 import { ISQLLintReuslt } from '../SQLLintResult/type';
+import styles from './index.less';
 
 interface IProps {
   sessionStore: SessionStore;
@@ -41,6 +42,7 @@ interface IProps {
   onChange?: (sql: string) => void;
   status?: EStatus;
   lintResultSet?: ISQLLintReuslt[];
+  callback?: () => void;
 }
 const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const {
@@ -52,6 +54,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     sessionStore,
     onCancel,
     onSave,
+    callback,
     status,
     lintResultSet,
   } = props;
@@ -73,6 +76,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     if (!updateSQL) {
       return;
     }
+    // 没有传入status参数的按之前的逻辑处理
     if (!status || status === EStatus.SUBMIT) {
       setLoading(true);
       try {
@@ -89,8 +93,10 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         rules: lintResultSet,
       });
       onCancel?.();
+      // 打开新建数据库抽屉后执行回调完成交互，例如 取消表格编辑状态、关闭当前页
+      callback?.();
     }
-  }, [onSave]);
+  }, [onSave, callback]);
 
   const handleFormat = () => {
     setIsFormatting(true);
@@ -153,6 +159,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
             {formatMessage({ id: 'app.button.execute' })}
           </Button>,
         ].filter(Boolean)}
+        className={styles.executeSqlModal}
       >
         {tip && <Alert message={tip} type="info" showIcon={true} style={{ marginBottom: 4 }} />}
         <div
@@ -187,6 +194,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           </div>
           {lintResultSet?.length > 0 && (
             <LintResultTable
+              resultHeight={166}
               ctx={editorRef.current}
               lintResultSet={lintResultSet}
               hasExtraOpt={false}
