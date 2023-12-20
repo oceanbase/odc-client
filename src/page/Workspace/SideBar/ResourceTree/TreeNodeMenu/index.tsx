@@ -25,6 +25,7 @@ import MenuConfig from './config';
 import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
+import classNames from 'classnames';
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip } = props;
@@ -49,7 +50,7 @@ const TreeNodeMenu = (props: IProps) => {
         }
         node.doubleClick?.(dbSession, node, databaseFrom);
       }}
-      className="ant-tree-title"
+      className={classNames("ant-tree-title", styles.fullWidthTitle)}
     >
       {node.title}
       {node.warning ? (
