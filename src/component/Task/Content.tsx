@@ -39,6 +39,8 @@ import styles from './index.less';
 import tracert from '@/util/tracert';
 import { getProject } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
+import { getTaskDetail } from '@/common/network/task';
+import { message } from 'antd';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -286,9 +288,14 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     this.openDefaultTask();
   }
 
-  private openDefaultTask = () => {
+  private openDefaultTask = async () => {
     const { defaultTaskId, defaultTaskType } = this.props;
     if (defaultTaskId) {
+      const data = await getTaskDetail(defaultTaskId, true);
+      if (!data) {
+        message.error('无当前工单查看权限');
+        return;
+      }
       this.setState({
         detailId: defaultTaskId,
         detailType: defaultTaskType || TaskType.ASYNC,
