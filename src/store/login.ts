@@ -293,6 +293,13 @@ export class UserStore {
     } else {
       const searchParamsObj = new URLSearchParams();
       const query = history.location.search || '';
+      if (query.includes("redirectTo")) {
+        history.push({
+          pathname: '/login',
+          search: query,
+        });
+        return;
+      }
       searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname)+query);
       history.push({
         pathname: '/login',
