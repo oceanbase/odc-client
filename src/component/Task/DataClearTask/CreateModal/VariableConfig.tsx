@@ -50,7 +50,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
           formatMessage({
             id: 'odc.src.component.Task.DataClearTask.CreateModal.CustomVariable',
           }) /* 
-        自定义变量
+         自定义变量
          */
         }
         <span className={styles.desc}>
@@ -99,7 +99,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 formatMessage({
                   id: 'odc.src.component.Task.DataClearTask.CreateModal.Shift',
                 }) /* 
-              时间偏移
+             时间偏移
              */
               }
             </HelpDoc>
@@ -158,7 +158,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               rules={[
                                 {
                                   required,
-                                  message: '请选择',
+                                  message: formatMessage({
+                                    id:
+                                      'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose',
+                                  }), //'请选择'
                                 },
                               ]}
                             >
@@ -175,7 +178,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               rules={[
                                 {
                                   required,
-                                  message: '请输入',
+                                  message: formatMessage({
+                                    id:
+                                      'odc.src.component.Task.DataClearTask.CreateModal.PleaseEnter',
+                                  }), //'请输入'
                                 },
                               ]}
                             >
@@ -192,7 +198,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               rules={[
                                 {
                                   required,
-                                  message: '请选择',
+                                  message: formatMessage({
+                                    id:
+                                      'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose.1',
+                                  }), //'请选择'
                                 },
                               ]}
                             >

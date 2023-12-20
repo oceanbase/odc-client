@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -41,7 +42,6 @@ import { getProject } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
 import { getTaskDetail } from '@/common/network/task';
 import { message } from 'antd';
-
 interface IProps {
   taskStore?: TaskStore;
   userStore?: UserStore;
@@ -54,7 +54,6 @@ interface IProps {
   defaultTaskId?: number;
   defaultTaskType?: TaskType;
 }
-
 interface IState {
   detailId: number;
   detailType: TaskType;
@@ -65,7 +64,6 @@ interface IState {
   tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
-
 @inject('userStore', 'taskStore', 'modalStore')
 @observer
 class TaskManaerContent extends React.Component<IProps, IState> {
@@ -82,9 +80,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       status: null,
     };
   }
-
   private tableRef = React.createRef<ITableInstance>();
-
   public loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { pageKey, taskStore } = this.props;
     const taskTabType = pageKey || taskStore?.taskPageType;
@@ -94,7 +90,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       await this.loadTaskList(taskTabType, args, executeDate);
     }
   };
-
   public loadTaskList = async (
     taskTabType,
     args: ITableLoadOptions,
@@ -137,7 +132,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         : taskTabType === TaskPageType.APPROVE_BY_CURRENT_USER,
       containsAll: isAll || isAllScope,
     };
-
     if (executeTime !== 'custom' && typeof executeTime === 'number') {
       params.startTime = getPreTime(executeTime);
       params.endTime = getPreTime(0);
@@ -149,7 +143,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       tasks,
     });
   };
-
   public loadCycleTaskList = async (
     taskTabType,
     args: ITableLoadOptions,
@@ -184,7 +177,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       size: pageSize,
       containsAll: isAll || isAllScope,
     };
-
     if (executeTime !== 'custom' && typeof executeTime === 'number') {
       params.startTime = getPreTime(executeTime);
       params.endTime = getPreTime(0);
@@ -196,17 +188,14 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       cycleTasks,
     });
   };
-
   private handlePartitionPlanChange = (value: IConnectionPartitionPlan) => {
     this.setState({
       partitionPlan: value,
     });
   };
-
   private reloadList = () => {
     this.tableRef.current.reload();
   };
-
   private handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     visible: boolean = false,
@@ -225,10 +214,11 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailVisible: visible,
     });
   };
-
   private handleMenuClick = (type: TaskPageType) => {
     const { modalStore } = this.props;
-    tracert.click('a3112.b64006.c330917.d367464', { type });
+    tracert.click('a3112.b64006.c330917.d367464', {
+      type,
+    });
     switch (type) {
       case TaskPageType.IMPORT:
         modalStore.changeImportModal(true);
@@ -287,13 +277,16 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     }
     this.openDefaultTask();
   }
-
   private openDefaultTask = async () => {
     const { defaultTaskId, defaultTaskType } = this.props;
     if (defaultTaskId) {
       const data = await getTaskDetail(defaultTaskId, true);
       if (!data) {
-        message.error('无当前工单查看权限');
+        message.error(
+          formatMessage({
+            id: 'odc.src.component.Task.NoCurrentWorkOrderView',
+          }), //'无当前工单查看权限'
+        );
         return;
       }
       this.setState({
@@ -303,12 +296,10 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       });
     }
   };
-
   private hasCreate = (key: string) => {
     const taskTypes = Object.values(TaskType);
     // return taskTypes.includes(key as TaskType);
   };
-
   render() {
     const { pageKey, taskStore, isMultiPage = false } = this.props;
     const {
@@ -350,5 +341,4 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     );
   }
 }
-
 export default TaskManaerContent;

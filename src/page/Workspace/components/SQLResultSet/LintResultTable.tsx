@@ -24,9 +24,15 @@ import { useCallback, useEffect, useState } from 'react';
 import getColumns from './columns';
 import styles from './index.less';
 const LintResultTip = {
-  default: '当前 SQL 可直接执行',
-  suggest: '当前 SQL 存在需要审批项，请发起审批或修改后再执行',
-  must: '当前 SQL 存在必须改进项，请修改后再执行',
+  default: formatMessage({
+    id: 'odc.src.page.Workspace.components.SQLResultSet.CurrentSQLCanBeExecuted',
+  }), //'当前 SQL 可直接执行'
+  suggest: formatMessage({
+    id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLNeedsApproval',
+  }), //'当前 SQL 存在需要审批项，请发起审批或修改后再执行'
+  must: formatMessage({
+    id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLExistenceMust',
+  }), //'当前 SQL 存在必须改进项，请修改后再执行'
 };
 export interface ILintResultTableProps {
   ctx?: any;
@@ -148,7 +154,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.SQLResultSet.InitiateApproval',
                 }) /* 
-              发起审批
+             发起审批
              */
               }
             </Button>
