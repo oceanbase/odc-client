@@ -246,13 +246,15 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               false,
             );
             if (!hasExecuted) {
-              setLintResultSet(results?.lintResultSet);
-              modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
-              setStatus(results?.status);
-              setHasExecuted(true);
-              return;
+              if (results?.status !== EStatus.SUBMIT) {
+                setLintResultSet(results?.lintResultSet);
+                modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
+                setStatus(results?.status);
+                setHasExecuted(true);
+                return;
+              }
             } else {
-              if (status === EStatus.APPROVAL) {
+              if (results?.status === EStatus.APPROVAL) {
                 modal.changeCreateAsyncTaskModal(true, {
                   sql: DDL,
                   databaseId: sessionManager.sessionMap.get(session?.sessionId).odcDatabase?.id,
