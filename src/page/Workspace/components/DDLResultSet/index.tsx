@@ -610,9 +610,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   );
 
   useEffect(() => {
-    if (rgdColumns?.length) {
-      gridRef.current.setColumns(rgdColumns);
-    }
+    gridRef.current?.setColumns?.(rgdColumns ?? []);
   }, [rgdColumns]);
 
   const pasteFormatter = useCallback(
