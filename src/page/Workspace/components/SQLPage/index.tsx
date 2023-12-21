@@ -322,7 +322,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
 
   public handleExecuteSQL = async () => {
-    const { params } = this.props;
+    const { params, sqlStore, pageKey } = this.props;
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
@@ -342,8 +342,21 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       });
     }
     if (result?.hasLintResults) {
+      if (
+        result?.executeResult &&
+        Array.isArray(result?.executeResult) &&
+        result?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
+      ) {
+        const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
+        this.setState({
+          resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
+        });
+      } else if (result?.status !== EStatus.SUBMIT) {
+        this.setState({
+          resultSetTabActiveKey: sqlLintTabKey,
+        });
+      }
       this.setState({
-        resultSetTabActiveKey: sqlLintTabKey,
         lintResultSet: result?.lintResultSet,
         executeOrPreCheckSql: sqlToExecute,
         sqlChanged: false,
@@ -359,6 +372,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
   // 执行选中的 SQL
   public handleExecuteSelectedSQL = async () => {
+    const { sqlStore, pageKey } = this.props;
     let selectedSQL = this.editor.getModel().getValueInRange(this.editor.getSelection()); // 如果没有选中，尝试获取当前语句
     let begin, end;
     if (!selectedSQL) {
@@ -399,8 +413,21 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       });
     }
     if (results?.hasLintResults) {
+      if (
+        results?.executeResult &&
+        Array.isArray(results?.executeResult) &&
+        results?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
+      ) {
+        const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
+        this.setState({
+          resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
+        });
+      } else if (results?.status !== EStatus.SUBMIT) {
+        this.setState({
+          resultSetTabActiveKey: sqlLintTabKey,
+        });
+      }
       this.setState({
-        resultSetTabActiveKey: sqlLintTabKey,
         lintResultSet: results?.lintResultSet,
         executeOrPreCheckSql: selectedSQL,
         sqlChanged: false,
@@ -458,8 +485,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }; // 保存 SQL
 
   public handleCreateSQL = async (script: ISQLScript) => {
-    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
-      this.props;
+    const {
+      userStore,
+      pageStore,
+      pageKey,
+      onSetUnsavedModalContent,
+      onChangeSaved,
+      params,
+    } = this.props;
     let existedScriptId;
     const newFiles = await newScript(
       [new File([params.scriptText], script.objectName)],
