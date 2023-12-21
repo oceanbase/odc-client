@@ -1225,10 +1225,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.database?.dbName,
       false,
     );
-    if (results?.hasLintResults) {
-      return results;
-    }
-    if (!results || results?.invalid) {
+    if ((!results || results?.invalid) && !results?.hasLintResults) {
       return;
     }
     this.getSession()?.initSessionStatus();
@@ -1253,6 +1250,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
     // await this.refreshResourceTree(results);
     this.triggerTableLayout();
+    if (results?.hasLintResults) {
+      return results;
+    }
   };
 
   private async showFirrstErrorStmt(
