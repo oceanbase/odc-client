@@ -126,7 +126,9 @@ export const AuditEventMetaMap = {
   }),
   //'导出结果集'
   // SQL安全规则管理
-  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.SQLSecurityRulesManagement',
+  }),
   [AuditEventType.APPLY_PROJECT_PERMISSION]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.ApplicationProjectPermissions',
   }), //'申请项目权限'
