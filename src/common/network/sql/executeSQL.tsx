@@ -228,7 +228,7 @@ export default async function executeSQL(
     // 一些场景下不需要弹出SQL确认弹窗
     if (!needModal) {
       return {
-        hasLintResults: true,
+        hasLintResults: lintResultSet?.length > 0,
         invalid: true,
         executeSuccess: false,
         executeResult: [],
@@ -281,6 +281,7 @@ export default async function executeSQL(
     executeResult: results || [],
     violatedRules: [],
     lintResultSet,
+    hasLintResults: lintResultSet?.length > 0,
     status,
   };
 }

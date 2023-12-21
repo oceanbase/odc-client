@@ -42,8 +42,9 @@ const getColumns = (
       dataIndex: 'sql',
       key: 'sql',
       ellipsis: {
-        showTitle: true,
+        showTitle: false,
       },
+      render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
     {
       title: formatMessage({
@@ -114,8 +115,7 @@ const getColumns = (
                                 title={
                                   sqlChanged
                                     ? formatMessage({
-                                        id:
-                                          'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
+                                        id: 'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
                                       }) //'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
                                     : ''
                                 }

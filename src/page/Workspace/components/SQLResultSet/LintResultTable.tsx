@@ -20,6 +20,7 @@ import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import { groupByPropertyName } from '@/util/utils';
 import { Button, Table } from 'antd';
+import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
 import getColumns from './columns';
 import styles from './index.less';
@@ -66,7 +67,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
     return (
       <Table
         rowKey="row"
-        className="o-table--no-lr-border"
+        className={classNames('o-table--no-lr-border', styles.thFilter)}
         bordered={true}
         columns={columns}
         dataSource={dataSource || []}
@@ -86,12 +87,13 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
               }
             : {
                 position: ['bottomRight'],
+                pageSize: resultHeight ? Math.floor((resultHeight - 150) / 24) : 0,
                 hideOnSinglePage: true,
               }
         }
       />
     );
-  }, [lintResultSet, ctx, baseOffset, dataSource]);
+  }, [lintResultSet, ctx, baseOffset, dataSource, resultHeight]);
   useEffect(() => {
     if (Array.isArray(lintResultSet) && lintResultSet?.length) {
       const newDataSource = lintResultSet?.map((resultSet, index) => {
@@ -111,7 +113,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
       if (violations?.some((violation) => violation?.level === 2)) {
         setDisabled(true);
         setTip(LintResultTip.must);
-      } else if (violations?.every((violation) => violation?.level === 2)) {
+      } else if (violations?.every((violation) => violation?.level === 0)) {
         setDisabled(true);
         setTip(LintResultTip.default);
       } else {
@@ -165,6 +167,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
           className={styles.table}
           style={{
             flexGrow: 1,
+            paddingBottom: 8,
           }}
         >
           <CallbackTable />

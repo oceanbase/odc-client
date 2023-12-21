@@ -323,7 +323,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleExecuteSQL = async () => {
     const { params } = this.props;
-    const { hasExecuted } = this.state;
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
@@ -333,9 +332,15 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
-    this.setState({
-      baseOffset: selectedSQL ? range.begin - this.editor?.getSelectionContent()?.length : 0,
-    });
+    if (range.begin === range.end) {
+      this.setState({
+        baseOffset: selectedSQL ? range.begin - this.editor?.getSelectionContent()?.length : 0,
+      });
+    } else if (range.begin < range.end) {
+      this.setState({
+        baseOffset: selectedSQL ? range.begin : 0,
+      });
+    }
     if (result?.hasLintResults) {
       this.setState({
         resultSetTabActiveKey: sqlLintTabKey,
@@ -351,8 +356,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         sqlChanged: false,
       });
     }
-  }; // 执行选中的 SQL
-
+  };
+  // 执行选中的 SQL
   public handleExecuteSelectedSQL = async () => {
     let selectedSQL = this.editor.getModel().getValueInRange(this.editor.getSelection()); // 如果没有选中，尝试获取当前语句
     let begin, end;
@@ -382,7 +387,32 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (!selectedSQL) {
       return;
     }
-    await this.executeSQL(selectedSQL, true, { begin, end });
+    const results = await this.executeSQL(selectedSQL, true, { begin, end });
+    const range = await utils.getCurrentSelectRange(this.editor);
+    if (range.begin === range.end) {
+      this.setState({
+        baseOffset: range.begin - this.editor?.getSelectionContent()?.length || 0,
+      });
+    } else if (range.begin < range.end) {
+      this.setState({
+        baseOffset: range.begin || 0,
+      });
+    }
+    if (results?.hasLintResults) {
+      this.setState({
+        resultSetTabActiveKey: sqlLintTabKey,
+        lintResultSet: results?.lintResultSet,
+        executeOrPreCheckSql: selectedSQL,
+        sqlChanged: false,
+      });
+    } else {
+      this.setState({
+        baseOffset: 0,
+        lintResultSet: null,
+        executeOrPreCheckSql: selectedSQL,
+        sqlChanged: false,
+      });
+    }
   };
 
   public async saveScript() {
@@ -504,8 +534,16 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.params?.delimiter,
       value,
     );
+    if (range.begin === range.end) {
+      this.setState({
+        baseOffset: range.begin - this.editor?.getSelectionContent()?.length || 0,
+      });
+    } else if (range.begin < range.end) {
+      this.setState({
+        baseOffset: range.begin || 0,
+      });
+    }
     this.setState({
-      baseOffset: selectted ? range.begin - this.editor?.getSelectionContent()?.length : 0,
       executeOrPreCheckSql: value,
       sqlChanged: false,
     });
@@ -517,6 +555,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         message.success(
           formatMessage({ id: 'odc.components.SQLPage.SqlCheckPassed' }), //SQL 检查通过
         );
+        this.setState({
+          baseOffset: 0,
+        });
         return;
       }
       this.setState({
