@@ -71,24 +71,25 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
         bordered={true}
         columns={columns}
         dataSource={dataSource || []}
-        scroll={
-          resultHeight
-            ? {
-                y: resultHeight,
-              }
-            : {}
-        }
         pagination={
           pageSize
             ? {
                 position: ['bottomRight'],
                 pageSize,
                 hideOnSinglePage: true,
+                showSizeChanger: false,
+              }
+            : resultHeight
+            ? {
+                position: ['bottomRight'],
+                pageSize: resultHeight - 150 > 24 ? Math.floor((resultHeight - 150) / 24) : 5,
+                hideOnSinglePage: true,
+                showSizeChanger: false,
               }
             : {
                 position: ['bottomRight'],
-                pageSize: resultHeight ? Math.floor((resultHeight - 150) / 24) : 0,
                 hideOnSinglePage: true,
+                showSizeChanger: false,
               }
         }
       />
