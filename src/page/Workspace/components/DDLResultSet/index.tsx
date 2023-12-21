@@ -848,7 +848,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 onClick={handleExport}
               />
             ) : null}
-            {!isEditing && showMock ? (
+            {!isEditing && showMock && getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+              TaskType.DATAMOCK,
+            ) ? (
               <>
                 <ToolbarButton
                   text={
