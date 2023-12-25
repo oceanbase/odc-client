@@ -76,16 +76,30 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
     return filePath;
   }
   // 3. 报告记录
-  const resUpload = await request.post('/api/v2/aliyun/specific/' + uploadFileOpenAPIName, {
+  const resUpload = await request.post('/api/v2/aliyun/specific/asyncUpload', {
     data: {
       bucketName,
       objectName: filePath,
       region,
       sid: generateDatabaseSid(null, sessionId),
+      type: uploadFileOpenAPIName
     },
   });
-  const fileName = resUpload.data;
-  return fileName;
+  const uploadId = resUpload.data;
+  if (!uploadId) {
+    return null;
+  }
+  async function getResult() {
+    const result = await request.get("/api/v2/aliyun/specific/getUploadResult/" + uploadId);
+    if (result?.isError) {
+      return null;
+    } else if (result?.data) {
+      return result?.data;
+    } else {
+      return await getResult();
+    }
+  }
+  return await getResult();
 }
 
 // 下载传输任务文件
