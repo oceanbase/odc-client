@@ -332,13 +332,19 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
-    if (range.begin === range.end) {
+    if (selectedSQL) {
+      if (range.begin === range.end) {
+        this.setState({
+          baseOffset: selectedSQL ? range.begin - this.editor?.getSelectionContent()?.length : 0,
+        });
+      } else if (range.begin < range.end) {
+        this.setState({
+          baseOffset: selectedSQL ? range.begin : 0,
+        });
+      }
+    } else {
       this.setState({
-        baseOffset: selectedSQL ? range.begin - this.editor?.getSelectionContent()?.length : 0,
-      });
-    } else if (range.begin < range.end) {
-      this.setState({
-        baseOffset: selectedSQL ? range.begin : 0,
+        baseOffset: 0,
       });
     }
     if (result?.hasLintResults) {
@@ -567,13 +573,19 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.params?.delimiter,
       value,
     );
-    if (range.begin === range.end) {
+    if (selectted) {
+      if (range.begin === range.end) {
+        this.setState({
+          baseOffset: range.begin - this.editor?.getSelectionContent()?.length || 0,
+        });
+      } else if (range.begin < range.end) {
+        this.setState({
+          baseOffset: range.begin || 0,
+        });
+      }
+    } else {
       this.setState({
-        baseOffset: range.begin - this.editor?.getSelectionContent()?.length || 0,
-      });
-    } else if (range.begin < range.end) {
-      this.setState({
-        baseOffset: range.begin || 0,
+        baseOffset: 0,
       });
     }
     this.setState({
