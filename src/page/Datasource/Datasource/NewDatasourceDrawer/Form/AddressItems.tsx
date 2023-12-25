@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { isConnectTypeBeShardingType } from '@/util/connection';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { checkNumberRange, validTrimEmptyWithWarn } from '@/util/valid';
-import { Col, Form, Input, Row } from 'antd';
+import { Col, Form, Input, Row, Space, Select } from 'antd';
 import React, { useContext } from 'react';
 import DatasourceFormContext from './context';
 import styles from './index.less';
 import InstanceSelect from './InstanceSelect';
+import { isNil } from 'lodash';
 interface IProps {}
 const AddressItems: React.FC<IProps> = function (props) {
   const { isEdit, dataSourceConfig } = useContext(DatasourceFormContext);
@@ -172,6 +172,55 @@ const AddressItems: React.FC<IProps> = function (props) {
                   })}
                   /*请输入租户名*/
                 />
+              </Form.Item>
+            </Col>
+          );
+        }
+        case 'sid': {
+          return (
+            <Col span={24}>
+              <Form.Item noStyle shouldUpdate>
+                {({ getFieldValue, setFieldsValue }) => {
+                  const serviceName = getFieldValue('serviceName');
+                  const type = isNil(serviceName) ? 'sid' : 'serviceName';
+                  return (
+                    <Form.Item required label="数据库" shouldUpdate>
+                      <Space.Compact block>
+                        <div style={{ width: '30%' }}>
+                          <Select
+                            value={type}
+                            style={{ width: '100%' }}
+                            size="small"
+                            options={[
+                              {
+                                label: 'SID',
+                                value: 'sid',
+                              },
+                              {
+                                label: '服务名',
+                                value: 'serviceName',
+                              },
+                            ]}
+                            onChange={(value) => {
+                              setFieldsValue({
+                                sid: value === 'sid' ? '' : null,
+                                serviceName: value === 'serviceName' ? '' : null,
+                              });
+                            }}
+                          />
+                        </div>
+                        <Form.Item
+                          rules={[{ required: true }]}
+                          style={{ width: '70%' }}
+                          name={type}
+                          label=""
+                        >
+                          <Input style={{ width: '100%' }} />
+                        </Form.Item>
+                      </Space.Compact>
+                    </Form.Item>
+                  );
+                }}
               </Form.Item>
             </Col>
           );

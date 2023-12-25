@@ -175,7 +175,9 @@ export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageS
 
 export async function openSessionManagePage(datasourceId?: number) {
   if (!datasourceId) {
-    [datasourceId] = await SelectDatabase();
+    [datasourceId] = await SelectDatabase(
+      (type) => getDataSourceModeConfig(type)?.features?.sessionManage,
+    );
   }
   if (!datasourceId) {
     return;

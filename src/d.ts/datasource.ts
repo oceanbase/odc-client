@@ -47,4 +47,5 @@ export enum ConnectionPropertyType {
 export enum IDataSourceType {
   OceanBase = 'ob',
   MySQL = 'mysql',
+  Oracle = 'oracle',
 }
