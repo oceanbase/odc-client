@@ -69,7 +69,7 @@
             bottom: 0px;
             display: none;
             align-items: center;
-            background-color: var(--hover-color2);
+            background-color: transparent;
           }
           .env {
             position: absolute;
@@ -84,8 +84,15 @@
             }
           }
         }
+        &.ant-tree-treenode-selected {
+          background-color: var(--code-background-selected-color);
+        }
+        &:not(.ant-tree-treenode-selected) {
+          &:hover {
+            background-color: var(--hover-color2);
+          }
+        }
         &:hover {
-          background-color: var(--hover-color2);
           :local {
             .menuActions {
               display: flex;
@@ -118,6 +125,15 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        &.ant-tree-node-selected {
+          background-color: transparent;
+        }
+        &.ant-tree-node-selected:hover {
+          background-color: transparent;
+        }
+        &:hover {
+          background-color: unset;
+        }
       }
     }
   }

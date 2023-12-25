@@ -20,7 +20,7 @@ import { Input, Space, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { loadNode } from './helper';
 import styles from './index.less';
 import { DataBaseTreeData } from './Nodes/database';
@@ -35,6 +35,7 @@ import { ConnectType, DbObjectType } from '@/d.ts';
 import useTreeState from './useTreeState';
 import DatabaseSearch from './DatabaseSearch';
 import { useParams } from '@umijs/max';
+import ResourceTreeContext from '../../context/ResourceTreeContext';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -62,6 +63,7 @@ const ResourceTree: React.FC<IProps> = function ({
   const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad } = useTreeState(
     stateId,
   );
+  const treeContext = useContext(ResourceTreeContext);
   const { tabKey } = useParams<{ tabKey: string }>();
   const update = useUpdate();
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -230,7 +232,8 @@ const ResourceTree: React.FC<IProps> = function ({
           loadedKeys={loadedKeys}
           onLoad={onLoad}
           height={wrapperHeight}
-          selectable={false}
+          selectable={true}
+          selectedKeys={[treeContext.currentDatabaseId].filter(Boolean)}
         />
       </div>
     </div>

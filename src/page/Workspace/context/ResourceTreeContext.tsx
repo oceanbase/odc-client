@@ -33,6 +33,8 @@ interface IResourceTreeContext {
   reloadDatasourceList?: () => void;
   projectList: IProject[];
   reloadProjectList?: () => void;
+  currentDatabaseId?: number;
+  setCurrentDatabaseId?: (v: number) => void;
 }
 
 const ResourceTreeContext = React.createContext<IResourceTreeContext>({
