@@ -32,6 +32,7 @@ export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
   const { datasourceId } = useParams<{ datasourceId: string }>();
   const [selectTabKey, _setSelectTabKey] = useState<ResourceTreeTab>(ResourceTreeTab.datasource);
+  const [currentDatabaseId, setCurrentDatabaseId] = useState<number>(null);
   function setSelectTabKey(v: ResourceTreeTab) {
     tracert.click(
       v === ResourceTreeTab.datasource
@@ -90,6 +91,8 @@ export default function WorkspaceStore({ children }) {
         reloadDatasourceList,
         projectList,
         reloadProjectList,
+        currentDatabaseId,
+        setCurrentDatabaseId,
       }}
     >
       <ActivityBarContext.Provider

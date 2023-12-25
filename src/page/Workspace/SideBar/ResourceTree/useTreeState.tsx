@@ -17,9 +17,14 @@
 import { TreeProps } from 'antd';
 import { useContext, useState } from 'react';
 import TreeStateStore from './TreeStateStore';
+import { TreeDataNode } from './type';
+import { EventDataNode } from 'antd/lib/tree';
+import sessionManager from '@/store/sessionManager';
+import ResourceTreeContext from '../../context/ResourceTreeContext';
 
 export default function useTreeState(id: string) {
   const { cache } = useContext(TreeStateStore);
+  const treeContext = useContext(ResourceTreeContext);
   let state: {
     sessionIds: Record<number, string>;
     expandedKeys: (string | number)[];
@@ -35,7 +40,15 @@ export default function useTreeState(id: string) {
   const [expandedKeys, setExpandedKeys] = useState<(string | number)[]>(state.expandedKeys);
   const [loadedKeys, setLoadedKeys] = useState<(string | number)[]>(state.loadedKeys);
   const onExpand: TreeProps['onExpand'] = function (expandedKeys, { expanded, node }) {
-    console.log('expand', node.key);
+    const { sessionId, cid } = node as TreeDataNode & EventDataNode<any>;
+    if (sessionId) {
+      const session = sessionManager.sessionMap.get(sessionId);
+      if (session) {
+        treeContext.setCurrentDatabaseId(session?.odcDatabase?.id);
+      }
+    } else if (cid) {
+      treeContext.setCurrentDatabaseId(cid);
+    }
     if (expanded && !loadedKeys?.includes(node.key)) {
       return;
     }
@@ -43,7 +56,6 @@ export default function useTreeState(id: string) {
     setExpandedKeys(expandedKeys);
   };
   const onLoad: TreeProps['onLoad'] = function (loadedKeys, { event, node }) {
-    console.log('onload', node.key);
     const newExpandedKeys = [...expandedKeys, node.key];
     cache[id] = Object.assign({}, cache[id], {
       loadedKeys: [...loadedKeys],

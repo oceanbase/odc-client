@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { PureComponent, ReactNode } from 'react';
+import { PureComponent, ReactNode, useContext, useState } from 'react';
 import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 import { IPage, PageType } from '@/d.ts';
 import { Badge, Dropdown, Menu, Space, Tabs, Tooltip } from 'antd';
@@ -29,250 +29,109 @@ import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
 import tracert from '@/util/tracert';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 const { TabPane } = Tabs;
-class WindowManager extends PureComponent<
-  {
-    pages: IPage[];
-    activeKey: string;
-    sqlStore?: SQLStore;
-    onActivatePage: (activePageKey: string) => void;
-    onOpenPage: () => void;
-    onOpenPageAfterTarget: (targetPage: IPage) => void;
-    onClosePage: (targetPageKey: string) => void;
-    onCloseOtherPage: (targetPageKey: string) => void;
-    onCopySQLPage: (targetPage: IPage) => void;
-    onCloseAllPage: () => void;
-    onSavePage: (targetPageKey: string) => void;
-    onStartSavingPage: (targetPageKey: string) => void;
-    onUnsavedChangePage: (pageKey: string) => void;
-  },
-  {
-    closePageKey: string;
-  }
-> {
-  public readonly state = {
-    closePageKey: '',
+
+interface IProps {
+  pages: IPage[];
+  activeKey: string;
+  sqlStore?: SQLStore;
+  onActivatePage: (activePageKey: string) => void;
+  onOpenPage: () => void;
+  onOpenPageAfterTarget: (targetPage: IPage) => void;
+  onClosePage: (targetPageKey: string) => void;
+  onCloseOtherPage: (targetPageKey: string) => void;
+  onCopySQLPage: (targetPage: IPage) => void;
+  onCloseAllPage: () => void;
+  onSavePage: (targetPageKey: string) => void;
+  onStartSavingPage: (targetPageKey: string) => void;
+  onUnsavedChangePage: (pageKey: string) => void;
+}
+
+const WindowManager: React.FC<IProps> = function (props) {
+  const [closePageKey, setClosePageKey] = useState<string>(null);
+  const treeContext = useContext(ResourceTreeContext);
+
+  const { pages, activeKey, onActivatePage } = props;
+
+  const handleSwitchTab = (clickParam: MenuInfo) => {
+    const { onActivatePage } = props;
+    onActivatePage(clickParam.key?.toString());
   };
 
-  // 处理未保存的修改
-  public handleUnsavedChange = (targetKey: string) => {
-    const { onUnsavedChangePage } = this.props;
-    onUnsavedChangePage(targetKey);
-  };
-  public handleChangeSaved = (targetKey: string) => {
-    const { onSavePage } = this.props;
-    onSavePage(targetKey);
-  };
-
-  /** 未保存弹框点击保存触发的事件 */
-  public handleSaveAndClosePage = (targetKey: string, closeImmediately?: boolean) => {
-    const { onStartSavingPage } = this.props;
-    onStartSavingPage(targetKey);
-    this.setState({
-      closePageKey: '',
-    });
-    if (closeImmediately) {
-      this.handleClosePage(targetKey);
-    }
-  };
-  public handleClosePage = (targetKey: string) => {
-    const { onClosePage } = this.props;
-    onClosePage(targetKey);
-    this.setState({
-      closePageKey: '',
-    });
-  };
-  public handleEditPage = (targetKey: any, action: string) => {
-    const { onOpenPage } = this.props;
+  const handleEditPage = (targetKey: any, action: string) => {
+    const { onOpenPage } = props;
     if (action === 'add') {
       tracert.click('a3112.b41896.c330993.d367629');
       onOpenPage();
     }
   };
 
-  /** 处理 Tab 切换事件 */
-  public handleSwitchTab = (clickParam: MenuInfo) => {
-    const { onActivatePage } = this.props;
-    onActivatePage(clickParam.key?.toString());
-  };
-
   /** 处理 Tab 关闭事件 */
-  public handleCloseTab = (pageKey: string) => {
-    const { pages } = this.props;
+  const handleCloseTab = (pageKey: string) => {
+    const { pages } = props;
     const targetPage = pages.find((p) => p.key === pageKey);
     if (targetPage && targetPage.isSaved) {
-      this.handleClosePage(pageKey);
+      handleClosePage(pageKey);
     } else {
-      this.setState({
-        closePageKey: pageKey,
-      });
-      this.props.onActivatePage(pageKey);
+      setClosePageKey(pageKey);
+      props.onActivatePage(pageKey);
     }
   };
-  public render() {
-    const { pages, activeKey, onActivatePage } = this.props;
-    const { closePageKey } = this.state;
-    const menu = (
-      <Menu
-        style={{
-          width: '320px',
-        }}
-        selectedKeys={[activeKey]}
-        onClick={this.handleSwitchTab}
-      >
-        {pages.map((page) => (
-          <Menu.Item key={page.key}>
-            <Space>
-              <span
-                className={styles.icon}
-                style={{
-                  display: 'flex',
-                  color: `${pageMap[page.type].color}`,
-                  lineHeight: 1,
-                  fontSize: 14,
-                }}
-              >
-                {pageMap[page.type].icon}
-              </span>
-              {getPageTitleText(page)}
-            </Space>
-          </Menu.Item>
-        ))}
-      </Menu>
-    );
-    return (
-      <>
-        <DraggableTabs
-          className={styles.tabs}
-          onChange={onActivatePage}
-          activeKey={activeKey}
-          type="editable-card"
-          onEdit={this.handleEditPage}
-          moveTabNode={(d, h) => {
-            movePagePostion(d, h);
-          }}
-          tabBarGutter={0}
-          addIcon={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'stretch',
-                flexDirection: 'row',
-                height: '100%',
-                alignItems: 'center',
-              }}
-            >
-              <PlusOutlined />
-              <Dropdown
-                trigger={['click']}
-                menu={{
-                  items: [
-                    {
-                      label: formatMessage({
-                        id: 'odc.src.component.WindowManager.NewSQLWindow',
-                      }), //'新建 SQL 窗口'
-                      key: 'newSQL',
-                      onClick: (e) => {
-                        e.domEvent.stopPropagation();
-                        this.handleEditPage(null, 'add');
-                      },
-                    },
-                    {
-                      label: formatMessage({
-                        id: 'odc.src.component.WindowManager.CreateAnonymousBlockWindow',
-                      }), //'新建匿名块窗口'
-                      key: 'newPL',
-                      onClick(e) {
-                        e.domEvent.stopPropagation();
-                        openNewDefaultPLPage();
-                      },
-                    },
-                  ],
-                }}
-              >
-                <div
-                  className={styles.addMoreIcon}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <DownOutlined />
-                </div>
-              </Dropdown>
-            </div>
-          }
-          tabBarExtraContent={
-            <Dropdown
-              overlayClassName={styles.menuList}
-              overlay={menu}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <EllipsisOutlined className={styles.moreBtn} />
-            </Dropdown>
-          }
-        >
-          {pages.map((page) => {
-            const Page = pageMap[page.type].component;
-            const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
-            return (
-              <TabPane tab={this.getPageTitle(page)} key={page.key} closable={false}>
-                <Page
-                  page={page}
-                  pageKey={page.key}
-                  isSaved={page.isSaved}
-                  params={pageParams}
-                  isShow={activeKey == page.key}
-                  showUnsavedModal={closePageKey === page.key}
-                  startSaving={page.startSaving}
-                  onUnsavedChange={this.handleUnsavedChange}
-                  onChangeSaved={this.handleChangeSaved}
-                  onCloseUnsavedModal={this.handleClosePage}
-                  onCancelUnsavedModal={() =>
-                    this.setState({
-                      closePageKey: '',
-                    })
-                  }
-                  onSaveAndCloseUnsavedModal={this.handleSaveAndClosePage}
-                  closeSelf={this.handleCloseTab.bind(this, page.key)}
-                />
-              </TabPane>
-            );
-          })}
-        </DraggableTabs>
-        <DefaultPage />
-      </>
-    );
-  }
-  private doTabAction(page: IPage, params: MenuInfo) {
+  const handleClosePage = (targetKey: string) => {
+    const { onClosePage } = props;
+    onClosePage(targetKey);
+    setClosePageKey('');
+  };
+  function doTabAction(page: IPage, params: MenuInfo) {
     params.domEvent.stopPropagation();
     const { key } = params;
     switch (key) {
       case 'closePage': {
-        return this.handleCloseTab(page.key);
+        return handleCloseTab(page.key);
       }
       case 'closeOtherPage': {
-        return this.props.onCloseOtherPage(page.key);
+        return props.onCloseOtherPage(page.key);
       }
       case 'closeAllPage': {
-        return this.props.onCloseAllPage();
+        return props.onCloseAllPage();
       }
       case 'openNewPage': {
-        return this.props.onOpenPageAfterTarget(page);
+        return props.onOpenPageAfterTarget(page);
       }
       case 'copyPage': {
-        return this.props.onCopySQLPage(page);
+        return props.onCopySQLPage(page);
       }
       default: {
       }
     }
   }
-  private getPageTitle(page: IPage): ReactNode {
+
+  // 处理未保存的修改
+  const handleUnsavedChange = (targetKey: string) => {
+    const { onUnsavedChangePage } = props;
+    onUnsavedChangePage(targetKey);
+  };
+  const handleChangeSaved = (targetKey: string) => {
+    const { onSavePage } = props;
+    onSavePage(targetKey);
+  };
+
+  /** 未保存弹框点击保存触发的事件 */
+  const handleSaveAndClosePage = (targetKey: string, closeImmediately?: boolean) => {
+    const { onStartSavingPage } = props;
+    onStartSavingPage(targetKey);
+    setClosePageKey('');
+    if (closeImmediately) {
+      handleClosePage(targetKey);
+    }
+  };
+
+  function getPageTitle(page: IPage): ReactNode {
     const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type].color;
     const isDocked = page.params.isDocked;
     const pageTitle = getPageTitleText(page);
-    const isPageProcessing = this.props.sqlStore.runningPageKey.has(page.key);
+    const isPageProcessing = props.sqlStore.runningPageKey.has(page.key);
     const isCompiler = [
       PageType.BATCH_COMPILE_FUNCTION,
       PageType.BATCH_COMPILE_PACKAGE,
@@ -284,7 +143,7 @@ class WindowManager extends PureComponent<
       <Dropdown
         trigger={['contextMenu']}
         overlay={
-          <Menu className={styles.tabsContextMenu} onClick={this.doTabAction.bind(this, page)}>
+          <Menu className={styles.tabsContextMenu} onClick={doTabAction.bind(null, page)}>
             {!isDocked && (
               <Menu.Item key="closePage">
                 {formatMessage({
@@ -388,7 +247,7 @@ class WindowManager extends PureComponent<
                   className={styles.closeBtn}
                   onClick={(e) => {
                     e.stopPropagation();
-                    this.handleCloseTab(page.key);
+                    handleCloseTab(page.key);
                   }}
                   style={{
                     fontSize: '8px',
@@ -407,5 +266,134 @@ class WindowManager extends PureComponent<
       </Dropdown>
     );
   }
-}
+
+  const menu = (
+    <Menu
+      style={{
+        width: '320px',
+      }}
+      selectedKeys={[activeKey]}
+      onClick={handleSwitchTab}
+    >
+      {pages.map((page) => (
+        <Menu.Item key={page.key}>
+          <Space>
+            <span
+              className={styles.icon}
+              style={{
+                display: 'flex',
+                color: `${pageMap[page.type].color}`,
+                lineHeight: 1,
+                fontSize: 14,
+              }}
+            >
+              {pageMap[page.type].icon}
+            </span>
+            {getPageTitleText(page)}
+          </Space>
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
+  return (
+    <>
+      <DraggableTabs
+        className={styles.tabs}
+        onChange={onActivatePage}
+        activeKey={activeKey}
+        type="editable-card"
+        onEdit={handleEditPage}
+        moveTabNode={(d, h) => {
+          movePagePostion(d, h);
+        }}
+        tabBarGutter={0}
+        addIcon={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'stretch',
+              flexDirection: 'row',
+              height: '100%',
+              alignItems: 'center',
+            }}
+          >
+            <PlusOutlined />
+            <Dropdown
+              trigger={['click']}
+              menu={{
+                items: [
+                  {
+                    label: formatMessage({
+                      id: 'odc.src.component.WindowManager.NewSQLWindow',
+                    }), //'新建 SQL 窗口'
+                    key: 'newSQL',
+                    onClick: (e) => {
+                      e.domEvent.stopPropagation();
+                      handleEditPage(null, 'add');
+                    },
+                  },
+                  {
+                    label: formatMessage({
+                      id: 'odc.src.component.WindowManager.CreateAnonymousBlockWindow',
+                    }), //'新建匿名块窗口'
+                    key: 'newPL',
+                    onClick(e) {
+                      e.domEvent.stopPropagation();
+                      openNewDefaultPLPage(undefined, treeContext?.currentDatabaseId);
+                    },
+                  },
+                ],
+              }}
+            >
+              <div
+                className={styles.addMoreIcon}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <DownOutlined />
+              </div>
+            </Dropdown>
+          </div>
+        }
+        tabBarExtraContent={
+          <Dropdown
+            overlayClassName={styles.menuList}
+            overlay={menu}
+            trigger={['click']}
+            placement="bottomRight"
+          >
+            <EllipsisOutlined className={styles.moreBtn} />
+          </Dropdown>
+        }
+      >
+        {pages.map((page) => {
+          const Page = pageMap[page.type].component;
+          const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
+          return (
+            <TabPane tab={getPageTitle(page)} key={page.key} closable={false}>
+              <Page
+                page={page}
+                pageKey={page.key}
+                isSaved={page.isSaved}
+                params={pageParams}
+                isShow={activeKey == page.key}
+                showUnsavedModal={closePageKey === page.key}
+                startSaving={page.startSaving}
+                onUnsavedChange={handleUnsavedChange}
+                onChangeSaved={handleChangeSaved}
+                onCloseUnsavedModal={handleClosePage}
+                onCancelUnsavedModal={() => setClosePageKey('')}
+                onSaveAndCloseUnsavedModal={handleSaveAndClosePage}
+                closeSelf={handleCloseTab.bind(null, page.key)}
+              />
+            </TabPane>
+          );
+        })}
+      </DraggableTabs>
+      <DefaultPage />
+    </>
+  );
+};
 export default inject('sqlStore')(observer(WindowManager));
