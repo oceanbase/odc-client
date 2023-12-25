@@ -35,7 +35,8 @@
     "pack-client:linux_aarch64": "node ./scripts/client/build.js linux_aarch64",
     "pack-client:windows": "node ./scripts/client/build.js win",
     "updateDoc": "node ./scripts/pulldoc.js",
-    "postinstall": "node scripts/plugin/initPlugins.js && max setup"
+    "postinstall": "node scripts/plugin/initPlugins.js && max setup",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx,less,md,json}": [
@@ -114,6 +115,7 @@
     "electron-builder-notarize": "^1.5.1",
     "eventbusjs": "^0.2.0",
     "highlight.js": "^11.6.0",
+    "husky": "^8.0.3",
     "immutability-helper": "^3.0.1",
     "jest-canvas-mock": "^2.3.0",
     "js-base64": "^3.7.2",
@@ -164,8 +166,7 @@
     "webpack-merge": "^4.2.1",
     "webpack-node-externals": "^2.5.0",
     "xterm": "^4.9.0",
-    "xterm-addon-fit": "^0.4.0",
-    "yorkie": "^2.0.0"
+    "xterm-addon-fit": "^0.4.0"
   },
   "appName": "OceanBase Developer Center",
   "build": {
@@ -174,8 +175,5 @@
       "customDir": "v22.3.27"
     }
   },
-  "copyright": "© 2021 ANT GROUP",
-  "gitHooks": {
-    "pre-commit": "npm run precommit"
-  }
+  "copyright": "© 2021 ANT GROUP"
 }

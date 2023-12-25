@@ -62,6 +62,7 @@ const NewDatasourceButton: React.FC<{
   const [type, setType] = useState<ConnectType>(null);
   const obConnectTypes = getAllConnectTypes(IDataSourceType.OceanBase);
   const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
+  const oracleConnectTypes = getAllConnectTypes(IDataSourceType.Oracle);
 
   const batchImportRef = useRef<{
     closeModal: () => void;
@@ -96,27 +97,50 @@ const NewDatasourceButton: React.FC<{
         ),
       };
     });
-    if (mysqlConnectTypes?.length) {
+    if (mysqlConnectTypes?.length || oracleConnectTypes?.length) {
       results.push({
         type: 'divider',
       });
-      results = results.concat(
-        mysqlConnectTypes.map((item) => {
-          return {
-            label: ConnectTypeText[item],
-            key: item,
-            icon: (
-              <Icon
-                component={getDataSourceStyleByConnectType(item)?.icon?.component}
-                style={{
-                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
-                  fontSize: '16px',
-                }}
-              />
-            ),
-          };
-        }),
-      );
+      if (mysqlConnectTypes?.length) {
+        results = results.concat(
+          mysqlConnectTypes.map((item) => {
+            return {
+              label: ConnectTypeText[item],
+              key: item,
+              icon: (
+                <Icon
+                  component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                  style={{
+                    color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                    fontSize: '16px',
+                  }}
+                />
+              ),
+            };
+          }),
+        );
+      }
+      if (oracleConnectTypes?.length) {
+        results = results.concat(
+          oracleConnectTypes.map((item) => {
+            return {
+              label: ConnectTypeText[item],
+              key: item,
+              icon: (
+                <Icon
+                  component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                  style={{
+                    color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                    fontSize: '16px',
+                  }}
+                />
+              ),
+            };
+          }),
+        );
+      }
+    }
+    if (oracleConnectTypes?.length) {
     }
     if (!haveOCP()) {
       results.push({
