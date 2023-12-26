@@ -33,7 +33,7 @@ const ODCDragger: React.FC<IProps> = function (props) {
     delete props.action;
     // @ts-ignore
     props.customRequest = async ({ file, onSuccess, onError, onProgress }) => {
-      const fileName = await uploadFileToOSS(file, props.uploadFileOpenAPIName, null);
+      const fileName = await uploadFileToOSS(file, props.uploadFileOpenAPIName, null, onProgress);
       setTimeout(() => {
         onSuccess(
           {
