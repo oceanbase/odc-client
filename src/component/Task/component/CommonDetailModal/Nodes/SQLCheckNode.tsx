@@ -18,25 +18,24 @@ import { getFlowSQLLintResult } from '@/common/network/task';
 import LintDrawer from '@/component/SQLLintResult/Drawer';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
-import { Descriptions, Steps } from 'antd';
+import { Descriptions, Tag } from 'antd';
 import React, { useState } from 'react';
 import NodeCompleteTime from './Items/NodeCompleteTime';
 import NodeStatus from './Items/NodeStatus';
 import { formatMessage } from '@/util/intl';
 import styles from '../index.less';
-const Step = Steps.Step;
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;
 }
 const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
-  const { status, nodeType, issueCount, unauthorizedDatabaseNames, id } = node;
+  const { status, nodeType, issueCount, unauthorizedDatabaseNames, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<ISQLLintReuslt[]>([]);
   const showCount = typeof issueCount === 'number';
   const showUnauthorized = unauthorizedDatabaseNames?.length > 0;
-  const showReslut = showCount || showUnauthorized;
+  const showReslut = showCount || showUnauthorized || preCheckOverLimit;
   async function viewLintResult() {
     if (isLoading) {
       return;
@@ -64,17 +63,10 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         </Descriptions.Item>
         {showReslut && (
           <Descriptions.Item>
-            <Descriptions
-              column={1}
-              title={
-                formatMessage({
-                  id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.ProcessResult',
-                }) /* 处理结果: */
-              }
-              className={styles['result-desc']}
-            >
-              {showCount ? (
+            <Descriptions column={1}>
+              {showCount || preCheckOverLimit ? (
                 <Descriptions.Item
+                  className={preCheckOverLimit ? styles.checkReslut : null}
                   label={
                     formatMessage({
                       id:
@@ -82,30 +74,68 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                     }) /* SQL 检查结果 */
                   }
                 >
-                  {
-                    formatMessage({
-                      id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
-                    }) /*存在*/
-                  }
-                  {issueCount}
-                  {
-                    formatMessage({
-                      id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
-                    }) /*个问题*/
-                  }
-                  {issueCount > 0 && (
-                    <a
-                      style={{
-                        marginLeft: 5,
-                      }}
-                      onClick={viewLintResult}
-                    >
+                  {showCount && (
+                    <>
                       {
                         formatMessage({
-                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
-                        }) /*查看*/
+                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
+                        }) /*存在*/
                       }
-                    </a>
+                      {issueCount}
+                      {
+                        formatMessage({
+                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
+                        }) /*个问题*/
+                      }
+                      {issueCount > 0 && (
+                        <a
+                          style={{
+                            marginLeft: 5,
+                          }}
+                          onClick={viewLintResult}
+                        >
+                          {
+                            formatMessage({
+                              id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
+                            }) /*查看*/
+                          }
+                        </a>
+                      )}
+                    </>
+                  )}
+                  {preCheckOverLimit && (
+                    <span>
+                      {
+                        formatMessage({
+                          id:
+                            'odc.src.component.Task.component.CommonDetailModal.Nodes.TheNumberOf',
+                        }) /* 
+                      ，预检查处理 SQL 条数超过最大限制，当前任务流程将按
+                       */
+                      }
+                      <Tag
+                        style={{
+                          marginLeft: '8px',
+                        }}
+                        color="error"
+                      >
+                        {
+                          formatMessage({
+                            id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.HighRisk',
+                          }) /* 
+                        高风险
+                       */
+                        }
+                      </Tag>
+                      {
+                        formatMessage({
+                          id:
+                            'odc.src.component.Task.component.CommonDetailModal.Nodes.GradeContinuesToAdvance',
+                        }) /* 
+                      等级继续推进
+                     */
+                      }
+                    </span>
                   )}
                 </Descriptions.Item>
               ) : null}
@@ -123,8 +153,8 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       id:
                         'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
                     }) /* 
-                  无权限访问数据库：
-                   */
+               无权限访问数据库：
+               */
                   }
                   {unauthorizedDatabaseNames?.join(', ')}
                 </Descriptions.Item>

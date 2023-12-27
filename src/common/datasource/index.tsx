@@ -20,10 +20,10 @@ import { IDataSourceType } from '@/d.ts/datasource';
 import obOracle from './oceanbase/oboracle';
 import obMySQL from './oceanbase/obmysql';
 import MySQL from './mysql';
-import OBSvg from '@/svgr/source_ob.svg';
-import DBOBSvg from '@/svgr/database_oceanbase.svg';
-import MySQLSvg from '@/svgr/mysql.svg';
-import DBMySQLSvg from '@/svgr/database_mysql.svg';
+import { ReactComponent as OBSvg } from '@/svgr/source_ob.svg';
+import { ReactComponent as DBOBSvg } from '@/svgr/database_oceanbase.svg';
+import { ReactComponent as MySQLSvg } from '@/svgr/mysql.svg';
+import { ReactComponent as DBMySQLSvg } from '@/svgr/database_mysql.svg';
 
 const _types: Map<
   IDataSourceType,

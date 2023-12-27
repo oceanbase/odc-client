@@ -26,6 +26,7 @@ import PartitionTaskCreateModal from './PartitionTask';
 import ResultSetExportTask from './ResultSetExportTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
+import ApplyPermissionCreateModal from './ApplyPermission';
 
 interface IProps {
   projectId?: number;
@@ -45,6 +46,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ShadowSyncTaskCreateModal projectId={projectId} />
       <DataArchiveTaskCreateModal projectId={projectId} />
       <DataClearTaskCreateModal projectId={projectId} />
+      <ApplyPermissionCreateModal projectId={projectId} />
       <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
       <ResultSetExportTask projectId={projectId} theme={theme} />
     </>

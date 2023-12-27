@@ -29,6 +29,7 @@ export interface IDatabase {
   databaseId?: string;
   name: string;
   project: IProject;
+  lockDatabaseUserRequired: boolean;
   dataSource: IDatasource;
   syncStatus: DatabaseSyncStatus;
   lastSyncTime: number;

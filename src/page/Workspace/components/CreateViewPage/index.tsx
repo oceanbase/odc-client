@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getViewCreateSQL } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
 import ScriptPage from '@/component/ScriptPage';
@@ -31,7 +32,6 @@ import { Button, Collapse, Layout, message, Tabs } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import { PropsTab, TopTab } from '../ViewPage';
@@ -39,7 +39,6 @@ import BaseInfoForm from './component/BaseInfoForm';
 import ColumnSelector from './component/ColumnSelector';
 import TableSelector from './component/TableSelector';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -194,6 +193,7 @@ class CreateViewPage extends Component<
           loading: false,
           actionGroupKey: 'VIEW_CREATE_ACTION_GROUP',
         }}
+        showSessionSelect={false}
         editor={{
           readOnly: false,
           defaultValue: this.sql,
@@ -460,10 +460,10 @@ class CreateViewPage extends Component<
         >
           <div className={styles.result}>
             <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
-            <FormattedMessage id="workspace.window.sql.result.failure" />
+            {formatMessage({ id: 'workspace.window.sql.result.failure' })}
             <div className={styles.executedSQL}>{executeSql}</div>
             <div className={styles.failReason}>
-              <FormattedMessage id="workspace.window.sql.result.failureReason" />
+              {formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
             </div>
             <div className={styles.track}>{errStack}</div>
           </div>

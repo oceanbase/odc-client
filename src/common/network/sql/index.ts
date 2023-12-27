@@ -149,7 +149,13 @@ export async function getSQLExecuteExplain(
 
   return result?.errMsg || 'fetch error';
 }
-
+/**
+ * 全链路诊断 Trace
+ * @param sessionId
+ * @param dbName
+ * @param data
+ * @returns
+ */
 export async function getFullLinkTrace(
   sessionId: string,
   dbName: string,
@@ -172,6 +178,32 @@ export async function getFullLinkTrace(
     data,
   });
   return res;
+}
+/**
+ * 获取要导出的JSON文件的下载链接
+ * @param sessionId
+ * @param dbName
+ * @param data
+ * @returns
+ */
+export async function getFullLinkTraceDownloadUrl(
+  sessionId: string,
+  dbName: string,
+  data?: Partial<{
+    sql: string;
+    tip: string;
+    affectMultiRows: boolean;
+    tag: string;
+    type: string;
+    desc: string;
+    queryList: number;
+  }>,
+): Promise<string> {
+  const sid = generateDatabaseSid(dbName, sessionId);
+  const res = await request.post(`/api/v1/diagnose/getFullLinkTraceDownloadUrl/${sid}`, {
+    data,
+  });
+  return res?.data;
 }
 export enum IDataFormmater {
   TEXT = 'TXT',

@@ -29,33 +29,33 @@ import TablePage from '@/page/Workspace/components/TablePage';
 import ViewPage from '@/page/Workspace/components/ViewPage';
 import withConfirmModal from './factory';
 // @ts-ignore
-import ConsoleSQLSvg from '@/svgr/Console-SQL.svg';
+import { ReactComponent as ConsoleSQLSvg } from '@/svgr/Console-SQL.svg';
 // @ts-ignore
-import ConsolePLSvg from '@/svgr/Console-PL.svg';
+import { ReactComponent as ConsolePLSvg } from '@/svgr/Console-PL.svg';
 // @ts-ignore
-import FunctionSvg from '@/svgr/menuFunc.svg';
+import { ReactComponent as FunctionSvg } from '@/svgr/menuFunc.svg';
 // @ts-ignore
-import ProcedureSvg from '@/svgr/menuProcedure.svg';
+import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg';
 // @ts-ignore
-import SequenceSvg from '@/svgr/menuSequence.svg';
+import { ReactComponent as SequenceSvg } from '@/svgr/menuSequence.svg';
 // @ts-ignore
-import PackageSvg from '@/svgr/menuPkg.svg';
+import { ReactComponent as PackageSvg } from '@/svgr/menuPkg.svg';
 // @ts-ignore
-import TriggerSvg from '@/svgr/menuTrigger.svg';
+import { ReactComponent as TriggerSvg } from '@/svgr/menuTrigger.svg';
 // @ts-ignore
-import SynonymSvg from '@/svgr/menuSynonym.svg';
+import { ReactComponent as SynonymSvg } from '@/svgr/menuSynonym.svg';
 // @ts-ignore
-import CommandSvg from '@/svgr/command.svg';
-import TableOutlined from '@/svgr/menuTable.svg';
-import ViewSvg from '@/svgr/menuView.svg';
-import DeleteOutlined from '@/svgr/tabRecycle.svg';
-import SettingOutlined from '@/svgr/tabSession.svg';
-import VariableSvg from '@/svgr/variable.svg';
+import { ReactComponent as CommandSvg } from '@/svgr/command.svg';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
+import { ReactComponent as DeleteOutlined } from '@/svgr/tabRecycle.svg';
+import { ReactComponent as SettingOutlined } from '@/svgr/tabSession.svg';
+import { ReactComponent as VariableSvg } from '@/svgr/variable.svg';
 
 // @ts-ignore
-import TypeSvg from '@/svgr/menuType.svg';
+import { ReactComponent as TypeSvg } from '@/svgr/menuType.svg';
 
-import TaskSvg from '@/svgr/icon_task.svg';
+import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 
 import CreateTriggerPage from '@/page/Workspace/components/CreateTriggerPage';
 import FunctionPage from '@/page/Workspace/components/FunctionPage';

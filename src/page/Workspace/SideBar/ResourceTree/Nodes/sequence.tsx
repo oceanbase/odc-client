@@ -21,7 +21,8 @@ import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 import { IDatabase } from '@/d.ts/database';
-import SequenceSvg from '@/svgr/menuSequence.svg';
+import { ReactComponent as SequenceSvg } from '@/svgr/menuSequence.svg';
+import { openSequenceViewPage } from '@/store/helper/page';
 
 export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): TreeDataNode {
   const dbName = database.name;
@@ -51,7 +52,9 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
             }}
           />
         ),
-
+        doubleClick(session, node, databaseFrom) {
+          openSequenceViewPage(sequence.name, undefined, session?.database?.databaseId);
+        },
         sessionId: dbSession?.sessionId,
         isLeaf: true,
       };

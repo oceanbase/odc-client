@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// This is a dirty file, no longer used in scenes！！！
+
 import Toolbar from '@/component/Toolbar';
 import { IndexRange, ITableColumn, ITableIndex } from '@/d.ts';
 import { generateUniqKey } from '@/util/utils';
@@ -22,12 +24,12 @@ import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import { Button, Divider } from 'antd';
 import memoizeOne from 'memoize-one';
 import React, { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 import EditableTable from '../EditableTable';
 import { WrapSelectEditor } from '../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import CheckboxFormatter from './CheckboxFormatter';
 import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -214,13 +216,13 @@ export default class CreateTableIndexForm extends Component<
         >
           <Toolbar>
             <ToolbarButton
-              text={<FormattedMessage id="workspace.header.create" />}
+              text={formatMessage({ id: 'workspace.header.create' })}
               icon={<PlusOutlined />}
               onClick={this.handleAddColumn}
             />
             <ToolbarButton
               disabled={!enableEdit || isEmpty}
-              text={<FormattedMessage id="workspace.window.session.button.edit" />}
+              text={formatMessage({ id: 'workspace.window.session.button.edit' })}
               icon={<EditOutlined />}
               onClick={this.handleEditColumn}
             />
@@ -232,7 +234,7 @@ export default class CreateTableIndexForm extends Component<
             />
             {allowRefresh && (
               <ToolbarButton
-                text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                 icon={<SyncOutlined />}
                 onClick={this.handleRefreshColumn}
               />
@@ -241,8 +243,8 @@ export default class CreateTableIndexForm extends Component<
           <EditableTable
             // emptyContent={formatMessage({ id: 'workspace.window.createTable.index.empty' })}
             minHeight={tableHeight || '200px'}
-            columns={tableColumns}
-            rows={indexes}
+            initialColumns={tableColumns}
+            initialRows={indexes}
             rowKey="key"
             onSelectChange={this.handleSelect}
             // @ts-ignore
@@ -281,7 +283,7 @@ export default class CreateTableIndexForm extends Component<
               marginRight: 8,
             }}
           >
-            <FormattedMessage id="app.button.cancel" />
+            {formatMessage({ id: 'app.button.cancel' })}
           </Button>
         )}
         <Button
@@ -291,7 +293,7 @@ export default class CreateTableIndexForm extends Component<
           type="primary"
           className={styles.submitButton}
         >
-          <FormattedMessage id="app.button.ok" />
+          {formatMessage({ id: 'app.button.ok' })}
         </Button>
       </>
     );

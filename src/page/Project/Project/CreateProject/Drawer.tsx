@@ -57,6 +57,18 @@ export default function CreateProjectDrawer(props: IProps) {
               role: ProjectRole.DEVELOPER,
             })),
           )
+          .concat(
+            data?.securityAdministrator?.map((item) => ({
+              id: item,
+              role: ProjectRole.SECURITY_ADMINISTRATOR,
+            })),
+          )
+          .concat(
+            data?.participant?.map((item) => ({
+              id: item,
+              role: ProjectRole.PARTICIPANT,
+            })),
+          )
           .filter(Boolean),
       });
       if (isSuccess) {

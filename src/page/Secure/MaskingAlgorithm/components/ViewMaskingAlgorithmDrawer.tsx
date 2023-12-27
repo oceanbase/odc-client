@@ -15,10 +15,11 @@
  */
 
 import { detailMaskingAlgorithm, testMaskingAlgorithm } from '@/common/network/maskingAlgorithm';
-import { MaskRyleTypeMap } from '@/d.ts';
+import { maskRuleTypeMap } from '..';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { formatMessage } from '@/util/intl';
-import { Button, Descriptions, Drawer, Input, message } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Drawer, Input, Tooltip, message } from 'antd';
 import { useEffect, useState } from 'react';
 const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClose }) => {
   const [searchText, setSearchText] = useState<string>('');
@@ -42,10 +43,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
     }
 
     setShowResult(true);
-    const result = await testMaskingAlgorithm({
-      ...detailMaskingAlgorithmData,
-      sampleContent: searchText,
-    });
+    const result = await testMaskingAlgorithm(detailMaskingAlgorithmData.id, searchText);
     setTestResult(result?.maskedContent);
   };
   const reset = () => {
@@ -130,7 +128,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
             }) //脱敏方式
           }
         >
-          {MaskRyleTypeMap[selectedData?.type]}
+          {maskRuleTypeMap[selectedData?.type]}
         </Descriptions.Item>
         <Descriptions.Item
           label={
@@ -152,13 +150,35 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
           padding: '16px',
         }}
       >
-        <div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: '8px',
+          }}
+        >
           <span>
             {
               formatMessage({
-                id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.TestData',
-              }) /*测试数据*/
+                id: 'odc.src.page.Secure.MaskingAlgorithm.components.TestData',
+              }) /* 
+            测试数据
+             */
             }
+            <Tooltip
+              title={
+                formatMessage({
+                  id: 'odc.src.page.Secure.MaskingAlgorithm.components.TheMaximumLength',
+                }) /* 最长长度 <= 128 */
+              }
+            >
+              <QuestionCircleOutlined
+                style={{
+                  marginLeft: '8px',
+                  cursor: 'pointer',
+                }}
+              />
+            </Tooltip>
           </span>
           <div
             style={{
@@ -174,6 +194,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
                     type: 'number',
                   }
                 : {})}
+              maxLength={128}
               onChange={handleSearchTextChange}
               placeholder={formatMessage({
                 id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.PleaseEnter',
@@ -193,7 +214,13 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
             </Button>
           </div>
         </div>
-        <div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: '8px',
+          }}
+        >
           <span>
             {
               formatMessage({

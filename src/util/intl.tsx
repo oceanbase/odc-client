@@ -16,29 +16,11 @@
 
 // TODO: 现在需要手动安装 react-intl，但可能与 umi 内置的版本冲突。因此后续需要等 umi 支持导出 createIntl，再从 umi 中引入，这样能避免版本冲突的问题。
 // 已给 umi 提 issue: https://github.com/umijs/plugins/issues/400
-import en_US from '@/locales/en-US';
-import zh_CN from '@/locales/zh-CN';
-import zh_TW from '@/locales/zh-TW';
 import odc from '@/plugins/odc';
-import { createIntl } from 'react-intl';
+import { IntlShape, createIntl } from 'react-intl';
 export const defaultLocale = 'en-us';
 
-const messages = {
-  'en-us': en_US,
-  'zh-cn': zh_CN,
-  'zh-tw': zh_TW,
-  zh_hk: zh_TW,
-};
-let locale: string = getEnvLocale();
-let lowerCaseLocale = locale.toLowerCase();
-if (!messages[lowerCaseLocale]) {
-  lowerCaseLocale = defaultLocale;
-}
-let intl = createIntl({
-  locale,
-  messages: messages[lowerCaseLocale],
-});
-
+let intl;
 /**
  * umi4  中插件会在render内初始化，这会导致ODC很多render之前涉及到插件调用的方法报错，所以需要特殊处理这部分的逻辑
  */
@@ -95,7 +77,38 @@ export function getLocalDocs(hash?: string) {
   return window.publicPath + 'help-doc/' + local + '/index.html' + (hash ? `#/${hash}` : '');
 }
 
-export const { formatMessage } = intl;
-export default intl;
+export async function initIntl() {
+  let locale: string = getEnvLocale();
+  let messages: Record<string, string> = {};
+  switch (locale) {
+    case 'zh-CN': {
+      messages = (await import('@/locales/must/strings/zh-CN.json')).default;
+      break;
+    }
+    case 'zh-TW': {
+      messages = (await import('@/locales/must/strings/zh-TW.json')).default;
+      break;
+    }
+    case 'zh-HK': {
+      messages = (await import('@/locales/must/strings/zh-TW.json')).default;
+      break;
+    }
+    case 'en-US':
+    default: {
+      messages = (await import('@/locales/must/strings/en-US.json')).default;
+      break;
+    }
+  }
+  intl = createIntl({
+    locale,
+    messages,
+  });
+  return true;
+}
+export function formatMessage(...args) {
+  return intl?.formatMessage(...args);
+}
 
-export const supportLanguage = Object.keys(messages);
+export default function getIntl(): IntlShape {
+  return intl;
+}

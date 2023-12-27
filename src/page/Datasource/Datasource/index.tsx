@@ -31,6 +31,7 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
   const [sortType, setSortType] = useState<SortType>(null);
   const [connectType, setConnectType] = useState([]);
   const [editDatasourceId, setEditDatasourceId] = useState(null);
+  const [copyDatasourceId, setCopyDatasourceId] = useState<number>(null);
   const contentRef = useRef<any>();
   const _searchValue = useMemo(() => {
     return {
@@ -57,6 +58,7 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
           editDatasource(id: number) {
             setEditDatasourceId(id);
           },
+          setCopyDatasourceId,
         }}
       >
         <div style={{ height: '100%' }}>
@@ -68,6 +70,18 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
           visible={!!editDatasourceId}
           id={editDatasourceId}
           close={() => setEditDatasourceId(null)}
+          onSuccess={() => {
+            contentRef.current?.reload();
+          }}
+        />
+        <NewDatasourceDrawer
+          key="copy"
+          isEdit={false}
+          isCopy={true}
+          disableTheme
+          visible={!!copyDatasourceId}
+          id={copyDatasourceId}
+          close={() => setCopyDatasourceId(null)}
           onSuccess={() => {
             contentRef.current?.reload();
           }}

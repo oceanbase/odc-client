@@ -25,6 +25,8 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
 import FormContext from '../FormContext';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -36,6 +38,7 @@ interface IProps {
 }
 const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, connection }) {
   const formContext = useContext(FormContext);
+  const config = getDataSourceModeConfig(connection?.type);
   const exportFileMaxSizeOpt = [
     {
       value: formatMessage({ id: 'odc.ExportForm.ConfigPanel.Unlimited' }), //无限制
@@ -178,43 +181,44 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                         <MaskPolicySelecter required />
                       </Col>
                     )} */}
+                    {config?.features?.export?.fileLimit && (
+                      <Col span={8}>
+                        <FormItem
+                          style={{ marginBottom: 8 }}
+                          label={
+                            <span>
+                              {
+                                formatMessage({
+                                  id: 'odc.ExportForm.ConfigPanel.MaximumSizeOfASingle',
+                                }) /*单个文件上限(MB)*/
+                              }
 
-                    <Col span={8}>
-                      <FormItem
-                        style={{ marginBottom: 8 }}
-                        label={
-                          <span>
+                              <HelpDoc
+                                {...{
+                                  doc: 'exportFileMaxSize',
+                                  leftText: true,
+                                  isTip: true,
+                                }}
+                              />
+                            </span>
+                          }
+                          name="exportFileMaxSize"
+                          rules={[
                             {
-                              formatMessage({
-                                id: 'odc.ExportForm.ConfigPanel.MaximumSizeOfASingle',
-                              }) /*单个文件上限(MB)*/
-                            }
-
-                            <HelpDoc
-                              {...{
-                                doc: 'exportFileMaxSize',
-                                leftText: true,
-                                isTip: true,
-                              }}
-                            />
-                          </span>
-                        }
-                        name="exportFileMaxSize"
-                        rules={[
-                          {
-                            required: true,
-                            message: formatMessage({
-                              id: 'odc.ExportForm.ConfigPanel.PleaseFillInOrSelect',
-                            }), //请填写或者选择单个文件上限(MB)
-                          },
-                          () => ({
-                            validator,
-                          }),
-                        ]}
-                      >
-                        <AutoComplete options={exportFileMaxSizeOpt} />
-                      </FormItem>
-                    </Col>
+                              required: true,
+                              message: formatMessage({
+                                id: 'odc.ExportForm.ConfigPanel.PleaseFillInOrSelect',
+                              }), //请填写或者选择单个文件上限(MB)
+                            },
+                            () => ({
+                              validator,
+                            }),
+                          ]}
+                        >
+                          <AutoComplete options={exportFileMaxSizeOpt} />
+                        </FormItem>
+                      </Col>
+                    )}
                   </Row>
                   {isSQL && (
                     <FormItem
@@ -422,19 +426,21 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                     </FormItem>
                   )}
 
-                  <FormItem
-                    name="globalSnapshot"
-                    valuePropName="checked"
-                    style={{ marginBottom: 4 }}
-                  >
-                    <Checkbox>
-                      <HelpDoc leftText isTip doc="globalSnapshot">
-                        {formatMessage({
-                          id: 'odc.ExportDrawer.ExportForm.UseGlobalSnapshots',
-                        })}
-                      </HelpDoc>
-                    </Checkbox>
-                  </FormItem>
+                  {config?.features?.export?.snapshot && (
+                    <FormItem
+                      name="globalSnapshot"
+                      valuePropName="checked"
+                      style={{ marginBottom: 4 }}
+                    >
+                      <Checkbox>
+                        <HelpDoc leftText isTip doc="globalSnapshot">
+                          {formatMessage({
+                            id: 'odc.ExportDrawer.ExportForm.UseGlobalSnapshots',
+                          })}
+                        </HelpDoc>
+                      </Checkbox>
+                    </FormItem>
+                  )}
                 </FormItemPanel>
               )}
 
@@ -464,7 +470,6 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
                       </Checkbox>
                     </FormItem>
                   )}
-
                   <FormItem
                     name="withDropDDL"
                     rules={[
@@ -501,40 +506,43 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
       >
         <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
       </FormItemPanel>
-      {odc.appConfig.connection.sys && odc.appConfig.task.sys && (
-        <FormItem noStyle shouldUpdate>
-          {({ getFieldValue }) => {
-            const exportDbObjects = getFieldValue('exportDbObjects');
-            return (
-              <SysFormItem
-                tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
-                  if (!useSys) {
-                    return formatMessage({
-                      id: 'odc.ExportForm.ConfigPanel.IfYouDoNotUse.1',
-                    }); //若不使用 sys 租户账号，导出可能缺少索引
-                  } else if (existSys) {
-                    return formatMessage({
-                      id: 'odc.ExportForm.ConfigPanel.TheAccountConfiguredForThe',
-                    });
+      {ENABLED_SYS_FROM_ITEM &&
+        odc.appConfig.connection.sys &&
+        odc.appConfig.task.sys &&
+        config?.connection?.sys && (
+          <FormItem noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const exportDbObjects = getFieldValue('exportDbObjects');
+              return (
+                <SysFormItem
+                  tip={(useSys: boolean, existSys: boolean, enforce: boolean) => {
+                    if (!useSys) {
+                      return formatMessage({
+                        id: 'odc.ExportForm.ConfigPanel.IfYouDoNotUse.1',
+                      }); //若不使用 sys 租户账号，导出可能缺少索引
+                    } else if (existSys) {
+                      return formatMessage({
+                        id: 'odc.ExportForm.ConfigPanel.TheAccountConfiguredForThe',
+                      });
 
-                    //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导出
-                  } else {
-                    return formatMessage({
-                      id: 'odc.ExportForm.ConfigPanel.PleaseConfigureTheSysTenant',
-                    });
+                      //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导出
+                    } else {
+                      return formatMessage({
+                        id: 'odc.ExportForm.ConfigPanel.PleaseConfigureTheSysTenant',
+                      });
 
-                    //请配置 sys 租户账号，该账号信息仅用于此次导出
-                  }
-                }}
-                form={form}
-                randomKey={Math.random()}
-                enforce={false}
-                connection={connection}
-              />
-            );
-          }}
-        </FormItem>
-      )}
+                      //请配置 sys 租户账号，该账号信息仅用于此次导出
+                    }
+                  }}
+                  form={form}
+                  randomKey={Math.random()}
+                  enforce={false}
+                  connection={connection}
+                />
+              );
+            }}
+          </FormItem>
+        )}
       <DescriptionInput />
     </>
   );

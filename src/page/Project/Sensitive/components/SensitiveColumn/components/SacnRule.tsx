@@ -21,13 +21,16 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Select } from 'antd';
+import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
+
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
   const [databaseId, setDatabaseId] = useState<number>(0);
+  const databaseIds = useWatch('databaseIds', formRef);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
   const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
@@ -203,11 +206,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             }) //请选择
           }
           maxTagCount="responsive"
-          disabled={
-            databaseIdsOptions?.length === 1 ||
-            dataSourceOptions?.length === 0 ||
-            dataSourceId === -1
-          }
+          disabled={databaseIdsOptions?.length === 1 || dataSourceId === -1}
           style={{
             width: '262px',
           }}
@@ -221,8 +220,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         }
         tooltip={
           formatMessage({
-            id:
-              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath',
+            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath',
           }) //'可通过路径、正则或Groovy任意一种识别方式，进行脚本批量选择列'
         }
         name="sensitiveRuleIds"
@@ -240,7 +238,11 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           options={sensitiveOptions}
           onSelect={handleSensitiveRuleIdsSelect}
           disabled={
-            databaseIdsOptions?.length === 1 || sensitiveOptions?.length === 1 || databaseId === 0
+            dataSourceId === -1 ||
+            databaseIdsOptions?.length === 1 ||
+            databaseIds?.length === 0 ||
+            databaseId === 0 ||
+            sensitiveOptions?.length === 1
           }
           maxTagCount="responsive"
           placeholder={
@@ -277,8 +279,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
               >
                 {
                   formatMessage({
-                    id:
-                      'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
+                    id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
                   }) /* 
              管理识别规则
              */

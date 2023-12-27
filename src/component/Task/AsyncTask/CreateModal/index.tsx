@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { runSQLLint } from '@/common/network/sql';
 import { createTask, getAsyncTaskUploadUrl } from '@/common/network/task';
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
-import RuleResult from '@/component/SQLLintResult/RuleResult';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
-  ConnectionMode,
   RollbackType,
   SQLContentType,
   TaskExecStrategy,
@@ -31,15 +32,18 @@ import {
   TaskPageType,
   TaskType,
 } from '@/d.ts';
+import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
+import utils, { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
+  Alert,
   AutoComplete,
   Button,
   Checkbox,
@@ -51,17 +55,15 @@ import {
   Modal,
   Radio,
   Space,
+  Tooltip,
 } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
-
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
-
 interface IProps {
   sqlStore?: SQLStore;
   taskStore?: TaskStore;
@@ -69,12 +71,10 @@ interface IProps {
   projectId?: number;
   theme?: string;
 }
-
 enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
   ABORT = 'ABORT',
 }
-
 const getFilesByIds = (ids: string[], names: string[]) => {
   return ids?.map((id, i) => {
     return {
@@ -83,37 +83,44 @@ const getFilesByIds = (ids: string[], names: string[]) => {
       status: 'done',
       response: {
         data: {
-          contents: [{ objectId: id }],
+          contents: [
+            {
+              objectId: id,
+            },
+          ],
         },
       },
     };
   });
 };
-
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
   const [form] = Form.useForm();
+  const editorRef = useRef<CommonIDE>();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [rollbackContentType, setRollbackContentType] = useState(SQLContentType.TEXT);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
-  const { database } = useDBSession(databaseId);
+  const sqlContent = Form.useWatch('sqlContent', form);
+  const { database, session } = useDBSession(databaseId);
+  const [preCheckLoading, setPreLoading] = useState<boolean>(false);
+  const [hasPreCheck, setHasPreCheck] = useState<boolean>(false);
+  const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
   const { asyncTaskData } = modalStore;
   const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql;
   const initRollbackContent = '';
-
   const [defaultFileList, setDefaultFileList] = useState({
     rollbackSqlFiles: [],
     sqlFiles: [],
   });
-
+  const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
+  const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const loadRollbackData = async () => {
     const { task, type, objectId } = asyncTaskData;
     const { parameters, projectId, databaseId, description, executionStrategy } = task;
-
     const {
       delimiter,
       queryLimit,
@@ -123,10 +130,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       rollbackSqlObjectNames,
       rollbackSqlContent,
     } = parameters ?? {};
-
     const sqlContentType = rollbackSqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
     const rollbackContentType = SQLContentType.TEXT;
-
     const formData = {
       projectId,
       databaseId,
@@ -144,7 +149,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       sqlFiles: undefined,
       rollbackSqlFiles: undefined,
     };
-
     if (type === RollbackType.REF) {
       const files = getFilesByIds([objectId], ['rollback-plan-result.sql']);
       formData.sqlContentType = SQLContentType.FILE;
@@ -155,7 +159,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         formData.sqlFiles = files;
       }
     }
-
     setSqlContentType(formData.sqlContentType);
     setRollbackContentType(formData.rollbackContentType);
     form.setFieldsValue(formData);
@@ -164,13 +167,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       sqlFiles: formData.sqlFiles,
     });
   };
-
-  useEffect(() => {
-    if (asyncTaskData?.task) {
-      loadRollbackData();
-    }
-  }, [asyncTaskData]);
-
   const getFileIdAndNames = (files: UploadFile[]) => {
     const ids = [];
     const names = [];
@@ -186,7 +182,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       size: ids.length,
     };
   };
-
   const checkFileSizeAmount = (files: UploadFile[]): boolean => {
     const fileSizeAmount = files?.reduce((prev, current) => {
       return prev + current.size;
@@ -201,11 +196,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         }),
         //文件最多不超过 256MB
       );
+
       return false;
     }
     return true;
   };
-
   const handleChange = (type: 'sqlContentType' | 'rollbackContentType', value: SQLContentType) => {
     if (type === 'sqlContentType') {
       setSqlContentType(value);
@@ -213,18 +208,15 @@ const CreateModal: React.FC<IProps> = (props) => {
       setRollbackContentType(value);
     }
   };
-
   const handleSqlChange = (type: 'sqlContent' | 'rollbackSqlContent', sql: string) => {
     form?.setFieldsValue({
       [type]: sql,
     });
     setHasEdit(true);
   };
-
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
-
   const handleBeforeUpload = (file, type: 'sqlFiles' | 'rollbackSqlFiles') => {
     const isLt20M = MAX_FILE_SIZE > file.size;
     if (!isLt20M) {
@@ -240,12 +232,10 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
     return isLt20M;
   };
-
   const handleFileChange = (files: UploadFile[], type: 'sqlFiles' | 'rollbackSqlFiles') => {
     form?.setFieldsValue({
       [type]: files,
     });
-
     if (files.some((item) => item?.error?.isLimit)) {
       setFormStatus(
         type,
@@ -258,7 +248,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       setFormStatus(type, '');
     }
   };
-
   const setFormStatus = (fieldName: string, errorMessage: string) => {
     form.setFields([
       {
@@ -267,7 +256,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     ]);
   };
-
   const hadleReset = () => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
@@ -276,28 +264,34 @@ const CreateModal: React.FC<IProps> = (props) => {
       rollbackSqlFiles: [],
       sqlFiles: [],
     });
+    setHasEdit(false);
+    setLintResultSet([]);
+    setHasPreCheck(false);
   };
-
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.CreateAsyncTaskModal.AreYouSureYouWant.1',
         }),
-
         //确认取消数据库变更吗？
         centered: true,
         onOk: () => {
           modalStore.changeCreateAsyncTaskModal(false);
           hadleReset();
         },
+        okText: formatMessage({
+          id: 'odc.src.component.Task.AsyncTask.CreateModal.Confirm',
+        }), //'确认'
+        cancelText: formatMessage({
+          id: 'odc.src.component.Task.AsyncTask.CreateModal.Cancel',
+        }), //'取消'
       });
     } else {
       modalStore.changeCreateAsyncTaskModal(false);
       hadleReset();
     }
   };
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -338,7 +332,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           queryLimit,
           delimiter,
         };
-
         if (!checkFileSizeAmount(sqlFiles) || !checkFileSizeAmount(rollbackSqlFiles)) {
           return;
         }
@@ -352,9 +345,9 @@ const CreateModal: React.FC<IProps> = (props) => {
               }),
               //文件最多不超过 256MB
             );
+
             return;
           }
-
           if (!sqlFileIdAndNames?.size || sqlFileIdAndNames?.size !== sqlFiles?.length) {
             setFormStatus(
               'sqlFiles',
@@ -364,6 +357,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
               //请上传 SQL 文件
             );
+
             return;
           }
         } else {
@@ -372,7 +366,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           delete parameters.sqlObjectNames;
         }
-
         if (rollbackContentType === SQLContentType.FILE) {
           delete parameters.rollbackSqlContent;
         } else {
@@ -389,18 +382,15 @@ const CreateModal: React.FC<IProps> = (props) => {
           parameters,
           description,
         };
-
         if (executionStrategy === TaskExecStrategy.TIMER) {
           data.executionTime = executionTime?.valueOf();
         } else {
           data.executionTime = undefined;
         }
-
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
         setConfirmLoading(false);
-
         if (res) {
           openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
@@ -409,29 +399,60 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
-
+  const preCheck = async () => {
+    utils.removeHighlight(editorRef?.current?.editor);
+    const { sqlContent, delimiter, databaseId } = await form?.getFieldsValue();
+    if (databaseId && sqlContent && session?.sessionId) {
+      setLintResultSet([]);
+      setPreLoading(true);
+      setHasPreCheck(false);
+      const result = await runSQLLint(session?.sessionId, delimiter, sqlContent);
+      setExecuteOrPreCheckSql(sqlContent);
+      setSqlChanged(false);
+      setHasPreCheck(true);
+      setPreLoading(false);
+      setLintResultSet(result);
+    }
+  };
+  const onEditorAfterCreatedCallback = (editor: IEditor) => {
+    editor.onDidChangeCursorPosition(() => {
+      utils.removeHighlight(editor);
+    });
+  };
+  useEffect(() => {
+    if (asyncTaskData?.task) {
+      loadRollbackData();
+    }
+    if (asyncTaskData?.rules) {
+      if (asyncTaskData?.rules?.length > 0) {
+        setLintResultSet(asyncTaskData?.rules);
+        setHasPreCheck(true);
+      }
+    }
+    if (asyncTaskData?.sql) {
+      setExecuteOrPreCheckSql(asyncTaskData?.sql);
+      setSqlChanged(false);
+    }
+  }, [asyncTaskData]);
   useEffect(() => {
     if (initSqlContent) {
       handleSqlChange('sqlContent', initSqlContent);
     }
   }, [initSqlContent]);
-
   useEffect(() => {
     form.setFieldsValue({
       databaseId: asyncTaskData?.databaseId,
     });
   }, [asyncTaskData?.databaseId]);
-
   return (
     <Drawer
       destroyOnClose
       className={styles.asyncTask}
-      width={520}
+      width={905}
       title={formatMessage({
         id: 'odc.components.CreateAsyncTaskModal.CreateDatabaseChanges',
       })}
-      /*新建数据库变更*/
-      footer={
+      /*新建数据库变更*/ footer={
         <Space>
           <Button
             onClick={() => {
@@ -473,24 +494,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        {asyncTaskData?.rules?.length ? (
-          <Form.Item
-            requiredMark={false}
-            label={formatMessage({
-              id: 'odc.AsyncTask.CreateModal.ThisOperationHasBeenBlocked',
-            })} /*该操作已被以下规则拦截，请发起审批*/
-          >
-            <RuleResult data={asyncTaskData?.rules} />
-            <Divider style={{ margin: '8px 0px' }} />
-          </Form.Item>
-        ) : null}
         <DatabaseSelect type={TaskType.ASYNC} projectId={projectId} />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateAsyncTaskModal.SqlContent',
           })}
-          /* SQL 内容 */
-          name="sqlContentType"
+          /* SQL 内容 */ name="sqlContentType"
           initialValue={SQLContentType.TEXT}
           rules={[
             {
@@ -543,13 +552,22 @@ const CreateModal: React.FC<IProps> = (props) => {
               // 请填写 SQL 内容
             },
           ]}
-          style={{ height: '280px' }}
+          style={{
+            height: '280px',
+          }}
         >
           <CommonIDE
+            ref={editorRef}
             initialSQL={initSqlContent}
             language={getDataSourceModeConfig(connection?.type)?.sql?.language}
+            onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
             onSQLChange={(sql) => {
               handleSqlChange('sqlContent', sql);
+              if (executeOrPreCheckSql !== sql) {
+                setSqlChanged(true);
+              } else {
+                setSqlChanged(false);
+              }
             }}
           />
         </Form.Item>
@@ -597,6 +615,70 @@ const CreateModal: React.FC<IProps> = (props) => {
             </p>
           </ODCDragger>
         </Form.Item>
+        <Tooltip
+          title={
+            sqlContentType === SQLContentType.FILE
+              ? formatMessage({
+                  id: 'odc.src.component.Task.AsyncTask.CreateModal.PleaseUseSQLToEnter',
+                }) //'请使用 SQL 录入，上传附件暂不支持 SQL 检查'
+              : ''
+          }
+        >
+          <Button
+            style={{
+              marginBottom: '12px',
+            }}
+            onClick={preCheck}
+            disabled={
+              !session?.sessionId ||
+              !databaseId ||
+              !sqlContent ||
+              sqlContentType === SQLContentType.FILE
+            }
+            loading={preCheckLoading}
+          >
+            {
+              preCheckLoading
+                ? formatMessage({
+                    id: 'odc.src.component.Task.AsyncTask.CreateModal.InInspection',
+                  }) //'检查中'
+                : formatMessage({
+                    id: 'odc.src.component.Task.AsyncTask.CreateModal.SQLCheck',
+                  }) //'SQL 检查'
+            }
+          </Button>
+        </Tooltip>
+        {hasPreCheck && (
+          <Alert
+            closable
+            message={
+              formatMessage(
+                {
+                  id: 'odc.src.component.Task.AsyncTask.CreateModal.ThePreExaminationIs',
+                },
+                {
+                  lintResultSetLength: lintResultSet?.length || 0,
+                },
+              ) //`预检查完成，${lintResultSet.length} 处语句违反 SQL 开发规范。`
+            }
+            type={lintResultSet?.length === 0 ? 'success' : 'warning'}
+            showIcon
+            style={{
+              marginBottom: '8px',
+            }}
+          />
+        )}
+        {lintResultSet?.length > 0 && (
+          <LintResultTable
+            ctx={editorRef?.current?.editor}
+            pageSize={10}
+            hasExtraOpt={false}
+            lintResultSet={lintResultSet}
+            sqlChanged={sqlChanged}
+            baseOffset={0}
+          />
+        )}
+        <Divider />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateAsyncTaskModal.RollbackScheme',
@@ -650,7 +732,9 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={`${styles.sqlContent} ${
             rollbackContentType !== SQLContentType.TEXT && styles.hide
           }`}
-          style={{ height: '280px' }}
+          style={{
+            height: '280px',
+          }}
         >
           <CommonIDE
             initialSQL={initRollbackContent}
@@ -723,7 +807,9 @@ const CreateModal: React.FC<IProps> = (props) => {
           ]}
         >
           <AutoComplete
-            style={{ width: 90 }}
+            style={{
+              width: 90,
+            }}
             options={[';', '/', '//', '$', '$$'].map((value) => {
               return {
                 value,
@@ -736,8 +822,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={formatMessage({
             id: 'odc.components.CreateAsyncTaskModal.QueryResultLimits',
           })}
-          /* 查询结果限制 */
-          initialValue={1000}
+          /* 查询结果限制 */ initialValue={1000}
           required
           rules={[
             {
@@ -762,8 +847,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',
             })}
-            /* 任务错误处理 */
-            name="errorStrategy"
+            /* 任务错误处理 */ name="errorStrategy"
             initialValue={ErrorStrategy.ABORT}
             rules={[
               {
@@ -810,8 +894,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               label={formatMessage({
                 id: 'odc.components.CreateAsyncTaskModal.Hours',
               })}
-              /* 小时 */
-              name="timeoutMillis"
+              /* 小时 */ name="timeoutMillis"
               rules={[
                 {
                   required: true,
@@ -853,5 +936,4 @@ const CreateModal: React.FC<IProps> = (props) => {
     </Drawer>
   );
 };
-
 export default inject('sqlStore', 'taskStore', 'modalStore')(observer(CreateModal));

@@ -36,6 +36,7 @@ import React from 'react';
 import FormModal from './component/FormModal';
 
 import styles from './index.less';
+import { projectRoleTextMap } from '@/page/Project/User';
 
 const renderTime = (time) => {
   return (
@@ -220,7 +221,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   loadRoles = async () => {
     const res = await getResourceRoles();
     const roles = res?.contents.map(({ roleName, id }) => ({
-      name: roleName,
+      name: projectRoleTextMap?.[roleName],
       id,
     }));
     this.setState({

@@ -24,7 +24,7 @@ import ProjectContext from '../../../../ProjectContext';
 import SensitiveContext from '../../../SensitiveContext';
 import DetectWay from './DetectWay';
 import styles from './index.less';
-import { MaskRyleTypeMap } from '@/d.ts';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { PopoverContainer } from '../../SensitiveColumn';
 const FormSensitiveRuleDrawer = ({
   formDrawerVisible,
@@ -436,7 +436,7 @@ const FormSensitiveRuleDrawer = ({
                           id:
                             'odc.src.page.Project.Sensitive.components.SensitiveRule.components.DesensitizationMethod',
                         }), //'脱敏方式'
-                        value: MaskRyleTypeMap?.[target?.type],
+                        value: maskRuleTypeMap?.[target?.type],
                       },
                       {
                         label: formatMessage({

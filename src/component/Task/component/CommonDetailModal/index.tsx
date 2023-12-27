@@ -20,7 +20,7 @@ import type { ITaskDetailModalProps } from '@/component/Task/interface';
 import { TaskDetailType } from '@/component/Task/interface';
 import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Radio, Spin } from 'antd';
+import { Drawer, Radio, Spin, message } from 'antd';
 import React from 'react';
 import { isCycleTask } from '../../helper';
 import styles from './index.less';
@@ -31,7 +31,9 @@ import TaskOperationRecord from './TaskOperationRecord';
 import TaskProgress from './TaskProgress';
 import TaskRecord from './TaskRecord';
 import TaskResult from './TaskResult';
-
+import { ShareAltOutlined } from '@ant-design/icons';
+import login from '@/store/login';
+import copy from 'copy-to-clipboard';
 const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
   const {
     task,
@@ -57,7 +59,6 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       ) : (
         <TaskInfo task={task} taskItems={getItems?.(task, result, hasFlow)} isSplit={isSplit} />
       );
-
       break;
     case TaskDetailType.LOG:
       content = (
@@ -68,7 +69,6 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           onLogTypeChange={onLogTypeChange}
         />
       );
-
       break;
     case TaskDetailType.RESULT:
       content = <TaskResult result={result} />;
@@ -91,14 +91,12 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
     default:
       break;
   }
-
   return (
     <div className={styles.content}>
       <Spin spinning={isLoading}>{content}</Spin>
     </div>
   );
 };
-
 interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   width?: number;
   isSplit?: boolean;
@@ -109,9 +107,8 @@ interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   ) => ITaskInfoProps['taskItems'];
   taskContent?: React.ReactNode;
 }
-
 const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
-  const { width = 750, visible, task, taskTools, detailType, hasFlow, onClose } = props;
+  const { width = 750, visible, task, taskTools, detailType, detailId, hasFlow, onClose } = props;
   const hasInfo = [
     TaskType.ASYNC,
     TaskType.IMPORT,
@@ -125,6 +122,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.ONLINE_SCHEMA_CHANGE,
     TaskType.DATA_DELETE,
     TaskType.EXPORT_RESULT_SET,
+    TaskType.APPLY_PROJECT_PERMISSION,
   ].includes(task?.type);
   const hasLog = [
     TaskType.ASYNC,
@@ -136,17 +134,46 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.ALTER_SCHEDULE,
     TaskType.ONLINE_SCHEMA_CHANGE,
     TaskType.EXPORT_RESULT_SET,
+    TaskType.APPLY_PROJECT_PERMISSION,
   ].includes(task?.type);
+  function onShare() {
+    const url =
+      location.origin +
+      location.pathname +
+      `#/task?taskId=${detailId}&taskType=${task?.type}&organizationId=${login.organizationId}`;
+    copy(url);
+    message.success(
+      formatMessage({
+        id: 'odc.src.component.Task.component.CommonDetailModal.Replication',
+      }), //'复制成功'
+    );
+  }
   return (
     <Drawer
       open={visible}
       width={width}
       onClose={onClose}
-      title={formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskDetails',
-      })}
-      /* 任务详情 */
-      destroyOnClose
+      title={
+        <div className={styles.title}>
+          {formatMessage({
+            id: 'odc.component.CommonTaskDetailModal.TaskDetails',
+          })}
+          {login.isPrivateSpace() ? (
+            <div></div>
+          ) : (
+            <a className={styles.share} onClick={onShare}>
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.CommonDetailModal.Share',
+                }) /* 
+            分享  */
+              }
+              <ShareAltOutlined />
+            </a>
+          )}
+        </div>
+      }
+      /* 任务详情 */ destroyOnClose
       className={styles.detailDrawer}
     >
       <div className={styles.header}>
@@ -234,7 +261,11 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
 
           {task?.type === TaskType.ASYNC && (
             <Radio.Button value={TaskDetailType.RECORD}>
-              {formatMessage({ id: 'odc.component.CommonDetailModal.RollbackTicket' }) /*回滚工单*/}
+              {
+                formatMessage({
+                  id: 'odc.component.CommonDetailModal.RollbackTicket',
+                }) /*回滚工单*/
+              }
             </Radio.Button>
           )}
 
@@ -257,5 +288,4 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     </Drawer>
   );
 };
-
 export default CommonTaskDetailModal;

@@ -35,9 +35,12 @@ import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { EStatus } from '@/d.ts';
 import { CreateTablePage } from '@/store/helper/page/pages/create';
+import modal from '@/store/modal';
 import page from '@/store/page';
-import { SessionManagerStore } from '@/store/sessionManager';
+import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
@@ -72,17 +75,39 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
   const [partitions, setPartitions] = useState<Partial<TablePartition>>(defaultPartitions);
   const [indexes, setIndexes] = useState<ITableIndex[]>([]);
+  const [status, setStatus] = useState<EStatus>(null);
+  const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const [primaryConstraints, setPrimaryConstraints] = useState<TablePrimaryConstraint[]>([]);
   const [uniqueConstraints, setUniqueConstraints] = useState<TableUniqueConstraint[]>([]);
   const [foreignConstraints, setForeignConstraints] = useState<TableForeignConstraint[]>([]);
   const [checkConstraints, setCheckConstraints] = useState<TableCheckConstraint[]>([]);
   const [DDL, setDDL] = useState('');
+  const [hasExecuted, setHasExecuted] = useState<boolean>(false);
   const { loading, run: runGenerateCreateTableDDL } = useRequest(generateCreateTableDDL, {
     manual: true,
   });
 
   const { session } = useContext(SessionContext);
 
+  const handleSubmit = async () => {
+    const sql = await runGenerateCreateTableDDL(
+      {
+        info,
+        columns,
+        partitions,
+        indexes,
+        primaryConstraints,
+        uniqueConstraints,
+        foreignConstraints,
+        checkConstraints,
+      },
+      session?.sessionId,
+      session?.odcDatabase?.name,
+    );
+    if (sql) {
+      setDDL(sql);
+    }
+  };
   const isComplete = useMemo(() => {
     return (
       info.tableName &&
@@ -92,7 +117,6 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
       !columns?.find((c) => !c.name || !c.type)
     );
   }, [info, columns]);
-
   if (!session) {
     return <WorkSpacePageLoading />;
   }
@@ -124,31 +148,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                   }) //请填写基本信息和列
             }
           >
-            <Button
-              type="primary"
-              disabled={!isComplete}
-              loading={loading}
-              onClick={async () => {
-                const sql = await runGenerateCreateTableDDL(
-                  {
-                    info,
-                    columns,
-                    partitions,
-                    indexes,
-                    primaryConstraints,
-                    uniqueConstraints,
-                    foreignConstraints,
-                    checkConstraints,
-                  },
-                  session?.sessionId,
-                  session?.odcDatabase?.name,
-                );
-
-                if (sql) {
-                  setDDL(sql);
-                }
-              }}
-            >
+            <Button type="primary" disabled={!isComplete} loading={loading} onClick={handleSubmit}>
               {
                 formatMessage({
                   id: 'odc.components.CreateTable.SubmitAndConfirmSql',
@@ -222,11 +222,74 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           sql={DDL}
           visible={!!DDL}
           readonly
-          onCancel={() => setDDL('')}
+          status={status}
+          lintResultSet={lintResultSet}
+          onCancel={() => {
+            setDDL('');
+            setStatus(null);
+            setLintResultSet(null);
+            setHasExecuted(false);
+          }}
+          callback={() => {
+            setDDL('');
+            setStatus(null);
+            setLintResultSet(null);
+            setHasExecuted(false);
+            // 关闭
+            page.close(pageKey);
+          }}
           onSave={async () => {
-            const results = await executeSQL(DDL, session?.sessionId, session?.odcDatabase?.name);
+            const results = await executeSQL(
+              DDL,
+              session?.sessionId,
+              session?.odcDatabase?.name,
+              false,
+            );
+            if (!hasExecuted) {
+              if (results?.status !== EStatus.SUBMIT) {
+                setLintResultSet(results?.lintResultSet);
+                modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
+                setStatus(results?.status);
+                setHasExecuted(true);
+                return;
+              }
+            } else {
+              if (results?.status === EStatus.APPROVAL) {
+                modal.changeCreateAsyncTaskModal(true, {
+                  sql: DDL,
+                  databaseId: sessionManager.sessionMap.get(session?.sessionId).odcDatabase?.id,
+                  rules: lintResultSet,
+                });
+              }
+              setStatus(null);
+              setLintResultSet(null);
+              setHasExecuted(false);
+            }
             if (!results) {
               return;
+            }
+            if (!hasExecuted) {
+              /**
+               * status为submit时，即SQL内容没有被拦截，继续执行后续代码，完成相关交互
+               * status为其他情况时，中断操作
+               */
+              if (results?.status !== EStatus.SUBMIT) {
+                setLintResultSet(results?.lintResultSet);
+                setStatus(results?.status);
+                setHasExecuted(true);
+                return;
+              }
+            } else {
+              if (results?.status === EStatus.APPROVAL) {
+                modal.changeCreateAsyncTaskModal(true, {
+                  sql: DDL,
+                  databaseId: sessionManager.sessionMap.get(session?.sessionId).odcDatabase?.id,
+                  rules: lintResultSet,
+                });
+              }
+              setStatus(null);
+              setLintResultSet(null);
+              setHasExecuted(false);
             }
             if (results?.invalid) {
               setDDL('');

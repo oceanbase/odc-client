@@ -16,19 +16,13 @@
 
 import { IConnection, IConnectionStatus } from '@/d.ts';
 import { Tooltip } from 'antd';
-import OBSvg from '@/svgr/source_ob.svg';
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
 
-import styles from './index.less';
-import login from '@/store/login';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 export default function StatusIcon({ item }: { item: IConnection }) {
   let status = item?.status?.status;
-  if (!login.isPrivateSpace()) {
-    status = IConnectionStatus.ACTIVE;
-  }
   const icon = getDataSourceStyleByConnectType(item.type)?.icon;
   switch (status) {
     case IConnectionStatus.TESTING: {

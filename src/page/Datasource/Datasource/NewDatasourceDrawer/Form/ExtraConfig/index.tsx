@@ -85,12 +85,16 @@ const ExtraConfig: React.FC<IProps> = function () {
               <Tabs
                 size="small"
                 type="card"
-                items={!haveOCP() ? [
-                  config?.sys && sysItem,
-                  config?.ssl && sslItem,
-                  initScriptItem,
-                  jdbcItem,
-                ].filter(Boolean) : [initScriptItem]}
+                items={
+                  !haveOCP()
+                    ? [
+                        config?.sys && sysItem,
+                        config?.ssl && sslItem,
+                        initScriptItem,
+                        jdbcItem,
+                      ].filter(Boolean)
+                    : [initScriptItem]
+                }
               />
             );
           }}

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -32,11 +33,12 @@ import { isClient } from '@/util/env';
 import { useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ContainerQuery } from 'react-container-query';
 import { Helmet, history, Outlet } from '@umijs/max';
 import Context from './MenuContext';
 import StoreProvider from './StoreProvider';
+import { PageLoadingContext } from './PageLoadingWrapper';
 
 // // TODO：支持英文版
 // setLocale('zh-CN');
@@ -65,7 +67,6 @@ const query = {
     minWidth: 1600,
   },
 };
-
 interface IBasicLayoutProps {
   settingStore: SettingStore;
   pageStore: PageStore;
@@ -78,19 +79,16 @@ interface IBasicLayoutProps {
   location: any;
   children?: any;
 }
-
 let timer = null;
 const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => {
   const [isServerReady, setIsServerReady] = useState<boolean>(false);
   const [waitNumber, setWaitNumber] = useState<number>(-1);
   const { route } = useRouteData();
   const { routes = [] } = useAppData();
-
   const { settingStore, userStore } = props;
   const location = useLocation();
   const { pathname } = location;
   const isReady = settingStore.settingLoadStatus === 'done' && isServerReady;
-
   const checkSerevrStatus = () => {
     const { settingStore } = props;
     if (!settingStore.serverSystemInfo?.sessionLimitEnabled) {
@@ -131,7 +129,6 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
     async function asyncEffect() {
       const { userStore, settingStore } = props;
       const authority = undefined;
-
       if (isClient()) {
         await initClientService();
         if ((await haveLockPwd()) && (await isLock())) {
@@ -155,7 +152,29 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
       }
     };
   }, []);
-
+  const pageLoadingContext = useContext(PageLoadingContext);
+  useEffect(() => {
+    if (isReady) {
+      pageLoadingContext?.removeTask();
+    } else {
+      pageLoadingContext?.setTask({
+        tip: isServerReady
+          ? formatMessage({
+              id: 'odc.src.layout.ObtainConfigurationInformation',
+            }) //'正在获取配置信息'
+          : formatMessage({
+              id: 'odc.src.layout.InspectionServiceStatus',
+            }), //'正在检查服务状态'
+        showError: settingStore.settingLoadStatus === 'failed',
+        queue:
+          waitNumber > -1
+            ? {
+                waitNumber,
+              }
+            : null,
+      });
+    }
+  }, [isReady, isServerReady, waitNumber, settingStore.settingLoadStatus]);
   return (
     <React.Fragment>
       {
@@ -169,14 +188,16 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
         {(params) => (
           <Context.Provider value={getContext()}>
             {isReady ? (
-              <div style={{ height: '100%' }} className={classNames(params)}>
+              <div
+                style={{
+                  height: '100%',
+                }}
+                className={classNames(params)}
+              >
                 <Outlet />
               </div>
             ) : (
-              <PageLoading
-                queue={waitNumber > -1 ? { waitNumber } : null}
-                showError={settingStore.settingLoadStatus === 'failed'}
-              />
+              <></>
             )}
           </Context.Provider>
         )}
@@ -190,7 +211,6 @@ const App = inject(
   'userStore',
   'clusterStore',
 )(observer(AppContainer));
-
 export default (props: any) => (
   // <Media query="(max-width: 599px)">
   <ErrorBoundary>

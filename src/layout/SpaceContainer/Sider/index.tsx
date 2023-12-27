@@ -19,8 +19,8 @@ import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
 import odc from '@/plugins/odc';
 import { TaskStore } from '@/store/task';
-import LinkOutlined from '@/svgr/icon_connection.svg';
-import TaskSvg from '@/svgr/icon_task.svg';
+import { ReactComponent as LinkOutlined } from '@/svgr/icon_connection.svg';
+import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon, {
@@ -38,6 +38,7 @@ import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import { useRequest } from 'ahooks';
 import HelpItem from './HelpItem';
 import styles from './index.less';
 import Logo from './Logo';
@@ -64,9 +65,15 @@ const Sider: React.FC<IProps> = function (props) {
     _setCollapsed(v);
   }
 
+  const { run } = useRequest(props.taskStore?.getTaskMetaInfo, {
+    pollingInterval: 5000,
+  });
+
   useEffect(() => {
-    props.taskStore?.getTaskMetaInfo();
-    tracert.expo('a3112.b46782.c330851');
+    if (!isClient()) {
+      run();
+      tracert.expo('a3112.b46782.c330851');
+    }
   }, []);
 
   return (

@@ -155,7 +155,12 @@ export function getColumnSizeMapFromColumns(columns: any[]): IColumnSizeMap {
         break;
       }
       case 'BIT': {
-        tmpColummSizeMap[columnName] = parseInt(precision) - parseInt(scale);
+        tmpColummSizeMap[columnName] = {
+          isNumber: true,
+          maxValue: new BigNumber(2).pow(precision).minus(1).toString(),
+          minValue: '0',
+          scale: 0,
+        };
         break;
       }
       case 'TINYTEXT':

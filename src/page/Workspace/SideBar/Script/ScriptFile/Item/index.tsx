@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import styles from './index.less';
 
 import { deleteScript, downloadScript, syncScript } from '@/common/network';
-import ConsoleSQLSvg from '@/svgr/Console-SQL.svg';
+import { ReactComponent as ConsoleSQLSvg } from '@/svgr/Console-SQL.svg';
 import { formatMessage } from '@/util/intl';
 import { useCallback } from 'react';
 

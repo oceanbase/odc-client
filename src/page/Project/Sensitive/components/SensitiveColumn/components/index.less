@@ -69,7 +69,7 @@
   }
 }
 .tooltipContent {
-  max-width: 240px;
+  max-width: 220px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -108,18 +108,18 @@
 }
 //自定义内容
 .optionExpand::after {
-  content: attr(data-name);
   color: rgb(230, 128, 13);
+  content: attr(data-name);
 }
 .icon {
   display: flex;
-  line-height: 24px;
-  font-size: 14px;
-  height: 24px;
-  width: 14px !important;
-  color: var(--icon-color-disable);
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  width: 14px !important;
+  height: 24px;
+  color: var(--icon-color-disable);
+  font-size: 14px;
+  line-height: 24px;
 }
 .manualForm {
   &Content {
@@ -136,8 +136,8 @@
     .exportCard {
       margin-top: 24px;
       .label {
-        color: var(--text-color-primary);
         margin-bottom: 4px;
+        color: var(--text-color-primary);
       }
       .doubleExportCardContainer {
         display: flex;
@@ -145,9 +145,9 @@
       }
       .content {
         flex: 1 1 50%;
+        width: 50%;
         height: calc(100vh - 265px);
         overflow-y: auto;
-        width: 50%;
         border: 1px solid var(--odc-border-color);
         border-right: 0;
         & + & {
@@ -155,8 +155,8 @@
         }
         .centerContainer {
           display: flex;
-          justify-content: center;
           align-items: center;
+          justify-content: center;
           height: 100%;
         }
       }
@@ -167,13 +167,13 @@
   padding: 0px 12px 0px 0px;
   .panelHeader {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     .headerIcon {
       display: flex;
-      line-height: 1;
-      font-size: 14;
       color: var(--icon-color-disable) !important;
+      font-size: 14;
+      line-height: 1;
     }
   }
   .panelContent {
@@ -184,21 +184,21 @@
       justify-content: space-between;
       &Column {
         display: flex;
-        align-items: baseline;
         gap: 8px;
+        align-items: baseline;
         margin-right: 8px;
         &Icon {
           align-self: flex-start;
-          line-height: 28px;
           height: 28px;
           color: var(--icon-color-disable) !important;
+          line-height: 28px;
         }
         &Tooltip {
           width: 76px;
+          overflow: hidden;
           line-height: 28px;
           white-space: nowrap;
           text-overflow: ellipsis;
-          overflow: hidden;
           text-overflow: hidden;
           &:hover {
             cursor: pointer;
@@ -211,8 +211,8 @@
     .ant-collapse-item {
       margin-left: 4px;
       .ant-collapse-header {
-        padding: 0px;
         height: 22px;
+        padding: 0px;
         line-height: 22px;
       }
       .ant-collapse-content {
@@ -231,6 +231,13 @@
   :global {
     .ant-tree-node-content-wrapper {
       display: flex;
+    }
+  }
+}
+.popover {
+  :global {
+    .ant-popover-inner {
+      border-radius: 5px;
     }
   }
 }

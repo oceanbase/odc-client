@@ -1,0 +1,229 @@
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .info {
+    &Label {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 20px;
+      letter-spacing: 0;
+      color: var(--text-color-primary);
+    }
+
+    &Value {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 20px;
+      letter-spacing: 0;
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+.optContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  margin-bottom: 12px;
+
+  .rightSide {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
+
+.expandIcon {
+  z-index: 2;
+  position: relative;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.traceTreeTable {
+  &Header {
+    display: flex;
+
+    .headerSpanID {
+      height: 24px;
+      width: 288px;
+      flex: 0 0 288px;
+      border: 1px solid var(--odc-border-color);
+      background-color: var(--neutral-grey2-color);
+
+      .headerSpanIDSpan {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--text-color-primary);
+        margin-left: 8px;
+        line-height: 24px;
+      }
+    }
+
+    .stepContainer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      height: 24px;
+      width: 576px;
+      line-height: 24px;
+      border: 1px solid var(--odc-border-color);
+      border-left: none;
+      background-color: var(--neutral-grey2-color);
+
+      .timeStep {
+        display: flex;
+        box-sizing: border-box;
+        flex: 0 0 144px;
+        width: 144px;
+        flex-shrink: 0;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0px 4px;
+        border-right: 1px dashed var(--odc-border-color);
+      }
+    }
+  }
+
+  &Body {
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+
+    .tableBodyContent {
+      display: flex;
+    }
+  }
+}
+
+.traceBar {
+  width: 576px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.traceTable {
+  flex-grow: 1;
+  width: 576px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &Item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 24px;
+    width: 576px;
+    line-height: 24px;
+    border: 1px solid var(--odc-border-color);
+    border-top: none;
+    border-left: none;
+    position: relative;
+    .timeStepItem {
+      flex: 0 0 144px;
+      position: absolute;
+      height: 20px;
+      border-left: 1px solid transparent;
+      border-right: 1px dashed var(--odc-border-color);
+      &:nth-child(4) {
+        border-right: none;
+      }
+    }
+
+    .progressBar {
+      position: relative;
+      width: 575px;
+      height: 24px;
+      display: flex;
+      text-align: right;
+      align-items: center;
+    }
+  }
+}
+
+.hover {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.node {
+  display: flex;
+  width: 288px;
+  height: 24px;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+  &EmptySquare {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex-shrink: 0;
+    .expandIcon {
+      z-index: 2;
+      flex-shrink: 0;
+      position: relative;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    .lastNode {
+      position: relative;
+      width: 40px;
+      flex-shrink: 0;
+    }
+  }
+
+  &TreeTitle {
+    display: flex;
+    gap: 8px;
+    flex-grow: 0;
+    height: 24px;
+    align-items: center;
+    &Content {
+      max-width: 200px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+.valueElliscape {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.tracePopover {
+  :global {
+    .ant-popover-inner > .ant-popover-title {
+      padding: 8px 12px;
+    }
+    .ant-descriptions-item-container {
+      align-items: center;
+    }
+    .ant-descriptions-row > th,
+    .ant-descriptions-row > td {
+      padding-bottom: 4px;
+    }
+  }
+}
+.nodeTitle {
+  display: flex;
+  gap: 8px;
+  flex-grow: 0;
+  height: 20px;
+  line-height: 20px;
+  align-items: center;
+}

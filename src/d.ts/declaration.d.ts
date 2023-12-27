@@ -23,7 +23,7 @@ declare module '*.svg' {
   import React = require('react');
   export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   const src: string;
-  export default ReactComponent;
+  export { ReactComponent };
 }
 
 declare const ENV_target: 'web' | 'client';
@@ -48,6 +48,7 @@ interface Window {
   currentEnv: string;
   route: any;
   haveOCP: boolean;
+  ODCClient: any;
 }
 
 declare let window: Window;

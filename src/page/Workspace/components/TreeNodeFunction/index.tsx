@@ -19,9 +19,9 @@ import Icon from '@ant-design/icons';
 import { Menu } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { PureComponent } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
-import FunctionSvg from '@/svgr/Function.svg';
+import { ReactComponent as FunctionSvg } from '@/svgr/Function.svg';
+import { formatMessage } from '@/util/intl';
 
 enum MenuKey {
   BROWSER_SCHEMA = 'BROWSER_SCHEMA',
@@ -69,15 +69,15 @@ export default class FunctionTreeNode extends PureComponent<{
         onMenuClick={this.handleMenuClick}
       >
         <Menu.Item key={MenuKey.BROWSER_SCHEMA}>
-          <FormattedMessage id="workspace.tree.function.browserSchema" />
+          {formatMessage({ id: 'workspace.tree.function.browserSchema' })}
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key={MenuKey.CREATE_FUNCTION}>
-          <FormattedMessage id="workspace.tree.function.create" />
+          {formatMessage({ id: 'workspace.tree.function.create' })}
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key={MenuKey.DELETE_FUNCTION}>
-          <FormattedMessage id="workspace.tree.table.delete" />
+          {formatMessage({ id: 'workspace.tree.table.delete' })}
         </Menu.Item>
       </Node>
     );

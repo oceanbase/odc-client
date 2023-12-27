@@ -24,9 +24,9 @@ import styles from './index.less';
 import { Space } from 'antd';
 import SideTabs from '../components/SideTabs';
 
-import TabRecycleSvg from '@/svgr/tabRecycle.svg';
-import SettingOutlined from '@/svgr/tabSession.svg';
-import VariableSvg from '@/svgr/variable.svg';
+import { ReactComponent as TabRecycleSvg } from '@/svgr/tabRecycle.svg';
+import { ReactComponent as SettingOutlined } from '@/svgr/tabSession.svg';
+import { ReactComponent as VariableSvg } from '@/svgr/variable.svg';
 import tracert from '@/util/tracert';
 import { useParams } from '@umijs/max';
 import { toInteger } from 'lodash';
@@ -38,6 +38,7 @@ const Manager: React.FC<{}> = function () {
   }, []);
   return (
     <SideTabs
+      key="Manager"
       tabs={[
         {
           title: formatMessage({ id: 'odc.SideBar.Manager.DatabaseOM' }), //数据库运维
@@ -46,7 +47,7 @@ const Manager: React.FC<{}> = function () {
           render() {
             return (
               <div className={styles.manager}>
-                <Space style={{ width: '100%' }} direction="vertical">
+                <Space style={{ width: '100%' }} direction="vertical" key="manager">
                   <ListItem
                     key="sessionManager"
                     title={formatMessage({

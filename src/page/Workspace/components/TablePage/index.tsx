@@ -24,7 +24,6 @@ import { Layout, Radio, Space, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 import { ITableModel } from '../CreateTable/interface';
 import TableColumns from './Columns';
 import TableConstraints from './Constraints';
@@ -36,6 +35,7 @@ import ShowExecuteModal from './showExecuteModal';
 import ShowTableBaseInfoForm from './ShowTableBaseInfoForm';
 import TableData from './TableData';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import Toolbar from '@/component/Toolbar';
 import { TablePage as TablePageModel } from '@/store/helper/page/pages';
@@ -44,7 +44,6 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const Content = Layout.Content;
 const TabPane = Tabs.TabPane;
@@ -79,13 +78,19 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
   const [topTab, setTopTab] = useState(TopTab.PROPS);
   const [propsTab, setPropsTab] = useState(PropsTab.INFO);
   const executeRef = useRef<{
-    showExecuteModal: (sql: any, tableName: any) => Promise<boolean>;
+    showExecuteModal: (
+      sql: any,
+      tableName: any,
+      onSuccess,
+      tip,
+      callback: () => void,
+    ) => Promise<boolean>;
   }>();
   const { session } = useContext(SessionContext);
   const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
   const enableConstraint = session?.supportFeature?.enableConstraint;
-
+  const callbackRef = useRef<any>();
   async function fetchTable() {
     if (table?.info?.tableName === params.tableName) {
       return;
@@ -174,10 +179,10 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
-              <FormattedMessage id="workspace.window.table.toptab.props" />
+              {formatMessage({ id: 'workspace.window.table.toptab.props' })}
             </Radio.Button>
             <Radio.Button value={TopTab.DATA}>
-              <FormattedMessage id="workspace.window.table.toptab.data" />
+              {formatMessage({ id: 'workspace.window.table.toptab.data' })}
             </Radio.Button>
           </Radio.Group>
           <Space>
@@ -206,7 +211,11 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
           value={{
             table: table,
             onRefresh: refresh,
-            showExecuteModal: executeRef.current?.showExecuteModal,
+            showExecuteModal: function (...args) {
+              // 后续回调函数
+              callbackRef.current = args?.[4];
+              return executeRef.current?.showExecuteModal(...args);
+            },
             editMode: true,
             session,
           }}
@@ -301,7 +310,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
           </Tabs>
         </TablePageContext.Provider>
       </div>
-      <ShowExecuteModal session={session} ref={executeRef} />
+      <ShowExecuteModal session={session} ref={executeRef} callbackRef={callbackRef} />
     </>
   ) : (
     <WorkSpacePageLoading />

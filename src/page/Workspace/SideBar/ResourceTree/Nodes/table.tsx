@@ -31,9 +31,9 @@ import { ResourceNodeType, TreeDataNode } from '../type';
 import { IDatabase } from '@/d.ts/database';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { openTableViewPage } from '@/store/helper/page';
-import IndexSvg from '@/svgr/index.svg';
-import TableOutlined from '@/svgr/menuTable.svg';
-import PartitionSvg from '@/svgr/Partition.svg';
+import { ReactComponent as IndexSvg } from '@/svgr/index.svg';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as PartitionSvg } from '@/svgr/Partition.svg';
 
 export function TableTreeData(dbSession: SessionStore, database: IDatabase): TreeDataNode {
   const dbName = database.name;

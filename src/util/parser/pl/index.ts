@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { PlSqlLexer as OraclePLLexer } from '@oceanbase-odc/ob-parser-js/lib/parser/oracle/PlSqlLexer';
 import { getPLTokens } from './core';
 
-export function getPLEntryName(sql: string) {
-  const tokens = getPLTokens(sql);
+export async function getPLEntryName(sql: string) {
+  const OraclePLLexer = await import(
+    '@oceanbase-odc/ob-parser-js/esm/parser/oracle/PlSqlLexer'
+  ).then((module) => module.PlSqlLexer);
+  const tokens = await getPLTokens(sql);
   let i = 0;
   for (; i < tokens.length; i++) {
     const token = tokens[i];

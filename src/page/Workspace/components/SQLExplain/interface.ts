@@ -30,11 +30,7 @@ export interface SQLExplainProps {
   traceId?: string;
 }
 export interface SQLExplainState {
-  tabName: TAB_NAME;
   onlyText: boolean;
   tableHeight: number;
   showExplainText: boolean;
-  treeData: any;
-  startTimestamp: number;
-  endTimestamp: number;
 }

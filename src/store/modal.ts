@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DbObjectType, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
-import { IRule } from '@/d.ts/rule';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { DbObjectType, EStatus, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -47,7 +47,8 @@ interface AsyncData {
   /**
    * 违反的校验规则
    */
-  rules?: IRule[];
+  rules?: ISQLLintReuslt[];
+  activePageKey?: string;
 }
 
 interface ResultSetExportData {
@@ -67,6 +68,17 @@ interface IExportModalData {
 interface IImportModalData {
   table?: Partial<ITable>;
   databaseId?: number;
+}
+interface IWorkSpaceExecuteSQLModalProps {
+  tip: string;
+  sql: string;
+  sessionId?: string;
+  visible: boolean;
+  readonly: boolean;
+  onCancel: any;
+  onSave: any;
+  status: EStatus;
+  lintResultSet: ISQLLintReuslt[];
 }
 
 export class ModalStore {
@@ -151,6 +163,19 @@ export class ModalStore {
     data?: any;
     databaseId: number;
     dbName: string;
+  };
+
+  @observable
+  public workSpaceExecuteSQLModalProps: Partial<IWorkSpaceExecuteSQLModalProps> = {
+    tip: '',
+    sql: '',
+    visible: false,
+    sessionId: null,
+    readonly: true,
+    onCancel: () => {},
+    onSave: () => {},
+    status: null,
+    lintResultSet: null,
   };
 
   @action
@@ -302,6 +327,15 @@ export class ModalStore {
   public changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
     this.createAsyncTaskVisible = isShow;
     this.asyncTaskData = isShow ? data : null;
+  }
+  @action
+  public updateCreateAsyncTaskModal(data?: AsyncData) {
+    this.asyncTaskData = data ? data : null;
+  }
+
+  @action
+  public updateWorkSpaceExecuteSQLModalProps(data?: Partial<IWorkSpaceExecuteSQLModalProps>) {
+    this.workSpaceExecuteSQLModalProps = data ? data : {};
   }
 
   @action

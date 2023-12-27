@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -18,20 +19,30 @@ import PageLoading from '@/component/PageLoading';
 import { UserStore } from '@/store/login';
 import { Outlet, useLocation, useNavigate } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect } from 'react';
-
+import React, { useContext, useEffect } from 'react';
+import { PageLoadingContext } from './PageLoadingWrapper';
 interface IProps {
   userStore?: UserStore;
 }
-
 const key = '$odc_event_organizationKey';
-
 const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore }) {
   const organizationId = userStore?.organizationId;
   const isSwitching = userStore?.isSwitchingOrganization;
   const location = useLocation();
   const navigate = useNavigate();
-
+  const loadingContext = useContext(PageLoadingContext);
+  useEffect(() => {
+    if (isSwitching) {
+      loadingContext?.setTask({
+        tip: formatMessage({
+          id: 'odc.src.layout.SwitchSpace',
+        }), //'正在切换空间'
+        showError: false,
+      });
+    } else {
+      loadingContext?.removeTask();
+    }
+  }, [isSwitching]);
   useEffect(() => {
     const isPersonal = userStore.isPrivateSpace();
     if (isPersonal && location.pathname?.indexOf('sqlworkspace') === -1) {
@@ -41,14 +52,12 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
       navigate('/sqlworkspace');
     }
   }, [location.pathname, organizationId, userStore.organizations]);
-
   return isSwitching ? (
-    <PageLoading showError={false} />
+    <></>
   ) : (
     <>
       <Outlet />
     </>
   );
 };
-
 export default inject('userStore')(observer(OrganizationListenWrap));

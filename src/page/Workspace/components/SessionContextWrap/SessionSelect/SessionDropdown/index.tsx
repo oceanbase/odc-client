@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { formatMessage } from '@/util/intl';
-import { Badge, Input, Popover, Select, Space, Spin, Tree } from 'antd';
+import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './index.less';
 import Icon, { SearchOutlined } from '@ant-design/icons';
-import ProjectSvg from '@/svgr/project_space.svg';
+import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import tracert from '@/util/tracert';
 import { ConnectionMode } from '@/d.ts';
 import SessionContext from '../../context';
@@ -29,12 +29,12 @@ import { listDatabases } from '@/common/network/database';
 import login from '@/store/login';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import PjSvg from '@/svgr/project_space.svg';
+import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import { IDatabase } from '@/d.ts/database';
 import { toInteger } from 'lodash';
 import { useParams } from '@umijs/max';
-import { tree } from 'antlr4';
 import { EnvColorMap } from '@/constant';
+import ConnectionPopover from '@/component/ConnectionPopover';
 interface IProps {
   dialectTypes?: ConnectionMode[];
 }
@@ -242,7 +242,13 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                 return {
                   title: (
                     <>
-                      {db.name}
+                      <Popover
+                        showArrow={false}
+                        content={<ConnectionPopover connection={db?.dataSource} />}
+                        placement={'left'}
+                      >
+                        {db.name}
+                      </Popover>
                       <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
                     </>
                   ),

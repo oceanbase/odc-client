@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
 import EditableTable from '../../../EditableTable';
 import TablePageContext from '../../../TablePage/context';
 import EditToolbar from '../../EditToolbar';
@@ -58,6 +58,14 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
       };
     });
   }, [tableContext.primaryConstraints]);
+
+  useEffect(() => {
+    gridRef.current?.setRows?.(rows ?? []);
+  }, [rows]);
+
+  useEffect(() => {
+    gridRef.current?.setColumns?.(gridColumns ?? []);
+  }, [gridColumns]);
 
   return (
     <TableCardLayout
@@ -97,9 +105,10 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
         rowKey="key"
         bordered={false}
         minHeight="100%"
-        columns={gridColumns}
+        initialColumns={gridColumns}
         enableFilterRow
-        rows={rows as any[]}
+        enableFlushDelete
+        initialRows={rows as any[]}
         enableRowRecord={true}
         enableColumnRecord={false}
         enableSortRow={false}
@@ -111,7 +120,7 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
           );
         }}
         gridRef={gridRef}
-        onRowsChange={(rows, data) => {
+        onRowsChange={(rows) => {
           const newRows: any[] = clone(rows);
           tableContext.setPrimaryConstraints(removeGridParams(newRows));
         }}

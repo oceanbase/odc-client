@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import {
   ColumnShowType,
   ConnectionMode,
@@ -23,14 +24,13 @@ import {
   IPartitionType,
 } from '@/d.ts';
 import setting from '@/store/setting';
-import intl, { formatMessage } from '@/util/intl';
+import getIntl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
 import { JSEncrypt } from 'jsencrypt';
 import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
@@ -39,9 +39,7 @@ export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
  * @example sid:1000002-1:d:ZJCG:var:session
  */
 
-export function extractResourceId(
-  id: string,
-): {
+export function extractResourceId(id: string): {
   [key: string]: string;
 } {
   const r = {};
@@ -131,7 +129,7 @@ export async function getCurrentSQL(
       splitSqls[splitSqls.length - 2] + 1,
       splitSqls[splitSqls.length - 1] + 1,
     );
-    const isEmpty = isSqlEmpty(lastSql, isMysql);
+    const isEmpty = await isSqlEmpty(lastSql, isMysql);
 
     if (isEmpty) {
       splitSqls.pop();
@@ -147,7 +145,7 @@ export async function getCurrentSQL(
        */
       let sql = rawSQL.substring(beginIndex, sqlOffset);
 
-      if (isSqlEmpty(sql, isMysql, true)) {
+      if (await isSqlEmpty(sql, isMysql, true)) {
         /**
          * 假如没什么东西，就不需要执行了，返回null给上层
          */
@@ -296,7 +294,7 @@ export function getLocalFormatDateTime(time: number) {
   if (time <= 0) {
     return '';
   }
-  return new Date(time).toLocaleString(intl.locale, {
+  return new Date(time).toLocaleString(getIntl()?.locale, {
     hour12: false,
     month: 'short',
     year: 'numeric',
@@ -572,6 +570,14 @@ export function formatTimeTemplate(time: number) {
     return `${BigNumber(timeNumber.toFixed(2)).toString()} ${unit?.[0]}`;
   }
 }
+/**
+ *
+ * @param time 传入微秒级时间戳，
+ * @returns 返回最大单位时间, 例: 6000us => 6ms
+ */
+export function formatTimeTemplatMicroSeconds(time: number): string {
+  return formatTimeTemplate(BigNumber(time).div(1000000).toNumber());
+}
 
 export const hourToSeconds = (hour: number) => {
   const seconds = hour ? hour * 60 * 60 : undefined;
@@ -592,3 +598,22 @@ export const mbToKb = (value: number) => {
 export const kbToMb = (value: number) => {
   return value / 1024;
 };
+
+/**
+ * https://tc39.es/proposal-array-grouping/#sec-object.groupby
+ * @param array object array => [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}]
+ * @param property object key => 'level'
+ * @returns group by object key
+ * @example groupByPropertyName([{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}], 'level')
+ * @example return { 1: [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}], 3: [{ level: 3, name: 'test3'}]}
+ */
+export function groupByPropertyName(array: any[], property: string): Object {
+  if (!Array.isArray(array)) {
+    return {};
+  }
+  return array?.reduce((group, cur) => {
+    group[cur[property]] ??= [];
+    group?.[cur?.[property]].push(cur);
+    return group;
+  }, {});
+}

@@ -20,10 +20,15 @@ import Content from './Content';
 import styles from './index.less';
 import Sider from './Sider';
 import CreateModals from './CreateModals';
+import { useSearchParams } from '@umijs/max';
+import { useEffect } from 'react';
+import login from '@/store/login';
+import { toInteger } from 'lodash';
 export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
     case TaskType.DATA_ARCHIVE:
     case TaskType.DATA_DELETE:
+    case TaskType.PARTITION_PLAN:
       return {
         [TaskExecStrategy.TIMER]: formatMessage({
           id: 'odc.src.component.Task.CycleExecution',
@@ -69,14 +74,25 @@ interface IProps {
   projectId?: number;
 }
 const TaskManaerPage = (props) => {
-  const { projectId } = props;
+  const { projectId, inProject } = props;
+  const [search] = useSearchParams();
+  const defaultTaskId = search.get('taskId');
+  const defaultTaskType = search.get('taskType') as TaskType;
+  const defaultOrganizationId = search.get('organizationId');
+  const currentOrganizationId = login.organizationId;
+  const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
   return (
     <>
       <div className={styles.task}>
         <div className={styles.sider}>
           <Sider />
         </div>
-        <Content projectId={projectId} />
+        <Content
+          projectId={projectId}
+          inProject={inProject}
+          defaultTaskType={defaultTaskType}
+          defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
+        />
         <CreateModals projectId={projectId} theme="white" />
       </div>
     </>

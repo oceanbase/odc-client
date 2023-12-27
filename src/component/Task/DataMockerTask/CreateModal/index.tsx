@@ -92,7 +92,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     message.warn(
                       formatMessage(
                         {
-                          id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
+                          id:
+                            'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
                         },
 
                         { editingColumnColumnName: editingColumn.columnName },

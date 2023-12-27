@@ -20,6 +20,7 @@ import DetailModal from '@/component/Task/DetailModal';
 import { IAsyncTaskParams, SubTaskType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
+import LogModal from './LogModal';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import styles from './index.less';
@@ -66,10 +67,12 @@ const getJobFilter = (taskType: TaskType) => {
 const getConnectionColumns = (params: {
   taskType: TaskType;
   taskId: number;
+  showLog: boolean;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
+  onLogVisible: (recordId: number, visible: boolean) => void;
 }) => {
-  const { taskType, taskId, onReloadList, onDetailVisible } = params;
+  const { taskType, taskId, showLog, onReloadList, onDetailVisible, onLogVisible } = params;
   const jobFilter = getJobFilter(taskType);
   const isSqlPlan = taskType === TaskType.SQL_PLAN;
   return [
@@ -84,7 +87,6 @@ const getConnectionColumns = (params: {
       dataIndex: 'jobGroup',
       title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskType' }), //任务类型
       ellipsis: true,
-      width: 200,
       filterIcon: <FilterOutlined />,
       filters: jobFilter,
       onFilter: (value: string, record) => {
@@ -131,15 +133,17 @@ const getConnectionColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Operation' }), //操作
       ellipsis: true,
-      width: 92,
+      width: 140,
       render: (_, record) => {
         return (
           <TaskTools
             taskId={taskId}
             record={record}
             showRollback={record?.jobGroup === SubTaskType.DATA_ARCHIVE}
+            showLog={showLog}
             onReloadList={onReloadList}
             onDetailVisible={onDetailVisible}
+            onLogVisible={onLogVisible}
           />
         );
       },
@@ -157,7 +161,9 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const { task, subTasks, onReload } = props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [logVisible, setLogVisible] = useState(false);
   const taskId = task?.id;
+  const showLog = [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(task?.type);
 
   const handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters>,
@@ -165,6 +171,15 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   ) => {
     setDetailId(task?.id);
     setDetailVisible(visible);
+  };
+
+  const handleLogVisible = (recordId: number, visible: boolean = false) => {
+    setLogVisible(visible);
+    setDetailId(recordId);
+  };
+
+  const handleCloseLog = () => {
+    handleLogVisible(null);
   };
 
   return (
@@ -175,8 +190,10 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         columns={getConnectionColumns({
           taskType: task?.type,
           taskId,
+          showLog,
           onReloadList: onReload,
           onDetailVisible: handleDetailVisible,
+          onLogVisible: handleLogVisible,
         })}
         dataSource={subTasks}
         disablePagination
@@ -189,6 +206,12 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         visible={detailVisible}
         onDetailVisible={handleDetailVisible}
         onReloadList={onReload}
+      />
+      <LogModal
+        visible={logVisible}
+        scheduleId={task?.id}
+        recordId={detailId}
+        onClose={handleCloseLog}
       />
     </>
   );

@@ -29,8 +29,8 @@ import {
 } from '@ant-design/icons';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
+import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
@@ -49,6 +49,7 @@ import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -89,6 +90,8 @@ class FunctionPage extends Component<
   }
 > {
   public editor: IEditor;
+
+  public gridRef: React.RefObject<DataGridRef> = React.createRef();
 
   public readonly state = {
     propsTab: this.props.params.propsTab || PropsTab.INFO,
@@ -153,6 +156,13 @@ class FunctionPage extends Component<
     } = this.props;
 
     await this.reloadFunction(funName);
+  }
+
+  public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
+    const { func } = this.state;
+    if (prevState.func?.params !== func?.params) {
+      this.gridRef.current?.setRows?.(func?.params ?? []);
+    }
   }
 
   public async editFunction(funName: string) {
@@ -265,16 +275,17 @@ class FunctionPage extends Component<
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />
                 </Toolbar>
                 <EditableTable
+                  gridRef={this.gridRef}
                   minHeight={'calc(100vh - 106px)'}
-                  rowKey={'paramName'}
-                  columns={tableColumns}
-                  rows={func.params || []}
+                  rowKey="paramName"
+                  initialColumns={tableColumns}
+                  initialRows={func.params || []}
                   bordered={false}
                   readonly={true}
                 />
@@ -283,7 +294,7 @@ class FunctionPage extends Component<
                 <Toolbar>
                   {getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit && (
                     <ToolbarButton
-                      text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                      text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                       icon={<EditOutlined />}
                       onClick={this.editFunction.bind(this, func.funName)}
                     />
@@ -302,7 +313,7 @@ class FunctionPage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.search" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.search' })}
                     icon={<FileSearchOutlined />}
                     onClick={this.showSearchWidget.bind(this)}
                   />
@@ -326,7 +337,7 @@ class FunctionPage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />

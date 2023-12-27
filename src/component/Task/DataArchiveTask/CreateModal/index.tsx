@@ -81,7 +81,6 @@ export const variable = {
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
-  variables: [variable],
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
   rowLimit: 100,
@@ -241,9 +240,9 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   const handleCreate = async (data: Partial<CreateTaskRecord>) => {
     const res = await createTask(data);
-    handleCancel(false);
     setConfirmLoading(false);
     if (res) {
+      handleCancel(false);
       openTasksPage(TaskPageType.DATA_ARCHIVE, TaskPageScope.CREATED_BY_CURRENT_USER);
     }
   };
@@ -373,7 +372,8 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   const handleReset = () => {
     form?.resetFields();
-    crontabRef.current?.resetFields();
+    setCrontab(null);
+    setHasEdit(false);
   };
   useEffect(() => {
     if (!dataArchiveVisible) {
@@ -467,8 +467,10 @@ const CreateModal: React.FC<IProps> = (props) => {
             projectId={projectId}
           />
         </Space>
-        <VariableConfig />
-        <ArchiveRange tables={tables} />
+        <Space direction="vertical" size={24}>
+          <ArchiveRange tables={tables} />
+          <VariableConfig form={form} />
+        </Space>
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
           <Checkbox>
             <Space>

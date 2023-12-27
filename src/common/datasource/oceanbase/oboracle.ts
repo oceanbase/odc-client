@@ -76,11 +76,16 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       plEdit: true,
       anonymousBlock: true,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: oracleTableConfig,
       func: functionConfig,
       proc: functionConfig,
+      innerSchema: ['SYS'],
     },
     sql: {
       language: 'oboracle',
@@ -114,11 +119,16 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       plEdit: true,
       anonymousBlock: true,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: oracleTableConfig,
       func: functionConfig,
       proc: functionConfig,
+      innerSchema: ['SYS'],
     },
     sql: {
       language: 'oboracle',

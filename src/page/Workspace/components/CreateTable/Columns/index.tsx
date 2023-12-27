@@ -18,7 +18,7 @@ import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../EditableTable';
 import TableContext from '../TableContext';
 import { useColumns } from './columns';
@@ -76,6 +76,14 @@ const Columns: React.FC<IProps> = function ({}) {
     });
   }, [displayColumns]);
 
+  useEffect(() => {
+    gridRef.current?.setRows?.(rows ?? []);
+  }, [rows]);
+
+  useEffect(() => {
+    gridRef.current?.setColumns?.(gridColumns ?? []);
+  }, [gridColumns]);
+
   const focusRowIdx = selectedRowsIdx?.length === 1 ? selectedRowsIdx?.[0] : -1;
   const ColumnExtraComponent = config.ColumnExtraComponent;
 
@@ -90,7 +98,7 @@ const Columns: React.FC<IProps> = function ({}) {
     [rows],
   );
 
-  const onRowsChange = useCallback((rows, data) => {
+  const onRowsChange = useCallback((rows) => {
     let newRows: any[] = cloneDeep(rows);
     newRows.forEach((row) => {
       /**
@@ -123,7 +131,7 @@ const Columns: React.FC<IProps> = function ({}) {
               }}
               onOk={async () => {
                 const newColumns = cloneDeep(editColumns);
-                const updateTableDML = await generateUpdateTableDDL(
+                const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                   {
                     ...pageContext.table,
                     columns: newColumns,
@@ -143,6 +151,8 @@ const Columns: React.FC<IProps> = function ({}) {
                     await pageContext.onRefresh();
                     setEditColumns(null);
                   },
+                  tip,
+                  () => setEditColumns(null),
                 );
               }}
             >
@@ -193,9 +203,10 @@ const Columns: React.FC<IProps> = function ({}) {
           <EditableTable
             bordered={false}
             minHeight="100%"
-            columns={gridColumns}
+            initialColumns={gridColumns}
             enableFilterRow
-            rows={rows as any[]}
+            enableFlushDelete
+            initialRows={rows as any[]}
             rowKey={'key'}
             /**
              * 编辑状态下不允许调整字端顺序

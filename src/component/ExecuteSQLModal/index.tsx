@@ -16,18 +16,19 @@
 
 import { formatMessage } from '@/util/intl';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // compatible
-import { runSQLLint } from '@/common/network/sql';
-import { ConnectionMode } from '@/d.ts';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { EStatus } from '@/d.ts';
+import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
+import modal from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import { useUpdate } from 'ahooks';
 import { Alert, Button, message, Modal } from 'antd';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MonacoEditor from '../MonacoEditor';
-import LintDrawer from '../SQLLintResult/Drawer';
-import login from '@/store/login';
+import { ISQLLintReuslt } from '../SQLLintResult/type';
+import styles from './index.less';
 
 interface IProps {
   sessionStore: SessionStore;
@@ -39,19 +40,30 @@ interface IProps {
   onCancel: () => void;
   readonly?: boolean;
   onChange?: (sql: string) => void;
+  status?: EStatus;
+  lintResultSet?: ISQLLintReuslt[];
+  callback?: () => void;
 }
-
 const ExecuteSQLModal: React.FC<IProps> = (props) => {
-  const { tip, theme, sql, visible, readonly, sessionStore, onCancel, onSave } = props;
+  const {
+    tip,
+    theme,
+    sql,
+    visible,
+    readonly,
+    sessionStore,
+    onCancel,
+    onSave,
+    callback,
+    status,
+    lintResultSet,
+  } = props;
   const [loading, setLoading] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
-  const [lintVisible, setLintVisible] = useState(false);
-  const [lintResult, setLintResult] = useState(null);
   const update = useUpdate();
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
-
   const connectionMode = sessionStore?.connection?.dialectType;
-  const isMySQL = connectionMode === ConnectionMode.MYSQL;
+  const config = getDataSourceModeConfigByConnectionMode(connectionMode);
 
   useEffect(() => {
     if (sql !== editorRef?.current?.getValue()) {
@@ -64,14 +76,27 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     if (!updateSQL) {
       return;
     }
-    setLoading(true);
-    try {
-      await onSave(updateSQL);
-    } catch (e) {
-    } finally {
-      setLoading(false);
+    // 没有传入status参数的按之前的逻辑处理
+    if (!status || status === EStatus.SUBMIT) {
+      setLoading(true);
+      try {
+        await onSave(updateSQL);
+      } catch (e) {
+      } finally {
+        setLoading(false);
+        return;
+      }
+    } else {
+      modal.changeCreateAsyncTaskModal(true, {
+        sql: updateSQL,
+        databaseId: sessionStore?.odcDatabase?.id,
+        rules: lintResultSet,
+      });
+      onCancel?.();
+      // 打开新建数据库抽屉后执行回调完成交互，例如 取消表格编辑状态、关闭当前页
+      callback?.();
     }
-  }, [onSave]);
+  }, [onSave, callback]);
 
   const handleFormat = () => {
     setIsFormatting(true);
@@ -87,24 +112,6 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     props?.onChange?.(sql);
   };
 
-  const handleLint = async () => {
-    const value = editorRef?.current?.getValue();
-    if (!value) {
-      return;
-    }
-    const lint = await runSQLLint(sessionStore?.sessionId, ';', value);
-    if (lint) {
-      if (!lint.length) {
-        message.success(
-          formatMessage({ id: 'odc.component.ExecuteSQLModal.SqlCheckPassed' }), //SQL 检查通过
-        );
-        return;
-      }
-      setLintVisible(true);
-      setLintResult(lint);
-    }
-  };
-
   return (
     <>
       <Modal
@@ -118,15 +125,6 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         onOk={handleSubmit}
         onCancel={onCancel}
         footer={[
-          login.isPrivateSpace() ? null : (
-            <Button key="lint" onClick={handleLint}>
-              {
-                formatMessage({
-                  id: 'odc.component.ExecuteSQLModal.SqlCheck',
-                }) /*SQL 检查*/
-              }
-            </Button>
-          ),
           <Button key="format" onClick={handleFormat}>
             {
               formatMessage({
@@ -146,44 +144,65 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
               );
             }}
           >
-            <Button>
-              <FormattedMessage id="app.button.copy" />
-            </Button>
+            <Button>{formatMessage({ id: 'app.button.copy' })}</Button>
           </CopyToClipboard>,
           <Button key="back" onClick={onCancel}>
-            <FormattedMessage id="app.button.cancel" />
+            {formatMessage({ id: 'app.button.cancel' })}
           </Button>,
-          <Button key="submit" type="primary" onClick={handleSubmit} loading={loading}>
-            <FormattedMessage id="app.button.execute" />
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSubmit}
+            loading={loading}
+            disabled={status === EStatus.DISABLED}
+          >
+            {formatMessage({ id: 'app.button.execute' })}
           </Button>,
         ].filter(Boolean)}
+        className={styles.executeSqlModal}
       >
         {tip && <Alert message={tip} type="info" showIcon={true} style={{ marginBottom: 4 }} />}
         <div
           style={{
-            height: 400,
-            width: '100%',
-            padding: 4,
-            border: '1px solid var(--odc-border-color)',
-            borderRadius: 4,
-            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: lintResultSet?.length > 0 ? '16px' : '0px',
           }}
         >
-          <MonacoEditor
-            theme={theme}
-            sessionStore={sessionStore}
-            readOnly={readonly && !isFormatting}
-            defaultValue={sql}
-            language={isMySQL ? 'obmysql' : 'oboracle'}
-            onValueChange={handleSQLChanged}
-            onEditorCreated={(editor) => {
-              editorRef.current = editor;
-              update();
+          <div
+            style={{
+              height: lintResultSet?.length > 0 ? 240 : 420,
+              width: '100%',
+              padding: 4,
+              border: '1px solid var(--odc-border-color)',
+              borderRadius: 4,
+              position: 'relative',
             }}
-          />
+          >
+            <MonacoEditor
+              theme={theme}
+              sessionStore={sessionStore}
+              readOnly={readonly && !isFormatting}
+              defaultValue={sql}
+              language={config?.sql?.language}
+              onValueChange={handleSQLChanged}
+              onEditorCreated={(editor) => {
+                editorRef.current = editor;
+                update();
+              }}
+            />
+          </div>
+          {lintResultSet?.length > 0 && (
+            <LintResultTable
+              resultHeight={166}
+              ctx={editorRef.current}
+              lintResultSet={lintResultSet}
+              hasExtraOpt={false}
+              pageSize={5}
+            />
+          )}
         </div>
       </Modal>
-      <LintDrawer visible={lintVisible} closePage={() => setLintVisible(false)} data={lintResult} />
     </>
   );
 };

@@ -38,6 +38,7 @@ const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
 
 class SessionStore {
+  public createTime: number;
   /** 数据库元信息 */
   @observable
   public charsets: string[] = [];
@@ -102,6 +103,7 @@ class SessionStore {
 
   public sessionId: string;
 
+  @observable.shallow
   public connection: IDatasource = null;
 
   public isAlive: boolean = false;
@@ -113,7 +115,13 @@ class SessionStore {
   constructor(connection: IDatasource, database: IDatabase) {
     this.connection = connection;
     this.odcDatabase = database;
+    this.createTime = Date.now();
   }
+
+   public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
+    this.connection = connection || this.connection;
+    this.odcDatabase = database || this.odcDatabase;
+   }
 
   static async createInstance(datasource: IDatasource, database: IDatabase) {
     const session = new SessionStore(datasource, database);
@@ -358,7 +366,7 @@ class SessionStore {
   @action
   public async getRecycleObjectList() {
     // ListRecycleObjects
-    const res = await request.get(`/api/v1/recyclebin/list/${generateSessionSid(this.sessionId)}`);
+    const res = await request.get(`/api/v2/recyclebin/list/${generateSessionSid(this.sessionId)}`);
     const recycleObjects = res?.data || [];
     this.recycleObjects = recycleObjects.map((r: IRecycleObject, i: number) => ({
       ...r,
@@ -392,6 +400,10 @@ class SessionStore {
   }
 
   static async batchDestory(sessions: SessionStore[], force: boolean = false) {
+    const sessionIds = sessions?.map((session) => generateSessionSid(session.sessionId));
+    if (!sessionIds?.length) {
+      return;
+    }
     await request.delete(`/api/v2/datasource/sessions`, {
       data: {
         sessionIds: sessions?.map((session) => generateSessionSid(session.sessionId)),

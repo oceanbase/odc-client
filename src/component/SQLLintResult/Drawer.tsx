@@ -14,40 +14,43 @@
  * limitations under the License.
  */
 
+import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { formatMessage } from '@/util/intl';
-import { Drawer } from 'antd';
+import { Button, Drawer, Space } from 'antd';
 import React from 'react';
-import SQLLintResult from '.';
 import { ISQLLintReuslt } from './type';
-
 interface IProps {
   data: ISQLLintReuslt[];
   visible: boolean;
   closePage: () => void;
 }
-
 const LintDrawer: React.FC<IProps> = function ({ data, visible, closePage }) {
   return (
     <Drawer
       zIndex={1003}
-      width={520}
+      width={832}
       destroyOnClose
       open={visible}
       title={formatMessage({
         id: 'odc.component.SQLLintResult.Drawer.CheckResult',
-      })} /*检查结果*/
-      // footer={
-      //   <Button style={{ float: 'right' }} type="primary">
-      //     下载
-      //   </Button>
-      // }
+      })}
+      /*检查结果*/ footer={
+        <Space
+          style={{
+            float: 'right',
+          }}
+        >
+          <Button onClick={closePage}>
+            {formatMessage({ id: 'odc.src.component.SQLLintResult.Closure' }) /* 关闭 */}
+          </Button>
+        </Space>
+      }
       onClose={() => {
         closePage();
       }}
     >
-      <SQLLintResult data={data} />
+      <LintResultTable hasExtraOpt={false} showLocate={false} lintResultSet={data} />
     </Drawer>
   );
 };
-
 export default LintDrawer;

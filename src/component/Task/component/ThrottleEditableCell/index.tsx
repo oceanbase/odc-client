@@ -30,15 +30,16 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
   const { defaultValue = 10, min, max, suffix, onOk } = props;
   const [isLmitRowEdit, setIsLmitRowEdit] = useState(false);
   const [lmitValue, setLmitValue] = useState(Number(defaultValue));
-  const [value, setValue] = useState(Number(defaultValue));
   const [status, setStatus] = useState(null);
-  const handleClose = () => {
+  const handleCancel = () => {
+    setLmitValue(Number(defaultValue));
     setIsLmitRowEdit(false);
   };
   const handleOk = () => {
-    if (value) {
-      setLmitValue(value);
-      onOk(value, handleClose);
+    if (lmitValue) {
+      onOk(lmitValue, () => {
+        setIsLmitRowEdit(false);
+      });
     } else {
       setStatus('error');
       message.error(
@@ -49,7 +50,7 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
     }
   };
   const handleChange = (value) => {
-    setValue(value);
+    setLmitValue(value);
   };
   return (
     <>
@@ -69,7 +70,7 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
               }}
             />
           </Action.Link>
-          <Action.Link onClick={handleClose}>
+          <Action.Link onClick={handleCancel}>
             <CloseOutlined
               style={{
                 color: 'var(--function-red6-color)',

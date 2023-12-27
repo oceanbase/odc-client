@@ -21,10 +21,15 @@ import { formatMessage } from '@/util/intl';
 import Icon, { InfoOutlined, NumberOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
-import ParameterSvg from '@/svgr/Parameter.svg';
+import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import FunctionSvg from '@/svgr/menuFunc.svg';
+import { ReactComponent as FunctionSvg } from '@/svgr/menuFunc.svg';
+import {
+  openFunctionViewPage,
+  openPackageHeadPage,
+  openPackageViewPage,
+} from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-2)';
 
@@ -133,7 +138,17 @@ export function FunctionTreeNodeData(
         }}
       />
     ),
-
+    doubleClick(session, node, databaseFrom) {
+      pkg
+        ? openPackageViewPage(pkg?.packageName, null, false, session?.database?.databaseId)
+        : openFunctionViewPage(
+            func.funName,
+            undefined,
+            undefined,
+            session?.database?.databaseId,
+            null,
+          );
+    },
     sessionId: dbSession?.sessionId,
     packageName: packageName,
     data: func,

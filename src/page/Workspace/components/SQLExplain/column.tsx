@@ -109,7 +109,7 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
               size="small"
               onClick={() => handleShowOutputFilter(v)}
             >
-              <FormattedMessage id="workspace.window.sql.explain.button.showOutputFilter" />
+              {formatMessage({ id: 'workspace.window.sql.explain.button.showOutputFilter' })}
             </Button>
           </div>
         </>

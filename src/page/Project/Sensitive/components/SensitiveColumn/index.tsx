@@ -21,18 +21,22 @@ import {
 } from '@/common/network/sensitiveColumn';
 import CommonTable from '@/component/CommonTable';
 import {
-  IRowSelecter,
   IOperationOptionType,
+  IRowSelecter,
   ITableInstance,
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
+import { IResponseData } from '@/d.ts';
 import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import Icon, { DownOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Drawer, Menu, message, Modal, Popover, Space, Tooltip } from 'antd';
+import { Button, Descriptions, Menu, message, Modal, Popover, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { debounce } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -40,10 +44,7 @@ import { AddSensitiveColumnType } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
 import EditSensitiveColumnModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
-import tracert from '@/util/tracert';
 import ManualForm from './components/ManualForm';
-import TableOutlined from '@/svgr/menuTable.svg';
-import ViewSvg from '@/svgr/menuView.svg';
 import styles from './index.less';
 
 export const PopoverContainer: React.FC<{
@@ -76,7 +77,6 @@ export const PopoverContainer: React.FC<{
         </Descriptions>
       }
     >
-      {' '}
       {children?.()}
     </Popover>
   );
@@ -190,10 +190,9 @@ const getColumns: ({
             descriptionsData={[
               {
                 label: formatMessage({
-                  id:
-                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
                 }) /* 脱敏方式 */,
-                value: MaskRyleTypeMap?.[target?.type],
+                value: maskRuleTypeMap?.[target?.type],
               },
               {
                 label: formatMessage({
@@ -301,12 +300,8 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
-  const {
-    dataSourceIdMap,
-    maskingAlgorithms,
-    maskingAlgorithmIdMap,
-    maskingAlgorithmOptions,
-  } = sensitiveContext;
+  const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
+    sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
@@ -399,7 +394,7 @@ const SensitiveColumn = ({
       //确认要取消新建吗？
       onOk: async () => {
         setVisible(false);
-        fn?.();
+        await fn?.();
       },
       onCancel: () => {},
       okText: formatMessage({
@@ -412,10 +407,10 @@ const SensitiveColumn = ({
     });
   };
 
-  const onOk = (fn?: () => void) => {
+  const onOk = async (fn?: () => void) => {
     setVisible(false);
     tableRef.current?.reload?.();
-    fn?.();
+    await fn?.();
   };
   const handleOpenEditSensitiveColumnDrawer = () => {
     setVisible(true);
@@ -482,6 +477,7 @@ const SensitiveColumn = ({
               }), //删除失败
             );
           }
+
           const { page } = sensitiveColumn;
           const newCurrent = Math.ceil((page?.totalElements - ids?.length) / page?.size);
           tableRef.current?.reload?.({
@@ -574,7 +570,6 @@ const SensitiveColumn = ({
     <>
       <CommonTable
         ref={tableRef}
-        // mode={CommonTableMode.SMALL}
         titleContent={null}
         showToolbar={true}
         filterContent={{
@@ -585,8 +580,7 @@ const SensitiveColumn = ({
         cascaderContent={{
           options: cascaderOptions,
           placeholder: formatMessage({
-            id:
-              'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
+            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
           }), //'请选择数据源和库'
         }}
         operationContent={{

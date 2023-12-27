@@ -129,11 +129,16 @@ export interface IDataSourceModeConfig {
     plEdit?: boolean;
     anonymousBlock?: boolean;
     supportOBProxy?: boolean;
+    export: {
+      fileLimit: boolean;
+      snapshot: boolean;
+    };
   };
   schema: {
     table: ICreateTableConfig;
     func: IFunctionConfig;
     proc: IProcedureConfig;
+    innerSchema: string[];
   };
   sql: {
     language: string;

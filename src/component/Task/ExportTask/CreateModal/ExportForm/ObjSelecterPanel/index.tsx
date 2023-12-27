@@ -22,26 +22,23 @@ import { FormInstance } from 'antd/es/form';
 import React, { useEffect } from 'react';
 import DatabaseSelect from '../../../../component/DatabaseSelect';
 import ExportSelecter from '../ExportSelecter';
+import { useRequest } from 'ahooks';
+import { getDatabase } from '@/common/network/database';
+import { IDatabase } from '@/d.ts/database';
 
 const FormItem = Form.Item;
 
 interface IProps {
   form: FormInstance<any>;
   projectId: number;
-  onConnectionChange: (data: IConnection) => void;
+  database: IDatabase;
 }
 
-const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, onConnectionChange }) {
-  const databaseId = Form.useWatch('databaseId', form);
-  const { database } = useDBSession(databaseId);
+const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database }) {
   const connection = database?.dataSource;
+  const databaseId = database?.id;
   const connectionId = connection?.id;
 
-  useEffect(() => {
-    if (connection) {
-      onConnectionChange(connection);
-    }
-  }, [connection]);
 
   const handleChange = () => {
     form.setFieldsValue({

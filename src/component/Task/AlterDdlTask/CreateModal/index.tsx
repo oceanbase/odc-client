@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-import { createTask } from '@/common/network/task';
+import { createTask, getDatasourceUsers, getLockDatabaseUserRequired } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IDatasourceUser } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { Alert, Button, Col, Drawer, Form, InputNumber, Modal, Radio, Row, Space } from 'antd';
+import {
+  Alert,
+  Button,
+  Col,
+  Drawer,
+  Form,
+  InputNumber,
+  Modal,
+  Radio,
+  Row,
+  Space,
+  Select,
+} from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -44,6 +56,10 @@ enum SqlType {
   CREATE = 'CREATE',
   ALTER = 'ALTER',
 }
+export enum SwapTableType {
+  AUTO = 'AUTO',
+  MANUAL = 'MANUAL',
+}
 export enum ClearStrategy {
   ORIGIN_TABLE_RENAME_AND_RESERVED = 'ORIGIN_TABLE_RENAME_AND_RESERVED',
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
@@ -53,11 +69,19 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [datasourceUser, setDatasourceUser] = useState<IDatasourceUser[]>([]);
+  const [lockDatabaseUserRequired, setLockDatabaseUserRequired] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
+  const datasourceUserOptions = datasourceUser?.map(({ name }) => ({
+    label: name,
+    value: name,
+  }));
   const hadleReset = () => {
     form.resetFields(null);
+    setHasEdit(false);
+    setLockDatabaseUserRequired(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -86,12 +110,14 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlType,
           sqlContent,
           swapTableNameRetryTimes,
+          swapTableType,
           lockTableTimeOutSeconds,
           originTableCleanStrategy,
           errorStrategy,
           description,
           executionTime,
           executionStrategy,
+          lockUsers,
         } = values;
         const parameters = {
           lockTableTimeOutSeconds,
@@ -100,6 +126,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlType,
           swapTableNameRetryTimes,
           originTableCleanStrategy,
+          lockUsers,
+          swapTableType,
         };
         const data = {
           projectId,
@@ -117,9 +145,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         }
         setConfirmLoading(true);
         const res = await createTask(data);
-        handleCancel(false);
         setConfirmLoading(false);
         if (res) {
+          handleCancel(false);
           openTasksPage(TaskPageType.ONLINE_SCHEMA_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
@@ -133,9 +161,30 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     });
     setHasEdit(true);
   };
-  const handleFieldsChange = () => {
+  const handleFieldsChange = (changedFields) => {
     setHasEdit(true);
   };
+  const handleDatabaseChange = () => {
+    form.setFieldValue('lockUsers', []);
+  };
+  const loadDatasourceUsers = async (datasourceId: number) => {
+    const res = await getDatasourceUsers(datasourceId);
+    setDatasourceUser(res?.contents);
+  };
+  const checkLockDatabaseUserRequired = async (databaseId: number) => {
+    const res = await getLockDatabaseUserRequired(databaseId);
+    setLockDatabaseUserRequired(res?.lockDatabaseUserRequired);
+  };
+  useEffect(() => {
+    if (connection?.id && lockDatabaseUserRequired) {
+      loadDatasourceUsers(connection.id);
+    }
+  }, [connection?.id]);
+  useEffect(() => {
+    if (databaseId) {
+      checkLockDatabaseUserRequired(databaseId);
+    }
+  }, [databaseId]);
   return (
     <Drawer
       destroyOnClose
@@ -178,35 +227,41 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         type="warning"
         showIcon
         message={
-          formatMessage({ id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice' }) /* 注意 */
+          formatMessage({
+            id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
+          }) /* 注意 */
         }
         description={
           <div>
             {
               formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1TheMySQLMode',
+                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1BeforePerformingThe',
               }) /* 
-            1. MySQL 模式 OB 版本小于 4.3 及 Oracle 模式 OB 版本小于
-            4.0，表名切换之前会锁定数据库账号，并 kill 该账号对应的
-            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
+            1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
              */
             }
             <br />
             {
               formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2BeforePerformingThe',
+                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA',
               }) /* 
-            2. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；
+            2、创建工单选择源表清理策略时建议选择保留源表；
              */
             }
-            <br />
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3ItIsRecommended',
-              }) /* 
-            3. 创建工单时建议选择保留原表；
-           */
-            }
+            {lockDatabaseUserRequired && (
+              <>
+                <br />
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB',
+                  }) /* 
+                3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
+                4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
+                session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
+               */
+                }
+              </>
+            )}
           </div>
         }
       />
@@ -220,7 +275,48 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         form={form}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect type={TaskType.ONLINE_SCHEMA_CHANGE} projectId={projectId} />
+        <Row gutter={14}>
+          <Col span={12}>
+            <DatabaseSelect
+              type={TaskType.ONLINE_SCHEMA_CHANGE}
+              projectId={projectId}
+              onChange={handleDatabaseChange}
+            />
+          </Col>
+          {lockDatabaseUserRequired && (
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <HelpDoc leftText isTip doc="AlterDdlTaskLockUsersTip">
+                    {
+                      formatMessage({
+                        id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
+                      }) /* 
+                    锁定用户
+                   */
+                    }
+                  </HelpDoc>
+                }
+                name="lockUsers"
+                required
+              >
+                <Select
+                  showSearch
+                  mode="multiple"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  placeholder={
+                    formatMessage({
+                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
+                    }) /* 请选择 */
+                  }
+                  options={datasourceUserOptions}
+                />
+              </Form.Item>
+            </Col>
+          )}
+        </Row>
         <Form.Item
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
@@ -422,6 +518,40 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                   formatMessage({
                     id: 'odc.AlterDdlTask.CreateModal.IgnoreErrorsToContinueThe',
                   }) /*忽略错误继续任务*/
+                }
+              </Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.TableNameSwitchingMethod',
+              }) /* 表名切换方式 */
+            }
+            name="swapTableType"
+            initialValue={SwapTableType.AUTO}
+            rules={[
+              {
+                required: true,
+                message: formatMessage({
+                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseSelectTheTableName',
+                }), //'请选择表名切换方式'
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value={SwapTableType.AUTO}>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.AutomaticSwitch',
+                  }) /* 自动切换 */
+                }
+              </Radio>
+              <Radio value={SwapTableType.MANUAL}>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.ManualSwitch',
+                  }) /* 手工切换 */
                 }
               </Radio>
             </Radio.Group>

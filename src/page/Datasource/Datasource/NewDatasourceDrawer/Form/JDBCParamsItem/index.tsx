@@ -18,6 +18,7 @@ import Toolbar from '@/component/Toolbar';
 import EditableTable, { RowType } from '@/page/Workspace/components/EditableTable';
 import { TextEditor } from '@/page/Workspace/components/EditableTable/Editors/TextEditor';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Form, Space } from 'antd';
@@ -38,78 +39,42 @@ function JDBCParamsItem() {
 const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
   const gridRef = useRef<DataGridRef>();
   const context = useContext(DatasourceFormContext);
-  const [innerValue, setInnerValue] = useState<
+  const [initialRows, setInitialRows] = useState<
     {
+      key: string;
       name: string;
       value: string;
     }[]
-  >(null);
+  >([]);
+
   useEffect(() => {
-    if (value && !innerValue) {
-      setInnerValue(
-        Object.entries(value || {}).map(([name, value]) => {
+    if (value && !initialRows?.length) {
+      const rows =
+        Object.entries(value || {})?.map(([name, value]) => {
           return {
             name,
             value,
+            key: generateUniqKey(),
           };
-        }),
-      );
+        }) || [];
+      gridRef.current?.setRows?.(rows);
+      setInitialRows(rows);
     }
   }, [value]);
-  const rows: ({
-    name: string;
-    value: string;
-    key: number;
-  } & RowType)[] =
-    innerValue?.map((item, index) => {
-      return {
-        ...item,
-        key: index,
-      };
-    }) || [];
-  function addParam() {
-    setInnerValue(
-      [...(innerValue || [])].concat({
-        name: '',
-        value: '',
-      }),
-    );
-  }
-  function deleteParam() {
-    let selectedKeys: ReadonlySet<React.Key>;
-    if (gridRef.current?.selectedRows?.size) {
-      selectedKeys = gridRef.current?.selectedRows;
-    } else if (gridRef.current?.selectedRange.rowIdx != -1) {
-      const maxIdx = Math.max(
-        gridRef.current?.selectedRange.rowIdx,
-        gridRef.current?.selectedRange.endRowIdx,
-      );
-      const minIdx = Math.min(
-        gridRef.current?.selectedRange.rowIdx,
-        gridRef.current?.selectedRange.endRowIdx,
-      );
-      selectedKeys = new Set(rows.slice(minIdx, maxIdx + 1).map((row) => row.key));
-    }
-    if (!selectedKeys?.size) {
-      return;
-    }
-    const newRows = [...rows].filter((row) => {
-      return !selectedKeys.has(row.key);
-    });
-    const result = {};
-    newRows.forEach((row: any) => {
-      result[row.name] = row.value;
-    });
-    setInnerValue(
-      newRows.map((row: any) => {
-        return {
-          name: row.name,
-          value: row.value,
-        };
-      }),
-    );
-    onChange(result);
-  }
+
+  const addParam = useCallback(() => {
+    const data = {
+      name: '',
+      value: '',
+      key: generateUniqKey(),
+    };
+    gridRef.current?.addRows([data]);
+  }, [gridRef]);
+
+  const deleteParam = useCallback(() => {
+    gridRef.current?.deleteRows();
+  }, [gridRef]);
+
   const columns = useMemo(() => {
     return [
       {
@@ -138,17 +103,9 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
       rows.forEach((row: any) => {
         result[row.name] = row.value;
       });
-      setInnerValue(
-        rows.map((row: any) => {
-          return {
-            name: row.name,
-            value: row.value,
-          };
-        }),
-      );
       onChange(result);
     },
-    [onChange, rows],
+    [onChange],
   );
   return (
     <>
@@ -212,9 +169,10 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
           enableColumnRecord={false}
           enableFilterRow={false}
           enableSortRow={false}
+          enableFlushDelete={true}
           minHeight="370px"
-          columns={columns}
-          rows={rows}
+          initialColumns={columns}
+          initialRows={initialRows as RowType<any>[]}
         />
       </Space>
     </>

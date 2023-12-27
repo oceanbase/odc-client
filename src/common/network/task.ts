@@ -33,10 +33,12 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
+  IDatasourceUser,
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
+import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
 
 /**
@@ -135,8 +137,12 @@ export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail
 /**
  * 查询任务列表
  */
-export async function getTaskDetail(id: number): Promise<TaskDetail<TaskRecordParameters>> {
-  const res = await request.get(`/api/v2/flow/flowInstances/${id}`);
+export async function getTaskDetail(id: number, ignoreError: boolean = false): Promise<TaskDetail<TaskRecordParameters>> {
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}`, {
+    params: {
+      ignoreError,
+    },
+  });
   return res?.data;
 }
 /**
@@ -157,6 +163,23 @@ export async function getTaskLog(id: number, logType: CommonTaskLogType): Promis
   });
   return res?.data;
 }
+
+/**
+ * 查询周期任务日志
+ */
+export async function getCycleTaskLog(
+  scheduleId: number,
+  taskId: number,
+  logType: CommonTaskLogType,
+): Promise<string> {
+  const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log`, {
+    params: {
+      logType,
+    },
+  });
+  return res?.data;
+}
+
 /**
  * 回滚任务
  */
@@ -440,7 +463,49 @@ export async function getSubTask(id: number): Promise<IResponseData<ISubTaskReco
   return res?.data;
 }
 
+/*
+ * 切换表名
+ */
+export async function swapTableName(taskId: number): Promise<boolean> {
+  const res = await request.post(`/api/v2/osc/swapTable/${taskId}`);
+  return !!res?.data;
+}
+
 /**
+ * 获取数据源用户列表
+ */
+export async function getDatasourceUsers(
+  datasourceId: number,
+): Promise<IResponseData<IDatasourceUser>> {
+  const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/users`);
+  return res?.data;
+}
+
+/**
+ * 查询项目列表
+ */
+export async function getProjectList(archived: boolean): Promise<IResponseData<IProject>> {
+  const res = await request.get('/api/v2/collaboration/projects/basic', {
+    params: {
+      archived,
+    },
+  });
+  return res?.data;
+}
+
+/**
+ * 查询当前数据库是否需要锁表
+ */
+export async function getLockDatabaseUserRequired(
+  databaseId: number,
+): Promise<{
+  lockDatabaseUserRequired: boolean;
+  databaseId: number;
+}> {
+  const res = await request.get(`/api/v2/osc/lockDatabaseUserRequired/${databaseId}`);
+  return res?.data;
+}
+/*
  * 更新限流配置
  */
 export async function updateLimiterConfig(

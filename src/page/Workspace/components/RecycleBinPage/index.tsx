@@ -21,22 +21,19 @@ import {
   getUpdateSQL,
   updateRecycleConfig,
 } from '@/common/network/recycle';
-import { executeSQL } from '@/common/network/sql';
-import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import MiniTable from '@/component/Table/MiniTable';
 import Toolbar from '@/component/Toolbar';
-import { IRecycleConfig, IRecycleObject, ISqlExecuteResultStatus } from '@/d.ts';
+import { IRecycleConfig, IRecycleObject } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
 import { sortString } from '@/util/utils';
 import { ExclamationCircleFilled, SettingOutlined, SyncOutlined } from '@ant-design/icons';
-import { FormattedMessage } from '@umijs/max';
 import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import classNames from 'classnames';
 import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import EditableTable from '../EditableTable';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import SessionContextWrap from '../SessionContextWrap';
@@ -61,10 +58,8 @@ class RecycleBin extends Component<
   IProps,
   {
     showEditModal: boolean;
-    showExecuteSQLModal: boolean;
     searchKey: string;
     listLoading: boolean;
-    updateDML: string;
     selectedObjectNames: Set<string>;
     selectAll: boolean;
     showDeleteDrawer: boolean;
@@ -74,10 +69,8 @@ class RecycleBin extends Component<
 > {
   public readonly state = {
     showEditModal: false,
-    showExecuteSQLModal: false,
     searchKey: '',
     listLoading: false,
-    updateDML: '',
     selectedObjectNames: new Set<string>(),
     selectAll: false,
     showDeleteDrawer: false,
@@ -87,12 +80,31 @@ class RecycleBin extends Component<
 
   private session: SessionStore;
 
+  // 当前选中的对象列表初始值
+  private initialSelectedObjects = [];
+
   public tableList: React.RefObject<HTMLDivElement> = React.createRef();
+
+  public restoreGridRef: React.RefObject<DataGridRef> = React.createRef();
+
+  public deleteGridRef: React.RefObject<DataGridRef> = React.createRef();
 
   public async componentDidMount() {
     this.session = this.props.session;
     this.getRecycleObjectList();
     this.getRecycleConfig();
+  }
+
+  componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
+    const { selectedObjectNames, showRestoreDrawer, showDeleteDrawer } = this.state;
+    const selectedObjects =
+      this.session?.recycleObjects?.filter((r) => selectedObjectNames.has(r.uniqueId)) ?? [];
+    if (showRestoreDrawer && prevState.showRestoreDrawer !== showRestoreDrawer) {
+      this.restoreGridRef.current?.setRows?.(selectedObjects);
+    }
+    if (showDeleteDrawer && prevState.showDeleteDrawer !== showDeleteDrawer) {
+      this.deleteGridRef.current?.setRows?.(selectedObjects);
+    }
   }
 
   public getRecycleConfig = async () => {
@@ -106,6 +118,14 @@ class RecycleBin extends Component<
     await this.session.getRecycleObjectList();
     this.setState({ listLoading: false });
   }
+
+  public onSuccess = async () => {
+    await this.session.getRecycleObjectList();
+    this.setState({
+      selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
+    });
+    message.success(formatMessage({ id: 'workspace.window.recyclebin.success' }));
+  };
 
   /**
    * 打开清空回收站确认框
@@ -139,11 +159,10 @@ class RecycleBin extends Component<
    * 清空全部
    */
   public handleSubmitPurgeAll = async () => {
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = await getPurgeAllSQL(this.session.sessionId, this.session?.database?.dbName);
-    // TODO: 获取修改对应的 SQL
-    this.setState({ updateDML });
+    const isSuccess = await getPurgeAllSQL(this.session.sessionId, this.session?.database?.dbName);
+    if (isSuccess) {
+      await this.onSuccess();
+    }
   };
 
   public handleDelete = async () => {
@@ -153,14 +172,17 @@ class RecycleBin extends Component<
       selectedObjectNames.has(r.uniqueId),
     );
 
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = await getDeleteSQL(
+    const isSuccess = await getDeleteSQL(
       selectedObjects,
       this.session.sessionId,
       this.session?.database?.dbName,
     );
-    this.setState({ updateDML });
+    if (isSuccess) {
+      await this.onSuccess();
+      this.setState({
+        showDeleteDrawer: false,
+      });
+    }
   };
 
   public handleRestore = async () => {
@@ -170,64 +192,16 @@ class RecycleBin extends Component<
       selectedObjectNames.has(r.uniqueId),
     );
 
-    this.setState({ showExecuteSQLModal: true });
-
-    const updateDML = await getUpdateSQL(
+    const isSuccess = await getUpdateSQL(
       selectedObjects,
       this.session.sessionId,
       this.session?.database?.dbName,
     );
-    this.setState({ updateDML });
-  };
-
-  /**
-   * 执行 SQL
-   */
-  public handleExecuteUpdateDML = async () => {
-    const { updateDML } = this.state;
-
-    // 执行 DML
-    const result = await executeSQL(
-      updateDML,
-      this.session?.sessionId,
-      this.session?.database?.dbName,
-    );
-    if (!result) {
-      return;
-    }
-    if (result?.invalid) {
+    if (isSuccess) {
+      await this.onSuccess();
       this.setState({
-        showExecuteSQLModal: false,
-        showDeleteDrawer: false,
         showRestoreDrawer: false,
-        updateDML: '',
-        selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
       });
-      return;
-    }
-
-    if (result?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS) {
-      // 刷新
-      await this.session.getRecycleObjectList();
-      // if (updateDML.toUpperCase().indexOf('FLASHBACK DATABASE') > -1) {
-      //   /**
-      //    * 重新刷新一下数据库
-      //    */
-      //   await this.session.getDatabaseList();
-      // }
-
-      // 关闭已打开的 drawer、modal
-      this.setState({
-        showExecuteSQLModal: false,
-        showDeleteDrawer: false,
-        showRestoreDrawer: false,
-        updateDML: '',
-        selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
-      });
-
-      message.success(formatMessage({ id: 'workspace.window.recyclebin.success' }));
-    } else {
-      notification.error(result?.executeResult?.[0]);
     }
   };
 
@@ -294,10 +268,8 @@ class RecycleBin extends Component<
     const {
       showDeleteDrawer,
       showRestoreDrawer,
-      showExecuteSQLModal,
       searchKey,
       listLoading,
-      updateDML,
       selectedObjectNames,
       recycleConfig,
     } = this.state;
@@ -382,11 +354,6 @@ class RecycleBin extends Component<
       },
     ];
 
-    // 当前选中的对象列表
-    const selectedObjects = this.session?.recycleObjects.filter((r) =>
-      selectedObjectNames.has(r.uniqueId),
-    );
-
     // 查找原名称和对象名称，忽略大小写
     const filteredRows = this.session?.recycleObjects.filter(
       (p) =>
@@ -415,7 +382,7 @@ class RecycleBin extends Component<
                   <ToolbarButton
                     type="BUTTON"
                     disabled={!selectedObjectNames.size}
-                    text={<FormattedMessage id="workspace.window.recyclebin.button.restore" />}
+                    text={formatMessage({ id: 'workspace.window.recyclebin.button.restore' })}
                     onClick={() => this.setState({ showRestoreDrawer: true })}
                   />
 
@@ -464,7 +431,7 @@ class RecycleBin extends Component<
                   </RecycleConfig>
                 </RecyleConfigContext.Provider>
                 <ToolbarButton
-                  text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                   icon={<SyncOutlined />}
                   onClick={this.handleRefresh}
                 />
@@ -515,16 +482,6 @@ class RecycleBin extends Component<
             />
           </div>
         </Spin>
-        <ExecuteSQLModal
-          sessionStore={this.session}
-          sql={updateDML}
-          theme={theme}
-          visible={showExecuteSQLModal}
-          onSave={this.handleExecuteUpdateDML}
-          onCancel={() => this.setState({ showExecuteSQLModal: false, updateDML: '' })}
-          onChange={(sql) => this.setState({ updateDML: sql })}
-        />
-
         <Drawer
           title={formatMessage({
             id: 'workspace.window.recyclebin.drawer.delete.title',
@@ -536,10 +493,11 @@ class RecycleBin extends Component<
           width={500}
         >
           <EditableTable
+            gridRef={this.deleteGridRef}
             minHeight="calc(100vh - 34px - 130px)"
-            columns={columnsInDeleteDrawer}
+            initialColumns={columnsInDeleteDrawer}
             rowKey="uniqueId"
-            rows={selectedObjects as any}
+            initialRows={this.initialSelectedObjects as any}
             readonly={true}
             theme={theme}
           />
@@ -549,10 +507,10 @@ class RecycleBin extends Component<
               onClick={() => this.setState({ showDeleteDrawer: false })}
               style={{ marginRight: 8 }}
             >
-              <FormattedMessage id="app.button.cancel" />
+              {formatMessage({ id: 'app.button.cancel' })}
             </Button>
             <Button onClick={this.handleDelete} danger ghost>
-              <FormattedMessage id="workspace.window.recyclebin.button.clean" />
+              {formatMessage({ id: 'workspace.window.recyclebin.button.clean' })}
             </Button>
           </div>
         </Drawer>
@@ -567,20 +525,21 @@ class RecycleBin extends Component<
           width={886}
         >
           <EditableTable
+            gridRef={this.restoreGridRef}
             minHeight="calc(100vh - 34px - 130px)"
-            columns={columnsInRestoreDrawer}
+            initialColumns={columnsInRestoreDrawer}
             rowKey="uniqueId"
-            rows={selectedObjects as any}
+            initialRows={this.initialSelectedObjects as any}
             theme={theme}
             onRowsChange={this.handleEditPropertyInCell}
           />
 
           <div className={styles.drawerFooter}>
             <Button onClick={this.handleCancelRestore} style={{ marginRight: 8 }}>
-              <FormattedMessage id="app.button.cancel" />
+              {formatMessage({ id: 'app.button.cancel' })}
             </Button>
             <Button onClick={this.handleRestore} type="primary">
-              <FormattedMessage id="workspace.window.recyclebin.button.restore" />
+              {formatMessage({ id: 'workspace.window.recyclebin.button.restore' })}
             </Button>
           </div>
         </Drawer>
