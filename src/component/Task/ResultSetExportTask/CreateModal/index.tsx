@@ -71,6 +71,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   const hadleReset = () => {
     form.resetFields();
+    setHasEdit(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {

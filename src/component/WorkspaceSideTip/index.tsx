@@ -23,7 +23,7 @@ import { Dropdown, List, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
-import CapSvg from '@/svgr/Cap.svg';
+import { ReactComponent as CapSvg } from '@/svgr/Cap.svg';
 import tracert from '@/util/tracert';
 
 const { Paragraph } = Typography;

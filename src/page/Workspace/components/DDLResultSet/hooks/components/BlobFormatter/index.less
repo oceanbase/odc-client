@@ -35,22 +35,22 @@
 .contenttext-disabled {
   flex: 1;
   padding: 8px;
-  background: #f8f9fb;
+  background-color: var(--background-primary-color);
   border: none;
   white-space: pre;
   &:focus {
     box-shadow: none;
   }
   &:global(.ant-input-disabled) {
-    color: rgba(0, 0, 0, 0.85);
-    background-color: #f8f9fb;
+    color: var(--text-color-primary);
+    background-color: var(--background-primary-color);
     cursor: unset;
   }
 }
 .contenttext-disabled {
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--odc-border-color);
   overflow-y: scroll;
-  color: rgba(0, 0, 0, 0.85);
-  background-color: #f8f9fb;
+  color: var(--text-color-primary);
+  background-color: var(--background-primary-color);
   cursor: unset;
 }

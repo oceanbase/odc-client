@@ -28,10 +28,9 @@ const DataTypeSelect: React.FC<{
 }> = forwardRef((props, ref) => {
   const { dataTypes, isOracle, ...rest } = props;
   const _dataTypes = dataTypes.filter((dataType) => {
-    return (
-      isOracle
-        ? ['blob', 'clob']
-        : ['tinyblob', 'blob', 'mediumblob', 'logblob', 'binary', 'varbinary']
+    return (isOracle
+      ? ['blob', 'clob']
+      : ['tinyblob', 'blob', 'mediumblob', 'logblob', 'binary', 'varbinary']
     ).includes(dataType.databaseType?.toLowerCase());
   });
   return (

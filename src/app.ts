@@ -19,16 +19,26 @@ import { setLocale } from '@umijs/max';
 import { initMetaStore } from './common/metaStore';
 import DndHTML5Provider from './component/DndHTML5Provider';
 import registerPlugins from './plugins/register';
-import { isClient } from './util/env';
+import { haveOCP, isClient } from './util/env';
 import logger from './util/logger';
 import { getRoute } from './util/tracert/userRoutes';
+import { initIntl } from './util/intl';
+import * as Sentry from "@sentry/react";
 if (isClient()) {
-  import('@sentry/electron').then((Sentry) => {
-    Sentry.init({
+  import('@sentry/electron').then((_Sentry) => {
+    _Sentry.init({
       dsn: 'https://859452cf23044aeda8677a8bdcc53081@obc-sentry.oceanbase.com/3',
     });
   });
+} else if (haveOCP()) {
+  Sentry.init({
+    dsn: "https://98fb52ab508043bf94a763dc51d5a2e0@obc-sentry.oceanbase.com/6"
+  });
 }
+
+
+
+
 
 // TODO: 非云上场景不应该 export qiankun
 export const qiankun = {
@@ -55,6 +65,7 @@ export const qiankun = {
 };
 
 export async function render(oldRender: () => void) {
+  await initIntl();
   registerPlugins();
   await initMetaStore();
   oldRender();

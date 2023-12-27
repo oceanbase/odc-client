@@ -17,10 +17,11 @@
 import { DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
-import SynonymSvg from '@/svgr/menuSynonym.svg';
+import { ReactComponent as SynonymSvg } from '@/svgr/menuSynonym.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
+import { openSynonymViewPage } from '@/store/helper/page';
 
 export function SynonymTreeData(
   dbSession: SessionStore,
@@ -58,7 +59,13 @@ export function SynonymTreeData(
             }}
           />
         ),
-
+        doubleClick(session, node, databaseFrom) {
+          openSynonymViewPage(
+            synonym.synonymName,
+            synonym.synonymType,
+            session?.database?.databaseId,
+          );
+        },
         sessionId: dbSession?.sessionId,
         isLeaf: true,
       };

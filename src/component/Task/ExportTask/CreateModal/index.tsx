@@ -33,18 +33,17 @@ import { selectFolder } from '@/util/client';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
-import { FormattedMessage } from '@umijs/max';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import ExportForm, { FormType } from './ExportForm';
 import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
 }
-
 export interface IState {
   stepIndex: number;
   formData: ExportFormData;
@@ -52,14 +51,11 @@ export interface IState {
   isFormChanged: boolean;
   isSaveDefaultConfig: boolean;
 }
-
 @inject('modalStore')
 @observer
 class CreateModal extends React.Component<IProps, IState> {
   private _formRef = React.createRef<any>();
-
   private defaultConfig: IState['formData'] = null;
-
   constructor(props: IProps) {
     super(props);
     const { modalStore } = props;
@@ -71,7 +67,6 @@ class CreateModal extends React.Component<IProps, IState> {
       isSaveDefaultConfig: false,
       formData: this.getDefaultFormData(),
     };
-
     if (modalStore.exportModalData) {
       this.state.formData.exportDbObjects = [
         {
@@ -79,7 +74,6 @@ class CreateModal extends React.Component<IProps, IState> {
           dbObjectType: modalStore.exportModalData.type,
         },
       ];
-
       if (
         modalStore.exportModalData?.type === DbObjectType.package &&
         modalStore.exportModalData?.exportPkgBody
@@ -91,31 +85,29 @@ class CreateModal extends React.Component<IProps, IState> {
       }
     }
   }
-
   private steps: {
     key: FormType;
     label: string;
   }[] = [
     {
-      label: formatMessage({ id: 'odc.components.ExportDrawer.SelectObject' }), //选择对象
+      label: formatMessage({
+        id: 'odc.components.ExportDrawer.SelectObject',
+      }),
+      //选择对象
       key: FormType.ObjSelecter,
     },
-
     {
       label: formatMessage({
         id: 'odc.components.ExportDrawer.ExportSettings',
       }),
-
       //导出设置
       key: FormType.Config,
     },
   ];
-
   private handleClose = () => {
     this.props.modalStore.changeExportModal(false);
     this.resetFormData();
   };
-
   private closeSelf = () => {
     if (!this.state.isFormChanged) {
       this.handleClose();
@@ -125,7 +117,6 @@ class CreateModal extends React.Component<IProps, IState> {
       title: formatMessage({
         id: 'odc.components.ExportDrawer.AreYouSureYouWant',
       }),
-
       centered: true,
       onOk: () => {
         this.handleClose();
@@ -147,7 +138,6 @@ class CreateModal extends React.Component<IProps, IState> {
           this.setState({
             submitting: true,
           });
-
           const formData = {
             ...this.state.formData,
             ...values,
@@ -162,19 +152,29 @@ class CreateModal extends React.Component<IProps, IState> {
           switch (exportContent) {
             case EXPORT_CONTENT.DATA_AND_STRUCT: {
               formData.mergeSchemaFiles = false;
-              formData.exportFileMaxSize =
-                exportFileMaxSize === formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }) //无限制
-                  ? -1
-                  : parseInt(exportFileMaxSize as string);
+              if (formData.exportFileMaxSize) {
+                formData.exportFileMaxSize =
+                  exportFileMaxSize ===
+                  formatMessage({
+                    id: 'odc.components.ExportDrawer.Unlimited',
+                  }) //无限制
+                    ? -1
+                    : parseInt(exportFileMaxSize as string);
+              }
               break;
             }
             case EXPORT_CONTENT.DATA: {
               formData.withDropDDL = false;
               formData.mergeSchemaFiles = false;
-              formData.exportFileMaxSize =
-                exportFileMaxSize === formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }) //无限制
-                  ? -1
-                  : parseInt(exportFileMaxSize as string);
+              if (formData.exportFileMaxSize) {
+                formData.exportFileMaxSize =
+                  exportFileMaxSize ===
+                  formatMessage({
+                    id: 'odc.components.ExportDrawer.Unlimited',
+                  }) //无限制
+                    ? -1
+                    : parseInt(exportFileMaxSize as string);
+              }
               break;
             }
             case EXPORT_CONTENT.STRUCT: {
@@ -185,7 +185,6 @@ class CreateModal extends React.Component<IProps, IState> {
               break;
             }
           }
-
           const { executionStrategy, executionTime } = formData;
           if (executionStrategy === TaskExecStrategy.TIMER) {
             formData.executionTime = executionTime?.valueOf();
@@ -196,10 +195,9 @@ class CreateModal extends React.Component<IProps, IState> {
           if (data) {
             message.success(
               formatMessage({
-                id: 'odc.components.ExportDrawer.CreatedAndExportedSuccessfully',
-              }),
+                id: 'odc.src.component.Task.ExportTask.CreateModal.ExportSuccess',
+              }), //'导出成功！'
             );
-
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
             }
@@ -236,7 +234,6 @@ class CreateModal extends React.Component<IProps, IState> {
       this.defaultConfig = safeParseJson(data);
     }
   };
-
   private getDefaultFormData = () => {
     return {
       databaseId: this.props.modalStore.exportModalData?.databaseId,
@@ -257,7 +254,10 @@ class CreateModal extends React.Component<IProps, IState> {
       columnSeparator: this.defaultConfig?.columnSeparator ?? ',',
       exportFileMaxSize:
         this.defaultConfig?.exportFileMaxSize ??
-        formatMessage({ id: 'odc.components.ExportDrawer.Unlimited' }), //无限制
+        formatMessage({
+          id: 'odc.components.ExportDrawer.Unlimited',
+        }),
+      //无限制
       columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
       lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
       useSys: false,
@@ -265,14 +265,12 @@ class CreateModal extends React.Component<IProps, IState> {
       exportDbObjects: [],
     };
   };
-
   private resetFormData = () => {
     this.setState({
       stepIndex: 0,
       formData: this.getDefaultFormData(),
     });
   };
-
   static getDerivedStateFromProps(props, state) {
     const nextModalData = props.modalStore?.exportModalData;
     if (nextModalData && !state.formData.exportDbObjects?.length) {
@@ -301,14 +299,12 @@ class CreateModal extends React.Component<IProps, IState> {
     }
     return null;
   }
-
   render() {
     const { modalStore, projectId } = this.props;
     const { formData, submitting, stepIndex, isSaveDefaultConfig } = this.state;
     const currentStep = this.steps[stepIndex],
       prevStep = this.steps[stepIndex - 1],
       nextStep = this.steps[stepIndex + 1];
-
     const isNextStepDisabled =
       nextStep?.key === FormType.Config &&
       !this.state.formData?.exportAllObjects &&
@@ -322,7 +318,9 @@ class CreateModal extends React.Component<IProps, IState> {
     return (
       <Drawer
         title={
-          formatMessage({ id: 'odc.components.ExportDrawer.Export' }) //导出
+          formatMessage({
+            id: 'odc.components.ExportDrawer.Export',
+          }) //导出
         }
         open={modalStore.exportModalVisible}
         destroyOnClose
@@ -372,7 +370,11 @@ class CreateModal extends React.Component<IProps, IState> {
         <div className={styles.drawerFooter}>
           <Checkbox
             checked={isSaveDefaultConfig}
-            onChange={(e) => this.setState({ isSaveDefaultConfig: e.target.checked })}
+            onChange={(e) =>
+              this.setState({
+                isSaveDefaultConfig: e.target.checked,
+              })
+            }
           >
             {
               formatMessage({
@@ -389,7 +391,9 @@ class CreateModal extends React.Component<IProps, IState> {
                 marginRight: 8,
               }}
             >
-              <FormattedMessage id="app.button.cancel" />
+              {formatMessage({
+                id: 'app.button.cancel',
+              })}
             </Button>
             {prevStep ? (
               <Button
@@ -427,7 +431,9 @@ class CreateModal extends React.Component<IProps, IState> {
             ) : null}
             {!nextStep ? (
               <Button loading={submitting} onClick={this.submit} type="primary">
-                <FormattedMessage id="workspace.header.tools.export" />
+                {formatMessage({
+                  id: 'workspace.header.tools.export',
+                })}
               </Button>
             ) : null}
           </Space>
@@ -436,5 +442,4 @@ class CreateModal extends React.Component<IProps, IState> {
     );
   }
 }
-
 export default CreateModal;

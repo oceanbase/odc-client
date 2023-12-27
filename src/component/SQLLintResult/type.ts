@@ -21,6 +21,6 @@ export interface ISQLLintReuslt {
     level: number;
     localizedMessage: string;
     row: number;
-    type: string;
+    type?: string;
   }[];
 }

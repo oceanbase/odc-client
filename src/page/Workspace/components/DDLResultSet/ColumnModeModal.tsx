@@ -16,12 +16,11 @@
 
 import { formatMessage } from '@/util/intl';
 import { Button, Modal } from 'antd';
-import React, { useContext, useMemo } from 'react';
-import { FormattedMessage } from '@umijs/max';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 
 import type { ResultSetColumn } from '@/d.ts';
 import { LeftSquareOutlined, RightSquareOutlined } from '@ant-design/icons';
-import type { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
+import type { FormatterProps, DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import TextFormatter from './hooks/components/TextFormatter';
@@ -75,6 +74,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
   } = props;
 
   const resultContext = useContext(ResultContext);
+  const gridRef = useRef<DataGridRef>();
 
   const tableColumns = useMemo(() => {
     return [
@@ -108,12 +108,6 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
     ];
   }, []);
 
-  const columnsInColumnMode: {
-    title: string;
-    dataIndex: string;
-    render?: any;
-    width?: number;
-  }[] = [];
   let dataInColumnMode: DataInColumnMode[] = [];
 
   if (selectedRow) {
@@ -131,6 +125,12 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
     });
   }
 
+  useEffect(() => {
+    if (dataInColumnMode && visible) {
+      gridRef.current?.setRows?.(dataInColumnMode);
+    }
+  }, [dataInColumnMode, visible]);
+
   return (
     <Modal
       destroyOnClose
@@ -144,7 +144,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       onCancel={() => onClose()}
       footer={[
         <Button key="close" type="primary" onClick={() => onClose()}>
-          <FormattedMessage id="app.button.close" />
+          {formatMessage({ id: 'app.button.close' })}
         </Button>,
       ]}
     >
@@ -156,9 +156,10 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
         }}
       >
         <EditableTable
+          gridRef={gridRef}
           rowKey="columnName"
-          rows={dataInColumnMode}
-          columns={tableColumns}
+          initialRows={dataInColumnMode}
+          initialColumns={tableColumns}
           enableFilterRow={false}
           enableColumnRecord={false}
           enableRowRecord={false}
@@ -168,19 +169,19 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
 
       <footer className={styles.columnModeFooter}>
         <span>
-          <FormattedMessage
-            id="workspace.window.sql.result.pagination.current"
-            values={{
+          {formatMessage(
+            { id: 'workspace.window.sql.result.pagination.current' },
+            {
               current: currentIdx + 1,
-            }}
-          />
+            },
+          )}
           /
-          <FormattedMessage
-            id="workspace.window.sql.result.pagination.total"
-            values={{
+          {formatMessage(
+            { id: 'workspace.window.sql.result.pagination.total' },
+            {
               total,
-            }}
-          />
+            },
+          )}
         </span>
         <span>
           <LeftSquareOutlined

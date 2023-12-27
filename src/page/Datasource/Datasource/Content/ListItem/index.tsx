@@ -20,9 +20,9 @@ import classNames from 'classnames';
 import React from 'react';
 import styles from './index.less';
 
-import ClusterSvg from '@/svgr/graphic_cluster.svg';
-import HostSvg from '@/svgr/graphic_server.svg';
-import TenantSvg from '@/svgr/graphic_tenant.svg';
+import { ReactComponent as ClusterSvg } from '@/svgr/graphic_cluster.svg';
+import { ReactComponent as HostSvg } from '@/svgr/graphic_server.svg';
+import { ReactComponent as TenantSvg } from '@/svgr/graphic_tenant.svg';
 import { haveOCP } from '@/util/env';
 import { Space, Spin, Tooltip } from 'antd';
 

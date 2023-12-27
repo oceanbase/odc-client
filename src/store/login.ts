@@ -28,6 +28,7 @@ import { action, observable } from 'mobx';
 import { history } from '@umijs/max';
 import authStore from './auth';
 import setting from './setting';
+import sessionManager from './sessionManager';
 
 class ScriptStore {
   @observable
@@ -125,6 +126,7 @@ export class UserStore {
   @action
   public async logout() {
     logger.debug('logout');
+    await sessionManager.destoryStore(true);
     const res = await request.post('/api/v2/iam/logout', {
       params: {
         wantCatchError: true,
@@ -292,7 +294,15 @@ export class UserStore {
       await this.gotoLoginPageSSO();
     } else {
       const searchParamsObj = new URLSearchParams();
-      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname));
+      const query = history.location.search || '';
+      if (query.includes("redirectTo") || history.location.pathname === '/login') {
+        history.push({
+          pathname: '/login',
+          search: query,
+        });
+        return;
+      }
+      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname)+query);
       history.push({
         pathname: '/login',
         search: searchParamsObj.toString(),

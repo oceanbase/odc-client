@@ -248,7 +248,8 @@ const ConfigModal: React.FC<IProps> = (props) => {
                 <HelpDoc doc="preCreatePartitionCount" leftText>
                   {
                     formatMessage({
-                      id: 'odc.components.PartitionPolicyTable.configModal.NumberOfPreCreatedPartitions',
+                      id:
+                        'odc.components.PartitionPolicyTable.configModal.NumberOfPreCreatedPartitions',
                     }) /*预创建分区数量*/
                   }
                 </HelpDoc>
@@ -316,7 +317,8 @@ const ConfigModal: React.FC<IProps> = (props) => {
                 {
                   required: isRequired,
                   message: formatMessage({
-                    id: 'odc.components.PartitionPolicyTable.configModal.PleaseEnterTheRetentionPeriod',
+                    id:
+                      'odc.components.PartitionPolicyTable.configModal.PleaseEnterTheRetentionPeriod',
                   }), //请输入保留时长
                 },
               ]}
@@ -352,7 +354,8 @@ const ConfigModal: React.FC<IProps> = (props) => {
                   {
                     pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
                     message: formatMessage({
-                      id: 'odc.components.PartitionPolicyTable.configModal.OnlyEnglishDigitsAndUnderscores',
+                      id:
+                        'odc.components.PartitionPolicyTable.configModal.OnlyEnglishDigitsAndUnderscores',
                     }), //仅支持英文/数字/下划线，且以英文开头
                   },
                   {

@@ -18,9 +18,9 @@ import Toolbar from '@/component/Toolbar';
 import { IPartitionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Form, Input, InputNumber, Space } from 'antd';
-import React, { useCallback, useContext, useRef, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { partitionNameMap } from '../../CreateTable/Partition/CreateTablePartitionRuleForm';
 import TablePageContext from '../context';
 
@@ -70,6 +70,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
   const addPartitionRef = useRef<{
     addNewPartitions: () => Promise<Partial<TablePartition>>;
   }>();
+  const gridRef = useRef<DataGridRef>();
   const table = tableContext?.table;
   const partitions = editPartitions || table?.partitions;
   const { partType } = partitions || {};
@@ -88,7 +89,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       resizable: true,
       sortable: false,
       editor: TextEditor,
-      editable: (row) => row?.isNew,
+      editable: (row) => !!row?.isNew,
     },
 
     {
@@ -107,15 +108,10 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       name: getTitleByPartType(partType),
       resizable: true,
       sortable: false,
-      editable: (row) => row?.isNew,
+      editable: (row) => !!row?.isNew,
       editor: TextEditor,
     },
   ];
-
-  const onRowsChange = useCallback((rows, data) => {
-    //@ts-ignore
-    // setEditPartitions([...rows]);
-  }, []);
 
   async function handleAddColumn() {
     const values = await addPartitionRef.current?.addNewPartitions();
@@ -124,28 +120,36 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       const partType = values.partType;
       switch (partType) {
         case IPartitionType.LIST: {
-          (newPartitions as ITableListPartition).partitions = (newPartitions as ITableListPartition).partitions.concat(
+          (newPartitions as ITableListPartition).partitions = (
+            newPartitions as ITableListPartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
           return;
         }
         case IPartitionType.RANGE: {
-          (newPartitions as ITableRangePartition).partitions = (newPartitions as ITableRangePartition).partitions.concat(
+          (newPartitions as ITableRangePartition).partitions = (
+            newPartitions as ITableRangePartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
           return;
         }
         case IPartitionType.LIST_COLUMNS: {
-          (newPartitions as ITableListColumnsPartition).partitions = (newPartitions as ITableListColumnsPartition).partitions.concat(
+          (newPartitions as ITableListColumnsPartition).partitions = (
+            newPartitions as ITableListColumnsPartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
           return;
         }
         case IPartitionType.RANGE_COLUMNS: {
-          (newPartitions as ITableRangeColumnsPartition).partitions = (newPartitions as ITableRangeColumnsPartition).partitions.concat(
+          (newPartitions as ITableRangeColumnsPartition).partitions = (
+            newPartitions as ITableRangeColumnsPartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
@@ -175,6 +179,11 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       }),
     );
   };
+
+  useEffect(() => {
+    const rows = getRowsByPartType(partType, partitions);
+    gridRef.current?.setRows?.(rows ?? []);
+  }, [partType, partitions]);
 
   switch (partType) {
     case IPartitionType.KEY: {
@@ -269,7 +278,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                   setEditPartitions(null);
                 }}
                 onOk={async () => {
-                  const updateTableDML = await generateUpdateTableDDL(
+                  const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                     {
                       ...tableContext.table,
                       partitions: partitions,
@@ -290,12 +299,14 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                       await tableContext.onRefresh();
                       setEditPartitions(null);
                     },
+                    tip,
+                    () => setEditPartitions(null),
                   );
                 }}
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.header.create" />}
+                    text={formatMessage({ id: 'workspace.header.create' })}
                     icon={<PlusOutlined />}
                     onClick={handleAddColumn}
                   />
@@ -354,12 +365,12 @@ const TablePartitions: React.FC<IProps> = function ({}) {
               </Space>
             </div>
             <EditableTable
+              gridRef={gridRef}
               minHeight={`calc(100vh - ${48 + 34 + 39 + 50 + 40}px)`}
-              rowKey={'key'}
-              columns={rdgColumns}
-              rows={rows as any}
+              rowKey="key"
+              initialColumns={rdgColumns}
+              initialRows={rows as any}
               onSelectChange={handleSelectCell}
-              onRowsChange={onRowsChange}
             />
           </TableCardLayout>
           <AddPartitionModal ref={addPartitionRef} />

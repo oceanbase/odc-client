@@ -19,13 +19,17 @@ import { IMaskingAlgorithm, MaskingAlgorithmType } from '@/d.ts/maskingAlgorithm
 import request from '@/util/request';
 
 export async function testMaskingAlgorithm(
-  maskingAlgorithm: IMaskingAlgorithm,
+  maskingAlgorithmId: number,
+  sample: string,
 ): Promise<IMaskingAlgorithm> {
-  const ret = await request.post(`/api/v2/datasecurity/maskingAlgorithms/test`, {
-    data: {
-      ...maskingAlgorithm,
+  const ret = await request.post(
+    `/api/v2/datasecurity/maskingAlgorithms/${maskingAlgorithmId}/test`,
+    {
+      params: {
+        sample,
+      },
     },
-  });
+  );
   return ret?.data;
 }
 

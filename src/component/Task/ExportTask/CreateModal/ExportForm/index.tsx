@@ -16,7 +16,7 @@
 
 import { isReadonlyPublicConnection } from '@/component/Acess';
 import { formatMessage } from '@/util/intl';
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 import { ExportFormData, IConnection } from '@/d.ts';
 // compatible
@@ -28,6 +28,8 @@ import { ModalStore } from '@/store/modal';
 import { useForm } from 'antd/es/form/Form';
 import ConfigPanel from './ConfigPanel';
 import ObjSelecterPanel from './ObjSelecterPanel';
+import { useRequest } from 'ahooks';
+import { getDatabase } from '@/common/network/database';
 
 export enum FormType {
   ObjSelecter,
@@ -47,8 +49,21 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
     forwardRef(function (props, ref) {
       const { formData, formType, onFormValueChange, projectId } = props;
       const [form] = useForm<ExportFormData>();
-      const [connection, setConnection] = useState<IConnection>(null);
+      const databaseId = Form.useWatch('databaseId', form);
+      const { data, run } = useRequest(getDatabase, {
+        manual: true
+      })
+      const database = data?.data;
+      const connection = database?.dataSource;
+      const connectionId = connection?.id;
       const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
+
+
+      useEffect(() => {
+        if (databaseId) {
+          run(databaseId);
+        }
+      }, [databaseId]);
 
       async function valid(callback: (haveError, values) => void) {
         const values = await form.validateFields();
@@ -85,7 +100,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
               <ObjSelecterPanel
                 form={form}
                 projectId={projectId}
-                onConnectionChange={handleConnectionChange}
+                database={database}
               />
             );
           }
@@ -102,10 +117,6 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
             return null;
           }
         }
-      }
-
-      function handleConnectionChange(connection: IConnection) {
-        setConnection(connection);
       }
 
       return (

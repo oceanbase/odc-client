@@ -20,7 +20,7 @@ import { Input, message, Modal } from 'antd';
 import React, { useState } from 'react';
 import { history } from '@umijs/max';
 
-import LogoOB from '@/svgr/LogoOB.svg';
+import { ReactComponent as LogoOB } from '@/svgr/LogoOB.svg';
 
 import ipcInvoke from '@/util/client/service';
 import styles from './index.less';

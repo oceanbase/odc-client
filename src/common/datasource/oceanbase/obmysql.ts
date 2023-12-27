@@ -75,11 +75,16 @@ const items: Record<
       recycleBin: true,
       sqlExplain: true,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
+      innerSchema: ['test', 'mysql', 'oceanbase', 'information_schema'],
     },
     sql: {
       language: 'obmysql',
@@ -101,11 +106,16 @@ const items: Record<
       recycleBin: true,
       sqlExplain: true,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
+      innerSchema: ['test', 'mysql', 'oceanbase', 'information_schema'],
     },
     sql: {
       language: 'obmysql',
@@ -123,22 +133,26 @@ const items: Record<
       defaultSchema: true,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.EXPORT_RESULT_SET],
+      task: [TaskType.ASYNC, TaskType.SQL_PLAN],
       obclient: false,
       recycleBin: false,
       sqlExplain: false,
       supportOBProxy: true,
+      export: {
+        fileLimit: true,
+        snapshot: true,
+      },
     },
     schema: {
       table: tableConfig,
       func: functionConfig,
       proc: procedureConfig,
+      innerSchema: ['test', 'mysql', 'oceanbase', 'information_schema'],
     },
     sql: {
       language: 'obmysql',
       escapeChar: '`',
     },
-    disable: true,
   },
 };
 if (haveOCP()) {

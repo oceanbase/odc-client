@@ -150,6 +150,30 @@ export const dataTypes: IDataTypes = {
   json: {
     params: [],
   },
+  geometry: {
+    params: [],
+  },
+  point: {
+    params: [],
+  },
+  linestring: {
+    params: [],
+  },
+  polygon: {
+    params: [],
+  },
+  multipoint: {
+    params: [],
+  },
+  multilinestring: {
+    params: [],
+  },
+  multipolygon: {
+    params: [],
+  },
+  geometrycollection: {
+    params: [],
+  },
   enum: {
     params: [],
     isEnum: true,

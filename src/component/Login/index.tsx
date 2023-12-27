@@ -15,7 +15,7 @@
  */
 
 import LocalMenus from '@/component/LocalMenus';
-import LogoImg from '@/svgr/ob_logo.svg';
+import { ReactComponent as LogoImg } from '@/svgr/ob_logo.svg';
 import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Divider, message, Typography } from 'antd';

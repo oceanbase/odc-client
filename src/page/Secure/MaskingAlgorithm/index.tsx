@@ -16,7 +16,7 @@
 
 import { listMaskingAlgorithm } from '@/common/network/maskingAlgorithm';
 import TooltipContent from '@/component/TooltipContent';
-import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
+import { IResponseData } from '@/d.ts';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { IRule } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
@@ -27,6 +27,15 @@ import ViewMaskingAlgorithmDrawer from './components/ViewMaskingAlgorithmDrawer'
 import CommonTable from '@/component/CommonTable';
 import { ITableLoadOptions } from '@/component/CommonTable/interface';
 
+export const maskRuleTypeMap = {
+  // 掩盖
+  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp' }), //掩盖 // 替换
+  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace' }), //替换 // 保留格式
+  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat' }), //保留格式 // 哈希
+  HASH: formatMessage({ id: 'odc.src.d.ts.Hash' }), //哈希 // 取整
+  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding' }), //取整 // 置空
+  NULL: formatMessage({ id: 'odc.src.d.ts.Empty' }), //置空
+};
 interface MaskingAlgorithmProps {}
 const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
   const tableRef = useRef<any>(null);
@@ -49,7 +58,7 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
         width: 94,
         dataIndex: 'type',
         key: 'type',
-        render: (text) => <TooltipContent content={MaskRyleTypeMap[text]} />,
+        render: (text) => <TooltipContent content={maskRuleTypeMap[text]} />,
       },
       {
         title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.TestData' }), //测试数据
@@ -130,7 +139,7 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
   });
 
   return (
-    <>
+    <div style={{ height: '100%', flexGrow: 1 }}>
       <CommonTable
         ref={tableRef}
         titleContent={null}
@@ -162,7 +171,7 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
           handleViewDrawerClose,
         }}
       />
-    </>
+    </div>
   );
 };
 

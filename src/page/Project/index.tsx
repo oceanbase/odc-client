@@ -51,7 +51,11 @@ const menu = (
     </Menu.Item>
   </Menu>
 );
-const ExtraContent = ({ projectId }) => {
+const ExtraContent = ({ projectId, currentRoles }) => {
+  const disabled =
+    currentRoles?.filter((roles) =>
+      [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
+    )?.length === 0;
   return (
     <Space size={12}>
       <Button
@@ -60,6 +64,7 @@ const ExtraContent = ({ projectId }) => {
           gotoSQLWorkspace(projectId);
         }}
         type="primary"
+        disabled={disabled}
       >
         {
           formatMessage({
@@ -164,7 +169,7 @@ const Index: React.FC<IProps> = function () {
       // 当前项目中只有Developer身份的用户通过url访问Sensitive页面时，跳转到Project，避免用户通过url直接进入Sensitvie页面导致发起错误请求。
       if (
         !project?.currentUserResourceRoles?.some((role) =>
-          [ProjectRole.DBA, ProjectRole.OWNER].includes(role),
+          [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.SECURITY_ADMINISTRATOR].includes(role),
         )
       ) {
         navigate('/project');
@@ -194,13 +199,33 @@ const Index: React.FC<IProps> = function () {
   );
   const displayTabs = useMemo(() => {
     let roleTabConfig = {
-      [ProjectRole.DBA]: [IPageType.Project_Database, IPageType.Project_Task, IPageType.Sensitive],
-      [ProjectRole.DEVELOPER]: [IPageType.Project_Database, IPageType.Project_Task],
+      [ProjectRole.DBA]: [
+        IPageType.Project_Database,
+        IPageType.Project_Task,
+        IPageType.Sensitive,
+        IPageType.Project_User,
+      ],
+      [ProjectRole.DEVELOPER]: [
+        IPageType.Project_Database,
+        IPageType.Project_Task,
+        IPageType.Project_User,
+      ],
       [ProjectRole.OWNER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
         IPageType.Sensitive,
         IPageType.Project_Setting,
+        IPageType.Project_User,
+      ],
+      [ProjectRole.SECURITY_ADMINISTRATOR]: [
+        IPageType.Project_Database,
+        IPageType.Project_Task,
+        IPageType.Sensitive,
+        IPageType.Project_User,
+      ],
+      [ProjectRole.PARTICIPANT]: [
+        IPageType.Project_Database,
+        IPageType.Project_Task,
         IPageType.Project_User,
       ],
     };
@@ -221,17 +246,12 @@ const Index: React.FC<IProps> = function () {
           v && tracert.expo('a3112.b64002.c330857');
         },
       }}
-      containerWrapStyle={
-        [IPageType.Sensitive].includes(page)
-          ? {
-              padding: '0px 12px',
-            }
-          : {}
-      }
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
       tabList={displayTabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent projectId={projectId} />}
+      tabBarExtraContent={
+        <ExtraContent projectId={projectId} currentRoles={project?.currentUserResourceRoles} />
+      }
       onTabChange={handleChange}
       bigSelectBottom={
         <Link onClick={() => tracert.click('a3112.b64002.c330857.d367380')} to={'/project'}>

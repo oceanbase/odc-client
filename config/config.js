@@ -19,40 +19,24 @@ let publicPath = '/';
 const define = defineConfig();
 
 const config = {
-  // singular: true,
   mock: false,
-  // dynamicImport: {
-  //   loading: "@/component/Loading"
-  // },
-  // dynamicImportSyntax: {},
   publicPath,
   esbuildMinifyIIFE: true,
   runtimePublicPath: {},
   hash: true,
   esbuildMinifyIIFE: true,
-  // tracert: {
-  //   spmAPos: 'a3112',
-  //   bizType: 'lu',
-  //   type: 'manual',
-  //   ifInjectManualScript: false,
-  //   ifRouterNeedPv: true
-  // },
   targets: {
     chrome: 76,
     firefox: 60,
     edge: 79,
   },
-  // esbuild: {},
   metas: [
     {
       name: 'version',
       content: version,
     },
   ],
-  // nodeModulesTransform: {
-  //   type: 'none',
-  //   exclude: [],
-  // },
+
   antd: {
     import: true,
   },
@@ -86,37 +70,16 @@ const config = {
   externals: {
     electron: 'commonjs electron',
   },
-  svgr: false,
-  svgo: false,
   alias: {
     "@@node_modules": path.resolve(process.cwd(), 'node_modules')
   },
   chainWebpack(config) {
-    config.performance.hints('warning');
-    config.module.rules.delete('svg');
-    config.module.rule('asset').oneOf('fallback').exclude.add(/.svg/);
     config.plugin('monaco').use(MonacoWebpackPlugin, [
       {
         filename: '[name].worker.js',
         languages: ['yaml', 'json']
       }
     ])
-    config.module
-      .rule('svg')
-      .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)
-      .use([
-        {
-          loader: 'babel-loader',
-        },
-        {
-          loader: '@svgr/webpack',
-          options: {
-            babel: false,
-            icon: true,
-          },
-        },
-      ])
-      .loader(require.resolve('@svgr/webpack'));
   },
 
   history: {
@@ -126,15 +89,7 @@ const config = {
   outputPath: './dist/renderer',
 
   define,
-
-  // qiankun: {
-  //   slave: {},
-  // },
-
-  // 路由配置
   routes: routes,
-  // ? undefined
-  // : routes
 };
 if (disableBrowserUpdate) {
   delete config.browserUpdate;

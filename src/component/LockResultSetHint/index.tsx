@@ -16,9 +16,9 @@
 
 import { CloseOutlined } from '@ant-design/icons';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 
 export class LockResultSetHint extends Component<{
   onClose(): void;
@@ -37,11 +37,11 @@ export class LockResultSetHint extends Component<{
     return (
       <div className={styles.wrapper}>
         <header className={styles.header}>
-          <FormattedMessage id="workspace.window.sql.record.notify.title" />
+          {formatMessage({ id: 'workspace.window.sql.record.notify.title' })}
           <CloseOutlined onClick={onClose} />
         </header>
         <div className={styles.desc}>
-          <FormattedMessage id="workspace.window.sql.record.notify.desc" />
+          {formatMessage({ id: 'workspace.window.sql.record.notify.desc' })}
         </div>
       </div>
     );

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Form, Popover, Select, Space, Tag, Typography } from 'antd';
+import { useParams } from '@umijs/max';
+import { Form, Popover, Select, Space, Typography } from 'antd';
+import { toInteger } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
-import { IDatabase } from '@/d.ts/database';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { useParams } from '@umijs/max';
-import { toInteger } from 'lodash';
 interface IProps {
   type: TaskType;
   label?: string;
@@ -34,7 +34,7 @@ interface IProps {
   projectId?: number;
   extra?: string;
   width?: string;
-  onChange?: (v: number) => void;
+  onChange?: (v: number, database?: IDatabase) => void;
 }
 const { Text } = Typography;
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -51,11 +51,11 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     disabled = false,
     onChange,
   } = props;
-  const [database, setDatabase] = useState<IDatabase[]>([]);
+  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const { datasourceId } = useParams<{ datasourceId: string }>();
   const form = Form.useFormInstance();
   const databaseId = Form.useWatch(name, form);
-  const databaseOptions = database
+  const databaseOptions = databases
     ?.filter((item) =>
       getDataSourceModeConfig(item.dataSource?.type)?.features?.task?.includes(type),
     )
@@ -65,7 +65,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           overlayClassName={styles.popover}
           data-label={name}
           placement="right"
-          arrowPointAtCenter={false}
+          showArrow={false}
           content={
             <Space direction="vertical">
               <Space>
@@ -115,15 +115,17 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       null,
       !!login.isPrivateSpace(),
       true,
+      type === TaskType.ONLINE_SCHEMA_CHANGE ? type : null,
     );
-    setDatabase(res?.contents);
+    setDatabases(res?.contents);
   };
   const handleDatabaseChange = (value) => {
-    onChange?.(value);
+    const database = databases?.find(({ id }) => id === value);
+    onChange?.(value, database);
   };
   const project = useMemo(() => {
-    return database?.find((item) => item.id === databaseId)?.project;
-  }, [database, databaseId]);
+    return databases?.find((item) => item.id === databaseId)?.project;
+  }, [databases, databaseId]);
   useEffect(() => {
     loadDatabase(projectId, datasourceId ? toInteger(datasourceId) : null);
   }, []);

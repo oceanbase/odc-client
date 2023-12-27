@@ -15,13 +15,6 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { FormattedMessage } from '@umijs/max';
-const dataArchiveFilterDoc = formatMessage({
-  id: 'odc.src.component.helpDoc.CanConfigureTheFilteringConditions',
-}); //"可使用常量或引用上文中定义的变量来配置过滤条件。样例1：gmt_create <=  '2023-01-01' ，样例2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为归档表中的字段。"
-const dataClearFilterDoc = formatMessage({
-  id: 'odc.src.component.helpDoc.CanConfigureTheFilteringConditions.1',
-}); //"可使用常量或引用上文中定义的变量来配置过滤条件。样例1：gmt_create <=  '2023-01-01' ，样例2：gmt_create <= '${bizdate}'，其中 bizdate 为变量配置中的变量名，gmt_create 为清理表中的字段。"
 const dataArchiveVariablesDoc = formatMessage({
   id: 'odc.src.component.helpDoc.DefineVariablesSetTime',
 }); //'定义变量、设置时间偏移量并在下文的过滤条件中引用'
@@ -42,17 +35,23 @@ export default {
   ),
   connectType: () => (
     <p>
-      <FormattedMessage id="portal.connection.form.connectType.desc" />
+      {formatMessage({
+        id: 'portal.connection.form.connectType.desc',
+      })}
     </p>
   ),
   dbMode: () => (
     <p>
-      <FormattedMessage id="portal.connection.form.mode.desc" />
+      {formatMessage({
+        id: 'portal.connection.form.mode.desc',
+      })}
     </p>
   ),
   configUrl: () => (
     <p>
-      <FormattedMessage id="portal.connection.form.configUrl.desc" />
+      {formatMessage({
+        id: 'portal.connection.form.configUrl.desc',
+      })}
     </p>
   ),
   sessionTimeTip: (
@@ -425,6 +424,15 @@ export default {
       }
     </p>
   ),
+  tableSizeToolTip: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.BecauseTheDataIsObtained',
+        }) /* 由于该数据是通过静态基线数据得到的，因此会有延迟，可能出现不准确的情况 */
+      }
+    </p>
+  ),
   exportFileMaxSize: (
     <p>
       {
@@ -470,6 +478,24 @@ export default {
       }
     </p>
   ),
+  projectSA: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.OnlyAllowTheSensitiveColumns',
+        }) /* 只允许管理项目的敏感列和参与审批 */
+      }
+    </p>
+  ),
+  participant: (
+    <p>
+      {
+        formatMessage({
+          id: 'odc.src.component.helpDoc.OnlyAllowParticipationInApproval',
+        }) /* 只允许参与审批 */
+      }
+    </p>
+  ),
   dataArchiveTimeDoc: (
     <p>
       {
@@ -479,8 +505,6 @@ export default {
       }
     </p>
   ),
-  dataArchiveFilterDoc: <p>{dataArchiveFilterDoc}</p>,
-  dataClearFilterDoc: <p>{dataClearFilterDoc}</p>,
   dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
@@ -526,6 +550,12 @@ export default {
           id: 'odc.src.component.helpDoc.TheTotalSizeLimitOf',
         }) /* 每秒操作数据总大小限制 */
       }
+    </p>
+  ),
+  AlterDdlTaskLockUsersTip: (
+    <p>
+      关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
+      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障
     </p>
   ),
 };

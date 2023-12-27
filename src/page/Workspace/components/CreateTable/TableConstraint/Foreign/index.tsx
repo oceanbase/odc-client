@@ -21,6 +21,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TableForeignConstraint } from '../../interface';
 import TableCardLayout from '../../TableCardLayout';
 import TableContext from '../../TableContext';
+import { generateUniqKey } from '@/util/utils';
 
 import { listDatabases } from '@/common/network/database';
 import {
@@ -76,6 +77,14 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
     });
   }, [tableContext.foreignConstraints]);
 
+  useEffect(() => {
+    gridRef.current?.setRows?.(rows ?? []);
+  }, [rows]);
+
+  useEffect(() => {
+    gridRef.current?.setColumns?.(gridColumns ?? []);
+  }, [gridColumns]);
+
   return (
     <TableCardLayout
       toolbar={
@@ -85,9 +94,11 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
               text={formatMessage({ id: 'workspace.header.create' })}
               icon={PlusOutlined}
               onClick={() => {
-                tableContext.setForeignConstraints(
-                  tableContext.foreignConstraints.concat(defaultForeignConstraint),
-                );
+                const row = {
+                  ...defaultForeignConstraint,
+                  key: generateUniqKey(),
+                };
+                gridRef.current?.addRows([row]);
               }}
             />
             <Toolbar.Button
@@ -95,10 +106,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
               icon={DeleteOutlined}
               disabled={!selectedRowsIdx?.length}
               onClick={() => {
-                let newRows = [...rows]?.filter((row, index) => {
-                  return !selectedRowsIdx?.includes(index);
-                });
-                tableContext.setForeignConstraints(removeGridParams(newRows));
+                gridRef.current?.deleteRows();
               }}
             />
           </Toolbar>
@@ -109,9 +117,10 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
         rowKey="key"
         bordered={false}
         minHeight="100%"
-        columns={gridColumns}
+        initialColumns={gridColumns}
         enableFilterRow
-        rows={rows as any[]}
+        enableFlushDelete
+        initialRows={rows as any[]}
         enableRowRecord={true}
         enableColumnRecord={false}
         enableSortRow={false}
@@ -123,7 +132,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
           );
         }}
         gridRef={gridRef}
-        onRowsChange={(rows, data) => {
+        onRowsChange={(rows) => {
           const newRows: any[] = clone(rows);
           tableContext.setForeignConstraints(removeGridParams(newRows));
         }}

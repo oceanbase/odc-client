@@ -18,27 +18,33 @@ import DisplayTable from '@/component/DisplayTable';
 import { timeUnitOptions } from '@/component/Task/DataArchiveTask/CreateModal/VariableConfig';
 import { formatMessage } from '@/util/intl';
 import React from 'react';
-
 const oprationReg = /^[-+]\d+[shdwmMy]$/;
-
 const columns = [
   {
     dataIndex: 'name',
-    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.VariableName' }), //变量名
+    title: formatMessage({
+      id: 'odc.DataArchiveTask.DetailContent.VariableConfig.VariableName',
+    }),
+    //变量名
     ellipsis: true,
     width: 190,
     render: (name) => name || '-',
   },
   {
     dataIndex: 'format',
-    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeFormat' }), //时间格式
+    title: formatMessage({
+      id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeFormat',
+    }),
+    //时间格式
     ellipsis: true,
     width: 150,
     render: (name) => name || '-',
   },
   {
     dataIndex: 'opration',
-    title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.VariableConfig.TimeOperation' }), //时间运算
+    title: formatMessage({
+      id: 'odc.src.component.Task.component.VariableConfigTable.Shift',
+    }), //'时间偏移'
     width: 160,
     render: (opration) => {
       let oprationLabel = opration;
@@ -53,7 +59,6 @@ const columns = [
     },
   },
 ];
-
 const VariableConfigTable: React.FC<{
   variables: {
     name: string;
@@ -69,7 +74,6 @@ const VariableConfigTable: React.FC<{
       opration,
     };
   });
-
   return (
     <DisplayTable
       rowKey="id"
@@ -80,5 +84,4 @@ const VariableConfigTable: React.FC<{
     />
   );
 };
-
 export default VariableConfigTable;

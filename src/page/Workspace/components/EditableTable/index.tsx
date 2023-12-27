@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-import DataGrid, { DataGridRef, SelectColumn } from '@oceanbase-odc/ob-react-data-grid';
-import type {
-  DataGridProps,
-  Position,
-  RowsChangeData,
-} from '@oceanbase-odc/ob-react-data-grid/lib/types';
-import { useControllableValue } from 'ahooks';
-import React, {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-
+import DataGrid, { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
+import type { DataGridProps } from '@oceanbase-odc/ob-react-data-grid/lib/types';
+import React, { useRef } from 'react';
 import { SettingStore } from '@/store/setting';
-import { generateUniqKey } from '@/util/utils';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
@@ -49,21 +35,12 @@ interface RefHandle {
 
 type PickDataGridProps<R, SR> = Pick<
   DataGridProps<R, SR>,
-  | 'rows'
-  | 'columns'
-  | 'readonly'
-  | 'enableRowRecord'
-  | 'enableFilterRow'
-  | 'enableSortRow'
+  | 'initialRows'
+  | 'initialColumns'
   | 'onRowsChange'
   | 'contextMenuRender'
-  | 'onRowClick'
   | 'pasteFormatter'
-  | 'onSelectedRowsChange'
-  | 'onSelectedColumnsChange'
   | 'getContextMenuConfig'
-  | 'enableFrozenRow'
-  | 'searchKey'
 >;
 
 interface IProps<R extends RowType<R>, SR> extends PickDataGridProps<R, SR> {
@@ -75,8 +52,13 @@ interface IProps<R extends RowType<R>, SR> extends PickDataGridProps<R, SR> {
   gridRef?: React.Ref<DataGridRef>;
   bordered?: boolean;
   theme?: 'dark' | 'white';
-  onScroll?: (rowVisibleStartIdx: number, rowVisibleEndIdx: number) => void;
-  getNewRowData?: () => R;
+  readonly?: boolean;
+  enableRowRecord?: boolean;
+  enableFilterRow?: boolean;
+  enableSortRow?: boolean;
+  enableFrozenRow?: boolean;
+  enableFlushDelete?: boolean;
+  searchKey?: string;
   /**
    * 只要cell或者rows选择改变，都会触发。
    * cellColumnsKey 只有在选择了cell的情况下才有值
@@ -91,8 +73,8 @@ export default inject('settingStore')(
       ref: React.Ref<RefHandle>,
     ) {
       const {
-        columns,
-        rows,
+        initialColumns,
+        initialRows,
         rowKey,
         readonly,
         gridRef,
@@ -103,186 +85,35 @@ export default inject('settingStore')(
         bordered = true,
         enableColumnRecord = true,
         enableFrozenRow,
+        enableFlushDelete,
         searchKey,
         settingStore,
         theme,
-        getNewRowData,
         onRowsChange,
-        onScroll,
         contextMenuRender,
-        onRowClick,
         pasteFormatter,
         getContextMenuConfig,
         onSelectChange,
       } = props;
       const innerGridRef = useRef<DataGridRef>(null);
 
-      const [innerColumns, setInnerColumns] = useState([]);
-
-      useEffect(() => {
-        setInnerColumns([SelectColumn].concat(columns));
-      }, [columns]);
-
-      let [selectedRows, setSelectedRows] = useControllableValue<Set<React.Key>>(props, {
-        defaultValue: new Set(),
-        trigger: 'onSelectedRowsChange',
-        valuePropName: 'selectedRows',
-      });
-
-      const innerOnSelectedRowsChange = useCallback(
-        function (selectedRows: Set<React.Key>) {
-          setSelectedRows(selectedRows);
-          onSelectChange?.([...selectedRows]);
-        },
-        [setSelectedRows, onSelectChange],
-      );
-
-      useImperativeHandle(
-        ref,
-        () => {
-          return {
-            selectedRows,
-          };
-        },
-        [selectedRows],
-      );
-      const rowKeyGetter = useCallback(
-        (row: R) => {
-          return row[rowKey];
-        },
-        [rowKey],
-      );
-      const onSelectedColumnsChange = function (keys: Set<React.Key>) {
-        onSelectChange?.([], [...keys]);
-      };
-      const innerOnSelectedCellChange = useCallback(
-        function (position: Position, row: any, columnKey: string) {
-          const { rowIdx, endRowIdx, idx, endIdx } = position;
-          if (rowIdx < 0) {
-            onSelectChange?.([]);
-          } else {
-            onSelectChange?.(
-              innerGridRef?.current?.rows
-                ?.slice(Math.min(rowIdx, endRowIdx), Math.max(rowIdx, endRowIdx) + 1)
-                .map((row) => rowKeyGetter(row)) || [],
-              innerColumns
-                ?.slice(Math.min(idx, endIdx), Math.max(idx, endIdx) + 1)
-                .map((column) => column.key),
-            );
-          }
-        },
-        [rows, innerColumns, rowKeyGetter, onSelectChange],
-      );
-
-      const newData = useMemo(() => {
-        return rows?.filter?.((row) => {
-          return row._created;
-        });
-      }, [rows]);
-      const deleteData = useMemo(() => {
-        return rows?.filter?.((row) => {
-          return row._deleted;
-        });
-      }, [rows]);
-      const modifiedData = useMemo(() => {
-        return rows
-          ?.filter?.((row) => {
-            return row._originRow;
-          })
-          .map((row) => row._originRow);
-      }, [rows]);
-
-      const innerOnRowsChange = useCallback(
-        (nextRows: R[], data: RowsChangeData<R>) => {
-          const { newRows, deletedRows, modifiedRows } = data;
-          if (deletedRows?.length) {
-            const deleteKeys = deletedRows.map((row) => {
-              return rowKeyGetter(row);
-            });
-            onRowsChange?.(
-              rows
-                .map((row) => {
-                  if (deleteKeys.includes(rowKeyGetter(row))) {
-                    if (row._created) {
-                      return null;
-                    }
-                    return {
-                      ...row,
-                      _deleted: true,
-                    };
-                  }
-                  return row;
-                })
-                .filter(Boolean),
-              data,
-            );
-            return;
-          }
-          newRows.forEach((row) => {
-            const srcIdx = nextRows.findIndex((r) => rowKeyGetter(row) === rowKeyGetter(r));
-            nextRows[srcIdx] = {
-              ...nextRows[srcIdx],
-              _created: true,
-              [rowKey]: generateUniqKey(),
-            };
-          });
-          modifiedRows.forEach((modifiedRow) => {
-            const srcIdx = nextRows.findIndex((r) => rowKeyGetter(modifiedRow) === rowKeyGetter(r));
-            if (nextRows[srcIdx]?._deleted || nextRows[srcIdx]?._created) return;
-            nextRows[srcIdx] = {
-              ...nextRows[srcIdx],
-              modified: true,
-            };
-            if (!nextRows[srcIdx]._originRow) {
-              nextRows[srcIdx] = {
-                ...nextRows[srcIdx],
-                _originRow: modifiedRow,
-              };
-            }
-          });
-          onRowsChange?.(nextRows, data);
-        },
-        [onRowsChange, rowKeyGetter, rowKey, rows],
-      );
-
-      const onRowReorder = useCallback(
-        (srcRow, targetRow) => {
-          const newRows = [...rows];
-          const srcIdx = newRows.findIndex((r) => rowKeyGetter(srcRow) === rowKeyGetter(r));
-          const targetIdx = newRows.findIndex((r) => rowKeyGetter(targetRow) === rowKeyGetter(r));
-          newRows.splice(
-            targetIdx > srcIdx ? targetIdx - 1 : targetIdx,
-            0,
-            newRows.splice(srcIdx, 1)[0],
-          );
-          onRowsChange(newRows, null);
-        },
-        [rows, rowKeyGetter],
-      );
-
-      const onColumnReorder = useCallback(
-        (sourceKey, targetColumnKey) => {
-          const newColumns = [...innerColumns];
-          const srcIdx = newColumns.findIndex((r) => r.key === sourceKey);
-          const targetIdx = newColumns.findIndex((r) => r.key === targetColumnKey);
-          newColumns.splice(
-            targetIdx > srcIdx ? targetIdx - 1 : targetIdx,
-            0,
-            newColumns.splice(srcIdx, 1)[0],
-          );
-
-          setInnerColumns(newColumns);
-        },
-        [innerColumns],
-      );
-
-      const innerOnScroll = useCallback(() => {
-        onScroll?.(0, 10);
-      }, [onScroll]);
-
       return (
         <DataGrid
-          theme={theme || (settingStore.theme.sheetTheme as any)}
+          initialRows={initialRows}
+          initialColumns={initialColumns}
+          rowKeyName={rowKey}
+          options={{
+            enableRowRecord,
+            enableFilterRow,
+            enableSortRow,
+            readonly,
+            enableFrozenRow,
+            enableColumnRecord,
+            enableFlushDelete,
+            theme: theme || (settingStore.theme.sheetTheme as any),
+            searchKey,
+            rowHeight: 24,
+          }}
           style={{
             height: minHeight,
           }}
@@ -292,32 +123,11 @@ export default inject('settingStore')(
             //@ts-ignore
             gridRef ? (gridRef.current = ref) : null;
           }}
-          columns={innerColumns}
-          rows={rows}
-          rowHeight={24}
-          rowKeyGetter={rowKeyGetter}
-          onRowsChange={innerOnRowsChange}
-          selectedRows={selectedRows}
-          onSelectedRowsChange={innerOnSelectedRowsChange}
-          onScroll={innerOnScroll}
-          enableRowRecord={enableRowRecord}
-          enableFilterRow={enableFilterRow}
-          enableSortRow={enableSortRow}
-          readonly={readonly}
-          newRows={newData}
-          deletedRows={deleteData}
-          getNewRowData={getNewRowData}
-          modifiedRows={modifiedData}
+          onRowsChange={onRowsChange}
+          onSelectChange={onSelectChange}
           contextMenuRender={contextMenuRender}
-          enableFrozenRow={enableFrozenRow}
           getContextMenuConfig={getContextMenuConfig}
-          onSelectedColumnsChange={onSelectedColumnsChange}
-          onSelectedCellChange={innerOnSelectedCellChange}
-          onRowReorder={onRowReorder}
-          onColumnReorder={enableColumnRecord ? onColumnReorder : null}
-          onRowClick={onRowClick}
           pasteFormatter={pasteFormatter}
-          searchKey={searchKey}
         />
       );
     }),

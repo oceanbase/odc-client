@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  executeVariableUpdateDML,
-  fetchVariableList,
-  getVariableUpdateDML,
-} from '@/common/network/sessionParams';
+import { fetchVariableList, updateVariable } from '@/common/network/sessionParams';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
@@ -29,11 +25,12 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { EditOutlined, SyncOutlined } from '@ant-design/icons';
 import { Alert, Input, Layout, message, Spin } from 'antd';
 import { debounce } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { FormattedMessage } from '@umijs/max';
 import EditableTable, { RowType } from '../EditableTable';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
@@ -64,13 +61,12 @@ function SessionParamsTable(props: {
     showDatasource,
   } = props;
   const [listLoading, setListLoading] = useState(false);
-  const [showExecuteSQLModal, setShowExecuteSQLModal] = useState(false);
-  const [updateDML, setupdateDML] = useState('');
   const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [searchKey, setSearchKey] = useState('');
   const [connectionProperty, setConnectionProperty] = useState([]);
   const [rows, setRows] = useState<IRowConnectionProperty[]>([]);
+  const gridRef = useRef<DataGridRef>();
   const session = sessionManagerStore.sessionMap.get(sessionId);
 
   const loadData = async function () {
@@ -108,25 +104,6 @@ function SessionParamsTable(props: {
     [],
   );
 
-  const handleExecuteUpdateDML = useCallback(async () => {
-    if (!session) {
-      return;
-    }
-    const success = await executeVariableUpdateDML(updateDML, connectionPropertyType, sessionId);
-
-    if (success) {
-      // 刷新
-      await loadData();
-      await session.initSessionStatus();
-      setShowExecuteSQLModal(false);
-      message.success(
-        formatMessage({
-          id: 'workspace.window.session.modal.sql.execute.success',
-        }),
-      ); // 更新页面标题 & url
-    }
-  }, [session, updateDML, rows, connectionPropertyType, loadData, sessionId]);
-
   const columns = [
     {
       key: 'key',
@@ -155,8 +132,7 @@ function SessionParamsTable(props: {
       const oldVlaue = filteredRows?.[selectedRowIndex]?.value;
       let modified = newValue !== oldVlaue;
       if (modified) {
-        setShowExecuteSQLModal(true);
-        const updateDML = await getVariableUpdateDML(
+        const isSuccess = await updateVariable(
           {
             ...filteredRows?.[selectedRowIndex],
             value: newValue,
@@ -164,8 +140,14 @@ function SessionParamsTable(props: {
           connectionPropertyType,
           sessionId,
         );
-        setupdateDML(updateDML);
-        if (updateDML) {
+        if (isSuccess) {
+          await loadData();
+          await session.initSessionStatus();
+          message.success(
+            formatMessage({
+              id: 'workspace.window.session.modal.sql.execute.success',
+            }),
+          );
           setShowEditModal(false);
         }
       } else {
@@ -174,6 +156,10 @@ function SessionParamsTable(props: {
     },
     [filteredRows, selectedRowIndex],
   );
+
+  useEffect(() => {
+    gridRef.current?.setRows?.(filteredRows ?? []);
+  }, [filteredRows]);
 
   return (
     <>
@@ -186,7 +172,7 @@ function SessionParamsTable(props: {
             <div className="tools-left">
               <ToolbarButton
                 isShowText
-                text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                 icon={<EditOutlined />}
                 onClick={handleOpenEditModal}
                 // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
@@ -204,7 +190,7 @@ function SessionParamsTable(props: {
                 className={styles.search}
               />
               <ToolbarButton
-                text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                 icon={<SyncOutlined />}
                 onClick={handleRefresh}
               />
@@ -218,12 +204,13 @@ function SessionParamsTable(props: {
           {tip ? <Alert showIcon message={tip} /> : null}
           <div className={styles.table}>
             <EditableTable
+              gridRef={gridRef}
               bordered={!bordered}
               minHeight={`100%`}
-              columns={columns}
+              initialColumns={columns}
               rowKey="key"
               enableFilterRow={false}
-              rows={filteredRows as any}
+              initialRows={filteredRows as any}
               readonly={true}
               onSelectChange={(keys) => {
                 const idx = filteredRows.findIndex((c) => keys.includes(c.key));
@@ -238,20 +225,6 @@ function SessionParamsTable(props: {
         onSave={handleSaveProperty}
         onCancel={() => setShowEditModal(false)}
         model={filteredRows?.[selectedRowIndex] || {}}
-      />
-      <ExecuteSQLModal
-        sessionStore={session}
-        key="key"
-        tip={formatMessage({
-          id: 'odc.components.SessionParamPage.ThisModificationWillTakeEffect',
-        })}
-        /*本次修改将对本连接的所有窗口生效，请仔细确认*/
-        sql={updateDML}
-        visible={showExecuteSQLModal}
-        onSave={handleExecuteUpdateDML}
-        onCancel={() => setShowExecuteSQLModal(false)}
-        onChange={(sql) => setupdateDML(sql)}
-        readonly={true}
       />
     </>
   );

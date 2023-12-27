@@ -37,7 +37,7 @@ import { ItemType } from 'antd/es/menu/hooks/useItems';
 import BatchImportButton from '@/component/BatchImportButton';
 import { encryptConnection } from '@/util/connection';
 import { batchImportPrivateConnection } from '@/common/network/connection';
-import ConIcon from '@/svgr/icon_connection.svg';
+import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
 
 import styles from './index.less';
 import ConnectionPopover from '@/component/ConnectionPopover';

@@ -59,7 +59,7 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
     icon,
     iconColor,
     onTabChange,
-    containerWrapStyle,
+    containerWrapStyle = {},
   } = props;
   const {
     title,

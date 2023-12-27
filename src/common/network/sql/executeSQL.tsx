@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import RuleResult from '@/component/SQLLintResult/RuleResult';
-import { ISqlExecuteResultStatus } from '@/d.ts';
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult } from '@/d.ts';
+import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { Modal, message } from 'antd';
+import { message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
+
 export interface IExecuteSQLParams {
   sql: string;
   queryLimit?: number;
@@ -53,10 +54,13 @@ export interface ISQLExecuteTask {
  * 包含拦截信息和执行结果
  */
 export interface IExecuteTaskResult {
+  hasLintResults?: boolean;
   invalid: boolean;
   executeSuccess: boolean;
-  violatedRules: ISQLExecuteTaskSQL['violatedRules'];
+  violatedRules: IRule[];
   executeResult: ISqlExecuteResult[];
+  lintResultSet?: ISQLLintReuslt[];
+  status?: EStatus;
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -139,10 +143,19 @@ class TaskManager {
   }
 }
 export const executeTaskManager = new TaskManager();
+/**
+ *
+ * @param params 要执行的SQL内容，可能为string或IExecuteSQLParams类型
+ * @param sessionId 会话ID
+ * @param dbName 数据库名称
+ * @param needModal SQL确认弹窗，默认需要弹出
+ * @returns
+ */
 export default async function executeSQL(
   params: IExecuteSQLParams | string,
   sessionId: string,
   dbName: string,
+  needModal: boolean = true,
 ): Promise<IExecuteTaskResult> {
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
@@ -159,11 +172,21 @@ export default async function executeSQL(
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
-  const rootViolatedRules = taskInfo?.violatedRules || [];
+  const rootViolatedRules = taskInfo?.violatedRules?.reduce((pre, cur) => {
+    if (cur?.violation) {
+      return pre.concat({
+        sqlTuple: {
+          executedSql: cur?.violation?.text,
+          offset: cur?.violation?.offset,
+          originalSql: cur?.violation?.text,
+        },
+        violatedRules: [cur],
+      });
+    }
+    return pre;
+  }, []);
   const unauthorizedDatabaseNames = taskInfo?.unauthorizedDatabaseNames;
-  const violatedRules = taskInfo?.sqls?.reduce((prev, current) => {
-    return prev.concat(current?.violatedRules || []);
-  }, rootViolatedRules);
+  const violatedRules = rootViolatedRules.concat(taskInfo?.sqls);
   if (unauthorizedDatabaseNames?.length) {
     /**
      * 无权限库
@@ -186,35 +209,58 @@ export default async function executeSQL(
       violatedRules: [],
     };
   }
-  if (violatedRules?.length) {
-    /**
-     * 拦截
-     * level = 1: 发起审批
-     * level = 2: 拒绝执行
-     */
-    const session = sessionManager.sessionMap.get(sessionId);
-    const isBan = violatedRules?.find((rule) => rule.level === 2);
-    if (isBan) {
-      Modal.error({
-        title: formatMessage({
-          id: 'odc.network.sql.executeSQL.ThisOperationHasBeenBlocked',
-        }),
-        //该操作已被以下规则拦截
-        content: <RuleResult data={violatedRules} />,
+  const lintResultSet = violatedRules?.reduce((pre, cur) => {
+    if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
+      return pre.concat({
+        sql: cur?.sqlTuple?.executedSql,
+        violations: cur?.violatedRules?.map((item) => item?.violation),
+      });
+    } else {
+      return pre;
+    }
+  }, []);
+  /**
+   * lintResultSet为空数组时，返回的status默认为submit
+   */
+  const status = getStatus(lintResultSet);
+  // 没有requestId，即是被拦截了
+  if (!taskInfo?.requestId) {
+    // 一些场景下不需要弹出SQL确认弹窗
+    if (!needModal) {
+      return {
+        hasLintResults: lintResultSet?.length > 0,
+        invalid: true,
+        executeSuccess: false,
+        executeResult: [],
+        violatedRules,
+        lintResultSet,
+        status,
+      };
+    }
+    // 当status不为submit时
+    if (status !== EStatus.SUBMIT) {
+      modal.updateWorkSpaceExecuteSQLModalProps({
+        sql: (params as IExecuteSQLParams)?.sql || (params as string),
+        visible: true,
+        sessionId,
+        lintResultSet,
+        status,
+        onSave: () => {
+          // 关闭SQL确认窗口打开新建数据库变更抽屉
+          modal.updateWorkSpaceExecuteSQLModalProps();
+          modal.changeCreateAsyncTaskModal(true, {
+            sql: (params as IExecuteSQLParams)?.sql || (params as string),
+            databaseId: sessionManager.sessionMap.get(sessionId).odcDatabase?.id,
+            rules: lintResultSet,
+          });
+        },
+        // 关闭SQL确认弹窗
+        onCancel: () =>
+          modal.updateWorkSpaceExecuteSQLModalProps({
+            visible: false,
+          }),
       });
     }
-    !isBan &&
-      modal.changeCreateAsyncTaskModal(true, {
-        sql: serverParams.sql,
-        databaseId: session?.database?.databaseId,
-        rules: violatedRules,
-      });
-    return {
-      invalid: true,
-      executeSuccess: false,
-      executeResult: [],
-      violatedRules: violatedRules,
-    };
   }
   const requestId = taskInfo?.requestId;
   const sqls = taskInfo?.sqls;
@@ -234,5 +280,31 @@ export default async function executeSQL(
       !!results && !results?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS),
     executeResult: results || [],
     violatedRules: [],
+    lintResultSet,
+    hasLintResults: lintResultSet?.length > 0,
+    status,
   };
+}
+
+function getStatus(lintResultSet: ISQLLintReuslt[]) {
+  if (Array.isArray(lintResultSet) && lintResultSet?.length) {
+    const violations = lintResultSet.reduce((pre, cur) => {
+      if (cur?.violations?.length === 0) {
+        return pre;
+      }
+      return pre.concat(...cur?.violations);
+    }, []);
+    // 含有必须改进， 中断后续操作，禁止执行
+    if (violations?.some((violation) => violation?.level === 2)) {
+      return EStatus.DISABLED;
+      //  全为无需改进，继续原有的后续操作
+    } else if (violations?.every((violation) => violation?.level === 0)) {
+      return EStatus.SUBMIT;
+    } else {
+      // 既不含必须改进，又不全是无需改进，需要发起审批
+      return EStatus.APPROVAL;
+    }
+  }
+  // 默认返回submit，不中断后续操作
+  return EStatus.SUBMIT;
 }

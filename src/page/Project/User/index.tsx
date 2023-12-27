@@ -28,24 +28,41 @@ import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
 import tracert from '@/util/tracert';
-
 export const projectRoleTextMap = {
-  [ProjectRole.OWNER]: formatMessage({ id: 'odc.User.AddUserModal.Administrator' }),
-  [ProjectRole.DEVELOPER]: formatMessage({ id: 'odc.User.AddUserModal.CommonMember' }),
+  [ProjectRole.OWNER]: formatMessage({
+    id: 'odc.User.AddUserModal.Administrator',
+  }),
+  [ProjectRole.DEVELOPER]: formatMessage({
+    id: 'odc.User.AddUserModal.CommonMember',
+  }),
   [ProjectRole.DBA]: 'DBA',
+  [ProjectRole.SECURITY_ADMINISTRATOR]: formatMessage({
+    id: 'odc.src.page.Project.User.SecurityAdministrator',
+  }), //'安全管理员'
+  [ProjectRole.PARTICIPANT]: formatMessage({
+    id: 'odc.src.page.Project.User.Participant',
+  }), //'参与者'
 };
 interface IProps {
   id: string;
 }
 const User: React.FC<IProps> = ({ id }) => {
   const context = useContext(ProjectContext);
-
+  const { project } = context;
+  const disabled =
+    project?.currentUserResourceRoles?.filter((roles) => [ProjectRole.OWNER]?.includes(roles))
+      ?.length === 0;
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
-
   const [editUserId, setEditUserId] = useState<number>(null);
-
-  const dataSource: (IProject['members'][0] & { roles: ProjectRole[] })[] = useMemo(() => {
-    const userMap = new Map<number, IProject['members'][0] & { roles: ProjectRole[] }>();
+  const dataSource: (IProject['members'][0] & {
+    roles: ProjectRole[];
+  })[] = useMemo(() => {
+    const userMap = new Map<
+      number,
+      IProject['members'][0] & {
+        roles: ProjectRole[];
+      }
+    >();
     context?.project?.members?.forEach((mem) => {
       const { id, role } = mem;
       if (userMap.has(id)) {
@@ -59,11 +76,9 @@ const User: React.FC<IProps> = ({ id }) => {
     });
     return [...userMap.values()];
   }, [context?.project?.members]);
-
   useEffect(() => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
-
   async function deleteUser(id: number) {
     const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
@@ -71,21 +86,26 @@ const User: React.FC<IProps> = ({ id }) => {
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.Project.User.DeletedSuccessfully' }), //删除成功
+        formatMessage({
+          id: 'odc.Project.User.DeletedSuccessfully',
+        }), //删除成功
       );
+
       context.reloadProject();
     }
   }
-
   async function updateUser(id: number) {
     setEditUserId(id);
   }
-
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)}>
-          {formatMessage({ id: 'odc.Project.User.AddMembers' }) /*添加成员*/}
+        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={disabled}>
+          {
+            formatMessage({
+              id: 'odc.Project.User.AddMembers',
+            }) /*添加成员*/
+          }
         </Button>
       }
       extra={
@@ -98,16 +118,25 @@ const User: React.FC<IProps> = ({ id }) => {
         rowKey={'id'}
         columns={[
           {
-            title: formatMessage({ id: 'odc.Project.User.UserName' }), //用户名称
+            title: formatMessage({
+              id: 'odc.Project.User.UserName',
+            }),
+            //用户名称
             dataIndex: 'name',
           },
           {
-            title: formatMessage({ id: 'odc.Project.User.Account' }), //账号
+            title: formatMessage({
+              id: 'odc.Project.User.Account',
+            }),
+            //账号
             dataIndex: 'accountName',
             width: 370,
           },
           {
-            title: formatMessage({ id: 'odc.Project.User.ProjectRole' }), //项目角色
+            title: formatMessage({
+              id: 'odc.Project.User.ProjectRole',
+            }),
+            //项目角色
             dataIndex: 'roles',
             width: 370,
             render(v) {
@@ -115,21 +144,42 @@ const User: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.User.Operation' }), //操作
+            title: formatMessage({
+              id: 'odc.Project.User.Operation',
+            }),
+            //操作
             dataIndex: 'name',
             width: 135,
             render(_, record) {
+              const disabled =
+                project?.currentUserResourceRoles?.filter((roles) =>
+                  [ProjectRole.OWNER]?.includes(roles),
+                )?.length === 0;
               return (
                 <Action.Group size={3}>
-                  <Action.Link onClick={() => updateUser(record.id)} key={'export'}>
-                    {formatMessage({ id: 'odc.Project.User.Edit' }) /*编辑*/}
+                  <Action.Link
+                    onClick={() => updateUser(record.id)}
+                    key={'export'}
+                    disabled={disabled}
+                  >
+                    {
+                      formatMessage({
+                        id: 'odc.Project.User.Edit',
+                      }) /*编辑*/
+                    }
                   </Action.Link>
                   <Popconfirm
-                    title={formatMessage({ id: 'odc.Project.User.AreYouSureYouWant' })}
+                    title={formatMessage({
+                      id: 'odc.Project.User.AreYouSureYouWant',
+                    })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
-                    <Action.Link key={'import'}>
-                      {formatMessage({ id: 'odc.Project.User.Remove' }) /*移除*/}
+                    <Action.Link key={'import'} disabled={disabled}>
+                      {
+                        formatMessage({
+                          id: 'odc.Project.User.Remove',
+                        }) /*移除*/
+                      }
                     </Action.Link>
                   </Popconfirm>
                 </Action.Group>
@@ -170,5 +220,4 @@ const User: React.FC<IProps> = ({ id }) => {
     </TableCard>
   );
 };
-
 export default User;

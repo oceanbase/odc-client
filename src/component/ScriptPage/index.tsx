@@ -55,6 +55,7 @@ interface IProps {
   session: SessionStore;
   sessionSelectReadonly?: boolean;
   dialectTypes?: ConnectionMode[];
+  showSessionSelect?: boolean;
   handleChangeSplitPane?: (size: number) => void;
 }
 
@@ -100,6 +101,7 @@ export default class ScriptPage extends PureComponent<IProps> {
       session,
       sessionSelectReadonly,
       dialectTypes,
+      showSessionSelect = true,
     } = this.props;
     const isShowDebugStackBar = !!stackbar?.list?.length;
     return (
@@ -112,7 +114,9 @@ export default class ScriptPage extends PureComponent<IProps> {
       >
         <Content style={{ position: 'relative' }}>
           {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
-          <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
+          {showSessionSelect && (
+            <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
+          )}
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {
@@ -133,7 +137,10 @@ export default class ScriptPage extends PureComponent<IProps> {
           <DropWrapper
             style={{
               position: 'absolute',
-              top: EDITOR_TOOLBAR_HEIGHT + (isShowDebugStackBar ? 28 : 0) + 32,
+              top:
+                EDITOR_TOOLBAR_HEIGHT +
+                (isShowDebugStackBar ? 28 : 0) +
+                (showSessionSelect ? 32 : 0),
               bottom: statusBar && statusBar.status ? 32 : 0,
               left: 0,
               right: 0,

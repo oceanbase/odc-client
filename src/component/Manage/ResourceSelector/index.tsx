@@ -458,7 +458,12 @@ export const ResourceSelector: React.FC<{
       ...item,
       selected,
     }));
-
+    formRef.current.setFields([
+      {
+        name: [name, index, 'resourceId'],
+        errors: [],
+      },
+    ]);
     setAllSelecteField(
       selected
         ? {

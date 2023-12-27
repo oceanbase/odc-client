@@ -15,7 +15,6 @@
  */
 
 import { generateDatabaseSid } from '@/common/network/pathUtil';
-import AWS from 'aws-sdk';
 import request from './request';
 
 // 上传文件到 OSS
@@ -40,7 +39,8 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
     accessKeyId,
   } = uploadMeta.data;
   // 3. 上传文件
-  const s3 = new AWS.S3({
+  const S3 = await import('aws-sdk/clients/s3').then((module) => module.default);
+  const s3 = new S3({
     credentials: {
       secretAccessKey: accessKeySecret,
       accessKeyId: accessKeyId,
@@ -48,6 +48,9 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
     },
     endpoint: endpoint,
     region: region,
+    httpOptions: {
+      timeout: 60 * 15 * 1000,
+    },
   });
   const isSuccess = await new Promise((resolve) => {
     s3.putObject(

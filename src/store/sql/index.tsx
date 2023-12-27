@@ -16,6 +16,7 @@
 
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
+import { executePL } from '@/common/network/sql/executePL';
 import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { PLType } from '@/constant/plType';
 import {
@@ -109,7 +110,7 @@ export class SQLStore {
       runInAction(() => {
         this.commitingPageKey.add(pageKey);
       });
-      const data = await executeSQL('commit;', sessionId, dbName);
+      const data = await executeSQL('commit;', sessionId, dbName, false);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
@@ -128,7 +129,7 @@ export class SQLStore {
         return;
       }
       this.rollbackPageKey.add(pageKey);
-      const data = await executeSQL('rollback;', sessionId, dbName);
+      const data = await executeSQL('rollback;', sessionId, dbName, false);
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
@@ -163,6 +164,7 @@ export class SQLStore {
     isSection: boolean,
     sessionId: string,
     dbName: string,
+    needModal: boolean = true,
   ): Promise<IExecuteTaskResult> {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
@@ -182,6 +184,7 @@ export class SQLStore {
         },
         sessionId,
         dbName,
+        needModal,
       );
     } catch (e) {
       throw e;
@@ -270,7 +273,7 @@ export class SQLStore {
   @action
   public async parsePL(sql: string, sessionId, dbName) {
     const sid = generateDatabaseSid(dbName, sessionId);
-    const res = await request.put(`/api/v1/pl/parsePLNameType/${sid}`, {
+    const res = await request.post(`/api/v2/pl/parsePLNameType/${sid}`, {
       data: {
         sql,
       },
@@ -286,7 +289,7 @@ export class SQLStore {
     dbName,
   ): Promise<IPLCompileResult> {
     const sid = generateDatabaseSid(dbName, sessionId);
-    const res = await request.post(`/api/v1/pl/compile/${sid}`, {
+    const res = await request.post(`/api/v2/pl/compile/${sid}`, {
       data: { obDbObjectType, plName },
     });
     return res && res.data;
@@ -345,25 +348,25 @@ export class SQLStore {
     let res;
     let dbms;
     if (plSchema.plType === PLType.PROCEDURE) {
-      res = await request.put(`/api/v1/pl/callProcedure/${sid}`, {
-        data: {
+      res = await executePL(
+        {
+          type: PLType.PROCEDURE,
           procedure: { ...plSchema?.procedure, params: plSchema?.params },
           anonymousBlockDdl,
         },
-        params: {
-          ignoreError,
-        },
-      });
+        sessionId,
+        ignoreError,
+      );
     } else if (plSchema.plType === PLType.FUNCTION) {
-      res = await request.put(`/api/v1/pl/callFunction/${sid}`, {
-        data: {
+      res = await await executePL(
+        {
+          type: PLType.FUNCTION,
           function: { ...plSchema?.function, params: plSchema?.params },
           anonymousBlockDdl,
         },
-        params: {
-          ignoreError,
-        },
-      });
+        sessionId,
+        ignoreError,
+      );
     } else {
       const data = await executeSQL({ sql: plSchema.ddl, split: false }, sessionId, dbName); // 数据格式兼容
       if (data?.invalid) {
@@ -417,7 +420,7 @@ export class SQLStore {
       return null;
     }
     const sid = generateDatabaseSid(dbName, sessionId);
-    const res = await request.get(`/api/v1/pl/getLine/${sid}`);
+    const res = await request.get(`/api/v2/pl/getLine/${sid}`);
     return res && res.data;
   }
 

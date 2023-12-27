@@ -20,6 +20,7 @@ import { ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { Checkbox, Form, message, Modal } from 'antd';
 import { useEffect } from 'react';
+import { projectRoleTextMap } from '..';
 interface IProps {
   close: () => void;
   onSuccess: () => void;
@@ -114,6 +115,24 @@ export default function UpdateUserModal({
                 ),
 
                 value: ProjectRole.DEVELOPER,
+              },
+              {
+                label: (
+                  <HelpDoc leftText doc="projectSA">
+                    {projectRoleTextMap[ProjectRole.SECURITY_ADMINISTRATOR]}
+                  </HelpDoc>
+                ),
+
+                value: ProjectRole.SECURITY_ADMINISTRATOR,
+              },
+              {
+                label: (
+                  <HelpDoc leftText doc="participant">
+                    {projectRoleTextMap[ProjectRole.PARTICIPANT]}
+                  </HelpDoc>
+                ),
+
+                value: ProjectRole.PARTICIPANT,
               },
             ]}
           />

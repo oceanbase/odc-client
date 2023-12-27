@@ -15,35 +15,35 @@
  */
 
 import PageLoading from '@/component/PageLoading';
-import { UserStore } from '@/store/login';
+import login, { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Outlet, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { history } from '@umijs/max';
-
+import { PageLoadingContext } from './PageLoadingWrapper';
 interface IProps {
   userStore: UserStore;
   settingStore: SettingStore;
 }
-
 enum STATUS_TYPE {
   INIT,
   LOADING,
   DONE,
   ERROR,
 }
-
 const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingStore }) {
   const [status, setStatus] = useState<STATUS_TYPE>(STATUS_TYPE.INIT);
   const location = useLocation();
-
+  const pageContext = useContext(PageLoadingContext);
   async function checkLoginStatus() {
     setStatus(STATUS_TYPE.LOADING);
-    const query: { [key: string]: any } = new URLSearchParams(location.search);
+    const query: {
+      [key: string]: any;
+    } = new URLSearchParams(location.search);
     if (query.has('accountVerifyToken') && !isClient()) {
       /**
        * 存在token的时候，直接跳到登录页面做自动登录处理
@@ -69,30 +69,11 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
             id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
           }), //[getCurrentUser]初始化信息失败
         );
+
         setStatus(STATUS_TYPE.ERROR);
         return;
       }
-      if (
-        !settingStore.serverSystemInfo?.passwordLoginEnabled &&
-        settingStore.serverSystemInfo?.ssoLoginEnabled
-      ) {
-        userStore.gotoLoginPageSSO();
-        return;
-      }
-      const searchParamsObj = new URLSearchParams();
-      if (location.search.includes('redirect')) {
-        searchParamsObj.append(
-          'redirectTo',
-          encodeURIComponent(
-            decodeURIComponent(new URLSearchParams(location.search).get('redirectTo')),
-          ),
-        );
-      }
-
-      history.replace({
-        pathname: '/login',
-        search: searchParamsObj.toString(),
-      });
+      await login.gotoLoginPage();
     } else if (userStore?.user?.enabled === false) {
       /**
        * 冻结用户
@@ -106,11 +87,42 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
     }
     setStatus(STATUS_TYPE.DONE);
   }
-
   useEffect(() => {
     checkLoginStatus();
   }, []);
-
+  useEffect(() => {
+    switch (status) {
+      case STATUS_TYPE.DONE: {
+        pageContext?.removeTask();
+        break;
+      }
+      case STATUS_TYPE.LOADING: {
+        pageContext?.setTask({
+          tip: formatMessage({
+            id: 'odc.src.layout.GetUserInformation',
+          }), //'正在获取用户信息'
+          showError: false,
+        });
+        break;
+      }
+      case STATUS_TYPE.ERROR: {
+        pageContext?.setTask({
+          tip: null,
+          showError: true,
+        });
+        break;
+      }
+      default: {
+        pageContext?.setTask({
+          tip: formatMessage({
+            id: 'odc.src.layout.UserStatusIsBeingChecked',
+          }), //'正在检查用户状态'
+          showError: false,
+        });
+        break;
+      }
+    }
+  }, [status]);
   switch (status) {
     case STATUS_TYPE.DONE: {
       return (
@@ -118,12 +130,6 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
           <Outlet />
         </>
       );
-    }
-    case STATUS_TYPE.LOADING: {
-      return <PageLoading showError={false} />;
-    }
-    case STATUS_TYPE.ERROR: {
-      return <PageLoading showError />;
     }
     default: {
       return <></>;

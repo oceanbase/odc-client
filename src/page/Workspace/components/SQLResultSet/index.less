@@ -95,7 +95,7 @@
     line-height: 20px;
   }
   .dbms {
-    white-space: pre-line;
+    white-space: pre;
   }
   .track {
     margin-top: 8px;
@@ -187,7 +187,8 @@
     }
 
     .ant-table-column-title {
-      color: rgba(0, 0, 0, 0.65);
+      // 同色值token在暗黑模式下颜色异常，注释后
+      // color: rgba(0, 0, 0, 0.65);
     }
 
     .ant-table-column-has-sorters {
@@ -233,4 +234,37 @@
       padding-bottom: 0;
     }
   }
+}
+:global {
+  .editor-selection-stmt-default {
+    background: var(--code-highlight-default-color);
+  }
+  .editor-selection-stmt-suggest {
+    background: var(--code-highlight-suggest-color);
+  }
+  .editor-selection-stmt-must {
+    background: var(--code-highlight-must-color);
+  }
+}
+.lintResultTableHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px;
+  .tip {
+    color: var(--text-color-hint);
+    font-weight: 400;
+    font-size: 12px;
+    font-family: OBPingFangSC;
+  }
+}
+.thFilter {
+  :global {
+    .ant-table-filter-column {
+      padding-right: 8px;
+    }
+  }
+}
+.labelHover {
+  cursor: pointer;
 }

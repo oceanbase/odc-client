@@ -83,7 +83,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   const { collation, character, ...rest } = data;
                   const newData = cloneDeep(table);
                   Object.assign(newData.info, rest);
-                  const updateTableDML = await generateUpdateTableDDL(
+                  const { sql: updateTableDML, tip } = await generateUpdateTableDDL(
                     newData,
                     table,
                     session.sessionId,
@@ -121,6 +121,8 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                       }
                       setIsEditing(false);
                     },
+                    tip,
+                    () => setIsEditing(false),
                   );
                 }
               }}
@@ -251,11 +253,20 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.Size',
               }), //大小 //大小
-              content:
-                table?.info?.tableSize ||
-                formatMessage({
-                  id: 'odc.components.ShowTableBaseInfoForm.Empty',
-                }),
+              content: (
+                <HelpDoc
+                  {...{
+                    doc: 'tableSizeToolTip',
+                    leftText: true,
+                    isTip: true,
+                  }}
+                >
+                  {table?.info?.tableSize ||
+                    formatMessage({
+                      id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                    })}
+                </HelpDoc>
+              ),
               // 空
             },
           ]}

@@ -16,7 +16,6 @@
 
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
-import { formatMessage } from '@/util/intl';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 
@@ -348,6 +347,7 @@ export interface ITaskFlowNode {
   externalApprovalName: string;
   autoApproval: boolean;
   sequenceNumber: number;
+  preCheckOverLimit?: boolean;
 }
 
 interface Encryption {
@@ -416,6 +416,8 @@ export enum AuditEventType {
   PROJECT_MANAGEMENT = 'PROJECT_MANAGEMENT',
   // 导出结果集
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  // 项目权限申请
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   // SQL 安全规则管理
   SQL_SECURITY_RULE_MANAGEMENT = 'SQL_SECURITY_RULE_MANAGEMENT',
 }
@@ -553,6 +555,12 @@ export enum AuditEventActionType {
   REJECT_EXPORT_RESULT_SET_TASK = 'REJECT_EXPORT_RESULT_SET_TASK',
   EXECUTE_EXPORT_RESULT_SET_TASK = 'EXECUTE_EXPORT_RESULT_SET_TASK',
   STOP_EXPORT_RESULT_SET_TASK = 'STOP_EXPORT_RESULT_SET_TASK',
+  // 项目权限申请
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  CREATE_APPLY_PROJECT_PERMISSION_TASK = 'CREATE_APPLY_PROJECT_PERMISSION_TASK',
+  APPROVE_APPLY_PROJECT_PERMISSION_TASK = 'APPROVE_APPLY_PROJECT_PERMISSION_TASK',
+  REJECT_APPLY_PROJECT_PERMISSION_TASK = 'REJECT_APPLY_PROJECT_PERMISSION_TASK',
+  STOP_APPLY_PROJECT_PERMISSION_TASK = 'STOP_APPLY_PROJECT_PERMISSION_TASK',
   // SQL 安全规则管理
   UPDATE_SQL_SECURITY_RULE = 'UPDATE_SQL_SECURITY_RULE',
 }
@@ -704,6 +712,9 @@ export interface IConnection {
   errorMessage?: string;
   jdbcUrlParameters?: Record<string, string>;
   sessionInitScript?: string;
+  defaultSchema?: string;
+  projectId?: number;
+  readonly projectName?: string;
 }
 
 export interface IConnectionLabel {
@@ -962,10 +973,30 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
 }
 
 export interface IColumnMetaData {
-  columnLabel: string;
+  autoIncrement: boolean;
+  caseSensitive: boolean;
+  catalogName: string;
+  columnClassName: string;
   columnComment: string;
-  readonly: boolean;
-  [key: string]: any;
+  columnsDisplaySize: number;
+  columnLabel: string;
+  columnName: string;
+  columnType: number;
+  columnTypeName: string;
+  currency: boolean;
+  definitelyWritable: boolean;
+  editable: boolean;
+  internal: boolean;
+  masked: boolean;
+  nullable: number;
+  precision: number;
+  readOnly: boolean;
+  scale: number;
+  schemaName: string;
+  searchable: boolean;
+  signed: boolean;
+  tableName: string;
+  writeable: boolean;
 }
 
 /** 日志相关 */
@@ -1445,11 +1476,24 @@ export interface IResultTimerStage {
 }
 
 export interface ISqlExecuteResult {
+  allowExport: boolean;
+  columnLabels: string[];
   columns?: string[];
+  errorCode: number;
   executeSql: string;
+  existSensitiveData: boolean;
+  existWarnings: boolean;
+  originSql: string;
+  resultSetMetaData: {
+    columnList: any[];
+    dbColumnList: any[];
+    editable: boolean;
+    fieldMetaDataList: IColumnMetaData[];
+    table: any;
+  };
   dbmsOutput?: string;
   messages?: string;
-  rows?: any[];
+  rows?: string[][];
   status: ISqlExecuteResultStatus;
   total?: number;
   // 是否含有告警信息
@@ -1462,7 +1506,9 @@ export interface ISqlExecuteResult {
   id?: string;
   requestId?: string | number;
   sqlId?: string;
-  types?: any;
+  types?: {
+    [key: string]: string | number;
+  };
   sqlType: SqlType;
   dbObjectType?: DbObjectType;
   dbObjectName?: string;
@@ -1472,6 +1518,7 @@ export interface ISqlExecuteResult {
    */
   whereColumns?: string[];
   timer: {
+    name: string;
     stages: IResultTimerStage[];
     startTimeMillis: number; // 开始时间
     totalDurationMicroseconds: number; // 总耗时
@@ -1485,6 +1532,8 @@ export interface ISqlExecuteResult {
     text: string;
     type: string;
   }[];
+  withFullLinkTrace: boolean;
+  traceEmptyReason?: string;
 }
 
 export enum ISqlExecuteResultStatus {
@@ -1747,6 +1796,7 @@ export enum TaskPageType {
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
 }
 
 export enum TaskType {
@@ -1765,6 +1815,7 @@ export enum TaskType {
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
 }
 
 export enum TaskJobType {
@@ -2138,6 +2189,10 @@ export interface ISubTaskRecords {
   tasks: ISubTaskRecord[];
 }
 
+export interface IDatasourceUser {
+  name: string;
+}
+
 export type TaskRecordParameters =
   | IDataTransferTaskParams
   | IAsyncTaskParams
@@ -2146,7 +2201,8 @@ export type TaskRecordParameters =
   | IPartitionPlanParams
   | ISQLPlanTaskParams
   | IAlterScheduleTaskParams
-  | IResultSetExportTaskParams;
+  | IResultSetExportTaskParams
+  | IApplyPermissionTaskParams;
 
 export interface ITaskResult {
   containQuery: boolean;
@@ -2370,6 +2426,18 @@ export interface IAsyncTaskParams {
   parentFlowInstanceId?: number;
 }
 
+export interface IApplyPermissionTaskParams {
+  applyReason: string;
+  project: {
+    name: string;
+    id: number;
+  };
+  resourceRoles: {
+    name: string;
+    id: number;
+  }[];
+}
+
 export interface IResultSetExportTaskParams {
   sql: string;
   fileFormat: IExportResultSetFileType;
@@ -2487,6 +2555,7 @@ export interface IConnectionPartitionPlan {
   inspectEnable: boolean;
   inspectTriggerStrategy: string;
   tablePartitionPlans: IPartitionPlanRecord[];
+  triggerConfig: ICycleTaskTriggerConfig;
 }
 
 export enum TaskExecStrategy {
@@ -2551,6 +2620,10 @@ export interface ITaskFlowNode {
 }
 
 export type TaskDetail<P> = TaskRecord<P>;
+
+export interface IIPartitionPlanTaskDetail<T> extends TaskDetail<T> {
+  nextFireTimes: number[];
+}
 
 export type CycleTaskDetail<T> = ICycleTaskRecord<T>;
 
@@ -2935,16 +3008,6 @@ export enum MaskRuleType {
   NULL = 'NULL',
 }
 
-export const MaskRyleTypeMap = {
-  // 掩盖
-  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp' }), //掩盖 // 替换
-  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace' }), //替换 // 保留格式
-  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat' }), //保留格式 // 哈希
-  HASH: formatMessage({ id: 'odc.src.d.ts.Hash' }), //哈希 // 取整
-  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding' }), //取整 // 置空
-  NULL: formatMessage({ id: 'odc.src.d.ts.Empty' }), //置空
-};
-
 export enum MaskRuleCustomSegmentsType {
   // 位数
   DIGIT = 'DIGIT',
@@ -3318,4 +3381,15 @@ export interface INlsObject {
    * 时间戳
    */
   timestamp: number;
+}
+
+export enum ETheme {
+  DARK = 'dark',
+  WHITE = 'white',
+}
+
+export enum EStatus {
+  SUBMIT = 'submit',
+  APPROVAL = 'approval',
+  DISABLED = 'disabled',
 }

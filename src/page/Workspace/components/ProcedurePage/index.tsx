@@ -28,8 +28,8 @@ import {
 } from '@ant-design/icons';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
+import React, { Component } from 'react';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';
@@ -50,6 +50,7 @@ import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -90,6 +91,8 @@ class ProcedurePage extends Component<
   }
 > {
   public editor: IEditor;
+
+  public gridRef: React.RefObject<DataGridRef> = React.createRef();
 
   public readonly state = {
     propsTab: this.props.params.propsTab || PropsTab.INFO,
@@ -152,6 +155,13 @@ class ProcedurePage extends Component<
     } = this.props;
 
     await this.reloadProcedure(proName);
+  }
+
+  public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<Record<string, any>>) {
+    const { procedure } = this.state;
+    if (prevState.procedure?.params !== procedure?.params) {
+      this.gridRef.current?.setRows?.(procedure?.params ?? []);
+    }
   }
 
   public async editProcedure(proName: string) {
@@ -264,16 +274,17 @@ class ProcedurePage extends Component<
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadProcedure.bind(this, procedure.proName)}
                   />
                 </Toolbar>
                 <EditableTable
+                  gridRef={this.gridRef}
                   minHeight={'calc(100vh - 106px)'}
-                  rowKey={'paramName'}
-                  columns={tableColumns}
-                  rows={procedure.params || []}
+                  rowKey="paramName"
+                  initialColumns={tableColumns}
+                  initialRows={procedure.params || []}
                   bordered={false}
                   readonly={true}
                 />
@@ -282,7 +293,7 @@ class ProcedurePage extends Component<
                 <Toolbar>
                   <ToolbarButton
                     disabled={!getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit}
-                    text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                     icon={<EditOutlined />}
                     onClick={this.editProcedure.bind(this, procedure.proName)}
                   />
@@ -304,7 +315,7 @@ class ProcedurePage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.sql.button.search" />}
+                    text={formatMessage({ id: 'workspace.window.sql.button.search' })}
                     icon={<FileSearchOutlined />}
                     onClick={this.showSearchWidget.bind(this)}
                   />
@@ -328,7 +339,7 @@ class ProcedurePage extends Component<
                   />
 
                   <ToolbarButton
-                    text={<FormattedMessage id="workspace.window.session.button.refresh" />}
+                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
                     icon={<SyncOutlined />}
                     onClick={this.reloadProcedure.bind(this, procedure.proName)}
                   />

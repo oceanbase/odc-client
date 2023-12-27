@@ -17,10 +17,10 @@
 import { FilterOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Popover } from 'antd';
 import { Component } from 'react';
-import { formatMessage, FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 
 export default class DDLResultSetFilter extends Component<
   {
@@ -141,18 +141,18 @@ export default class DDLResultSetFilter extends Component<
             <div className={styles.footer}>
               <span>
                 <span className={styles.select} onClick={this.handleSelectAll}>
-                  <FormattedMessage id="app.button.selectAll" />
+                  {formatMessage({ id: 'app.button.selectAll' })}
                 </span>
                 <span className={styles.deselect} onClick={this.handleDeselectAll}>
-                  <FormattedMessage id="app.button.deselectAll" />
+                  {formatMessage({ id: 'app.button.deselectAll' })}
                 </span>
               </span>
               <span>
                 <Button size="small" style={{ marginRight: 8 }} onClick={this.handleCancel}>
-                  <FormattedMessage id="app.button.cancel" />
+                  {formatMessage({ id: 'app.button.cancel' })}
                 </Button>
                 <Button size="small" type="primary" onClick={this.handleSubmit}>
-                  <FormattedMessage id="app.button.ok" />
+                  {formatMessage({ id: 'app.button.ok' })}
                 </Button>
               </span>
             </div>

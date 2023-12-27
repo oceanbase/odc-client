@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import type { ProjectUser } from './project';
 
 export interface IEnvironment {
@@ -39,13 +38,6 @@ export interface DataType {
   sqlDevSpecification: string;
   riskSensitiveSpecification: string;
 }
-
-export const envMap = {
-  dev: formatMessage({ id: 'odc.src.d.ts.environment.Development' }), //开发
-  test: formatMessage({ id: 'odc.src.d.ts.environment.Test' }), //测试
-  prod: formatMessage({ id: 'odc.src.d.ts.environment.Production' }), //生产
-};
-
 export interface Page {
   totalElements: number;
   totalPages: number;

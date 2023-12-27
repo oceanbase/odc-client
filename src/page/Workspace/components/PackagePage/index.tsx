@@ -281,12 +281,12 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
           <Radio.Group onChange={this.handleTopTabChanged} value={topTab} className={styles.topbar}>
             {pkg.packageHead ? (
               <Radio.Button value={TopTab.HEAD}>
-                <FormattedMessage id="workspace.window.table.toptab.package.head" />
+                {formatMessage({ id: 'workspace.window.table.toptab.package.head' })}
               </Radio.Button>
             ) : null}
             {pkg.packageBody ? (
               <Radio.Button value={TopTab.BODY}>
-                <FormattedMessage id="workspace.window.table.toptab.package.body" />
+                {formatMessage({ id: 'workspace.window.table.toptab.package.body' })}
               </Radio.Button>
             ) : null}
           </Radio.Group>
@@ -345,7 +345,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                   <TabPane tab={'DDL'} key={PropsTab.PACKAGE_HEAD_CODE}>
                     <Toolbar>
                       <ToolbarButton
-                        text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                        text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                         icon={<EditOutlined />}
                         onClick={this.handleEditPackage.bind(
                           this,
@@ -371,7 +371,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                       />
 
                       <ToolbarButton
-                        text={<FormattedMessage id="workspace.window.sql.button.search" />}
+                        text={formatMessage({ id: 'workspace.window.sql.button.search' })}
                         icon={<FileSearchOutlined />}
                         onClick={this.showSearchWidget.bind(this)}
                       />
@@ -481,7 +481,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                   <TabPane tab={'DDL'} key={PropsTab.PACKAGE_BODY_CODE}>
                     <Toolbar>
                       <ToolbarButton
-                        text={<FormattedMessage id="workspace.window.session.button.edit" />}
+                        text={formatMessage({ id: 'workspace.window.session.button.edit' })}
                         icon={<EditOutlined />}
                         onClick={this.handleEditPackage.bind(
                           this,
@@ -507,7 +507,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                       />
 
                       <ToolbarButton
-                        text={<FormattedMessage id="workspace.window.sql.button.search" />}
+                        text={formatMessage({ id: 'workspace.window.sql.button.search' })}
                         icon={<FileSearchOutlined />}
                         onClick={this.showSearchWidget.bind(this)}
                       />

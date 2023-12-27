@@ -123,9 +123,15 @@ export const AuditEventMetaMap = {
   // 审计事件
   [AuditEventType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.ExportResultSet',
-  }), //'导出结果集'
+  }),
+  //'导出结果集'
   // SQL安全规则管理
-  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: 'SQL安全规则管理',
+  [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: formatMessage({
+    id: 'odc.src.page.Secure.Record.RecordPage.SQLSecurityRulesManagement',
+  }),
+  [AuditEventType.APPLY_PROJECT_PERMISSION]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.ApplicationProjectPermissions',
+  }), //'申请项目权限'
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -146,6 +152,18 @@ export const AuditEventActionMap = {
   [AuditEventActionType.SET_PASSWORD]: formatMessage({
     id: 'odc.components.RecordPage.SetPassword',
   }),
+  [AuditEventActionType.CREATE_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.NewlyBuilt',
+  }), //'新建'
+  [AuditEventActionType.APPROVE_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.Approve',
+  }), //'审批'
+  [AuditEventActionType.REJECT_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.Reject',
+  }), //'拒绝'
+  [AuditEventActionType.STOP_APPLY_PROJECT_PERMISSION_TASK]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.Termination',
+  }), //'终止'
   // 连接管理
   [AuditEventActionType.CREATE_CONNECTION]: formatMessage({
     id: 'odc.components.RecordPage.CreateConnection',
@@ -525,21 +543,28 @@ export const AuditEventActionMap = {
   // 审计事件操作
   [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.CreateTheExportResultsSet',
-  }), //'创建导出结果集任务'
+  }),
+  //'创建导出结果集任务'
   [AuditEventActionType.APPROVE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.AgreeToExportResultsSet',
-  }), //'同意导出结果集任务'
+  }),
+  //'同意导出结果集任务'
   [AuditEventActionType.REJECT_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.RejectTheExportResultsSet',
-  }), //'拒绝导出结果集任务'
+  }),
+  //'拒绝导出结果集任务'
   [AuditEventActionType.EXECUTE_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.ExecutionResultsSetTask',
-  }), //'执行结果集任务'
+  }),
+  //'执行结果集任务'
   [AuditEventActionType.STOP_EXPORT_RESULT_SET_TASK]: formatMessage({
     id: 'odc.src.page.Secure.components.RecordPage.StopExportResultsSetTask',
-  }), //'停止导出结果集任务'
+  }),
+  //'停止导出结果集任务'
   // SQL安全规则管理
-  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: '更新SQL安全规则',
+  [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: formatMessage({
+    id: 'odc.src.page.Secure.components.RecordPage.ModifySQLSecurityRules',
+  }), //'修改SQL安全规则'
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =

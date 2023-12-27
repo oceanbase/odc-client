@@ -1,6 +1,6 @@
 {
   "name": "odc",
-  "version": "4.2.2",
+  "version": "4.2.3",
   "private": true,
   "description": "企业级数据开发平台",
   "homepage": "https://www.oceanbase.com/",
@@ -69,10 +69,11 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.0.0",
-    "@oceanbase-odc/monaco-plugin-ob": "~0.0.24",
-    "@oceanbase-odc/ob-intl-cli": "^1.0.0",
-    "@oceanbase-odc/ob-parser-js": "~2.0.6",
-    "@oceanbase-odc/ob-react-data-grid": "~2.4.10",
+    "@oceanbase-odc/monaco-plugin-ob": "^0.1.1",
+    "@oceanbase-odc/ob-intl-cli": "^1.1.5",
+    "@oceanbase-odc/ob-parser-js": "^3.0.1",
+    "@oceanbase-odc/ob-react-data-grid": "^3.0.6",
+    "@sentry/react": "^7.88.0",
     "@svgr/webpack": "^6.5.1",
     "@testing-library/react": "^11.2.2",
     "@types/antlr4": "~4.7.2",
@@ -108,7 +109,7 @@
     "cross-env": "^6.0.3",
     "css": "^3.0.0",
     "echarts": "^5.4.0",
-    "electron": "20.3.12",
+    "electron": "~22.3.27",
     "electron-builder": "^24.6.0",
     "electron-builder-notarize": "^1.5.1",
     "eventbusjs": "^0.2.0",
@@ -125,7 +126,6 @@
     "memoize-one": "^4.0.0",
     "mobx": "^5.9.4",
     "mobx-react": "^6.3.1",
-    "mockjs": "^1.1.0",
     "moment": "^2.29.0",
     "monaco-editor": "^0.36.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
@@ -171,7 +171,7 @@
   "build": {
     "extends": "build/electron-build.config.js",
     "electronDownload": {
-      "customDir": "v20.3.12"
+      "customDir": "v22.3.27"
     }
   },
   "copyright": "© 2021 ANT GROUP",

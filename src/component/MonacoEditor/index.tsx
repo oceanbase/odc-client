@@ -141,7 +141,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
   }
 
   async function initEditor() {
-    editorRef.current = monaco.editor.create(domRef.current, {
+    editorRef.current = monaco.editor?.create(domRef.current, {
       value: innerValue,
       language: language || 'sql',
       theme: themeValue,

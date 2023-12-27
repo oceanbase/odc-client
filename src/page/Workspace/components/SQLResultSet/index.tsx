@@ -20,13 +20,12 @@ import { Badge, Dropdown, Menu, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from '@umijs/max';
 // @ts-ignore
 import { LockResultSetHint } from '@/component/LockResultSetHint';
-import SQLLintResult from '@/component/SQLLintResult';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
+import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
@@ -34,26 +33,30 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
+import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
 
 const { TabPane } = Tabs;
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
-
-enum MenuKey {
+export const enum MenuKey {
   LOCK = 'LOCK',
   UNLOCK = 'UNLOCK',
 }
 
 interface IProps {
   sqlStore?: SQLStore;
+  modalStore?: ModalStore;
+  ctx: any;
   pageKey: string;
   activeKey: string;
   resultHeight: number;
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
+  sqlChanged?: boolean;
+  baseOffset: number;
 
   onCloseResultSet: (resultSetKey: string) => void;
   onChangeResultSetTab?: (tabKey: string) => void;
@@ -70,6 +73,7 @@ interface IProps {
     columnList: Partial<ITableColumn>[],
     dbName: string,
   ) => void;
+  onShowTrace: (sql: string, tag: string) => void;
   onUpdateEditing: (resultSetIndex: number, editing: boolean) => void;
 }
 
@@ -77,15 +81,20 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const {
     activeKey,
     sqlStore: { resultSets: r },
+    ctx,
+    modalStore,
     pageKey,
     resultHeight,
     editingMap,
     session,
     lintResultSet,
+    sqlChanged,
+    baseOffset,
     onSubmitRows,
     onExportResultSet,
     onChangeResultSetTab,
     onShowExecuteDetail,
+    onShowTrace,
     onLockResultSet,
     onUnLockResultSet,
     onCloseResultSet,
@@ -156,10 +165,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         }}
       >
         <Menu.Item key={MenuKey.LOCK}>
-          <FormattedMessage id="workspace.window.sql.record.column.lock" />
+          {formatMessage({ id: 'workspace.window.sql.record.column.lock' })}
         </Menu.Item>
         <Menu.Item key={MenuKey.UNLOCK}>
-          <FormattedMessage id="workspace.window.sql.record.column.unlock" />
+          {formatMessage({ id: 'workspace.window.sql.record.column.unlock' })}
         </Menu.Item>
       </Menu>
     );
@@ -229,7 +238,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         >
           <ExecuteHistory resultHeight={resultHeight} onShowExecuteDetail={onShowExecuteDetail} />
         </TabPane>
-        {lintResultSet ? (
+        {lintResultSet?.length ? (
           <TabPane
             tab={
               <span className={styles.resultSetTitle}>
@@ -253,16 +262,15 @@ const SQLResultSet: React.FC<IProps> = function (props) {
             }
             key={sqlLintTabKey}
           >
-            <div
-              style={{
-                height: '100%',
-                overflow: 'auto',
-                overflowX: 'hidden',
-                maxHeight: resultHeight - TAB_HEADER_HEIGHT,
-              }}
-            >
-              <SQLLintResult data={lintResultSet} />
-            </div>
+            <LintResultTable
+              session={session}
+              resultHeight={resultHeight}
+              modalStore={modalStore}
+              ctx={ctx?.editor}
+              lintResultSet={lintResultSet}
+              sqlChanged={sqlChanged}
+              baseOffset={baseOffset}
+            />
           </TabPane>
         ) : null}
         {resultSets
@@ -299,6 +307,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
                     showExplain={session?.supportFeature?.enableSQLExplain}
                     showPagination={true}
+                    showTrace={true}
                     columns={set.columns}
                     session={session}
                     sqlId={set.sqlId}
@@ -321,6 +330,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       set.allowExport ? (limit) => onExportResultSet(i, limit, tableName) : null
                     }
                     onShowExecuteDetail={() => onShowExecuteDetail(set.initialSql, set.traceId)}
+                    onShowTrace={() => onShowTrace(set.initialSql, set.traceId)}
                     onSubmitRows={(newRows, limit, autoCommit, columns) =>
                       onSubmitRows(
                         i,
@@ -333,6 +343,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     }
                     onUpdateEditing={(editing) => onUpdateEditing(i, editing)}
                     isEditing={editingMap[set.uniqKey]}
+                    withFullLinkTrace={set?.withFullLinkTrace}
+                    traceEmptyReason={set?.traceEmptyReason}
                   />
                 </TabPane>
               );
@@ -429,4 +441,4 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   );
 };
 
-export default inject('sqlStore', 'userStore', 'pageStore')(observer(SQLResultSet));
+export default inject('sqlStore', 'userStore', 'pageStore', 'modalStore')(observer(SQLResultSet));

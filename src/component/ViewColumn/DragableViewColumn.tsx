@@ -17,15 +17,13 @@
 import Icon, { CloseCircleFilled } from '@ant-design/icons';
 import { Col, Input, Row } from 'antd';
 import React from 'react';
-import { FormattedMessage } from '@umijs/max';
-// @ts-ignore
 import { IPLParam } from '@/d.ts';
 import classNames from 'classnames';
 import { IViewParam } from '.';
 import Dragable, { IDragable } from '../Dragable';
 import styles from './index.less';
-// @ts-ignore
-import DragSvg from '@/svgr/drag.svg';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
+import { formatMessage } from '@/util/intl';
 
 export interface IDragableViewParamProps extends IDragable {
   rule: Partial<IViewParam>;
@@ -62,7 +60,7 @@ const DragableViewColumn = ({ props }: { props: IDragableViewParamProps }) => {
           <span style={{ marginRight: 8 }}>
             <Icon component={DragSvg} className={styles.dragHandler} />
           </span>
-          <FormattedMessage id="workspace.window.createView.columnName" />：
+          {formatMessage({ id: 'workspace.window.createView.columnName' })}：
           <Input
             value={rule.paramName}
             style={{ flex: 1 }}

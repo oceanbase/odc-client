@@ -20,6 +20,7 @@ import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import {
+  CopyOutlined,
   DeleteOutlined,
   EditOutlined,
   EllipsisOutlined,
@@ -39,6 +40,7 @@ enum Actions {
   EDIT = 'edit',
   COPY = 'copy',
   REMOVE = 'remove',
+  CLONE = 'clone',
 }
 const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   const context = useContext(ParamContext);
@@ -71,7 +73,8 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ),
       content: formatMessage({
         id: 'odc.src.page.Datasource.AfterDeletingYouWill',
-      }), //'删除后将无法访问该数据源'
+      }),
+      //'删除后将无法访问该数据源'
       okText: formatMessage({
         id: 'app.button.ok',
       }),
@@ -103,11 +106,21 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
           icon: <EditOutlined />,
         }
       : null,
+    connection.permittedActions?.includes(actionTypes.update)
+      ? {
+          label: formatMessage({
+            id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Clone',
+          }), //'克隆'
+          key: Actions.CLONE,
+          icon: <CopyOutlined />,
+        }
+      : null,
     connection.permittedActions?.includes(actionTypes.delete)
       ? {
           label: formatMessage({
             id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Delete',
-          }), //'删除'
+          }),
+          //'删除'
           key: Actions.REMOVE,
           icon: <DeleteOutlined />,
         }
@@ -144,6 +157,10 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
             }
             case Actions.REMOVE: {
               remove();
+              return;
+            }
+            case Actions.CLONE: {
+              context.setCopyDatasourceId?.(connection?.id);
               return;
             }
           }

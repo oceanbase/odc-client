@@ -18,6 +18,7 @@ import { listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
+import Icon from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
 import MiniTable from '@/component/Table/MiniTable';
@@ -33,40 +34,40 @@ import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Input, Space, Tag } from 'antd';
+import { Input, Space, Tag, Tooltip, Typography } from 'antd';
 import { toInteger } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 import tracert from '@/util/tracert';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import {
   getDataSourceModeConfig,
   getDataSourceModeConfigByConnectionMode,
+  getDataSourceStyleByConnectType,
 } from '@/common/datasource';
+import { ProjectRole } from '@/d.ts/project';
+import ProjectContext from '../ProjectContext';
+import styles from './index.less';
+import setting from '@/store/setting';
 interface IProps {
   id: string;
 }
 const Database: React.FC<IProps> = ({ id }) => {
+  const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
-
   const [data, setData] = useState<IDatabase[]>([]);
-
   const [visible, setVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
-
   const params = useRef({
     pageSize: 0,
     current: 0,
     environmentId: null,
   });
-
   const { data: envList } = useRequest(listEnvironments);
-
   useEffect(() => {
     tracert.expo('a3112.b64002.c330858');
   }, []);
-
   const loadData = async (pageSize, current, environmentId, name: string = searchValue) => {
     params.current.pageSize = pageSize;
     params.current.current = current;
@@ -77,11 +78,9 @@ const Database: React.FC<IProps> = ({ id }) => {
       setTotal(res?.page?.totalElements);
     }
   };
-
   function reload(name: string = searchValue) {
     loadData(params.current.pageSize, params.current.current, params.current.environmentId, name);
   }
-
   const handleMenuClick = (type: TaskPageType, databaseId: number) => {
     switch (type) {
       case TaskPageType.IMPORT:
@@ -102,7 +101,6 @@ const Database: React.FC<IProps> = ({ id }) => {
       default:
     }
   };
-
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
@@ -115,8 +113,10 @@ const Database: React.FC<IProps> = ({ id }) => {
             }}
             placeholder={formatMessage({
               id: 'odc.Project.Database.SearchDatabase',
-            })} /*搜索数据库*/
-            style={{ width: 200 }}
+            })}
+            /*搜索数据库*/ style={{
+              width: 200,
+            }}
           />
 
           <FilterIcon onClick={() => reload()}>
@@ -132,13 +132,23 @@ const Database: React.FC<IProps> = ({ id }) => {
         }}
         columns={[
           {
-            title: formatMessage({ id: 'odc.Project.Database.DatabaseName' }), //数据库名称
+            title: formatMessage({
+              id: 'odc.Project.Database.DatabaseName',
+            }),
+            //数据库名称
             dataIndex: 'name',
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
+              const currentUserResourceRoles = project?.currentUserResourceRoles || [];
+              const disabled =
+                currentUserResourceRoles?.filter((roles) =>
+                  [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
+                )?.length === 0;
               if (!record.existed) {
-                return (
+                return disabled ? (
+                  <div className={styles.disable}>{name}</div>
+                ) : (
                   <HelpDoc
                     leftText
                     isTip={false}
@@ -150,7 +160,9 @@ const Database: React.FC<IProps> = ({ id }) => {
                   </HelpDoc>
                 );
               }
-              return (
+              return disabled ? (
+                <div className={styles.disable}>{name}</div>
+              ) : (
                 <a
                   onClick={() => {
                     tracert.click('a3112.b64002.c330858.d367382');
@@ -163,12 +175,38 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.DataSource' }), //所属数据源
+            title: formatMessage({
+              id: 'odc.Project.Database.DataSource',
+            }),
+            //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
+            ellipsis: true,
+            render(value, record, index) {
+              /**
+               * return datasource icon + label
+               */
+              const style = getDataSourceStyleByConnectType(record.dataSource?.type);
+              return (
+                <>
+                  <Icon
+                    component={style?.icon?.component}
+                    style={{
+                      color: style?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+                  <span title={value}>{value}</span>
+                </>
+              );
+            },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.Environment' }), //环境
+            title: formatMessage({
+              id: 'odc.Project.Database.Environment',
+            }),
+            //环境
             dataIndex: 'environmentId',
             filters: envList?.map((env) => {
               return {
@@ -188,18 +226,27 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.CharacterEncoding' }), //字符编码
+            title: formatMessage({
+              id: 'odc.Project.Database.CharacterEncoding',
+            }),
+            //字符编码
             dataIndex: 'charsetName',
             width: 120,
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.SortingRules' }), //排序规则
+            title: formatMessage({
+              id: 'odc.Project.Database.SortingRules',
+            }),
+            //排序规则
             dataIndex: 'collationName',
             width: 120,
             ellipsis: true,
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.LastSynchronizationTime' }), //上一次同步时间
+            title: formatMessage({
+              id: 'odc.Project.Database.LastSynchronizationTime',
+            }),
+            //上一次同步时间
             dataIndex: 'lastSyncTime',
             width: 170,
             render(v) {
@@ -207,36 +254,56 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({ id: 'odc.Project.Database.Operation' }), //操作
-            dataIndex: 'name',
+            title: formatMessage({
+              id: 'odc.Project.Database.Operation',
+            }),
+            //操作
+            dataIndex: 'actions',
             width: 200,
             render(_, record) {
               if (!record.existed) {
                 return '-';
               }
               const config = getDataSourceModeConfig(record?.dataSource?.type);
+              const disabled =
+                project?.currentUserResourceRoles?.filter((roles) =>
+                  [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
+                )?.length === 0;
+              const disableTransfer =
+                !!record?.dataSource?.projectId &&
+                !config?.schema?.innerSchema?.includes(record?.name);
               return (
                 <Action.Group size={3}>
-                  {config?.features?.task?.includes(TaskType.EXPORT) && (
+                  {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
                     <Action.Link
                       key={'export'}
                       onClick={() => {
                         tracert.click('a3112.b64002.c330858.d367383');
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
+                      disabled={disabled}
                     >
-                      {formatMessage({ id: 'odc.Project.Database.Export' }) /*导出*/}
+                      {
+                        formatMessage({
+                          id: 'odc.Project.Database.Export',
+                        }) /*导出*/
+                      }
                     </Action.Link>
                   )}
-                  {config?.features?.task?.includes(TaskType.IMPORT) && (
+                  {config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && (
                     <Action.Link
                       key={'import'}
                       onClick={() => {
                         tracert.click('a3112.b64002.c330858.d367384');
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
+                      disabled={disabled}
                     >
-                      {formatMessage({ id: 'odc.Project.Database.Import' }) /*导入*/}
+                      {
+                        formatMessage({
+                          id: 'odc.Project.Database.Import',
+                        }) /*导入*/
+                      }
                     </Action.Link>
                   )}
                   <Action.Link
@@ -245,8 +312,13 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367385');
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
+                    disabled={disabled}
                   >
-                    {formatMessage({ id: 'odc.Project.Database.DatabaseChanges' }) /*数据库变更*/}
+                    {
+                      formatMessage({
+                        id: 'odc.Project.Database.DatabaseChanges',
+                      }) /*数据库变更*/
+                    }
                   </Action.Link>
                   <Action.Link
                     key={'login'}
@@ -254,6 +326,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
+                    disabled={disabled}
                   >
                     {
                       formatMessage({
@@ -268,8 +341,25 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setVisible(true);
                       setDatabase(record);
                     }}
+                    disabled={disabled || disableTransfer}
                   >
-                    {formatMessage({ id: 'odc.Project.Database.TransferProject' }) /*转移项目*/}
+                    <Tooltip
+                      title={
+                        disableTransfer
+                          ? formatMessage({
+                              id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                            }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
+                          : null
+                      }
+                    >
+                      {
+                        formatMessage({
+                          id: 'odc.src.page.Project.Database.ModifyTheProject',
+                        }) /* 
+                      修改所属项目
+                     */
+                      }
+                    </Tooltip>
                   </Action.Link>
                 </Action.Group>
               );
@@ -300,5 +390,4 @@ const Database: React.FC<IProps> = ({ id }) => {
     </TableCard>
   );
 };
-
 export default Database;

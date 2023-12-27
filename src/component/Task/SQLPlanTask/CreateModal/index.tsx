@@ -434,7 +434,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     setFormData(null);
     setSqlContentType(SQLContentType.TEXT);
     form?.resetFields();
-    crontabRef.current?.resetFields();
+    setCrontab(null);
   };
 
   useEffect(() => {
@@ -501,7 +501,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={defaultValue}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect type={TaskType.SQL_PLAN} projectId={projectId} />
+        <DatabaseSelect disabled={isEdit} type={TaskType.SQL_PLAN} projectId={projectId} />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',

@@ -18,23 +18,29 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
-import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
+import { Typography } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { ClearStrategy } from '../CreateModal';
+import { ClearStrategy, SwapTableType } from '../CreateModal';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+const { Text } = Typography;
 interface IDDLAlterParamters {
   errorStrategy: TaskExecStrategy;
   connectionId: string;
   schemaName: string;
   comparingTaskId: string;
   description: string;
+  lockUsers: {
+    name: string;
+  }[];
   // 单位：秒
   lockTableTimeOutSeconds: number;
   swapTableNameRetryTimes: number;
   originTableCleanStrategy: ClearStrategy;
+  swapTableType: SwapTableType;
 }
 const ErrorStrategyText = {
   ABORT: formatMessage({
@@ -56,6 +62,14 @@ const ClearStrategyMap = {
   }), //重命名不处理
 };
 
+const SwapTableTypeMap = {
+  [SwapTableType.AUTO]: formatMessage({
+    id: 'odc.src.component.Task.AlterDdlTask.DetailContent.AutomaticSwitch',
+  }), //'自动切换'
+  [SwapTableType.MANUAL]: formatMessage({
+    id: 'odc.src.component.Task.AlterDdlTask.DetailContent.ManualSwitch',
+  }), //'手工切换'
+};
 const SQLContentSection = ({ task }) => {
   return (
     <SimpleTextItem
@@ -113,6 +127,7 @@ export function getItems(
     //执行时间
     getFormatDateTime(task?.executionTime),
   ];
+  const lockUsers = parameters?.lockUsers?.join(', ');
   return [
     {
       // @ts-ignore
@@ -143,10 +158,27 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
-          }), //'所属数据源'
+          }),
+          //'所属数据源'
           task?.connection?.name || '-',
         ],
         hasFlow ? riskItem : null,
+        lockUsers
+          ? [
+              formatMessage({
+                id: 'odc.src.component.Task.AlterDdlTask.DetailContent.LockUsers',
+              }), //'锁定用户'
+              <Text
+                ellipsis={true}
+                title={lockUsers}
+                style={{
+                  width: '240px',
+                }}
+              >
+                {lockUsers}
+              </Text>,
+            ]
+          : null,
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.ChangeDefinition',
@@ -183,6 +215,12 @@ export function getItems(
           }),
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
+        ],
+        [
+          formatMessage({
+            id: 'odc.src.component.Task.AlterDdlTask.DetailContent.TableNameSwitchingMethod',
+          }), //'表名切换方式'
+          SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-',
         ],
         isTimerExecution ? timerExecutionItem : null,
         [

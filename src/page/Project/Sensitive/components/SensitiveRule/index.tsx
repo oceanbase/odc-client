@@ -26,7 +26,7 @@ import {
 } from '@/component/CommonTable/interface';
 import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
-import { IResponseData, MaskRyleTypeMap } from '@/d.ts';
+import { IResponseData } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { formatMessage } from '@/util/intl';
 import { Descriptions, message, Modal, Popover, Space } from 'antd';
@@ -40,6 +40,7 @@ import CommonTable from '@/component/CommonTable';
 import tracert from '@/util/tracert';
 import styles from './index.less';
 import { PopoverContainer } from '../SensitiveColumn';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
   hanldeEditDrawerOpen;
@@ -154,7 +155,7 @@ const getColumns: (columnsFunction: {
                   id:
                     'odc.src.page.Project.Sensitive.components.SensitiveRule.DesensitizationMethod',
                 }) /* 脱敏方式 */,
-                value: MaskRyleTypeMap?.[target?.type],
+                value: maskRuleTypeMap?.[target?.type],
               },
               {
                 label: formatMessage({

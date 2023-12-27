@@ -18,8 +18,9 @@ import { Acess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
 import TooltipContent from '@/component/TooltipContent';
 import { actionTypes, IManagerResourceType, ITaskFlowNode } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { transformOBConfigTimeStringToText, transformSecond } from '@/util/utils';
-import { formatMessage } from '@umijs/max';
+
 interface ApprovalProcessProps {
   nodes: ITaskFlowNode[];
 }

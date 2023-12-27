@@ -125,12 +125,6 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
     if (!isActive) {
       return;
     }
-    if (!connection.permittedActions?.includes(actionTypes.update)) {
-      message.error(
-        formatMessage({ id: 'odc.List.ConnectionNameItem.TheDataSourceIsNot' }), //无该数据源权限
-      );
-      return;
-    }
     openNewConnection(connection);
   }
   return (

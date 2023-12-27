@@ -23,21 +23,17 @@ import { Form, message, Modal } from 'antd';
 import { isUndefined } from 'lodash';
 import { useEffect } from 'react';
 import ProjectSelect from './ProjectSelect';
-
 interface IProps {
   visible: boolean;
   database: IDatabase;
   close: () => void;
   onSuccess: () => void;
 }
-
 export default function ChangeProjectModal({ visible, database, close, onSuccess }: IProps) {
   const [form] = Form.useForm();
-
   const { data, loading, run } = useRequest(listProjects, {
     manual: true,
   });
-
   useEffect(() => {
     if (visible) {
       run(null, 1, 9999);
@@ -46,10 +42,13 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
       });
     }
   }, [visible]);
-
   return (
     <Modal
-      title={formatMessage({ id: 'odc.Info.ChangeProjectModal.TransferProject' })} /*转移项目*/
+      title={
+        formatMessage({
+          id: 'odc.src.page.Datasource.Info.ChangeProjectModal.ModifyTheProject',
+        }) //'修改所属项目'
+      }
       open={visible}
       onCancel={close}
       onOk={async () => {
@@ -58,8 +57,11 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
         const isSuccess = await updateDataBase([database?.id], value.project);
         if (isSuccess) {
           message.success(
-            formatMessage({ id: 'odc.Info.ChangeProjectModal.OperationSucceeded' }), //操作成功
+            formatMessage({
+              id: 'odc.Info.ChangeProjectModal.OperationSucceeded',
+            }), //操作成功
           );
+
           close();
           onSuccess();
         }
@@ -67,7 +69,11 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
     >
       <Form requiredMark="optional" form={form} layout="vertical">
         <Form.Item>
-          {formatMessage({ id: 'odc.Info.ChangeProjectModal.DatabaseName' }) /*数据库名称：*/}
+          {
+            formatMessage({
+              id: 'odc.Info.ChangeProjectModal.DatabaseName',
+            }) /*数据库名称：*/
+          }
           {database?.name}
         </Form.Item>
         <Form.Item
@@ -77,16 +83,23 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
               validator(rule, value, callback) {
                 if (isUndefined(value)) {
                   callback(
-                    formatMessage({ id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject' }), //请选择项目
+                    formatMessage({
+                      id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject',
+                    }), //请选择项目
                   );
+
                   return;
                 }
                 callback();
               },
             },
           ]}
-          label={formatMessage({ id: 'odc.Info.ChangeProjectModal.Project' })}
-          /*所属项目*/ name={'project'}
+          label={
+            formatMessage({
+              id: 'odc.src.page.Datasource.Info.ChangeProjectModal.Project',
+            }) //'项目'
+          }
+          name={'project'}
         >
           <ProjectSelect projects={data?.contents} currentDatabase={database} />
         </Form.Item>

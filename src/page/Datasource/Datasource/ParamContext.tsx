@@ -67,6 +67,7 @@ interface IParamContext {
   setConnectType?: (v: ConnectType[]) => void;
   reloadTable?: () => Promise<boolean>;
   editDatasource?: (id: number) => void;
+  setCopyDatasourceId?: (id: number) => void;
 }
 
 const ParamContext: React.Context<IParamContext> = React.createContext({
