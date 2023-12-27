@@ -35,10 +35,14 @@ import { toInteger } from 'lodash';
 import { useParams } from '@umijs/max';
 import { EnvColorMap } from '@/constant';
 import ConnectionPopover from '@/component/ConnectionPopover';
+import { IProject } from '@/d.ts/project';
+import { IDatasource } from '@/d.ts/datasource';
+import logger from '@/util/logger';
 interface IProps {
   dialectTypes?: ConnectionMode[];
+  containsUnassigned?: boolean;
 }
-const SessionDropdown: React.FC<IProps> = function ({ children }) {
+const SessionDropdown: React.FC<IProps> = function ({ children, containsUnassigned = false }) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,35 +52,51 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
   const [searchValue, setSearchValue] = useState<string>('');
   const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
-  const [loadedKeys, setLoadedKeys] = useState<Key[]>([]);
-  const databaseRef = useRef<Record<string, IDatabase[]>>({});
-  const treeRef = useRef<{
-    scrollTo: (node: {
-      key: string | number;
-      align?: 'top' | 'bottom' | 'auto';
-      offset?: number;
-    }) => void;
-  }>();
+
   const update = useUpdate();
-  const { data: project, loading: projectLoading, run: fetchProjects } = useRequest(listProjects, {
-    manual: true,
+  const { run: fetchDatabase, refresh, data } = useRequest(listDatabases, {
+    manual: false,
+    defaultParams: [null, null, 1, 99999, null, null, containsUnassigned, true, null],
   });
-  const { data: datasourceList, loading: datasourceLoading, run: fetchDatasource } = useRequest(
-    getDataSourceGroupByProject,
-    {
-      manual: true,
-    },
-  );
-  const {
-    data: allDatasourceList,
-    loading: allDatasourceLoading,
-    run: fetchAllDatasource,
-  } = useRequest(getConnectionList, {
-    manual: true,
-  });
-  const { run: fetchDatabase } = useRequest(listDatabases, {
-    manual: true,
-  });
+  const dataGroup = useMemo(() => {
+    const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
+    const projects: Map<number, { project: IProject; databases: IDatabase[] }> = new Map();
+    const allProjects: IProject[] = [],
+      allDatasources: IDatasource[] = [];
+    data?.contents?.forEach((db) => {
+      const { project, dataSource } = db;
+      if (project) {
+        const projectDatabases = projects.get(project?.id) || {
+          project: project,
+          databases: [],
+        };
+        projectDatabases.databases.push(db);
+        if (!projects.has(project?.id)) {
+          allProjects.push(project);
+        }
+        projects.set(project?.id, projectDatabases);
+      }
+      if (dataSource) {
+        const datasourceDatabases = datasources.get(dataSource?.id) || {
+          datasource: dataSource,
+          databases: [],
+        };
+        datasourceDatabases.databases.push(db);
+        if (!datasources.has(dataSource?.id)) {
+          allDatasources.push(dataSource);
+        }
+        datasources.set(dataSource?.id, datasourceDatabases);
+      }
+    });
+
+    return {
+      datasources,
+      projects,
+      allDatasources,
+      allProjects,
+    };
+  }, [data?.contents]);
+
   function onOpen(open: boolean) {
     if (!open) {
       setIsOpen(open);
@@ -88,50 +108,14 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
   }
   async function reloadTree() {
     setExpandedKeys([]);
-    setLoadedKeys([]);
-    if (context.datasourceMode) {
-      /**
-       * datasourceMode
-       */
-      fetchAllDatasource({
-        size: 9999,
-        page: 1,
-        minPrivilege: 'update',
-      });
-      return;
-    }
-
-    const session = context?.session;
-    const projectId = session?.odcDatabase?.project?.id;
-    const datasourceId = session?.odcDatabase?.dataSource?.id;
-    switch (from) {
-      case 'datasource': {
-        await fetchDatasource(login.isPrivateSpace());
-        if (session) {
-          setExpandedKeys([datasourceId]);
-          treeRef.current?.scrollTo({
-            key: datasourceId,
-            align: 'top',
-          });
-        }
-        return;
-      }
-      case 'project': {
-        fetchProjects(null, 1, 9999, false);
-        if (session) {
-          setExpandedKeys([projectId]);
-          treeRef.current?.scrollTo({
-            key: projectId,
-            align: 'top',
-          });
-        }
-        return;
-      }
-    }
   }
+  useEffect(() => {
+    reloadTree();
+  }, [from]);
   function treeData(): DataNode[] {
+    const { allDatasources, allProjects, projects, datasources } = dataGroup;
     if (context?.datasourceMode) {
-      return allDatasourceList?.contents
+      return allDatasources
         ?.map((item) => {
           if (
             (datasourceId && toInteger(datasourceId) !== item.id) ||
@@ -162,7 +146,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
     }
     switch (from) {
       case 'datasource': {
-        return datasourceList?.contents
+        return allDatasources
           ?.map((item) => {
             if (
               (datasourceId && toInteger(datasourceId) !== item.id) ||
@@ -170,7 +154,49 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
             ) {
               return null;
             }
-            const dbList = databaseRef.current[`ds:${item.id}`];
+            const isNameMatched =
+              !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
+            const dbList = datasources
+              .get(item.id)
+              ?.databases?.map((db) => {
+                /**
+                 * 父节点没匹配到，变更为搜索数据库
+                 */
+                if (
+                  !isNameMatched &&
+                  searchValue &&
+                  !db.name?.toLowerCase().includes(searchValue?.toLowerCase())
+                ) {
+                  return null;
+                }
+                return {
+                  title: (
+                    <>
+                      {db.name}
+                      <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
+                    </>
+                  ),
+                  key: `db:${db.id}`,
+                  selectable: true,
+                  isLeaf: true,
+                  icon: (
+                    <Icon
+                      component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
+                      style={{
+                        fontSize: 14,
+                        color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
+                      }}
+                    />
+                  ),
+                };
+              })
+              .filter(Boolean);
+            if (!isNameMatched && !dbList?.length) {
+              /**
+               * 父节点没匹配到，并且也不存在子节点，则不展示
+               */
+              return null;
+            }
             return {
               title: item.name,
               icon: (
@@ -185,58 +211,24 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
               key: item.id,
               selectable: false,
               isLeaf: false,
-              children: dbList
-                ?.map((db) => {
-                  if (searchValue && !db.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
-                    return null;
-                  }
-                  return {
-                    title: (
-                      <>
-                        {db.name}
-                        <Badge
-                          color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor}
-                        />
-                      </>
-                    ),
-                    key: `db:${db.id}`,
-                    selectable: true,
-                    isLeaf: true,
-                    icon: (
-                      <Icon
-                        component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
-                        style={{
-                          fontSize: 14,
-                          color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
-                        }}
-                      />
-                    ),
-                  };
-                })
-                .filter(Boolean),
+              children: dbList,
             };
           })
           .filter(Boolean);
       }
       case 'project': {
-        return project?.contents?.map((item) => {
-          const dbList = databaseRef.current[`p:${item.id}`];
-          return {
-            title: item.name,
-            icon: (
-              <Icon
-                component={PjSvg}
-                style={{
-                  fontSize: 14,
-                }}
-              />
-            ),
-            key: item.id,
-            selectable: false,
-            isLeaf: false,
-            children: dbList
-              ?.map((db) => {
-                if (searchValue && !db.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
+        return allProjects
+          ?.map((item) => {
+            const isNameMatched =
+              !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
+            const dbList = projects
+              .get(item.id)
+              ?.databases?.map((db) => {
+                if (
+                  !isNameMatched &&
+                  searchValue &&
+                  !db.name?.toLowerCase().includes(searchValue?.toLowerCase())
+                ) {
                   return null;
                 }
                 return {
@@ -268,45 +260,34 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                   ),
                 };
               })
-              .filter(Boolean),
-          };
-        });
+              .filter(Boolean);
+            if (!isNameMatched && !dbList?.length) {
+              /**
+               * 父节点没匹配到，并且也不存在子节点，则不展示
+               */
+              return null;
+            }
+            return {
+              title: item.name,
+              icon: (
+                <Icon
+                  component={PjSvg}
+                  style={{
+                    fontSize: 14,
+                  }}
+                />
+              ),
+              key: item.id,
+              selectable: false,
+              isLeaf: false,
+              children: dbList,
+            };
+          })
+          .filter(Boolean);
       }
     }
   }
 
-  async function loadDataBase(key: Key) {
-    switch (from) {
-      case 'datasource': {
-        const data = await fetchDatabase(null, toInteger(key), 1, 9999, null, null, null, true);
-        if (data) {
-          databaseRef.current = {
-            ...databaseRef.current,
-            [`ds:${key}`]: data?.contents,
-          };
-        }
-        return;
-      }
-      case 'project': {
-        const data = await fetchDatabase(toInteger(key), null, 1, 9999, null, null, null, true);
-        if (data) {
-          databaseRef.current = {
-            ...databaseRef.current,
-            [`p:${key}`]: data?.contents,
-          };
-        }
-        return;
-      }
-    }
-  }
-  async function loadData(node: EventDataNode<DataNode>) {
-    const key = node.key;
-    await loadDataBase(key);
-    update();
-  }
-  useEffect(() => {
-    reloadTree();
-  }, [from]);
   return (
     <Popover
       trigger={['click']}
@@ -369,8 +350,6 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
               }}
             >
               <Tree
-                //@ts-ignore
-                ref={treeRef}
                 expandAction="click"
                 className={styles.tree}
                 key={from}
@@ -378,9 +357,9 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                   const key = info.node?.key?.toString();
                   let dbId, dsId;
                   if (context.datasourceMode) {
-                    dsId = key;
+                    dsId = toInteger(key);
                   } else {
-                    dbId = key?.replace('db:', '');
+                    dbId = toInteger(key?.replace('db:', ''));
                   }
                   setLoading(true);
                   try {
@@ -395,22 +374,9 @@ const SessionDropdown: React.FC<IProps> = function ({ children }) {
                 selectedKeys={[
                   context?.datasourceMode ? context?.datasourceId : `db:${context?.databaseId}`,
                 ].filter(Boolean)}
-                loadData={loadData}
                 height={215}
                 showIcon
                 treeData={treeData()}
-                expandedKeys={expandedKeys}
-                loadedKeys={loadedKeys}
-                onExpand={(expandedKeys, { expanded, node }) => {
-                  if (!expanded || loadedKeys.includes(node.key)) {
-                    setExpandedKeys(expandedKeys);
-                    return;
-                  }
-                }}
-                onLoad={(loadedKeys, { node }) => {
-                  setLoadedKeys(loadedKeys);
-                  setExpandedKeys([...expandedKeys, node.key]);
-                }}
               />
             </div>
           </div>
