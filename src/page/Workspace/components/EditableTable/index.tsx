@@ -97,10 +97,6 @@ export default inject('settingStore')(
       } = props;
       const innerGridRef = useRef<DataGridRef>(null);
 
-      if (!initialColumns?.length) {
-        return null;
-      }
-
       return (
         <DataGrid
           initialRows={initialRows}

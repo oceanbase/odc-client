@@ -238,7 +238,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         >
           <ExecuteHistory resultHeight={resultHeight} onShowExecuteDetail={onShowExecuteDetail} />
         </TabPane>
-        {lintResultSet ? (
+        {lintResultSet?.length ? (
           <TabPane
             tab={
               <span className={styles.resultSetTitle}>

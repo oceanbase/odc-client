@@ -52,11 +52,13 @@ const FormModal: React.FC<IProps> = (props) => {
     : formatMessage({ id: 'odc.component.FormModal.Create' }); //新建
   useEffect(() => {
     if (editId) {
-      loadEditData(editId);
+      if (visible) {
+        loadEditData(editId);
+      }
     } else {
       setBuiltIn(false);
     }
-  }, [editId]);
+  }, [editId, visible]);
 
   async function loadEditData(_editId: number) {
     const data = await getTaskFlowDetail(_editId);

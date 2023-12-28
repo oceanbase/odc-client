@@ -36,8 +36,6 @@ import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResult
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
-import modal from '@/store/modal';
-import page from '@/store/page';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
@@ -394,7 +392,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          page.close(modal?.asyncTaskData?.activePageKey);
           openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })

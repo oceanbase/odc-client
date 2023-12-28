@@ -179,8 +179,10 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ],
 
       ellipsis: true,
-      isHide: () => {
-        return !setting.enableMockdata;
+      isHide: (session) => {
+        return !setting.enableMockdata || !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+          TaskType.DATAMOCK,
+        );
       },
       actionType: actionTypes.update,
       hasDivider: true,

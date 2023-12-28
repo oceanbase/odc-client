@@ -60,7 +60,7 @@ export interface IExecuteTaskResult {
   violatedRules: IRule[];
   executeResult: ISqlExecuteResult[];
   lintResultSet?: ISQLLintReuslt[];
-  levels?: number[];
+  status?: EStatus;
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -143,6 +143,14 @@ class TaskManager {
   }
 }
 export const executeTaskManager = new TaskManager();
+/**
+ *
+ * @param params 要执行的SQL内容，可能为string或IExecuteSQLParams类型
+ * @param sessionId 会话ID
+ * @param dbName 数据库名称
+ * @param needModal SQL确认弹窗，默认需要弹出
+ * @returns
+ */
 export default async function executeSQL(
   params: IExecuteSQLParams | string,
   sessionId: string,
@@ -201,7 +209,6 @@ export default async function executeSQL(
       violatedRules: [],
     };
   }
-  const levels = violatedRules?.map((rule) => rule?.violation?.level) || [];
   const lintResultSet = violatedRules?.reduce((pre, cur) => {
     if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
       return pre.concat({
@@ -212,41 +219,48 @@ export default async function executeSQL(
       return pre;
     }
   }, []);
-  if (!taskInfo?.requestId && taskInfo?.sqls?.length) {
+  /**
+   * lintResultSet为空数组时，返回的status默认为submit
+   */
+  const status = getStatus(lintResultSet);
+  // 没有requestId，即是被拦截了
+  if (!taskInfo?.requestId) {
     // 一些场景下不需要弹出SQL确认弹窗
     if (!needModal) {
       return {
-        hasLintResults: true,
+        hasLintResults: lintResultSet?.length > 0,
         invalid: true,
         executeSuccess: false,
         executeResult: [],
         violatedRules,
         lintResultSet,
-        levels,
+        status,
       };
     }
-    // 弹出SQL确认弹窗
-    modal.updateWorkSpaceExecuteSQLModalProps({
-      sql: (params as IExecuteSQLParams)?.sql || (params as string),
-      visible: true,
-      sessionId,
-      lintResultSet,
-      status: getStatus(lintResultSet),
-      onSave: () => {
-        // 打开新建数据库变更抽屉
-        modal.updateWorkSpaceExecuteSQLModalProps();
-        modal.changeCreateAsyncTaskModal(true, {
-          sql: (params as IExecuteSQLParams)?.sql || (params as string),
-          databaseId: sessionManager.sessionMap.get(sessionId).odcDatabase?.id,
-          rules: lintResultSet,
-        });
-      },
-      // 关闭SQL确认弹窗
-      onCancel: () =>
-        modal.updateWorkSpaceExecuteSQLModalProps({
-          visible: false,
-        }),
-    });
+    // 当status不为submit时
+    if (status !== EStatus.SUBMIT) {
+      modal.updateWorkSpaceExecuteSQLModalProps({
+        sql: (params as IExecuteSQLParams)?.sql || (params as string),
+        visible: true,
+        sessionId,
+        lintResultSet,
+        status,
+        onSave: () => {
+          // 关闭SQL确认窗口打开新建数据库变更抽屉
+          modal.updateWorkSpaceExecuteSQLModalProps();
+          modal.changeCreateAsyncTaskModal(true, {
+            sql: (params as IExecuteSQLParams)?.sql || (params as string),
+            databaseId: sessionManager.sessionMap.get(sessionId).odcDatabase?.id,
+            rules: lintResultSet,
+          });
+        },
+        // 关闭SQL确认弹窗
+        onCancel: () =>
+          modal.updateWorkSpaceExecuteSQLModalProps({
+            visible: false,
+          }),
+      });
+    }
   }
   const requestId = taskInfo?.requestId;
   const sqls = taskInfo?.sqls;
@@ -266,6 +280,9 @@ export default async function executeSQL(
       !!results && !results?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS),
     executeResult: results || [],
     violatedRules: [],
+    lintResultSet,
+    hasLintResults: lintResultSet?.length > 0,
+    status,
   };
 }
 
@@ -277,14 +294,17 @@ function getStatus(lintResultSet: ISQLLintReuslt[]) {
       }
       return pre.concat(...cur?.violations);
     }, []);
+    // 含有必须改进， 中断后续操作，禁止执行
     if (violations?.some((violation) => violation?.level === 2)) {
       return EStatus.DISABLED;
-    } else if (violations?.every((violation) => violation?.level === 1)) {
+      //  全为无需改进，继续原有的后续操作
+    } else if (violations?.every((violation) => violation?.level === 0)) {
       return EStatus.SUBMIT;
     } else {
+      // 既不含必须改进，又不全是无需改进，需要发起审批
       return EStatus.APPROVAL;
     }
-  } else {
-    return EStatus.DISABLED;
   }
+  // 默认返回submit，不中断后续操作
+  return EStatus.SUBMIT;
 }

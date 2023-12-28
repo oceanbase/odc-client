@@ -34,18 +34,14 @@ import styles from './index.less';
 interface IProps {}
 
 const TableConstraints: React.FC<IProps> = function ({}) {
-  const [editPrimaryConstraints, setEditPrimaryConstraints] = useState<
-    ITableModel['primaryConstraints']
-  >(null);
-  const [editUniqueConstraints, setEditUniqueConstraints] = useState<
-    ITableModel['uniqueConstraints']
-  >(null);
-  const [editCheckConstraints, setEditCheckConstraints] = useState<ITableModel['checkConstraints']>(
-    null,
-  );
-  const [editForeignConstraints, setEditForeignConstraints] = useState<
-    ITableModel['foreignConstraints']
-  >(null);
+  const [editPrimaryConstraints, setEditPrimaryConstraints] =
+    useState<ITableModel['primaryConstraints']>(null);
+  const [editUniqueConstraints, setEditUniqueConstraints] =
+    useState<ITableModel['uniqueConstraints']>(null);
+  const [editCheckConstraints, setEditCheckConstraints] =
+    useState<ITableModel['checkConstraints']>(null);
+  const [editForeignConstraints, setEditForeignConstraints] =
+    useState<ITableModel['foreignConstraints']>(null);
   const tableContext = useContext(TablePageContext);
   const table = tableContext.table;
   const config = useTableConfig(tableContext?.session?.connection.dialectType);
@@ -113,6 +109,13 @@ const TableConstraints: React.FC<IProps> = function ({}) {
                   setEditForeignConstraints(null);
                 },
                 tip,
+                async () => {
+                  await tableContext.onRefresh();
+                  setEditPrimaryConstraints(null);
+                  setEditUniqueConstraints(null);
+                  setEditCheckConstraints(null);
+                  setEditForeignConstraints(null);
+                },
               );
             }}
             modified={modified}

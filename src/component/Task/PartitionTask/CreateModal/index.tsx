@@ -48,7 +48,6 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
 import styles from './index.less';
-
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
   FIRST_DAY_OF_MONTH = 'FIRST_DAY_OF_MONTH',
@@ -131,12 +130,9 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         })),
       );
     };
-    const handleReset = () => {
-      form?.resetFields();
-      crontabRef.current?.resetFields();
-    };
     const onClose = useCallback(() => {
-      form.resetFields();
+      form?.resetFields();
+      setCrontab(null);
       setDisabledSubmit(true);
       setHasPartitionPlan(false);
       setPartitionPlans([]);
@@ -157,7 +153,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const handleCrontabChange = (crontab) => {
       setCrontab(crontab);
     };
-
     const handleSubmit = async () => {
       try {
         const values = await form.validateFields();
@@ -217,11 +212,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       const isExist = await checkConnectionPartitionPlan(databaseId);
       setHasPartitionPlan(isExist);
     };
-    useEffect(() => {
-      if (!partitionVisible) {
-        handleReset();
-      }
-    }, [partitionVisible]);
     useEffect(() => {
       if (partitionVisible && databaseId) {
         checkPartitionPlanExist();
@@ -338,7 +328,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               onLoad={loadData}
             />
           </Form.Item>
-          <Form.Item label="执行方式" name="triggerStrategy" required>
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.PartitionTask.CreateModal.ImplementationModalities',
+              }) /* 执行方式 */
+            }
+            name="triggerStrategy"
+            required
+          >
             <Radio.Group>
               {/**
                  * <Radio.Button value={TaskExecStrategy.START_NOW}>
@@ -350,7 +348,13 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     </Radio.Button>
                   ) : null}
                  */}
-              <Radio.Button value={TaskExecStrategy.TIMER}>周期执行</Radio.Button>
+              <Radio.Button value={TaskExecStrategy.TIMER}>
+                {
+                  formatMessage({
+                    id: 'odc.src.component.Task.PartitionTask.CreateModal.CycleExecution',
+                  }) /* 周期执行 */
+                }
+              </Radio.Button>
             </Radio.Group>
           </Form.Item>
           <Form.Item shouldUpdate noStyle>
@@ -358,7 +362,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               const triggerStrategy = getFieldValue('triggerStrategy') || [];
               if (triggerStrategy === TaskExecStrategy.START_AT) {
                 return (
-                  <Form.Item name="startAt" label="执行时间" required>
+                  <Form.Item
+                    name="startAt"
+                    label={
+                      formatMessage({
+                        id: 'odc.src.component.Task.PartitionTask.CreateModal.ExecutionTime',
+                      }) /* 执行时间 */
+                    }
+                    required
+                  >
                     <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
                   </Form.Item>
                 );

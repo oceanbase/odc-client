@@ -31,7 +31,6 @@ import {
 } from './interface';
 import TableContext from './TableContext';
 
-import { runSQLLint } from '@/common/network/sql';
 import executeSQL from '@/common/network/sql/executeSQL';
 import { generateCreateTableDDL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
@@ -41,7 +40,7 @@ import { EStatus } from '@/d.ts';
 import { CreateTablePage } from '@/store/helper/page/pages/create';
 import modal from '@/store/modal';
 import page from '@/store/page';
-import { SessionManagerStore } from '@/store/sessionManager';
+import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
@@ -83,6 +82,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const [foreignConstraints, setForeignConstraints] = useState<TableForeignConstraint[]>([]);
   const [checkConstraints, setCheckConstraints] = useState<TableCheckConstraint[]>([]);
   const [DDL, setDDL] = useState('');
+  const [hasExecuted, setHasExecuted] = useState<boolean>(false);
   const { loading, run: runGenerateCreateTableDDL } = useRequest(generateCreateTableDDL, {
     manual: true,
   });
@@ -105,26 +105,6 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
       session?.odcDatabase?.name,
     );
     if (sql) {
-      const lintResultSet = await runSQLLint(session?.sessionId, ';', sql);
-      setLintResultSet(lintResultSet);
-      modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
-      if (Array.isArray(lintResultSet) && lintResultSet?.length) {
-        const violations = lintResultSet.reduce((pre, cur) => {
-          if (cur?.violations?.length === 0) {
-            return pre;
-          }
-          return pre.concat(...cur?.violations);
-        }, []);
-        if (violations?.some((violation) => violation?.level === 2)) {
-          setStatus(EStatus.DISABLED);
-        } else if (violations?.every((violation) => violation?.level === 1)) {
-          setStatus(EStatus.SUBMIT);
-        } else {
-          setStatus(EStatus.APPROVAL);
-        }
-      } else {
-        setStatus(EStatus.DISABLED);
-      }
       setDDL(sql);
     }
   };
@@ -244,7 +224,20 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           readonly
           status={status}
           lintResultSet={lintResultSet}
-          onCancel={() => setDDL('')}
+          onCancel={() => {
+            setDDL('');
+            setStatus(null);
+            setLintResultSet(null);
+            setHasExecuted(false);
+          }}
+          callback={() => {
+            setDDL('');
+            setStatus(null);
+            setLintResultSet(null);
+            setHasExecuted(false);
+            // 关闭
+            page.close(pageKey);
+          }}
           onSave={async () => {
             const results = await executeSQL(
               DDL,
@@ -252,8 +245,51 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               session?.odcDatabase?.name,
               false,
             );
+            if (!hasExecuted) {
+              if (results?.status !== EStatus.SUBMIT) {
+                setLintResultSet(results?.lintResultSet);
+                modal.updateCreateAsyncTaskModal({ activePageKey: page.activePageKey });
+                setStatus(results?.status);
+                setHasExecuted(true);
+                return;
+              }
+            } else {
+              if (results?.status === EStatus.APPROVAL) {
+                modal.changeCreateAsyncTaskModal(true, {
+                  sql: DDL,
+                  databaseId: sessionManager.sessionMap.get(session?.sessionId).odcDatabase?.id,
+                  rules: lintResultSet,
+                });
+              }
+              setStatus(null);
+              setLintResultSet(null);
+              setHasExecuted(false);
+            }
             if (!results) {
               return;
+            }
+            if (!hasExecuted) {
+              /**
+               * status为submit时，即SQL内容没有被拦截，继续执行后续代码，完成相关交互
+               * status为其他情况时，中断操作
+               */
+              if (results?.status !== EStatus.SUBMIT) {
+                setLintResultSet(results?.lintResultSet);
+                setStatus(results?.status);
+                setHasExecuted(true);
+                return;
+              }
+            } else {
+              if (results?.status === EStatus.APPROVAL) {
+                modal.changeCreateAsyncTaskModal(true, {
+                  sql: DDL,
+                  databaseId: sessionManager.sessionMap.get(session?.sessionId).odcDatabase?.id,
+                  rules: lintResultSet,
+                });
+              }
+              setStatus(null);
+              setLintResultSet(null);
+              setHasExecuted(false);
             }
             if (results?.invalid) {
               setDDL('');
