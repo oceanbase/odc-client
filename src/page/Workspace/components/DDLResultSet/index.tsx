@@ -60,6 +60,7 @@ import styles from './index.less';
 // @ts-ignore
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
 // @ts-ignore
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { uploadTableObject } from '@/common/network/sql';
 import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
 import SessionStore from '@/store/sessionManager/session';
@@ -70,14 +71,13 @@ import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { defaultOnCopy, defaultOnCopyCsv } from '@oceanbase-odc/ob-react-data-grid';
 import type { CalculatedColumn } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import BigNumber from 'bignumber.js';
+import { compare } from 'compare-versions';
 import { cloneDeep, debounce, isNil, isNull, isUndefined } from 'lodash';
 import ColumnModeModal from './ColumnModeModal';
 import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { compare } from 'compare-versions';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -116,6 +116,7 @@ interface IProps {
   showExplain?: boolean;
   showTrace?: boolean; // 是否展示trace功能
   showPagination?: boolean;
+  allowExport?: boolean; // 是否允许导出
   columns: ResultSetColumn[];
   /**
    * 展示的数据
@@ -160,6 +161,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     showExplain,
     showTrace = false,
     showMock,
+    allowExport = true,
     table,
     resultHeight,
     useUniqueColumnName,
@@ -608,9 +610,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   );
 
   useEffect(() => {
-    if (rgdColumns?.length) {
-      gridRef.current.setColumns(rgdColumns);
-    }
+    gridRef.current?.setColumns?.(rgdColumns ?? []);
   }, [rgdColumns]);
 
   const pasteFormatter = useCallback(
@@ -832,6 +832,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               )
             ) : null}
             {!isEditing &&
+            allowExport &&
             onExport &&
             settingStore.enableDBExport &&
             getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
@@ -847,7 +848,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 onClick={handleExport}
               />
             ) : null}
-            {!isEditing && showMock ? (
+            {!isEditing && showMock && getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+              TaskType.DATAMOCK,
+            ) ? (
               <>
                 <ToolbarButton
                   text={

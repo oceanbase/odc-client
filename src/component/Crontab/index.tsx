@@ -49,14 +49,14 @@ const defaultCronTabValue = {
 };
 
 interface IProps {
-  initialValue: ICrontab;
+  initialValue?: ICrontab;
   onValueChange: (value: ICrontab) => void;
 }
 
 const Crontab = (props, ref) => {
-  const { initialValue, onValueChange } = props;
+  const { initialValue = null, onValueChange } = props;
   const [value, setValue] = useState(() => {
-    return merge(defaultCronTabValue, initialValue);
+    return merge({}, defaultCronTabValue, initialValue);
   });
   const [plan, setPlan] = useState([]);
 

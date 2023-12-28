@@ -160,9 +160,9 @@ export class SessionManagerStore {
   // }
 
   @action
-  destoryStore(force: boolean = false) {
+  async destoryStore(force: boolean = false) {
     this.connection.clear();
-    SessionStore.batchDestory(Array.from(this.sessionMap.values()), force);
+    await SessionStore.batchDestory(Array.from(this.sessionMap.values()), force);
     this.sessionMap.clear();
     this.database.clear();
     this.masterSession.clear();

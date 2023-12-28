@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getViewCreateSQL } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
 import ScriptPage from '@/component/ScriptPage';
@@ -38,7 +39,6 @@ import BaseInfoForm from './component/BaseInfoForm';
 import ColumnSelector from './component/ColumnSelector';
 import TableSelector from './component/TableSelector';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -193,6 +193,7 @@ class CreateViewPage extends Component<
           loading: false,
           actionGroupKey: 'VIEW_CREATE_ACTION_GROUP',
         }}
+        showSessionSelect={false}
         editor={{
           readOnly: false,
           defaultValue: this.sql,

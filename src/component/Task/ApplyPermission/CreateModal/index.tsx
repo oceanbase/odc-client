@@ -29,12 +29,12 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 const { Text } = Typography;
-
 export const projectRoleMap = {
   [ProjectRole.OWNER]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Administrator',
-    }), //'管理员'
+    }),
+    //'管理员'
     description: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.HavingOwnershipInTheProject',
     }), //'拥有项目内的所有权限'
@@ -42,7 +42,8 @@ export const projectRoleMap = {
   [ProjectRole.DEVELOPER]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.OrdinaryMember',
-    }), //'普通成员'
+    }),
+    //'普通成员'
     description: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.AllowingLoginDatabaseExecution',
     }), //'允许登录数据库、执行 SQL、提交工单等，通常是开发人员'
@@ -56,7 +57,8 @@ export const projectRoleMap = {
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.SecurityAdministrator',
-    }), //'安全管理员'
+    }),
+    //'安全管理员'
     description: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnTheBasisOfParticipants',
     }), //'在参与者的基础上还可以管理敏感列'
@@ -64,7 +66,8 @@ export const projectRoleMap = {
   [ProjectRole.PARTICIPANT]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Participant',
-    }), //'参与者'
+    }),
+    //'参与者'
     description: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnlyAllowParticipationInApproval',
     }), //'只允许参与审批'
@@ -125,7 +128,9 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消申请项目权限吗？',
+        title: formatMessage({
+          id: 'odc.src.component.Task.ApplyPermission.CreateModal.DoYouConfirmTheCancellation',
+        }), //'确认取消申请项目权限吗？'
         centered: true,
         onOk: () => {
           modalStore.changeApplyPermissionModal(false);
@@ -204,8 +209,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.Cancel',
               }) /* 
-            取消
-           */
+         取消
+         */
             }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
@@ -213,8 +218,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.NewlyBuilt',
               }) /* 
-            新建
-           */
+         新建
+         */
             }
           </Button>
         </Space>
@@ -252,9 +257,15 @@ const CreateModal: React.FC<IProps> = (props) => {
           ]}
         >
           <Select
-            style={{ width: 240 }}
+            style={{
+              width: 240,
+            }}
             options={projectOptions}
-            placeholder="请选择"
+            placeholder={
+              formatMessage({
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose.1',
+              }) /* 请选择 */
+            }
             showSearch
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())

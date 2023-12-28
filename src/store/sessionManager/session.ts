@@ -400,6 +400,10 @@ class SessionStore {
   }
 
   static async batchDestory(sessions: SessionStore[], force: boolean = false) {
+    const sessionIds = sessions?.map((session) => generateSessionSid(session.sessionId));
+    if (!sessionIds?.length) {
+      return;
+    }
     await request.delete(`/api/v2/datasource/sessions`, {
       data: {
         sessionIds: sessions?.map((session) => generateSessionSid(session.sessionId)),

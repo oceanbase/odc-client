@@ -105,11 +105,36 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                   )}
                   {preCheckOverLimit && (
                     <span>
+                      {
+                        formatMessage({
+                          id:
+                            'odc.src.component.Task.component.CommonDetailModal.Nodes.TheNumberOf',
+                        }) /* 
                       ，预检查处理 SQL 条数超过最大限制，当前任务流程将按
-                      <Tag style={{ marginLeft: '8px' }} color="error">
+                       */
+                      }
+                      <Tag
+                        style={{
+                          marginLeft: '8px',
+                        }}
+                        color="error"
+                      >
+                        {
+                          formatMessage({
+                            id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.HighRisk',
+                          }) /* 
                         高风险
+                       */
+                        }
                       </Tag>
+                      {
+                        formatMessage({
+                          id:
+                            'odc.src.component.Task.component.CommonDetailModal.Nodes.GradeContinuesToAdvance',
+                        }) /* 
                       等级继续推进
+                     */
+                      }
                     </span>
                   )}
                 </Descriptions.Item>
@@ -128,8 +153,8 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       id:
                         'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
                     }) /* 
-                  无权限访问数据库：
-                   */
+               无权限访问数据库：
+               */
                   }
                   {unauthorizedDatabaseNames?.join(', ')}
                 </Descriptions.Item>

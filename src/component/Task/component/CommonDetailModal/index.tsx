@@ -34,7 +34,6 @@ import TaskResult from './TaskResult';
 import { ShareAltOutlined } from '@ant-design/icons';
 import login from '@/store/login';
 import copy from 'copy-to-clipboard';
-
 const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
   const {
     task,
@@ -60,7 +59,6 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       ) : (
         <TaskInfo task={task} taskItems={getItems?.(task, result, hasFlow)} isSplit={isSplit} />
       );
-
       break;
     case TaskDetailType.LOG:
       content = (
@@ -71,7 +69,6 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           onLogTypeChange={onLogTypeChange}
         />
       );
-
       break;
     case TaskDetailType.RESULT:
       content = <TaskResult result={result} />;
@@ -94,14 +91,12 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
     default:
       break;
   }
-
   return (
     <div className={styles.content}>
       <Spin spinning={isLoading}>{content}</Spin>
     </div>
   );
 };
-
 interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   width?: number;
   isSplit?: boolean;
@@ -112,7 +107,6 @@ interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   ) => ITaskInfoProps['taskItems'];
   taskContent?: React.ReactNode;
 }
-
 const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
   const { width = 750, visible, task, taskTools, detailType, detailId, hasFlow, onClose } = props;
   const hasInfo = [
@@ -148,7 +142,11 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
       location.pathname +
       `#/task?taskId=${detailId}&taskType=${task?.type}&organizationId=${login.organizationId}`;
     copy(url);
-    message.success('复制成功');
+    message.success(
+      formatMessage({
+        id: 'odc.src.component.Task.component.CommonDetailModal.Replication',
+      }), //'复制成功'
+    );
   }
   return (
     <Drawer
@@ -160,13 +158,22 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           {formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskDetails',
           })}
-          {login.isPrivateSpace() ? <div></div> : <a className={styles.share} onClick={onShare}>
-            分享 <ShareAltOutlined />
-          </a>}
+          {login.isPrivateSpace() ? (
+            <div></div>
+          ) : (
+            <a className={styles.share} onClick={onShare}>
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.component.CommonDetailModal.Share',
+                }) /* 
+            分享  */
+              }
+              <ShareAltOutlined />
+            </a>
+          )}
         </div>
       }
-      /* 任务详情 */
-      destroyOnClose
+      /* 任务详情 */ destroyOnClose
       className={styles.detailDrawer}
     >
       <div className={styles.header}>
@@ -254,7 +261,11 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
 
           {task?.type === TaskType.ASYNC && (
             <Radio.Button value={TaskDetailType.RECORD}>
-              {formatMessage({ id: 'odc.component.CommonDetailModal.RollbackTicket' }) /*回滚工单*/}
+              {
+                formatMessage({
+                  id: 'odc.component.CommonDetailModal.RollbackTicket',
+                }) /*回滚工单*/
+              }
             </Radio.Button>
           )}
 
@@ -277,5 +288,4 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     </Drawer>
   );
 };
-
 export default CommonTaskDetailModal;

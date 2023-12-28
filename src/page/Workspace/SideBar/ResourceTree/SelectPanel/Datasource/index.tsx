@@ -283,7 +283,7 @@ export default forwardRef(function DatasourceTree({ filters, closeSelectPanel }:
                               ],
                             }}
                           >
-                            <span>{node.title}</span>
+                            <span className={styles.fullWidthTitle}>{node.title}</span>
                           </Dropdown>
                           <div
                             className={classNames(styles.envTip, {

@@ -137,8 +137,12 @@ export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail
 /**
  * 查询任务列表
  */
-export async function getTaskDetail(id: number): Promise<TaskDetail<TaskRecordParameters>> {
-  const res = await request.get(`/api/v2/flow/flowInstances/${id}`);
+export async function getTaskDetail(id: number, ignoreError: boolean = false): Promise<TaskDetail<TaskRecordParameters>> {
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}`, {
+    params: {
+      ignoreError,
+    },
+  });
   return res?.data;
 }
 /**

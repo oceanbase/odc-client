@@ -20,13 +20,20 @@ import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import { groupByPropertyName } from '@/util/utils';
 import { Button, Table } from 'antd';
+import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
 import getColumns from './columns';
 import styles from './index.less';
 const LintResultTip = {
-  default: '当前 SQL 可直接执行',
-  suggest: '当前 SQL 存在需要审批项，请发起审批或修改后再执行',
-  must: '当前 SQL 存在必须改进项，请修改后再执行',
+  default: formatMessage({
+    id: 'odc.src.page.Workspace.components.SQLResultSet.CurrentSQLCanBeExecuted',
+  }), //'当前 SQL 可直接执行'
+  suggest: formatMessage({
+    id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLNeedsApproval',
+  }), //'当前 SQL 存在需要审批项，请发起审批或修改后再执行'
+  must: formatMessage({
+    id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLExistenceMust',
+  }), //'当前 SQL 存在必须改进项，请修改后再执行'
 };
 export interface ILintResultTableProps {
   ctx?: any;
@@ -60,32 +67,34 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
     return (
       <Table
         rowKey="row"
-        className="o-table--no-lr-border"
+        className={classNames('o-table--no-lr-border', styles.thFilter)}
         bordered={true}
         columns={columns}
         dataSource={dataSource || []}
-        scroll={
-          resultHeight
-            ? {
-                y: resultHeight,
-              }
-            : {}
-        }
         pagination={
           pageSize
             ? {
                 position: ['bottomRight'],
                 pageSize,
                 hideOnSinglePage: true,
+                showSizeChanger: false,
+              }
+            : resultHeight
+            ? {
+                position: ['bottomRight'],
+                pageSize: resultHeight - 150 > 24 ? Math.floor((resultHeight - 150) / 24) : 5,
+                hideOnSinglePage: true,
+                showSizeChanger: false,
               }
             : {
                 position: ['bottomRight'],
                 hideOnSinglePage: true,
+                showSizeChanger: false,
               }
         }
       />
     );
-  }, [lintResultSet, ctx, baseOffset, dataSource]);
+  }, [lintResultSet, ctx, baseOffset, dataSource, resultHeight]);
   useEffect(() => {
     if (Array.isArray(lintResultSet) && lintResultSet?.length) {
       const newDataSource = lintResultSet?.map((resultSet, index) => {
@@ -105,7 +114,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
       if (violations?.some((violation) => violation?.level === 2)) {
         setDisabled(true);
         setTip(LintResultTip.must);
-      } else if (violations?.every((violation) => violation?.level === 2)) {
+      } else if (violations?.every((violation) => violation?.level === 0)) {
         setDisabled(true);
         setTip(LintResultTip.default);
       } else {
@@ -148,7 +157,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.SQLResultSet.InitiateApproval',
                 }) /* 
-              发起审批
+             发起审批
              */
               }
             </Button>
@@ -159,6 +168,7 @@ const LintResultTable: React.FC<ILintResultTableProps> = ({
           className={styles.table}
           style={{
             flexGrow: 1,
+            paddingBottom: 8,
           }}
         >
           <CallbackTable />
