@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { isUndefined } from 'lodash';
+import { isUndefined, isNil } from 'lodash';
 
 function unifiedStr(value: string) {
   return value?.replace(/\\"|\\t|\'/g, '');
@@ -150,7 +150,7 @@ class Parser {
             const next = args[i + 1];
             const isNextValid = !next?.startsWith('-');
             let value: any = isNextValid ? next : null;
-            result[name] = isUndefined(value) ? value : type(value, name, result[name]);
+            result[name] = isNil(value) ? value : type(value, name, result[name]);
             if (isNextValid) {
               ++i;
             }
