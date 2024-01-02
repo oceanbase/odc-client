@@ -120,7 +120,7 @@ export default function SelectTransfer(props: IProps) {
           />
         </Card>
       </div>
-      <div style={{ width: '100%', height: '100%' }}>
+      <div style={{ width: '50%', height: '100%' }}>
         <Card
           title={
             formatMessage(
@@ -155,6 +155,7 @@ export default function SelectTransfer(props: IProps) {
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
+                      wordBreak: "break-all"
                     }}
                     title={node.title}
                   >
