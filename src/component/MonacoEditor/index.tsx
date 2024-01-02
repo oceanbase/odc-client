@@ -28,6 +28,7 @@ import styles from './index.less';
 import * as groovy from './plugins/languageSupport/groovy';
 import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
+import logger from '@/util/logger';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -138,6 +139,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       ),
     );
     markerPluginApply(editorRef.current.getModel());
+    logger.debug('init plugin done')
   }
 
   async function initEditor() {
@@ -154,6 +156,10 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       readOnly: readOnly,
     });
     await initPlugin();
+    editorRef.current.updateOptions({
+      readOnly,
+      theme: themeValue,
+    });
     if (!editorRef.current?.getModel?.()) {
       return;
     }
