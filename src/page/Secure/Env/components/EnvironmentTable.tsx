@@ -85,7 +85,7 @@ const EnvironmentTable = ({ ruleType }) => {
     }
     if (supportedDialectTypes) {
       filteredRules = filteredRules?.filter((item) =>
-        item?.metadata?.supportedDialectTypes?.some((supportedDialectType) =>
+        item?.appliedDialectTypes?.some((supportedDialectType) =>
           supportedDialectTypes?.includes(supportedDialectType),
         ),
       );
@@ -119,7 +119,7 @@ const EnvironmentTable = ({ ruleType }) => {
     }
     if (supportedDialectTypes) {
       filteredRules = filteredRules?.filter((item) =>
-        item?.metadata?.supportedDialectTypes?.some((supportedDialectType) =>
+        item?.appliedDialectTypes?.some((supportedDialectType) =>
           supportedDialectTypes?.includes(supportedDialectType),
         ),
       );
