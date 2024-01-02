@@ -131,3 +131,4 @@ You can adjust the command parameters to selectively build different installatio
 4. **win** - win32, win64 version installation package
 5. **all** - all installation packages
 6. 
+7. 
