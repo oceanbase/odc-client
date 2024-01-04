@@ -30,7 +30,6 @@ import { getPageTitleText } from './helper';
 import styles from './index.less';
 import tracert from '@/util/tracert';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-const { TabPane } = Tabs;
 
 interface IProps {
   pages: IPage[];
@@ -367,12 +366,14 @@ const WindowManager: React.FC<IProps> = function (props) {
             <EllipsisOutlined className={styles.moreBtn} />
           </Dropdown>
         }
-      >
-        {pages.map((page) => {
+        items={pages.map((page) => {
           const Page = pageMap[page.type].component;
           const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
-          return (
-            <TabPane tab={getPageTitle(page)} key={page.key} closable={false}>
+          return {
+            key: page.key,
+            label: getPageTitle(page),
+            closable: true,
+            children: (
               <Page
                 page={page}
                 pageKey={page.key}
@@ -388,10 +389,10 @@ const WindowManager: React.FC<IProps> = function (props) {
                 onSaveAndCloseUnsavedModal={handleSaveAndClosePage}
                 closeSelf={handleCloseTab.bind(null, page.key)}
               />
-            </TabPane>
-          );
+            ),
+          };
         })}
-      </DraggableTabs>
+      />
       <DefaultPage />
     </>
   );

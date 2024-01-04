@@ -53,7 +53,6 @@ import styles from './index.less';
 const ToolbarButton = Toolbar.Button;
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 
 // 顶层 Tab key 枚举
 export enum TopTab {
@@ -295,295 +294,319 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
             activeKey={topTab}
             className={styles.topbarTab}
             animated={false}
-          >
-            {pkg.packageHead ? (
-              <TabPane key={TopTab.HEAD} tab="">
-                <Tabs
-                  activeKey={propsTab}
-                  tabPosition="left"
-                  className={styles.propsTab}
-                  onChange={this.handlePropsTabChanged as any}
-                >
-                  <TabPane
-                    tab={formatMessage({
-                      id: 'workspace.window.table.propstab.info',
-                    })}
-                    key={PropsTab.PACKAGE_HEAD_INFO}
-                  >
-                    <Content>
-                      <p>
-                        {formatMessage(
+            items={[
+              pkg.packageHead
+                ? {
+                    key: TopTab.HEAD,
+                    label: '',
+                    children: (
+                      <Tabs
+                        activeKey={propsTab}
+                        tabPosition="left"
+                        className={styles.propsTab}
+                        onChange={this.handlePropsTabChanged as any}
+                        items={[
                           {
-                            id: 'odc.components.PackagePage.PackageNamePkgpackagename',
+                            key: PropsTab.PACKAGE_HEAD_INFO,
+                            label: formatMessage({
+                              id: 'workspace.window.table.propstab.info',
+                            }),
+                            children: (
+                              <Content>
+                                <p>
+                                  {formatMessage(
+                                    {
+                                      id: 'odc.components.PackagePage.PackageNamePkgpackagename',
+                                    },
+
+                                    { pkgPackageName: pkg.packageName },
+                                  )}
+                                </p>
+                                <p>
+                                  {formatMessage({
+                                    id: 'odc.components.PackagePage.Created',
+                                  })}
+
+                                  {pkg.packageHead.basicInfo.definer}
+                                </p>
+                                <p>
+                                  {formatMessage({
+                                    id: 'odc.components.PackagePage.Created.2',
+                                  })}
+
+                                  {moment(pkg.packageHead.basicInfo.createTime).format(
+                                    'YYYY-MM-DD HH:mm',
+                                  )}
+                                </p>
+                                <p>
+                                  {formatMessage({
+                                    id: 'odc.components.PackagePage.LastModifiedTime',
+                                  })}
+                                  {moment(pkg.packageHead.basicInfo.modifyTime).format(
+                                    'YYYY-MM-DD HH:mm',
+                                  )}{' '}
+                                </p>
+                              </Content>
+                            ),
                           },
-
-                          { pkgPackageName: pkg.packageName },
-                        )}
-                      </p>
-                      <p>
-                        {formatMessage({
-                          id: 'odc.components.PackagePage.Created',
-                        })}
-
-                        {pkg.packageHead.basicInfo.definer}
-                      </p>
-                      <p>
-                        {formatMessage({
-                          id: 'odc.components.PackagePage.Created.2',
-                        })}
-
-                        {moment(pkg.packageHead.basicInfo.createTime).format('YYYY-MM-DD HH:mm')}
-                      </p>
-                      <p>
-                        {formatMessage({
-                          id: 'odc.components.PackagePage.LastModifiedTime',
-                        })}
-                        {moment(pkg.packageHead.basicInfo.modifyTime).format('YYYY-MM-DD HH:mm')}{' '}
-                      </p>
-                    </Content>
-                  </TabPane>
-                  <TabPane tab={'DDL'} key={PropsTab.PACKAGE_HEAD_CODE}>
-                    <Toolbar>
-                      <ToolbarButton
-                        text={formatMessage({ id: 'workspace.window.session.button.edit' })}
-                        icon={<EditOutlined />}
-                        onClick={this.handleEditPackage.bind(
-                          this,
-                          pkg.packageName,
-                          PropsTab.PACKAGE_HEAD_CODE,
-                        )}
-                      />
-                      <ToolbarButton
-                        text={
-                          formatMessage({
-                            id: 'odc.components.PackagePage.Download',
-                          }) //下载
-                        }
-                        icon={<CloudDownloadOutlined />}
-                        onClick={() => {
-                          downloadPLDDL(
-                            packageName + '.head',
-                            PLType.PKG_HEAD,
-                            pkg?.packageHead?.basicInfo?.ddl,
-                            dbName,
-                          );
-                        }}
-                      />
-
-                      <ToolbarButton
-                        text={formatMessage({ id: 'workspace.window.sql.button.search' })}
-                        icon={<FileSearchOutlined />}
-                        onClick={this.showSearchWidget.bind(this)}
-                      />
-
-                      <ToolbarButton
-                        text={
-                          headerFormated
-                            ? formatMessage({
-                                id: 'odc.components.PackagePage.Unformat',
-                              })
-                            : // 取消格式化
-                              formatMessage({
-                                id: 'odc.components.PackagePage.Formatting',
-                              })
-
-                          // 格式化
-                        }
-                        icon={<AlignLeftOutlined />}
-                        onClick={() => {
-                          this.handleFormat(
-                            this.editor_header,
-                            'headerFormated',
-                            pkg?.packageHead?.basicInfo?.ddl,
-                          );
-                        }}
-                        status={headerFormated ? IConStatus.ACTIVE : IConStatus.INIT}
-                      />
-
-                      <ToolbarButton
-                        text={
-                          formatMessage({
-                            id: 'odc.components.PackagePage.Refresh',
-                          })
-                          // 刷新
-                        }
-                        icon={<SyncOutlined />}
-                        onClick={this.reloadPackage}
-                        status={reloading ? IConStatus.ACTIVE : IConStatus.INIT}
-                      />
-                    </Toolbar>
-                    <div
-                      style={{
-                        height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
-                        position: 'relative',
-                      }}
-                    >
-                      <SQLCodeEditorDDL
-                        readOnly
-                        defaultValue={pkg?.packageHead?.basicInfo?.ddl}
-                        language={'oboracle'}
-                        onEditorCreated={(editor: IEditor) => {
-                          this.editor_header = editor;
-                        }}
-                      />
-                    </div>
-                  </TabPane>
-                </Tabs>
-              </TabPane>
-            ) : null}
-
-            {pkg.packageBody ? (
-              <TabPane key={TopTab.BODY} tab="">
-                <Tabs
-                  activeKey={propsTab}
-                  tabPosition="left"
-                  className={styles.propsTab}
-                  onChange={this.handlePropsTabChanged as any}
-                >
-                  <TabPane
-                    tab={formatMessage({
-                      id: 'workspace.window.table.propstab.info',
-                    })}
-                    key={PropsTab.PACKAGE_BODY_INFO}
-                  >
-                    <Content>
-                      <p>
-                        {formatMessage(
                           {
-                            id: 'odc.components.PackagePage.PackageNamePkgpackagename',
+                            key: PropsTab.PACKAGE_HEAD_CODE,
+                            label: 'DDL',
+                            children: (
+                              <>
+                                <Toolbar>
+                                  <ToolbarButton
+                                    text={formatMessage({
+                                      id: 'workspace.window.session.button.edit',
+                                    })}
+                                    icon={<EditOutlined />}
+                                    onClick={this.handleEditPackage.bind(
+                                      this,
+                                      pkg.packageName,
+                                      PropsTab.PACKAGE_HEAD_CODE,
+                                    )}
+                                  />
+                                  <ToolbarButton
+                                    text={
+                                      formatMessage({
+                                        id: 'odc.components.PackagePage.Download',
+                                      }) //下载
+                                    }
+                                    icon={<CloudDownloadOutlined />}
+                                    onClick={() => {
+                                      downloadPLDDL(
+                                        packageName + '.head',
+                                        PLType.PKG_HEAD,
+                                        pkg?.packageHead?.basicInfo?.ddl,
+                                        dbName,
+                                      );
+                                    }}
+                                  />
+
+                                  <ToolbarButton
+                                    text={formatMessage({
+                                      id: 'workspace.window.sql.button.search',
+                                    })}
+                                    icon={<FileSearchOutlined />}
+                                    onClick={this.showSearchWidget.bind(this)}
+                                  />
+
+                                  <ToolbarButton
+                                    text={
+                                      headerFormated
+                                        ? formatMessage({
+                                            id: 'odc.components.PackagePage.Unformat',
+                                          })
+                                        : // 取消格式化
+                                          formatMessage({
+                                            id: 'odc.components.PackagePage.Formatting',
+                                          })
+
+                                      // 格式化
+                                    }
+                                    icon={<AlignLeftOutlined />}
+                                    onClick={() => {
+                                      this.handleFormat(
+                                        this.editor_header,
+                                        'headerFormated',
+                                        pkg?.packageHead?.basicInfo?.ddl,
+                                      );
+                                    }}
+                                    status={headerFormated ? IConStatus.ACTIVE : IConStatus.INIT}
+                                  />
+
+                                  <ToolbarButton
+                                    text={
+                                      formatMessage({
+                                        id: 'odc.components.PackagePage.Refresh',
+                                      })
+                                      // 刷新
+                                    }
+                                    icon={<SyncOutlined />}
+                                    onClick={this.reloadPackage}
+                                    status={reloading ? IConStatus.ACTIVE : IConStatus.INIT}
+                                  />
+                                </Toolbar>
+                                <div
+                                  style={{
+                                    height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
+                                    position: 'relative',
+                                  }}
+                                >
+                                  <SQLCodeEditorDDL
+                                    readOnly
+                                    defaultValue={pkg?.packageHead?.basicInfo?.ddl}
+                                    language={'oboracle'}
+                                    onEditorCreated={(editor: IEditor) => {
+                                      this.editor_header = editor;
+                                    }}
+                                  />
+                                </div>
+                              </>
+                            ),
                           },
-
-                          { pkgPackageName: pkg.packageName },
-                        )}
-                      </p>
-                      <p>
-                        {formatMessage({
-                          id: 'odc.components.PackagePage.Created',
-                        })}
-
-                        {pkg.packageBody.basicInfo.definer}
-                      </p>
-                      <p>
-                        {formatMessage({
-                          id: 'odc.components.PackagePage.Created.2',
-                        })}
-
-                        {moment(pkg.packageBody.basicInfo.createTime).format('YYYY-MM-DD HH:mm')}
-                      </p>
-                      <p>
-                        {formatMessage({
-                          id: 'odc.components.PackagePage.LastModifiedTime',
-                        })}
-                        {moment(pkg.packageBody.basicInfo.modifyTime).format('YYYY-MM-DD HH:mm')}{' '}
-                      </p>
-                    </Content>
-                  </TabPane>
-                  <TabPane tab={'DDL'} key={PropsTab.PACKAGE_BODY_CODE}>
-                    <Toolbar>
-                      <ToolbarButton
-                        text={formatMessage({ id: 'workspace.window.session.button.edit' })}
-                        icon={<EditOutlined />}
-                        onClick={this.handleEditPackage.bind(
-                          this,
-                          pkg.packageName,
-                          PropsTab.PACKAGE_BODY_CODE,
-                        )}
+                        ]}
                       />
-                      <ToolbarButton
-                        text={
-                          formatMessage({
-                            id: 'odc.components.PackagePage.Download',
-                          }) //下载
-                        }
-                        icon={<CloudDownloadOutlined />}
-                        onClick={() => {
-                          downloadPLDDL(
-                            packageName + '.body',
-                            PLType.PKG_BODY,
-                            pkg.packageBody.basicInfo.ddl,
-                            dbName,
-                          );
-                        }}
-                      />
+                    ),
+                  }
+                : null,
+              pkg.packageBody
+                ? {
+                    key: TopTab.BODY,
+                    label: '',
+                    children: (
+                      <Tabs
+                        activeKey={propsTab}
+                        tabPosition="left"
+                        className={styles.propsTab}
+                        onChange={this.handlePropsTabChanged as any}
+                        items={[
+                          {
+                            key: PropsTab.PACKAGE_BODY_INFO,
+                            label: formatMessage({
+                              id: 'workspace.window.table.propstab.info',
+                            }),
+                            children: (
+                              <Content>
+                                <p>
+                                  {formatMessage(
+                                    {
+                                      id: 'odc.components.PackagePage.PackageNamePkgpackagename',
+                                    },
 
-                      <ToolbarButton
-                        text={formatMessage({ id: 'workspace.window.sql.button.search' })}
-                        icon={<FileSearchOutlined />}
-                        onClick={this.showSearchWidget.bind(this)}
-                      />
+                                    { pkgPackageName: pkg.packageName },
+                                  )}
+                                </p>
+                                <p>
+                                  {formatMessage({
+                                    id: 'odc.components.PackagePage.Created',
+                                  })}
 
-                      <ToolbarButton
-                        text={
-                          bodyFormated
-                            ? formatMessage({
-                                id: 'odc.components.PackagePage.Unformat',
-                              })
-                            : // 取消格式化
-                              formatMessage({
-                                id: 'odc.components.PackagePage.Formatting',
-                              })
+                                  {pkg.packageBody.basicInfo.definer}
+                                </p>
+                                <p>
+                                  {formatMessage({
+                                    id: 'odc.components.PackagePage.Created.2',
+                                  })}
 
-                          // 格式化
-                        }
-                        icon={<AlignLeftOutlined />}
-                        onClick={() => {
-                          this.handleFormat(
-                            this.editor_body,
-                            'bodyFormated',
-                            pkg.packageBody.basicInfo.ddl,
-                          );
-                        }}
-                        status={bodyFormated ? IConStatus.ACTIVE : IConStatus.INIT}
-                      />
+                                  {moment(pkg.packageBody.basicInfo.createTime).format(
+                                    'YYYY-MM-DD HH:mm',
+                                  )}
+                                </p>
+                                <p>
+                                  {formatMessage({
+                                    id: 'odc.components.PackagePage.LastModifiedTime',
+                                  })}
+                                  {moment(pkg.packageBody.basicInfo.modifyTime).format(
+                                    'YYYY-MM-DD HH:mm',
+                                  )}{' '}
+                                </p>
+                              </Content>
+                            ),
+                          },
+                          {
+                            key: PropsTab.PACKAGE_BODY_CODE,
+                            label: 'DDL',
+                            children: (
+                              <>
+                                <Toolbar>
+                                  <ToolbarButton
+                                    text={formatMessage({
+                                      id: 'workspace.window.session.button.edit',
+                                    })}
+                                    icon={<EditOutlined />}
+                                    onClick={this.handleEditPackage.bind(
+                                      this,
+                                      pkg.packageName,
+                                      PropsTab.PACKAGE_BODY_CODE,
+                                    )}
+                                  />
+                                  <ToolbarButton
+                                    text={
+                                      formatMessage({
+                                        id: 'odc.components.PackagePage.Download',
+                                      }) //下载
+                                    }
+                                    icon={<CloudDownloadOutlined />}
+                                    onClick={() => {
+                                      downloadPLDDL(
+                                        packageName + '.body',
+                                        PLType.PKG_BODY,
+                                        pkg.packageBody.basicInfo.ddl,
+                                        dbName,
+                                      );
+                                    }}
+                                  />
 
-                      <ToolbarButton
-                        text={
-                          formatMessage({
-                            id: 'odc.components.PackagePage.Refresh',
-                          })
-                          // 刷新
-                        }
-                        icon={<SyncOutlined />}
-                        onClick={this.reloadPackage}
-                        status={reloading ? IConStatus.ACTIVE : IConStatus.INIT}
+                                  <ToolbarButton
+                                    text={formatMessage({
+                                      id: 'workspace.window.sql.button.search',
+                                    })}
+                                    icon={<FileSearchOutlined />}
+                                    onClick={this.showSearchWidget.bind(this)}
+                                  />
+
+                                  <ToolbarButton
+                                    text={
+                                      bodyFormated
+                                        ? formatMessage({
+                                            id: 'odc.components.PackagePage.Unformat',
+                                          })
+                                        : // 取消格式化
+                                          formatMessage({
+                                            id: 'odc.components.PackagePage.Formatting',
+                                          })
+
+                                      // 格式化
+                                    }
+                                    icon={<AlignLeftOutlined />}
+                                    onClick={() => {
+                                      this.handleFormat(
+                                        this.editor_body,
+                                        'bodyFormated',
+                                        pkg.packageBody.basicInfo.ddl,
+                                      );
+                                    }}
+                                    status={bodyFormated ? IConStatus.ACTIVE : IConStatus.INIT}
+                                  />
+
+                                  <ToolbarButton
+                                    text={
+                                      formatMessage({
+                                        id: 'odc.components.PackagePage.Refresh',
+                                      })
+                                      // 刷新
+                                    }
+                                    icon={<SyncOutlined />}
+                                    onClick={this.reloadPackage}
+                                    status={reloading ? IConStatus.ACTIVE : IConStatus.INIT}
+                                  />
+                                </Toolbar>
+                                <div
+                                  style={{
+                                    height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
+                                    position: 'relative',
+                                  }}
+                                >
+                                  <SQLCodeEditorDDL
+                                    readOnly
+                                    defaultValue={pkg.packageBody.basicInfo.ddl}
+                                    language={'oboracle'}
+                                    onEditorCreated={(editor: IEditor) => {
+                                      this.editor_body = editor;
+                                    }}
+                                  />
+                                </div>
+                              </>
+                            ),
+                          },
+                        ]}
                       />
-                    </Toolbar>
-                    <div
-                      style={{
-                        height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
-                        position: 'relative',
-                      }}
-                    >
-                      <SQLCodeEditorDDL
-                        readOnly
-                        defaultValue={pkg.packageBody.basicInfo.ddl}
-                        language={'oboracle'}
-                        onEditorCreated={(editor: IEditor) => {
-                          this.editor_body = editor;
-                        }}
-                      />
-                    </div>
-                  </TabPane>
-                  {/* <TabPane
-                  tab={formatMessage({
-                  id: 'workspace.window.table.propstab.reffer',
-                  })}
-                  key={PropsTab.PACKAGE_BODY_REFFER}
-                  >
-                  <Content> {pkg.packageBody.basicInfo.refer} </Content>
-                  </TabPane>
-                  <TabPane
-                  tab={formatMessage({
-                  id: 'workspace.window.table.propstab.reffered',
-                  })}
-                  key={PropsTab.PACKAGE_BODY_REFFERED}
-                  >
-                  <Content> {pkg.packageBody.basicInfo.referd} </Content>
-                  </TabPane> */}
-                </Tabs>
-              </TabPane>
-            ) : null}
-          </Tabs>
+                    ),
+                  }
+                : null,
+            ].filter(Boolean)}
+          />
         </Content>
       </>
     );

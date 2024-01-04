@@ -40,7 +40,6 @@ import ColumnSelector from './component/ColumnSelector';
 import TableSelector from './component/TableSelector';
 import styles from './index.less';
 
-const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Panel } = Collapse;
 const RESULT_HEIGHT = 230;
@@ -453,22 +452,24 @@ class CreateViewPage extends Component<
         tabBarGutter={0}
         className={styles.tabs}
         animated={false}
-      >
-        <TabPane
-          tab={formatMessage({ id: 'odc.components.CreateViewPage.Result' })}
-          /* 运行结果 */ key="SQL_EXEC_RESULT"
-        >
-          <div className={styles.result}>
-            <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
-            {formatMessage({ id: 'workspace.window.sql.result.failure' })}
-            <div className={styles.executedSQL}>{executeSql}</div>
-            <div className={styles.failReason}>
-              {formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
-            </div>
-            <div className={styles.track}>{errStack}</div>
-          </div>
-        </TabPane>
-      </Tabs>
+        items={[
+          {
+            key: 'SQL_EXEC_RESULT',
+            label: formatMessage({ id: 'odc.components.CreateViewPage.Result' }),
+            children: (
+              <div className={styles.result}>
+                <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
+                {formatMessage({ id: 'workspace.window.sql.result.failure' })}
+                <div className={styles.executedSQL}>{executeSql}</div>
+                <div className={styles.failReason}>
+                  {formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
+                </div>
+                <div className={styles.track}>{errStack}</div>
+              </div>
+            ),
+          },
+        ]}
+      />
     );
   };
 

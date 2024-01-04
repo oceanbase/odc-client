@@ -24,13 +24,11 @@ import Foreign from './Foreign';
 import PrimaryConstaint from './Primary';
 import UniqueConstraints from './Unique';
 
-const TabPane = Tabs.TabPane;
-
 export enum ConstraintType {
-  Primary,
-  Unique,
-  Foreign,
-  Check,
+  Primary = 'primary',
+  Unique = 'unique',
+  Foreign = 'foreign',
+  Check = 'check',
 }
 
 interface IProps {
@@ -41,42 +39,40 @@ const TableConstraint: React.FC<IProps> = function ({ modified }) {
   const tableContext = useContext(TableContext);
   const config = useTableConfig(tableContext?.session?.connection.dialectType);
   return (
-    <Tabs className={'odc-left-tabs'} tabPosition="left">
-      <TabPane
-        tab={formatMessage({
-          id: 'odc.CreateTable.TableConstraint.PrimaryKeyConstraint',
-        })}
-        /*主键约束*/ key={ConstraintType.Primary}
-      >
-        <PrimaryConstaint modified={modified} />
-      </TabPane>
-      <TabPane
-        tab={formatMessage({
-          id: 'odc.CreateTable.TableConstraint.UniqueConstraint',
-        })}
-        /*唯一约束*/ key={ConstraintType.Unique}
-      >
-        <UniqueConstraints modified={modified} />
-      </TabPane>
-      <TabPane
-        tab={formatMessage({
-          id: 'odc.CreateTable.TableConstraint.ForeignKeyConstraint',
-        })}
-        /*外键约束*/ key={ConstraintType.Foreign}
-      >
-        <Foreign modified={modified} />
-      </TabPane>
-      {config.enableCheckConstraint && (
-        <TabPane
-          tab={formatMessage({
+    <Tabs
+      className={'odc-left-tabs'}
+      tabPosition="left"
+      items={[
+        {
+          key: ConstraintType.Primary,
+          label: formatMessage({
+            id: 'odc.CreateTable.TableConstraint.PrimaryKeyConstraint',
+          }),
+          children: <PrimaryConstaint modified={modified} />,
+        },
+        {
+          key: ConstraintType.Unique,
+          label: formatMessage({
+            id: 'odc.CreateTable.TableConstraint.UniqueConstraint',
+          }),
+          children: <UniqueConstraints modified={modified} />,
+        },
+        {
+          key: ConstraintType.Foreign,
+          label: formatMessage({
+            id: 'odc.CreateTable.TableConstraint.ForeignKeyConstraint',
+          }),
+          children: <Foreign modified={modified} />,
+        },
+        config.enableCheckConstraint && {
+          key: ConstraintType.Check,
+          label: formatMessage({
             id: 'odc.CreateTable.TableConstraint.CheckConstraints',
-          })}
-          /*检查约束*/ key={ConstraintType.Check}
-        >
-          <CheckConstraint modified={modified} />
-        </TabPane>
-      )}
-    </Tabs>
+          }),
+          children: <CheckConstraint modified={modified} />,
+        },
+      ].filter(Boolean)}
+    />
   );
 };
 

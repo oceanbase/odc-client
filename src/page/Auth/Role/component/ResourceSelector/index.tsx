@@ -35,8 +35,6 @@ import {
 } from './const';
 import styles from './index.less';
 
-const { TabPane } = Tabs;
-
 const getOptions = (
   type: IManagerResourceType,
   data: {
@@ -172,124 +170,129 @@ const FormResourceSelector: React.FC<{
         /* 权限设置 */ className={styles.noOptional}
       >
         {permissionType.length ? (
-          <Tabs activeKey={permissionActiveKey} type="card" onChange={handlePermissionTypeChange}>
-            {EnableRoleSystemPermission &&
-              permissionType.includes('resourceManagementPermissions') && (
-                <TabPane
-                  tab={formatMessage({
+          <Tabs
+            activeKey={permissionActiveKey}
+            type="card"
+            onChange={handlePermissionTypeChange}
+            items={[
+              EnableRoleSystemPermission &&
+                permissionType.includes('resourceManagementPermissions') && {
+                  key: 'resourceManagementPermissions',
+                  label: formatMessage({
                     id: 'odc.components.FormResourceSelector.ResourceManagementPermissions',
-                  })}
-                  /*资源管理权限*/ key="resourceManagementPermissions"
-                  forceRender
-                >
-                  <Form.Item
-                    label={formatMessage({
-                      id: 'odc.components.FormResourceSelector.ObjectsThatCanBeCreated',
-                    })} /*可新建的对象*/
-                    name="createAbleResource"
-                    style={{ padding: '0 12px' }}
-                  >
-                    <Checkbox.Group
-                      options={createAbleResourceOptions?.filter((item) =>
-                        odc.appConfig.manage.user.create
-                          ? true
-                          : item.value !== IManagerResourceType.user,
-                      )}
-                    />
-                  </Form.Item>
-                  <div className={styles['resource-header-sys']}>
-                    <div style={{ width: '100px' }}>
-                      {
-                        formatMessage({
-                          id: 'odc.components.FormResourceSelector.ManageableObjects',
-                        }) /*可管理的对象*/
-                      }
-                    </div>
-                    <div style={{ width: '108px' }}>
-                      <HelpDoc doc="resourceManagementPermissionsAction" leftText>
+                  }),
+                  children: (
+                    <>
+                      <Form.Item
+                        label={formatMessage({
+                          id: 'odc.components.FormResourceSelector.ObjectsThatCanBeCreated',
+                        })} /*可新建的对象*/
+                        name="createAbleResource"
+                        style={{ padding: '0 12px' }}
+                      >
+                        <Checkbox.Group
+                          options={createAbleResourceOptions?.filter((item) =>
+                            odc.appConfig.manage.user.create
+                              ? true
+                              : item.value !== IManagerResourceType.user,
+                          )}
+                        />
+                      </Form.Item>
+                      <div className={styles['resource-header-sys']}>
+                        <div style={{ width: '100px' }}>
+                          {
+                            formatMessage({
+                              id: 'odc.components.FormResourceSelector.ManageableObjects',
+                            }) /*可管理的对象*/
+                          }
+                        </div>
+                        <div style={{ width: '108px' }}>
+                          <HelpDoc doc="resourceManagementPermissionsAction" leftText>
+                            {
+                              formatMessage({
+                                id: 'odc.components.FormResourceSelector.ManagePermissions',
+                              }) /*管理权限*/
+                            }
+                          </HelpDoc>
+                        </div>
+                      </div>
+                      <Form.Item name="resourceManagementPermissions">
+                        <ResourceSelector
+                          name="resourceManagementPermissions"
+                          optionsMap={resourceManagementOptionsMap}
+                          typeOptions={resourceManagementTypeOptions?.filter(
+                            (item) => item.value !== IManagerResourceType.project,
+                          )}
+                          actionOptions={resourceManagementActionOptions}
+                          initialValue={initialValue}
+                          isEdit={isEdit}
+                          isCopy={isCopy}
+                          formRef={formRef}
+                          required={false}
+                          onFieldChange={handleFieldChange}
+                          onOptionsChange={handleResourceManagementOptionsChange}
+                        />
+                      </Form.Item>
+                    </>
+                  ),
+                },
+              permissionType.includes('systemOperationPermissions') && {
+                key: 'systemOperationPermissions',
+                label: formatMessage({
+                  id: 'odc.components.FormResourceSelector.SystemOperatingPermissions',
+                }),
+                forceRender: true,
+                children: (
+                  <>
+                    <div className={styles['resource-header']}>
+                      <div style={{ width: '100px' }}>
                         {
                           formatMessage({
-                            id: 'odc.components.FormResourceSelector.ManagePermissions',
-                          }) /*管理权限*/
+                            id: 'odc.components.FormResourceSelector.OperationalType',
+                          }) /*可操作的类型*/
                         }
-                      </HelpDoc>
+                      </div>
+                      <div style={{ width: '108px' }}>
+                        <HelpDoc doc="systemOperationPermissionsAction" leftText>
+                          {
+                            formatMessage({
+                              id: 'odc.components.FormResourceSelector.OperationPermission',
+                            }) /*操作权限*/
+                          }
+                        </HelpDoc>
+                      </div>
                     </div>
-                  </div>
-                  <Form.Item name="resourceManagementPermissions">
-                    <ResourceSelector
-                      name="resourceManagementPermissions"
-                      optionsMap={resourceManagementOptionsMap}
-                      typeOptions={resourceManagementTypeOptions?.filter(
-                        (item) => item.value !== IManagerResourceType.project,
-                      )}
-                      actionOptions={resourceManagementActionOptions}
-                      initialValue={initialValue}
-                      isEdit={isEdit}
-                      isCopy={isCopy}
-                      formRef={formRef}
-                      required={false}
-                      onFieldChange={handleFieldChange}
-                      onOptionsChange={handleResourceManagementOptionsChange}
-                    />
-                  </Form.Item>
-                </TabPane>
-              )}
-
-            {permissionType.includes('systemOperationPermissions') && (
-              <TabPane
-                tab={formatMessage({
-                  id: 'odc.components.FormResourceSelector.SystemOperatingPermissions',
-                })}
-                /*系统操作权限*/ key="systemOperationPermissions"
-                forceRender
-              >
-                <div className={styles['resource-header']}>
-                  <div style={{ width: '100px' }}>
-                    {
-                      formatMessage({
-                        id: 'odc.components.FormResourceSelector.OperationalType',
-                      }) /*可操作的类型*/
-                    }
-                  </div>
-                  <div style={{ width: '108px' }}>
-                    <HelpDoc doc="systemOperationPermissionsAction" leftText>
-                      {
-                        formatMessage({
-                          id: 'odc.components.FormResourceSelector.OperationPermission',
-                        }) /*操作权限*/
-                      }
-                    </HelpDoc>
-                  </div>
-                </div>
-                <Form.Item
-                  name="systemOperationPermissions"
-                  rules={[
-                    {
-                      required: true,
-                      message: formatMessage({
-                        id: 'odc.components.FormRoleModal.component.SelectPermissions',
-                      }),
-                      // 请选择权限
-                    },
-                  ]}
-                >
-                  <ResourceSelector
-                    name="systemOperationPermissions"
-                    showField={false}
-                    typeOptions={systemTypeOptions?.filter((item) =>
-                      !isUndefined(item.visible) ? item.visible : true,
-                    )}
-                    actionOptions={systemActionOptions}
-                    initialValue={initialValue}
-                    isEdit={isEdit}
-                    isCopy={isCopy}
-                    formRef={formRef}
-                    onFieldChange={handleFieldChange}
-                  />
-                </Form.Item>
-              </TabPane>
-            )}
-          </Tabs>
+                    <Form.Item
+                      name="systemOperationPermissions"
+                      rules={[
+                        {
+                          required: true,
+                          message: formatMessage({
+                            id: 'odc.components.FormRoleModal.component.SelectPermissions',
+                          }),
+                          // 请选择权限
+                        },
+                      ]}
+                    >
+                      <ResourceSelector
+                        name="systemOperationPermissions"
+                        showField={false}
+                        typeOptions={systemTypeOptions?.filter((item) =>
+                          !isUndefined(item.visible) ? item.visible : true,
+                        )}
+                        actionOptions={systemActionOptions}
+                        initialValue={initialValue}
+                        isEdit={isEdit}
+                        isCopy={isCopy}
+                        formRef={formRef}
+                        onFieldChange={handleFieldChange}
+                      />
+                    </Form.Item>
+                  </>
+                ),
+              },
+            ].filter(Boolean)}
+          />
         ) : (
           <Typography.Text type="secondary">
             {
