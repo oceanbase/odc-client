@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { PureComponent, ReactNode, useContext, useState } from 'react';
 import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 import { IPage, PageType } from '@/d.ts';
-import { Badge, Dropdown, Menu, Space, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, MenuProps, Space, Tabs, Tooltip } from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { movePagePostion, openNewDefaultPLPage } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
@@ -141,47 +141,45 @@ const WindowManager: React.FC<IProps> = function (props) {
     return (
       <Dropdown
         trigger={['contextMenu']}
-        overlay={
-          <Menu className={styles.tabsContextMenu} onClick={doTabAction.bind(null, page)}>
-            {!isDocked && (
-              <Menu.Item key="closePage">
-                {formatMessage({
-                  id: 'odc.component.WindowManager.CloseThisWindow',
-                })}
-              </Menu.Item>
-            )}
-
-            <Menu.Item key="closeOtherPage">
-              {formatMessage({
+        menu={{
+          className: styles.tabsContextMenu,
+          onClick: doTabAction.bind(null, page),
+          items: [
+            !isDocked && {
+              key: 'closePage',
+              label: formatMessage({
+                id: 'odc.component.WindowManager.CloseThisWindow',
+              }),
+            },
+            {
+              key: 'closeOtherPage',
+              label: formatMessage({
                 id: 'odc.component.WindowManager.CloseOtherWindows',
-              })}
-            </Menu.Item>
-            {!isDocked && (
-              <Menu.Item key="closeAllPage">
-                {formatMessage({
-                  id: 'odc.component.WindowManager.CloseAllWindows',
-                })}
-              </Menu.Item>
-            )}
-            <Menu.Divider />
-
-            {page.type === PageType.SQL ? (
-              <Menu.Item key="copyPage">
-                {
-                  formatMessage({
-                    id: 'odc.src.component.WindowManager.CopyTheSQLWindow',
-                  }) /* 复制 SQL 窗口 */
-                }
-              </Menu.Item>
-            ) : null}
-
-            <Menu.Item key="openNewPage">
-              {formatMessage({
+              }),
+            },
+            !isDocked && {
+              key: 'closeAllPage',
+              label: formatMessage({
+                id: 'odc.component.WindowManager.CloseAllWindows',
+              }),
+            },
+            {
+              type: 'divider',
+            },
+            page.type === PageType.SQL && {
+              key: 'copyPage',
+              label: formatMessage({
+                id: 'odc.src.component.WindowManager.CopyTheSQLWindow',
+              }),
+            },
+            {
+              key: 'openNewPage',
+              label: formatMessage({
                 id: 'odc.component.WindowManager.OpenANewSqlWindow',
-              })}
-            </Menu.Item>
-          </Menu>
-        }
+              }),
+            },
+          ].filter(Boolean) as MenuProps['items'],
+        }}
       >
         <Tooltip
           placement="bottom"
@@ -266,16 +264,16 @@ const WindowManager: React.FC<IProps> = function (props) {
     );
   }
 
-  const menu = (
-    <Menu
-      style={{
-        width: '320px',
-      }}
-      selectedKeys={[activeKey]}
-      onClick={handleSwitchTab}
-    >
-      {pages.map((page) => (
-        <Menu.Item key={page.key}>
+  const menu: MenuProps = {
+    style: {
+      width: '320px',
+    },
+    selectedKeys: [activeKey],
+    onClick: handleSwitchTab,
+    items: pages.map((page) => {
+      return {
+        key: page.key,
+        label: (
           <Space>
             <span
               className={styles.icon}
@@ -290,10 +288,10 @@ const WindowManager: React.FC<IProps> = function (props) {
             </span>
             {getPageTitleText(page)}
           </Space>
-        </Menu.Item>
-      ))}
-    </Menu>
-  );
+        ),
+      };
+    }),
+  };
   return (
     <>
       <DraggableTabs
@@ -359,39 +357,45 @@ const WindowManager: React.FC<IProps> = function (props) {
         tabBarExtraContent={
           <Dropdown
             overlayClassName={styles.menuList}
-            overlay={menu}
+            menu={menu}
             trigger={['click']}
             placement="bottomRight"
           >
             <EllipsisOutlined className={styles.moreBtn} />
           </Dropdown>
         }
-        items={pages.map((page) => {
-          const Page = pageMap[page.type].component;
-          const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
-          return {
-            key: page.key,
-            label: getPageTitle(page),
-            closable: true,
-            children: (
-              <Page
-                page={page}
-                pageKey={page.key}
-                isSaved={page.isSaved}
-                params={pageParams}
-                isShow={activeKey == page.key}
-                showUnsavedModal={closePageKey === page.key}
-                startSaving={page.startSaving}
-                onUnsavedChange={handleUnsavedChange}
-                onChangeSaved={handleChangeSaved}
-                onCloseUnsavedModal={handleClosePage}
-                onCancelUnsavedModal={() => setClosePageKey('')}
-                onSaveAndCloseUnsavedModal={handleSaveAndClosePage}
-                closeSelf={handleCloseTab.bind(null, page.key)}
-              />
-            ),
-          };
-        })}
+        items={pages
+          .map((page) => {
+            const Page = pageMap[page.type].component;
+            const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
+            if (!Page) {
+              return null;
+            }
+            console.log('page', page.type, Page);
+            return {
+              key: page.key,
+              label: getPageTitle(page),
+              closable: false, // hide close btn
+              children: (
+                <Page
+                  page={page}
+                  pageKey={page.key}
+                  isSaved={page.isSaved}
+                  params={pageParams}
+                  isShow={activeKey == page.key}
+                  showUnsavedModal={closePageKey === page.key}
+                  startSaving={page.startSaving}
+                  onUnsavedChange={handleUnsavedChange}
+                  onChangeSaved={handleChangeSaved}
+                  onCloseUnsavedModal={handleClosePage}
+                  onCancelUnsavedModal={() => setClosePageKey('')}
+                  onSaveAndCloseUnsavedModal={handleSaveAndClosePage}
+                  closeSelf={handleCloseTab.bind(null, page.key)}
+                />
+              ),
+            };
+          })
+          .filter(Boolean)}
       />
       <DefaultPage />
     </>

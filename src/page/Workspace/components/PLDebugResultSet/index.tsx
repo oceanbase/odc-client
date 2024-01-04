@@ -466,6 +466,14 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
       activeKey: '',
       tabBarGutter: 0,
       onChange: null,
+      items: tabs.map((cfg) => {
+        const { name, key, renderTabContent } = cfg;
+        return {
+          key,
+          label: name,
+          children: renderTabContent(),
+        };
+      }),
     };
 
     if (isLeft) {
@@ -475,18 +483,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
       tabCfg.activeKey = activeRightTabKey || tabs[0].key;
       tabCfg.onChange = handleChangeRightTab;
     }
-    return (
-      <Tabs {...tabCfg}>
-        {tabs.map((cfg) => {
-          const { name, key, renderTabContent } = cfg;
-          return {
-            key,
-            label: name,
-            children: renderTabContent(),
-          };
-        })}
-      </Tabs>
-    );
+    return <Tabs {...tabCfg} />;
   }
 
   function handleChangeTab(activeTabKey: string) {
