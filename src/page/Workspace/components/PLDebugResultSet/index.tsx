@@ -36,8 +36,6 @@ import DebugLog from './DebugLog';
 import DebugVariables from './DebugVariables';
 import styles from './index.less';
 
-const { TabPane } = Tabs;
-
 interface IProps {
   session: SessionStore;
   type: IResultType;
@@ -481,11 +479,11 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
       <Tabs {...tabCfg}>
         {tabs.map((cfg) => {
           const { name, key, renderTabContent } = cfg;
-          return (
-            <TabPane tab={name} key={key}>
-              {renderTabContent()}
-            </TabPane>
-          );
+          return {
+            key,
+            label: name,
+            children: renderTabContent(),
+          };
         })}
       </Tabs>
     );
