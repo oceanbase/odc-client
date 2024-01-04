@@ -111,7 +111,7 @@ class ToolTipInput extends React.PureComponent<ToolTipInputProos> {
     return (
       <Tooltip
         trigger="focus"
-        visible={this.state.isShowTop}
+        open={this.state.isShowTop}
         title={
           this.props.value ||
           formatMessage({

@@ -52,7 +52,7 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
       width={720}
       footer={null}
       closable={false}
-      visible={visible}
+      open={visible}
       wrapClassName={styles['space-modal']}
     >
       <div className={styles.header}>

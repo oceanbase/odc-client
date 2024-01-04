@@ -92,7 +92,7 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
   return (
     <Drawer
       width={520}
-      visible={visible}
+      open={visible}
       title={formatMessage({
         id: 'odc.SSO.NewSSODrawerButton.Edit.EditSsoIntegrationConfiguration',
       })} /*编辑 SSO 集成配置*/
