@@ -75,24 +75,21 @@ const InnerEnvironment = memo(({ ruleType, setRuleType }: InnerEnvironmentProps)
         className={styles.tabs}
         activeKey={ruleType}
         onTabClick={handleTabClick}
-      >
-        <Tabs.TabPane
-          tab={
-            formatMessage({
+        items={[
+          {
+            key: RuleType.SQL_CHECK,
+            label: formatMessage({
               id: 'odc.src.page.Secure.Env.components.SQLCheckSpecification',
-            }) //'SQL 检查规范'
-          }
-          key={RuleType.SQL_CHECK}
-        ></Tabs.TabPane>
-        <Tabs.TabPane
-          tab={
-            formatMessage({
+            }),
+          },
+          {
+            key: RuleType.SQL_CONSOLE,
+            label: formatMessage({
               id: 'odc.src.page.Secure.Env.components.SQLWindowSpecification',
-            }) //'SQL 窗口规范'
-          }
-          key={RuleType.SQL_CONSOLE}
-        />
-      </Tabs>
+            }),
+          },
+        ]}
+      />
       <div
         style={{
           height: '100%',

@@ -50,37 +50,7 @@ import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 const ToolbarButton = Toolbar.Button;
-const tableColumns = [
-  {
-    key: 'name',
-    name: formatMessage({ id: 'odc.components.TriggerPage.Name' }), // 名称
-    resizable: true,
-    sortable: false,
-  },
-
-  {
-    key: 'owner',
-    name: formatMessage({ id: 'odc.components.TriggerPage.Owner' }), // 所有者
-    resizable: true,
-    sortable: false,
-  },
-
-  {
-    key: 'type',
-    name: formatMessage({ id: 'odc.components.TriggerPage.Type' }), // 类型
-    resizable: true,
-    sortable: false,
-  },
-
-  {
-    key: 'status',
-    name: formatMessage({ id: 'odc.components.TriggerPage.State' }), // 状态
-    resizable: true,
-    sortable: false,
-  },
-];
 
 // 属性 Tab key 枚举
 
@@ -300,63 +270,274 @@ class TriggerPage extends Component<
       trigger && (
         <>
           <Content className={styles.triggerPage}>
-            <ToolPageTabs activeKey={propsTab} onChange={this.handlePropsTabChanged as any}>
-              <TabPane
-                tab={formatMessage({
-                  id: 'odc.components.TriggerPage.BasicInformation',
-                })}
-                /* 基本信息 */
-                key={PropsTab.BASE_INFO}
-              >
-                {session?.supportFeature?.enableTriggerAlterStatus && (
-                  <Toolbar>
-                    {isEditStatus ? (
-                      <div className={styles.toolbarCustomize}>
-                        <div className={styles.title}>
-                          {
-                            formatMessage({
-                              id: 'odc.components.TriggerPage.Editing',
-                            })
+            <ToolPageTabs
+              activeKey={propsTab}
+              onChange={this.handlePropsTabChanged as any}
+              items={[
+                {
+                  key: PropsTab.BASE_INFO,
+                  label: formatMessage({
+                    id: 'odc.components.TriggerPage.BasicInformation',
+                  }),
+                  children: (
+                    <>
+                      {session?.supportFeature?.enableTriggerAlterStatus && (
+                        <Toolbar>
+                          {isEditStatus ? (
+                            <div className={styles.toolbarCustomize}>
+                              <div className={styles.title}>
+                                {
+                                  formatMessage({
+                                    id: 'odc.components.TriggerPage.Editing',
+                                  })
 
-                            /* 编辑 */
-                          }
-                        </div>
-                        <div className={styles.operator}>
-                          <Button size="small" onClick={this.handleCancelBaseInfo}>
-                            {
-                              formatMessage({
-                                id: 'odc.components.TriggerPage.Cancel',
-                              })
+                                  /* 编辑 */
+                                }
+                              </div>
+                              <div className={styles.operator}>
+                                <Button size="small" onClick={this.handleCancelBaseInfo}>
+                                  {
+                                    formatMessage({
+                                      id: 'odc.components.TriggerPage.Cancel',
+                                    })
 
-                              /* 取消 */
-                            }
-                          </Button>
-                          <Button
-                            size="small"
-                            className={styles.spaceLeft}
-                            type="primary"
-                            onClick={() => {
-                              this.handleConfirmBaseInfo();
-                            }}
-                          >
-                            {
-                              formatMessage({
-                                id: 'odc.components.TriggerPage.Determine',
-                              })
+                                    /* 取消 */
+                                  }
+                                </Button>
+                                <Button
+                                  size="small"
+                                  className={styles.spaceLeft}
+                                  type="primary"
+                                  onClick={() => {
+                                    this.handleConfirmBaseInfo();
+                                  }}
+                                >
+                                  {
+                                    formatMessage({
+                                      id: 'odc.components.TriggerPage.Determine',
+                                    })
 
-                              /* 确定 */
-                            }
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
+                                    /* 确定 */
+                                  }
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <ToolbarButton
+                                text={formatMessage({
+                                  id: 'workspace.window.session.button.edit',
+                                })}
+                                icon={<EditOutlined />}
+                                onClick={this.handleEditBaseInfo}
+                              />
+
+                              <ToolbarButton
+                                text={formatMessage({
+                                  id: 'workspace.window.session.button.refresh',
+                                })}
+                                icon={<SyncOutlined />}
+                                onClick={this.reloadTrigger}
+                              />
+                            </>
+                          )}
+                        </Toolbar>
+                      )}
+
+                      <ToolContentWrpper>
+                        <ToolPageTextFromWrapper>
+                          <div className={`${preTextForm}-line`}>
+                            <span className={`${preTextForm}-label`}>
+                              {
+                                formatMessage({
+                                  id: 'odc.components.TriggerPage.Name.2',
+                                })
+
+                                /* 名称: */
+                              }
+                            </span>
+                            <span className={`${preTextForm}-content`}>{trigger.triggerName}</span>
+                          </div>
+                          <div className={`${preTextForm}-line`}>
+                            <span className={`${preTextForm}-label`}>
+                              {
+                                formatMessage({
+                                  id: 'odc.components.TriggerPage.Owner.2',
+                                })
+
+                                /* 所有者: */
+                              }
+                            </span>
+                            <span className={`${preTextForm}-content`}>{trigger.owner}</span>
+                          </div>
+                          {isEditStatus ? (
+                            <Radio.Group
+                              defaultValue={trigger.enableState}
+                              onChange={this.handleStatusChange}
+                            >
+                              <Radio value={TriggerState.enabled}>
+                                {
+                                  formatMessage({
+                                    id: 'odc.components.TriggerPage.Enable',
+                                  })
+
+                                  /* 启用 */
+                                }
+                              </Radio>
+                              <Radio value={TriggerState.disabled}>
+                                {
+                                  formatMessage({
+                                    id: 'odc.components.TriggerPage.Disable',
+                                  })
+
+                                  /* 禁用 */
+                                }
+                              </Radio>
+                            </Radio.Group>
+                          ) : (
+                            <div className={`${preTextForm}-line`}>
+                              <span className={`${preTextForm}-label`}>
+                                {
+                                  formatMessage({
+                                    id: 'odc.components.TriggerPage.WhetherToEnable',
+                                  })
+
+                                  /* 是否启用: */
+                                }
+                              </span>
+                              <span className={`${preTextForm}-content`}>
+                                {
+                                  trigger.enableState === TriggerState.enabled
+                                    ? formatMessage({
+                                        id: 'odc.components.TriggerPage.Enable',
+                                      })
+                                    : // 启用
+                                      formatMessage({
+                                        id: 'odc.components.TriggerPage.Disable',
+                                      })
+
+                                  // 禁用
+                                }
+                              </span>
+                            </div>
+                          )}
+                        </ToolPageTextFromWrapper>
+                      </ToolContentWrpper>
+                    </>
+                  ),
+                },
+                {
+                  key: PropsTab.BASE_OBJECT,
+                  label: formatMessage({
+                    id: 'odc.components.TriggerPage.ReferenceObject',
+                  }),
+                  children: (
+                    <>
+                      <Toolbar>
+                        <ToolbarButton
+                          text={formatMessage({
+                            id: 'workspace.window.session.button.refresh',
+                          })}
+                          icon={<SyncOutlined />}
+                          onClick={this.reloadTrigger}
+                        />
+                      </Toolbar>
+                      <ToolContentWrpper>
+                        <ToolPageTextFromWrapper>
+                          <div className={`${preTextForm}-line`}>
+                            <span className={`${preTextForm}-label`}>
+                              {
+                                formatMessage({
+                                  id: 'odc.components.TriggerPage.Name.2',
+                                })
+
+                                /* 名称: */
+                              }
+                            </span>
+                            <span className={`${preTextForm}-content`}>{trigger.tableName}</span>
+                          </div>
+                          <div className={`${preTextForm}-line`}>
+                            <span className={`${preTextForm}-label`}>
+                              {
+                                formatMessage({
+                                  id: 'odc.components.TriggerPage.Owner.2',
+                                })
+
+                                /* 所有者: */
+                              }
+                            </span>
+                            <span className={`${preTextForm}-content`}>{trigger.tableOwner}</span>
+                          </div>
+                          <div className={`${preTextForm}-line`}>
+                            <span className={`${preTextForm}-label`}>
+                              {
+                                formatMessage({
+                                  id: 'odc.components.TriggerPage.Type.1',
+                                })
+
+                                /* 类型: */
+                              }
+                            </span>
+                            <span className={`${preTextForm}-content`}>
+                              {trigger.baseObjectType}
+                            </span>
+                          </div>
+                          {trigger.status && (
+                            <div className={`${preTextForm}-line`}>
+                              <span className={`${preTextForm}-label`}>
+                                {
+                                  formatMessage({
+                                    id: 'odc.components.TriggerPage.Status',
+                                  })
+
+                                  /* 状态: */
+                                }
+                              </span>
+                              <span className={`${preTextForm}-content`}>{trigger.status}</span>
+                            </div>
+                          )}
+                        </ToolPageTextFromWrapper>
+                      </ToolContentWrpper>
+                    </>
+                  ),
+                },
+                {
+                  key: PropsTab.DDL,
+                  label: 'DDL',
+                  children: (
+                    <>
+                      <Toolbar>
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.session.button.edit',
                           })}
                           icon={<EditOutlined />}
-                          onClick={this.handleEditBaseInfo}
+                          onClick={this.editTrigger}
+                        />
+
+                        <ToolbarButton
+                          text={
+                            formatMessage({
+                              id: 'odc.components.TriggerPage.Download',
+                            }) //下载
+                          }
+                          icon={<CloudDownloadOutlined />}
+                          onClick={() => {
+                            downloadPLDDL(
+                              trigger?.triggerName,
+                              PLType.TRIGGER,
+                              trigger?.ddl,
+                              session?.odcDatabase?.name,
+                            );
+                          }}
+                        />
+
+                        <ToolbarButton
+                          text={formatMessage({
+                            id: 'workspace.window.sql.button.search',
+                          })}
+                          icon={<FileSearchOutlined />}
+                          onClick={this.showSearchWidget}
                         />
 
                         <ToolbarButton
@@ -366,259 +547,41 @@ class TriggerPage extends Component<
                           icon={<SyncOutlined />}
                           onClick={this.reloadTrigger}
                         />
-                      </>
-                    )}
-                  </Toolbar>
-                )}
 
-                <ToolContentWrpper>
-                  <ToolPageTextFromWrapper>
-                    <div className={`${preTextForm}-line`}>
-                      <span className={`${preTextForm}-label`}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.TriggerPage.Name.2',
-                          })
-
-                          /* 名称: */
-                        }
-                      </span>
-                      <span className={`${preTextForm}-content`}>{trigger.triggerName}</span>
-                    </div>
-                    <div className={`${preTextForm}-line`}>
-                      <span className={`${preTextForm}-label`}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.TriggerPage.Owner.2',
-                          })
-
-                          /* 所有者: */
-                        }
-                      </span>
-                      <span className={`${preTextForm}-content`}>{trigger.owner}</span>
-                    </div>
-                    {isEditStatus ? (
-                      <Radio.Group
-                        defaultValue={trigger.enableState}
-                        onChange={this.handleStatusChange}
-                      >
-                        <Radio value={TriggerState.enabled}>
-                          {
-                            formatMessage({
-                              id: 'odc.components.TriggerPage.Enable',
-                            })
-
-                            /* 启用 */
-                          }
-                        </Radio>
-                        <Radio value={TriggerState.disabled}>
-                          {
-                            formatMessage({
-                              id: 'odc.components.TriggerPage.Disable',
-                            })
-
-                            /* 禁用 */
-                          }
-                        </Radio>
-                      </Radio.Group>
-                    ) : (
-                      <div className={`${preTextForm}-line`}>
-                        <span className={`${preTextForm}-label`}>
-                          {
-                            formatMessage({
-                              id: 'odc.components.TriggerPage.WhetherToEnable',
-                            })
-
-                            /* 是否启用: */
-                          }
-                        </span>
-                        <span className={`${preTextForm}-content`}>
-                          {
-                            trigger.enableState === TriggerState.enabled
+                        <ToolbarButton
+                          text={
+                            formated
                               ? formatMessage({
-                                  id: 'odc.components.TriggerPage.Enable',
+                                  id: 'odc.components.TriggerPage.Unformat',
                                 })
-                              : // 启用
+                              : // 取消格式化
                                 formatMessage({
-                                  id: 'odc.components.TriggerPage.Disable',
+                                  id: 'odc.components.TriggerPage.Formatting',
                                 })
-
-                            // 禁用
+                            // 格式化
                           }
-                        </span>
-                      </div>
-                    )}
-                  </ToolPageTextFromWrapper>
-                </ToolContentWrpper>
-              </TabPane>
-              <TabPane
-                tab={formatMessage({
-                  id: 'odc.components.TriggerPage.ReferenceObject',
-                })}
-                /* 基准对象 */
-                key={PropsTab.BASE_OBJECT}
-              >
-                <Toolbar>
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.session.button.refresh',
-                    })}
-                    icon={<SyncOutlined />}
-                    onClick={this.reloadTrigger}
-                  />
-                </Toolbar>
-                <ToolContentWrpper>
-                  <ToolPageTextFromWrapper>
-                    <div className={`${preTextForm}-line`}>
-                      <span className={`${preTextForm}-label`}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.TriggerPage.Name.2',
-                          })
-
-                          /* 名称: */
-                        }
-                      </span>
-                      <span className={`${preTextForm}-content`}>{trigger.tableName}</span>
-                    </div>
-                    <div className={`${preTextForm}-line`}>
-                      <span className={`${preTextForm}-label`}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.TriggerPage.Owner.2',
-                          })
-
-                          /* 所有者: */
-                        }
-                      </span>
-                      <span className={`${preTextForm}-content`}>{trigger.tableOwner}</span>
-                    </div>
-                    <div className={`${preTextForm}-line`}>
-                      <span className={`${preTextForm}-label`}>
-                        {
-                          formatMessage({
-                            id: 'odc.components.TriggerPage.Type.1',
-                          })
-
-                          /* 类型: */
-                        }
-                      </span>
-                      <span className={`${preTextForm}-content`}>{trigger.baseObjectType}</span>
-                    </div>
-                    {trigger.status && (
-                      <div className={`${preTextForm}-line`}>
-                        <span className={`${preTextForm}-label`}>
-                          {
-                            formatMessage({
-                              id: 'odc.components.TriggerPage.Status',
-                            })
-
-                            /* 状态: */
+                          icon={<AlignLeftOutlined />}
+                          onClick={this.handleFormat}
+                          status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
+                        />
+                      </Toolbar>
+                      <ToolContentWrpper>
+                        <SQLCodeEditorDDL
+                          readOnly
+                          defaultValue={(trigger && trigger.ddl) || ''}
+                          language={
+                            getDataSourceModeConfig(session?.connection?.type)?.sql?.language
                           }
-                        </span>
-                        <span className={`${preTextForm}-content`}>{trigger.status}</span>
-                      </div>
-                    )}
-                  </ToolPageTextFromWrapper>
-                </ToolContentWrpper>
-              </TabPane>
-              {/**
-              * 本期（2.4.0）不支持该功能
-              <TabPane
-              tab="相关性"
-              key={PropsTab.CORRELATION}
-              >
-              <Toolbar>
-                <ToolbarButton
-                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
-                  icon={<SyncOutlined />}
-                  onClick={
-                    () =>{
-                      console.log('刷新！');
-                    }
-                  }
-                />
-              </Toolbar>
-              <EditableTable
-                minHeight='200px'
-                columns={tableColumns}
-                rows={trigger.correlation || []}
-                showCheckbox={false}
-              />
-              </TabPane>
-              */}
-              <TabPane tab={'DDL'} key={PropsTab.DDL}>
-                <Toolbar>
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.session.button.edit',
-                    })}
-                    icon={<EditOutlined />}
-                    onClick={this.editTrigger}
-                  />
-
-                  <ToolbarButton
-                    text={
-                      formatMessage({
-                        id: 'odc.components.TriggerPage.Download',
-                      }) //下载
-                    }
-                    icon={<CloudDownloadOutlined />}
-                    onClick={() => {
-                      downloadPLDDL(
-                        trigger?.triggerName,
-                        PLType.TRIGGER,
-                        trigger?.ddl,
-                        session?.odcDatabase?.name,
-                      );
-                    }}
-                  />
-
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.search',
-                    })}
-                    icon={<FileSearchOutlined />}
-                    onClick={this.showSearchWidget}
-                  />
-
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.session.button.refresh',
-                    })}
-                    icon={<SyncOutlined />}
-                    onClick={this.reloadTrigger}
-                  />
-
-                  <ToolbarButton
-                    text={
-                      formated
-                        ? formatMessage({
-                            id: 'odc.components.TriggerPage.Unformat',
-                          })
-                        : // 取消格式化
-                          formatMessage({
-                            id: 'odc.components.TriggerPage.Formatting',
-                          })
-                      // 格式化
-                    }
-                    icon={<AlignLeftOutlined />}
-                    onClick={this.handleFormat}
-                    status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
-                  />
-                </Toolbar>
-                <ToolContentWrpper>
-                  <SQLCodeEditorDDL
-                    readOnly
-                    defaultValue={(trigger && trigger.ddl) || ''}
-                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
-                    onEditorCreated={(editor: IEditor) => {
-                      this.editor = editor;
-                    }}
-                  />
-                </ToolContentWrpper>
-              </TabPane>
-            </ToolPageTabs>
+                          onEditorCreated={(editor: IEditor) => {
+                            this.editor = editor;
+                          }}
+                        />
+                      </ToolContentWrpper>
+                    </>
+                  ),
+                },
+              ]}
+            />
           </Content>
         </>
       )

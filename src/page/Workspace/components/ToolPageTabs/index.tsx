@@ -17,21 +17,26 @@
 /**
  * 任意对象详情页的tabs组件，主要包含了ODC的统一定制样式
  */
-import { Tabs } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import React from 'react';
 import styles from './index.less';
 
 interface IProps {
+  items: TabsProps['items'];
   activeKey: string;
   onChange: () => void;
 }
 
 const ToolPageTabs: React.FC<IProps> = (props) => {
-  const { activeKey, onChange } = props;
+  const { activeKey, items, onChange } = props;
   return (
-    <Tabs activeKey={activeKey} tabPosition="left" className={styles.propsTab} onChange={onChange}>
-      {props.children}
-    </Tabs>
+    <Tabs
+      items={items}
+      activeKey={activeKey}
+      tabPosition="left"
+      className={styles.propsTab}
+      onChange={onChange}
+    />
   );
 };
 
