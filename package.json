@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.0.0",
-    "@oceanbase-odc/monaco-plugin-ob": "^0.1.1",
+    "@oceanbase-odc/monaco-plugin-ob": "^0.1.2",
     "@oceanbase-odc/ob-intl-cli": "^1.1.5",
     "@oceanbase-odc/ob-parser-js": "^3.0.1",
     "@oceanbase-odc/ob-react-data-grid": "^3.0.6",

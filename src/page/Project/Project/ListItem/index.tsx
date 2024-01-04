@@ -45,13 +45,11 @@ export default forwardRef(function ListItem(
       <div className={classNames(styles.block, styles.name)}>{data.name}</div>
       <div className={classNames(styles.block, styles.desc)}>{data.description || '-'}</div>
       <div className={classNames(styles.block, styles.users)}>
-        <Space>
-          <Icon style={{ color: 'var(--icon-color-disable)' }} component={UserSvg} />
-          {data.members
-            ?.filter((item) => item.role === ProjectRole.OWNER)
-            ?.map((a) => a.name)
-            ?.join(', ') || '-'}
-        </Space>
+        <Icon style={{ color: 'var(--icon-color-disable)', marginRight: 5 }} component={UserSvg} />
+        {data.members
+          ?.filter((item) => item.role === ProjectRole.OWNER)
+          ?.map((a) => a.name)
+          ?.join(', ') || '-'}
       </div>
     </div>
   );
