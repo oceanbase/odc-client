@@ -175,7 +175,7 @@ const ConfigModal: React.FC<IProps> = (props) => {
       title={formatMessage({
         id: 'odc.components.PartitionPolicyTable.configModal.SetPartitionPolicies',
       })} /*设置分区策略*/
-      visible={visible}
+      open={visible}
       width={600}
       onCancel={handleClose}
       footer={

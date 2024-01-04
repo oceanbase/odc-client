@@ -33,24 +33,6 @@ import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
 import tracert from '@/util/tracert';
-const menu = (
-  <Menu>
-    <Menu.Item>
-      {
-        formatMessage({
-          id: 'odc.page.Project.MenuItem',
-        }) /*菜单项一*/
-      }
-    </Menu.Item>
-    <Menu.Item>
-      {
-        formatMessage({
-          id: 'odc.page.Project.MenuItem.1',
-        }) /*菜单项二*/
-      }
-    </Menu.Item>
-  </Menu>
-);
 const ExtraContent = ({ projectId, currentRoles }) => {
   const disabled =
     currentRoles?.filter((roles) =>
@@ -72,10 +54,6 @@ const ExtraContent = ({ projectId, currentRoles }) => {
           }) /*登录数据库*/
         }
       </Button>
-      {/* <Dropdown.Button
-         overlay={menu}
-         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
-        /> */}
     </Space>
   );
 };

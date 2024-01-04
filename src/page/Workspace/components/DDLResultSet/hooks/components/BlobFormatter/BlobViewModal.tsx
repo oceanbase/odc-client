@@ -413,7 +413,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
       maskClosable={!resultContext.isEditing}
       width={720}
       title={columnName}
-      visible={true}
+      open={true}
       centered
       onCancel={onCancel}
       footer={renderFooter()}

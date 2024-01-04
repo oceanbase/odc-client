@@ -189,7 +189,7 @@ export default function NewDatasourceDrawer({
           ? formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.EditDataSource' }) //编辑数据源
           : formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.CreateADataSource' }) //新建数据源
       }
-      visible={visible}
+      open={visible}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
