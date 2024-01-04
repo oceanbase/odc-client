@@ -49,53 +49,51 @@ const TaskLog: React.FC<{
       onChange={(key) => {
         props.onLogTypeChange(key as CommonTaskLogType);
       }}
-    >
-      <Tabs.TabPane
-        tab={
-          formatMessage({
+      items={[
+        {
+          label: formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskLog.AllLogs',
-          }) // 全部日志
-        }
-        key={CommonTaskLogType.ALL}
-      >
-        <Spin spinning={isLoading}>
-          <Log
-            enableHighLight
-            language="java"
-            value={log?.[CommonTaskLogType.ALL] ?? ''}
-            ignoreCase={true}
-            enableDownload={enableDataExport}
-            enableCopy={enableDataExport}
-            defaultPosition="end"
-            searchTrigger="change"
-            style={{ height: '100%' }}
-          />
-        </Spin>
-      </Tabs.TabPane>
-      <Tabs.TabPane
-        tab={
-          formatMessage({
+          }),
+          key: CommonTaskLogType.ALL,
+          children: (
+            <Spin spinning={isLoading}>
+              <Log
+                enableHighLight
+                language="java"
+                value={log?.[CommonTaskLogType.ALL] ?? ''}
+                ignoreCase={true}
+                enableDownload={enableDataExport}
+                enableCopy={enableDataExport}
+                defaultPosition="end"
+                searchTrigger="change"
+                style={{ height: '100%' }}
+              />
+            </Spin>
+          ),
+        },
+        {
+          label: formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskLog.AlertLogs',
-          })
-          // 告警日志
-        }
-        key={CommonTaskLogType.WARN}
-      >
-        <Spin spinning={isLoading}>
-          <Log
-            enableHighLight
-            language="java"
-            value={log?.[CommonTaskLogType.WARN] ?? ''}
-            ignoreCase={true}
-            enableDownload={enableDataExport}
-            enableCopy={enableDataExport}
-            defaultPosition="end"
-            searchTrigger="change"
-            style={{ height: '100%' }}
-          />
-        </Spin>
-      </Tabs.TabPane>
-    </Tabs>
+          }),
+          key: CommonTaskLogType.WARN,
+          children: (
+            <Spin spinning={isLoading}>
+              <Log
+                enableHighLight
+                language="java"
+                value={log?.[CommonTaskLogType.WARN] ?? ''}
+                ignoreCase={true}
+                enableDownload={enableDataExport}
+                enableCopy={enableDataExport}
+                defaultPosition="end"
+                searchTrigger="change"
+                style={{ height: '100%' }}
+              />
+            </Spin>
+          ),
+        },
+      ]}
+    />
   );
 };
 export default inject('settingStore')(observer(TaskLog));

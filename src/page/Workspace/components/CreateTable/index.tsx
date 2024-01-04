@@ -53,8 +53,6 @@ import Partition from './Partition';
 import TableConstraint from './TableConstraint';
 import TableIndex from './TableIndex';
 
-const TabPane = Tabs.TabPane;
-
 interface IProps {
   pageKey: string;
   sessionManagerStore?: SessionManagerStore;
@@ -181,42 +179,41 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           session,
         }}
       >
-        <Tabs className={'odc-left-tabs'} tabPosition="left">
-          <TabPane
-            tab={formatMessage({
-              id: 'odc.components.CreateTable.BasicInformation',
-            })}
-            /*基本信息*/ key={TableTabType.INFO}
-          >
-            <BaseInfo />
-          </TabPane>
-          <TabPane
-            tab={formatMessage({ id: 'odc.components.CreateTable.Column' })}
-            /*列*/ key={TableTabType.COLUMN}
-          >
-            <Columns />
-          </TabPane>
-          <TabPane
-            tab={formatMessage({ id: 'odc.components.CreateTable.Index' })}
-            /*索引*/ key={TableTabType.INDEX}
-          >
-            <TableIndex />
-          </TabPane>
-          <TabPane
-            tab={formatMessage({
-              id: 'odc.components.CreateTable.Constraints',
-            })}
-            /*约束*/ key={TableTabType.CONSTRAINT}
-          >
-            <TableConstraint />
-          </TabPane>
-          <TabPane
-            tab={formatMessage({ id: 'odc.components.CreateTable.Partition' })}
-            /*分区*/ key={TableTabType.PARTITION}
-          >
-            <Partition />
-          </TabPane>
-        </Tabs>
+        <Tabs
+          className={'odc-left-tabs'}
+          tabPosition="left"
+          items={[
+            {
+              key: TableTabType.INFO,
+              label: formatMessage({
+                id: 'odc.components.CreateTable.BasicInformation',
+              }),
+              children: <BaseInfo />,
+            },
+            {
+              key: TableTabType.COLUMN,
+              label: formatMessage({ id: 'odc.components.CreateTable.Column' }),
+              children: <Columns />,
+            },
+            {
+              key: TableTabType.INDEX,
+              label: formatMessage({ id: 'odc.components.CreateTable.Index' }),
+              children: <TableIndex />,
+            },
+            {
+              key: TableTabType.CONSTRAINT,
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Constraints',
+              }),
+              children: <TableConstraint />,
+            },
+            {
+              key: TableTabType.PARTITION,
+              label: formatMessage({ id: 'odc.components.CreateTable.Partition' }),
+              children: <Partition />,
+            },
+          ]}
+        />
         <ExecuteSQLModal
           sessionStore={session}
           sql={DDL}

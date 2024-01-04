@@ -45,9 +45,6 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 
-const Content = Layout.Content;
-const TabPane = Tabs.TabPane;
-
 interface IProps {
   pageKey: string;
   pageStore?: PageStore;
@@ -225,89 +222,97 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             activeKey={topTab}
             className={styles.topbarTab}
             animated={false}
-          >
-            <TabPane key={TopTab.PROPS} tab="">
-              <Tabs
-                activeKey={propsTab}
-                tabPosition="left"
-                className={styles.propsTab}
-                onChange={handlePropsTabChanged}
-              >
-                <TabPane
-                  tab={formatMessage({
-                    id: 'workspace.window.table.propstab.info',
-                  })}
-                  key={PropsTab.INFO}
-                >
-                  <ShowTableBaseInfoForm pageKey={pageKey} />
-                </TabPane>
-                <TabPane
-                  tab={formatMessage({
-                    id: 'workspace.window.table.propstab.column',
-                  })}
-                  key={PropsTab.COLUMN}
-                >
-                  <Spin spinning={false}>
-                    <TableColumns />
-                  </Spin>
-                </TabPane>
-                <TabPane
-                  tab={formatMessage({
-                    id: 'workspace.window.table.propstab.index',
-                  })}
-                  key={PropsTab.INDEX}
-                >
-                  <Spin spinning={false}>
-                    <TableIndexes />
-                  </Spin>
-                </TabPane>
-                {enableConstraint && (
-                  <TabPane
-                    tab={formatMessage({
-                      id: 'workspace.window.table.propstab.constraint',
-                    })}
-                    key={PropsTab.CONSTRAINT}
-                  >
-                    <Spin spinning={false}>
-                      <TableConstraints />
-                    </Spin>
-                  </TabPane>
-                )}
-
-                {showPartition ? (
-                  <TabPane
-                    tab={formatMessage({
-                      id: 'workspace.window.table.propstab.partition',
-                    })}
-                    key={PropsTab.PARTITION}
-                  >
-                    <Spin spinning={false}>
-                      <TablePartitions />
-                    </Spin>
-                  </TabPane>
-                ) : null}
-                <TabPane
-                  tab={formatMessage({
-                    id: 'workspace.window.table.propstab.ddl',
-                  })}
-                  key={PropsTab.DDL}
-                >
-                  <TableDDL key={version.current} />
-                </TabPane>
-              </Tabs>
-            </TabPane>
-            <TabPane key={TopTab.DATA} tab="">
-              {version.current > 0 ? (
-                <TableData
-                  table={oldTable}
-                  session={session}
-                  tableName={table?.info.tableName}
-                  pageKey={pageKey}
-                  key={version.current}
-                />
-              ) : null}
-            </TabPane>
-          </Tabs>
+            items={[
+              {
+                key: TopTab.PROPS,
+                label: '',
+                children: (
+                  <Tabs
+                    activeKey={propsTab}
+                    tabPosition="left"
+                    className={styles.propsTab}
+                    onChange={handlePropsTabChanged}
+                    items={[
+                      {
+                        label: formatMessage({
+                          id: 'workspace.window.table.propstab.info',
+                        }),
+                        key: PropsTab.INFO,
+                        children: <ShowTableBaseInfoForm pageKey={pageKey} />,
+                      },
+                      {
+                        label: formatMessage({
+                          id: 'workspace.window.table.propstab.column',
+                        }),
+                        key: PropsTab.COLUMN,
+                        children: (
+                          <Spin spinning={false}>
+                            <TableColumns />
+                          </Spin>
+                        ),
+                      },
+                      {
+                        key: PropsTab.INDEX,
+                        label: formatMessage({
+                          id: 'workspace.window.table.propstab.index',
+                        }),
+                        children: (
+                          <Spin spinning={false}>
+                            <TableIndexes />
+                          </Spin>
+                        ),
+                      },
+                      enableConstraint && {
+                        children: (
+                          <Spin spinning={false}>
+                            <TableConstraints />
+                          </Spin>
+                        ),
+                        key: PropsTab.CONSTRAINT,
+                        label: formatMessage({
+                          id: 'workspace.window.table.propstab.constraint',
+                        }),
+                      },
+                      showPartition
+                        ? {
+                            key: PropsTab.PARTITION,
+                            label: formatMessage({
+                              id: 'workspace.window.table.propstab.partition',
+                            }),
+                            childen: (
+                              <Spin spinning={false}>
+                                <TablePartitions />
+                              </Spin>
+                            ),
+                          }
+                        : null,
+                      {
+                        key: PropsTab.DDL,
+                        label: formatMessage({
+                          id: 'workspace.window.table.propstab.ddl',
+                        }),
+                        children: <TableDDL key={version.current} />,
+                      },
+                    ].filter(Boolean)}
+                  />
+                ),
+              },
+              {
+                key: TopTab.DATA,
+                label: '',
+                children:
+                  version.current > 0 ? (
+                    <TableData
+                      table={oldTable}
+                      session={session}
+                      tableName={table?.info.tableName}
+                      pageKey={pageKey}
+                      key={version.current}
+                    />
+                  ) : null,
+              },
+            ]}
+          />
         </TablePageContext.Provider>
       </div>
       <ShowExecuteModal session={session} ref={executeRef} callbackRef={callbackRef} />
