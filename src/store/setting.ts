@@ -58,7 +58,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
   },
   [EThemeConfigKey.ODC_DARK]: {
     key: 'odc-dark',
-    editorTheme: 'vs-dark',
+    editorTheme: 'obdark',
     className: 'odc-dark',
     sheetTheme: 'dark',
     cmdTheme: 'dark',
