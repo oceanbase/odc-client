@@ -51,13 +51,12 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
       const [form] = useForm<ExportFormData>();
       const databaseId = Form.useWatch('databaseId', form);
       const { data, run } = useRequest(getDatabase, {
-        manual: true
-      })
+        manual: true,
+      });
       const database = data?.data;
       const connection = database?.dataSource;
       const connectionId = connection?.id;
       const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
-
 
       useEffect(() => {
         if (databaseId) {
@@ -75,7 +74,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
           formType === FormType.ObjSelecter &&
           !values.exportAllObjects
         ) {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.ExportDrawer.ExportForm.SelectExportObjects',
             }),
@@ -96,13 +95,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
       function renderFormItem() {
         switch (formType) {
           case FormType.ObjSelecter: {
-            return (
-              <ObjSelecterPanel
-                form={form}
-                projectId={projectId}
-                database={database}
-              />
-            );
+            return <ObjSelecterPanel form={form} projectId={projectId} database={database} />;
           }
           case FormType.Config: {
             return (

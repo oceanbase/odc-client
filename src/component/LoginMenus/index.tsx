@@ -22,7 +22,7 @@ import type { ModalStore } from '@/store/modal';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { Divider, Menu, message, Tooltip } from 'antd';
+import { Divider, Menu, MenuProps, message, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import ChangeLockPwdModal from './ChangeLockPwdModal';
@@ -96,67 +96,75 @@ class LoginMenus extends React.PureComponent<IProps, IState> {
           ?.join(' | ')
       : '-';
     const userName = `${user?.name}(${user?.accountName})`;
-    return (
-      <Menu className={!isClient() ? styles.userMenu : ''}>
-        {!isClient() && (
-          <>
-            <Menu.Item className={styles.userName}>
-              <Tooltip title={userName}>{userName}</Tooltip>
-            </Menu.Item>
-            <Menu.Item className={styles.userRoles}>
-              <Tooltip title={RoleNames}>{RoleNames}</Tooltip>
-            </Menu.Item>
-            <Divider />
-          </>
-        )}
-        <Menu.Item
-          onClick={() => {
-            this.props.modalStore.changeUserConfigModal(true);
-          }}
-        >
+    let items: MenuProps['items'] = !isClient()
+      ? [
           {
-            formatMessage({
-              id: 'odc.component.LoginMenus.PersonalSettings',
-            }) /* 个人设置 */
-          }
-        </Menu.Item>
-        {!isClient() && !isThridPartyLogin ? (
-          <Menu.Item
-            onClick={() => {
-              this.handleChangeModalState('changePasswordModalVisible', true);
-            }}
-          >
-            {
-              formatMessage({
+            key: 'userName',
+            className: styles.userName,
+            label: <Tooltip title={userName}>{userName}</Tooltip>,
+          },
+          {
+            key: 'userRoles',
+            className: styles.userRoles,
+            label: <Tooltip title={RoleNames}>{RoleNames}</Tooltip>,
+          },
+          {
+            type: 'divider',
+          },
+        ]
+      : [];
+    items = items
+      .concat({
+        onClick: () => {
+          this.props.modalStore.changeUserConfigModal(true);
+        },
+        label: formatMessage({
+          id: 'odc.component.LoginMenus.PersonalSettings',
+        }),
+        key: 'personalSettings',
+      })
+      .concat(
+        !isClient() && !isThridPartyLogin
+          ? {
+              key: 'changePassword',
+              onClick: () => {
+                this.handleChangeModalState('changePasswordModalVisible', true);
+              },
+              label: formatMessage({
                 id: 'odc.component.GlobalHeader.ChangePassword',
-              }) /* 修改密码 */
+              }),
             }
-          </Menu.Item>
-        ) : null}
-        {isClient() ? (
-          <Menu.Item
-            onClick={() => {
-              this.handleChangeModalState('changeLockPwdModalVisible', true);
-            }}
-          >
-            {
-              formatMessage({
+          : null,
+      )
+      .concat(
+        isClient()
+          ? {
+              key: 'changeLockPwd',
+              onClick: () => {
+                this.handleChangeModalState('changeLockPwdModalVisible', true);
+              },
+              label: formatMessage({
                 id: 'odc.component.LoginMenus.ApplicationPassword',
-              }) /* 应用密码 */
+              }),
             }
-          </Menu.Item>
-        ) : null}
-        {!isClient() ? (
-          <Menu.Item onClick={this.handleLogout}>
-            {
-              formatMessage({
+          : null,
+      )
+      .concat(
+        !isClient()
+          ? {
+              key: 'logout',
+              onClick: this.handleLogout,
+              label: formatMessage({
                 id: 'odc.component.GlobalHeader.LogOut',
-              }) /* 退出登录 */
+              }),
             }
-          </Menu.Item>
-        ) : null}
-      </Menu>
-    );
+          : null,
+      )
+      .filter(Boolean);
+    return {
+      className: !isClient() ? styles.userMenu : '',
+      items,
+    };
   };
 
   render() {
@@ -173,7 +181,7 @@ class LoginMenus extends React.PureComponent<IProps, IState> {
     const isThridPartyLogin = !!settingStore.serverSystemInfo?.ssoLoginEnabled;
     return (
       <>
-        <DropdownMenu overlay={this.getMenu(user)}>
+        <DropdownMenu menu={this.getMenu(user)}>
           {
             !isClient()
               ? user?.accountName

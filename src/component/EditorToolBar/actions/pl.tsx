@@ -130,7 +130,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       const { plName, plType } = plSchema;
       if (plName && !pageStore.activePage.isSaved) {
-        message.warn(
+        message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
           }),
@@ -204,7 +204,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       const { plName } = plSchema;
       if (plName && !pageStore.activePage.isSaved) {
-        message.warn(
+        message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
           }),
@@ -223,7 +223,7 @@ const plActions: ToolBarActions = {
         );
         const { obDbObjectType } = resParse || {};
         if (obDbObjectType !== 'ANONYMOUS_BLOCK') {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.EditorToolBar.actions.pl.TheWindowContentDoesNot',
             }),
@@ -258,7 +258,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       const { plName } = plSchema;
       if (plName && !pageStore.activePage.isSaved) {
-        message.warn(
+        message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
           }),
@@ -277,7 +277,7 @@ const plActions: ToolBarActions = {
         );
         const { obDbObjectType } = resParse || {};
         if (obDbObjectType !== 'ANONYMOUS_BLOCK') {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.EditorToolBar.actions.pl.TheWindowContentDoesNot',
             }),

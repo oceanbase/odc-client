@@ -86,7 +86,7 @@ const WorkspaceSideTip: React.FC<any> = function () {
         return document.getElementById('workspace_side_tip');
       }}
       trigger={['click']}
-      overlay={content}
+      dropdownRender={() => content}
       placement="topRight"
       open={visible}
       onOpenChange={(v) => {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MenuProps } from 'antd';
 import type { TablePaginationConfig, TableProps } from 'antd/es/table';
 import type { TableRowSelection } from 'antd/es/table/interface';
 import type { FixedType } from 'rc-table/es/interface';
@@ -81,7 +82,7 @@ export interface IOperationOption {
   isPrimary?: boolean;
   visible?: boolean;
   disabled?: boolean;
-  overlay?: React.ReactElement | (() => React.ReactElement);
+  menu?: MenuProps;
   onClick?: (args?: ITableLoadOptions) => void;
 }
 export interface IOperationContent {

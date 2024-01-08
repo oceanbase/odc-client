@@ -63,7 +63,6 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
     pageSize: pageSize,
     showSizeChanger: false,
   };
-
   cloneProps.onChange = function (page, filters, s, e) {
     loadData(page, filters);
   };

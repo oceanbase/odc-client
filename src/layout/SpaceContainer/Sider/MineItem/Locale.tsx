@@ -37,23 +37,21 @@ const Locale: React.FC<IProps> = function () {
     <DropMenu
       small
       menu={
-        <Menu selectedKeys={[localeObj?.value]}>
-          {localeList.map((item) => (
-            <Menu.Item
-              onClick={() => {
-                if (localeObj?.value === item.value) {
-                  return;
-                }
-                window._forceRefresh = true;
-                setLocale(item.value);
-                window._forceRefresh = false;
-              }}
-              key={item.value}
-            >
-              {item.label}
-            </Menu.Item>
-          ))}
-        </Menu>
+        <Menu
+          selectedKeys={[localeObj?.value]}
+          items={localeList.map((item) => ({
+            onClick: () => {
+              if (localeObj?.value === item.value) {
+                return;
+              }
+              window._forceRefresh = true;
+              setLocale(item.value);
+              window._forceRefresh = false;
+            },
+            key: item.value,
+            label: item.label,
+          }))}
+        />
       }
     >
       <MenuItem>{formatMessage({ id: 'odc.Sider.MineItem.Locale.Language' }) /*语言*/}</MenuItem>

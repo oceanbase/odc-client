@@ -21,6 +21,7 @@ import {
 } from '@/common/network/sensitiveColumn';
 import CommonTable from '@/component/CommonTable';
 import {
+  IOperationOption,
   IOperationOptionType,
   IRowSelecter,
   ITableInstance,
@@ -190,7 +191,8 @@ const getColumns: ({
             descriptionsData={[
               {
                 label: formatMessage({
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
+                  id:
+                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
                 }) /* 脱敏方式 */,
                 value: maskRuleTypeMap?.[target?.type],
               },
@@ -300,8 +302,12 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
-  const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
-    sensitiveContext;
+  const {
+    dataSourceIdMap,
+    maskingAlgorithms,
+    maskingAlgorithmIdMap,
+    maskingAlgorithmOptions,
+  } = sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
@@ -512,7 +518,7 @@ const SensitiveColumn = ({
     dataSourceIdMap: dataSourceIdMap,
     maskingAlgorithmIdMap: maskingAlgorithmIdMap,
   });
-  const operationOptions = [];
+  const operationOptions: IOperationOption[] = [];
   operationOptions.push({
     tooltip: '',
     type: IOperationOptionType.dropdown,
@@ -531,39 +537,33 @@ const SensitiveColumn = ({
         </a>
       </Button>
     ),
-    overlay: (
-      <Menu>
-        <Menu.Item
-          key={AddSensitiveColumnType.Manual}
-          onClick={() => {
+    menu: {
+      items: [
+        {
+          key: AddSensitiveColumnType.Manual,
+          label: formatMessage({
+            id: 'odc.components.SensitiveColumn.ManuallyAdd',
+          }),
+          onClick: () => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Manual);
             // handleOpenEditSensitiveColumnDrawer();
             setModalOpen(true);
             tracert.click('a3112.b64002.c330861.d367388');
-          }}
-        >
-          {
-            formatMessage({
-              id: 'odc.components.SensitiveColumn.ManuallyAdd',
-            }) /*手动添加*/
-          }
-        </Menu.Item>
-        <Menu.Item
-          key={AddSensitiveColumnType.Scan}
-          onClick={() => {
+          },
+        },
+        {
+          key: AddSensitiveColumnType.Scan,
+          label: formatMessage({
+            id: 'odc.components.SensitiveColumn.ScanAdd',
+          }),
+          onClick: () => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Scan);
             handleOpenEditSensitiveColumnDrawer();
             tracert.click('a3112.b64002.c330861.d367389');
-          }}
-        >
-          {
-            formatMessage({
-              id: 'odc.components.SensitiveColumn.ScanAdd',
-            }) /*扫描添加*/
-          }
-        </Menu.Item>
-      </Menu>
-    ),
+          },
+        },
+      ],
+    },
     onClick: () => {},
   });
   return (
@@ -580,7 +580,8 @@ const SensitiveColumn = ({
         cascaderContent={{
           options: cascaderOptions,
           placeholder: formatMessage({
-            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
+            id:
+              'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
           }), //'请选择数据源和库'
         }}
         operationContent={{

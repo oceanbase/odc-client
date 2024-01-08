@@ -56,44 +56,36 @@ const ValueInput: React.FC<IProps> = function ({ value, connectionMode, onChange
       />
 
       <Dropdown
-        overlay={
-          <Menu
-            activeKey={menuValue}
-            onClick={(info) => {
-              if (info.key === 'empty') {
-                onChange('');
-              } else {
-                onChange(info.key);
-              }
-            }}
-          >
-            {isOracle && (
-              <Menu.Item key={ValueList.DEFAULT}>
-                {
-                  formatMessage({
-                    id: 'odc.component.EditPLParamsModal.ValueInput.SetToDefault',
-                  }) /*设置为 DEFAULT*/
-                }
-              </Menu.Item>
-            )}
-            <Menu.Item key={ValueList.NULL}>
-              {
-                formatMessage({
-                  id: 'odc.component.EditPLParamsModal.ValueInput.SetToNull',
-                }) /*设置为 NULL*/
-              }
-            </Menu.Item>
-            {!isOracle && (
-              <Menu.Item key={'empty'}>
-                {
-                  formatMessage({
-                    id: 'odc.component.EditPLParamsModal.ValueInput.SetToAnEmptyString',
-                  }) /*设置为空字符串*/
-                }
-              </Menu.Item>
-            )}
-          </Menu>
-        }
+        menu={{
+          accessKey: menuValue,
+          onClick: (info) => {
+            if (info.key === 'empty') {
+              onChange('');
+            } else {
+              onChange(info.key);
+            }
+          },
+          items: [
+            isOracle && {
+              key: ValueList.DEFAULT,
+              label: formatMessage({
+                id: 'odc.component.EditPLParamsModal.ValueInput.SetToNull',
+              }),
+            },
+            {
+              key: ValueList.NULL,
+              label: formatMessage({
+                id: 'odc.component.EditPLParamsModal.ValueInput.SetToNull',
+              }),
+            },
+            !isOracle && {
+              key: 'empty',
+              label: formatMessage({
+                id: 'odc.component.EditPLParamsModal.ValueInput.SetToAnEmptyString',
+              }),
+            },
+          ].filter(Boolean),
+        }}
       >
         <MenuOutlined
           style={{

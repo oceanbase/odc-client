@@ -37,24 +37,29 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
     <DropMenu
       small
       menu={
-        <Menu selectedKeys={[currentTheme]}>
-          <Menu.Item onClick={() => onClick(EThemeConfigKey.ODC_WHITE)} key="odc-white">
+        <Menu
+          selectedKeys={[currentTheme]}
+          items={[
             {
-              formatMessage({
+              onClick: () => {
+                onClick(EThemeConfigKey.ODC_WHITE);
+              },
+              key: EThemeConfigKey.ODC_WHITE,
+              label: formatMessage({
                 id: 'odc.component.ThemeBtn.DefaultTheme',
-              })
-              /*默认主题*/
-            }
-          </Menu.Item>
-          <Menu.Item onClick={() => onClick(EThemeConfigKey.ODC_DARK)} key="odc-dark">
+              }),
+            },
             {
-              formatMessage({
+              onClick: () => {
+                onClick(EThemeConfigKey.ODC_DARK);
+              },
+              key: EThemeConfigKey.ODC_DARK,
+              label: formatMessage({
                 id: 'odc.component.ThemeBtn.DarkTheme',
-              })
-              /*暗黑主题*/
-            }
-          </Menu.Item>
-        </Menu>
+              }),
+            },
+          ]}
+        />
       }
     >
       <MenuItem>{formatMessage({ id: 'odc.Sider.MineItem.Theme.Theme' }) /*主题*/}</MenuItem>

@@ -157,7 +157,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       }
     });
     if (dockedPage) {
-      message.warn(
+      message.warning(
         formatMessage(
           {
             id: 'odc.page.Workspace.DockedpagetitleIsBeingDebuggedAnd',
