@@ -715,20 +715,22 @@ const ActionBar: React.FC<IProps> = inject(
       ? getTools(task).filter((item) => item?.type === 'button')
       : getTools(task);
 
-    const renderTool = (tool) => {
+    const renderTool = (tool, index) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
       const disabled = activeBtnKey === tool?.key || tool?.disabled;
       if (tool.confirmText) {
         return (
-          <Popconfirm title={tool.confirmText} onConfirm={tool.action}>
-            <ActionButton disabled={disabled}>{tool.text}</ActionButton>
+          <Popconfirm key={tool?.key || index} title={tool.confirmText} onConfirm={tool.action}>
+            <ActionButton key={tool?.key || index} disabled={disabled}>
+              {tool.text}
+            </ActionButton>
           </Popconfirm>
         );
       }
 
       if (tool.download) {
         return (
-          <ActionButton disabled={disabled} onClick={tool.download}>
+          <ActionButton key={tool?.key || index} disabled={disabled} onClick={tool.download}>
             {tool.text}
           </ActionButton>
         );
@@ -736,6 +738,7 @@ const ActionBar: React.FC<IProps> = inject(
 
       return (
         <ActionButton
+          key={tool?.key || index}
           type={tool.isPrimary ? 'primary' : 'default'}
           disabled={disabled}
           onClick={tool.action}
@@ -751,8 +754,8 @@ const ActionBar: React.FC<IProps> = inject(
     return (
       <>
         <Action.Group size={!isDetailModal ? 4 : 6}>
-          {btnTools?.map((tool) => {
-            return renderTool(tool);
+          {btnTools?.map((tool, index) => {
+            return renderTool(tool, index);
           })}
         </Action.Group>
         {isDetailModal && (

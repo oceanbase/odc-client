@@ -720,7 +720,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
             }
           });
           if (isEmpty) {
-            message.warn(
+            message.warning(
               formatMessage({
                 id: 'odc.TablePage.TableData.DoNotSubmitBlankLines',
               }),
@@ -752,7 +752,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         })
         .filter(Boolean);
       if (!editRows?.length) {
-        message.warn(
+        message.warning(
           formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
         );
         return;
@@ -778,7 +778,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       }
 
       if (!sql) {
-        message.warn(
+        message.warning(
           formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
         );
         return;
@@ -977,7 +977,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     } else if (value?.length > MAX_LIMIT) {
       !this.outOfLimitTipHaveShow &&
-        message.warn(
+        message.warning(
           formatMessage({ id: 'odc.components.SQLPage.BecauseTheSqlIsToo' }), //由于 SQL 过长，编辑器将只支持预览
         );
       this.outOfLimitTipHaveShow = true;

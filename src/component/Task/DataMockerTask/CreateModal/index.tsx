@@ -89,7 +89,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     return c.typeConfig?._isEditing;
                   });
                   if (editingColumn) {
-                    message.warn(
+                    message.warning(
                       formatMessage(
                         {
                           id:

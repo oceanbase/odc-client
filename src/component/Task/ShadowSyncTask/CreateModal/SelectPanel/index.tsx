@@ -96,7 +96,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             originTableNames = tables?.map((table) => table.tableName);
           }
           if (!originTableNames?.length) {
-            message.warn(
+            message.warning(
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.SelectASynchronizationObject',
               }),

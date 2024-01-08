@@ -273,7 +273,7 @@ const Crontab = (props, ref) => {
       </Space>
       <Collapse
         bordered={false}
-        expandIconPosition="right"
+        expandIconPosition="end"
         expandIcon={({ isActive }) => {
           if (error) return null;
           return isActive ? <UpOutlined /> : <DownOutlined />;

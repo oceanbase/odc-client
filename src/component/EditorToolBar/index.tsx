@@ -137,17 +137,14 @@ export default class EditorToolBar extends Component<IProps, IState> {
             status={status}
             icon={icon}
             text={name}
-            menu={
-              <Menu>
-                {menu?.map((menuItem, menuIndex) => {
-                  return (
-                    <Menu.Item key={menuItem}>
-                      {getActionButton(menuItem, menuIndex, true)}
-                    </Menu.Item>
-                  );
-                })}
-              </Menu>
-            }
+            menu={{
+              items: menu?.map((menuItem, menuIndex) => {
+                return {
+                  key: menuItem,
+                  label: getActionButton(menuItem, menuIndex, true),
+                };
+              }),
+            }}
           />
         );
       } else if (isCommonAction(actionItem)) {

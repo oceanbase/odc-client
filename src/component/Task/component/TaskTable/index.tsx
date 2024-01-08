@@ -44,7 +44,7 @@ import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Divider, Menu } from 'antd';
+import { Button, DatePicker, Divider, Menu, MenuProps } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
@@ -53,6 +53,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
+import { flatten } from 'lodash';
+import { MenuDividerType } from 'antd/lib/menu/hooks/useItems';
 const { RangePicker } = DatePicker;
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
@@ -442,31 +444,27 @@ const TaskTable: React.FC<IProps> = inject(
                     </Button>
                   ),
                   disabled: disabledOpt,
-                  overlay: (
-                    <Menu
-                      onClick={({ key }) => {
-                        props.onMenuClick(key as TaskPageType);
-                      }}
-                    >
-                      {menus?.map(({ group }, index) => {
+                  menu: {
+                    onClick: ({ key }) => {
+                      props.onMenuClick(key as TaskPageType);
+                    },
+                    items: flatten(
+                      menus?.map(({ group }, index) => {
                         const tasks = group?.filter((task) => task.enabled);
-                        return (
-                          <>
-                            {tasks?.map((item) => (
-                              <Menu.Item key={item.value}>{item.label}</Menu.Item>
-                            ))}
-                            {index !== menus?.length - 1 && (
-                              <Divider
-                                style={{
-                                  margin: 0,
-                                }}
-                              />
-                            )}
-                          </>
-                        );
-                      })}
-                    </Menu>
-                  ),
+                        let items: MenuProps['items'];
+                        let divider: MenuDividerType = {
+                          type: 'divider',
+                        };
+                        items = tasks?.map((item) => {
+                          return {
+                            key: item.value,
+                            label: item.label,
+                          };
+                        });
+                        return index !== menus?.length - 1 ? [...items, divider] : items;
+                      }),
+                    ),
+                  },
                 }
               : {
                   type: IOperationOptionType.button,

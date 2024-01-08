@@ -29,31 +29,28 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
   const currentTheme = settingStore.theme?.key;
   return (
     <DropdownMenu
-      overlay={
-        <Menu
-          selectedKeys={[currentTheme]}
-          onClick={({ key }) => {
-            if (key != currentTheme) {
-              settingStore.setTheme(key);
-            }
-          }}
-        >
-          <Menu.Item key="odc-white">
-            {
-              formatMessage({
-                id: 'odc.component.ThemeBtn.DefaultTheme',
-              }) /*默认主题*/
-            }
-          </Menu.Item>
-          <Menu.Item key="odc-dark">
-            {
-              formatMessage({
-                id: 'odc.component.ThemeBtn.DarkTheme',
-              }) /*暗黑主题*/
-            }
-          </Menu.Item>
-        </Menu>
-      }
+      menu={{
+        selectedKeys: [currentTheme],
+        onClick: ({ key }) => {
+          if (key != currentTheme) {
+            settingStore.setTheme(key);
+          }
+        },
+        items: [
+          {
+            key: 'odc-white',
+            label: formatMessage({
+              id: 'odc.component.ThemeBtn.DefaultTheme',
+            }) /*默认主题*/,
+          },
+          {
+            key: 'odc-dark',
+            label: formatMessage({
+              id: 'odc.component.ThemeBtn.DarkTheme',
+            }) /*暗黑主题*/,
+          },
+        ],
+      }}
     >
       {formatMessage({ id: 'odc.component.ThemeBtn.Theme' }) /*主题*/}
     </DropdownMenu>

@@ -84,7 +84,11 @@ const CommonDetailModal: React.FC<IProps> = (props) => {
         <div className={styles.header}>
           <Radio.Group onChange={handleChangeKey} value={activeKey}>
             {filteredTabs.map((item) => {
-              return <Radio.Button value={item.key}>{item.title}</Radio.Button>;
+              return (
+                <Radio.Button key={item.key} value={item.key}>
+                  {item.title}
+                </Radio.Button>
+              );
             })}
           </Radio.Group>
           <Status enabled={detail?.enabled} />

@@ -170,7 +170,7 @@ class TableData extends React.Component<
           }
         });
         if (isEmpty) {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.TablePage.TableData.DoNotSubmitBlankLines',
             }), // 请不要提交空行
@@ -201,7 +201,7 @@ class TableData extends React.Component<
       })
       .filter(Boolean);
     if (!editRows?.length) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
       );
       return;
@@ -225,7 +225,7 @@ class TableData extends React.Component<
     }
 
     if (!sql) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
       );
       return;

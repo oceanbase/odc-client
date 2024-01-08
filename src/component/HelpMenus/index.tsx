@@ -92,15 +92,15 @@ export default class HelpMenus extends React.Component<
   ].filter(Boolean);
 
   public getHelpMenus = () => {
-    return (
-      <Menu>
-        {this.HELP_MENUS.map((item) => (
-          <Menu.Item key={item.key} onClick={this.handleClickHelpMenu}>
-            {item.title}
-          </Menu.Item>
-        ))}
-      </Menu>
-    );
+    return {
+      items: this.HELP_MENUS.map((item) => {
+        return {
+          key: item.key,
+          label: item.title,
+          onClick: this.handleClickHelpMenu,
+        };
+      }),
+    };
   };
 
   public handleClickHelpMenu = (item) => {
@@ -113,7 +113,7 @@ export default class HelpMenus extends React.Component<
     const { size, placement } = this.props;
     return (
       <>
-        <DropdownMenu overlay={this.getHelpMenus()} placement={placement || 'bottom'}>
+        <DropdownMenu menu={this.getHelpMenus()} placement={placement || 'bottom'}>
           <div className={classnames(styles.helpNav)}>
             <span>{formatMessage({ id: 'odc.component.HelpMenus.Help' }) /* 帮助 */}</span>
           </div>

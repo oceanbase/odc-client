@@ -119,7 +119,7 @@ const Login: React.FC<LoginProps> = (props) => {
 
   const switchForm = useCallback(() => {
     if (isLoading) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.component.Login.Running' }), //正在执行中
       );
     }
@@ -128,7 +128,7 @@ const Login: React.FC<LoginProps> = (props) => {
 
   const goBack = useCallback(() => {
     if (isLoading) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.component.Login.Running' }), //正在执行中
       );
     }

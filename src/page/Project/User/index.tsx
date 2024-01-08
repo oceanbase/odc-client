@@ -115,7 +115,7 @@ const User: React.FC<IProps> = ({ id }) => {
       }
     >
       <MiniTable<IProject['members'][0]>
-        rowKey={'id'}
+        rowKey={'accountName'}
         columns={[
           {
             title: formatMessage({
@@ -169,6 +169,7 @@ const User: React.FC<IProps> = ({ id }) => {
                     }
                   </Action.Link>
                   <Popconfirm
+                    key="import"
                     title={formatMessage({
                       id: 'odc.Project.User.AreYouSureYouWant',
                     })}
@@ -189,7 +190,7 @@ const User: React.FC<IProps> = ({ id }) => {
         ]}
         dataSource={dataSource}
         pagination={{
-          total: dataSource?.length,
+          total: dataSource?.length || 0,
         }}
         loadData={(page) => {}}
       />

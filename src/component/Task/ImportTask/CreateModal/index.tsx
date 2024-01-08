@@ -273,7 +273,7 @@ class CreateModal extends React.Component<IProps, IState> {
       fileName: importFileName?.[0].response.data?.fileName,
     });
     if (!fileInfo) {
-      message.warn(
+      message.warning(
         formatMessage({
           id: 'odc.components.ImportDrawer.AnErrorOccurredWhileParsing',
         }),

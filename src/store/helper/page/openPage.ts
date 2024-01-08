@@ -430,7 +430,7 @@ export async function openOBClientPage(cid: number, dbId: number) {
     return p.type === PageType.OB_CLIENT;
   })?.length;
   if (clientPageCounts >= MAX_CLIENT_PAGE) {
-    message.warn(
+    message.warning(
       formatMessage(
         {
           id: 'odc.helper.page.openPage.YouCannotOpenMoreThan',

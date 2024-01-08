@@ -217,7 +217,7 @@ class CreateViewPage extends Component<
         viewUnitsMap[uid] = true;
       } else {
         const _t = `${viewName || tableName}(${dbName})`;
-        message.warn(
+        message.warning(
           formatMessage(
             {
               id: 'odc.components.CreateViewPage.MultipleTExistYouNeed',
@@ -304,7 +304,7 @@ class CreateViewPage extends Component<
         required: false,
         onShow() {
           if (!viewUnits.length) {
-            message.warn(
+            message.warning(
               formatMessage({
                 id: 'odc.components.CreateViewPage.SelectABaseTableFirst',
               }),

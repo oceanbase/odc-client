@@ -190,7 +190,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       /**
        * 校验文件总大小
        */
-      message.warn(
+      message.warning(
         formatMessage({
           id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
         }),

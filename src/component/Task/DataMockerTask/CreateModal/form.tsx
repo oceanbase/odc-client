@@ -290,7 +290,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 /* 插入模拟数据清空表 */
               >
                 <Radio.Group>
-                  <Radio value={false}>
+                  <Radio key="1" value={false}>
                     {
                       formatMessage({
                         id: 'odc.component.DataMockerDrawer.form.No',
@@ -299,7 +299,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                       /* 否 */
                     }
                   </Radio>
-                  <Radio value>
+                  <Radio key="2" value>
                     {
                       formatMessage({
                         id: 'odc.component.DataMockerDrawer.form.Is',
@@ -324,7 +324,11 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 <Radio.Group>
                   {[MockStrategy.IGNORE, MockStrategy.OVERWRITE, MockStrategy.TERMINATE].map(
                     (strategy) => {
-                      return <Radio value={strategy}>{MockStrategyTextMap[strategy]}</Radio>;
+                      return (
+                        <Radio key={strategy} value={strategy}>
+                          {MockStrategyTextMap[strategy]}
+                        </Radio>
+                      );
                     },
                   )}
                 </Radio.Group>

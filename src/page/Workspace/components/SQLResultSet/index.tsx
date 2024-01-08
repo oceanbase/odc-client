@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, LockOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, MenuProps, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -151,25 +151,26 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     locked: boolean,
     resultSetKey: string,
   ): ReactNode {
-    const menu = (
-      <Menu
-        style={{
-          width: '160px',
-        }}
-        onClick={(e) => {
-          e.domEvent.preventDefault();
-          e.domEvent.stopPropagation();
-          handleMenuClick(e, resultSetKey);
-        }}
-      >
-        <Menu.Item key={MenuKey.LOCK}>
-          {formatMessage({ id: 'workspace.window.sql.record.column.lock' })}
-        </Menu.Item>
-        <Menu.Item key={MenuKey.UNLOCK}>
-          {formatMessage({ id: 'workspace.window.sql.record.column.unlock' })}
-        </Menu.Item>
-      </Menu>
-    );
+    const menu: MenuProps = {
+      style: {
+        width: '160px',
+      },
+      onClick: (e) => {
+        e.domEvent.preventDefault();
+        e.domEvent.stopPropagation();
+        handleMenuClick(e, resultSetKey);
+      },
+      items: [
+        {
+          key: MenuKey.LOCK,
+          label: formatMessage({ id: 'workspace.window.sql.record.column.lock' }),
+        },
+        {
+          key: MenuKey.UNLOCK,
+          label: formatMessage({ id: 'workspace.window.sql.record.column.unlock' }),
+        },
+      ],
+    };
 
     return (
       <>
@@ -179,7 +180,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
           </div>
         )}
 
-        <Dropdown overlay={menu} trigger={['contextMenu']}>
+        <Dropdown menu={menu} trigger={['contextMenu']}>
           <span
             className={styles.resultSetTitle}
             style={{
