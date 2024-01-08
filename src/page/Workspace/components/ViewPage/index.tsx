@@ -376,7 +376,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     return (
       view && (
         <>
-          <Content>
+          <Content style={{ height: '100%' }}>
             <Radio.Group
               onChange={this.handleTopTabChanged}
               value={topTab}
@@ -473,7 +473,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                               </Toolbar>
                               <div
                                 style={{
-                                  height: `calc(100vh - ${40 + 28 + 47 + 38}px)`,
+                                  height: `calc(100% - 38px)`,
                                   position: 'relative',
                                 }}
                               >

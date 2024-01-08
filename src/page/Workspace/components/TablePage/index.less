@@ -10,6 +10,7 @@
 }
 
 .topbarTab:global(.ant-tabs) {
+  height: calc(100% - 46px);
   :global {
     .ant-tabs-nav {
       border-bottom: 1px solid var(--divider-color);
@@ -19,14 +20,24 @@
         display: none;
       }
     }
+    .ant-tabs-content-holder {
+      height: 100%;
+      .ant-tabs-content {
+        height: 100%;
+        .ant-tabs-tabpane {
+          height: 100%;
+        }
+      }
+    }
   }
 
   .propsTab {
+    height: 100%;
     &:global(.ant-tabs-left) {
       :global {
         .ant-tabs-nav {
           min-width: 80px;
-          height: calc(100vh - 115px);
+          height: 100%;
         }
       }
     }
