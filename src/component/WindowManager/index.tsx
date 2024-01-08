@@ -371,7 +371,6 @@ const WindowManager: React.FC<IProps> = function (props) {
             if (!Page) {
               return null;
             }
-            console.log('page', page.type, Page);
             return {
               key: page.key,
               label: getPageTitle(page),
