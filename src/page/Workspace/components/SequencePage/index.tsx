@@ -158,7 +158,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
 
     return sequence ? (
       <>
-        <Content>
+        <Content style={{ height: '100%' }}>
           <Tabs
             activeKey={propsTab}
             tabPosition="left"
@@ -312,9 +312,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         onClick={this.reloadSequence.bind(this, params.sequenceName)}
                       />
                     </Toolbar>
-                    <div
-                      style={{ height: `calc(100vh - ${40 + 28 + 38}px)`, position: 'relative' }}
-                    >
+                    <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
                       <SQLCodeEditorDDL
                         readOnly
                         defaultValue={(sequence && sequence.ddl) || ''}

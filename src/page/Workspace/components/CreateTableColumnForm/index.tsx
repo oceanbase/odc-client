@@ -169,7 +169,7 @@ export default class CreateTableColumnForm extends Component<
         <div
           className={styles.container}
           style={{
-            height: fixedFooter ? 'calc(100vh - 115px)' : 'initial',
+            height: fixedFooter ? 'calc(100% - 40px)' : 'initial',
             border: hideBorder ? 'none' : '1px solid var(--odc-border-color)',
           }}
         >

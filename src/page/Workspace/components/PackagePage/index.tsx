@@ -276,7 +276,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
 
     return (
       <>
-        <Content>
+        <Content style={{ height: '100%' }}>
           <Radio.Group onChange={this.handleTopTabChanged} value={topTab} className={styles.topbar}>
             {pkg.packageHead ? (
               <Radio.Button value={TopTab.HEAD}>
@@ -429,7 +429,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                 </Toolbar>
                                 <div
                                   style={{
-                                    height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
+                                    height: `calc(100% - 38px)`,
                                     position: 'relative',
                                   }}
                                 >
@@ -584,7 +584,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                 </Toolbar>
                                 <div
                                   style={{
-                                    height: `calc(100vh - ${40 + 28 + 46 + 39}px)`,
+                                    height: `calc(100% - 38px)`,
                                     position: 'relative',
                                   }}
                                 >
