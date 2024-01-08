@@ -87,7 +87,6 @@ const TableDDL: React.FC<IProps> = function ({}) {
       <div
         style={{
           flex: 1,
-          // height: `calc(100vh - ${48 + 34 + 39 + 50}px)`,
           overflow: 'hidden',
           position: 'relative',
         }}
