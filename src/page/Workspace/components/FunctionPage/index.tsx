@@ -252,7 +252,7 @@ class FunctionPage extends Component<
     return (
       func && (
         <>
-          <Content>
+          <Content style={{ height: "100%" }}>
             <Tabs
               activeKey={propsTab}
               tabPosition="left"
@@ -282,7 +282,7 @@ class FunctionPage extends Component<
                 </Toolbar>
                 <EditableTable
                   gridRef={this.gridRef}
-                  minHeight={'calc(100vh - 106px)'}
+                  minHeight={'calc(100% - 38px)'}
                   rowKey="paramName"
                   initialColumns={tableColumns}
                   initialRows={func.params || []}
@@ -342,7 +342,7 @@ class FunctionPage extends Component<
                     onClick={this.reloadFunction.bind(this, func.funName)}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)`, position: 'relative' }}>
+                <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(func && func.ddl) || ''}

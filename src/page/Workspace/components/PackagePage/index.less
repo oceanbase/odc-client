@@ -5,6 +5,7 @@
 }
 
 .topbarTab:global(.ant-tabs) {
+  height: calc(100% - 46px);
   :global {
     .ant-layout-content {
       padding: 25px;
@@ -18,15 +19,22 @@
         display: none;
       }
     }
+    .ant-tabs-content {
+      height: 100%;
+      .ant-tabs-tabpane {
+        height: 100%;
+      }
+    }
   }
 
   .propsTab {
     position: relative;
     &:global(.ant-tabs-left) {
+      height: 100%;
       :global {
         .ant-tabs-nav {
           width: 80px;
-          height: calc(100vh - 115px);
+          height: 100%;
         }
       }
     }
