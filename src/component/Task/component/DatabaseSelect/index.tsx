@@ -39,60 +39,10 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     //数据库
     name = 'databaseId',
     projectId,
+    width,
     onChange,
   } = props;
   const fetchType = type === TaskType.ONLINE_SCHEMA_CHANGE ? type : null;
-
-  // const databaseOptions = databases
-  //   ?.filter((item) =>
-  //     getDataSourceModeConfig(item.dataSource?.type)?.features?.task?.includes(type),
-  //   )
-  //   ?.map(({ name, id, environment, dataSource, project }) => ({
-  //     label: (
-  //       <Popover
-  //         overlayClassName={styles.popover}
-  //         data-label={name}
-  //         placement="right"
-  //         showArrow={false}
-  //         content={
-  //           <Space direction="vertical">
-  //             <Space>
-  //               <RiskLevelLabel color={environment?.style} content={environment?.name} />
-  //               <Text strong>{name}</Text>
-  //             </Space>
-  //             <Text type="secondary">
-  //               {
-  //                 formatMessage({
-  //                   id: 'odc.src.component.Task.component.DatabaseSelect.DataSource',
-  //                 }) /* 所属数据源:  */
-  //               }
-  //               {dataSource?.name ?? '-'}
-  //             </Text>
-  //             <Text type="secondary">
-  //               {
-  //                 formatMessage({
-  //                   id: 'odc.src.component.Task.component.DatabaseSelect.ItSNotPlayed',
-  //                 }) /* 所属项目:  */
-  //               }
-  //               {project?.name ?? '-'}
-  //             </Text>
-  //           </Space>
-  //         }
-  //       >
-  //         <Space
-  //           size={2}
-  //           data-label={name}
-  //           style={{
-  //             display: 'flex',
-  //           }}
-  //         >
-  //           <RiskLevelLabel color={environment?.style} content={environment?.name} />
-  //           <span>{name}</span>
-  //         </Space>
-  //       </Popover>
-  //     ),
-  //     value: id,
-  //   }));
 
   return (
     <Form.Item
@@ -112,6 +62,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         projectId={projectId}
         taskType={type}
         fetchType={fetchType}
+        width={width}
         onChange={onChange}
       />
     </Form.Item>
