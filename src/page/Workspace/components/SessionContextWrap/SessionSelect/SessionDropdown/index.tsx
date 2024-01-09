@@ -41,7 +41,6 @@ import { IDatasource } from '@/d.ts/datasource';
 
 interface IProps {
   dialectTypes?: ConnectionMode[];
-  containsUnassigned?: boolean;
   width?: number | string;
   taskType?: TaskType;
   fetchType?: TaskType;
@@ -53,7 +52,6 @@ const SessionDropdown: React.FC<IProps> = function ({
   projectId,
   taskType,
   fetchType,
-  containsUnassigned = false,
 }) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -74,7 +72,7 @@ const SessionDropdown: React.FC<IProps> = function ({
       99999,
       null,
       null,
-      containsUnassigned,
+      login.isPrivateSpace(),
       true,
       fetchType,
     ],

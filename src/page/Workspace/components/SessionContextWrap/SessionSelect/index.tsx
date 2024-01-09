@@ -31,6 +31,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import SessionDropdown from './SessionDropdown';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
+import login from '@/store/login';
 
 export default function SessionSelect({
   readonly,
@@ -142,7 +143,9 @@ export default function SessionSelect({
               split={<Divider type="vertical" />}
               style={{ color: 'var(--text-color-hint)', marginLeft: 8 }}
             >
-              <span>项目：{context?.session?.odcDatabase?.project?.name}</span>
+              {login.isPrivateSpace() ? null : (
+                <span>项目：{context?.session?.odcDatabase?.project?.name}</span>
+              )}
               <span>数据源：{context?.session?.odcDatabase?.dataSource?.name}</span>
             </Space>
           </Space>
