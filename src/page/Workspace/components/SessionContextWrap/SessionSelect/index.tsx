@@ -20,7 +20,7 @@ import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Popover, Space, Spin } from 'antd';
+import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
@@ -111,14 +111,51 @@ export default function SessionSelect({
     );
   }
   function renderSessionInfo() {
-    const fromDataSource = context?.from === 'datasource' || context.datasourceMode;
+    const fromDataSource = context.datasourceMode;
+
+    const dsStyle = getDataSourceStyleByConnectType(context?.session?.connection?.type);
+    const content = (
+      <Popover
+        overlayClassName={styles.pop}
+        placement="bottomLeft"
+        content={<ConnectionPopover connection={context?.session?.connection} />}
+      >
+        {fromDataSource ? (
+          <Space className={styles.link} size={4}>
+            <Icon
+              component={dsStyle?.icon?.component}
+              style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
+            />
+            <span style={{ verticalAlign: 'middle' }}>{context?.session?.connection?.name}</span>
+            <DownOutlined style={{ verticalAlign: 'textBottom' }} />
+          </Space>
+        ) : (
+          <Space className={styles.link} size={4}>
+            <Icon
+              component={dsStyle?.dbIcon?.component}
+              style={{ fontSize: 16, verticalAlign: 'middle' }}
+            />
+            <span style={{ verticalAlign: 'middle' }}>
+              {context?.session?.odcDatabase?.project?.name}
+            </span>
+            <DownOutlined style={{ verticalAlign: 'textBottom' }} />
+            <Space
+              size={1}
+              split={<Divider type="vertical" />}
+              style={{ color: 'var(--text-color-hint)', marginLeft: 8 }}
+            >
+              <span>项目：{context?.session?.odcDatabase?.project?.name}</span>
+              <span>数据源：{context?.session?.odcDatabase?.dataSource?.name}</span>
+            </Space>
+          </Space>
+        )}
+      </Popover>
+    );
     if (readonly) {
       return (
         <>
           {renderEnv()}
-          <div className={classNames(styles.readonly)}>
-            {fromDataSource ? renderDatasource() : renderProject()}
-          </div>
+          <div className={classNames(styles.readonly)}>{content}</div>
         </>
       );
     }
@@ -126,7 +163,7 @@ export default function SessionSelect({
       <SessionDropdown>
         <div className={styles.content}>
           {renderEnv()}
-          <div>{fromDataSource ? renderDatasource() : renderProject()}</div>
+          <div>{content}</div>
         </div>
       </SessionDropdown>
     );
