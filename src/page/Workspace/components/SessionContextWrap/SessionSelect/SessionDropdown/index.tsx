@@ -42,7 +42,7 @@ import { IDatasource } from '@/d.ts/datasource';
 interface IProps {
   dialectTypes?: ConnectionMode[];
   containsUnassigned?: boolean;
-  width?: number;
+  width?: number | string;
   taskType?: TaskType;
   fetchType?: TaskType;
   projectId?: number;
@@ -154,7 +154,15 @@ const SessionDropdown: React.FC<IProps> = function ({
             return null;
           }
           return {
-            title: item.name,
+            title: (
+              <Popover
+                showArrow={false}
+                placement={'right'}
+                content={<ConnectionPopover connection={item} />}
+              >
+                <div className={styles.textoverflow}>{item.name}</div>
+              </Popover>
+            ),
             icon: (
               <Icon
                 component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
@@ -199,7 +207,13 @@ const SessionDropdown: React.FC<IProps> = function ({
                 return {
                   title: (
                     <>
-                      {db.name}
+                      <Popover
+                        showArrow={false}
+                        placement={'right'}
+                        content={<ConnectionPopover connection={db?.dataSource} />}
+                      >
+                        <div className={styles.textoverflow}>{db.name}</div>
+                      </Popover>
                       <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
                     </>
                   ),
@@ -264,9 +278,9 @@ const SessionDropdown: React.FC<IProps> = function ({
                       <Popover
                         showArrow={false}
                         content={<ConnectionPopover connection={db?.dataSource} />}
-                        placement={'left'}
+                        placement={'right'}
                       >
-                        {db.name}
+                        <div className={styles.textoverflow}>{db.name}</div>
                       </Popover>
                       <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
                     </>
@@ -403,6 +417,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ].filter(Boolean)}
                 height={215}
                 showIcon
+                blockNode={true}
                 treeData={treeData()}
               />
             </div>

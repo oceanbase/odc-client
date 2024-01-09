@@ -13,11 +13,19 @@ interface IProps {
   value?: number;
   taskType?: TaskType;
   fetchType?: TaskType;
+  width?: number | string;
   projectId?: number;
   onChange?: (value: number) => void;
 }
 
-const SelectItem: React.FC<IProps> = ({ value, taskType, projectId, fetchType, onChange }) => {
+const SelectItem: React.FC<IProps> = ({
+  value,
+  taskType,
+  projectId,
+  width,
+  fetchType,
+  onChange,
+}) => {
   const { data: database, run } = useRequest(getDatabase, {
     manual: true,
   });
@@ -38,16 +46,16 @@ const SelectItem: React.FC<IProps> = ({ value, taskType, projectId, fetchType, o
         },
       }}
     >
-      <Space direction="vertical">
+      <Space style={{ width: '100%' }} direction="vertical">
         <SessionDropdown
           projectId={projectId}
-          width={400}
+          width={width || 320}
           taskType={taskType}
           fetchType={fetchType}
         >
           <Select
             placeholder={
-              <Space size={1} style={{ color: 'var(--text-color-primary)' }}>
+              <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
                 {database?.data ? (
                   <>
                     <RiskLevelLabel
@@ -63,7 +71,7 @@ const SelectItem: React.FC<IProps> = ({ value, taskType, projectId, fetchType, o
                 {database?.data?.name}
               </Space>
             }
-            style={{ width: 400 }}
+            style={{ width: width || 320 }}
             open={false}
           />
         </SessionDropdown>

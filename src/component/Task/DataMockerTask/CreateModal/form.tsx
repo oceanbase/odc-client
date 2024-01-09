@@ -177,7 +177,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
               <DatabaseSelect
                 onChange={(v) => form.resetFields(['tableName', 'columns'])}
                 projectId={projectId}
-                width="100%"
+                width={'441px'}
                 type={TaskType.DATAMOCK}
               />
             </Col>
