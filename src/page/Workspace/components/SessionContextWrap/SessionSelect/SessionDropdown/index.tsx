@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 import { formatMessage } from '@/util/intl';
-import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
-import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Badge, Input, Popover, Select, Space, Spin, Tree } from 'antd';
+import React, { Key, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import Icon, { SearchOutlined } from '@ant-design/icons';
-import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import tracert from '@/util/tracert';
-import { ConnectionMode } from '@/d.ts';
+import { ConnectionMode, TaskType } from '@/d.ts';
 import SessionContext from '../../context';
-import { useRequest, useUpdate } from 'ahooks';
-import { listProjects } from '@/common/network/project';
-import { getConnectionList, getDataSourceGroupByProject } from '@/common/network/connection';
+import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
 import login from '@/store/login';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { DataNode } from 'antd/lib/tree';
+import {
+  getDataSourceModeConfig,
+  getDataSourceModeConfigByConnectionMode,
+  getDataSourceStyleByConnectType,
+} from '@/common/datasource';
 import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import { IDatabase } from '@/d.ts/database';
 import { toInteger } from 'lodash';
@@ -37,12 +38,23 @@ import { EnvColorMap } from '@/constant';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IProject } from '@/d.ts/project';
 import { IDatasource } from '@/d.ts/datasource';
-import logger from '@/util/logger';
+
 interface IProps {
   dialectTypes?: ConnectionMode[];
   containsUnassigned?: boolean;
+  width?: number;
+  taskType?: TaskType;
+  fetchType?: TaskType;
+  projectId?: number;
 }
-const SessionDropdown: React.FC<IProps> = function ({ children, containsUnassigned = false }) {
+const SessionDropdown: React.FC<IProps> = function ({
+  children,
+  width,
+  projectId,
+  taskType,
+  fetchType,
+  containsUnassigned = false,
+}) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,10 +65,19 @@ const SessionDropdown: React.FC<IProps> = function ({ children, containsUnassign
   const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
 
-  const update = useUpdate();
-  const { run: fetchDatabase, refresh, data } = useRequest(listDatabases, {
+  const { data } = useRequest(listDatabases, {
     manual: false,
-    defaultParams: [null, null, 1, 99999, null, null, containsUnassigned, true, null],
+    defaultParams: [
+      projectId,
+      datasourceId,
+      1,
+      99999,
+      null,
+      null,
+      containsUnassigned,
+      true,
+      fetchType,
+    ],
   });
   const dataGroup = useMemo(() => {
     const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
@@ -65,6 +86,12 @@ const SessionDropdown: React.FC<IProps> = function ({ children, containsUnassign
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
       const { project, dataSource } = db;
+      const support =
+        !taskType ||
+        getDataSourceModeConfig(db.dataSource?.type)?.features?.task?.includes(taskType);
+      if (!support) {
+        return;
+      }
       if (project) {
         const projectDatabases = projects.get(project?.id) || {
           project: project,
@@ -298,7 +325,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children, containsUnassign
       overlayStyle={{ paddingTop: 2 }}
       content={
         <Spin spinning={loading}>
-          <div className={styles.main}>
+          <div className={styles.main} style={{ width }}>
             <Space.Compact block>
               {context?.datasourceMode || login.isPrivateSpace() ? null : (
                 <Select
