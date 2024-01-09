@@ -135,9 +135,7 @@ export default function SessionSelect({
               component={dsStyle?.dbIcon?.component}
               style={{ fontSize: 16, verticalAlign: 'middle' }}
             />
-            <span style={{ verticalAlign: 'middle' }}>
-              {context?.session?.odcDatabase?.project?.name}
-            </span>
+            <span style={{ verticalAlign: 'middle' }}>{context?.session?.odcDatabase?.name}</span>
             <DownOutlined style={{ verticalAlign: 'textBottom' }} />
             <Space
               size={1}
