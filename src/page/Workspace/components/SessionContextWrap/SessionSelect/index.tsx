@@ -15,51 +15,33 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Dropdown, Popover, Space, Spin, Tag } from 'antd';
+import { Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
 import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import classNames from 'classnames';
-import SelectModal from './modal';
 import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
 import SessionDropdown from './SessionDropdown';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
 
 export default function SessionSelect({
   readonly,
-  dialectTypes,
 }: {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
 }) {
   const context = useContext(SessionContext);
-  const [visible, setVisible] = useState(false);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330994');
   }, []);
-
-  const { data, loading, run: fetchDatabase } = useRequest(listDatabases, {
-    manual: true,
-  });
-
-  const databaseOptions = useMemo(() => {
-    return data?.contents?.map((item) => {
-      return {
-        label: item.name,
-        key: item.id,
-      };
-    });
-  }, [data]);
 
   function renderProject() {
     const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.dbIcon;
@@ -188,14 +170,6 @@ export default function SessionSelect({
             />
           )}
         </div>
-      )}
-
-      {!readonly && (
-        <SelectModal
-          dialectTypes={dialectTypes || []}
-          visible={visible}
-          close={() => setVisible(false)}
-        />
       )}
     </>
   );
