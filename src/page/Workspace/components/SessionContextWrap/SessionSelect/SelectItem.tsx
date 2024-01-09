@@ -8,6 +8,7 @@ import Icon from '@ant-design/icons';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { TaskType } from '@/d.ts';
+import login from '@/store/login';
 
 interface IProps {
   value?: number;
@@ -81,7 +82,7 @@ const SelectItem: React.FC<IProps> = ({
             split={<Divider type="vertical" />}
             style={{ color: 'var(--text-color-hint)' }}
           >
-            <span>项目：{database?.data?.project?.name}</span>
+            {login.isPrivateSpace() ? null : <span>项目：{database?.data?.project?.name}</span>}
             <span>数据源：{database?.data?.dataSource?.name}</span>
           </Space>
         ) : null}
