@@ -122,19 +122,19 @@ export default function SessionSelect({
         content={<ConnectionPopover connection={context?.session?.connection} />}
       >
         {fromDataSource ? (
-          <Space style={{ lineHeight: '16px' }} className={styles.link} size={4}>
+          <Space style={{ lineHeight: '22px' }} className={styles.link} size={4}>
             <Icon
               component={dsStyle?.icon?.component}
-              style={{ fontSize: 16, verticalAlign: 'text-bottom', color: dsStyle?.icon?.color }}
+              style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
             />
             <span style={{ lineHeight: 1 }}>{context?.session?.connection?.name}</span>
             <DownOutlined />
           </Space>
         ) : (
-          <Space style={{ lineHeight: '16px' }} className={styles.link} size={4}>
+          <Space style={{ lineHeight: '22px' }} className={styles.link} size={4}>
             <Icon
               component={dsStyle?.dbIcon?.component}
-              style={{ fontSize: 16, verticalAlign: 'text-bottom' }}
+              style={{ fontSize: 16, verticalAlign: 'middle' }}
             />
             <span style={{ lineHeight: 1 }}>{context?.session?.odcDatabase?.name}</span>
             <DownOutlined />
