@@ -33,6 +33,7 @@ interface IDDLAlterParamters {
   schemaName: string;
   comparingTaskId: string;
   description: string;
+  sqlContent?: string;
   lockUsers: {
     name: string;
   }[];
@@ -70,7 +71,9 @@ const SwapTableTypeMap = {
     id: 'odc.src.component.Task.AlterDdlTask.DetailContent.ManualSwitch',
   }), //'手工切换'
 };
-const SQLContentSection = ({ task }) => {
+const SQLContentSection: React.FC<{
+  task: TaskDetail<IDDLAlterParamters>;
+}> = ({ task }) => {
   return (
     <SimpleTextItem
       label={formatMessage({
@@ -88,7 +91,8 @@ const SQLContentSection = ({ task }) => {
             sqlObjectNames={null}
             taskId={task?.id}
             language={
-              getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)?.sql
+                ?.language
             }
           />
         </div>
@@ -153,14 +157,14 @@ export function getItems(
             id: 'odc.AlterDdlTask.DetailContent.Library',
           }),
           //所属库
-          task?.databaseName || '-',
+          task?.database?.name || '-',
         ],
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
           }),
           //'所属数据源'
-          task?.connection?.name || '-',
+          task?.database.dataSource?.name || '-',
         ],
         hasFlow ? riskItem : null,
         lockUsers
