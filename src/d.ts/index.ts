@@ -18,6 +18,7 @@ import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
+import { IDatabase } from './database';
 
 export interface IUser {
   email: string;
@@ -2132,13 +2133,7 @@ export interface TaskRecord<P> {
   id: number;
   type: TaskType;
   subTypes: string[];
-  connection: {
-    id: number;
-    name: string;
-    dbMode: ConnectionMode;
-  };
-  databaseId: number;
-  databaseName: string;
+  database: IDatabase;
   creator: {
     id: number;
     name: string;
@@ -2291,7 +2286,7 @@ export interface ISqlPlayJobParameters {
 export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
-  databaseName: string;
+
   creator: {
     id: number;
     name: string;
@@ -2308,16 +2303,7 @@ export interface ICycleTaskRecord<T> {
   jobParameters: T;
   nodeList?: ITaskFlowNode[];
   triggerConfig?: ICycleTaskTriggerConfig;
-  connection: {
-    id: number;
-    name: string;
-    dbMode: ConnectionMode;
-  };
-  datasource?: {
-    id: number;
-    name: string;
-    dbMode: ConnectionMode;
-  };
+  database: IDatabase;
   riskLevel?: IRiskLevel;
   description?: string;
 }

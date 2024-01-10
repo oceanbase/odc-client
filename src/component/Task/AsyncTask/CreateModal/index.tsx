@@ -120,7 +120,13 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const loadRollbackData = async () => {
     const { task, type, objectId } = asyncTaskData;
-    const { parameters, projectId, databaseId, description, executionStrategy } = task;
+    const {
+      parameters,
+      projectId,
+      database: { id: databaseId },
+      description,
+      executionStrategy,
+    } = task;
     const {
       delimiter,
       queryLimit,
