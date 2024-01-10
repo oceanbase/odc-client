@@ -156,13 +156,13 @@ export default ({
               return {
                 key: (actionKey as string) ?? index.toString(),
                 style: { minWidth: 120 },
-                ...omit(action.props, 'disabled'),
+                ...omit(action.props, 'disabled', 'children', 'onClick'),
                 disabled: actionDisabled,
                 onClick: (info) => {
                   info.domEvent.stopPropagation();
                   action.props.onClick?.();
                 },
-                children: (
+                label: (
                   <Tooltip title={action.props.tooltip}>
                     {action.props.loading && <LoadingOutlined />} {action.props.children}
                   </Tooltip>
