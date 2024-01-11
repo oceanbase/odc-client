@@ -53,7 +53,8 @@ const MineItem: React.FC<IProps> = function ({
   const [changePasswordLoading, setChangePasswordLoading] = useState(false);
   const recordRef = useRef<RecordRef>();
   const havePasswordLogin = !!settingStore.serverSystemInfo?.passwordLoginEnabled;
-  const hasUserInfo = !haveOCP() && !isClient();
+  const showUserInfo = !isClient();
+  const allowEditUser = !haveOCP() && showUserInfo;
   const RoleNames = user?.roles?.length
     ? user?.roles
         ?.filter((item) => item.enabled)
@@ -101,7 +102,7 @@ const MineItem: React.FC<IProps> = function ({
         }}
         menu={
           <Menu selectedKeys={null} key="user" className={!isClient() ? styles.userMenu : ''}>
-            {hasUserInfo && (
+            {showUserInfo && (
               <>
                 <Menu.Item key={'username'}>
                   <Tooltip placement="right" title={userName}>
@@ -117,7 +118,7 @@ const MineItem: React.FC<IProps> = function ({
               </>
             )}
 
-            {hasUserInfo && havePasswordLogin ? (
+            {allowEditUser && havePasswordLogin ? (
               <Menu.Item
                 onClick={() => {
                   setChangePasswordModalVisible(true);
@@ -171,7 +172,7 @@ const MineItem: React.FC<IProps> = function ({
             )}
 
             <Menu.Divider />
-            {hasUserInfo && (
+            {allowEditUser && (
               <Menu.Item onClick={handleLogout} key={'exit'}>
                 {formatMessage({ id: 'odc.Sider.MineItem.Exit' }) /*退出*/}
               </Menu.Item>
