@@ -43,16 +43,9 @@ interface IProps {
   dialectTypes?: ConnectionMode[];
   width?: number | string;
   taskType?: TaskType;
-  fetchType?: TaskType;
   projectId?: number;
 }
-const SessionDropdown: React.FC<IProps> = function ({
-  children,
-  width,
-  projectId,
-  taskType,
-  fetchType,
-}) {
+const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId, taskType }) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -65,17 +58,7 @@ const SessionDropdown: React.FC<IProps> = function ({
 
   const { data } = useRequest(listDatabases, {
     manual: false,
-    defaultParams: [
-      projectId,
-      datasourceId,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      fetchType,
-    ],
+    defaultParams: [projectId, datasourceId, 1, 99999, null, null, login.isPrivateSpace(), true],
   });
   const dataGroup = useMemo(() => {
     const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
