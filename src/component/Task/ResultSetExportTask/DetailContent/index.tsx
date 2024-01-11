@@ -77,7 +77,7 @@ export const getItems = (
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Database',
                 }) /* 所属数据库 */
               }
-              content={task?.databaseName || '-'}
+              content={task?.database?.name || '-'}
             />
             <SimpleTextItem
               label={
@@ -85,7 +85,7 @@ export const getItems = (
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.DataSource',
                 }) /* 所属数据源 */
               }
-              content={task?.connection?.name || '-'}
+              content={task?.database?.dataSource?.name || '-'}
             />
             <SimpleTextItem
               label={
@@ -128,8 +128,9 @@ export const getItems = (
                     sqlObjectNames={null}
                     taskId={task?.id}
                     language={
-                      getDataSourceModeConfigByConnectionMode(_task?.connection?.dbMode)?.sql
-                        ?.language
+                      getDataSourceModeConfigByConnectionMode(
+                        _task?.database?.dataSource?.dialectType,
+                      )?.sql?.language
                     }
                   />
                 </div>

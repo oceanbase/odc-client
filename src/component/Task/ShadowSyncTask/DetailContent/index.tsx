@@ -96,7 +96,7 @@ export function getItems(
     return [];
   }
   const riskLevel = task?.riskLevel;
-  const connectionMode = task?.connection?.dbMode;
+  const connectionMode = task?.database?.dataSource?.dialectType;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   const riskItem = [
     formatMessage({
@@ -136,13 +136,13 @@ export function getItems(
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
           //所属数据库
-          task?.databaseName || '-',
+          task?.database?.name || '-',
         ],
         [
           formatMessage({
             id: 'odc.src.component.Task.ShadowSyncTask.DetailContent.DataSource',
           }), //'所属数据源'
-          task?.connection?.name || '-',
+          task?.database?.dataSource?.name || '-',
         ],
         hasFlow ? riskItem : null,
         [

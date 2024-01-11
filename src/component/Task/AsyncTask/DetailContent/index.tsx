@@ -69,7 +69,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据库 */
           }
         >
-          {task?.databaseName || '-'}
+          {task?.database?.name || '-'}
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -79,7 +79,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据源 */
           }
         >
-          {task?.connection?.name || '-'}
+          {task?.database?.dataSource?.name || '-'}
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -125,7 +125,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               sqlObjectNames={task?.parameters?.sqlObjectNames}
               taskId={task?.id}
               language={
-                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                  ?.sql?.language
               }
             />
           </div>
@@ -157,7 +158,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
               taskId={task?.id}
               language={
-                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                  ?.sql?.language
               }
             />
           </div>

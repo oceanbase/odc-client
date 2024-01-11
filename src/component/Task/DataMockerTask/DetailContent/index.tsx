@@ -37,13 +37,13 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
     id,
     parameters: { taskDetail },
     status,
-    connection,
+    database,
   } = task;
   const taskDetailObj: {
     tables: IServerMockTable;
   } = JSON.parse(taskDetail);
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
-  const taskDbMode = connection?.dbMode;
+  const taskDbMode = database?.dataSource?.dialectType;
   let taskDetailItems;
   let columnsItems;
   let schemaName;
@@ -183,13 +183,13 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
           //所属数据库
-          task?.databaseName || '-',
+          task?.database?.name || '-',
         ],
         [
           formatMessage({
             id: 'odc.src.component.Task.DataMockerTask.DetailContent.DataSource',
           }), //'所属数据源'
-          task?.connection?.name || '-',
+          task?.database?.dataSource?.name || '-',
         ],
         [
           formatMessage({
