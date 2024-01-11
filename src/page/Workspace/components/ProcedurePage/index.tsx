@@ -251,7 +251,7 @@ class ProcedurePage extends Component<
     return (
       procedure && (
         <>
-          <Content>
+          <Content style={{ height: "100%" }}>
             <Tabs
               activeKey={propsTab}
               tabPosition="left"
@@ -281,7 +281,7 @@ class ProcedurePage extends Component<
                 </Toolbar>
                 <EditableTable
                   gridRef={this.gridRef}
-                  minHeight={'calc(100vh - 106px)'}
+                  minHeight={'calc(100% - 38px)'}
                   rowKey="paramName"
                   initialColumns={tableColumns}
                   initialRows={procedure.params || []}
@@ -344,7 +344,7 @@ class ProcedurePage extends Component<
                     onClick={this.reloadProcedure.bind(this, procedure.proName)}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 38}px)`, position: 'relative' }}>
+                <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(procedure && procedure.ddl) || ''}

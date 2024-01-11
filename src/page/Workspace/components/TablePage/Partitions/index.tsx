@@ -366,7 +366,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
             </div>
             <EditableTable
               gridRef={gridRef}
-              minHeight={`calc(100vh - ${48 + 34 + 39 + 50 + 40}px)`}
+              minHeight={`calc(100% - 40px)`}
               rowKey="key"
               initialColumns={rdgColumns}
               initialRows={rows as any}

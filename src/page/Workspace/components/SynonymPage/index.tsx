@@ -263,7 +263,7 @@ class SynonymPage extends Component<
                     status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
                   />
                 </Toolbar>
-                <div style={{ height: `calc(100vh - ${40 + 28 + 39}px)`, position: 'relative' }}>
+                <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
                   <SQLCodeEditorDDL
                     readOnly
                     defaultValue={(synonym && synonym.ddl) || ''}

@@ -72,7 +72,7 @@ import { defaultOnCopy, defaultOnCopyCsv } from '@oceanbase-odc/ob-react-data-gr
 import type { CalculatedColumn } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import BigNumber from 'bignumber.js';
 import { compare } from 'compare-versions';
-import { cloneDeep, debounce, isNil, isNull, isUndefined } from 'lodash';
+import { cloneDeep, debounce, isNil, isNull, isString, isUndefined } from 'lodash';
 import ColumnModeModal from './ColumnModeModal';
 import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
@@ -908,7 +908,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </Tooltip>
               ))}
             {showTrace &&
-              (compare(obVersion, '4.1.0', '>=') ? (
+              (isString(obVersion) && compare(obVersion, '4.1.0', '>=') ? (
                 <ToolbarButton
                   text={
                     withFullLinkTrace
