@@ -15,7 +15,6 @@
  */
 
 import { TaskType } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { Form } from 'antd';
 import React from 'react';
@@ -42,7 +41,6 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     width,
     onChange,
   } = props;
-  const fetchType = type === TaskType.ONLINE_SCHEMA_CHANGE ? type : null;
 
   return (
     <Form.Item
@@ -58,13 +56,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         },
       ]}
     >
-      <SessionSelect
-        projectId={projectId}
-        taskType={type}
-        fetchType={fetchType}
-        width={width}
-        onChange={onChange}
-      />
+      <SessionSelect projectId={projectId} taskType={type} width={width} onChange={onChange} />
     </Form.Item>
   );
 };

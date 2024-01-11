@@ -13,20 +13,12 @@ import login from '@/store/login';
 interface IProps {
   value?: number;
   taskType?: TaskType;
-  fetchType?: TaskType;
   width?: number | string;
   projectId?: number;
   onChange?: (value: number) => void;
 }
 
-const SelectItem: React.FC<IProps> = ({
-  value,
-  taskType,
-  projectId,
-  width,
-  fetchType,
-  onChange,
-}) => {
+const SelectItem: React.FC<IProps> = ({ value, taskType, projectId, width, onChange }) => {
   const { data: database, run } = useRequest(getDatabase, {
     manual: true,
   });
@@ -48,12 +40,7 @@ const SelectItem: React.FC<IProps> = ({
       }}
     >
       <Space style={{ width: '100%' }} direction="vertical">
-        <SessionDropdown
-          projectId={projectId}
-          width={width || 320}
-          taskType={taskType}
-          fetchType={fetchType}
-        >
+        <SessionDropdown projectId={projectId} width={width || 320} taskType={taskType}>
           <Select
             placeholder={
               <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
