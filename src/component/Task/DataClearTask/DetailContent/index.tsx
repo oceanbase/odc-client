@@ -100,8 +100,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           })} /*数据库*/
         >
           <Space size={2}>
-            <span>{task?.databaseName || '-'}</span>
-            <Text type="secondary">{task?.datasource?.name}</Text>
+            <span>{task?.database?.name || '-'}</span>
+            <Text type="secondary">{task?.database?.dataSource?.name}</Text>
           </Space>
         </Descriptions.Item>
         {hasFlow && (

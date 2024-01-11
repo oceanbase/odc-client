@@ -115,7 +115,8 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
               sqlObjectNames={jobParameters?.sqlObjectNames}
               taskId={task?.id}
               language={
-                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                  ?.sql?.language
               }
             />
           </div>

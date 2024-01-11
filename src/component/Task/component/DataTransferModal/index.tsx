@@ -26,7 +26,6 @@ import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
-import { getDataSourceModeConfig } from '@/common/datasource';
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;
@@ -207,11 +206,6 @@ class TaskContent extends React.Component<any, any> {
     ) : null;
     if (!isImport) {
       const exportData = [];
-      const maskingPolicyName = taskConfig?.maskingPolicy?.name;
-      const maskingPolicyRules =
-        taskConfig?.maskingPolicy?.ruleApplyings?.map(({ rule }) => ({
-          ...rule,
-        })) ?? [];
       taskConfig?.globalSnapshot &&
         exportData.push(
           formatMessage({
@@ -484,7 +478,7 @@ class TaskContent extends React.Component<any, any> {
               label={formatMessage({
                 id: 'odc.component.DataTransferModal.Database',
               })}
-              /*所属数据库*/ content={task?.databaseName || '-'}
+              /*所属数据库*/ content={task?.database?.name || '-'}
             />
           </Col>
           <Col span={12}>
@@ -494,7 +488,7 @@ class TaskContent extends React.Component<any, any> {
                   id: 'odc.src.component.Task.component.DataTransferModal.DataSource',
                 }) /* 所属数据源 */
               }
-              content={task?.connection?.name || '-'}
+              content={task?.database?.dataSource?.name || '-'}
             />
           </Col>
           <Col span={12}>

@@ -128,7 +128,7 @@ const ActionBar: React.FC<IProps> = inject(
       props.modalStore.changeCreateAsyncTaskModal(true, {
         type,
         task: task as TaskDetail<IAsyncTaskParams>,
-        databaseId: task?.databaseId,
+        databaseId: task?.database?.id,
         objectId: result?.rollbackPlanResult?.objectId,
       });
     };
@@ -165,7 +165,14 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, databaseId, executionStrategy, executionTime, parameters, description } = task;
+      const {
+        type,
+        database: { id: databaseId },
+        executionStrategy,
+        executionTime,
+        parameters,
+        description,
+      } = task;
       const res = await createTask({
         taskType: type,
         databaseId,
@@ -196,7 +203,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const disableCycleTask = async () => {
-      const { databaseId, id } = task;
+      const {
+        database: { id: databaseId },
+        id,
+      } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.1',
@@ -242,7 +252,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const enableCycleTask = async () => {
-      const { databaseId, id } = task;
+      const {
+        database: { id: databaseId },
+        id,
+      } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
@@ -288,7 +301,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const stopCycleTask = async () => {
-      const { databaseId, id } = task;
+      const {
+        database: { id: databaseId },
+        id,
+      } = task;
       await createTask({
         databaseId,
         taskType: TaskType.ALTER_SCHEDULE,

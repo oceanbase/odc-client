@@ -55,7 +55,6 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
       });
       const database = data?.data;
       const connection = database?.dataSource;
-      const connectionId = connection?.id;
       const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
 
       useEffect(() => {
