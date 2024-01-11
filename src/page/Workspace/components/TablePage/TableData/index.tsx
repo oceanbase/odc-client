@@ -37,8 +37,7 @@ import { inject, observer } from 'mobx-react';
 import React from 'react';
 import DDLResultSet from '../../DDLResultSet';
 import { wrapRow } from '../../DDLResultSet/util';
-const GLOBAL_HEADER_HEIGHT = 40;
-const TABBAR_HEIGHT = 46;
+import styles from './index.less';
 interface ITableDataProps {
   sqlStore?: SQLStore;
   pageStore?: PageStore;
@@ -379,7 +378,7 @@ class TableData extends React.Component<
     } = this.state;
 
     return (
-      <Spin spinning={dataLoading || !resultSet}>
+      <Spin wrapperClassName={styles.spin} spinning={dataLoading || !resultSet}>
         {resultSet && (
           <DDLResultSet
             key={this._resultSetKey}
@@ -404,7 +403,7 @@ class TableData extends React.Component<
             sqlId={resultSet.sqlId}
             useUniqueColumnName={true}
             rows={resultSet.rows}
-            resultHeight={`calc(100vh - ${TAB_HEADER_HEIGHT + TABBAR_HEIGHT + 2 + 32}px)`}
+            resultHeight={`100%`}
             onRefresh={(limit) => this.reloadTableData(tableName, false, limit)}
             onExport={(limitToExport) => {
               this.setState({

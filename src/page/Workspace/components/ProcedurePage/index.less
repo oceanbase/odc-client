@@ -1,10 +1,11 @@
 .propsTab {
   position: relative;
   &:global(.ant-tabs-left) {
+    height: 100%;
     :global {
       .ant-tabs-nav {
         width: 80px;
-        height: calc(100vh - 68px);
+        height: 100%;
         .ant-tabs-tab {
           margin: 0 !important;
           padding: 8px 16px;
@@ -23,7 +24,9 @@
       .ant-tabs-content-holder {
         background-color: var(--background-primary-color);
         .ant-tabs-content {
+          height: 100%;
           > .ant-tabs-tabpane {
+            height: 100%;
             padding-left: 0;
             border-left: none;
           }

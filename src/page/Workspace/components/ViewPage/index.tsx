@@ -377,7 +377,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     return (
       view && (
         <>
-          <Content>
+          <Content style={{ height: "100%" }}>
             <Radio.Group
               onChange={this.handleTopTabChanged}
               value={topTab}
@@ -467,7 +467,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                     </Toolbar>
                     <div
                       style={{
-                        height: `calc(100vh - ${40 + 28 + 47 + 38}px)`,
+                        height: `calc(100% - 38px)`,
                         position: 'relative',
                       }}
                     >
@@ -485,7 +485,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                 </Tabs>
               </TabPane>
               <TabPane key={TopTab.DATA} tab="">
-                <Spin spinning={dataLoading || !resultSet}>
+                <Spin wrapperClassName={styles.spin} spinning={dataLoading || !resultSet}>
                   {resultSet && (
                     <DDLResultSet
                       showExplain={false}
@@ -503,9 +503,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                         tableName: view?.viewName,
                         ...view,
                       }}
-                      resultHeight={`calc(100vh - ${
-                        GLOBAL_HEADER_HEIGHT + TABBAR_HEIGHT + 46 + 1
-                      }px)`}
+                      resultHeight={`100%`}
                       onRefresh={(limit) => this.reloadViewData(viewName, false, limit)}
                       onExport={(limitToExport) => {
                         this.setState({
