@@ -73,7 +73,7 @@ const DefaultValue: React.FC<IProps> = function ({ column, originColumns, onChan
             onChange={(e) => {
               onChange({
                 ...column,
-                defaultValueOrExpr: e.target.checked ? null : '',
+                defaultValueOrExpr: e.target.checked ? null : '(empty_string)',
               });
             }}
             checked={isNullValue}
