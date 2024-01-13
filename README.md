@@ -130,6 +130,3 @@ You can adjust the command parameters to selectively build different installatio
 3. **linux_aarch64** - arm64 version deb, AppImage installation package
 4. **win** - win32, win64 version installation package
 5. **all** - all installation packages
-6. 
-7. 
-8. 
