@@ -49,7 +49,7 @@ export default class ColumnTab extends Component<
           modified={modified}
           allowRefresh={true}
           allowReset={true}
-          tableHeight="calc(100vh - 153px)"
+          tableHeight="calc(100% - 38px)"
           columns={(table && table.columns) || []}
           onRefresh={onReload}
         />

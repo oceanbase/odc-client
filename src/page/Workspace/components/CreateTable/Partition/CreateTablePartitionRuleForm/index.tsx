@@ -29,7 +29,6 @@ import styles from './index.less';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
-  fixedFooter?: boolean;
   dataTypes: IDataType[];
   partitionType?: IPartitionType;
   disableCheckMaxValue?: boolean;
@@ -259,7 +258,6 @@ class CreateTablePartitionRuleForm extends Component<
     const {
       columns,
       disablePartition,
-      fixedFooter,
       selectColumns,
       addMode,
       selectColumnName,
@@ -286,9 +284,6 @@ class CreateTablePartitionRuleForm extends Component<
           ref={this.form}
           requiredMark={false}
           layout="vertical"
-          style={{
-            height: fixedFooter ? 'calc(100vh - 157px)' : 'initial',
-          }}
           onValuesChange={(_, v) => {
             this.handleSubmit();
           }}
@@ -303,7 +298,6 @@ class CreateTablePartitionRuleForm extends Component<
         >
           <div
             style={{
-              height: fixedFooter ? 'calc(100vh - 213px)' : 'initial',
               overflow: 'auto',
               marginBottom: '24px',
             }}
@@ -356,26 +350,8 @@ class CreateTablePartitionRuleForm extends Component<
             </Form.Item>
             {this.renderPartitions()}
           </div>
-          {fixedFooter ? (
-            <>
-              <div className={styles.footer}>{this.renderButtons()}</div>
-            </>
-          ) : null}
         </Form>
       </>
-    );
-  }
-
-  private renderButtons() {
-    return (
-      <Button
-        size="small"
-        type="primary"
-        onClick={this.handleSubmit}
-        className={styles.submitButton}
-      >
-        {formatMessage({ id: 'app.button.ok' })}
-      </Button>
     );
   }
 }
