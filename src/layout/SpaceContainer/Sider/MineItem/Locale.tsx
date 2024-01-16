@@ -54,7 +54,7 @@ const Locale: React.FC<IProps> = function () {
         />
       }
     >
-      <MenuItem>{formatMessage({ id: 'odc.Sider.MineItem.Locale.Language' }) /*语言*/}</MenuItem>
+      <div>{formatMessage({ id: 'odc.Sider.MineItem.Locale.Language' })}</div>
     </DropMenu>
   );
 };

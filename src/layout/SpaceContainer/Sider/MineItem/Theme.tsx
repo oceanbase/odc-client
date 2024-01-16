@@ -62,7 +62,7 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
         />
       }
     >
-      <MenuItem>{formatMessage({ id: 'odc.Sider.MineItem.Theme.Theme' }) /*主题*/}</MenuItem>
+      <div>{formatMessage({ id: 'odc.Sider.MineItem.Theme.Theme' }) /*主题*/}</div>
     </DropMenu>
   );
 };
