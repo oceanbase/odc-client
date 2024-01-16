@@ -512,6 +512,9 @@ const TaskTable: React.FC<IProps> = inject(
                     showTime={{
                       format: 'HH:mm:ss',
                     }}
+                    disabledDate={(current) => {
+                      return current > moment();
+                    }}
                     format="YYYY-MM-DD HH:mm:ss"
                     onChange={(value) => {
                       setExecuteDate(value);
