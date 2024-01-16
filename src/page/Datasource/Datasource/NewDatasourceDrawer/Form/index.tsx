@@ -263,7 +263,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             }
             return (
               <>
-                {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
+                {!haveOCP() && !dsc?.disableURLParse && <ParseURLItem autoType={!isEdit} />}
                 <AddressItems />
                 {dsc?.defaultSchema ? (
                   <Form.Item
