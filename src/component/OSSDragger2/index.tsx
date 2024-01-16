@@ -144,7 +144,12 @@ const ODCDragger: React.FC<IProps> = React.memo((props) => {
 
     try {
       if (setting.isUploadCloudStore) {
-        const fileName = await uploadFileToOSS(task.file, task.uploadFileOpenAPIName, sessionId, task.onProgress);
+        const fileName = await uploadFileToOSS(
+          task.file,
+          task.uploadFileOpenAPIName,
+          sessionId,
+          task.onProgress,
+        );
         task.onSuccess(
           {
             data: fileName,

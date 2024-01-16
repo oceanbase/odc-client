@@ -180,10 +180,6 @@ const Condition = ({
     <Space key={indexChan?.at(-1)} className={styles.gl} align="baseline">
       <Form.Item
         name={[parentField?.name, 'expression']}
-        shouldUpdate={(prevValues, curValues) => {
-          //@ts-ignore
-          return prevValues.expression !== curValues.expression;
-        }}
         rules={[
           {
             required: true,
