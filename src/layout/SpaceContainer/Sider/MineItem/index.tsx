@@ -111,7 +111,7 @@ const MineItem: React.FC<IProps> = function ({
                 </Menu.Item>
                 <Menu.Item key={'user-role'}>
                   <Tooltip placement="right" title={RoleNames}>
-                    <span className={styles.userRoles}>{RoleNames}</span>
+                    <span className={styles.userRoles}>角色：{RoleNames}</span>
                   </Tooltip>
                 </Menu.Item>
                 <Menu.Divider />

@@ -467,14 +467,23 @@ class CreateModal extends React.Component<IProps, IState> {
               type="info"
               showIcon
               message={
-                formatMessage(
-                  {
-                    id: 'odc.components.ImportDrawer.TheMaximumSizeOfData',
-                  },
-                  {
-                    size,
-                  },
-                )
+                <>
+                  {formatMessage(
+                    {
+                      id: 'odc.components.ImportDrawer.TheMaximumSizeOfData',
+                    },
+                    {
+                      size,
+                    },
+                  )}
+                  <a
+                    style={{ marginLeft: 4 }}
+                    target="__blank"
+                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381200"
+                  >
+                    详情
+                  </a>
+                </>
 
                 // `数据最大不能超过 ${size}，如需导入大量数据，请使用导数工具 OBLOADER`
               }
