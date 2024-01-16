@@ -27,6 +27,7 @@ import { getDataSourceGroupByProject } from '@/common/network/connection';
 import { listProjects } from '@/common/network/project';
 import { useParams } from '@umijs/max';
 import { toInteger } from 'lodash';
+import datasourceStatus from '@/store/datasourceStatus';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
@@ -71,6 +72,7 @@ export default function WorkspaceStore({ children }) {
   const reloadDatasourceList = useCallback(async () => {
     const data = await fetchDatasource();
     setDatasourceList(data?.contents || []);
+    datasourceStatus.asyncUpdateStatus(data?.contents?.map((a) => a.id));
   }, []);
 
   const reloadProjectList = useCallback(async () => {

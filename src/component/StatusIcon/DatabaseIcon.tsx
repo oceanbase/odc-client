@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import { IConnection, IConnectionStatus } from '@/d.ts';
+import { IConnectionStatus } from '@/d.ts';
 import { Tooltip } from 'antd';
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import datasourceStatus from '@/store/datasourceStatus';
+import { IDatabase } from '@/d.ts/database';
 
-export default function StatusIcon({ item }: { item: IConnection }) {
-  let status = item?.status?.status;
-  const icon = getDataSourceStyleByConnectType(item.type)?.icon;
+export default function DataBaseStatusIcon({ item }: { item: IDatabase }) {
+  const datasource = item.dataSource;
+  const statusInfo = datasourceStatus.statusMap.get(datasource?.id) || datasource.status;
+  let status = statusInfo?.status;
+  const icon = getDataSourceStyleByConnectType(datasource?.type)?.dbIcon;
   switch (status) {
     case IConnectionStatus.TESTING: {
       return (
@@ -50,7 +54,7 @@ export default function StatusIcon({ item }: { item: IConnection }) {
             id: 'odc.components.ConnectionCardList.ValidConnection',
           })}
         >
-          <Icon component={icon.component} style={{ fontSize: 16, color: icon?.color }} />
+          <Icon component={icon.component} style={{ fontSize: 16 }} />
         </Tooltip>
       );
     }
@@ -87,11 +91,8 @@ export default function StatusIcon({ item }: { item: IConnection }) {
     case IConnectionStatus.INACTIVE:
     default: {
       return (
-        <Tooltip title={item?.status?.errorMessage} placement="top">
-          <Icon
-            component={icon?.component}
-            style={{ fontSize: 16, filter: 'grayscale(1)', color: icon?.color }}
-          />
+        <Tooltip title={statusInfo?.errorMessage} placement="top">
+          <Icon component={icon?.component} style={{ fontSize: 16, filter: 'grayscale(1)' }} />
         </Tooltip>
       );
     }
