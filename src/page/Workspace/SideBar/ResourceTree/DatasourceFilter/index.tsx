@@ -47,7 +47,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
   const isFiltered = !!envs?.length || !!types?.length;
   return (
     <Popover
-      placement="bottomRight"
+      placement="bottom"
       overlayStyle={{
         width: 300,
       }}
