@@ -20,6 +20,7 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
 import TreeTitle from './Title';
+import datasourceStatus from '@/store/datasourceStatus';
 
 interface IProps {
   openSelectPanel?: () => void;
@@ -52,6 +53,15 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
       initDatabase(selectProjectId, selectDatasourceId);
     }
   }, [selectDatasourceId, selectProjectId]);
+  useEffect(() => {
+    if (db?.contents) {
+      const ids: Set<number> = new Set();
+      db.contents.forEach((d) => {
+        ids.add(d.dataSource?.id);
+      });
+      datasourceStatus.asyncUpdateStatus(Array.from(ids));
+    }
+  }, [db?.contents]);
   function ProjectRender() {
     return (
       <ResourceTree

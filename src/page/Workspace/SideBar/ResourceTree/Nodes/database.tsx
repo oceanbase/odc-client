@@ -32,6 +32,7 @@ import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { DbObjectType } from '@/d.ts';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,
@@ -156,10 +157,7 @@ export function DataBaseTreeData(
     },
     cid,
     icon: showDBTypeIcon ? (
-      <Icon
-        component={getDataSourceStyleByConnectType(database?.dataSource?.type)?.dbIcon?.component}
-        style={{ fontSize: 14 }}
-      />
+      <DataBaseStatusIcon item={database} />
     ) : (
       <Icon component={DatabaseSvg} style={{ color: '#3FA3FF', fontSize: 14 }} />
     ),
