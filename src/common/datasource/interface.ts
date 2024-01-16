@@ -119,6 +119,7 @@ export interface IDataSourceModeConfig {
     ssl: boolean;
     defaultSchema?: boolean;
     jdbcDoc?: string;
+    disableURLParse?: boolean;
   };
   features: {
     task: TaskType[];
