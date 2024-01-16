@@ -38,14 +38,25 @@ import { EnvColorMap } from '@/constant';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IProject } from '@/d.ts/project';
 import { IDatasource } from '@/d.ts/datasource';
+import { inject, observer } from 'mobx-react';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 
 interface IProps {
   dialectTypes?: ConnectionMode[];
   width?: number | string;
   taskType?: TaskType;
   projectId?: number;
+  dataSourceStatusStore?: DataSourceStatusStore;
 }
-const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId, taskType }) {
+const SessionDropdown: React.FC<IProps> = function ({
+  children,
+  width,
+  projectId,
+  taskType,
+  dataSourceStatusStore,
+}) {
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -56,10 +67,23 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
   const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
 
-  const { data } = useRequest(listDatabases, {
-    manual: false,
-    defaultParams: [projectId, datasourceId, 1, 99999, null, null, login.isPrivateSpace(), true],
+  const { data, run, loading: fetchLoading } = useRequest(listDatabases, {
+    manual: true,
   });
+  useEffect(() => {
+    if (isOpen) {
+      run(
+        projectId,
+        datasourceId && toInteger(datasourceId),
+        1,
+        99999,
+        null,
+        null,
+        login.isPrivateSpace(),
+        true,
+      );
+    }
+  }, [isOpen]);
   const dataGroup = useMemo(() => {
     const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
     const projects: Map<number, { project: IProject; databases: IDatabase[] }> = new Map();
@@ -105,6 +129,12 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
     };
   }, [data?.contents]);
 
+  useEffect(() => {
+    if (dataGroup?.allDatasources) {
+      dataSourceStatusStore.asyncUpdateStatus(dataGroup?.allDatasources?.map((a) => a.id));
+    }
+  }, [dataGroup?.allDatasources]);
+
   function onOpen(open: boolean) {
     if (!open) {
       setIsOpen(open);
@@ -144,15 +174,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
                 <div className={styles.textoverflow}>{item.name}</div>
               </Popover>
             ),
-            icon: (
-              <Icon
-                component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
-                style={{
-                  fontSize: 14,
-                  color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
-                }}
-              />
-            ),
+            icon: <StatusIcon item={item} />,
             key: item.id,
             selectable: true,
             isLeaf: true,
@@ -201,15 +223,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
-                  icon: (
-                    <Icon
-                      component={getDataSourceStyleByConnectType(item.type)?.dbIcon?.component}
-                      style={{
-                        fontSize: 14,
-                        color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
-                      }}
-                    />
-                  ),
+                  icon: <DataBaseStatusIcon item={db} />,
                 };
               })
               .filter(Boolean);
@@ -221,15 +235,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
             }
             return {
               title: item.name,
-              icon: (
-                <Icon
-                  component={getDataSourceStyleByConnectType(item.type)?.icon?.component}
-                  style={{
-                    fontSize: 14,
-                    color: getDataSourceStyleByConnectType(item.type)?.icon?.color,
-                  }}
-                />
-              ),
+              icon: <StatusIcon item={item} />,
               key: item.id,
               selectable: false,
               isLeaf: false,
@@ -269,17 +275,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
-                  icon: (
-                    <Icon
-                      component={
-                        getDataSourceStyleByConnectType(db?.dataSource?.type)?.dbIcon?.component
-                      }
-                      style={{
-                        fontSize: 14,
-                        color: getDataSourceStyleByConnectType(db?.dataSource?.type)?.icon?.color,
-                      }}
-                    />
-                  ),
+                  icon: <DataBaseStatusIcon item={db} />,
                 };
               })
               .filter(Boolean);
@@ -319,7 +315,7 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
       onOpenChange={onOpen}
       overlayStyle={{ paddingTop: 2 }}
       content={
-        <Spin spinning={loading}>
+        <Spin spinning={loading || fetchLoading}>
           <div className={styles.main} style={{ width }}>
             <Space.Compact block>
               {context?.datasourceMode || login.isPrivateSpace() ? null : (
@@ -410,4 +406,4 @@ const SessionDropdown: React.FC<IProps> = function ({ children, width, projectId
     </Popover>
   );
 };
-export default SessionDropdown;
+export default inject('dataSourceStatusStore')(observer(SessionDropdown));

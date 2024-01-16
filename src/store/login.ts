@@ -29,6 +29,7 @@ import { history } from '@umijs/max';
 import authStore from './auth';
 import setting from './setting';
 import sessionManager from './sessionManager';
+import datasourceStatus from './datasourceStatus';
 
 class ScriptStore {
   @observable
@@ -295,14 +296,14 @@ export class UserStore {
     } else {
       const searchParamsObj = new URLSearchParams();
       const query = history.location.search || '';
-      if (query.includes("redirectTo") || history.location.pathname === '/login') {
+      if (query.includes('redirectTo') || history.location.pathname === '/login') {
         history.push({
           pathname: '/login',
           search: query,
         });
         return;
       }
-      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname)+query);
+      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname) + query);
       history.push({
         pathname: '/login',
         search: searchParamsObj.toString(),
@@ -326,6 +327,7 @@ export class UserStore {
   public async gotoLogoutPage() {
     this.user = null;
     tracert.setUser(null);
+    datasourceStatus.reset();
     if (
       !setting.serverSystemInfo?.passwordLoginEnabled &&
       setting.serverSystemInfo?.ssoLoginEnabled
