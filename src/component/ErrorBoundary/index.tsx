@@ -15,6 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
+import { getSentry } from '@/util/sentry';
 import { Button, Result } from 'antd';
 import React from 'react';
 export default class ErrorBoundary extends React.Component {
@@ -39,6 +40,7 @@ export default class ErrorBoundary extends React.Component {
   public componentDidCatch(error: any, errorInfo) {
     // You can also log the error to an error reporting service
     console.log('error', error?.stack, errorInfo);
+    getSentry()?.captureException(error);
     this.setState({
       hasError: true,
       errorComponent: errorInfo?.componentStack,
