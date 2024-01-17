@@ -16,10 +16,11 @@
 
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import request from './request';
+import logger from './logger';
 
 // 上传文件到 OSS
 // @see https://help.aliyun.com/document_detail/64047.html
-export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
+export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId, onProgress?: (e: any) => void) {
   // 1. 获取文档上传坐标
   const uploadMeta = await request.post('/api/v2/cloud/resource/generateTempCredential', {
     data: {
@@ -40,6 +41,7 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
   } = uploadMeta.data;
   // 3. 上传文件
   const S3 = await import('aws-sdk/clients/s3').then((module) => module.default);
+  let beginTime, uploadTime, pullTime;
   const s3 = new S3({
     credentials: {
       secretAccessKey: accessKeySecret,
@@ -53,7 +55,8 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
     },
   });
   const isSuccess = await new Promise((resolve) => {
-    s3.putObject(
+    beginTime = Date.now();
+    const req = s3.putObject(
       {
         Bucket: bucketName,
         Body: file,
@@ -68,7 +71,19 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
         }
       },
     );
+    // 获取进度
+    req.on('httpUploadProgress', (e) => {
+      const newP = {...e, percent: 0};
+      if (e.total > 0) {
+        /**
+         * 后续还需要后端去pull资源，空出10%当作pull时间
+         */
+        newP.percent = (e.loaded / e.total) * 100 * 0.9;
+      }
+      onProgress?.(newP)
+    })
   });
+  uploadTime = Date.now();
   if (!isSuccess) {
     return null;
   }
@@ -76,16 +91,38 @@ export async function uploadFileToOSS(file, uploadFileOpenAPIName, sessionId) {
     return filePath;
   }
   // 3. 报告记录
-  const resUpload = await request.post('/api/v2/aliyun/specific/' + uploadFileOpenAPIName, {
+  const resUpload = await request.post('/api/v2/aliyun/specific/asyncUpload', {
     data: {
       bucketName,
       objectName: filePath,
       region,
       sid: generateDatabaseSid(null, sessionId),
+      type: uploadFileOpenAPIName
     },
   });
-  const fileName = resUpload.data;
-  return fileName;
+  const uploadId = resUpload.data;
+  if (!uploadId) {
+    return null;
+  }
+  async function getResult() {
+    const result = await request.get("/api/v2/aliyun/specific/getUploadResult/" + uploadId);
+    if (result?.isError) {
+      pullTime = Date.now();
+      logger.info('upload:', (uploadTime - beginTime)/1000, 'pull:', (pullTime - uploadTime)/1000)
+      return null;
+    } else if (result?.data) {
+      pullTime = Date.now();
+      logger.info('upload:', (uploadTime - beginTime)/1000, 'pull:', (pullTime - uploadTime)/1000)
+      return result?.data;
+    } else {
+      return await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true)
+        }, 3000);
+      }).then(() => getResult())
+    }
+  }
+  return await getResult();
 }
 
 // 下载传输任务文件
