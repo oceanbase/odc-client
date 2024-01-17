@@ -16,6 +16,7 @@
 
 import {
   createConnection,
+  getConnectionDetail,
   getConnectionList,
   testExsitConnection,
   updateConnectionFromConnection,
@@ -222,12 +223,20 @@ export const action = async (config: INewCloudConnection) => {
   if (!pass) {
     return 'Connect Failed';
   }
-  if (isExist) {
-    await updateConnectionFromConnection({
-      ...targetConnection,
-      passwordSaved: true,
-      password: password,
-    });
+  if (isExist && isPasswordError) {
+    /**
+     * replace password
+     */
+    const connectionDetail = await getConnectionDetail(targetConnection?.id);
+    if (connectionDetail) {
+      await updateConnectionFromConnection({
+        ...connectionDetail,
+        passwordSaved: true,
+        password: password,
+      });
+    } else {
+      return 'Update Connection Failed';
+    }
   }
   gotoSQLWorkspace(
     null,
