@@ -39,10 +39,11 @@ import {
 } from '@/d.ts/projectNotification';
 import { IResponseData } from '@/d.ts';
 import styles from './index.less';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import HelpDoc from '@/component/helpDoc';
 import { getChannelColumns } from './columns';
-import { EChannelTypeMap, TimeUnitMap } from './interface';
+import { EChannelTypeMap, ELanguageMap, TimeUnitMap } from './interface';
+import odc from '@/plugins/odc';
 
 const Channel: React.FC<{
   projectId: number;
@@ -93,9 +94,9 @@ const Channel: React.FC<{
     setSelectedChannelId(channelId);
     setFormDrawerOpen(true);
   };
-  const closedCallback = () => {
-    selectedChannelId && setSelectedChannelId(null);
-    tableRef?.current?.reload();
+  const closedCallback = (needReload?: boolean) => {
+    setSelectedChannelId(null);
+    needReload && tableRef?.current?.reload();
   };
 
   const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel, 'channelConfig'>) => {
@@ -160,7 +161,7 @@ export const FromChannelDrawer: React.FC<{
   channelId?: number;
   formDrawerOpen: boolean;
   setFormDrawerOpen: (formDrawerOpen: boolean) => void;
-  closedCallback?: () => void;
+  closedCallback?: (needReload?: boolean) => void;
 }> = ({ projectId, channelId, formDrawerOpen, setFormDrawerOpen, closedCallback }) => {
   const [formRef] = useForm<IChannel>();
   const [currentChannel, setCurrentChannel] = useState<IChannel>();
@@ -217,7 +218,7 @@ export const FromChannelDrawer: React.FC<{
     if (data) {
       message.success(channelId ? '保存成功' : '新建成功');
       setFormDrawerOpen(false);
-      closedCallback?.();
+      closedCallback?.(true);
       return;
     }
     message.success(channelId ? '保存失败' : '新建失败');
@@ -249,8 +250,9 @@ export const FromChannelDrawer: React.FC<{
       setTestChannelErrorMessage(null);
       setTestChannelSuccess(false);
       setTestLoading(false);
+      closedCallback?.();
     }
-  }, [formDrawerOpen, channelId]);
+  }, [formDrawerOpen]);
   return (
     <Drawer
       open={formDrawerOpen}
@@ -343,7 +345,21 @@ export const FromChannelDrawer: React.FC<{
         </Form.Item>
         <Form.Item name="channelConfig">
           <Form.Item
-            label="Webhook 地址"
+            label={
+              <Space>
+                <div>Webhook 地址</div>
+                <a // TODO
+                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
+                  target={'_blank'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  rel="noreferrer"
+                >
+                  如何配置
+                </a>
+              </Space>
+            }
             name={['channelConfig', 'webhook']}
             requiredMark="optional"
             validateTrigger="onBlur"
@@ -362,7 +378,12 @@ export const FromChannelDrawer: React.FC<{
           <Form.Item label="指定用户" name={['channelConfig', 'atMobiles']} requiredMark="optional">
             <Select mode="tags" placeholder="请输入用户手机号" />
           </Form.Item>
-          <Form.Item label="推送消息模版">
+          <Form.Item
+            label="推送消息模版"
+            style={{
+              marginBottom: '1px',
+            }}
+          >
             <Form.Item
               name={['channelConfig', 'language']}
               requiredMark="optional"
@@ -389,6 +410,21 @@ export const FromChannelDrawer: React.FC<{
               ]}
             >
               <Input.TextArea rows={5} maxLength={200} placeholder="请输入消息模版" />
+              <div>
+                <span style={{ color: 'var(--neutral-black45-color)' }}>
+                  {'可通过输入${ } 引入标签，'}
+                </span>
+                <a // TODO
+                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
+                  target={'_blank'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  rel="noreferrer"
+                >
+                  查看标签说明
+                </a>
+              </div>
             </Form.Item>
           </Form.Item>
           <FormItemPanel keepExpand noPaddingBottom>
@@ -464,6 +500,20 @@ export const DetailChannelDrawer: React.FC<{
             ? parseRateLimitConfigToText(channel?.channelConfig?.rateLimitConfig)
             : '-'}
         </Descriptions.Item>
+        <Descriptions.Item label="消息模版">
+          {ELanguageMap?.[channel?.channelConfig?.language] || '-'}
+        </Descriptions.Item>
+      </Descriptions>
+      <pre
+        style={{
+          borderRadius: '2px',
+          backgroundColor: '#F7F9FB',
+          padding: '8px 12px',
+        }}
+      >
+        {channel?.channelConfig?.contentTemplate || '-'}
+      </pre>
+      <Descriptions column={1}>
         <Descriptions.Item label="描述">{channel?.description || '-'}</Descriptions.Item>
       </Descriptions>
     </Drawer>
@@ -479,8 +529,8 @@ const CheckboxWithTip: React.FC<{
     onChange(
       !checked
         ? {
-            timeUnit: ETimeUnit.DAYS,
-            limit: 1,
+            timeUnit: ETimeUnit.MINUTES,
+            limit: 20,
             overLimitStrategy: EOverLimitStrategy.THROWN,
           }
         : null,
@@ -541,7 +591,6 @@ const CheckboxWithTip: React.FC<{
                       </Form.Item>
                     </Space>
                   </Form.Item>
-
                   <Form.Item
                     label="超出限流处理策略"
                     name={['channelConfig', 'rateLimitConfig', 'overLimitStrategy']}
@@ -599,17 +648,17 @@ const LangagueTab: React.FC<{
   }, [value]);
   const items = [
     {
-      label: '中文',
+      label: ELanguageMap[ELanguage.ZH_CN],
       key: ELanguage.ZH_CN,
       children: null,
     },
     {
-      label: '繁体中文',
+      label: ELanguageMap[ELanguage.ZH_TW],
       key: ELanguage.ZH_TW,
       children: null,
     },
     {
-      label: '英文',
+      label: ELanguageMap[ELanguage.EN_US],
       key: ELanguage.EN_US,
       children: null,
     },

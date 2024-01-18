@@ -117,7 +117,7 @@ export interface IPolicy {
 export type TBatchUpdatePolicy = {
   id?: number;
   policyMetadataId?: number;
-  enabled: boolean;
+  enabled?: boolean;
   channels: Pick<IChannel, 'id'>[];
 };
 // #endregion

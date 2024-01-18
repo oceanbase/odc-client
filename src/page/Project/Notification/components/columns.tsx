@@ -114,18 +114,18 @@ export const getMessageColumns: GetMessageColumns = function ({
 type GetPolicyColumns = ({
   projectId,
   handleUpdatePolicies,
-  handleSwitchPolicyStatus,
+  handleSwitchPoliciesStatus,
   hanleOpenChannelDetailDrawer,
 }: {
   projectId: number;
   handleUpdatePolicies: (formType: TPolicyForm) => void;
-  handleSwitchPolicyStatus: (policy: IPolicy) => void;
+  handleSwitchPoliciesStatus: (formType: TPolicyForm, enabled?: boolean) => Promise<void>;
   hanleOpenChannelDetailDrawer;
 }) => ColumnType<IPolicy>[];
 export const getPolicyColumns: GetPolicyColumns = function ({
   projectId,
   handleUpdatePolicies,
-  handleSwitchPolicyStatus,
+  handleSwitchPoliciesStatus,
   hanleOpenChannelDetailDrawer,
 }) {
   return [
@@ -153,7 +153,16 @@ export const getPolicyColumns: GetPolicyColumns = function ({
       width: 122,
       key: 'enabled',
       render: (status, policy) => (
-        <Switch checked={status} size="small" onClick={() => handleSwitchPolicyStatus(policy)} />
+        <Switch
+          checked={status}
+          size="small"
+          onClick={() =>
+            handleSwitchPoliciesStatus({
+              mode: EPolicyFormMode.SINGLE,
+              policies: [policy],
+            })
+          }
+        />
       ),
     },
     {
@@ -219,7 +228,6 @@ export const getPolicyColumns: GetPolicyColumns = function ({
             onClick={() =>
               handleUpdatePolicies({
                 mode: EPolicyFormMode.SINGLE,
-                projectId: projectId,
                 policies: [proxy],
               })
             }
