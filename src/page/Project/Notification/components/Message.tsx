@@ -144,7 +144,7 @@ const DetailDrawer: React.FC<{
           style={{
             borderRadius: '2px',
             backgroundColor: '#F7F9FB',
-            padding: '8px',
+            padding: '8px 12px',
           }}
         >
           {message?.content || '-'}

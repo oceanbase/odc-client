@@ -1,4 +1,10 @@
-import { EChannelType, EMessageStatus, ETimeUnit, IPolicy } from '@/d.ts/projectNotification';
+import {
+  EChannelType,
+  ELanguage,
+  EMessageStatus,
+  ETimeUnit,
+  IPolicy,
+} from '@/d.ts/projectNotification';
 
 export const TimeUnitMap = {
   [ETimeUnit.MINUTES]: '每分钟',
@@ -10,6 +16,11 @@ export const EChannelTypeMap = {
   [EChannelType.FEI_SHU]: '飞书',
   [EChannelType.WE_COM]: '微信',
   [EChannelType.WEBHOOK]: '自定义webhook',
+};
+export const ELanguageMap = {
+  [ELanguage.ZH_CN]: '中文',
+  [ELanguage.ZH_TW]: '繁体中文',
+  [ELanguage.EN_US]: '英文',
 };
 export const EMessageStatusMap = {
   [EMessageStatus.CREATED]: '待发送',
@@ -24,6 +35,5 @@ export enum EPolicyFormMode {
 }
 export type TPolicyForm = {
   mode: EPolicyFormMode;
-  projectId: number;
   policies: IPolicy[];
 };

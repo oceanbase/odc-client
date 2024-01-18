@@ -34,14 +34,13 @@ const Policy: React.FC<{
   const [pagination, setPagination] = useState<ITablePagination>(null);
   const [policyForm, setPolicyForm] = useSetState<TPolicyForm>({
     mode: EPolicyFormMode.SINGLE,
-    projectId: projectId,
     policies: [],
   });
 
   const loadPolicies = async (args: ITableLoadOptions) => {
     const { eventName, channels } = argsRef.current?.filters ?? {};
     const results = await getPoliciesList(projectId, {});
-    originPoliciesRef.current = results.contents;
+    originPoliciesRef.current = results?.contents || [];
     let filterPolicies: IPolicy[] = originPoliciesRef.current;
 
     if (eventName && eventName?.length === 1) {
@@ -89,20 +88,31 @@ const Policy: React.FC<{
     setPolicyForm(formType);
     setFormModalOpen(true);
   };
-  const handleSwitchPolicyStatus = async (policy: IPolicy) => {
-    const result = await batchUpdatePolicy(policyForm?.projectId, [
-      {
-        ...policy,
-        enabled: !policy.enabled,
-      } as TBatchUpdatePolicy,
-    ]);
+  const handleSwitchPoliciesStatus = async (formData: TPolicyForm, enabled?: boolean) => {
+    const isSingle = formData.mode === EPolicyFormMode.SINGLE;
+
+    let policies: TBatchUpdatePolicy[];
+    if (isSingle) {
+      policies = formData?.policies;
+      policies[0].enabled = !policies[0].enabled;
+    } else {
+      policies = formData?.policies?.map((policy) => {
+        return {
+          ...policy,
+          enabled,
+        };
+      });
+    }
+    const result = await batchUpdatePolicy(projectId, policies);
+    const batchOrNot = isSingle ? '' : '批量';
+    const currentEnabled = policies?.[0]?.enabled ? '启用' : '停用';
     if (result) {
-      message.success('操作成功');
+      message.success(`${batchOrNot}${currentEnabled}成功`);
       setFormModalOpen(false);
       tableRef.current?.reload();
       return;
     }
-    message.error('操作失败');
+    message.error(`${batchOrNot}${currentEnabled}失败`);
   };
 
   const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel, 'channelConfig'>) => {
@@ -112,18 +122,45 @@ const Policy: React.FC<{
   const columns = getPolicyColumns({
     projectId,
     handleUpdatePolicies,
-    handleSwitchPolicyStatus,
+    handleSwitchPoliciesStatus,
     hanleOpenChannelDetailDrawer,
   });
 
   const rowSelector: IRowSelecter<IPolicy> = {
     options: [
       {
+        okText: '批量启用',
+        onOk: (keys) => {
+          handleSwitchPoliciesStatus(
+            {
+              mode: EPolicyFormMode.BATCH,
+              policies: originPoliciesRef?.current?.filter((policy) =>
+                keys?.includes(policy?.policyMetadataId),
+              ),
+            },
+            true,
+          );
+        },
+      },
+      {
+        okText: '批量停用',
+        onOk: (keys) => {
+          handleSwitchPoliciesStatus(
+            {
+              mode: EPolicyFormMode.BATCH,
+              policies: originPoliciesRef?.current?.filter((policy) =>
+                keys?.includes(policy?.policyMetadataId),
+              ),
+            },
+            false,
+          );
+        },
+      },
+      {
         okText: '批量添加通道',
         onOk: (keys) => {
           handleUpdatePolicies({
             mode: EPolicyFormMode.BATCH,
-            projectId: projectId,
             policies: originPoliciesRef?.current?.filter((policy) =>
               keys?.includes(policy?.policyMetadataId),
             ),
@@ -135,6 +172,7 @@ const Policy: React.FC<{
   return (
     <div className={styles.common}>
       <FormPolicyModal
+        projectId={projectId}
         formModalOpen={formModalOpen}
         setFormModalOpen={setFormModalOpen}
         policyForm={policyForm}
@@ -170,9 +208,10 @@ const Policy: React.FC<{
 const FormPolicyModal: React.FC<{
   policyForm: TPolicyForm;
   formModalOpen: boolean;
+  projectId: number;
   setFormModalOpen: (open: boolean) => void;
   callback: () => void;
-}> = ({ policyForm, formModalOpen, setFormModalOpen, callback }) => {
+}> = ({ policyForm, formModalOpen, projectId, setFormModalOpen, callback }) => {
   const [formRef] = useForm<{
     channelIds: number[];
   }>();
@@ -192,20 +231,20 @@ const FormPolicyModal: React.FC<{
     if (isSingle) {
       policies = [
         {
+          ...policyForm?.policies?.[0],
           [policyForm?.policies?.[0]?.id ? 'id' : 'policyMetadataId']:
             policyForm?.policies?.[0]?.id || policyForm?.policies?.[0]?.policyMetadataId,
-          enabled: true,
           channels,
         },
       ];
     } else {
       policies = policyForm?.policies?.map((policy) => ({
+        ...policy,
         [policy?.id ? 'id' : 'policyMetadataId']: policy?.id || policy?.policyMetadataId,
-        enabled: true,
         channels,
       }));
     }
-    const result = await batchUpdatePolicy(policyForm?.projectId, policies);
+    const result = await batchUpdatePolicy(projectId, policies);
     if (result) {
       message.success(isSingle ? '操作成功' : '批量操作成功');
       setFormModalOpen(false);
@@ -215,7 +254,7 @@ const FormPolicyModal: React.FC<{
     message.error(isSingle ? '操作失败' : '批量操作失败');
   }
   async function loadOptions() {
-    const channels = await getChannelsList(policyForm?.projectId);
+    const channels = await getChannelsList(projectId);
     const newOptions = channels?.contents?.map((channel) => ({
       label: channel?.name,
       value: channel?.id,
@@ -247,17 +286,8 @@ const FormPolicyModal: React.FC<{
         onCancel={onCancel}
         onOk={onSubmit}
       >
-        <Form form={formRef} layout="vertical" requiredMark="optional">
-          <Form.Item
-            label="推送通道"
-            name="channelIds"
-            rules={[
-              {
-                required: true,
-                message: '推送通道不能为空',
-              },
-            ]}
-          >
+        <Form form={formRef} layout="vertical">
+          <Form.Item label="推送通道" name="channelIds">
             <Select
               mode="multiple"
               placeholder="请选择"
@@ -277,7 +307,7 @@ const FormPolicyModal: React.FC<{
         </Form>
       </Modal>
       <FromChannelDrawer
-        projectId={policyForm?.projectId}
+        projectId={projectId}
         formDrawerOpen={channelFormDrawerOpen}
         setFormDrawerOpen={setChannelFormDrawerOpen}
         closedCallback={loadOptions}
