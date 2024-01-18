@@ -322,7 +322,7 @@ const ActionBar: React.FC<IProps> = inject(
       if (!_task) {
         return [];
       }
-      const { status } = _task;
+      const { status, completeTime = 0 } = _task;
 
       const viewBtn = {
         key: 'view',
@@ -442,7 +442,9 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Download',
         }),
-
+        disabled: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
+        isExpired: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
+        tip: '文件下载链接已超时，请重新发起工单。',
         //下载
         action: download,
         type: 'button',
@@ -756,11 +758,12 @@ const ActionBar: React.FC<IProps> = inject(
         <ActionButton
           key={tool?.key || index}
           type={tool.isPrimary ? 'primary' : 'default'}
-          disabled={disabled}
+          disabled={disabled || tool?.isExpired}
           onClick={tool.action}
-          tooltip={isDetailModal ? tool?.tooltip : null}
+          placement={tool?.isExpired ? 'topRight' : null}
+          tooltip={isDetailModal ? (tool?.isExpired ? tool?.tip : tool?.tooltip) : null}
         >
-          <Tooltip placement="topRight" title={tool?.tooltip}>
+          <Tooltip placement="topRight" title={tool?.isExpired ? tool?.tip : tool?.tooltip}>
             {tool.text}
           </Tooltip>
         </ActionButton>
