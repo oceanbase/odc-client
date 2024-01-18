@@ -29,6 +29,7 @@ import React, { useState } from 'react';
 import type { LoginLocale } from '.';
 import { getPrefix } from './index';
 import './index.less';
+import { ESSOLgoinType } from '@/d.ts';
 
 export interface Values {
   username: string;
@@ -41,8 +42,10 @@ export interface ILoginFormProps extends FormProps {
   errorMessage?: React.ReactNode | string;
   showAuthCode?: boolean;
   showOtherLoginButton?: boolean;
+  ssoLoginType?: ESSOLgoinType;
   authCodeImg?: string;
   otherLoginProps?: any;
+  switchSSOLoginType?: () => void;
   onAuthCodeImgChange?: () => void;
 }
 
@@ -52,9 +55,11 @@ const Login: React.FC<ILoginFormProps> = ({
   errorMessage,
   showAuthCode,
   showOtherLoginButton,
+  ssoLoginType,
   authCodeImg,
   otherLoginProps,
   onAuthCodeImgChange,
+  switchSSOLoginType,
   ...restProps
 }) => {
   const [focusInput, setFocusInput] = useState('');
@@ -159,7 +164,6 @@ const Login: React.FC<ILoginFormProps> = ({
           </div>
         </Space>
       )}
-
       <Button
         // 按下回车键，即可触发点击事件
         htmlType="submit"
@@ -185,11 +189,19 @@ const Login: React.FC<ILoginFormProps> = ({
             type="primary"
             style={{ marginTop: 0 }}
             block={true}
-            onClick={otherLoginProps.onFinish}
-            className={`${prefix}-submit-btn`}
+            onClick={
+              ssoLoginType === ESSOLgoinType.LDAP
+                ? () => {
+                    switchSSOLoginType();
+                  }
+                : otherLoginProps.onFinish
+            }
+            className={classNames(`${prefix}-submit-btn`, {
+              [`${prefix}-submit-ldap-btn`]: ssoLoginType === ESSOLgoinType.LDAP,
+            })}
           >
             {
-              setting.serverSystemInfo?.ssoLoginName ||
+              setting.serverSystemInfo?.ssoLoginType ||
                 formatMessage({
                   id: 'odc.component.Login.LoginForm.ThirdPartyLogin',
                 }) /*第三方登录*/

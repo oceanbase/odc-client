@@ -15,7 +15,7 @@
  */
 
 import { createIntegration } from '@/common/network/manager';
-import { EncryptionAlgorithm, IntegrationType, ISSOConfig } from '@/d.ts';
+import { EncryptionAlgorithm, IntegrationType, ISSOConfig, ISSOType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { encrypt } from '@/util/utils';
 import { useUpdate } from 'ahooks';
@@ -50,6 +50,10 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
       })
       .filter(Boolean);
     tracert.click('a3112.b64009.c330927.d367485');
+    const secret =
+      clone?.type === ISSOType.LDAP
+        ? clone?.ssoParameter?.managerPassword
+        : clone?.ssoParameter?.secret;
     const isSuccess = await createIntegration({
       type: IntegrationType.SSO,
       name: clone?.name,
@@ -57,7 +61,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
       encryption: {
         enabled: true,
         algorithm: EncryptionAlgorithm.RAW,
-        secret: encrypt(clone?.ssoParameter?.secret),
+        secret: encrypt(secret),
       },
       configuration: JSON.stringify(clone),
     });

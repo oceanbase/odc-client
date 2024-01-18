@@ -37,6 +37,7 @@ import { apply as ssoLoginAction, ISSOLogin } from './ssoLogin';
 import { action as taskAction, ITaskAction } from './task';
 import { action as tutorialAction, ITutorialAction } from './tutorial';
 import { formatMessage } from '@/util/intl';
+
 const { Content } = Layout;
 
 interface IRemoteStartData {
