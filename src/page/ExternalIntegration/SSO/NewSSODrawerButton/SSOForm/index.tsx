@@ -20,6 +20,8 @@ import {
   IClientAuthenticationMethod,
   ISSOConfig,
   ISSOType,
+  ISSO_LDAP_CONFIG,
+  ISSO_MAPPINGRULE,
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
@@ -35,7 +37,6 @@ import {
   Radio,
   Select,
   Space,
-  Switch,
   Typography,
 } from 'antd';
 import md5 from 'blueimp-md5';
@@ -43,7 +44,12 @@ import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import HelpDoc from '@/component/helpDoc';
 import { encrypt } from '@/util/utils';
-const requiredRule = {
+import { cloneDeep } from 'lodash';
+import channel, { ChannelMap } from '@/util/broadcastChannel';
+import logger from '@/util/logger';
+import { OAUTH2PartForm, LDAPPartForm, OIDCPartForm } from './PartForm';
+
+export const requiredRule = {
   required: true,
 };
 interface IProps {
@@ -51,6 +57,10 @@ interface IProps {
   isEdit?: boolean;
   editData?: ISSOConfig;
   onTestInfoChanged: (testInfo: string) => void;
+}
+export enum ELDAPMode {
+  LOGIN = 'LOGIN',
+  TEST = 'TEST',
 }
 export interface IFormRef {
   form: FormInstance<ISSOConfig>;
@@ -66,10 +76,12 @@ export default inject('userStore')(
       }>,
     ) {
       const loginWindow = useRef<Window>();
-      const testListener = useRef<(e) => void>();
+      const channelStatusRef = useRef<boolean>(false);
+      const timer = useRef<NodeJS.Timer>();
       const [showExtraConfig, setShowExtraConfig] = useState(!!isEdit);
       const [registrationId, setRegistrationId] = useState('');
       const [testInfo, _setTestInfo] = useState<string>();
+
       function setTestInfo(v: string) {
         _setTestInfo(v);
         onTestInfoChanged(v);
@@ -97,29 +109,64 @@ export default inject('userStore')(
         }
         setTestInfo(text);
       }
-      function removeTestListener() {
-        if (testListener.current) {
-          window.removeEventListener('odcssotest', testListener.current);
-          testListener.current = null;
+      // 重复发送消息，直到确认接收方正确接收到了数据。
+      function sendDataUntilComfirmedReceive(
+        value: {
+          mode: ELDAPMode;
+          data: {
+            name: string;
+            type: ISSOType.LDAP;
+            ssoParameter: ISSO_LDAP_CONFIG;
+            mappingRule: Omit<ISSO_MAPPINGRULE, 'userAccountNameField'>;
+          };
+        },
+        time: number = 1,
+      ) {
+        if (loginWindow.current?.closed && !channelStatusRef?.current) {
+          message.error('窗口异常关闭，请等待窗口创建，输入账号密码点击登录后完成连接测试！');
+          channel.close([ChannelMap.LDAP_MAIN, ChannelMap.LDAP_TEST]);
+          clearTimeout(timer.current);
+          timer.current = null;
+          return;
         }
+        if (channelStatusRef?.current) {
+          logger.log(
+            `[${ChannelMap.LDAP_MAIN}] LDAPModal received the message from current component, stop recurse.`,
+          );
+          clearTimeout(timer.current);
+          timer.current = null;
+          return;
+        }
+        // 确保测试窗口能够正确接收到测试连接所需的相关数据。
+        timer.current = setTimeout(() => {
+          logger.log(
+            `[${ChannelMap.LDAP_MAIN}] try to send message to component LDAPModal, accept success ? ${channelStatusRef?.current}, retry send ${time} times`,
+          );
+          channel.send(ChannelMap.LDAP_MAIN, value);
+          sendDataUntilComfirmedReceive(value, time + 1);
+        }, 1000);
       }
       useEffect(() => {
-        removeTestListener();
-      }, []);
-      function addTestListener(testId: string) {
-        removeTestListener();
-        testListener.current = (e) => {
-          message.success(
-            formatMessage({
-              id: 'odc.NewSSODrawerButton.SSOForm.TheTestConnectionIsSuccessful',
-            }), //测试连接成功！
-          );
-
-          fetchTestInfo(testId);
+        return () => {
+          clearTimeout(timer.current);
+          timer.current = null;
+          // 当前组件可能使用到的频道都需要关闭，释放内存。
+          channel.close([ChannelMap.LDAP_MAIN, ChannelMap.LDAP_TEST, ChannelMap.ODC_SSO_TEST]);
           loginWindow.current?.close();
-          loginWindow.current = null;
         };
-        window.addEventListener('odcssotest', testListener.current);
+      }, []);
+      async function testByType(type: ISSOType) {
+        switch (type) {
+          case ISSOType.LDAP: {
+            testLDAP();
+            break;
+          }
+          case ISSOType.OIDC:
+          case ISSOType.OAUTH2: {
+            test();
+            break;
+          }
+        }
       }
       async function test() {
         setTestInfo('');
@@ -145,6 +192,7 @@ export default inject('userStore')(
         if (!value) {
           return;
         }
+        if (value.type === ISSOType.LDAP) return;
         const clone = {
           ...value,
         };
@@ -164,19 +212,94 @@ export default inject('userStore')(
           loginWindow.current = window.open(
             res?.testLoginUrl,
             'testlogin',
-            `
-                    toolbar=no,
-                    location=no,
-                    status=no,
-                    menubar=no,
-                    scrollbars=yes,
-                    resizable=yes,
-                    width=1024,
-                    height=600
-                `,
+            `toolbar=no,
+            location=no,
+            status=no,
+            menubar=no,
+            scrollbars=yes,
+            resizable=yes,
+            width=1024,
+            height=600`,
           );
-          addTestListener(res?.testId);
+          channel.add(ChannelMap.ODC_SSO_TEST).listen(
+            ChannelMap.ODC_SSO_TEST,
+            (data) => {
+              if (data?.isSuccess && !loginWindow.current?.closed) {
+                message.success('测试登录成功！');
+                loginWindow.current?.close();
+                fetchTestInfo(res?.testId);
+              }
+            },
+            true,
+          );
         }
+      }
+      async function testLDAP() {
+        channelStatusRef.current = false;
+        setTestInfo('');
+        const data = await form.validateFields([
+          'name',
+          'type',
+          ['ssoParameter', 'server'],
+          ['ssoParameter', 'managerDn'],
+          ['ssoParameter', 'managerPassword'],
+          ['ssoParameter', 'userSearchBase'],
+          ['ssoParameter', 'userSearchFilter'],
+          ['ssoParameter', 'groupSearchBase'],
+          ['ssoParameter', 'groupSearchFilter'],
+          ['ssoParameter', 'groupSearchSubtree'],
+          ['mappingRule', 'userProfileViewType'],
+          ['mappingRule', 'nestedAttributeField'],
+        ]);
+        const copyData = cloneDeep(data);
+        if (copyData.type !== ISSOType.LDAP) return;
+        if (!isEdit) {
+          copyData.ssoParameter.managerPassword = encrypt(copyData.ssoParameter.managerPassword);
+          copyData.ssoParameter.registrationId = registrationId;
+        } else {
+          copyData.ssoParameter.registrationId = editData?.ssoParameter?.registrationId;
+        }
+
+        channel.reset();
+        channel.add([ChannelMap.LDAP_TEST, ChannelMap.LDAP_MAIN]);
+        if (!loginWindow.current?.closed) {
+          loginWindow.current?.close();
+        }
+        loginWindow.current = window.open(
+          location.origin + '/#/' + 'testLDAP',
+          'testLDAPLogin',
+          `popup = yes,
+          toolbar = no,
+          location = no,
+          status = no,
+          menubar = no,
+          scrollbars = no,
+          resizable = no,
+          width = 460,
+          innerWidth = 460,
+          height = 640`,
+        );
+        // 监听要早于发送，确保正确接收数据。
+        channel.listen(ChannelMap.LDAP_TEST, (data) => {
+          channelStatusRef.current = true;
+          if (data?.isSuccess) {
+            channel.send(ChannelMap.LDAP_TEST, {
+              receiveSuccess: true,
+            });
+            logger.log(
+              `[${ChannelMap.LDAP_MAIN}]: current component received the message from LDAPModal`,
+              data,
+            );
+            message.success('测试登录成功！');
+            !loginWindow.current?.closed && loginWindow.current?.close();
+            fetchTestInfo(data?.testId);
+          }
+        });
+
+        sendDataUntilComfirmedReceive({
+          mode: ELDAPMode.TEST,
+          data: copyData,
+        });
       }
       function updateRegistrationId(name) {
         var md5Hex = md5(`${name || ''}`);
@@ -269,479 +392,63 @@ export default inject('userStore')(
                   label: 'OIDC',
                   value: ISSOType.OIDC,
                 },
+                {
+                  label: 'LDAP',
+                  value: ISSOType.LDAP,
+                },
               ]}
             />
           </Form.Item>
-          <Typography.Title level={5}>
-            {
-              formatMessage({
-                id: 'odc.NewSSODrawerButton.SSOForm.OauthInformation',
-              }) /*OAUTH 信息*/
-            }
-          </Typography.Title>
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const type = getFieldValue(['type']);
               if (type === ISSOType.OAUTH2) {
                 return (
-                  <>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'clientId']}
-                      label="Client ID"
-                      messageVariables={{
-                        label: 'Client ID',
-                      }}
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      style={{
-                        display: !isEdit ? 'block' : 'none',
-                      }}
-                      rules={isEdit ? [] : [requiredRule]}
-                      name={['ssoParameter', 'secret']}
-                      label="Client Secret"
-                      messageVariables={{
-                        label: 'Client Secret',
-                      }}
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'authUrl']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheGrantCodeAddress',
-                          })} /*授权服务器提供的获取 grant-code 地址*/
-                        >
-                          Auth URL
-                        </HelpDoc>
-                      }
-                      messageVariables={{
-                        label: 'Auth URL',
-                      }}
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'userInfoUrl']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheUserInfoAddress',
-                          })} /*授权服务器提供的获取 user-info 地址*/
-                        >
-                          User Info URL
-                        </HelpDoc>
-                      }
-                      messageVariables={{
-                        label: 'User Info URL',
-                      }}
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'tokenUrl']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheAccessTokenAddress',
-                          })} /*授权服务器提供的获取 access-token 地址*/
-                        >
-                          Token URL
-                        </HelpDoc>
-                      }
-                      messageVariables={{
-                        label: 'Token URL',
-                      }}
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'redirectUrl']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.AuthorizeTheServerToCall',
-                          })} /*授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白*/
-                        >
-                          Redirect URL
-                        </HelpDoc>
-                      }
-                      messageVariables={{
-                        label: 'Redirect URL',
-                      }}
-                    >
-                      <Input.TextArea
-                        autoSize={{
-                          minRows: 2,
-                          maxRows: 3,
-                        }}
-                        disabled
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.AutomaticGeneration',
-                        })} /*自动生成*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'scope']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.TheScopeOfApplicationAuthorization',
-                          })} /*应用授权作用域，多个空格隔开，建议为 profile*/
-                        >
-                          Scope
-                        </HelpDoc>
-                      }
-                      messageVariables={{
-                        label: 'Scope',
-                      }}
-                    >
-                      <Select
-                        mode="tags"
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Space
-                      style={{
-                        marginBottom: 12,
-                        marginTop: 10,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        {
-                          formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.AdvancedOptions',
-                          }) /*高级选项*/
-                        }
-                      </span>
-                      <Switch
-                        size="small"
-                        checked={showExtraConfig}
-                        onChange={(v) => setShowExtraConfig(v)}
-                      />
-                    </Space>
-                    <div
-                      style={{
-                        display: showExtraConfig ? 'block' : 'none',
-                      }}
-                    >
-                      <Form.Item
-                        name={['ssoParameter', 'jwkSetUri']}
-                        label={
-                          <HelpDoc
-                            leftText
-                            title={formatMessage({
-                              id: 'odc.NewSSODrawerButton.SSOForm.ThePublicKeyAddressProvided',
-                            })} /*授权服务器提供的公钥地址，使用公钥进行鉴权*/
-                          >
-                            jwkSet URL
-                          </HelpDoc>
-                        }
-                      >
-                        <Input
-                          style={{
-                            width: '100%',
-                          }}
-                          placeholder={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                          })} /*请输入*/
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={['ssoParameter', 'userNameAttribute']}
-                        label={
-                          <HelpDoc
-                            leftText
-                            title={formatMessage({
-                              id: 'odc.NewSSODrawerButton.SSOForm.UserNameField',
-                            })} /*用户名称字段*/
-                          >
-                            userNameAttribute
-                          </HelpDoc>
-                        }
-                      >
-                        <Input
-                          style={{
-                            width: '100%',
-                          }}
-                          placeholder={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                          })} /*请输入*/
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        rules={[requiredRule]}
-                        name={['ssoParameter', 'clientAuthenticationMethod']}
-                        label={
-                          <HelpDoc
-                            leftText
-                            title={formatMessage({
-                              id: 'odc.NewSSODrawerButton.SSOForm.TheAuthenticationMethodUsedTo',
-                            })} /*使用授权服务器对客户端进行身份验证时使用的身份验证方法*/
-                          >
-                            Client Authentication Method
-                          </HelpDoc>
-                        }
-                      >
-                        <Select
-                          style={{
-                            width: 200,
-                          }}
-                          options={Object.values(IClientAuthenticationMethod).map((item) => {
-                            return {
-                              label: item,
-                              value: item,
-                            };
-                          })}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        rules={[requiredRule]}
-                        name={['ssoParameter', 'authorizationGrantType']}
-                        label={
-                          <HelpDoc
-                            leftText
-                            title={formatMessage({
-                              id: 'odc.NewSSODrawerButton.SSOForm.AuthorizationMethodOfOauth',
-                            })} /*OAUTH2 的授权方式*/
-                          >
-                            Authorization Grant Type
-                          </HelpDoc>
-                        }
-                      >
-                        <Select
-                          style={{
-                            width: 200,
-                          }}
-                          options={Object.values(IAuthorizationGrantType).map((item) => {
-                            return {
-                              label: item,
-                              value: item,
-                            };
-                          })}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        rules={[requiredRule]}
-                        name={['ssoParameter', 'userInfoAuthenticationMethod']}
-                        label={
-                          <HelpDoc
-                            leftText
-                            title={formatMessage({
-                              id:
-                                'odc.NewSSODrawerButton.SSOForm.AuthenticationMethodUsedWhenSending',
-                            })} /*在向资源服务器发送资源请求中的承载访问令牌时使用的身份验证方法*/
-                          >
-                            User Info Authentication Method
-                          </HelpDoc>
-                        }
-                      >
-                        <Select
-                          style={{
-                            width: 200,
-                          }}
-                          options={Object.values(IUserInfoAuthenticationMethod).map((item) => {
-                            return {
-                              label: item,
-                              value: item,
-                            };
-                          })}
-                        />
-                      </Form.Item>
-                    </div>
-                  </>
+                  <OAUTH2PartForm
+                    isEdit={isEdit}
+                    showExtraConfig={showExtraConfig}
+                    setShowExtraConfig={setShowExtraConfig}
+                  />
                 );
+              } else if (type === ISSOType.LDAP) {
+                return <LDAPPartForm isEdit={isEdit} />;
               } else {
-                return (
-                  <>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'clientId']}
-                      label="Client ID"
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      style={{
-                        display: !isEdit ? 'block' : 'none',
-                      }}
-                      rules={isEdit ? [] : [requiredRule]}
-                      name={['ssoParameter', 'secret']}
-                      label="Client Secret"
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'scope']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.TheScopeOfApplicationAuthorization',
-                          })} /*应用授权作用域，多个空格隔开，建议为 profile*/
-                        >
-                          Scope
-                        </HelpDoc>
-                      }
-                    >
-                      <Select
-                        mode="tags"
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'issueUrl']}
-                      label="Issue URL"
-                    >
-                      <Input
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                        })} /*请输入*/
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      rules={[requiredRule]}
-                      name={['ssoParameter', 'redirectUrl']}
-                      label={
-                        <HelpDoc
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.NewSSODrawerButton.SSOForm.AuthorizeTheServerToCall',
-                          })} /*授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白*/
-                        >
-                          Redirect URL
-                        </HelpDoc>
-                      }
-                    >
-                      <Input.TextArea
-                        autoSize={{
-                          minRows: 2,
-                          maxRows: 3,
-                        }}
-                        disabled
-                        style={{
-                          width: '100%',
-                        }}
-                        placeholder={formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.AutomaticGeneration',
-                        })} /*自动生成*/
-                      />
-                    </Form.Item>
-                  </>
-                );
+                return <OIDCPartForm isEdit={isEdit} />;
               }
             }}
           </Form.Item>
-          <Form.Item
-            rules={[requiredRule]}
-            name={['mappingRule', 'userProfileViewType']}
-            label={formatMessage({
-              id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
-            })} /*用户信息数据结构类型*/
-          >
-            <Select
-              options={[
-                {
-                  label: 'FLAT',
-                  value: 'FLAT',
-                },
-                {
-                  label: 'NESTED',
-                  value: 'NESTED',
-                },
-              ]}
-              style={{
-                width: 200,
-              }}
-              placeholder={formatMessage({
-                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-              })} /*请输入*/
-            />
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const type = getFieldValue(['type']);
+              return type !== ISSOType.LDAP ? (
+                <Form.Item
+                  rules={[requiredRule]}
+                  name={['mappingRule', 'userProfileViewType']}
+                  label={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+                  })} /*用户信息数据结构类型*/
+                >
+                  <Select
+                    options={[
+                      {
+                        label: 'FLAT',
+                        value: 'FLAT',
+                      },
+                      {
+                        label: 'NESTED',
+                        value: 'NESTED',
+                      },
+                    ]}
+                    style={{
+                      width: 200,
+                    }}
+                    placeholder={formatMessage({
+                      id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    })} /*请输入*/
+                  />
+                </Form.Item>
+              ) : null;
+            }}
           </Form.Item>
           <Form.Item shouldUpdate noStyle>
             {({ getFieldValue }) => {
@@ -768,28 +475,36 @@ export default inject('userStore')(
               }
             }}
           </Form.Item>
-          <Form.Item>
-            <HelpDoc
-              leftText
-              title={
-                formatMessage(
-                  {
-                    id: 'odc.NewSSODrawerButton.SSOForm.ASeparateCallbackWhitelistIs',
-                  },
-                  {
-                    redirectUrl: redirectUrl,
-                  },
-                ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
-              }
-            >
-              <a onClick={test}>
-                {
-                  formatMessage({
-                    id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
-                  }) /*测试连接*/
-                }
-              </a>
-            </HelpDoc>
+
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const type = getFieldValue(['type']);
+              return (
+                <Form.Item>
+                  <HelpDoc
+                    leftText
+                    title={
+                      formatMessage(
+                        {
+                          id: 'odc.NewSSODrawerButton.SSOForm.ASeparateCallbackWhitelistIs',
+                        },
+                        {
+                          redirectUrl: redirectUrl,
+                        },
+                      ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
+                    }
+                  >
+                    <a onClick={() => testByType(type)}>
+                      {
+                        formatMessage({
+                          id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
+                        }) /*测试连接*/
+                      }
+                    </a>
+                  </HelpDoc>
+                </Form.Item>
+              );
+            }}
           </Form.Item>
           {testInfo ? (
             <Alert
@@ -832,38 +547,88 @@ export default inject('userStore')(
               }) /*用户字段映射*/
             }
           </Typography.Title>
-          <Form.Item
-            rules={[requiredRule]}
-            name={['mappingRule', 'userAccountNameField']}
-            label={formatMessage({
-              id: 'odc.NewSSODrawerButton.SSOForm.UsernameField',
-            })} /*用户名字段*/
-          >
-            <Input
-              style={{
-                width: 200,
-              }}
-              placeholder={formatMessage({
-                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-              })} /*请输入*/
-            />
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const type = getFieldValue('type');
+              if (type !== ISSOType.LDAP) {
+                return (
+                  <Form.Item
+                    rules={[requiredRule]}
+                    name={['mappingRule', 'userAccountNameField']}
+                    label={formatMessage({
+                      id: 'odc.NewSSODrawerButton.SSOForm.UsernameField',
+                    })} /*用户名字段*/
+                  >
+                    <Input
+                      style={{
+                        width: 200,
+                      }}
+                      placeholder={formatMessage({
+                        id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                      })} /*请输入*/
+                    />
+                  </Form.Item>
+                );
+              }
+            }}
           </Form.Item>
-          <Form.Item
-            rules={[requiredRule]}
-            name={['mappingRule', 'userNickNameField']}
-            label={formatMessage({
-              id: 'odc.NewSSODrawerButton.SSOForm.UserNicknameField',
-            })} /*用户昵称字段*/
-          >
-            <Select
-              mode="tags"
-              style={{
-                width: 200,
-              }}
-              placeholder={formatMessage({
-                id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-              })} /*请输入*/
-            />
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const userNickNameField = getFieldValue(['mappingRule', 'userNickNameField']);
+              return (
+                <Form.Item
+                  rules={[requiredRule]}
+                  name={['mappingRule', 'userNickNameField']}
+                  label={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.UserNicknameField',
+                  })} /*用户昵称字段*/
+                >
+                  <Select
+                    mode="tags"
+                    defaultValue={userNickNameField ? userNickNameField : undefined}
+                    style={{
+                      width: 200,
+                    }}
+                    placeholder={formatMessage({
+                      id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    })} /*请输入*/
+                  />
+                </Form.Item>
+              );
+            }}
+          </Form.Item>
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const type = getFieldValue(['type']);
+              return type === ISSOType.LDAP ? (
+                <Form.Item
+                  rules={[requiredRule]}
+                  name={['mappingRule', 'userProfileViewType']}
+                  label={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+                  })} /*用户信息数据结构类型*/
+                >
+                  <Select
+                    options={[
+                      {
+                        label: 'FLAT',
+                        value: 'FLAT',
+                      },
+                      {
+                        label: 'NESTED',
+                        value: 'NESTED',
+                      },
+                    ]}
+                    style={{
+                      width: 200,
+                    }}
+                    placeholder={formatMessage({
+                      id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    })} /*请输入*/
+                  />
+                </Form.Item>
+              ) : null;
+            }}
           </Form.Item>
           <Form.List name={['mappingRule', 'extraInfo']}>
             {(fields, operation) => {

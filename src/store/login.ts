@@ -125,6 +125,31 @@ export class UserStore {
   }
 
   @action
+  public async ldapLogin(params: {
+    username?: string;
+    password?: string;
+    testId?: string;
+    registrationId?: string;
+  }) {
+    const { username, password, testId, registrationId } = params;
+    const form = new URLSearchParams();
+    form.append('username', username);
+    form.append('password', encrypt(password));
+    testId && form.append('testId', testId);
+    registrationId && form.append('registrationId', registrationId);
+    let result = await request.post(`/api/v2/iam/ldap/login`, {
+      data: form,
+      params: {
+        ignoreError: true,
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    return result;
+  }
+
+  @action
   public async logout() {
     logger.debug('logout');
     await sessionManager.destoryStore(true);

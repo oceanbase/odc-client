@@ -2870,7 +2870,11 @@ export type IColumnSizeValue =
 export interface IColumnSizeMap {
   [key: string]: IColumnSizeValue;
 }
-
+export enum ESSOLgoinType {
+  OAUTH2 = 'OAUTH2',
+  LDAP = 'LDAP',
+  OIDC = 'OIDC',
+}
 export interface ServerSystemInfo {
   buildTime: number;
   startTime: number;
@@ -2926,6 +2930,8 @@ export interface ServerSystemInfo {
    */
   ssoLoginEnabled?: boolean;
   ssoLoginName?: string;
+  /** @description 第三集成登录类型 */
+  ssoLoginType?: ESSOLgoinType;
 }
 
 export enum ODCErrorsCode {
@@ -3255,6 +3261,7 @@ export interface IScript {
 export enum ISSOType {
   OIDC = 'OIDC',
   OAUTH2 = 'OAUTH2',
+  LDAP = 'LDAP',
 }
 
 export enum IClientAuthenticationMethod {
@@ -3303,6 +3310,19 @@ export interface ISSO_OIDC_CONFIG {
   redirectUrl: string;
 }
 
+export interface ISSO_LDAP_CONFIG {
+  server: string;
+  managerDn: string;
+  managerPassword: string;
+  userSearchBase?: string;
+  userSearchFilter: string;
+  groupSearchBase?: string;
+  groupSearchFilter?: string;
+  groupSearchSubtree?: boolean;
+  registrationId?: string;
+  redirectUrl: string;
+}
+
 export interface ISSO_MAPPINGRULE {
   userNickNameField: string;
   userProfileViewType: 'FLAT' | 'NESTED';
@@ -3324,6 +3344,12 @@ export type ISSOConfig =
       type: ISSOType.OIDC;
       ssoParameter: ISSO_OIDC_CONFIG;
       mappingRule: ISSO_MAPPINGRULE;
+    }
+  | {
+      name: string;
+      type: ISSOType.LDAP;
+      ssoParameter: ISSO_LDAP_CONFIG;
+      mappingRule: Omit<ISSO_MAPPINGRULE, 'userAccountNameField'>;
     };
 
 export interface IFormatPLSchema {
