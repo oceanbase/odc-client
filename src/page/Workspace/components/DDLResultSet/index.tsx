@@ -57,9 +57,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import styles from './index.less';
-// @ts-ignore
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
-// @ts-ignore
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { uploadTableObject } from '@/common/network/sql';
 import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
@@ -71,13 +69,13 @@ import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { defaultOnCopy, defaultOnCopyCsv } from '@oceanbase-odc/ob-react-data-grid';
 import type { CalculatedColumn } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import BigNumber from 'bignumber.js';
-import { compare } from 'compare-versions';
 import { cloneDeep, debounce, isNil, isNull, isString, isUndefined } from 'lodash';
 import ColumnModeModal from './ColumnModeModal';
 import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
+import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -848,7 +846,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 onClick={handleExport}
               />
             ) : null}
-            {!isEditing && showMock && getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+            {!isEditing &&
+            showMock &&
+            getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
               TaskType.DATAMOCK,
             ) ? (
               <>
@@ -908,7 +908,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </Tooltip>
               ))}
             {showTrace &&
-              (isString(obVersion) && compare(obVersion, '4.1.0', '>=') ? (
+              (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
                 <ToolbarButton
                   text={
                     withFullLinkTrace
