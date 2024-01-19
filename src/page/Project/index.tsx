@@ -23,6 +23,7 @@ import Database from './Database';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
+import Notification from './Notification';
 import { getProject, listProjects } from '@/common/network/project';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
@@ -71,8 +72,11 @@ const Pages = {
   [IPageType.Project_User]: {
     component: User,
   },
-  [IPageType.Sensitive]: {
+  [IPageType.Project_Sensitive]: {
     component: Sensitive,
+  },
+  [IPageType.Project_Notification]: {
+    component: Notification,
   },
 };
 const tabs = [
@@ -101,7 +105,11 @@ const tabs = [
     tab: formatMessage({
       id: 'odc.src.page.Project.Sensitive',
     }), //'敏感列'
-    key: IPageType.Sensitive,
+    key: IPageType.Project_Sensitive,
+  },
+  {
+    tab: '消息通知',
+    key: IPageType.Project_Notification,
   },
   {
     tab: formatMessage({
@@ -143,7 +151,7 @@ const Index: React.FC<IProps> = function () {
     }
   }, [projectId]);
   useEffect(() => {
-    if (page === IPageType.Sensitive) {
+    if (page === IPageType.Project_Sensitive) {
       // 当前项目中只有Developer身份的用户通过url访问Sensitive页面时，跳转到Project，避免用户通过url直接进入Sensitvie页面导致发起错误请求。
       if (
         !project?.currentUserResourceRoles?.some((role) =>
@@ -180,7 +188,7 @@ const Index: React.FC<IProps> = function () {
       [ProjectRole.DBA]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
-        IPageType.Sensitive,
+        IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
       [ProjectRole.DEVELOPER]: [
@@ -191,14 +199,15 @@ const Index: React.FC<IProps> = function () {
       [ProjectRole.OWNER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
-        IPageType.Sensitive,
+        IPageType.Project_Sensitive,
         IPageType.Project_Setting,
         IPageType.Project_User,
+        IPageType.Project_Notification,
       ],
       [ProjectRole.SECURITY_ADMINISTRATOR]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
-        IPageType.Sensitive,
+        IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
       [ProjectRole.PARTICIPANT]: [
@@ -229,6 +238,13 @@ const Index: React.FC<IProps> = function () {
       tabActiveKey={page}
       tabBarExtraContent={
         <ExtraContent projectId={projectId} currentRoles={project?.currentUserResourceRoles} />
+      }
+      containerWrapStyle={
+        [IPageType.Project_Notification].includes(page)
+          ? {
+              padding: '0px 12px',
+            }
+          : {}
       }
       onTabChange={handleChange}
       bigSelectBottom={

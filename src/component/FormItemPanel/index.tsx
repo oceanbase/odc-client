@@ -30,11 +30,12 @@ interface IProps {
    * 展开panel，没有按钮展开缩起
    */
   keepExpand?: boolean;
+  noPaddingBottom?: boolean;
   onExpandChange?: (isExpand: boolean) => void;
 }
 
 const FormItemPanel: React.FC<IProps> = function (props) {
-  const { overview, label, children, expandText, keepExpand } = props;
+  const { overview, label, children, expandText, keepExpand, noPaddingBottom = false } = props;
   const [expand, setExpand] = useControllableValue<boolean>(props, {
     defaultValue: false,
     valuePropName: 'expand',
@@ -70,6 +71,7 @@ const FormItemPanel: React.FC<IProps> = function (props) {
         style={{
           background: 'var(--background-tertraiy-color)',
           padding: '11px 12px 8px 12px',
+          paddingBottom: noPaddingBottom ? '0px' : '8px',
           margin: '0px 0px 16px 0px',
         }}
       >
