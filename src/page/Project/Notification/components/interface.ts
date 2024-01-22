@@ -22,6 +22,26 @@ export const ELanguageMap = {
   [ELanguage.ZH_TW]: '繁体中文',
   [ELanguage.EN_US]: '英文',
 };
+export const EContentTemplateMap = {
+  [ELanguage.ZH_CN]: `### ODC \${taskType}-\${taskStatus}
+  - 任务ID: \${taskId}
+  - 项目: \${projectName}
+  - 数据库: \${databaseName}
+  - 发起人: \${creatorName}
+  - 触发时间: \${triggerTime}`,
+  [ELanguage.ZH_TW]: `### ODC \${taskType}-\${taskStatus}
+  - 任務ID: \${taskId}
+  - 項目: \${projectName}
+  - 數據庫: \${databaseName}
+  - 發起人: \${creatorName}
+  - 觸發時間: \${triggerTime}`,
+  [ELanguage.EN_US]: `### ODC \${taskType}-\${taskStatus}
+  - task ID: \${taskId}
+  - project: \${projectName}
+  - database: \${databaseName}
+  - creator: \${creatorName}
+  - trigger time: \${triggerTime}`,
+};
 export const EMessageStatusMap = {
   [EMessageStatus.CREATED]: '待发送',
   [EMessageStatus.SENDING]: '发送中',

@@ -42,7 +42,7 @@ import styles from './index.less';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import HelpDoc from '@/component/helpDoc';
 import { getChannelColumns } from './columns';
-import { EChannelTypeMap, ELanguageMap, TimeUnitMap } from './interface';
+import { EChannelTypeMap, EContentTemplateMap, ELanguageMap, TimeUnitMap } from './interface';
 import odc from '@/plugins/odc';
 
 const Channel: React.FC<{
@@ -53,9 +53,8 @@ const Channel: React.FC<{
   const [selectedChannelId, setSelectedChannelId] = useState<number>(null);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState<boolean>(false);
   const [formDrawerOpen, setFormDrawerOpen] = useState<boolean>(false);
-  const [channelsList, setChannelsList] = useState<
-    IResponseData<Omit<IChannel, 'channelConfig'>>
-  >();
+  const [channelsList, setChannelsList] =
+    useState<IResponseData<Omit<IChannel, 'channelConfig'>>>();
   const loadChannels = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { name, type } = filters ?? {};
@@ -83,9 +82,9 @@ const Channel: React.FC<{
         if (result) {
           message.success('删除成功!');
           tableRef?.current?.reload?.();
-        } else {
-          message.error('删除失败');
+          return;
         }
+        message.error('删除失败');
       },
       onCancel: () => {},
     });
@@ -188,7 +187,7 @@ export const FromChannelDrawer: React.FC<{
       message.success('测试消息发送成功！');
     } else {
       setTestChannelSuccess(false);
-      message.success('测试消息发送失败！');
+      message.error('测试消息发送失败！');
       setTestChannelErrorMessage(result?.errorMessage);
     }
     setTestLoading(false);
@@ -210,6 +209,9 @@ export const FromChannelDrawer: React.FC<{
     const result = await formRef.validateFields().catch();
     result.id ??= channelId;
     let data;
+    if (result?.type === EChannelType.WEBHOOK) {
+      result.channelConfig.atMobiles = null;
+    }
     if (channelId) {
       data = await editChannel(projectId, channelId, result);
     } else {
@@ -221,11 +223,15 @@ export const FromChannelDrawer: React.FC<{
       closedCallback?.(true);
       return;
     }
-    message.success(channelId ? '保存失败' : '新建失败');
+    message.error(channelId ? '保存失败' : '新建失败');
   };
-  const handleFieldsChange = () => {
+  const handleFieldsChange = (changedFields, allFields) => {
     setHasEdit(true);
     setTestChannelSuccess(false);
+    if (changedFields?.[0]?.name?.join('') === ['channelConfig', 'language'].join('')) {
+      const _language = formRef.getFieldValue(['channelConfig', 'language']) || ELanguage.ZH_CN;
+      formRef.setFieldValue(['channelConfig', 'contentTemplate'], EContentTemplateMap?.[_language]);
+    }
   };
 
   const checkNameRepeat = async (ruler, value) => {
@@ -293,6 +299,7 @@ export const FromChannelDrawer: React.FC<{
             type: EChannelType.DING_TALK,
             channelConfig: {
               language: ELanguage.ZH_CN,
+              contentTemplate: EContentTemplateMap[ELanguage.ZH_CN],
               rateLimitConfig: null,
               atMobiles: [],
             },
@@ -375,8 +382,19 @@ export const FromChannelDrawer: React.FC<{
           <Form.Item label="签名密钥" name={['channelConfig', 'sign']} requiredMark="optional">
             <Input placeholder="若开启签名校验，请输入密钥" />
           </Form.Item>
-          <Form.Item label="指定用户" name={['channelConfig', 'atMobiles']} requiredMark="optional">
-            <Select mode="tags" placeholder="请输入用户手机号" />
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const hasAtMobiles = getFieldValue('type') !== EChannelType.WEBHOOK;
+              return hasAtMobiles ? (
+                <Form.Item
+                  label="指定用户"
+                  name={['channelConfig', 'atMobiles']}
+                  requiredMark="optional"
+                >
+                  <Select mode="tags" placeholder="请输入用户手机号" />
+                </Form.Item>
+              ) : null;
+            }}
           </Form.Item>
           <Form.Item
             label="推送消息模版"
@@ -399,17 +417,21 @@ export const FromChannelDrawer: React.FC<{
             >
               <LangagueTab />
             </Form.Item>
-            <Form.Item
-              name={['channelConfig', 'contentTemplate']}
-              requiredMark="optional"
-              rules={[
-                {
-                  required: true,
-                  message: '消息模版不能为空',
-                },
-              ]}
-            >
-              <Input.TextArea rows={5} maxLength={200} placeholder="请输入消息模版" />
+            <Form.Item>
+              <Form.Item
+                noStyle
+                shouldUpdate
+                name={['channelConfig', 'contentTemplate']}
+                requiredMark="optional"
+                rules={[
+                  {
+                    required: true,
+                    message: '消息模版不能为空',
+                  },
+                ]}
+              >
+                <Input.TextArea rows={5} maxLength={200} placeholder="请输入消息模版" />
+              </Form.Item>
               <div>
                 <span style={{ color: 'var(--neutral-black45-color)' }}>
                   {'可通过输入${ } 引入标签，'}
@@ -604,8 +626,7 @@ const CheckboxWithTip: React.FC<{
                           isTip
                           leftText
                           title={formatMessage({
-                            id:
-                              'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
+                            id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
                           })}
                         >
                           忽略
@@ -616,8 +637,7 @@ const CheckboxWithTip: React.FC<{
                           isTip
                           leftText
                           title={formatMessage({
-                            id:
-                              'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
+                            id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
                           })}
                         >
                           重发

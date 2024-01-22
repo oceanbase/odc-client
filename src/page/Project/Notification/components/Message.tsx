@@ -140,16 +140,16 @@ const DetailDrawer: React.FC<{
           {EMessageStatusMap?.[message?.status] || '-'}
         </Descriptions.Item>
         <Descriptions.Item label="消息内容">{null}</Descriptions.Item>
-        <div
-          style={{
-            borderRadius: '2px',
-            backgroundColor: '#F7F9FB',
-            padding: '8px 12px',
-          }}
-        >
-          {message?.content || '-'}
-        </div>
       </Descriptions>
+      <pre
+        style={{
+          borderRadius: '2px',
+          backgroundColor: '#F7F9FB',
+          padding: '8px 12px',
+        }}
+      >
+        {message?.content || '-'}
+      </pre>
     </Drawer>
   );
 };
