@@ -34,7 +34,7 @@ export enum EChannelType {
   // 微信
   WE_COM = 'WeCom',
   // 自定义webhook
-  WEBHOOK = 'webhook',
+  WEBHOOK = 'Webhook',
 }
 // 限流策略
 export enum EOverLimitStrategy {
