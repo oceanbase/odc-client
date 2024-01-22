@@ -118,10 +118,10 @@ class SessionStore {
     this.createTime = Date.now();
   }
 
-   public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
+  public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
     this.connection = connection || this.connection;
     this.odcDatabase = database || this.odcDatabase;
-   }
+  }
 
   static async createInstance(datasource: IDatasource, database: IDatabase) {
     const session = new SessionStore(datasource, database);
@@ -312,7 +312,7 @@ class SessionStore {
     const sid = generateDatabaseSid(this.database?.dbName, this.sessionId);
     const now = Date.now();
 
-    if (now - this.lastTableAndViewLoadTime < 10000 && !force) {
+    if (now - this.lastTableAndViewLoadTime < 15000 && !force) {
       return this.allTableAndView;
     }
     this.lastTableAndViewLoadTime = now;
@@ -418,7 +418,7 @@ class SessionStore {
   @action
   public async queryIdentities() {
     const now = Date.now();
-    if (now - this.lastIdentitiesLoadTime < 10000) {
+    if (now - this.lastIdentitiesLoadTime < 15000) {
       return;
     }
     this.lastIdentitiesLoadTime = now;
