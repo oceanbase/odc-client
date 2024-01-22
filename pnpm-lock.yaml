@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^4.0.0
     version: 4.8.1(react-dom@17.0.2)(react@17.0.2)
   '@oceanbase-odc/monaco-plugin-ob':
-    specifier: ^0.1.2
-    version: 0.1.2(monaco-editor@0.36.1)
+    specifier: ^0.2.1
+    version: 0.2.1(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
     specifier: ^2.0.1
     version: 2.0.1(prettier@2.8.8)(typescript@4.9.5)
@@ -3353,8 +3353,8 @@ packages:
       fastq: 1.16.0
     dev: true
 
-  /@oceanbase-odc/monaco-plugin-ob@0.1.2(monaco-editor@0.36.1):
-    resolution: {integrity: sha512-h8k/S17ql1qj0YpEHIBxQjYMdOtU34d8qg6SCPP4MychInNYL6T0PzYYvLMEH0f9CiEmVl6zcCyvC5paGZbjJw==}
+  /@oceanbase-odc/monaco-plugin-ob@0.2.1(monaco-editor@0.36.1):
+    resolution: {integrity: sha512-qU4JYQAOWMnU0b1n84tUydpqlR1NZy9IJewEYTOAkRspNdw6/yH3+c/ZpDm4OtFTNmrnsINC+cQ/PW2hIPjjZw==}
     peerDependencies:
       monaco-editor: ^0.34.1
     dependencies:
@@ -4186,7 +4186,7 @@ packages:
     resolution: {integrity: sha512-hy8b7Y1J8OGe6LbAjj3xniQrj3v6lsivCcrmf4TzSgPzLkhIeKgc5IZnT7ReIqmEuodjfO8EYAuoFvIrHi/+jQ==}
     deprecated: This is a stub types definition. history provides its own type definitions, so you do not need this installed.
     dependencies:
-      history: 4.10.1
+      history: 5.3.0
     dev: true
 
   /@types/hoist-non-react-statics@3.3.5:
