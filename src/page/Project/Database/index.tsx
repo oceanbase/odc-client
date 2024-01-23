@@ -26,7 +26,7 @@ import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
-import { TaskPageType, TaskType } from '@/d.ts';
+import { IConnectionStatus, TaskPageType, TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import modalStore from '@/store/modal';
@@ -49,6 +49,9 @@ import { ProjectRole } from '@/d.ts/project';
 import ProjectContext from '../ProjectContext';
 import styles from './index.less';
 import setting from '@/store/setting';
+import datasourceStatus from '@/store/datasourceStatus';
+import { observer } from 'mobx-react';
+import StatusName from './StatusName';
 interface IProps {
   id: string;
 }
@@ -74,6 +77,7 @@ const Database: React.FC<IProps> = ({ id }) => {
     params.current.environmentId = environmentId;
     const res = await listDatabases(parseInt(id), null, current, pageSize, name, environmentId);
     if (res) {
+      datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
     }
@@ -101,6 +105,7 @@ const Database: React.FC<IProps> = ({ id }) => {
       default:
     }
   };
+  const statusMap = datasourceStatus.statusMap;
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
@@ -163,14 +168,12 @@ const Database: React.FC<IProps> = ({ id }) => {
               return disabled ? (
                 <div className={styles.disable}>{name}</div>
               ) : (
-                <a
+                <StatusName
+                  item={record}
                   onClick={() => {
                     tracert.click('a3112.b64002.c330858.d367382');
-                    gotoSQLWorkspace(toInteger(id), null, record.id);
                   }}
-                >
-                  {name}
-                </a>
+                />
               );
             },
           },
@@ -390,4 +393,4 @@ const Database: React.FC<IProps> = ({ id }) => {
     </TableCard>
   );
 };
-export default Database;
+export default observer(Database);
