@@ -172,6 +172,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                   item={record}
                   onClick={() => {
                     tracert.click('a3112.b64002.c330858.d367382');
+                    gotoSQLWorkspace(toInteger(id), null, record.id);
                   }}
                 />
               );
