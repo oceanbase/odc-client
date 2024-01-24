@@ -396,7 +396,7 @@ const WindowManager: React.FC<IProps> = function (props) {
           })
           .filter(Boolean)}
       />
-      <DefaultPage />
+      {(!activeKey || !pages?.length) && <DefaultPage />}
     </>
   );
 };
