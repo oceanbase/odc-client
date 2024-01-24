@@ -16,6 +16,7 @@
 
 import { getFlowSQLLintResult } from '@/common/network/task';
 import LintDrawer from '@/component/SQLLintResult/Drawer';
+import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
 import { Descriptions, Tag } from 'antd';
@@ -29,12 +30,13 @@ interface IProps {
   flowId: number;
 }
 const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
-  const { status, nodeType, issueCount, unauthorizedDatabaseNames, id, preCheckOverLimit } = node;
+  const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [permissionResultVisible, setPermissionResultVisible] = useState(false);
   const [data, setData] = useState<ISQLLintReuslt[]>([]);
   const showCount = typeof issueCount === 'number';
-  const showUnauthorized = unauthorizedDatabaseNames?.length > 0;
+  const showUnauthorized = unauthorizedDatabases?.length > 0;
   const showReslut = showCount || showUnauthorized || preCheckOverLimit;
   async function viewLintResult() {
     if (isLoading) {
@@ -50,6 +52,10 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function viewPermissionResult() {
+    setPermissionResultVisible(true);
   }
   return (
     <>
@@ -148,15 +154,15 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                     }) /* 权限检查结果 */
                   }
                 >
-                  {
-                    formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
-                    }) /* 
-               无权限访问数据库：
-               */
-                  }
-                  {unauthorizedDatabaseNames?.join(', ')}
+                 存在 {unauthorizedDatabases?.length} 个问题
+                 <a
+                  style={{
+                    marginLeft: 5,
+                  }}
+                  onClick={viewPermissionResult}
+                >
+                  查看
+                </a>
                 </Descriptions.Item>
               ) : null}
             </Descriptions>
@@ -171,6 +177,13 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         </Descriptions.Item>
       </Descriptions>
       <LintDrawer visible={visible} closePage={() => setVisible(false)} data={data} />
+      <DBPermissionTableDrawer
+        visible={permissionResultVisible}
+        dataSource={unauthorizedDatabases}
+        onClose={() =>{
+          setPermissionResultVisible(false);
+        }}
+      />
     </>
   );
 };

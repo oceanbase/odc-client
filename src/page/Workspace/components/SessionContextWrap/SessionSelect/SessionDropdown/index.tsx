@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { formatMessage } from '@/util/intl';
-import { Badge, Input, Popover, Select, Space, Spin, Tree } from 'antd';
+import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
 import React, { Key, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import Icon, { SearchOutlined } from '@ant-design/icons';
@@ -38,10 +38,40 @@ import { EnvColorMap } from '@/constant';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IProject } from '@/d.ts/project';
 import { IDatasource } from '@/d.ts/datasource';
+import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
 import { inject, observer } from 'mobx-react';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+
+interface IDatabasesTitleProps {
+  db: IDatabase;
+  taskType: TaskType;
+  disabled: boolean;
+}
+
+const DatabasesTitle: React.FC<IDatabasesTitleProps>  = (props) =>{
+  const { taskType, db, disabled } = props;
+  return (
+    <>
+      {
+        disabled ?
+        <Tooltip placement={'right'} title={`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`}>
+          <div className={styles.textoverflow}>{db.name}</div>
+        </Tooltip>
+        :
+        <Popover
+          showArrow={false}
+          placement={'right'}
+          content={<ConnectionPopover connection={db?.dataSource} />}
+        >
+          <div className={styles.textoverflow}>{db.name}</div>
+        </Popover>
+      }
+      <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
+    </>
+  )
+}
 
 interface IProps {
   dialectTypes?: ConnectionMode[];
@@ -81,6 +111,7 @@ const SessionDropdown: React.FC<IProps> = function ({
         null,
         login.isPrivateSpace(),
         true,
+        true
       );
     }
   }, [isOpen]);
@@ -207,24 +238,19 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
+                const disabled = taskType ? !hasPermission(taskType, db.authorizedPermissionTypes) : !db.authorizedPermissionTypes?.length;
                 return {
-                  title: (
-                    <>
-                      <Popover
-                        showArrow={false}
-                        placement={'right'}
-                        content={<ConnectionPopover connection={db?.dataSource} />}
-                      >
-                        <div className={styles.textoverflow}>{db.name}</div>
-                      </Popover>
-                      <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
-                    </>
-                  ),
+                  title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
                   icon: <DataBaseStatusIcon item={db} />,
+                  disabled
                 };
+              })
+              .sort((a, b) => {
+                if (a.disabled === b.disabled) return 0;
+                return a.disabled ? 1 : -1;
               })
               .filter(Boolean);
             if (!isNameMatched && !dbList?.length) {
@@ -259,24 +285,19 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
+                const disabled = taskType ? !hasPermission(taskType, db.authorizedPermissionTypes) : !db.authorizedPermissionTypes?.length;
                 return {
-                  title: (
-                    <>
-                      <Popover
-                        showArrow={false}
-                        content={<ConnectionPopover connection={db?.dataSource} />}
-                        placement={'right'}
-                      >
-                        <div className={styles.textoverflow}>{db.name}</div>
-                      </Popover>
-                      <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
-                    </>
-                  ),
+                  title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
                   icon: <DataBaseStatusIcon item={db} />,
+                  disabled
                 };
+              })
+              .sort((a, b) => {
+                if (a.disabled === b.disabled) return 0;
+                return a.disabled ? 1 : -1;
               })
               .filter(Boolean);
             if (!isNameMatched && !dbList?.length) {

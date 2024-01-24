@@ -123,6 +123,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.DATA_DELETE,
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
+    TaskType.APPLY_DATABASE_PERMISSION,
   ].includes(task?.type);
   const hasLog = [
     TaskType.ASYNC,
@@ -135,6 +136,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.ONLINE_SCHEMA_CHANGE,
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
+    TaskType.APPLY_DATABASE_PERMISSION,
   ].includes(task?.type);
   function onShare() {
     const url =

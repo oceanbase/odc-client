@@ -133,6 +133,8 @@ export const AuditEventMetaMap = {
   [AuditEventType.SQL_SECURITY_RULE_MANAGEMENT]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.SQLSecurityRulesManagement',
   }), //'SQL安全规则管理'
+  [AuditEventActionType.APPLY_DATABASE_PERMISSION]: '申请库权限',
+  [AuditEventActionType.DATABASE_PERMISSION_MANAGEMENT]: '库权限管理',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -570,6 +572,16 @@ export const AuditEventActionMap = {
   [AuditEventActionType.UPDATE_SQL_SECURITY_RULE]: formatMessage({
     id: 'odc.src.page.Secure.Record.RecordPage.ModifySQLSecurityRules',
   }), //'修改SQL安全规则'
+  // 申请项目权限
+  [AuditEventActionType.APPLY_DATABASE_PERMISSION]: '申请库权限',
+  [AuditEventActionType.CREATE_APPLY_DATABASE_PERMISSION_TASK]: '创建申请库权限',
+  [AuditEventActionType.APPROVE_APPLY_DATABASE_PERMISSION_TASK]: '同意申请库权限',
+  [AuditEventActionType.REJECT_APPLY_DATABASE_PERMISSION_TASK]: '拒绝申请库权限',
+  [AuditEventActionType.STOP_APPLY_DATABASE_PERMISSION_TASK]: '停止申请库权限',
+  // 库权限管理
+  [AuditEventActionType.DATABASE_PERMISSION_MANAGEMENT]: '库权限管理',
+  [AuditEventActionType.GRANT_DATABASE_PERMISSION]: '新增库权限管理',
+  [AuditEventActionType.REVOKE_DATABASE_PERMISSION]: '回收库权限管理',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =

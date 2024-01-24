@@ -17,7 +17,7 @@
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
-import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import { executeTaskManager, IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { batchGetDataModifySQL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { IEditor } from '@/component/MonacoEditor';
@@ -37,6 +37,7 @@ import {
   ISQLScript,
   ITableColumn,
 } from '@/d.ts';
+import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
@@ -93,6 +94,8 @@ interface ISQLPageState {
   lintResultSet: ISQLLintReuslt[];
   // 记录当前编辑器中的sql内容
   executeOrPreCheckSql: string;
+  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedSql?: string;
   sqlChanged: boolean;
   baseOffset: number;
   status: EStatus;
@@ -142,6 +145,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     resultSetIndex: 0,
     editingMap: {},
     lintResultSet: null,
+    unauthorizedDatabases: null,
+    unauthorizedSql: '',
     executeOrPreCheckSql: null,
     sqlChanged: false,
     baseOffset: 0,
@@ -669,6 +674,13 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlStore.lockResultSet(pageKey, key);
   };
 
+  public handleCheckDatabasePermission = (result: IExecuteTaskResult) =>{
+    this.setState({
+      unauthorizedDatabases: result?.unauthorizedDatabases,
+      unauthorizedSql: result?.unauthorizedSql
+    })
+  }
+
   public onUpdateEditing = (resultSetIndex: number, editing: boolean) => {
     const resultSets = this.props.sqlStore.resultSets.get(this.props.pageKey);
     this.setState({
@@ -811,6 +823,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       if (!result) {
         return;
       }
+      this.handleCheckDatabasePermission(result);
       /**
        * 这里只需要第一个错误的节点，因为一个报错，后面的都会取消执行，没必要把取消执行的错误也抛出去
        */
@@ -1081,6 +1094,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       status,
       sqlChanged,
       baseOffset,
+      unauthorizedDatabases,
+      unauthorizedSql
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
@@ -1130,6 +1145,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 session={session}
                 baseOffset={baseOffset}
                 lintResultSet={lintResultSet}
+                unauthorizedDatabases={unauthorizedDatabases}
+                unauthorizedSql={unauthorizedSql}
                 sqlChanged={sqlChanged}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}
               />
@@ -1237,6 +1254,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.database?.dbName,
       false,
     );
+    this.handleCheckDatabasePermission(results);
     if ((!results || results?.invalid) && !results?.hasLintResults) {
       return;
     }

@@ -110,7 +110,7 @@ export default function UpdateUserModal({
               {
                 label: (
                   <HelpDoc leftText doc="projectDev">
-                    {formatMessage({ id: 'odc.User.UpdateUserModal.CommonMember' }) /*普通成员*/}
+                    开发者
                   </HelpDoc>
                 ),
 
