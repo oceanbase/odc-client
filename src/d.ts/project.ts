@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { DatabasePermissionType } from './database';
+
 export enum ProjectRole {
   DEVELOPER = 'DEVELOPER',
   DBA = 'DBA',
@@ -47,4 +49,36 @@ export interface IProject {
   updateTime: number;
   creator: ProjectUser;
   lastModifier: ProjectUser;
+}
+
+export enum PermissionSourceType {
+  // 用户授权
+  USER_AUTHORIZATION = 'USER_AUTHORIZATION',
+  // 工单申请
+  TICKET_APPLICATION = 'TICKET_APPLICATION',
+}
+
+export enum DatabasePermissionStatus {
+  EXPIRED = 'EXPIRED',
+  EXPIRING = 'EXPIRING',
+  NOT_EXPIRED = 'NOT_EXPIRED',
+}
+
+export interface IDatabasePermission {
+  id: number;
+  userId: number;
+  permissionType: DatabasePermissionType;
+  sourceType: PermissionSourceType;
+  ticketId: number;
+  createTime: number;
+  expireTime: number;
+  creatorId: number;
+  organizationId: number;
+  projectId: number;
+  databaseId: number;
+  databaseName: string;
+  datasourceId: number;
+  datasourceName: string;
+  environmentId: number;
+  environmentName: string;
 }

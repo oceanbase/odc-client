@@ -21,7 +21,6 @@ import styles from './index.less';
 import Sider from './Sider';
 import CreateModals from './CreateModals';
 import { useSearchParams } from '@umijs/max';
-import { useEffect } from 'react';
 import login from '@/store/login';
 import { toInteger } from 'lodash';
 export const getTaskExecStrategyMap = (type: TaskType) => {

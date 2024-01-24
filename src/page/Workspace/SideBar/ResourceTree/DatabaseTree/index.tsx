@@ -39,9 +39,10 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
       manual: true,
     },
   );
+  const databases = db?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length);
 
   async function initDatabase(projectId: number, datasourceId: number) {
-    await _runListDatabases(projectId, datasourceId, 1, 99999, null, null, null, true);
+    await _runListDatabases(projectId, datasourceId, 1, 99999, null, null, null, true, true);
   }
 
   async function reloadDatabase() {
@@ -69,7 +70,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
         reloadDatabase={() => reloadDatabase()}
         databaseFrom={'project'}
         title={<TreeTitle project={selectProject} />}
-        databases={db?.contents}
+        databases={databases}
         onTitleClick={() => openSelectPanel()}
         enableFilter
         showTip
@@ -83,7 +84,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
         reloadDatabase={() => reloadDatabase()}
         databaseFrom={'datasource'}
         title={<TreeTitle datasource={selectDatasource} />}
-        databases={db?.contents}
+        databases={databases}
         onTitleClick={() => openSelectPanel()}
       />
     );

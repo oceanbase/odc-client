@@ -17,16 +17,14 @@ import { formatMessage } from '@/util/intl';
 
 import { createTask } from '@/common/network/task';
 import { getResourceRoles } from '@/common/network/manager';
-import { getProjectList } from '@/common/network/task';
 import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
-import type { SQLStore } from '@/store/sql';
-import type { TaskStore } from '@/store/task';
 import { ProjectRole } from '@/d.ts/project';
 import { Button, Drawer, Form, Modal, Select, Space, Input, message, Typography, Tag } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import { useProjects } from '@/component/Task/hooks/useProjects';
 import styles from './index.less';
 const { Text } = Typography;
 export const projectRoleMap = {
@@ -35,62 +33,43 @@ export const projectRoleMap = {
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Administrator',
     }),
     //'管理员'
-    description: formatMessage({
-      id: 'odc.src.component.Task.ApplyPermission.CreateModal.HavingOwnershipInTheProject',
-    }), //'拥有项目内的所有权限'
+    description: '拥有项目内的所有权限'
   },
   [ProjectRole.DEVELOPER]: {
-    label: formatMessage({
-      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OrdinaryMember',
-    }),
-    //'普通成员'
-    description: formatMessage({
-      id: 'odc.src.component.Task.ApplyPermission.CreateModal.AllowingLoginDatabaseExecution',
-    }), //'允许登录数据库、执行 SQL、提交工单等，通常是开发人员'
+    label: '开发者',
+    description: '允许登录所有数据库、执行 SQL、提交工单，通常是开发人员',
   },
   [ProjectRole.DBA]: {
     label: 'DBA',
-    description: formatMessage({
-      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnTheBasisOfOrdinary',
-    }), //'在普通成员的基础上，还可以管理敏感列、添加/转移数据库等'
+    description: '在开发者的基础上，还可以管理敏感列、添加/转移数据库等'
   },
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.SecurityAdministrator',
     }),
     //'安全管理员'
-    description: formatMessage({
-      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnTheBasisOfParticipants',
-    }), //'在参与者的基础上还可以管理敏感列'
+    description: '在参与者的基础上还可以管理敏感列'
   },
   [ProjectRole.PARTICIPANT]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Participant',
     }),
     //'参与者'
-    description: formatMessage({
-      id: 'odc.src.component.Task.ApplyPermission.CreateModal.OnlyAllowParticipationInApproval',
-    }), //'只允许参与审批'
+    description: '允许查看项目基本信息，并自助申请库权限和提交工单'
   },
 };
 interface IProps {
-  sqlStore?: SQLStore;
-  taskStore?: TaskStore;
   modalStore?: ModalStore;
   projectId?: number;
 }
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
   const [form] = Form.useForm();
-  const [projects, setProjects] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const { projectOptions, loadProjects } = useProjects();
   const { applyPermissionVisible, asyncTaskData } = modalStore;
-  const projectOptions = projects?.map(({ name, id }) => ({
-    label: name,
-    value: id,
-  }));
   const rolesOptions = roles?.map(({ roleName, id }) => {
     const role = projectRoleMap?.[roleName];
     return {
@@ -104,10 +83,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       value: id,
     };
   });
-  const loadProjects = async () => {
-    const res = await getProjectList(false);
-    setProjects(res?.contents);
-  };
   const loadRoles = async () => {
     const roles = await getResourceRoles();
     setRoles(roles?.contents);
@@ -349,4 +324,4 @@ const CreateModal: React.FC<IProps> = (props) => {
     </Drawer>
   );
 };
-export default inject('sqlStore', 'taskStore', 'modalStore')(observer(CreateModal));
+export default inject('modalStore')(observer(CreateModal));

@@ -193,6 +193,18 @@ const ActionBar: React.FC<IProps> = inject(
       }
     };
 
+    const handleApplyReTry = async () => {
+      const { parameters } = task;
+      const data = {
+        taskType: TaskType.APPLY_DATABASE_PERMISSION,
+        parameters,
+      };
+      const res = await createTask(data);
+      if (res) {
+        message.success('再次发起成功');
+      }
+    };
+
     const editCycleTask = async () => {
       props?.onClose?.();
       if (task?.type === TaskType.DATA_ARCHIVE) {
@@ -434,7 +446,7 @@ const ActionBar: React.FC<IProps> = inject(
 
         //再次发起
         type: 'button',
-        action: handleReTry,
+        action: task?.type === TaskType.APPLY_DATABASE_PERMISSION ? handleApplyReTry : handleReTry,
       };
 
       const downloadBtn = {

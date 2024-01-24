@@ -20,21 +20,22 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
-import { Button, message, Popconfirm } from 'antd';
+import { inject, observer } from 'mobx-react';
+import { Button, message, Popconfirm, Space, Tag } from 'antd';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
+import ManageModal from './ManageModal';
 import tracert from '@/util/tracert';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
   }),
-  [ProjectRole.DEVELOPER]: formatMessage({
-    id: 'odc.User.AddUserModal.CommonMember',
-  }),
+  [ProjectRole.DEVELOPER]: '开发者',
   [ProjectRole.DBA]: 'DBA',
   [ProjectRole.SECURITY_ADMINISTRATOR]: formatMessage({
     id: 'odc.src.page.Project.User.SecurityAdministrator',
@@ -45,15 +46,16 @@ export const projectRoleTextMap = {
 };
 interface IProps {
   id: string;
+  userStore?: UserStore;
 }
-const User: React.FC<IProps> = ({ id }) => {
+const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
-  const disabled =
-    project?.currentUserResourceRoles?.filter((roles) => [ProjectRole.OWNER]?.includes(roles))
-      ?.length === 0;
+  const isOwner = project?.currentUserResourceRoles?.some(item => item === ProjectRole.OWNER);
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
+  const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
+  const [detailId, setDetailId] = useState<number>(null);
   const dataSource: (IProject['members'][0] & {
     roles: ProjectRole[];
   })[] = useMemo(() => {
@@ -97,10 +99,21 @@ const User: React.FC<IProps> = ({ id }) => {
   async function updateUser(id: number) {
     setEditUserId(id);
   }
+
+  function showManageModal(id: number) {
+    setDetailId(id);
+    setManageModalVisiable(true);
+  }
+
+  function closeManageModal() {
+    setDetailId(null);
+    setManageModalVisiable(false);
+  }
+
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={disabled}>
+        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
           {
             formatMessage({
               id: 'odc.Project.User.AddMembers',
@@ -123,6 +136,12 @@ const User: React.FC<IProps> = ({ id }) => {
             }),
             //用户名称
             dataIndex: 'name',
+            render(name, _) {
+              const isMe = userStore?.user?.id === _.id;
+              return (
+                isMe ? <Space size={5}>{name}<Tag style={{ border: 'none' }} color="blue">我</Tag></Space> : name
+              );
+            },
           },
           {
             title: formatMessage({
@@ -151,10 +170,8 @@ const User: React.FC<IProps> = ({ id }) => {
             dataIndex: 'name',
             width: 135,
             render(_, record) {
-              const disabled =
-                project?.currentUserResourceRoles?.filter((roles) =>
-                  [ProjectRole.OWNER]?.includes(roles),
-                )?.length === 0;
+              const disabled = !isOwner;
+              const isMe = userStore?.user?.id === record.id;
               return (
                 <Action.Group size={3}>
                   <Action.Link
@@ -183,6 +200,14 @@ const User: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   </Popconfirm>
+                  <Action.Link
+                    disabled={disabled && !isMe}
+                    onClick={() => {
+                      showManageModal(record.id);
+                    }}
+                  >
+                    管理库权限
+                  </Action.Link>
                 </Action.Group>
               );
             },
@@ -218,7 +243,14 @@ const User: React.FC<IProps> = ({ id }) => {
           context.project?.members?.filter((m) => m.id === editUserId)?.map((m) => m.role) || []
         }
       />
+      <ManageModal
+        visible={manageModalVisiable}
+        projectId={context.project?.id}
+        userId={detailId}
+        isOwner={isOwner}
+        onClose={closeManageModal}
+      />
     </TableCard>
   );
 };
-export default User;
+export default inject('userStore')(observer(User));

@@ -58,6 +58,12 @@ interface ResultSetExportData {
 }
 
 interface ApplyPermissionData {}
+
+interface ApplyDatabasePermissionData {
+  projectId?: number;
+  databaseId?: number;
+}
+
 interface IExportModalData {
   type?: DbObjectType;
   name?: string;
@@ -119,6 +125,9 @@ export class ModalStore {
   public applyPermissionVisible: boolean = false;
 
   @observable
+  public applyDatabasePermissionVisible: boolean = false;
+
+  @observable
   public partitionVisible: boolean = false;
 
   @observable
@@ -144,6 +153,9 @@ export class ModalStore {
 
   @observable
   public applyPermissionData: ApplyPermissionData = null;
+
+  @observable
+  public applyDatabasePermissionData: ApplyDatabasePermissionData = null;
 
   @observable
   public asyncTaskData: AsyncData = null;
@@ -351,6 +363,12 @@ export class ModalStore {
   }
 
   @action
+  public changeApplyDatabasePermissionModal(isShow: boolean = true, data?: any) {
+    this.applyDatabasePermissionVisible = isShow;
+    this.applyDatabasePermissionData = isShow ? data : null;
+  }
+
+  @action
   public changePartitionModal(isShow: boolean = true) {
     this.partitionVisible = isShow;
   }
@@ -409,6 +427,7 @@ export class ModalStore {
     this.createSQLPlanVisible = false;
     this.userConfigModalVisible = false;
     this.applyPermissionVisible = false;
+    this.applyDatabasePermissionVisible = false;
     this.partitionVisible = false;
     this.dataArchiveVisible = false;
     this.dataClearVisible = false;

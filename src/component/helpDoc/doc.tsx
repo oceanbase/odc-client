@@ -453,47 +453,27 @@ export default {
   ),
   projectOwner: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.ManageAllDatabasesAndMembers',
-        }) /*可管理项目所有数据库和成员*/
-      }
+      拥有项目内的所有权限
     </p>
   ),
   projectDBA: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.ManageAllDatabasesOfA',
-        }) /*可管理项目所有数据库*/
-      }
+      拥有项目内除添加/移除成员和归档项目以外的所有权限
     </p>
   ),
   projectDev: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.AccessAllDatabasesOfThe',
-        }) /*可访问项目所有数据库*/
-      }
+      允许登录所有数据库、执行 SQL、提交工单，通常是开发人员
     </p>
   ),
   projectSA: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.src.component.helpDoc.OnlyAllowTheSensitiveColumns',
-        }) /* 只允许管理项目的敏感列和参与审批 */
-      }
+      在参与者的基础上还可以管理敏感列
     </p>
   ),
   participant: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.src.component.helpDoc.OnlyAllowParticipationInApproval',
-        }) /* 只允许参与审批 */
-      }
+      允许查看项目基本信息，并自助申请库权限和提交工单
     </p>
   ),
   dataArchiveTimeDoc: (
@@ -556,6 +536,26 @@ export default {
     <p>
       关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
       将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障
+    </p>
+  ),
+  ApplyDatabasePermissionQueryTip: (
+    <p>
+      执行查询语句的权限
+    </p>
+  ),
+  ApplyDatabasePermissionExportTip: (
+    <p>
+      新建导出和导出结果集工单的权限
+    </p>
+  ),
+  ApplyDatabasePermissionChangeTip: (
+    <p>
+      新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL 计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）
+    </p>
+  ),
+  ApplyDatabasePermissionExpiringTip: (
+    <p>
+      该权限将在7天内过期
     </p>
   ),
 };

@@ -27,6 +27,7 @@ import ResultSetExportTask from './ResultSetExportTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
 import ApplyPermissionCreateModal from './ApplyPermission';
+import ApplyDatabasePermissionCreateModal from './ApplyDatabasePermission';
 
 interface IProps {
   projectId?: number;
@@ -49,6 +50,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ApplyPermissionCreateModal projectId={projectId} />
       <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
       <ResultSetExportTask projectId={projectId} theme={theme} />
+      <ApplyDatabasePermissionCreateModal projectId={projectId} />
     </>
   );
 };

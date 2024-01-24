@@ -60,7 +60,6 @@ interface IState {
   detailVisible: boolean;
   partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
-  disabledOpt: boolean;
   tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
@@ -73,7 +72,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       detailId: props.taskStore?.defaultOpenTaskId,
       detailType: props.taskStore?.defauleOpenTaskType,
       detailVisible: !!props.taskStore?.defaultOpenTaskId,
-      disabledOpt: null,
       partitionPlan: null,
       tasks: null,
       cycleTasks: null,
@@ -256,25 +254,14 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.APPLY_PROJECT_PERMISSION:
         modalStore.changeApplyPermissionModal(true);
         break;
+      case TaskPageType.APPLY_DATABASE_PERMISSION:
+        modalStore.changeApplyDatabasePermissionModal(true);
+        break;
       default:
     }
   };
-  async fetchProject(projectId: number) {
-    const data = await getProject(projectId);
-    const currentUserResourceRoles = data?.currentUserResourceRoles || [];
-    const disabled =
-      currentUserResourceRoles?.filter((roles) =>
-        [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
-      )?.length === 0;
-    this.setState({
-      disabledOpt: disabled,
-    });
-  }
+  
   componentDidMount(): void {
-    const { inProject, projectId } = this.props;
-    if (inProject && projectId) {
-      this.fetchProject(projectId);
-    }
     this.openDefaultTask();
   }
   private openDefaultTask = async () => {
@@ -309,7 +296,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       partitionPlan,
       cycleTasks,
       tasks,
-      disabledOpt,
     } = this.state;
     const taskTabType = pageKey || taskStore?.taskPageType;
     const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
@@ -317,7 +303,6 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       <>
         <div className={styles.content}>
           <TaskTable
-            disabledOpt={disabledOpt}
             tableRef={this.tableRef}
             taskTabType={taskTabType}
             taskList={taskList}
