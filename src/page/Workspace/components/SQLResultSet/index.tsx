@@ -25,6 +25,7 @@ import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
+import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
@@ -35,6 +36,7 @@ import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
+import DBPermissionTable from './DBPermissionTable';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -53,6 +55,8 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
+  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedSql?: string;
   sqlChanged?: boolean;
   baseOffset: number;
 
@@ -86,6 +90,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
+    unauthorizedDatabases,
+    unauthorizedSql,
     sqlChanged,
     baseOffset,
     onSubmitRows,
@@ -222,6 +228,12 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
+  if(unauthorizedDatabases?.length){
+    return (
+      <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />
+    )
+  }
+
   return (
     <>
       <Tabs
@@ -432,7 +444,12 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     </Tooltip>
                   ),
                   key: set.uniqKey,
-                  children: <SQLResultLog resultHeight={resultHeight} resultSet={set} />,
+                  children: (
+                    <SQLResultLog 
+                      resultHeight={resultHeight}
+                      resultSet={set}
+                    />
+                  ),
                 };
               }
             }),

@@ -26,26 +26,21 @@ import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
-import { IConnectionStatus, TaskPageType, TaskType } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
+import { TaskPageType, TaskType } from '@/d.ts';
+import { IDatabase, DatabasePermissionType } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import modalStore from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
-import { Input, Space, Tag, Tooltip, Typography } from 'antd';
+import { Input, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import AddDataBaseButton from './AddDataBaseButton';
 import tracert from '@/util/tracert';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import {
-  getDataSourceModeConfig,
-  getDataSourceModeConfigByConnectionMode,
-  getDataSourceStyleByConnectType,
-} from '@/common/datasource';
-import { ProjectRole } from '@/d.ts/project';
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../ProjectContext';
 import styles from './index.less';
 import setting from '@/store/setting';
@@ -75,7 +70,8 @@ const Database: React.FC<IProps> = ({ id }) => {
     params.current.pageSize = pageSize;
     params.current.current = current;
     params.current.environmentId = environmentId;
-    const res = await listDatabases(parseInt(id), null, current, pageSize, name, environmentId);
+    const res = await listDatabases(
+      parseInt(id), null, current, pageSize, name, environmentId, null, null, true);
     if (res) {
       datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
       setData(res?.contents);
@@ -145,11 +141,9 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
-              const currentUserResourceRoles = project?.currentUserResourceRoles || [];
-              const disabled =
-                currentUserResourceRoles?.filter((roles) =>
-                  [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
-                )?.length === 0;
+                const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+                const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
+                const disabled = !hasChangeAuth && !hasQueryAuth;
               if (!record.existed) {
                 return disabled ? (
                   <div className={styles.disable}>{name}</div>
@@ -269,13 +263,12 @@ const Database: React.FC<IProps> = ({ id }) => {
                 return '-';
               }
               const config = getDataSourceModeConfig(record?.dataSource?.type);
-              const disabled =
-                project?.currentUserResourceRoles?.filter((roles) =>
-                  [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
-                )?.length === 0;
               const disableTransfer =
                 !!record?.dataSource?.projectId &&
                 !config?.schema?.innerSchema?.includes(record?.name);
+              const hasExportAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
+              const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+              const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -285,7 +278,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         tracert.click('a3112.b64002.c330858.d367383');
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
-                      disabled={disabled}
+                      disabled={!hasExportAuth}
                     >
                       {
                         formatMessage({
@@ -301,7 +294,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         tracert.click('a3112.b64002.c330858.d367384');
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
-                      disabled={disabled}
+                      disabled={!hasChangeAuth}
                     >
                       {
                         formatMessage({
@@ -316,7 +309,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367385');
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
-                    disabled={disabled}
+                    disabled={!hasChangeAuth}
                   >
                     {
                       formatMessage({
@@ -330,7 +323,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
-                    disabled={disabled}
+                    disabled={!hasQueryAuth}
                   >
                     {
                       formatMessage({
@@ -345,7 +338,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setVisible(true);
                       setDatabase(record);
                     }}
-                    disabled={disabled || disableTransfer}
+                    disabled={!hasChangeAuth || disableTransfer}
                   >
                     <Tooltip
                       title={

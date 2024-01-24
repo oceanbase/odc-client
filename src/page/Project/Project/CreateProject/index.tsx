@@ -151,11 +151,7 @@ export default React.forwardRef<{
         name={'developer'}
         label={
           <HelpDoc leftText doc="projectDev">
-            {
-              formatMessage({
-                id: 'odc.Project.CreateProject.CommonMember',
-              }) /*普通成员*/
-            }
+            开发者
           </HelpDoc>
         }
       >

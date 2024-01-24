@@ -18,7 +18,7 @@ import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
-import { IDatabase } from './database';
+import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
 
 export interface IUser {
   email: string;
@@ -564,6 +564,16 @@ export enum AuditEventActionType {
   STOP_APPLY_PROJECT_PERMISSION_TASK = 'STOP_APPLY_PROJECT_PERMISSION_TASK',
   // SQL 安全规则管理
   UPDATE_SQL_SECURITY_RULE = 'UPDATE_SQL_SECURITY_RULE',
+  // 数据库权限申请
+  APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  CREATE_APPLY_DATABASE_PERMISSION_TASK = 'CREATE_APPLY_DATABASE_PERMISSION_TASK',
+  APPROVE_APPLY_DATABASE_PERMISSION_TASK = 'APPROVE_APPLY_DATABASE_PERMISSION_TASK',
+  REJECT_APPLY_DATABASE_PERMISSION_TASK = 'REJECT_APPLY_DATABASE_PERMISSION_TASK',
+  STOP_APPLY_DATABASE_PERMISSION_TASK = 'STOP_APPLY_DATABASE_PERMISSION_TASK',
+  // 数据库权限管理
+  DATABASE_PERMISSION_MANAGEMENT = 'DATABASE_PERMISSION_MANAGEMENT',
+  GRANT_DATABASE_PERMISSION = 'GRANT_DATABASE_PERMISSION',
+  REVOKE_DATABASE_PERMISSION = 'REVOKE_DATABASE_PERMISSION',
 }
 
 export enum AuditEventDialectType {
@@ -1801,6 +1811,7 @@ export enum TaskPageType {
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
 }
 
 export enum TaskType {
@@ -1820,6 +1831,7 @@ export enum TaskType {
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
 }
 
 export enum TaskJobType {
@@ -2200,7 +2212,8 @@ export type TaskRecordParameters =
   | ISQLPlanTaskParams
   | IAlterScheduleTaskParams
   | IResultSetExportTaskParams
-  | IApplyPermissionTaskParams;
+  | IApplyPermissionTaskParams
+  | IApplyDatabasePermissionTaskParams;
 
 export interface ITaskResult {
   containQuery: boolean;
@@ -2427,6 +2440,20 @@ export interface IApplyPermissionTaskParams {
   }[];
 }
 
+export interface IApplyDatabasePermissionTaskParams {
+  project: {
+    id: number;
+    name?: string;
+  };
+  databases: {
+    id: number;
+    name?: string;
+  }[];
+  types: DatabasePermissionType[];
+  expireTime: number;
+  applyReason: string;
+}
+
 export interface IResultSetExportTaskParams {
   sql: string;
   fileFormat: IExportResultSetFileType;
@@ -2588,7 +2615,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
-  unauthorizedDatabaseNames: string[];
+  unauthorizedDatabases: IUnauthorizedDatabase[];
   id?: number;
   candidates: {
     id: number;
