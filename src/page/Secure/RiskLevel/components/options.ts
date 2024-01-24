@@ -69,6 +69,10 @@ export const getTaskTypeOptions = () => {
       label: TaskTypeMap[TaskType.APPLY_PROJECT_PERMISSION],
       value: TaskType.APPLY_PROJECT_PERMISSION,
     },
+    {
+      label: TaskTypeMap[TaskType.APPLY_DATABASE_PERMISSION],
+      value: TaskType.APPLY_DATABASE_PERMISSION,
+    },
   ];
   return newTaskTypeOptions;
 };

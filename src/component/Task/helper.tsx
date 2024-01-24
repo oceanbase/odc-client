@@ -15,14 +15,31 @@
  */
 
 import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { DatabasePermissionType } from '@/d.ts/database';
 import login from '@/store/login';
 import settingStore from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
+export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 
 // 423 屏蔽 SysFormItem 配置
 export const ENABLED_SYS_FROM_ITEM = false;
+
+export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) =>{
+  let _permissions = null;
+  switch(taskType){
+    case TaskType.EXPORT:
+      _permissions = [DatabasePermissionType.EXPORT];
+      break;
+    case TaskType.EXPORT_RESULT_SET:
+      _permissions = [DatabasePermissionType.EXPORT, DatabasePermissionType.QUERY];
+      break;
+    default:
+      _permissions = [DatabasePermissionType.CHANGE];
+  }
+  return permissions?.some(item => _permissions.includes(item));
+}
 
 export const isCycleTask = (type: TaskType) => {
   return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
@@ -207,6 +224,11 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           label: formatMessage({
             id: 'odc.src.component.Task.ApplicationProjectPermissions',
           }), //'申请项目权限'
+          enabled: !isClient() && !isPersonal,
+        },
+        {
+          value: TaskPageType.APPLY_DATABASE_PERMISSION,
+          label: '申请库权限',
           enabled: !isClient() && !isPersonal,
         },
       ],

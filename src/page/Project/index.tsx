@@ -25,6 +25,7 @@ import Task from './Task';
 import User from './User';
 import Notification from './Notification';
 import { getProject, listProjects } from '@/common/network/project';
+import { listDatabases } from '@/common/network/database';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { gotoSQLWorkspace } from '@/util/route';
@@ -34,11 +35,21 @@ import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
 import tracert from '@/util/tracert';
-const ExtraContent = ({ projectId, currentRoles }) => {
-  const disabled =
-    currentRoles?.filter((roles) =>
-      [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
-    )?.length === 0;
+const ExtraContent = ({ projectId }) => {
+  const [disabled, setDisabled] = useState(false);
+  
+  const getLoginDatabaseAuth = async () => {
+    const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
+    const hasLoginDatabaseAuth = res.contents?.some(item => !!item.authorizedPermissionTypes.length);
+    setDisabled(!hasLoginDatabaseAuth);
+  };
+
+  useEffect(() =>{
+    if(projectId){
+      getLoginDatabaseAuth();
+    }
+  }, [projectId])
+
   return (
     <Space size={12}>
       <Button
@@ -237,7 +248,7 @@ const Index: React.FC<IProps> = function () {
       tabList={displayTabs}
       tabActiveKey={page}
       tabBarExtraContent={
-        <ExtraContent projectId={projectId} currentRoles={project?.currentUserResourceRoles} />
+        <ExtraContent projectId={projectId} />
       }
       containerWrapStyle={
         [IPageType.Project_Notification].includes(page)

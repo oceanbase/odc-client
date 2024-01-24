@@ -63,6 +63,7 @@ import { getItems as getResultSetExportTaskContentItems } from './ResultSetExpor
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
+import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 
 interface IProps {
   type: TaskType;
@@ -373,6 +374,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
   } else if (task?.type === TaskType.APPLY_PROJECT_PERMISSION) {
     taskContent = <ApplyPermissionTaskContent task={task as any} />;
+  } else if (task?.type === TaskType.APPLY_DATABASE_PERMISSION) {
+    taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
   } else {
     getItems = taskContentMap[task?.type]?.getItems;
   }

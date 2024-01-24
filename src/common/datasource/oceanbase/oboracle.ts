@@ -61,13 +61,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) =>
-          ![
-            TaskType.SHADOW,
-            TaskType.DATA_ARCHIVE,
-            TaskType.DATA_DELETE,
-            TaskType.PARTITION_PLAN,
-          ].includes(type),
+        (type) => ![TaskType.SHADOW, TaskType.PARTITION_PLAN].includes(type),
       ),
       obclient: true,
       recycleBin: true,

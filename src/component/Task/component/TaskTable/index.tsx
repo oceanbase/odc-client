@@ -121,6 +121,7 @@ export const TaskTypeMap = {
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
   }), //'申请项目权限'
+  [TaskType.APPLY_DATABASE_PERMISSION]: '申请库权限',
 };
 export const getStatusFilters = (status: {
   [key: string]: {
@@ -148,7 +149,6 @@ interface IProps {
     | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
   >;
   isMultiPage?: boolean;
-  disabledOpt?: boolean;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -167,7 +167,6 @@ const TaskTable: React.FC<IProps> = inject(
       tableRef,
       taskList,
       isMultiPage,
-      disabledOpt,
     } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
@@ -443,7 +442,6 @@ const TaskTable: React.FC<IProps> = inject(
                       <DownOutlined />
                     </Button>
                   ),
-                  disabled: disabledOpt,
                   menu: {
                     onClick: ({ key }) => {
                       props.onMenuClick(key as TaskPageType);
@@ -468,19 +466,20 @@ const TaskTable: React.FC<IProps> = inject(
                 }
               : {
                   type: IOperationOptionType.button,
-                  content:
-                    taskTabType === TaskPageType.APPLY_PROJECT_PERMISSION
-                      ? activeTaskLabel
-                      : formatMessage(
-                          {
-                            id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                          },
-                          {
-                            activeTaskLabel: activeTaskLabel,
-                          },
-                        ),
+                  content: [
+                    TaskPageType.APPLY_PROJECT_PERMISSION,
+                    TaskPageType.APPLY_DATABASE_PERMISSION,
+                  ].includes(taskTabType)
+                    ? activeTaskLabel
+                    : formatMessage(
+                        {
+                          id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                        },
+                        {
+                          activeTaskLabel: activeTaskLabel,
+                        },
+                      ),
                   //`新建${activeTaskLabel}`
-                  disabled: disabledOpt,
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskTabType);
