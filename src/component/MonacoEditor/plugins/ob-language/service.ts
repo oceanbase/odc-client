@@ -37,7 +37,13 @@ export function getModelService(
       if (!hasConnect(sessionFunc())) {
         return;
       }
-      await sessionFunc()?.queryIdentities();
+      const db =
+        sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
+      if (db?.tables?.length || db?.views?.length) {
+        sessionFunc()?.queryIdentities();
+      } else {
+        await sessionFunc()?.queryIdentities();
+      }
       const dbObj =
         sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
       if (!dbObj) {
