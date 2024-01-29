@@ -161,7 +161,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         ].filter(Boolean)}
         className={styles.executeSqlModal}
       >
-        {tip && <Alert message={tip} type="info" showIcon={true} style={{ marginBottom: 4 }} />}
+        {tip && <Alert message={tip} type="warning" showIcon={true} style={{ marginBottom: 4 }} />}
         <div
           style={{
             display: 'flex',
