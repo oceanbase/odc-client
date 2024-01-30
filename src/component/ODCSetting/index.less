@@ -1,0 +1,30 @@
+.box {
+  display: flex;
+  flex-direction: row;
+  height: 550px;
+  .menu {
+    width: 140px;
+    :global {
+      .ant-menu.ant-menu-vertical {
+        padding: 12px 8px;
+        height: 100%;
+        .ant-menu-item {
+          height: 28px;
+          line-height: 28px;
+        }
+      }
+    }
+  }
+  .content {
+    flex: 1;
+    padding: 16px;
+  }
+}
+
+.modal {
+  :global {
+    .ant-modal-body {
+      padding: 0;
+    }
+  }
+}
