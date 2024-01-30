@@ -2,16 +2,20 @@ import { AutoCommitMode } from '@/d.ts';
 import RadioItem from './Item/RadioItem';
 import { formatMessage } from '@/util/intl';
 
-interface ODCSettingGroup {
+export interface ODCSettingGroup {
   label: string;
   key: string;
 }
 
-interface ODCSetting<T = any> {
+export interface IODCSetting<T = any> {
   label: string;
   key: string;
   group: ODCSettingGroup;
   secondGroup: ODCSettingGroup;
+  /**
+   * 渲染宽度
+   */
+  span?: number;
   storeType: 'server' | 'locale';
   render: (value: T, onChange: (value: T) => Promise<void>) => React.ReactNode;
 }
@@ -95,7 +99,7 @@ const accountPrivacyGroup: ODCSettingGroup = {
 /**
  * setting
  */
-const setting: ODCSetting[] = [
+const odcSetting: IODCSetting[] = [
   {
     label: 'MYSQL 提交模式',
     key: 'mysqlCommitMode',
@@ -125,4 +129,34 @@ const setting: ODCSetting[] = [
       );
     },
   },
+  {
+    label: 'Oracle 提交模式',
+    key: 'oracleCommitMode',
+    group: databaseGroup,
+    secondGroup: databaseSessionGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: formatMessage({
+                id: 'odc.component.LoginMenus.UserConfig.Automatic',
+              }),
+              value: AutoCommitMode.ON,
+            },
+            {
+              label: formatMessage({
+                id: 'odc.component.LoginMenus.UserConfig.Manual',
+              }),
+              value: AutoCommitMode.OFF,
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
 ];
+export default odcSetting;
