@@ -451,31 +451,11 @@ export default {
       }
     </p>
   ),
-  projectOwner: (
-    <p>
-      拥有项目内的所有权限
-    </p>
-  ),
-  projectDBA: (
-    <p>
-      拥有项目内除添加/移除成员和归档项目以外的所有权限
-    </p>
-  ),
-  projectDev: (
-    <p>
-      允许登录所有数据库、执行 SQL、提交工单，通常是开发人员
-    </p>
-  ),
-  projectSA: (
-    <p>
-      在参与者的基础上还可以管理敏感列
-    </p>
-  ),
-  participant: (
-    <p>
-      允许查看项目基本信息，并自助申请库权限和提交工单
-    </p>
-  ),
+  projectOwner: <p>拥有项目内的所有权限</p>,
+  projectDBA: <p>拥有项目内除添加/移除成员和归档项目以外的所有权限</p>,
+  projectDev: <p>允许登录所有数据库、执行 SQL、提交工单，通常是开发人员</p>,
+  projectSA: <p>在参与者的基础上还可以管理敏感列</p>,
+  participant: <p>允许查看项目基本信息，并自助申请库权限和提交工单</p>,
   dataArchiveTimeDoc: (
     <p>
       {
@@ -538,24 +518,14 @@ export default {
       将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障
     </p>
   ),
-  ApplyDatabasePermissionQueryTip: (
-    <p>
-      执行查询语句的权限
-    </p>
-  ),
-  ApplyDatabasePermissionExportTip: (
-    <p>
-      新建导出和导出结果集工单的权限
-    </p>
-  ),
+  ApplyDatabasePermissionQueryTip: <p>执行查询语句的权限</p>,
+  ApplyDatabasePermissionExportTip: <p>新建导出和导出结果集工单的权限</p>,
   ApplyDatabasePermissionChangeTip: (
     <p>
-      新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL 计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）
+      新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL
+      计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）
     </p>
   ),
-  ApplyDatabasePermissionExpiringTip: (
-    <p>
-      该权限将在7天内过期
-    </p>
-  ),
+  ApplyDatabasePermissionExpiringTip: <p>该权限将在7天内过期</p>,
+  copiedRulesetId: <p>可引用和修改已有环境的SQL检查和SQL窗口规范</p>,
 };
