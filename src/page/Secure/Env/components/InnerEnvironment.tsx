@@ -17,13 +17,16 @@ import { formatMessage } from '@/util/intl';
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { RuleType } from '@/d.ts/rule';
-import { Tabs } from 'antd';
-import { memo, useCallback, useContext } from 'react';
+import { Tabs, message } from 'antd';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
-import { EnvironmentContext, IEnvironmentContext } from '../EnvironmentContext';
 import EnvironmentInfo from './EnvironmentInfo';
 import EnvironmentTable from './EnvironmentTable';
 import styles from './index.less';
+import { IEnvironment } from '@/d.ts/environment';
+import { IManagerIntegration } from '@/d.ts';
+import { setEnabled } from '@/common/network/env';
+import { useState } from 'react';
+
 export const RenderLevel: React.FC<{
   level: number | string;
   extra?: string;
@@ -43,31 +46,52 @@ export const RenderLevel: React.FC<{
   };
   return <RiskLevelLabel content={levelMap[level]} color={colorMap[level]} extra={extra} />;
 };
-interface InnerEnvironmentProps {
+export interface InnerEnvironmentProps {
+  currentEnvironment: IEnvironment;
+  integrations: IManagerIntegration[];
+  integrationsIdMap: Record<string, string>;
   ruleType: RuleType;
   setRuleType: (v: RuleType) => void;
+  initEnvironment: (currentEnvironmentId?: number) => void;
+  handleUpdateEnvironment: () => void;
+  handleDeleteEnvironment: () => void;
 }
-const InnerEnvironment = memo(({ ruleType, setRuleType }: InnerEnvironmentProps) => {
-  const environmentContext = useContext<IEnvironmentContext>(EnvironmentContext);
+const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
+  integrations,
+  integrationsIdMap,
+  currentEnvironment,
+  ruleType,
+  setRuleType,
+  initEnvironment,
+  handleUpdateEnvironment,
+  handleDeleteEnvironment,
+}) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const handleTabClick = (
     key: string,
     event: React.KeyboardEvent<Element> | React.MouseEvent<Element, MouseEvent>,
   ) => {
     setRuleType(key as RuleType);
   };
-  const MemoTable = useCallback(
-    () =>
-      EnvironmentTable({
-        ruleType,
-      }),
-    [ruleType, environmentContext?.currentEnvironment],
-  );
+  const handleSwitchEnvEnabled = async () => {
+    setLoading(true);
+    const successful = await setEnabled(currentEnvironment?.id, !currentEnvironment.enabled);
+    setLoading(false);
+    if (successful) {
+      message.success(currentEnvironment.enabled ? '禁用成功' : '启用成功');
+      await initEnvironment(currentEnvironment?.id);
+      return;
+    }
+    message.error(currentEnvironment.enabled ? '禁用失败' : '启用失败');
+  };
   return (
     <div className={styles.innerEnv}>
       <EnvironmentInfo
-        label={environmentContext?.currentEnvironment?.name}
-        style={environmentContext?.currentEnvironment?.style}
-        description={environmentContext?.currentEnvironment?.description}
+        currentEnvironment={currentEnvironment}
+        loading={loading}
+        handleSwitchEnvEnabled={handleSwitchEnvEnabled}
+        handleDeleteEnvironment={handleDeleteEnvironment}
+        handleUpdateEnvironment={handleUpdateEnvironment}
       />
       <Tabs
         type="card"
@@ -101,9 +125,15 @@ const InnerEnvironment = memo(({ ruleType, setRuleType }: InnerEnvironmentProps)
             height: '8px',
           }}
         ></div>
-        {environmentContext?.currentEnvironment?.id && <MemoTable />}
+        <EnvironmentTable
+          key={currentEnvironment?.id}
+          ruleType={ruleType}
+          currentEnvironment={currentEnvironment}
+          integrations={integrations}
+          integrationsIdMap={integrationsIdMap}
+        />
       </div>
     </div>
   );
-});
+};
 export default InnerEnvironment;

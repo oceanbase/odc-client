@@ -29,11 +29,13 @@ export interface SecureSiderProps {
 export interface ISecureSiderProps {
   loading?: boolean;
   siderItemList: SiderItem[];
+  extra?: React.ReactNode;
   selectedItem: any;
   handleItemClick: (v: any) => void;
 }
 const SecureSider: React.FC<ISecureSiderProps> = ({
   loading = false,
+  extra = null,
   siderItemList,
   selectedItem,
   handleItemClick,
@@ -48,6 +50,7 @@ const SecureSider: React.FC<ISecureSiderProps> = ({
     return (
       <Spin spinning={loading}>
         <div className={styles.siderItemList}>
+          {extra}
           {siderItemList?.map((item) => {
             return (
               <div
