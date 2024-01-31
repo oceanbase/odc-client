@@ -16,10 +16,11 @@
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
-import { Button, Descriptions, Dropdown, Space } from 'antd';
+import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
 import styles from './index.less';
 import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
 import { IEnvironment } from '@/d.ts/environment';
+import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 
 const EnvironmentInfo: React.FC<{
   loading: boolean;
@@ -36,7 +37,6 @@ const EnvironmentInfo: React.FC<{
 }) => {
   const { name, style, builtIn = true, enabled, description } = currentEnvironment ?? {};
   const handleMenuOnClick: MenuClickEventHandler = (info: MenuInfo) => {
-    console.log(info);
     switch (info.key) {
       case 'edit': {
         handleUpdateEnvironment();
@@ -58,10 +58,27 @@ const EnvironmentInfo: React.FC<{
           <div className={styles.tagLabel}>
             {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
           </div>
-          <RiskLevelLabel content={name} color={style} />
+          <Space size={0}>
+            <RiskLevelLabel content={name} color={style} />
+            {!enabled && (
+              <Tooltip title={'环境已被禁用'}>
+                <ExclamationCircleFilled
+                  style={{
+                    color: 'var(--function-gold6-color)',
+                    cursor: 'pointer',
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Space>
         </Space>
         <Space>
-          <Button onClick={handleSwitchEnvEnabled} loading={loading} disabled={loading}>
+          <Button
+            onClick={handleSwitchEnvEnabled}
+            type={enabled ? 'default' : 'primary'}
+            loading={loading}
+            disabled={loading}
+          >
             {enabled ? '禁用' : '启用'}
           </Button>
           {builtIn ? null : (
@@ -74,7 +91,9 @@ const EnvironmentInfo: React.FC<{
                 onClick: handleMenuOnClick,
               }}
             >
-              <Button>...</Button>
+              <Button style={{ padding: '3.6px 8px' }}>
+                <Icon component={EllipsisOutlined} />
+              </Button>
             </Dropdown>
           )}
         </Space>

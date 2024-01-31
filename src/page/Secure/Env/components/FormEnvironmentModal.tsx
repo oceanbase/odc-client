@@ -56,6 +56,7 @@ export const FormEnvironmentModal: React.FC<{
         });
       } else {
         formRef.setFieldsValue({
+          style: items?.[0],
           copiedRulesetId: options?.[0]?.value,
         });
       }
