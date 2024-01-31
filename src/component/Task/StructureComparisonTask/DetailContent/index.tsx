@@ -50,7 +50,12 @@ import {
   IComparisonResultData,
 } from '@/d.ts/task';
 import CommonTable from '@/component/CommonTable';
-import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import {
+  CommonTableMode,
+  ITableInstance,
+  ITableLoadOptions,
+} from '@/component/CommonTable/interface';
+import MonacoEditor from '@/component/MonacoEditor';
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
   task: TaskDetail<IStructureComparisonTaskParams>;
@@ -160,11 +165,12 @@ const CompareTable: React.FC<{
     }
   }, [currentTaskResult]);
   return (
-    <div style={{ height: '500px' }}>
+    <div style={{ height: '316px' }}>
       <ConfigProvider renderEmpty={TableEmpty}>
         <CommonTable
           key="CompareTable"
           ref={tableRef}
+          mode={CommonTableMode.SMALL}
           titleContent={null}
           showToolbar={false}
           operationContent={null}
@@ -200,14 +206,13 @@ const SQLPreview: React.FC<{
         }}
       >
         {comparisonResult?.totalChangeScript ? (
-          <SQLContent
-            sqlContent={comparisonResult?.totalChangeScript}
-            sqlObjectIds={null}
-            sqlObjectNames={null}
-            taskId={null}
-            showLineNumbers={false}
-            language={getDataSourceModeConfig(datasourceType)?.sql?.language}
-          />
+          <div className={styles?.sqlContent}>
+            <MonacoEditor
+              readOnly
+              defaultValue={comparisonResult?.totalChangeScript}
+              language={getDataSourceModeConfig(datasourceType)?.sql?.language}
+            />
+          </div>
         ) : (
           <div
             style={{
@@ -244,6 +249,9 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     const [structrueComparison, setStructrueComparison] =
       useState<IStructrueComparisonDetail>(null);
     const loadStructureComparisonResults = async (args?: ITableLoadOptions) => {
+      if (!(currentResult as any)?.taskId) {
+        return;
+      }
       const { filters, sorter, pagination, pageSize } = args ?? {};
       const { current = 1 } = pagination ?? {};
       const { dbObjectName, operationType } = filters ?? {};
@@ -251,14 +259,14 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         dbObjectName,
         operationType,
         page: current,
-        size: pageSize,
+        size: 10,
       };
       const data = await getStructrueComparison((currentResult as any)?.taskId, {
         ...params,
       } as any);
       if (data?.storageObjectId) {
         modalStore?.updateStructureComparisonDataMap(task?.id, {
-          database: task?.database,
+          database: task?.relatedDatabase,
           storageObjectId: data?.storageObjectId,
           totalChangeScript: data?.totalChangeScript,
         });
