@@ -38,7 +38,17 @@ export default function DefaultPage() {
   }, []);
   const context = useContext(ActivityBarContext);
   return (
-    <div style={{ marginLeft: '50%', marginTop: 100, transform: 'translateX(-50%)', width: 360, position: "absolute", top: 0, left: 0 }}>
+    <div
+      style={{
+        marginLeft: '50%',
+        marginTop: 100,
+        transform: 'translateX(-50%)',
+        width: 360,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+      }}
+    >
       <Typography.Title level={4}>
         {formatMessage({ id: 'odc.component.WindowManager.DefaultPage.QuickStart' }) /*快速开始*/}
       </Typography.Title>
