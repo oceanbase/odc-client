@@ -26,9 +26,9 @@ export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 // 423 屏蔽 SysFormItem 配置
 export const ENABLED_SYS_FROM_ITEM = false;
 
-export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) =>{
+export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) => {
   let _permissions = null;
-  switch(taskType){
+  switch (taskType) {
     case TaskType.EXPORT:
       _permissions = [DatabasePermissionType.EXPORT];
       break;
@@ -38,8 +38,8 @@ export const hasPermission = (taskType: TaskType, permissions: DatabasePermissio
     default:
       _permissions = [DatabasePermissionType.CHANGE];
   }
-  return permissions?.some(item => _permissions.includes(item));
-}
+  return permissions?.some((item) => _permissions.includes(item));
+};
 
 export const isCycleTask = (type: TaskType) => {
   return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
@@ -163,6 +163,12 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
           }),
           //影子表同步
+          enabled: true,
+        },
+        {
+          value: TaskPageType.STRUCTURE_COMPARISON,
+          label: '结构比对',
+          //无锁结构变更
           enabled: true,
         },
         {
