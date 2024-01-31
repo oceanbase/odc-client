@@ -34,12 +34,14 @@ import {
   TaskStatus,
   TaskType,
   IDatasourceUser,
+  CreateStructureComparisonTaskRecord,
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
 import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
+import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 
 /**
  * 根据函数获取ddl sql
@@ -62,7 +64,19 @@ export async function createTask(data: Partial<CreateTaskRecord>): Promise<numbe
   });
   return res?.data?.contents?.length || 0;
 }
-
+/**
+ * 新建结构比对工单
+ * @param data
+ * @returns boolean
+ */
+export async function createStructureComparisonTask(
+  data: Partial<CreateStructureComparisonTaskRecord>,
+) {
+  const res = await request.post(`/api/v2/flow/flowInstances/`, {
+    data,
+  });
+  return res?.data?.contents?.length > 0;
+}
 /**
  * 查询任务列表
  */
@@ -137,7 +151,10 @@ export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail
 /**
  * 查询任务列表
  */
-export async function getTaskDetail(id: number, ignoreError: boolean = false): Promise<TaskDetail<TaskRecordParameters>> {
+export async function getTaskDetail(
+  id: number,
+  ignoreError: boolean = false,
+): Promise<TaskDetail<TaskRecordParameters>> {
   const res = await request.get(`/api/v2/flow/flowInstances/${id}`, {
     params: {
       ignoreError,
@@ -328,6 +345,25 @@ export async function getCycleTaskFile(taskId: number, objectId: string[]): Prom
 }
 
 /**
+ * 下载文件（结构比对任务）
+ * @param taskId
+ * @param objectId
+ * @returns
+ */
+export async function getStructureComparisonTaskFile(
+  taskId: number,
+  objectId: string[],
+): Promise<string[]> {
+  const downloadInfo = await request.post(
+    `/api/v2/flow/flowInstances/${taskId}/tasks/structure-comparison/batchGetDownloadUrl`,
+    {
+      data: objectId,
+    },
+  );
+  return downloadInfo?.data?.contents ?? [];
+}
+
+/**
  * 查询分区详情
  */
 export async function getPartitionPlan(params: {
@@ -496,9 +532,7 @@ export async function getProjectList(archived: boolean): Promise<IResponseData<I
 /**
  * 查询当前数据库是否需要锁表
  */
-export async function getLockDatabaseUserRequired(
-  databaseId: number,
-): Promise<{
+export async function getLockDatabaseUserRequired(databaseId: number): Promise<{
   lockDatabaseUserRequired: boolean;
   databaseId: number;
 }> {
@@ -519,4 +553,38 @@ export async function updateLimiterConfig(
     data,
   });
   return !!res?.data;
+}
+/**
+ * 获取结构比对中涉及的表信息
+ * @param taskId 结构比对工单id
+ * @param params.operationType 要筛选的任务结果类型
+ */
+export async function getStructrueComparison(
+  taskId: number,
+  params?: {
+    dbObjectName?: string;
+    operationType?: EOperationType;
+    page?: number;
+    size?: number;
+  },
+): Promise<IComparisonResultData> {
+  const res = await request.get(`/api/v2/schema-sync/structureComparison/${taskId}`, {
+    params,
+  });
+  return res?.data;
+}
+/**
+ * 获取结构比对中表的详情
+ * @param taskId
+ * @param structureComparisonId
+ * @returns
+ */
+export async function getStructrueComparisonDetail(
+  taskId: number,
+  structureComparisonId: number,
+): Promise<IStructrueComparisonDetail> {
+  const res = await request.get(
+    `/api/v2/schema-sync/structureComparison/${taskId}/${structureComparisonId}`,
+  );
+  return res?.data;
 }

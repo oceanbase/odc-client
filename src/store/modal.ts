@@ -16,6 +16,7 @@
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { DbObjectType, EStatus, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -135,6 +136,26 @@ export class ModalStore {
 
   @observable
   public dataArchiveEditId: number = null;
+
+  @observable
+  public structureComparisonVisible: boolean = false;
+
+  @observable
+  public structureComparisonDataMap: Map<
+    number,
+    {
+      database: IDatabase;
+      storageObjectId: number;
+      totalChangeScript: string;
+    }
+  > = new Map<
+    number,
+    {
+      database: IDatabase;
+      storageObjectId: number;
+      totalChangeScript: string;
+    }
+  >();
 
   @observable
   public dataClearVisible: boolean = false;
@@ -377,6 +398,29 @@ export class ModalStore {
   public changeDataArchiveModal(isShow: boolean = true, id?: number) {
     this.dataArchiveVisible = isShow;
     this.dataArchiveEditId = isShow ? id : null;
+  }
+
+  @action
+  public changeStructureComparisonModal(isShow: boolean = true) {
+    this.structureComparisonVisible = isShow;
+    isShow && this.structureComparisonDataMap.clear();
+  }
+
+  @action
+  public updateStructureComparisonDataMap(
+    taskId?: number,
+    structureComparisonData?: {
+      database: IDatabase;
+      storageObjectId: number;
+      totalChangeScript: string;
+    },
+    clear: boolean = false,
+  ) {
+    if (clear) {
+      this.structureComparisonDataMap.clear();
+      return;
+    }
+    this.structureComparisonDataMap.set(taskId, structureComparisonData);
   }
 
   @action
