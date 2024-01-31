@@ -60,27 +60,35 @@ const ODCSetting: React.FC<IProps> = () => {
           />
         </div>
         <div className={styles.content}>
-          {Array.from(groupData?.secondGroup?.values()).map((group) => {
-            return (
-              <>
-                <Space direction="vertical">
-                  <Typography.Title level={5}>{group.label}</Typography.Title>
-                  <Row style={{ paddingLeft: 12 }} gutter={20}>
-                    {group.settings.map((set) => {
-                      return (
-                        <Col span={set.span || 10}>
-                          <Form.Item label={set.label} name={set.label} key={set.key}>
-                            {set.render(null, async () => {})}
-                          </Form.Item>
-                        </Col>
-                      );
-                    })}
-                  </Row>
-                </Space>
-                <Divider />
-              </>
-            );
-          })}
+          <Form layout="vertical">
+            {Array.from(groupData?.secondGroup?.values()).map((group, index) => {
+              return (
+                <>
+                  <Space style={{ width: '100%' }} direction="vertical">
+                    <Typography.Title level={5}>{group.label}</Typography.Title>
+                    <Row style={{ paddingLeft: 12 }} gutter={20}>
+                      {group.settings.map((set, index) => {
+                        return (
+                          <Col span={set.span || 10}>
+                            <Form.Item
+                              label={<Typography.Text strong>{set.label}</Typography.Text>}
+                              name={set.label}
+                              key={set.key}
+                            >
+                              {set.render(null, async () => {})}
+                            </Form.Item>
+                          </Col>
+                        );
+                      })}
+                    </Row>
+                  </Space>
+                  {groupData?.secondGroup.size > index + 1 ? (
+                    <Divider style={{ margin: '0px 0px 12px 0px' }} />
+                  ) : null}
+                </>
+              );
+            })}
+          </Form>
         </div>
       </div>
     </Modal>
