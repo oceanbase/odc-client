@@ -23,6 +23,7 @@ import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { useMemo } from 'react';
 interface IProps {}
 export default function AddDataSourceDropdown(props: IProps) {
+  const dorisConnectTypes = getAllConnectTypes(IDataSourceType.Doris);
   const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
   const obConnectTypes = getAllConnectTypes(IDataSourceType.OceanBase);
   const result: ItemType[] = useMemo(() => {
@@ -42,6 +43,16 @@ export default function AddDataSourceDropdown(props: IProps) {
         key: t,
       });
     });
+    dorisConnectTypes.forEach((t) => {
+      result.push({
+        label: ConnectTypeText[t],
+        key: t,
+      });
+    });
+    result.push({
+      type: 'divider',
+    });
+    console.log(123)
     result.push({
       label: formatMessage({
         id: 'odc.src.component.AddDataSourceDropdown.BatchImport',
@@ -49,7 +60,7 @@ export default function AddDataSourceDropdown(props: IProps) {
       key: 'batchImport',
     });
     return result;
-  }, [mysqlConnectTypes, obConnectTypes]);
+  }, [dorisConnectTypes,mysqlConnectTypes, obConnectTypes]);
   return (
     <Dropdown
       menu={{
