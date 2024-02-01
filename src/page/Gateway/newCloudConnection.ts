@@ -199,7 +199,7 @@ export const action = async (config: INewCloudConnection) => {
        */
       getSentry()?.withScope((scope) => {
         scope.setExtras({
-          fetchList: connectionList,
+          fetchList: JSON.stringify(connectionList),
           data,
           params
         });
