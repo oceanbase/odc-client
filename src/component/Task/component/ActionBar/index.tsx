@@ -18,6 +18,7 @@ import {
   createTask,
   downloadTaskFlow,
   executeTask,
+  getStructureComparisonTaskFile,
   getTaskResult,
   stopTask,
 } from '@/common/network/task';
@@ -72,6 +73,7 @@ const ActionBar: React.FC<IProps> = inject(
   observer((props) => {
     const {
       taskStore,
+      modalStore,
       userStore: { user },
       settingStore,
       isDetailModal,
@@ -167,7 +169,7 @@ const ActionBar: React.FC<IProps> = inject(
     const handleReTry = async () => {
       const {
         type,
-        database: { id: databaseId },
+        database: { id: databaseId } = {},
         executionStrategy,
         executionTime,
         parameters,
@@ -335,7 +337,8 @@ const ActionBar: React.FC<IProps> = inject(
         return [];
       }
       const { status, completeTime = 0 } = _task;
-
+      const structureComparisonData =
+        modalStore?.structureComparisonDataMap?.get(_task?.id) || null;
       const viewBtn = {
         key: 'view',
         text: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.See' }), // 查看
@@ -461,7 +464,39 @@ const ActionBar: React.FC<IProps> = inject(
         action: download,
         type: 'button',
       };
-
+      const downloadSQLBtn = {
+        key: 'downloadSQL',
+        text: '下载 SQL',
+        disabled: task?.status !== TaskStatus.EXECUTION_SUCCEEDED || !structureComparisonData,
+        tip: '暂不可用',
+        type: 'button',
+        action: async () => {
+          if (structureComparisonData?.storageObjectId) {
+            const fileUrl = await getStructureComparisonTaskFile(_task?.id, [
+              `${structureComparisonData?.storageObjectId}`,
+            ]);
+            fileUrl?.forEach((url) => {
+              url && downloadFile(url);
+            });
+          }
+        },
+      };
+      const structrueComparisonBySQL = {
+        key: 'structrueComparisonBySQL',
+        text: '发起结构同步',
+        disabled: task?.status !== TaskStatus.EXECUTION_SUCCEEDED || !structureComparisonData,
+        tip: '暂不可用',
+        type: 'button',
+        isPrimary: true,
+        action: async () => {
+          structureComparisonData &&
+            modalStore?.changeCreateAsyncTaskModal(true, {
+              sql: structureComparisonData?.totalChangeScript,
+              databaseId: structureComparisonData?.database?.id,
+              rules: null,
+            });
+        },
+      };
       const openLocalFolder = {
         key: 'openLocalFolder',
         text: formatMessage({
@@ -534,6 +569,8 @@ const ActionBar: React.FC<IProps> = inject(
                 tools.push(downloadBtn);
               } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
                 tools.push(rollbackBtn);
+              } else if (task.type === TaskType.STRUCTURE_COMPARISON) {
+                tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
             }
             if (isApprovable) {
@@ -564,8 +601,7 @@ const ActionBar: React.FC<IProps> = inject(
 
                 _executeBtn.tooltip = formatMessage(
                   {
-                    id:
-                      'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+                    id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
                   },
 
                   { executionTime: executionTime },
@@ -773,7 +809,7 @@ const ActionBar: React.FC<IProps> = inject(
           disabled={disabled || tool?.isExpired}
           onClick={tool.action}
           placement={tool?.isExpired ? 'topRight' : null}
-          tooltip={isDetailModal ? (tool?.isExpired ? tool?.tip : tool?.tooltip) : null}
+          tooltip={isDetailModal ? (tool?.isExpired && tool?.tip) || tool?.tooltip : null}
         >
           <Tooltip placement="topRight" title={tool?.isExpired ? tool?.tip : tool?.tooltip}>
             {tool.text}

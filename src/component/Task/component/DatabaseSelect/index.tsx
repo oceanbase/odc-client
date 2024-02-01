@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import { TaskType } from '@/d.ts';
+import { ConnectionMode, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Form } from 'antd';
 import React from 'react';
 import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
+import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 interface IProps {
   type: TaskType;
   label?: string;
   disabled?: boolean;
-  name?: string;
+  name?: string | string[];
   projectId?: number;
+  filters?: ISessionDropdownFiltersProps;
   extra?: string;
   width?: string;
+  placeholder?: string;
   onChange?: (v: number) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -38,7 +41,9 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     //数据库
     name = 'databaseId',
     projectId,
+    filters = null,
     width,
+    placeholder = null,
     onChange,
   } = props;
 
@@ -56,7 +61,14 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         },
       ]}
     >
-      <SessionSelect projectId={projectId} taskType={type} width={width} onChange={onChange} />
+      <SessionSelect
+        projectId={projectId}
+        filters={filters}
+        taskType={type}
+        width={width}
+        onChange={onChange}
+        placeholder={placeholder}
+      />
     </Form.Item>
   );
 };

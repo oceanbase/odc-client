@@ -29,6 +29,7 @@ import styles from './index.less';
 @observer
 export class SQLContent extends React.PureComponent<{
   type?: TaskType;
+  showLineNumbers?: boolean;
   sqlObjectIds: string[];
   sqlObjectNames: string[];
   sqlContent: string;
@@ -48,7 +49,13 @@ export class SQLContent extends React.PureComponent<{
   };
 
   render() {
-    const { sqlObjectNames, sqlContent, language, settingStore } = this.props;
+    const {
+      sqlObjectNames,
+      sqlContent,
+      language,
+      settingStore,
+      showLineNumbers = true,
+    } = this.props;
     return (
       <div className={styles.sqlContent}>
         {sqlObjectNames ? (
@@ -80,6 +87,7 @@ export class SQLContent extends React.PureComponent<{
               readOnly
               defaultValue={sqlContent}
               language={language}
+              showLineNumbers={showLineNumbers}
               onEditorCreated={async (e: IEditor) => {
                 this.editor = e;
                 await this.editor.doFormat();

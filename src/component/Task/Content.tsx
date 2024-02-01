@@ -242,6 +242,9 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       case TaskPageType.DATA_ARCHIVE:
         modalStore.changeDataArchiveModal(true);
         break;
+      case TaskPageType.STRUCTURE_COMPARISON:
+        modalStore.changeStructureComparisonModal(true);
+        break;
       case TaskPageType.DATA_DELETE:
         modalStore.changeDataClearModal(true);
         break;
@@ -260,7 +263,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       default:
     }
   };
-  
+
   componentDidMount(): void {
     this.openDefaultTask();
   }
@@ -289,14 +292,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
   };
   render() {
     const { pageKey, taskStore, isMultiPage = false } = this.props;
-    const {
-      detailId,
-      detailType,
-      detailVisible,
-      partitionPlan,
-      cycleTasks,
-      tasks,
-    } = this.state;
+    const { detailId, detailType, detailVisible, partitionPlan, cycleTasks, tasks } = this.state;
     const taskTabType = pageKey || taskStore?.taskPageType;
     const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
     return (
