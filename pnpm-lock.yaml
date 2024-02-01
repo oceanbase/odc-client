@@ -50,8 +50,8 @@ devDependencies:
     specifier: ^3.0.1
     version: 3.0.1
   '@oceanbase-odc/ob-react-data-grid':
-    specifier: ^3.0.8
-    version: 3.0.8(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2)
+    specifier: ^3.0.9
+    version: 3.0.9(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2)
   '@sentry/react':
     specifier: ^7.88.0
     version: 7.98.0(react@17.0.2)
@@ -3401,8 +3401,8 @@ packages:
       lodash: 4.17.21
     dev: true
 
-  /@oceanbase-odc/ob-react-data-grid@3.0.8(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-gTfyuYeO6/0SwoMBAg9riXMmKiL3072H50/c/sG9CQ/1d/JniX8w8AMUOnq+0o8k3bB+gEkvEsVPebeD+sKi7A==}
+  /@oceanbase-odc/ob-react-data-grid@3.0.9(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-ZVDVloabx+QU/UMuOgpiQfzMqHHKPmpQv7gPepC5P9GiyYb4zmOngPXKOejjSFDASJcj85TLgADb7U/Cvi1aCQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       antd: ^4.15.3
