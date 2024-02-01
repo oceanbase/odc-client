@@ -51,7 +51,12 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
           id: 'odc.src.component.Task.TimedExecution',
         }), //'定时执行'
       };
-      break;
+    case TaskType.STRUCTURE_COMPARISON: {
+      return {
+        [TaskExecStrategy.AUTO]: '自动执行',
+        [TaskExecStrategy.MANUAL]: '手动执行',
+      };
+    }
     default:
       return {
         [TaskExecStrategy.AUTO]: formatMessage({
@@ -71,8 +76,9 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
 
 interface IProps {
   projectId?: number;
+  inProject?: boolean;
 }
-const TaskManaerPage = (props) => {
+const TaskManaerPage: React.FC<IProps> = (props) => {
   const { projectId, inProject } = props;
   const [search] = useSearchParams();
   const defaultTaskId = search.get('taskId');

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import SessionDropdown from './SessionDropdown';
+import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
 import SessionContext from '../context';
-import { Divider, Input, Select, Space } from 'antd';
+import { Divider, Select, Space } from 'antd';
 import { useRequest } from 'ahooks';
 import { getDatabase } from '@/common/network/database';
 import Icon from '@ant-design/icons';
@@ -15,10 +15,20 @@ interface IProps {
   taskType?: TaskType;
   width?: number | string;
   projectId?: number;
+  filters?: ISessionDropdownFiltersProps;
+  placeholder?: string;
   onChange?: (value: number) => void;
 }
 
-const SelectItem: React.FC<IProps> = ({ value, taskType, projectId, width, onChange }) => {
+const SelectItem: React.FC<IProps> = ({
+  value,
+  taskType,
+  projectId,
+  filters = null,
+  width,
+  placeholder = null,
+  onChange,
+}) => {
   const { data: database, run } = useRequest(getDatabase, {
     manual: true,
   });
@@ -40,24 +50,33 @@ const SelectItem: React.FC<IProps> = ({ value, taskType, projectId, width, onCha
       }}
     >
       <Space style={{ width: '100%' }} direction="vertical">
-        <SessionDropdown projectId={projectId} width={width || 320} taskType={taskType}>
+        <SessionDropdown
+          projectId={projectId}
+          filters={filters}
+          width={width || 320}
+          taskType={taskType}
+        >
           <Select
             placeholder={
-              <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
-                {database?.data ? (
-                  <>
-                    <RiskLevelLabel
-                      content={database?.data?.environment?.name}
-                      color={database?.data?.environment?.style}
-                    />
-                    <Icon
-                      component={dbIcon?.component}
-                      style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
-                    />
-                  </>
-                ) : null}
-                {database?.data?.name}
-              </Space>
+              database?.data ? (
+                <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
+                  {database?.data ? (
+                    <>
+                      <RiskLevelLabel
+                        content={database?.data?.environment?.name}
+                        color={database?.data?.environment?.style}
+                      />
+                      <Icon
+                        component={dbIcon?.component}
+                        style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
+                      />
+                    </>
+                  ) : null}
+                  {database?.data?.name}
+                </Space>
+              ) : (
+                placeholder
+              )
             }
             style={{ width: width || 320 }}
             open={false}

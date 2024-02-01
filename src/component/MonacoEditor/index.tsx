@@ -54,6 +54,9 @@ export interface IProps {
 
   theme?: string;
 
+  /** @description 是否展示左侧行号 */
+  showLineNumbers?: boolean;
+
   readOnly?: boolean;
 
   onEditorCreated?: (editor: IEditor) => void;
@@ -62,7 +65,8 @@ export interface IProps {
 const MonacoEditor: React.FC<IProps> = function (props) {
   const {
     defaultValue,
-    language,
+    language = 'sql',
+    showLineNumbers = true,
     value,
     theme,
     readOnly,
@@ -139,14 +143,16 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       ),
     );
     markerPluginApply(editorRef.current.getModel());
-    logger.debug('init plugin done')
+    logger.debug('init plugin done');
   }
 
   async function initEditor() {
     editorRef.current = monaco.editor?.create(domRef.current, {
       value: innerValue,
-      language: language || 'sql',
+      language: language,
       theme: themeValue,
+      lineNumbers: showLineNumbers ? 'on' : 'off',
+      lineNumbersMinChars: showLineNumbers ? 5 : 0,
       minimap: { enabled: false },
       automaticLayout: true,
       unicodeHighlight: {
@@ -163,7 +169,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     if (!editorRef.current?.getModel?.()) {
       return;
     }
-    monaco.editor.setModelLanguage(editorRef.current.getModel(), language || 'sql');
+    monaco.editor.setModelLanguage(editorRef.current.getModel(), language);
     editorRef.current.onDidChangeModelContent((e) => {
       /**
        * editor value change
@@ -207,7 +213,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       language &&
       language !== editorRef.current?.getModel().getLanguageId()
     ) {
-      monaco.editor.setModelLanguage(editorRef.current?.getModel(), language || 'sql');
+      monaco.editor.setModelLanguage(editorRef.current?.getModel(), language);
     }
   }, [language]);
 
