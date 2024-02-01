@@ -197,13 +197,16 @@ export const action = async (config: INewCloudConnection) => {
       /**
        * 非预期错误，上报一下
        */
-      getSentry()?.captureException(
-        new Error('Create Cloud Connection Failed:' + JSON.stringify({
+      getSentry()?.withScope((scope) => {
+        scope.setExtras({
           fetchList: connectionList,
           data,
           params
-        }))
-      );
+        });
+        getSentry()?.captureException(
+          new Error('Create Cloud Connection Failed'),
+        );
+      })
       message.error('Create Connection Failed');
       return;
     }
