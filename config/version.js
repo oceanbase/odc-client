@@ -1,9 +1,10 @@
 /**
  * 获取唯一标识号
  */
+import pkg from '../package.json';
 
-const DEFAULT_VERSION = '1818'
-function getVersion() {
+function getCommitId() {
+  const DEFAULT_VERSION = '1818';
   try {
     const { spawnSync } = require('child_process');
     const git = spawnSync('git', ['version']);
@@ -20,5 +21,11 @@ function getVersion() {
     console.error(e);
     return DEFAULT_VERSION;
   }
+}
+
+function getVersion() {
+  const versionLeft = pkg.version;
+  const commitId = getCommitId();
+  return `${versionLeft}-${commitId}`;
 }
 module.exports = getVersion;
