@@ -224,7 +224,7 @@ export function isObjectColumn(columnType: string) {
 }
 
 export function isNlsColumn(columnType: string, dbMode: ConnectionMode) {
-  if (dbMode !== ConnectionMode.OB_ORACLE) {
+  if (dbMode !== ConnectionMode.OB_ORACLE && dbMode !== ConnectionMode.ORACLE) {
     return false;
   }
   columnType = convertColumnType(columnType);
