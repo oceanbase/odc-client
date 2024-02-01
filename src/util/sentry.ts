@@ -9,7 +9,8 @@ export function getSentry() {
 export function initSentry() {
   getSentry()?.init({
     dsn: 'https://98fb52ab508043bf94a763dc51d5a2e0@obc-sentry.oceanbase.com/6',
-    debug: true,
+    debug: false,
+    release: ODC_VERSION,
     transport: Sentry.makeXHRTransport,
   });
 }

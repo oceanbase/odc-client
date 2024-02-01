@@ -47,7 +47,7 @@ export default class ModalHelp extends PureComponent<{
               {
                 id: 'odc.components.ModalHelpAbout.VersionNumberPkgversion',
               },
-              { pkgVersion: pkg.version },
+              { pkgVersion: ODC_VERSION },
             )}
           </p>
           <span>Server: {setting?.serverSystemInfo?.version}</span>
