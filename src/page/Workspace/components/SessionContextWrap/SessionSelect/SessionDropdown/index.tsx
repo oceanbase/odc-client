@@ -283,11 +283,11 @@ const SessionDropdown: React.FC<IProps> = function ({
                   disabled,
                 };
               })
+              .filter(Boolean)
               .sort((a, b) => {
                 if (a.disabled === b.disabled) return 0;
                 return a.disabled ? 1 : -1;
-              })
-              .filter(Boolean);
+              });
             if (!isNameMatched && !dbList?.length) {
               /**
                * 父节点没匹配到，并且也不存在子节点，则不展示
@@ -337,11 +337,11 @@ const SessionDropdown: React.FC<IProps> = function ({
                   disabled,
                 };
               })
+              .filter(Boolean)
               .sort((a, b) => {
                 if (a.disabled === b.disabled) return 0;
                 return a.disabled ? 1 : -1;
-              })
-              .filter(Boolean);
+              });
             if (!isNameMatched && !dbList?.length) {
               /**
                * 父节点没匹配到，并且也不存在子节点，则不展示
