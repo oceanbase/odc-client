@@ -1,5 +1,5 @@
 import { Col, Divider, Form, Menu, Modal, Row, Space, Typography } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup } from './config';
 
 import styles from './index.less';
@@ -9,6 +9,7 @@ interface IProps {}
 const ODCSetting: React.FC<IProps> = () => {
   const [formRef] = Form.useForm();
   const formBoxRef = React.createRef<HTMLDivElement>();
+  const scrollSwitcher = useRef<Boolean>(true);
   const data = useMemo(() => {
     const result = new Map<
       string,
@@ -45,29 +46,43 @@ const ODCSetting: React.FC<IProps> = () => {
   const [activeKey, setActiveKey] = useState(data.keys().next().value);
 
   function scrollToKey(key: string) {
+    scrollSwitcher.current = false;
     const element = document.querySelector(`[data-name=${key}]`);
     if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-      });
+      element.scrollIntoView();
     }
+    setTimeout(() => {
+      scrollSwitcher.current = true;
+    });
   }
 
   function addListener() {
     const dom = formBoxRef.current;
     // 滚动事件监听器
     function listener() {
+      if (!scrollSwitcher.current) {
+        return;
+      }
       // 获取容器A的当前滚动位置和高度
       const scrollTop = dom.scrollTop;
-      const containerHeight = dom.clientHeight;
 
       // 遍历所有子节点
       const children = dom.querySelectorAll<HTMLHeadingElement>('[data-name]'); // 假定子节点有共同的类名'child'
+      let min = Number.MAX_SAFE_INTEGER;
+      let key;
       children.forEach((child) => {
         // 获取子节点相对于容器A顶部的位置
         const childOffsetTop = child.offsetTop;
-        const childHeight = child.clientHeight;
+        const distance = Math.abs(childOffsetTop - scrollTop);
+        if (distance < min) {
+          min = distance;
+          key = child.getAttribute('data-name');
+        }
       });
+      if (!key) {
+        return;
+      }
+      setActiveKey(key);
     }
     formBoxRef.current?.addEventListener('scroll', listener);
     return () => {
