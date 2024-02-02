@@ -8,7 +8,7 @@ const preferenceGroup: ODCSettingGroup = {
   key: 'preference',
 };
 const preferenceDefaultGroup: ODCSettingGroup = {
-  label: '外观',
+  label: '',
   key: 'preferenceDefault',
 };
 

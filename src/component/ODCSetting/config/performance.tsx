@@ -6,7 +6,7 @@ const performanceGroup: ODCSettingGroup = {
   key: 'performance',
 };
 const performanceDefaultGroup: ODCSettingGroup = {
-  label: '性能',
+  label: '',
   key: 'performanceDefault',
 };
 
