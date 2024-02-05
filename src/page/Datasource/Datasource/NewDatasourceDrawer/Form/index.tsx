@@ -303,7 +303,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     }}
                   >
                     {environments
-                      ?.filter((env) => env?.enabled)
+                      // ?.filter((env) => env?.enabled)
                       ?.map((env) => {
                         return (
                           <Option key={env.id} value={env.id}>
