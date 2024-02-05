@@ -69,9 +69,7 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
     features: {
       task: [
         TaskType.ASYNC,
-        TaskType.DATAMOCK,
         TaskType.SQL_PLAN,
-        TaskType.DATA_ARCHIVE,
         TaskType.DATA_DELETE,
         TaskType.IMPORT,
         TaskType.EXPORT,
