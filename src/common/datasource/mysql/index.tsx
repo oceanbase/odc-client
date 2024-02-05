@@ -95,6 +95,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     sql: {
       language: 'mysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
 };

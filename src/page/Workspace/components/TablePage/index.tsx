@@ -44,6 +44,7 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
+import { getQuoteTableName } from '@/util/utils';
 
 interface IProps {
   pageKey: string;
@@ -100,7 +101,11 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
        * 加一个校验的逻辑，避免名字不同步
        */
       const newTableName = newTable?.info?.tableName;
-      if (newTableName && newTableName !== params.tableName) {
+      if (
+        newTableName &&
+        newTableName !==
+          getQuoteTableName(params.tableName, session?.odcDatabase?.dataSource?.dialectType)
+      ) {
         setTable({
           ...newTable,
           info: Object.assign({}, newTable?.info, { tableName: newTableName }),

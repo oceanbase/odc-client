@@ -90,6 +90,7 @@ const items: Record<
     sql: {
       language: 'obmysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
   [ConnectType.CLOUD_OB_MYSQL]: {
@@ -122,6 +123,7 @@ const items: Record<
     sql: {
       language: 'obmysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
   [ConnectType.ODP_SHARDING_OB_MYSQL]: {
@@ -155,6 +157,7 @@ const items: Record<
     sql: {
       language: 'obmysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
 };
