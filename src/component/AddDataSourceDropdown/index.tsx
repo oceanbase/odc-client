@@ -50,10 +50,6 @@ export default function AddDataSourceDropdown(props: IProps) {
       });
     });
     result.push({
-      type: 'divider',
-    });
-    console.log(123)
-    result.push({
       label: formatMessage({
         id: 'odc.src.component.AddDataSourceDropdown.BatchImport',
       }), //'批量导入'
