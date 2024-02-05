@@ -126,7 +126,7 @@ const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
           }}
         ></div>
         <EnvironmentTable
-          key={currentEnvironment?.id}
+          key={`${currentEnvironment?.id}_${ruleType}`}
           ruleType={ruleType}
           currentEnvironment={currentEnvironment}
           integrations={integrations}

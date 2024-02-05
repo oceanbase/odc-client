@@ -44,8 +44,8 @@ devDependencies:
     specifier: ^0.2.1
     version: 0.2.1(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
-    specifier: ^2.0.1
-    version: 2.0.1(prettier@2.8.8)(typescript@4.9.5)
+    specifier: ^2.0.2
+    version: 2.0.2(prettier@2.8.8)(typescript@4.9.5)
   '@oceanbase-odc/ob-parser-js':
     specifier: ^3.0.1
     version: 3.0.1
@@ -3349,8 +3349,8 @@ packages:
       monaco-editor: 0.36.1
     dev: true
 
-  /@oceanbase-odc/ob-intl-cli@2.0.1(prettier@2.8.8)(typescript@4.9.5):
-    resolution: {integrity: sha512-x3uT+Tuab4slk/MQIy4TYEU3PzlizsUIzL2Epm3wkspYlP8dok8CB9S2pEVvo+c2IQO7Jm9ikzyvG3llpaR4CQ==}
+  /@oceanbase-odc/ob-intl-cli@2.0.2(prettier@2.8.8)(typescript@4.9.5):
+    resolution: {integrity: sha512-QL6VSsWCC6dYzc4HE2Cdo+Bp6TKjqgjxu3OcKBldn72CF5IfBdjw5docb80jVhUbwrsMrPEk5wyIdkWHqIoWkA==}
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -3669,7 +3669,7 @@ packages:
       postcss: '>=7.0.0'
       postcss-syntax: '>=0.36.2'
     dependencies:
-      '@babel/core': 7.23.6
+      '@babel/core': 7.23.9
       postcss: 8.4.33
       postcss-syntax: 0.36.2(postcss@8.4.33)
     transitivePeerDependencies:
@@ -5150,7 +5150,7 @@ packages:
       babel-plugin-import: 1.13.8
       babel-plugin-styled-components: 2.1.4(@babel/core@7.23.9)(styled-components@6.1.1)
       dayjs: 1.11.10
-      dva-core: 2.0.4(redux@4.2.1)
+      dva-core: 2.0.4(redux@3.7.2)
       dva-immer: 1.0.1(dva@2.5.0-beta.2)
       dva-loading: 3.0.24(dva-core@2.0.4)
       event-emitter: 0.3.5
@@ -8068,7 +8068,7 @@ packages:
       warning: 3.0.0
     dev: true
 
-  /dva-core@2.0.4(redux@4.2.1):
+  /dva-core@2.0.4(redux@3.7.2):
     resolution: {integrity: sha512-Zh39llFyItu9HKXKfCZVf9UFtDTcypdAjGBew1S+wK8BGVzFpm1GPTdd6uIMeg7O6STtCvt2Qv+RwUut1GFynA==}
     peerDependencies:
       redux: 4.x
@@ -8078,7 +8078,7 @@ packages:
       global: 4.4.0
       invariant: 2.2.4
       is-plain-object: 2.0.4
-      redux: 4.2.1
+      redux: 3.7.2
       redux-saga: 0.16.2
       warning: 3.0.0
     dev: true
@@ -8099,7 +8099,7 @@ packages:
       dva-core: ^1.1.0 || ^1.5.0-0 || ^1.6.0-0
     dependencies:
       '@babel/runtime': 7.23.9
-      dva-core: 2.0.4(redux@4.2.1)
+      dva-core: 2.0.4(redux@3.7.2)
     dev: true
 
   /dva@2.5.0-beta.2(react-dom@17.0.2)(react@17.0.2):
@@ -14830,7 +14830,7 @@ packages:
   /react-redux@8.1.3(@types/react-dom@16.9.24)(@types/react@16.14.56)(react-dom@17.0.2)(react@17.0.2)(redux@4.2.1):
     resolution: {integrity: sha512-n0ZrutD7DaX/j9VscF+uTALI3oUPa/pO4Z3soOBIjuRn/FzVu6aehhysxZCLi6y7duMf52WNZGMl7CtuK5EnRw==}
     peerDependencies:
-      '@types/react': ^16.0.0
+      '@types/react': ^16.8 || ^17.0 || ^18.0
       '@types/react-dom': ^16.8 || ^17.0 || ^18.0
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
@@ -17540,7 +17540,7 @@ packages:
     resolution: {integrity: sha512-1XfIxnUXzyswPAPXo1P3Pdx2mq/pIqZICkWN60Hby0d9Iqb+MEIpqgYVlbflvHdrp2YR/q3jyKWRPJJ100yxaw==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
-      '@types/react': ^16.0.0
+      '@types/react': '>=16.8'
       react: '>=16.8'
     peerDependenciesMeta:
       '@types/react':
