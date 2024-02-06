@@ -175,23 +175,28 @@ const ActionBar: React.FC<IProps> = inject(
         parameters,
         description,
       } = task;
-      const res = await createTask({
-        taskType: type,
-        databaseId,
-        executionStrategy,
-        executionTime,
-        parameters,
-        description,
-      });
-
-      if (res) {
-        message.success(
-          formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
-          }),
-
-          //再次发起成功
-        );
+      if(type === TaskType.ASYNC){
+        props.modalStore.changeCreateAsyncTaskModal(true, {
+          task: task as TaskDetail<IAsyncTaskParams>,
+        });
+      }else{
+        const res = await createTask({
+          taskType: type,
+          databaseId,
+          executionStrategy,
+          executionTime,
+          parameters,
+          description,
+        });
+        if (res) {
+          message.success(
+            formatMessage({
+              id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
+            }),
+  
+            //再次发起成功
+          );
+        }
       }
     };
 
