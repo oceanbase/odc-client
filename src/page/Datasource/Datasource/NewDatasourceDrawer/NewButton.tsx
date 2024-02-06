@@ -141,8 +141,6 @@ const NewDatasourceButton: React.FC<{
         );
       }
     }
-    if (oracleConnectTypes?.length) {
-    }
     if (dorisConnectTypes?.length) {
       results.push({
         type: 'divider',
@@ -251,8 +249,7 @@ const NewDatasourceButton: React.FC<{
               <Empty
                 description={
                   formatMessage({
-                    id:
-                      'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
+                    id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
                   }) /* 暂无有效数据源信息 */
                 }
               />
