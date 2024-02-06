@@ -110,6 +110,9 @@ function register(
     }
     connectType2Ds[type] = dataSourceType;
   }
+  obj.connectTypes = obj.connectTypes.sort((a, b) => {
+    return (obj.config[b]?.priority || 0) - (obj.config[a]?.priority || 0);
+  });
   _types.set(dataSourceType, obj);
 }
 
