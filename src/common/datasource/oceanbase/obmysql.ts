@@ -61,6 +61,7 @@ const items: Record<
   IDataSourceModeConfig
 > = {
   [ConnectType.OB_MYSQL]: {
+    priority: 98,
     connection: {
       address: {
         items: ['ip', 'port', 'cluster', 'tenant'],
@@ -94,6 +95,7 @@ const items: Record<
     },
   },
   [ConnectType.CLOUD_OB_MYSQL]: {
+    priority: 96,
     connection: {
       address: {
         items: ['ip', 'port'],
@@ -127,6 +129,7 @@ const items: Record<
     },
   },
   [ConnectType.ODP_SHARDING_OB_MYSQL]: {
+    priority: 95,
     connection: {
       address: {
         items: ['ip', 'port'],
