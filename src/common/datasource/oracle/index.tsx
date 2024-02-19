@@ -64,9 +64,13 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       disableURLParse: true,
     },
     features: {
-      task: Object.values(TaskType).filter(
-        (type) => ![TaskType.ASYNC, TaskType.SQL_PLAN].includes(type),
-      ),
+      task: [
+        TaskType.IMPORT,
+        TaskType.EXPORT,
+        TaskType.EXPORT_RESULT_SET,
+        TaskType.SQL_PLAN,
+        TaskType.ASYNC,
+      ],
       obclient: false,
       recycleBin: false,
       sqlExplain: false,

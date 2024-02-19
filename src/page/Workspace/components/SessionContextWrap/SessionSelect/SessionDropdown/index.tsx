@@ -50,16 +50,18 @@ interface IDatabasesTitleProps {
   disabled: boolean;
 }
 
-const DatabasesTitle: React.FC<IDatabasesTitleProps>  = (props) =>{
+const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
   const { taskType, db, disabled } = props;
   return (
     <>
-      {
-        disabled ?
-        <Tooltip placement={'right'} title={`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`}>
+      {disabled ? (
+        <Tooltip
+          placement={'right'}
+          title={`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`}
+        >
           <div className={styles.textoverflow}>{db.name}</div>
         </Tooltip>
-        :
+      ) : (
         <Popover
           showArrow={false}
           placement={'right'}
@@ -67,23 +69,30 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps>  = (props) =>{
         >
           <div className={styles.textoverflow}>{db.name}</div>
         </Popover>
-      }
+      )}
       <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
     </>
-  )
+  );
+};
+export interface ISessionDropdownFiltersProps {
+  projectId?: number;
+  dialectTypes?: ConnectionMode[];
+  dataSourceId?: number;
 }
-
 interface IProps {
   dialectTypes?: ConnectionMode[];
   width?: number | string;
   taskType?: TaskType;
   projectId?: number;
+  filters?: ISessionDropdownFiltersProps;
   dataSourceStatusStore?: DataSourceStatusStore;
 }
 const SessionDropdown: React.FC<IProps> = function ({
   children,
   width,
   projectId,
+  filters = null,
+  dialectTypes,
   taskType,
   dataSourceStatusStore,
 }) {
@@ -97,7 +106,14 @@ const SessionDropdown: React.FC<IProps> = function ({
   const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
 
-  const { data, run, loading: fetchLoading } = useRequest(listDatabases, {
+  const hasDialectTypesFilter =
+    filters?.dialectTypes && Array.isArray(filters?.dialectTypes) && filters?.dialectTypes?.length;
+  const hasProjectIdFilter = !!filters?.projectId;
+  const {
+    data,
+    run,
+    loading: fetchLoading,
+  } = useRequest(listDatabases, {
     manual: true,
   });
   useEffect(() => {
@@ -111,7 +127,7 @@ const SessionDropdown: React.FC<IProps> = function ({
         null,
         login.isPrivateSpace(),
         true,
-        true
+        true,
       );
     }
   }, [isOpen]);
@@ -122,6 +138,8 @@ const SessionDropdown: React.FC<IProps> = function ({
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
       const { project, dataSource } = db;
+      // 插入项目ID用于下方筛选
+      dataSource.projectId = project?.id;
       const support =
         !taskType ||
         getDataSourceModeConfig(db.dataSource?.type)?.features?.task?.includes(taskType);
@@ -151,12 +169,24 @@ const SessionDropdown: React.FC<IProps> = function ({
         datasources.set(dataSource?.id, datasourceDatabases);
       }
     });
-
+    let filterDataSources: IDatasource[];
+    let filterProjects: IProject[];
+    if (hasProjectIdFilter) {
+      filterProjects = allProjects?.filter((project) => filters?.projectId === project?.id);
+      filterDataSources = allDatasources?.filter(
+        (datasource) => datasource?.projectId === filters?.projectId,
+      );
+    }
+    if (hasDialectTypesFilter) {
+      filterDataSources = allDatasources?.filter((datasource) =>
+        filters?.dialectTypes?.includes(datasource?.dialectType),
+      );
+    }
     return {
       datasources,
       projects,
-      allDatasources,
-      allProjects,
+      allDatasources: hasDialectTypesFilter ? filterDataSources : allDatasources,
+      allProjects: hasProjectIdFilter ? filterProjects : allProjects,
     };
   }, [data?.contents]);
 
@@ -227,7 +257,10 @@ const SessionDropdown: React.FC<IProps> = function ({
               !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
             const dbList = datasources
               .get(item.id)
-              ?.databases?.map((db) => {
+              ?.databases?.filter((database) =>
+                hasProjectIdFilter ? filters?.projectId === database?.project?.id : true,
+              )
+              ?.map((db) => {
                 /**
                  * 父节点没匹配到，变更为搜索数据库
                  */
@@ -238,21 +271,23 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
-                const disabled = taskType ? !hasPermission(taskType, db.authorizedPermissionTypes) : !db.authorizedPermissionTypes?.length;
+                const disabled = taskType
+                  ? !hasPermission(taskType, db.authorizedPermissionTypes)
+                  : !db.authorizedPermissionTypes?.length;
                 return {
                   title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
                   icon: <DataBaseStatusIcon item={db} />,
-                  disabled
+                  disabled,
                 };
               })
+              .filter(Boolean)
               .sort((a, b) => {
                 if (a.disabled === b.disabled) return 0;
                 return a.disabled ? 1 : -1;
-              })
-              .filter(Boolean);
+              });
             if (!isNameMatched && !dbList?.length) {
               /**
                * 父节点没匹配到，并且也不存在子节点，则不展示
@@ -277,7 +312,12 @@ const SessionDropdown: React.FC<IProps> = function ({
               !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
             const dbList = projects
               .get(item.id)
-              ?.databases?.map((db) => {
+              ?.databases?.filter((database) =>
+                hasDialectTypesFilter
+                  ? filters?.dialectTypes?.includes(database?.dataSource?.dialectType)
+                  : true,
+              )
+              ?.map((db) => {
                 if (
                   !isNameMatched &&
                   searchValue &&
@@ -285,21 +325,23 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
-                const disabled = taskType ? !hasPermission(taskType, db.authorizedPermissionTypes) : !db.authorizedPermissionTypes?.length;
+                const disabled = taskType
+                  ? !hasPermission(taskType, db.authorizedPermissionTypes)
+                  : !db.authorizedPermissionTypes?.length;
                 return {
                   title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
                   icon: <DataBaseStatusIcon item={db} />,
-                  disabled
+                  disabled,
                 };
               })
+              .filter(Boolean)
               .sort((a, b) => {
                 if (a.disabled === b.disabled) return 0;
                 return a.disabled ? 1 : -1;
-              })
-              .filter(Boolean);
+              });
             if (!isNameMatched && !dbList?.length) {
               /**
                * 父节点没匹配到，并且也不存在子节点，则不展示
@@ -326,7 +368,6 @@ const SessionDropdown: React.FC<IProps> = function ({
       }
     }
   }
-
   return (
     <Popover
       trigger={['click']}
@@ -350,15 +391,13 @@ const SessionDropdown: React.FC<IProps> = function ({
                   options={[
                     {
                       label: formatMessage({
-                        id:
-                          'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
+                        id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
                       }), //'按项目'
                       value: 'project',
                     },
                     {
                       label: formatMessage({
-                        id:
-                          'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
+                        id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
                       }), //'按数据源'
                       value: 'datasource',
                     },
@@ -371,8 +410,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                 suffix={<SearchOutlined />}
                 placeholder={
                   formatMessage({
-                    id:
-                      'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
+                    id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
                   }) /* 搜索关键字 */
                 }
                 onChange={(v) => setSearchValue(v.target.value)}

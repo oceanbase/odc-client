@@ -62,6 +62,7 @@ const NewDatasourceButton: React.FC<{
   const [type, setType] = useState<ConnectType>(null);
   const obConnectTypes = getAllConnectTypes(IDataSourceType.OceanBase);
   const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
+  const dorisConnectTypes = getAllConnectTypes(IDataSourceType.Doris);
   const oracleConnectTypes = getAllConnectTypes(IDataSourceType.Oracle);
 
   const batchImportRef = useRef<{
@@ -140,7 +141,27 @@ const NewDatasourceButton: React.FC<{
         );
       }
     }
-    if (oracleConnectTypes?.length) {
+    if (dorisConnectTypes?.length) {
+      results.push({
+        type: 'divider',
+      });
+      results = results.concat(
+        dorisConnectTypes.map((item) => {
+          return {
+            label: ConnectTypeText[item],
+            key: item,
+            icon: (
+              <Icon
+                component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                  fontSize: '16px',
+                }}
+              />
+            ),
+          };
+        }),
+      );
     }
     if (!haveOCP()) {
       results.push({
@@ -228,8 +249,7 @@ const NewDatasourceButton: React.FC<{
               <Empty
                 description={
                   formatMessage({
-                    id:
-                      'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
+                    id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
                   }) /* 暂无有效数据源信息 */
                 }
               />

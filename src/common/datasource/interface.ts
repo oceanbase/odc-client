@@ -147,6 +147,7 @@ export interface IDataSourceModeConfig {
     language: string;
     escapeChar: string;
     plParamMode?: 'text' | 'list';
+    caseSensitivity?: boolean;
   };
   disable?: boolean;
 }

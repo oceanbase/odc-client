@@ -21,10 +21,13 @@ import obOracle from './oceanbase/oboracle';
 import obMySQL from './oceanbase/obmysql';
 import oracle from './oracle';
 import MySQL from './mysql';
+import Doris from './doris';
 import { ReactComponent as OBSvg } from '@/svgr/source_ob.svg';
 import { ReactComponent as DBOBSvg } from '@/svgr/database_oceanbase.svg';
 import { ReactComponent as MySQLSvg } from '@/svgr/mysql.svg';
 import { ReactComponent as DBMySQLSvg } from '@/svgr/database_mysql.svg';
+import { ReactComponent as DorisSvg } from '@/svgr/doris.svg';
+import { ReactComponent as DBDorisSvg } from '@/svgr/database_doris.svg';
 import { ReactComponent as OracleSvg } from '@/svgr/oracle.svg';
 import { ReactComponent as DBOracleSvg } from '@/svgr/database_oracle.svg';
 
@@ -55,6 +58,15 @@ const _styles = {
     },
     dbIcon: {
       component: DBMySQLSvg,
+    },
+  },
+  [IDataSourceType.Doris]: {
+    icon: {
+      component: DorisSvg,
+      color: '#09C7F7',
+    },
+    dbIcon: {
+      component: DBDorisSvg,
     },
   },
   [IDataSourceType.Oracle]: {
@@ -98,12 +110,16 @@ function register(
     }
     connectType2Ds[type] = dataSourceType;
   }
+  obj.connectTypes = obj.connectTypes.sort((a, b) => {
+    return (obj.config[b]?.priority || 0) - (obj.config[a]?.priority || 0);
+  });
   _types.set(dataSourceType, obj);
 }
 
 register(IDataSourceType.OceanBase, obOracle);
 register(IDataSourceType.OceanBase, obMySQL);
 register(IDataSourceType.MySQL, MySQL);
+register(IDataSourceType.Doris, Doris);
 register(IDataSourceType.Oracle, oracle);
 
 function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {

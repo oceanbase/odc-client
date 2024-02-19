@@ -50,7 +50,8 @@ import { ReactComponent as SetSvg } from '@/svgr/Set.svg'; // 集合类型 icon
 
 import { ReactComponent as timeSvg } from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 
-export const PASSWORD_REGEX = /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
+export const PASSWORD_REGEX =
+  /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
 
 export const SPACE_REGEX = /^[^\s]+$/;
 
@@ -127,29 +128,77 @@ export const DbObjsIcon = {
 /**
  * lineBackground: src/page/Workspace/components/SessionContextWrap/SessionSelect/index.tsx 中使用的背景，使用场景较为特殊，单独区分出来。
  */
-export const EnvColorMap = {
-  GREEN: {
-    textColor: 'var(--function-green6-color)',
-    background: 'var(--function-green1-color)',
-    lineBackground: 'var(--function-green1-color)',
-    tipColor: 'var(--function-green6-color)',
-  },
+export const EnvColorMap: Record<
+  string,
+  {
+    textColor: string;
+    background: string;
+    tipColor: string;
+    lineBackground: string;
+    borderColor: string;
+  }
+> = {
   GRAY: {
     textColor: 'var(--text-color-secondary)',
     background: 'var(--hover-color)',
     tipColor: 'transparent',
     lineBackground: 'transparent',
+    borderColor: 'var(--text-color-primary)',
   },
-  RED: {
-    textColor: 'var(--function-red6-color)',
-    background: 'var(--function-red1-color)',
-    tipColor: 'var(--function-red6-color)',
-    lineBackground: 'var(--function-red1-color)',
+  GREEN: {
+    textColor: 'var(--function-green6-color)',
+    background: 'var(--function-green1-color)',
+    lineBackground: 'var(--function-green1-color)',
+    tipColor: 'var(--function-green6-color)',
+    borderColor: 'var(--function-green6-color)',
   },
   ORANGE: {
     textColor: 'var(--function-gold6-color)',
     background: 'var(--function-gold1-color)',
     tipColor: 'var(--function-gold6-color)',
     lineBackground: 'var(--function-gold1-color)',
+    borderColor: 'var(--function-gold6-color)',
+  },
+  RED: {
+    textColor: 'var(--function-red6-color)',
+    background: 'var(--function-red1-color)',
+    tipColor: 'var(--function-red6-color)',
+    lineBackground: 'var(--function-red1-color)',
+    borderColor: 'var(--function-red6-color)',
+  },
+  BLUE: {
+    textColor: 'var(--odc-color1-color)',
+    background: 'var(--odc-color1-bgcolor)',
+    tipColor: 'var(--odc-color1-color)',
+    lineBackground: 'var(--odc-color1-bgcolor)',
+    borderColor: 'var(--odc-color1-color)',
+  },
+  CYAN: {
+    textColor: 'var(--odc-color2-color)',
+    background: 'var(--odc-color2-bgcolor)',
+    tipColor: 'var(--odc-color2-color)',
+    lineBackground: 'var(--odc-color2-bgcolor)',
+    borderColor: 'var(--odc-color2-color)',
+  },
+  GEEKBLUE: {
+    textColor: 'var(--odc-color3-color)',
+    background: 'var(--odc-color3-bgcolor)',
+    tipColor: 'var(--odc-color3-color)',
+    lineBackground: 'var(--odc-color3-bgcolor)',
+    borderColor: 'var(--odc-color3-color)',
+  },
+  MAGENTA: {
+    textColor: 'var(--odc-color4-color)',
+    background: 'var(--odc-color4-bgcolor)',
+    tipColor: 'var(--odc-color4-color)',
+    lineBackground: 'var(--odc-color4-bgcolor)',
+    borderColor: 'var(--odc-color4-color)',
+  },
+  PURPLE: {
+    textColor: 'var(--odc-color5-color)',
+    background: 'var(--odc-color5-bgcolor)',
+    tipColor: 'var(--odc-color5-color)',
+    lineBackground: 'var(--odc-color5-bgcolor)',
+    borderColor: 'var(--odc-color5-color)',
   },
 };

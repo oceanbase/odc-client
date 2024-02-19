@@ -64,6 +64,7 @@ import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
+import { StructureComparisonTaskContent } from './StructureComparisonTask';
 
 interface IProps {
   type: TaskType;
@@ -333,51 +334,76 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     setApprovalVisible(visible);
     setApprovalStatus(approvalStatus);
   };
-
-  if ([TaskType.IMPORT, TaskType.EXPORT].includes(task?.type)) {
-    taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.PARTITION_PLAN) {
-    taskContent = (
-      <PartitionTaskContent
-        task={task as IIPartitionPlanTaskDetail<IPartitionPlanParams>}
-        result={result}
-        hasFlow={hasFlow}
-        partitionPlans={partitionPlan?.tablePartitionPlans}
-        onPartitionPlansChange={handlePartitionPlansChange}
-      />
-    );
-  } else if (task?.type === TaskType.ASYNC) {
-    taskContent = (
-      <AsyncTaskContent
-        task={task as TaskDetail<IAsyncTaskParams>}
-        result={result}
-        hasFlow={hasFlow}
-      />
-    );
-  } else if (task?.type === TaskType.DATA_ARCHIVE) {
-    taskContent = (
-      <DataArchiveTaskContent
-        task={task as CycleTaskDetail<IDataArchiveJobParameters>}
-        hasFlow={hasFlow}
-        onReload={handleReloadData}
-      />
-    );
-  } else if (task?.type === TaskType.DATA_DELETE) {
-    taskContent = (
-      <DataClearTaskContent
-        task={task as CycleTaskDetail<IDataClearJobParameters>}
-        hasFlow={hasFlow}
-        onReload={handleReloadData}
-      />
-    );
-  } else if (task?.type === TaskType.SQL_PLAN) {
-    taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.APPLY_PROJECT_PERMISSION) {
-    taskContent = <ApplyPermissionTaskContent task={task as any} />;
-  } else if (task?.type === TaskType.APPLY_DATABASE_PERMISSION) {
-    taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
-  } else {
-    getItems = taskContentMap[task?.type]?.getItems;
+  switch (task?.type) {
+    case TaskType.IMPORT:
+    case TaskType.EXPORT: {
+      taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
+      break;
+    }
+    case TaskType.PARTITION_PLAN: {
+      taskContent = (
+        <PartitionTaskContent
+          task={task as TaskDetail<IPartitionPlanParams>}
+          result={result}
+          hasFlow={hasFlow}
+          partitionPlans={partitionPlan?.tablePartitionPlans}
+          onPartitionPlansChange={handlePartitionPlansChange}
+        />
+      );
+      break;
+    }
+    case TaskType.ASYNC: {
+      taskContent = (
+        <AsyncTaskContent
+          task={task as TaskDetail<IAsyncTaskParams>}
+          result={result}
+          hasFlow={hasFlow}
+        />
+      );
+      break;
+    }
+    case TaskType.DATA_ARCHIVE: {
+      taskContent = (
+        <DataArchiveTaskContent
+          task={task as CycleTaskDetail<IDataArchiveJobParameters>}
+          hasFlow={hasFlow}
+          onReload={handleReloadData}
+        />
+      );
+      break;
+    }
+    case TaskType.DATA_DELETE: {
+      taskContent = (
+        <DataClearTaskContent
+          task={task as CycleTaskDetail<IDataClearJobParameters>}
+          hasFlow={hasFlow}
+          onReload={handleReloadData}
+        />
+      );
+      break;
+    }
+    case TaskType.SQL_PLAN: {
+      taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
+      break;
+    }
+    case TaskType.APPLY_PROJECT_PERMISSION: {
+      taskContent = <ApplyPermissionTaskContent task={task as any} />;
+      break;
+    }
+    case TaskType.APPLY_DATABASE_PERMISSION: {
+      taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
+      break;
+    }
+    case TaskType.STRUCTURE_COMPARISON: {
+      taskContent = (
+        <StructureComparisonTaskContent task={task as any} result={result} hasFlow={hasFlow} />
+      );
+      break;
+    }
+    default: {
+      getItems = taskContentMap[task?.type]?.getItems;
+      break;
+    }
   }
 
   const modalProps = {

@@ -81,6 +81,7 @@ export const ConnectTypeText = {
   [ConnectType.CLOUD_OB_ORACLE]: 'OB Cloud Oracle',
   [ConnectType.ODP_SHARDING_OB_MYSQL]: 'OB Sharding MySQL',
   [ConnectType.MYSQL]: 'MySQL',
+  [ConnectType.DORIS]: 'Doris',
   [ConnectType.ORACLE]: 'Oracle',
 };
 
