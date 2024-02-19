@@ -10,10 +10,13 @@ const performanceDefaultGroup: ODCSettingGroup = {
   key: 'performanceDefault',
 };
 
+const restartTip = '修改此参数，将在 ODC 重启后生效';
+
 const performanceSettings: IODCSetting[] = [
   {
     label: 'Jvm 参数',
     key: 'jvmParams',
+    tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,
     storeType: 'server',
@@ -25,6 +28,7 @@ const performanceSettings: IODCSetting[] = [
   {
     label: 'ODC 参数',
     key: 'odcParams',
+    tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,
     storeType: 'server',

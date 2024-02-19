@@ -1,4 +1,4 @@
-import { Col, Divider, Form, Menu, Modal, Row, Space, Typography } from 'antd';
+import { Button, Col, Divider, Form, Menu, Modal, Row, Space, Typography } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup } from './config';
 
@@ -73,9 +73,13 @@ const ODCSetting: React.FC<IProps> = () => {
       children.forEach((child) => {
         // 获取子节点相对于容器A顶部的位置
         const childOffsetTop = child.offsetTop;
-        const distance = Math.abs(childOffsetTop - scrollTop);
-        if (distance < min) {
-          min = distance;
+        let distance = childOffsetTop - scrollTop;
+        if (distance >= 0) {
+          distance = distance / 2;
+        }
+        const distanceAbs = Math.abs(distance);
+        if (distanceAbs < min) {
+          min = distanceAbs;
           key = child.getAttribute('data-name');
         }
       });
@@ -97,20 +101,36 @@ const ODCSetting: React.FC<IProps> = () => {
     };
   }, []);
 
+  function footerRender() {
+    return (
+      <Space>
+        <Button>取消</Button>
+        <Button>恢复默认设置</Button>
+        <Button type="primary">保存</Button>
+      </Space>
+    );
+  }
+
   return (
-    <Modal wrapClassName={styles.modal} width={760} open={true} title="设置" footer={null}>
+    <Modal
+      wrapClassName={styles.modal}
+      width={760}
+      open={true}
+      title="设置"
+      footer={footerRender()}
+    >
       <div className={styles.box}>
         <div ref={formBoxRef} className={styles.content}>
           <Form form={formRef} layout="vertical">
             {Array.from(data.values()).map((groupData) => {
               return (
-                <>
+                <React.Fragment key={groupData.key}>
                   <Typography.Title data-name={groupData.key} level={5}>
                     {groupData?.label}
                   </Typography.Title>
                   {Array.from(groupData?.secondGroup?.values()).map((group, index) => {
                     return (
-                      <>
+                      <React.Fragment key={group.key}>
                         <Space
                           style={{ width: '100%', paddingLeft: 8, marginTop: 12 }}
                           direction="vertical"
@@ -119,9 +139,18 @@ const ODCSetting: React.FC<IProps> = () => {
                           <Row style={{ paddingLeft: 12 }} gutter={20}>
                             {group.settings.map((set, index) => {
                               return (
-                                <Col span={set.span || 10}>
+                                <Col key={index} span={set.span || 10}>
                                   <Form.Item
-                                    label={<Typography.Text>{set.label}</Typography.Text>}
+                                    label={
+                                      <Space direction="vertical" size={2}>
+                                        <Typography.Text>{set.label}</Typography.Text>
+                                        {!!set.tip && (
+                                          <Typography.Text type="secondary">
+                                            {set.tip}
+                                          </Typography.Text>
+                                        )}
+                                      </Space>
+                                    }
                                     name={set.key}
                                     key={set.key}
                                   >
@@ -135,10 +164,10 @@ const ODCSetting: React.FC<IProps> = () => {
                         {groupData?.secondGroup.size == index + 1 ? (
                           <div style={{ margin: '0px 0px 24px 0px' }} />
                         ) : null}
-                      </>
+                      </React.Fragment>
                     );
                   })}
-                </>
+                </React.Fragment>
               );
             })}
           </Form>

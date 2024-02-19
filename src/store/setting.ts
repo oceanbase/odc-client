@@ -323,6 +323,7 @@ export class SettingStore {
     try {
       console.log('server buildTime:', new Date(info.buildTime));
       console.log('server version:', info.version);
+      console.log('odc version:', ODC_VERSION);
     } catch (e) {}
     this.serverSystemInfo = info;
   }
