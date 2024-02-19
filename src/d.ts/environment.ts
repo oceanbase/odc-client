@@ -29,6 +29,8 @@ export interface IEnvironment {
   creator: ProjectUser;
   lastModifier: ProjectUser;
   style: string;
+  enabled: boolean;
+  copiedRulesetId?: number;
 }
 export interface DataType {
   key: string;

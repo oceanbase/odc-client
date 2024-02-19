@@ -122,6 +122,7 @@ export const TaskTypeMap = {
     id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
   }), //'申请项目权限'
   [TaskType.APPLY_DATABASE_PERMISSION]: '申请库权限',
+  [TaskType.STRUCTURE_COMPARISON]: '结构比对',
 };
 export const getStatusFilters = (status: {
   [key: string]: {
@@ -160,14 +161,7 @@ const TaskTable: React.FC<IProps> = inject(
   'pageStore',
 )(
   observer((props) => {
-    const {
-      taskStore,
-      pageStore,
-      taskTabType,
-      tableRef,
-      taskList,
-      isMultiPage,
-    } = props;
+    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
     const currentTask = taskList;

@@ -25,14 +25,26 @@ import {
 } from '@/component/CommonTable/interface';
 import { IRule, RuleType } from '@/d.ts/rule';
 import { message, Spin } from 'antd';
-import { useContext, useRef, useState } from 'react';
-import { EnvironmentContext } from '../EnvironmentContext';
+import React, { useRef, useState } from 'react';
 import { getColumns } from './column';
 import EditRuleDrawer from './EditRuleDrawer';
 import styles from './index.less';
 import tracert from '@/util/tracert';
-const EnvironmentTable = ({ ruleType }) => {
-  const environmentContext = useContext(EnvironmentContext);
+import { IEnvironment } from '@/d.ts/environment';
+import { IManagerIntegration } from '@/d.ts';
+
+interface IEnvironmentProps {
+  currentEnvironment: IEnvironment;
+  integrations: IManagerIntegration[];
+  integrationsIdMap: Record<string, string>;
+  ruleType: RuleType;
+}
+const EnvironmentTable: React.FC<IEnvironmentProps> = ({
+  currentEnvironment,
+  integrations,
+  integrationsIdMap,
+  ruleType,
+}) => {
   const tableRef = useRef<ITableInstance>();
   const argsRef = useRef<ITableFilter>();
   const originRules = useRef<IRule[]>(null);
@@ -48,8 +60,11 @@ const EnvironmentTable = ({ ruleType }) => {
   const [pagination, setPagination] = useState<ITablePagination>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
+  /**
+   * 获取不同规范规则类型以及支持的数据源类型，用于筛选。
+   */
   const handleStatsRule = async () => {
-    const rawData = await statsRules(environmentContext?.currentEnvironment?.id, ruleType);
+    const rawData = await statsRules(currentEnvironment?.rulesetId, ruleType);
     setSubTypeFilters(
       rawData?.subTypes?.distinct?.map((d) => ({
         text: d,
@@ -63,12 +78,15 @@ const EnvironmentTable = ({ ruleType }) => {
       })),
     );
   };
-  const getRules = async (args: ITableLoadOptions) => {
+  const getRules = async (args?: ITableLoadOptions) => {
+    if (!currentEnvironment?.id) {
+      return;
+    }
     setLoading(true);
-    const { pageSize = 0, pagination = null, filters = null } = args;
+    const { pagination = null, filters = null } = args ?? {};
     const { subTypes, supportedDialectTypes, level, name } = filters ?? {};
     handleStatsRule();
-    const rulesets = await listRules(environmentContext?.currentEnvironment?.id, {
+    const rulesets = await listRules(currentEnvironment?.rulesetId, {
       types: ruleType,
     });
     let filteredRules: IRule[] = rulesets?.contents;
@@ -141,11 +159,7 @@ const EnvironmentTable = ({ ruleType }) => {
     setEditRuleDrawerVisible(false);
   };
   const handleUpdateEnvironment = async (rule: IRule, fn?: () => void) => {
-    const flag = await updateRule(
-      environmentContext?.currentEnvironment?.rulesetId,
-      selectedRule?.id,
-      rule,
-    );
+    const flag = await updateRule(currentEnvironment?.rulesetId, selectedRule?.id, rule);
     if (flag) {
       message.success(
         formatMessage({
@@ -189,7 +203,7 @@ const EnvironmentTable = ({ ruleType }) => {
   const rawColumns = getColumns({
     subTypeFilters,
     supportedDialectTypeFilters,
-    integrationsIdMap: environmentContext?.integrationsIdMap,
+    integrationsIdMap: integrationsIdMap,
     handleSwtichRuleStatus,
     handleOpenEditModal,
   });
@@ -221,7 +235,7 @@ const EnvironmentTable = ({ ruleType }) => {
         rule={selectedRule}
         ruleType={ruleType}
         editRuleDrawerVisible={editRuleDrawerVisible}
-        integrations={environmentContext?.integrations}
+        integrations={integrations}
         handleCloseModal={handleCloseModal}
         handleUpdateEnvironment={handleUpdateEnvironment}
       />

@@ -24,6 +24,8 @@ import { Button, Form, Input, message, Modal, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
+import { CaseInput } from '@/component/Input/Case';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 interface IProps {
   dataSourceId: string;
   projectId: number;
@@ -51,6 +53,7 @@ export default function NewDataBaseButton({
   const { data: project, loading: projectListLoading } = useRequest(listProjects, {
     defaultParams: [null, 1, 99999],
   });
+  const sqlConfig = getDataSourceModeConfigByConnectionMode(mode)?.sql;
   function close() {
     setOpen(false);
     form.resetFields();
@@ -130,7 +133,9 @@ export default function NewDataBaseButton({
               id: 'odc.Info.NewDataBaseButton.DatabaseName',
             })} /*数据库名称*/
           >
-            <Input
+            <CaseInput
+              caseSensitive={sqlConfig?.caseSensitivity}
+              escapes={sqlConfig?.escapeChar}
               style={{
                 width: 320,
               }}

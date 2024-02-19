@@ -19,6 +19,7 @@ import { IRiskLevel } from '@/d.ts/riskLevel';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
+import { EComparisonScope } from './task';
 
 export interface IUser {
   email: string;
@@ -581,6 +582,7 @@ export enum AuditEventDialectType {
   OB_ORACLE = 'OB_ORACLE',
   ORACLE = 'ORACLE',
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -639,6 +641,7 @@ export type ISQLScript = IScriptMeta;
 
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   ORACLE = 'ORACLE',
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
@@ -1812,6 +1815,7 @@ export enum TaskPageType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
 }
 
 export enum TaskType {
@@ -1832,6 +1836,7 @@ export enum TaskType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
 }
 
 export enum TaskJobType {
@@ -2146,6 +2151,7 @@ export interface TaskRecord<P> {
   type: TaskType;
   subTypes: string[];
   database: IDatabase;
+  relatedDatabase?: IDatabase;
   creator: {
     id: number;
     name: string;
@@ -2412,7 +2418,16 @@ export interface CreateTaskRecord {
   executionTime?: number;
   description?: string;
 }
-
+export interface CreateStructureComparisonTaskRecord {
+  taskType: TaskType;
+  executionStrategy: TaskExecStrategy;
+  parameters: {
+    comparisonScope: EComparisonScope;
+    sourceDatabaseId: number;
+    tableNamesToBeCompared?: string[];
+    targetDatabaseId: number;
+  };
+}
 export interface IAsyncTaskParams {
   timeoutMillis: number;
   errorStrategy: string;
@@ -2565,6 +2580,13 @@ export interface IDataArchiveTaskParams {
   };
 }
 
+export interface IStructureComparisonTaskParams {
+  comparisonScope: EComparisonScope;
+  sourceDatabaseId: number;
+  tableNamesToBeCompared?: string[];
+  targetDatabaseId: number;
+}
+
 export interface IConnectionPartitionPlan {
   databaseId: number;
   flowInstanceId?: number;
@@ -2638,7 +2660,7 @@ export interface ITaskFlowNode {
 export type TaskDetail<P> = TaskRecord<P>;
 
 export interface IIPartitionPlanTaskDetail<T> extends TaskDetail<T> {
-  nextFireTimes: number[];
+  nextFireTimes?: number[];
 }
 
 export type CycleTaskDetail<T> = ICycleTaskRecord<T>;
@@ -2979,6 +3001,7 @@ export enum ConnectType {
   CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   ORACLE = 'ORACLE',
 }
 

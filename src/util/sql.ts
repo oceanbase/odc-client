@@ -191,11 +191,13 @@ export function removeComment(text = '') {
 /**
  * 去除表名的引号，oracle中，表名可以用引号包裹来输入含大小写的字符，显示的时候我们需要去掉
  */
-export function removeTableQuote(tableName: string) {
+export function removeTableQuote(tableName: string, quote?: string) {
   if (!tableName || !tableName.trim()) {
     return '';
   }
-  const tbReg = /^\"([^"]+)\"$/.exec(tableName) || /^\`([^"]+)\`$/.exec(tableName);
+  const tbReg = quote
+    ? new RegExp(`^${quote}([^${quote}]+)${quote}$`).exec(tableName)
+    : /^\"([^"]+)\"$/.exec(tableName) || /^\`([^"]+)\`$/.exec(tableName);
   return tbReg ? tbReg[1] : tableName;
 }
 

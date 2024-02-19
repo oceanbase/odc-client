@@ -16,18 +16,88 @@
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
-import { Descriptions, Space } from 'antd';
+import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
 import styles from './index.less';
+import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
+import { IEnvironment } from '@/d.ts/environment';
+import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 
-const EnvironmentInfo = ({ label, style, description }) => {
+const EnvironmentInfo: React.FC<{
+  loading: boolean;
+  currentEnvironment: IEnvironment;
+  handleSwitchEnvEnabled: () => void;
+  handleDeleteEnvironment: () => void;
+  handleUpdateEnvironment: () => void;
+}> = ({
+  loading,
+  currentEnvironment,
+  handleSwitchEnvEnabled = () => {},
+  handleDeleteEnvironment = () => {},
+  handleUpdateEnvironment = () => {},
+}) => {
+  const { name, style, builtIn = true, enabled, description } = currentEnvironment ?? {};
+  const handleMenuOnClick: MenuClickEventHandler = (info: MenuInfo) => {
+    switch (info.key) {
+      case 'edit': {
+        handleUpdateEnvironment();
+        return;
+      }
+      case 'delete': {
+        handleDeleteEnvironment();
+        return;
+      }
+      default: {
+        return;
+      }
+    }
+  };
   return (
     <>
-      <Space className={styles.tag}>
-        <div className={styles.tagLabel}>
-          {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
-        </div>
-        <RiskLevelLabel content={label} color={style} />
-      </Space>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Space className={styles.tag}>
+          <div className={styles.tagLabel}>
+            {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
+          </div>
+          <Space size={0}>
+            <RiskLevelLabel content={name} color={style} />
+            {!enabled && (
+              <Tooltip title={'环境已被禁用'}>
+                <ExclamationCircleFilled
+                  style={{
+                    color: 'var(--function-gold6-color)',
+                    cursor: 'pointer',
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Space>
+        </Space>
+        <Space>
+          <Button
+            onClick={handleSwitchEnvEnabled}
+            type={enabled ? 'default' : 'primary'}
+            loading={loading}
+            disabled={loading}
+          >
+            {enabled ? '禁用' : '启用'}
+          </Button>
+          {builtIn ? null : (
+            <Dropdown
+              menu={{
+                items: [
+                  { label: '编辑环境', key: 'edit' },
+                  { label: '删除环境', key: 'delete' },
+                ],
+                onClick: handleMenuOnClick,
+              }}
+            >
+              <Button style={{ padding: '3.6px 8px' }}>
+                <Icon component={EllipsisOutlined} />
+              </Button>
+            </Dropdown>
+          )}
+        </Space>
+      </div>
       <Descriptions column={1}>
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
@@ -35,7 +105,7 @@ const EnvironmentInfo = ({ label, style, description }) => {
             formatMessage({ id: 'odc.Env.components.InnerEnvironment.Description' }) //描述
           }
         >
-          {description}
+          {description || '-'}
         </Descriptions.Item>
       </Descriptions>
     </>

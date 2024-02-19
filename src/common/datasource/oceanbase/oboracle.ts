@@ -50,7 +50,7 @@ const functionConfig: IDataSourceModeConfig['schema']['func'] = {
 
 const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSourceModeConfig> = {
   [ConnectType.OB_ORACLE]: {
-    priority: 2,
+    priority: 99,
     connection: {
       address: {
         items: ['ip', 'port', 'cluster', 'tenant'],
@@ -89,6 +89,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
   },
   [ConnectType.CLOUD_OB_ORACLE]: {
+    priority: 97,
     connection: {
       address: {
         items: ['ip', 'port'],

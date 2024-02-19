@@ -28,6 +28,7 @@ import ShadowSyncTaskCreateModal from './ShadowSyncTask';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
 import ApplyPermissionCreateModal from './ApplyPermission';
 import ApplyDatabasePermissionCreateModal from './ApplyDatabasePermission';
+import StructureComparisonTask from './StructureComparisonTask';
 
 interface IProps {
   projectId?: number;
@@ -51,6 +52,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
       <ResultSetExportTask projectId={projectId} theme={theme} />
       <ApplyDatabasePermissionCreateModal projectId={projectId} />
+      <StructureComparisonTask projectId={projectId} />
     </>
   );
 };
