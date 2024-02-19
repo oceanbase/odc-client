@@ -12,6 +12,7 @@ export interface ODCSettingGroup {
 export interface IODCSetting<T = any> {
   label: string;
   key: string;
+  tip?: string;
   group: ODCSettingGroup;
   secondGroup: ODCSettingGroup;
   /**

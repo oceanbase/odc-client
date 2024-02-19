@@ -112,7 +112,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '限制行数',
+    label: '查询条数限制',
     key: 'resultsetLimit',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,

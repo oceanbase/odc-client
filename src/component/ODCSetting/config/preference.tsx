@@ -25,11 +25,21 @@ const perferenceSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: 'White',
+              label: (
+                <img
+                  style={{ width: 170, height: 100 }}
+                  src={window.publicPath + `img/theme-white.png`}
+                />
+              ),
               value: EThemeConfigKey.ODC_WHITE,
             },
             {
-              label: 'Dark',
+              label: (
+                <img
+                  style={{ width: 170, height: 100 }}
+                  src={window.publicPath + `img/theme-dark.png`}
+                />
+              ),
               value: EThemeConfigKey.ODC_DARK,
             },
           ]}
