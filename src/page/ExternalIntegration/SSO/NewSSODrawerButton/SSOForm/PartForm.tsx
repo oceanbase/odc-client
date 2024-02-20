@@ -377,7 +377,7 @@ export const LDAPPartForm: React.FC<{
         }
         rules={[requiredRule]}
       >
-        <Input addonBefore="LDAP//:" placeholder="请输入，如：cn=admin,dc=example,dc=com" />
+        <Input placeholder="请输入，如：ldap://11.124.9.78/dc=example,dc=com" />
       </Form.Item>
 
       <Form.Item
