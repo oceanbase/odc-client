@@ -35,6 +35,7 @@ import {
   IApplyDatabasePermissionTaskParams,
   TaskStatus,
   TaskType,
+  SubTaskStatus,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -49,6 +50,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isCycleTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
+import { cloneDeep } from 'lodash';
 
 interface IProps {
   userStore?: UserStore;
@@ -170,43 +172,51 @@ const ActionBar: React.FC<IProps> = inject(
 
     const handleReTry = async () => {
       const { type } = task;
-      if(type === TaskType.ASYNC){
-        props.modalStore.changeCreateAsyncTaskModal(true, {
-          task: task as TaskDetail<IAsyncTaskParams>,
-        });
-      }else if(type === TaskType.DATAMOCK){
-        props.modalStore.changeDataMockerModal(true, {
-          task: task as TaskDetail<IMockDataParams>,
-        });
-      }else if(type === TaskType.APPLY_DATABASE_PERMISSION){
-        modalStore.changeApplyDatabasePermissionModal(true, {
-          task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
-        });
-      }else{
-        const {
-          database: { id: databaseId } = {},
-          executionStrategy,
-          executionTime,
-          parameters,
-          description,
-        } = task;
-        const data = {
-          taskType: type,
-          parameters,
-          databaseId,
-          executionStrategy,
-          executionTime,
-          description,
-        };
-        const res = await createTask(data);
-        if (res) {
-          message.success(
-            formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
-            }),
-  
-            //再次发起成功
-          );
+      switch (type) {
+        case TaskType.ASYNC: {
+          props.modalStore.changeCreateAsyncTaskModal(true, {
+            task: task as TaskDetail<IAsyncTaskParams>,
+          });
+          return;
+        }
+        case TaskType.DATAMOCK: {
+          props.modalStore.changeDataMockerModal(true, {
+            task: task as TaskDetail<IMockDataParams>,
+          });
+          return;
+        }
+        case TaskType.APPLY_DATABASE_PERMISSION: {
+          modalStore.changeApplyDatabasePermissionModal(true, {
+            task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        default: {
+          const {
+            database: { id: databaseId } = {},
+            executionStrategy,
+            executionTime,
+            parameters,
+            description,
+          } = task;
+          const data = {
+            taskType: type,
+            parameters,
+            databaseId,
+            executionStrategy,
+            executionTime,
+            description,
+          };
+          const res = await createTask(data);
+          if (res) {
+            message.success(
+              formatMessage({
+                id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
+              }),
+
+              //再次发起成功
+            );
+          }
         }
       }
     };
@@ -216,7 +226,7 @@ const ActionBar: React.FC<IProps> = inject(
       if (task?.type === TaskType.DATA_ARCHIVE) {
         props.modalStore.changeDataArchiveModal(true, {
           id: task?.id,
-          type: 'EDIT'
+          type: 'EDIT',
         });
       } else {
         props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
@@ -228,12 +238,12 @@ const ActionBar: React.FC<IProps> = inject(
       if (task?.type === TaskType.DATA_ARCHIVE) {
         props.modalStore.changeDataArchiveModal(true, {
           id: task?.id,
-          type: 'RETRY'
+          type: 'RETRY',
         });
-      }else if(task?.type === TaskType.DATA_DELETE){
+      } else if (task?.type === TaskType.DATA_DELETE) {
         props.modalStore.changeDataClearModal(true, {
           id: task?.id,
-          type: 'RETRY'
+          type: 'RETRY',
         });
       }
     };
@@ -361,6 +371,10 @@ const ActionBar: React.FC<IProps> = inject(
       const { status, completeTime = 0 } = _task;
       const structureComparisonData =
         modalStore?.structureComparisonDataMap?.get(_task?.id) || null;
+      const disableBtn =
+        task?.type === TaskType.STRUCTURE_COMPARISON &&
+        structureComparisonData &&
+        ![SubTaskStatus.DONE, SubTaskStatus.FAILED].includes(structureComparisonData?.status);
       const viewBtn = {
         key: 'view',
         text: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.See' }), // 查看
@@ -489,7 +503,8 @@ const ActionBar: React.FC<IProps> = inject(
       const downloadSQLBtn = {
         key: 'downloadSQL',
         text: '下载 SQL',
-        disabled: task?.status !== TaskStatus.EXECUTION_SUCCEEDED || !structureComparisonData,
+        disabled: disableBtn,
+        isExpired: disableBtn,
         tip: '暂不可用',
         type: 'button',
         action: async () => {
@@ -506,7 +521,8 @@ const ActionBar: React.FC<IProps> = inject(
       const structrueComparisonBySQL = {
         key: 'structrueComparisonBySQL',
         text: '发起结构同步',
-        disabled: task?.status !== TaskStatus.EXECUTION_SUCCEEDED || !structureComparisonData,
+        isExpired: disableBtn,
+        disabled: disableBtn,
         tip: '暂不可用',
         type: 'button',
         isPrimary: true,
@@ -570,6 +586,9 @@ const ActionBar: React.FC<IProps> = inject(
           case TaskStatus.EXECUTING: {
             if (isOwner || (isOwner && isApprovable)) {
               tools = [reTryBtn, stopBtn];
+              if (task.type === TaskType.STRUCTURE_COMPARISON) {
+                tools.push(downloadSQLBtn, structrueComparisonBySQL);
+              }
             }
             if (isApprovable) {
               tools = [];
@@ -790,14 +809,14 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.COMPLETED: {
           if (isOwner || (isOwner && isApprovable)) {
             tools = [viewBtn];
-            if([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)){
+            if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
               tools.push(reTryBtn);
             }
           } else {
             tools = [viewBtn];
           }
           break;
-        } 
+        }
         default:
       }
 
