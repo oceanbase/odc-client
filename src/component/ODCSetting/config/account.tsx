@@ -18,7 +18,7 @@ const accountPrivacyGroup: ODCSettingGroup = {
 const accountSettings: IODCSetting[] = [
   {
     label: '默认空间',
-    key: 'defaultSpaceType',
+    key: 'account.defaultOrganizationType',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
     storeType: 'server',
@@ -43,7 +43,7 @@ const accountSettings: IODCSetting[] = [
   },
   {
     label: '用户行为分析',
-    key: 'tracert',
+    key: 'account.userBehaviorAnalysisEnabled',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
     storeType: 'server',

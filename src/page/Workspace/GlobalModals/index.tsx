@@ -40,7 +40,6 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateProcedureModal />
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
       <CreateModals />
-      <ODCSetting />
     </>
   );
 };

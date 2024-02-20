@@ -1,6 +1,7 @@
 import RadioItem from '../Item/RadioItem';
 import { IODCSetting, ODCSettingGroup } from '../config';
 import InputItem from '../Item/InputItem';
+import KeymapInput from '@/component/Input/Keymap';
 
 const editorGroup: ODCSettingGroup = {
   label: '编辑器',
@@ -18,7 +19,7 @@ const editorKeymapGroup: ODCSettingGroup = {
 const editorSettings: IODCSetting[] = [
   {
     label: '主题',
-    key: 'editorTheme',
+    key: 'editor.style.theme',
     group: editorGroup,
     secondGroup: editorPreferenceGroup,
     storeType: 'server',
@@ -43,7 +44,7 @@ const editorSettings: IODCSetting[] = [
   },
   {
     label: '字体',
-    key: 'editorFont',
+    key: 'editor.style.fontSize',
     group: editorGroup,
     secondGroup: editorPreferenceGroup,
     storeType: 'server',
@@ -72,22 +73,22 @@ const editorSettings: IODCSetting[] = [
   },
   {
     label: '运行 SQL',
-    key: 'editorKeymapExecute',
+    key: 'editor.shortcut.executeStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
     storeType: 'server',
     render: (value, onChange) => {
-      return <InputItem value={value} onChange={onChange} />;
+      return <KeymapInput value={value} onChange={onChange} />;
     },
   },
   {
     label: '运行所选 SQL',
-    key: 'editorKeymapExecuteSelected',
+    key: 'editor.shortcut.executeCurrentStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
     storeType: 'server',
     render: (value, onChange) => {
-      return <InputItem value={value} onChange={onChange} />;
+      return <KeymapInput value={value} onChange={onChange} />;
     },
   },
 ];

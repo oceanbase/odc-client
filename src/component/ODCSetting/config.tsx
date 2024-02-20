@@ -19,7 +19,7 @@ export interface IODCSetting<T = any> {
    * 渲染宽度
    */
   span?: number;
-  storeType: 'server' | 'locale';
+  storeType: 'server' | 'local';
   render: (value: T, onChange: (value: T) => Promise<void>) => React.ReactNode;
 }
 
@@ -32,4 +32,10 @@ const odcSetting: IODCSetting[] = []
   .concat(perferenceSettings)
   .concat(performanceSettings)
   .concat(accountSettings);
+
+const odcSettingMap: Record<string, IODCSetting> = {};
+odcSetting.forEach((setting) => {
+  odcSettingMap[setting.key] = setting;
+});
+export { odcSettingMap };
 export default odcSetting;

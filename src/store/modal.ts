@@ -90,6 +90,9 @@ interface IWorkSpaceExecuteSQLModalProps {
 
 export class ModalStore {
   @observable
+  public odcSettingVisible: boolean = false;
+
+  @observable
   public exportModalVisible: boolean;
 
   @observable
@@ -459,6 +462,11 @@ export class ModalStore {
     this.sensitiveColumnVisible = isShow;
   }
 
+  @action
+  public changeOdcSettingVisible(isShow: boolean = true) {
+    this.odcSettingVisible = isShow;
+  }
+
   @action clear() {
     this.exportModalVisible = false;
     this.exportModalData = null;
@@ -480,6 +488,7 @@ export class ModalStore {
     this.versionModalVisible = false;
     this.sensitiveColumnVisible = false;
     this.createDDLAlterVisible = false;
+    this.odcSettingVisible = false;
   }
 }
 
