@@ -15,7 +15,7 @@
  */
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import { DbObjectType, EStatus, IAsyncTaskParams, ITable, RollbackType, TaskDetail } from '@/d.ts';
+import { DbObjectType, EStatus, IAsyncTaskParams, ITable, RollbackType, TaskDetail, IMockDataParams, IApplyDatabasePermissionTaskParams } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
@@ -37,6 +37,7 @@ interface ConnectionData {
 interface DataMockerData {
   tableName?: string;
   databaseId?: number;
+  task?: Partial<TaskDetail<IMockDataParams>>;
 }
 
 interface AsyncData {
@@ -63,6 +64,7 @@ interface ApplyPermissionData {}
 interface ApplyDatabasePermissionData {
   projectId?: number;
   databaseId?: number;
+  task?: Partial<TaskDetail<IApplyDatabasePermissionTaskParams>>;
 }
 
 interface IExportModalData {
@@ -76,6 +78,14 @@ interface IImportModalData {
   table?: Partial<ITable>;
   databaseId?: number;
 }
+
+interface IDataArchiveTaskData {
+  id: number;
+  type: 'RETRY' | 'EDIT';
+}
+
+interface IDataClearTaskData extends IDataArchiveTaskData{}
+
 interface IWorkSpaceExecuteSQLModalProps {
   tip: string;
   sql: string;
@@ -135,7 +145,7 @@ export class ModalStore {
   public dataArchiveVisible: boolean = false;
 
   @observable
-  public dataArchiveEditId: number = null;
+  public dataArchiveTaskData: IDataArchiveTaskData = null;
 
   @observable
   public structureComparisonVisible: boolean = false;
@@ -159,6 +169,9 @@ export class ModalStore {
 
   @observable
   public dataClearVisible: boolean = false;
+
+  @observable
+  public dataClearTaskData: IDataClearTaskData = null;
 
   @observable
   public createSQLPlanVisible: boolean = false;
@@ -395,9 +408,9 @@ export class ModalStore {
   }
 
   @action
-  public changeDataArchiveModal(isShow: boolean = true, id?: number) {
+  public changeDataArchiveModal(isShow: boolean = true, data?: IDataArchiveTaskData) {
     this.dataArchiveVisible = isShow;
-    this.dataArchiveEditId = isShow ? id : null;
+    this.dataArchiveTaskData = isShow ? data : null;
   }
 
   @action
@@ -424,8 +437,9 @@ export class ModalStore {
   }
 
   @action
-  public changeDataClearModal(isShow: boolean = true) {
+  public changeDataClearModal(isShow: boolean = true, data?: IDataClearTaskData) {
     this.dataClearVisible = isShow;
+    this.dataClearTaskData = isShow ? data : null;
   }
 
   @action

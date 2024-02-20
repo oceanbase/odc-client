@@ -178,15 +178,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       hadleReset();
     }
   };
-  
-  
-
-  useEffect(() =>{
-    if(applyDatabasePermissionVisible){
-      form.setFieldValue('projectId', props?.projectId);
-    }
-  }, [applyDatabasePermissionVisible, props?.projectId])
-
   const handleSubmit = () => {
     form
       .validateFields()
@@ -223,12 +214,40 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
 
-  useEffect(() => {
-    const { projectId, databaseId } = applyDatabasePermissionData ?? {};
-    form.setFieldsValue({
+  const loadEditData = async () => {
+    const { task } = applyDatabasePermissionData;
+    const {
+      parameters: {
+        project: { id: projectId },
+        databases,
+        types,
+        applyReason
+       },
+      executionStrategy,
+    } = task;
+    const formData = {
       projectId,
-      databaseId
-    });
+      executionStrategy,
+      databases: databases?.map(item => item.id),
+      types,
+      applyReason
+    };
+    form.setFieldsValue(formData);
+  };
+
+  const handleResetDatabase = () =>{
+    form.setFieldValue('databases', []);
+  }
+
+  useEffect(() => {
+    const { projectId } = applyDatabasePermissionData ?? {};
+    if (applyDatabasePermissionData?.task) {
+      loadEditData();
+    }else{
+      form.setFieldsValue({
+        projectId: projectId || props?.projectId
+      });
+    }
   }, [applyDatabasePermissionData]);
 
   return (
@@ -258,7 +277,9 @@ const CreateModal: React.FC<IProps> = (props) => {
     >
       <Form
         name="basic"
-        initialValues={null}
+        initialValues={{
+          databases: []
+        }}
         layout="vertical"
         requiredMark="optional"
         form={form}
@@ -282,6 +303,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
+            onChange={handleResetDatabase}
           />
         </Form.Item>
         <Form.Item name="databases" label="数据库" required>

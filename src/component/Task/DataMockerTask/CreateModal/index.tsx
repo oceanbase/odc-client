@@ -15,7 +15,7 @@
  */
 
 import { createTask } from '@/common/network/task';
-import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IServerMockTable } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
@@ -23,7 +23,7 @@ import { Button, Drawer, message, Modal, Space } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { FormInstance } from 'antd/es/form/Form';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
 
@@ -35,9 +35,37 @@ interface IProps extends Pick<DrawerProps, 'visible'> {
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
     const { modalStore, projectId } = props;
+    const { dataMockerData } = modalStore;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
+    const isReTry = dataMockerData?.task;
+
+    const loadEditData = async () => {
+      const { task } = dataMockerData;
+      const {
+        parameters: { taskDetail },
+        database: { id: databaseId },
+        description,
+        executionStrategy,
+      } = task;
+      const taskDetailObj: {
+        tables: IServerMockTable;
+      } = JSON.parse(taskDetail);
+      const { tableName, whetherTruncate, totalCount, strategy, batchSize } = taskDetailObj?.tables?.[0] ?? {};
+      const formData = {
+        databaseId,
+        tableName,
+        whetherTruncate,
+        totalCount,
+        strategy,
+        batchSize,
+        executionStrategy,
+        description
+      };
+      formRef.current?.setFieldsValue(formData);
+    };
+
     const onClose = useCallback(() => {
       modalStore.changeDataMockerModal(false, null);
     }, [modalStore]);
@@ -59,6 +87,12 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       setDbMode(mode);
     };
 
+    useEffect(() => {
+      if (dataMockerData?.task) {
+        loadEditData();
+      }
+    }, [dataMockerData]);
+
     return (
       <Drawer
         open={modalStore.dataMockerVisible}
@@ -66,9 +100,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         destroyOnClose
         width={960}
         className="o-adaptive-drawer"
-        title={formatMessage({
-          id: 'odc.component.DataMockerDrawer.CreateSimulationData',
-        })} /*新建模拟数据*/
+        title={isReTry ? '再次发起模拟数据' : '新建模拟数据'}
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>

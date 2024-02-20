@@ -117,7 +117,7 @@ const getVariables = (
   });
 };
 
-const getVariableValue = (
+export const getVariableValue = (
   value: {
     name: string;
     pattern: string;
@@ -167,8 +167,9 @@ const CreateModal: React.FC<IProps> = (props) => {
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-  const { dataArchiveVisible, dataArchiveEditId } = modalStore;
-  const isEdit = !!dataArchiveEditId;
+  const { dataArchiveVisible, dataArchiveTaskData } = modalStore;
+  const dataArchiveEditId = dataArchiveTaskData?.id;
+  const isEdit = !!dataArchiveEditId && dataArchiveTaskData?.type === 'EDIT';
   const loadEditData = async (editId: number) => {
     const data = await getCycleTaskDetail<IDataArchiveJobParameters>(editId);
     const {
@@ -375,6 +376,19 @@ const CreateModal: React.FC<IProps> = (props) => {
     setCrontab(null);
     setHasEdit(false);
   };
+
+  const getDrawerTitle = () =>{
+    let title = '新建数据归档';
+    if(dataArchiveEditId){
+      if(isEdit){
+        title = '编辑数据归档';
+      }else{
+        title = '再次发起数据归档';
+      }
+    }
+    return title;
+  }
+
   useEffect(() => {
     if (!dataArchiveVisible) {
       handleReset();
@@ -400,15 +414,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles['data-archive']}
       width={760}
-      title={
-        isEdit
-          ? formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.EditDataArchive',
-            }) //编辑数据归档
-          : formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.CreateADataArchive',
-            }) //新建数据归档
-      }
+      title={getDrawerTitle()}
       footer={
         <Space>
           <Button
