@@ -25,12 +25,14 @@ import {
 import Action from '@/component/Action';
 import {
   IAsyncTaskParams,
+  IMockDataParams,
   ITaskResult,
   RollbackType,
   TaskDetail,
   TaskExecStrategy,
   TaskRecord,
   TaskRecordParameters,
+  IApplyDatabasePermissionTaskParams,
   TaskStatus,
   TaskType,
 } from '@/d.ts';
@@ -167,27 +169,36 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const {
-        type,
-        database: { id: databaseId } = {},
-        executionStrategy,
-        executionTime,
-        parameters,
-        description,
-      } = task;
+      const { type } = task;
       if(type === TaskType.ASYNC){
         props.modalStore.changeCreateAsyncTaskModal(true, {
           task: task as TaskDetail<IAsyncTaskParams>,
         });
+      }else if(type === TaskType.DATAMOCK){
+        props.modalStore.changeDataMockerModal(true, {
+          task: task as TaskDetail<IMockDataParams>,
+        });
+      }else if(type === TaskType.APPLY_DATABASE_PERMISSION){
+        modalStore.changeApplyDatabasePermissionModal(true, {
+          task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+        });
       }else{
-        const res = await createTask({
-          taskType: type,
-          databaseId,
+        const {
+          database: { id: databaseId } = {},
           executionStrategy,
           executionTime,
           parameters,
           description,
-        });
+        } = task;
+        const data = {
+          taskType: type,
+          parameters,
+          databaseId,
+          executionStrategy,
+          executionTime,
+          description,
+        };
+        const res = await createTask(data);
         if (res) {
           message.success(
             formatMessage({
@@ -200,24 +211,30 @@ const ActionBar: React.FC<IProps> = inject(
       }
     };
 
-    const handleApplyReTry = async () => {
-      const { parameters } = task;
-      const data = {
-        taskType: TaskType.APPLY_DATABASE_PERMISSION,
-        parameters,
-      };
-      const res = await createTask(data);
-      if (res) {
-        message.success('再次发起成功');
-      }
-    };
-
     const editCycleTask = async () => {
       props?.onClose?.();
       if (task?.type === TaskType.DATA_ARCHIVE) {
-        props.modalStore.changeDataArchiveModal(true, task?.id);
+        props.modalStore.changeDataArchiveModal(true, {
+          id: task?.id,
+          type: 'EDIT'
+        });
       } else {
         props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
+      }
+    };
+
+    const handleReTryCycleTask = async () => {
+      props?.onClose?.();
+      if (task?.type === TaskType.DATA_ARCHIVE) {
+        props.modalStore.changeDataArchiveModal(true, {
+          id: task?.id,
+          type: 'RETRY'
+        });
+      }else if(task?.type === TaskType.DATA_DELETE){
+        props.modalStore.changeDataClearModal(true, {
+          id: task?.id,
+          type: 'RETRY'
+        });
       }
     };
 
@@ -454,7 +471,7 @@ const ActionBar: React.FC<IProps> = inject(
 
         //再次发起
         type: 'button',
-        action: task?.type === TaskType.APPLY_DATABASE_PERMISSION ? handleApplyReTry : handleReTry,
+        action: handleReTry,
       };
 
       const downloadBtn = {
@@ -678,6 +695,13 @@ const ActionBar: React.FC<IProps> = inject(
         type: 'button',
       };
 
+      const reTryBtn = {
+        key: 'reTry',
+        text: '再次发起',
+        type: 'button',
+        action: handleReTryCycleTask,
+      };
+
       const disableBtn = {
         key: 'disable',
         text: formatMessage({
@@ -763,6 +787,17 @@ const ActionBar: React.FC<IProps> = inject(
           }
           break;
         }
+        case TaskStatus.COMPLETED: {
+          if (isOwner || (isOwner && isApprovable)) {
+            tools = [viewBtn];
+            if([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)){
+              tools.push(reTryBtn);
+            }
+          } else {
+            tools = [viewBtn];
+          }
+          break;
+        } 
         default:
       }
 
