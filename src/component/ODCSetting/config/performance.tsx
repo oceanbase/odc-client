@@ -15,11 +15,11 @@ const restartTip = '修改此参数，将在 ODC 重启后生效';
 const performanceSettings: IODCSetting[] = [
   {
     label: 'Jvm 参数',
-    key: 'jvmParams',
+    key: 'client.jvm.params',
     tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,
-    storeType: 'server',
+    storeType: 'local',
     span: 24,
     render: (value, onChange) => {
       return <TextAreaItem value={value} onChange={onChange} />;
@@ -27,11 +27,11 @@ const performanceSettings: IODCSetting[] = [
   },
   {
     label: 'ODC 参数',
-    key: 'odcParams',
+    key: 'client.start.params',
     tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,
-    storeType: 'server',
+    storeType: 'local',
     span: 24,
     render: (value, onChange) => {
       return <TextAreaItem value={value} onChange={onChange} />;

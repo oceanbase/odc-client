@@ -1,12 +1,16 @@
-import { Button, Col, Divider, Form, Menu, Modal, Row, Space, Typography } from 'antd';
+import { Button, Col, Form, Modal, Row, Space, Tabs, Typography } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup } from './config';
 
 import styles from './index.less';
+import { inject, observer } from 'mobx-react';
+import { ModalStore } from '@/store/modal';
 
-interface IProps {}
+interface IProps {
+  modalStore?: ModalStore;
+}
 
-const ODCSetting: React.FC<IProps> = () => {
+const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const [formRef] = Form.useForm();
   const formBoxRef = React.createRef<HTMLDivElement>();
   const scrollSwitcher = useRef<Boolean>(true);
@@ -99,23 +103,37 @@ const ODCSetting: React.FC<IProps> = () => {
     return () => {
       clear();
     };
-  }, []);
+  }, [modalStore.odcSettingVisible]);
+
+  async function save() {
+    const values = await formRef.validateFields();
+    console.log(values);
+  }
+
+  function reset() {
+    Modal.confirm({
+      title: '确定要恢复默认设置吗？',
+      onOk: () => {},
+    });
+  }
 
   function footerRender() {
     return (
       <Space>
-        <Button>取消</Button>
-        <Button>恢复默认设置</Button>
-        <Button type="primary">保存</Button>
+        <Button onClick={() => modalStore.changeOdcSettingVisible(false)}>取消</Button>
+        <Button onClick={reset}>恢复默认设置</Button>
+        <Button type="primary" onClick={save}>
+          保存
+        </Button>
       </Space>
     );
   }
-
   return (
     <Modal
       wrapClassName={styles.modal}
       width={760}
-      open={true}
+      open={modalStore.odcSettingVisible}
+      onCancel={() => modalStore.changeOdcSettingVisible(false)}
       title="设置"
       footer={footerRender()}
     >
@@ -173,18 +191,21 @@ const ODCSetting: React.FC<IProps> = () => {
           </Form>
         </div>
         <div className={styles.menu}>
-          <Menu
-            selectedKeys={[activeKey]}
-            onClick={({ key }) => {
-              setActiveKey(key);
-              scrollToKey(key);
-            }}
+          <Tabs
+            tabBarGutter={0}
+            size="small"
+            tabPosition="right"
             items={Array.from(data.values()).map((g) => {
               return {
                 label: g.label,
                 key: g.key,
               };
             })}
+            activeKey={activeKey}
+            onChange={(key) => {
+              setActiveKey(key);
+              scrollToKey(key);
+            }}
           />
         </div>
       </div>
@@ -192,4 +213,4 @@ const ODCSetting: React.FC<IProps> = () => {
   );
 };
 
-export default ODCSetting;
+export default inject('modalStore')(observer(ODCSetting));

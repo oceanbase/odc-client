@@ -15,7 +15,7 @@ const preferenceDefaultGroup: ODCSettingGroup = {
 const perferenceSettings: IODCSetting[] = [
   {
     label: '主题',
-    key: 'theme',
+    key: 'appearance.scheme',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',
@@ -51,13 +51,24 @@ const perferenceSettings: IODCSetting[] = [
   },
   {
     label: '语言',
-    key: 'language',
+    key: 'appearance.language',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',
     span: 24,
     render: (value, onChange) => {
-      return <RadioItem options={localeList} value={value} onChange={onChange} />;
+      return (
+        <RadioItem
+          options={[
+            {
+              label: '当前系统语言',
+              value: 'auto',
+            },
+          ].concat(localeList)}
+          value={value}
+          onChange={onChange}
+        />
+      );
     },
   },
 ];

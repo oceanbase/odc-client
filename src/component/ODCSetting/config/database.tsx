@@ -30,7 +30,7 @@ const databaseObjectGroup: ODCSettingGroup = {
 const databaseSettings: IODCSetting[] = [
   {
     label: 'MYSQL 提交模式',
-    key: 'mysqlCommitMode',
+    key: 'sqlexecute.default.mysqlAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
     storeType: 'server',
@@ -59,7 +59,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: 'Oracle 提交模式',
-    key: 'oracleCommitMode',
+    key: 'sqlexecute.default.oracleAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
     storeType: 'server',
@@ -88,7 +88,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '获取结果集列信息',
-    key: 'resultsetColumnMetadata',
+    key: 'sqlexecute.default.fetchColumnInfo',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
     storeType: 'server',
@@ -113,7 +113,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '查询条数限制',
-    key: 'resultsetLimit',
+    key: 'sqlexecute.default.queryLimit',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
     storeType: 'server',
@@ -123,7 +123,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '开启全链路诊断',
-    key: 'sqlTrace',
+    key: 'sqlexecute.default.fullTraceDiagnosisEnabled',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -148,7 +148,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '报错继续执行',
-    key: 'continueOnError',
+    key: 'sqlexecute.default.continueExecutionOnError',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -173,7 +173,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: 'Delimiter 设置',
-    key: 'delimiter',
+    key: 'sqlexecute.default.delimiter',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -210,7 +210,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '对象拖放生成语句类型',
-    key: 'objectDropStatementType',
+    key: 'sqlexecute.default.objectDraggingOption',
     group: databaseGroup,
     secondGroup: databaseObjectGroup,
     storeType: 'server',
