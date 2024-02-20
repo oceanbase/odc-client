@@ -39,7 +39,7 @@ process.on('uncaughtException', (e) => {
   log.info(e);
 });
 app.commandLine.appendSwitch('disable-http-cache');
-app.commandLine.appendSwitch('disable-gpu-sandbox');
+app.commandLine.appendSwitch('in-process-gpu');
 function resolveWinRemoteParams(argv) {
   if (argv.length > 1) {
     log.info('app opened with argv');
