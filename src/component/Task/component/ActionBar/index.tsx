@@ -61,7 +61,7 @@ interface IProps {
   task: Partial<TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>>;
   disabledSubmit?: boolean;
   result?: ITaskResult;
-  onReloadList: () => void;
+  onReloadList?: () => void;
   onReload?: () => void;
   onApprovalVisible?: (status: boolean, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -114,7 +114,7 @@ const ActionBar: React.FC<IProps> = inject(
           }),
         );
 
-        props.onReloadList();
+        props?.onReloadList?.();
         props?.onReload?.();
       }
     };
