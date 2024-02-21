@@ -1,10 +1,15 @@
 import { Button, Col, Form, Modal, Row, Space, Tabs, Typography } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import odcSetting, { IODCSetting, ODCSettingGroup } from './config';
+import odcSetting, { IODCSetting, ODCSettingGroup, odcSettingMap } from './config';
 
 import styles from './index.less';
 import { inject, observer } from 'mobx-react';
 import { ModalStore } from '@/store/modal';
+import setting from '@/store/setting';
+import { IUserConfig } from '@/d.ts';
+import { getODCSetting, saveODCSetting } from '@/util/client';
+import { isClient } from '@/util/env';
+import { safeParseJson } from '@/util/utils';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -98,8 +103,21 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     };
   }
 
+  async function loadData() {
+    let data = setting.configurations || {};
+    if (isClient()) {
+      const clientData = safeParseJson(await getODCSetting(), {});
+      data = { ...data, ...clientData };
+    }
+    formRef.setFieldsValue(data);
+  }
+
   useEffect(() => {
+    if (!modalStore.odcSettingVisible) {
+      return;
+    }
     const clear = addListener();
+    loadData();
     return () => {
       clear();
     };
@@ -107,7 +125,31 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
   async function save() {
     const values = await formRef.validateFields();
-    console.log(values);
+    const serverData: Record<string, string> = {},
+      localData = {};
+    Object.keys(values).forEach((key) => {
+      const info = odcSettingMap[key];
+      switch (info.storeType) {
+        case 'server': {
+          serverData[key] = values[key];
+          break;
+        }
+        case 'local': {
+          localData[key] = values[key];
+          break;
+        }
+      }
+    });
+    /**
+     * submit serverData
+     */
+    await setting.updateUserConfig(serverData as any);
+    /**
+     * submit localData
+     */
+    if (isClient()) {
+      await saveODCSetting(JSON.stringify(localData));
+    }
   }
 
   function reset() {
