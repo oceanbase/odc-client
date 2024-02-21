@@ -78,7 +78,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
             type="link"
             size="small"
             onClick={() => {
-              modalStore.changeUserConfigModal(true);
+              modalStore.changeOdcSettingVisible(true);
             }}
           >
             {

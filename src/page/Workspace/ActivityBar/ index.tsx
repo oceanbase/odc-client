@@ -123,7 +123,7 @@ const ActivityBar: React.FC<IProps> = function () {
               label={formatMessage({ id: 'odc.Index.Sider.Help' })} /*帮助*/
             />
           </HelpItem>
-          <MineItem enableTheme={true}>
+          <MineItem>
             <MenuItem
               disableTip={true}
               icon={UserOutlined}
