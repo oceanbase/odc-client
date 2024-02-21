@@ -188,7 +188,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           project:{
             id: projectId
           },
-          databases,
+          databases: databases?.map(id => ({ id })),
           types,
           expireTime: getExpireTime(expireTime, customExpireTime, isCustomExpireTime),
           applyReason,
