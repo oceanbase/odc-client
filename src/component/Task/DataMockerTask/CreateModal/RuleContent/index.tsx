@@ -79,7 +79,7 @@ interface IRuleContentProps {
  * 获取是否为浮点型
  */
 function getNumberType(dbMode: ConnectionMode, columnType: string) {
-  if (dbMode === ConnectionMode.OB_ORACLE) {
+  if (dbMode === ConnectionMode.OB_ORACLE || dbMode === ConnectionMode.ORACLE) {
     return 'float';
   }
   if (['DECIMAL', 'FLOAT', 'DOUBLE', 'NUMERIC'].includes(convertColumnType(columnType))) {
@@ -92,16 +92,8 @@ const RuleContent: React.FC<IRuleContentProps> = (props) => {
   const [isEditing, _setIsEditing] = useState(false);
   const itemRef = useRef<FormInstance>();
   let emptyShowFunc;
-  let {
-    dbMode,
-    columnType,
-    ruleType,
-    readonly,
-    value,
-    columnSizeMap,
-    columnName,
-    onChange,
-  } = props;
+  let { dbMode, columnType, ruleType, readonly, value, columnSizeMap, columnName, onChange } =
+    props;
   const maxLength = columnSizeMap?.[columnName];
   columnType = convertColumnType(columnType);
   const ruleItem = columnTypeToRuleMap[dbMode]?.[columnType];
