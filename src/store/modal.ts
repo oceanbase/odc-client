@@ -15,7 +15,17 @@
  */
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import { DbObjectType, EStatus, IAsyncTaskParams, ITable, RollbackType, TaskDetail, IMockDataParams, IApplyDatabasePermissionTaskParams } from '@/d.ts';
+import {
+  DbObjectType,
+  EStatus,
+  IAsyncTaskParams,
+  ITable,
+  RollbackType,
+  TaskDetail,
+  IMockDataParams,
+  IApplyDatabasePermissionTaskParams,
+  SubTaskStatus,
+} from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
@@ -84,7 +94,7 @@ interface IDataArchiveTaskData {
   type: 'RETRY' | 'EDIT';
 }
 
-interface IDataClearTaskData extends IDataArchiveTaskData{}
+interface IDataClearTaskData extends IDataArchiveTaskData {}
 
 interface IWorkSpaceExecuteSQLModalProps {
   tip: string;
@@ -157,6 +167,7 @@ export class ModalStore {
       database: IDatabase;
       storageObjectId: number;
       totalChangeScript: string;
+      status: SubTaskStatus;
     }
   > = new Map<
     number,
@@ -164,6 +175,7 @@ export class ModalStore {
       database: IDatabase;
       storageObjectId: number;
       totalChangeScript: string;
+      status: SubTaskStatus;
     }
   >();
 
@@ -426,6 +438,7 @@ export class ModalStore {
       database: IDatabase;
       storageObjectId: number;
       totalChangeScript: string;
+      status: SubTaskStatus;
     },
     clear: boolean = false,
   ) {

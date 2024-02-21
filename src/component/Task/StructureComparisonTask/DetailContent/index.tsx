@@ -165,7 +165,7 @@ const CompareTable: React.FC<{
     }
   }, [currentTaskResult]);
   return (
-    <div style={{ height: '316px' }}>
+    <div style={{ height: '316px', paddingTop: '8px' }}>
       <ConfigProvider renderEmpty={TableEmpty}>
         <CommonTable
           key="CompareTable"
@@ -225,7 +225,7 @@ const SQLPreview: React.FC<{
           >
             <Empty
               description={
-                <span style={{ color: 'var(--neutral-black45-color)', cursor: 'default' }}>
+                <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
                   正在比对中，暂无数据
                 </span>
               }
@@ -269,6 +269,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           database: task?.relatedDatabase,
           storageObjectId: data?.storageObjectId,
           totalChangeScript: data?.totalChangeScript,
+          status: (currentResult as any)?.status,
         });
         setComparisonResult(data);
       }
@@ -289,6 +290,12 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           timerRef.current = null;
         } else {
           taskEndRef.current = false;
+          modalStore?.updateStructureComparisonDataMap(task?.id, {
+            database: null,
+            storageObjectId: null,
+            totalChangeScript: null,
+            status: (currentResult as any)?.status,
+          });
         }
         loop(2000);
       }, timeout);

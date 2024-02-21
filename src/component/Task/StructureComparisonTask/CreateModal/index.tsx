@@ -34,8 +34,8 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   async function handleSubmit() {
-    setConfirmLoading(true);
     const rawData = await form.validateFields().catch();
+    setConfirmLoading(true);
     rawData.taskType = TaskType.STRUCTURE_COMPARISON;
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
