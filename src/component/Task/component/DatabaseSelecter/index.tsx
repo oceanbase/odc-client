@@ -32,7 +32,7 @@ interface IProps {
   onChange?: (newValue: any[]) => void;
 }
 
-const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checkedKeys, onChange }) {
+const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checkedKeys = [], onChange }) {
   const [isLoading, setIsLoading] = useState(false);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
   const [targetSearchValue, setTargetSearchValue] = useState(null);
@@ -133,7 +133,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
   };
 
   const allTreeDataKeys = getAllTreeDataKeys();
-  const checkAll = allTreeDataKeys.length && allTreeDataKeys.length === checkedKeys.length;
+  const checkAll = allTreeDataKeys?.length && allTreeDataKeys.length === checkedKeys.length;
   const allTreeData = getAllTreeData();
   const selectedTreeData = getCheckedTreeData();
   const allTreeDataCount = allTreeDataKeys?.length;
