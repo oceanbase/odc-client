@@ -167,9 +167,6 @@ export class ModalStore {
   public createSQLPlanVisible: boolean = false;
 
   @observable
-  public userConfigModalVisible: boolean = false;
-
-  @observable
   public sensitiveColumnVisible: boolean = false;
 
   @observable
@@ -438,11 +435,6 @@ export class ModalStore {
   }
 
   @action
-  public changeUserConfigModal(isShow: boolean = true) {
-    this.userConfigModalVisible = isShow;
-  }
-
-  @action
   public changeCreateDDLAlterTaskModal(isShow: boolean = true) {
     this.createDDLAlterVisible = isShow;
   }
@@ -477,7 +469,7 @@ export class ModalStore {
     this.createAsyncTaskVisible = false;
     this.createResultSetExportTaskVisible = false;
     this.createSQLPlanVisible = false;
-    this.userConfigModalVisible = false;
+
     this.applyPermissionVisible = false;
     this.applyDatabasePermissionVisible = false;
     this.partitionVisible = false;
