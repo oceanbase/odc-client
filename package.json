@@ -74,7 +74,7 @@
     "@oceanbase-odc/monaco-plugin-ob": "^0.2.1",
     "@oceanbase-odc/ob-intl-cli": "^2.0.2",
     "@oceanbase-odc/ob-parser-js": "^3.0.1",
-    "@oceanbase-odc/ob-react-data-grid": "^3.0.9",
+    "@oceanbase-odc/ob-react-data-grid": "^3.0.10",
     "@sentry/react": "^7.88.0",
     "@svgr/webpack": "^6.5.1",
     "@testing-library/react": "^11.2.2",
