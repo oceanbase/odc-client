@@ -76,7 +76,11 @@ const config = {
       from: `${distDir}/renderer`,
       to: 'renderer',
     },
-    'build/setting.json'
+    {
+      from: `build/setting.json`,
+      to: 'setting.json',
+    },
+    
   ],
 };
 
