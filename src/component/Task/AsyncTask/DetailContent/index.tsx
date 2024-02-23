@@ -143,7 +143,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
                 }) /*回滚内容*/
               }
             </span>
-            <DownloadFileAction taskId={task?.id} objectId={result?.rollbackPlanResult?.objectId} />
+            <DownloadFileAction url={result?.rollbackPlanResult?.resultFileDownloadUrl} />
           </Space>
         }
         content={
