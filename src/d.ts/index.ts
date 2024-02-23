@@ -2237,7 +2237,7 @@ export interface ITaskResult {
   rollbackPlanResult?: {
     error: string;
     generated: boolean;
-    objectId: string;
+    resultFileDownloadUrl: string;
     success: boolean;
   };
 }
