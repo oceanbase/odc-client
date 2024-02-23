@@ -267,8 +267,10 @@ class MainServer {
           const fileTempPath = path.resolve(app.getPath('userData'), 'odc.temp.properties');
           writeFileSync(fileTempPath, odcProperties);
           odcOptions = fileTempPath;
+          log.info('odc system propeties ', odcOptions, setting['client.start.params']);
         }
       }
+      log.info('jvmOptions:', jvmOptions.join(' '));
       javaChildProcess = spawn(
         javaBin,
         [
