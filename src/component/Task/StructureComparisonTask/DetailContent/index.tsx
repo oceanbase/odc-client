@@ -296,8 +296,8 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             totalChangeScript: null,
             status: (currentResult as any)?.status,
           });
+          loop(2000);
         }
-        loop(2000);
       }, timeout);
     };
     const handleDetailModalOpen = async (taskId: number, structureComparisonId: number) => {
