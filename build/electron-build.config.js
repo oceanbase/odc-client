@@ -76,6 +76,7 @@ const config = {
       from: `${distDir}/renderer`,
       to: 'renderer',
     },
+    'build/setting.json'
   ],
 };
 

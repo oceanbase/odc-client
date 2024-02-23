@@ -219,6 +219,22 @@ export function getJavaPath() {
   };
 }
 
+export function getSetting(): Record<string, string> {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  let basePath = isDevelopment
+    ? path.join(process.cwd(), 'build/setting.json')
+    : path.join(process.resourcesPath || '', 'setting.json');
+  if (!fs.existsSync(basePath)) {
+    return null;
+  }
+  const file = fs.readFileSync(basePath, 'utf-8').toString();
+  try {
+    return JSON.parse(file);
+  } catch (e) {
+    return null;
+  }
+}
+
 export function getRendererPath() {
   const p = 'file:' + path.join(process.resourcesPath, 'renderer/');
   log.info('renderer path: ', p);
