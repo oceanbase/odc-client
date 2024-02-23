@@ -135,7 +135,7 @@ const ActionBar: React.FC<IProps> = inject(
         type,
         task: task as TaskDetail<IAsyncTaskParams>,
         databaseId: task?.database?.id,
-        objectId: result?.rollbackPlanResult?.objectId,
+        objectId: result?.rollbackPlanResult?.resultFileDownloadUrl,
       });
     };
 
@@ -889,7 +889,7 @@ const ActionBar: React.FC<IProps> = inject(
             open={openRollback}
             generateRollbackPlan={
               (task as TaskDetail<IAsyncTaskParams>)?.parameters?.generateRollbackPlan &&
-              !!result?.rollbackPlanResult?.objectId
+              !!result?.rollbackPlanResult?.resultFileDownloadUrl
             }
             onOk={confirmRollback}
             onCancel={handleCloseRollback}
