@@ -20,6 +20,8 @@ import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
 import { EComparisonScope } from './task';
+import { EThemeConfigKey } from '@/store/setting';
+import { SpaceType } from './_index';
 
 export interface IUser {
   email: string;
@@ -74,12 +76,22 @@ export enum SQL_OBJECT_TYPE {
 
 // 个人配置
 export interface IUserConfig {
-  'sqlexecute.defaultDelimiter': string;
-  'sqlexecute.oracleAutoCommitMode': AutoCommitMode;
-  'sqlexecute.mysqlAutoCommitMode': AutoCommitMode;
-  'sqlexecute.defaultQueryLimit': string; // 大数值
-  'connect.sessionMode': SQLSessionMode;
-  'sqlexecute.defaultObjectDraggingOption': DragInsertType;
+  'odc.sqlexecute.default.delimiter': string;
+  'odc.sqlexecute.default.oracleAutoCommitMode': AutoCommitMode;
+  'odc.sqlexecute.default.mysqlAutoCommitMode': AutoCommitMode;
+  'odc.sqlexecute.default.fetchColumnInfo': 'true' | 'false';
+  'odc.sqlexecute.default.queryLimit': string;
+  'odc.sqlexecute.default.fullTraceDiagnosisEnabled': 'true' | 'false';
+  'odc.sqlexecute.default.continueExecutionOnError': 'true' | 'false';
+  'odc.sqlexecute.default.objectDraggingOption': DragInsertType;
+  'odc.editor.style.theme': 'OceanBase' | 'VSCode';
+  'odc.editor.style.fontSize': 'Small' | 'Normal' | 'Large';
+  'odc.editor.shortcut.executeStatement': string;
+  'odc.editor.shortcut.executeCurrentStatement': string;
+  'odc.appearance.scheme': EThemeConfigKey;
+  'odc.appearance.language': 'FollowSystem' | string;
+  'odc.account.defaultOrganizationType': SpaceType;
+  'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
 }
 
 // 系统配置

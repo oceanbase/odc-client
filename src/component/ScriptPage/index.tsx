@@ -175,7 +175,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   const name = snippetBody;
                   const type = snippetStore.snippetDragging?.objType;
                   const value =
-                    settingStore.configurations['sqlexecute.defaultObjectDraggingOption'];
+                    settingStore.configurations['odc.sqlexecute.default.objectDraggingOption'];
                   const insertText = await getCopyText(name, type, value, true, session.sessionId);
                   const editor = ctx.editor as IEditor;
                   editor.focus();

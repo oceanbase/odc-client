@@ -1,4 +1,4 @@
-import { KeyCode } from 'monaco-editor';
+import { KeyCode, KeyMod } from 'monaco-editor';
 
 export const KEY_CODE_MAP: Record<number, KeyCode> = {
   3: KeyCode.PauseBreak,
@@ -115,3 +115,30 @@ export const KEY_CODE_MAP: Record<number, KeyCode> = {
   226: KeyCode.IntlBackslash,
   229: KeyCode.KEY_IN_COMPOSITION,
 };
+
+const convertMap = {
+  [KeyCode.Ctrl]: KeyMod.CtrlCmd,
+  [KeyCode.Shift]: KeyMod.Shift,
+  [KeyCode.Alt]: KeyMod.Alt,
+  [KeyCode.Meta]: KeyMod.WinCtrl,
+};
+
+export function getKeyCodeText(code: string) {
+  const splitValues = code?.split(',')?.filter(Boolean) || [];
+  return splitValues.reduce((acc, cur) => {
+    if (acc.length) {
+      acc.push('+');
+    }
+    acc.push(KeyCode[cur]);
+    return acc;
+  }, []);
+}
+
+export function getKeyCodeValue(code: string) {
+  const splitValues = code?.split(',')?.filter(Boolean) || [];
+  return splitValues.reduce((prev, cur) => {
+    let code = parseInt(cur);
+    code = convertMap[code] || code;
+    return code | prev;
+  }, 0);
+}

@@ -21,7 +21,7 @@ import type { IOrganization, ISQLScript, IUser } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
 import logger from '@/util/logger';
 import request from '@/util/request';
-import tracert from '@/util/tracert';
+import tracert, { initTracert } from '@/util/tracert';
 import { encrypt, safeParseJson } from '@/util/utils';
 import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
@@ -30,6 +30,7 @@ import authStore from './auth';
 import setting from './setting';
 import sessionManager from './sessionManager';
 import datasourceStatus from './datasourceStatus';
+import odc from '@/plugins/odc';
 
 class ScriptStore {
   @observable
@@ -227,7 +228,12 @@ export class UserStore {
     if (user) {
       this.user = user;
       tracert.setUser(this.user.id);
-      await setting.getUserConfig();
+      if (
+        setting.configurations['odc.account.userBehaviorAnalysisEnabled'] === 'true' &&
+        odc.appConfig.spm.enable
+      ) {
+        initTracert();
+      }
       await setting.getSystemConfig();
       this.addLogoutListener();
     }
@@ -249,6 +255,7 @@ export class UserStore {
 
   @action
   public async switchCurrentOrganization(id?: number) {
+    await setting.getUserConfig();
     id = id || this.getDefaultOrganization()?.id;
     if (!id) {
       return false;
@@ -273,7 +280,9 @@ export class UserStore {
     let personalOrganization: IOrganization = this.organizations?.find(
       (item) => item.type === SpaceType.PRIVATE,
     );
-    const firstOrganization = this.organizations?.find((item) => item.type === SpaceType.SYNERGY);
+    const firstOrganization = this.organizations?.find(
+      (item) => item.type === setting.configurations['odc.account.defaultOrganizationType'],
+    );
     let defaultOrganization = firstOrganization || personalOrganization;
     return defaultOrganization;
   }

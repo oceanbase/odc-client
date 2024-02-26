@@ -76,8 +76,7 @@ export class SettingStore {
   public siderWidth: number = 260; // sidebar width
 
   @observable
-  public theme: IThemeConfig =
-    themeConfig[localStorage.getItem(themeKey)] || themeConfig[defaultTheme];
+  public theme: IThemeConfig = themeConfig[defaultTheme];
 
   /**
    * 是否支持数据的导出，包括下载与结果集导出
@@ -173,7 +172,7 @@ export class SettingStore {
   public settingLoadStatus: 'init' | 'loading' | 'done' | 'failed' = 'init';
 
   @observable
-  public configurations: IUserConfig = null;
+  public configurations: Partial<IUserConfig> = null;
 
   @observable
   public headerStyle: any = {
@@ -227,6 +226,9 @@ export class SettingStore {
         data[item.key] = item.value;
         return data;
       }, {});
+      this.theme = themeConfig[this.configurations['odc.appearance.scheme']];
+    } else {
+      this.configurations = {};
     }
   }
 
@@ -278,7 +280,7 @@ export class SettingStore {
     if (data) {
       await this.getUserConfig();
     }
-    return data;
+    return !!data;
   }
 
   @action
@@ -294,7 +296,7 @@ export class SettingStore {
         await this.getUserConfig();
       }
     }
-    return data;
+    return !!data;
   }
 
   @action
@@ -311,9 +313,7 @@ export class SettingStore {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
       await this.getPublicKeyData();
-      if (this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
-        initTracert();
-      }
+
       this.settingLoadStatus = 'done';
     } catch (e) {
       console.error(e);
