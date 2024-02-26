@@ -181,7 +181,7 @@ export const getPolicyColumns: GetPolicyColumns = function ({
           }}
         />
       ),
-      render: (channels: IChannel[] = []) => {
+      render: (channels: IChannel<EChannelType>[] = []) => {
         if (channels?.length === 0) {
           return '-';
         }
@@ -249,8 +249,8 @@ type GetChannelColumn = ({
 }: {
   handleDelete: (channelId: number) => void;
   handleChannelEdit: (channelId: number) => void;
-  hanleOpenChannelDetailDrawer: (channel: Omit<IChannel, 'channelConfig'>) => void;
-}) => ColumnType<IChannel>[];
+  hanleOpenChannelDetailDrawer: (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => void;
+}) => ColumnType<IChannel<EChannelType>>[];
 export const getChannelColumns: GetChannelColumn = function ({
   handleDelete,
   handleChannelEdit,
@@ -313,7 +313,7 @@ export const getChannelColumns: GetChannelColumn = function ({
     {
       title: '操作',
       key: 'action',
-      render: (channel: IChannel) => {
+      render: (channel: IChannel<EChannelType>) => {
         return (
           <Space>
             <a onClick={() => hanleOpenChannelDetailDrawer(channel)}>查看</a>

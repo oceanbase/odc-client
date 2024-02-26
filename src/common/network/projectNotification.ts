@@ -6,6 +6,7 @@ import {
   IMessage,
   TBatchUpdatePolicy,
   EMessageStatus,
+  EChannelType,
 } from '@/d.ts/projectNotification';
 import request from '@/util/request';
 
@@ -24,7 +25,7 @@ export async function getChannelsList(
     page?: number;
     size?: number;
   }>,
-): Promise<IResponseData<Omit<IChannel, 'channelConfig'>>> {
+): Promise<IResponseData<Omit<IChannel<EChannelType>, 'channelConfig'>>> {
   const res = await request.get(
     `/api/v2/collaboration/projects/${projectId}/notification/channels`,
     {
@@ -39,7 +40,10 @@ export async function getChannelsList(
  * @param channelId 通道ID
  * @return `data: IChannel` 通道详情
  */
-export async function detailChannel(projectId: number, channelId: number): Promise<IChannel> {
+export async function detailChannel(
+  projectId: number,
+  channelId: number,
+): Promise<IChannel<EChannelType>> {
   const res = await request.get(
     `/api/v2/collaboration/projects/${projectId}/notification/channels/${channelId}`,
   );
@@ -54,7 +58,7 @@ export async function detailChannel(projectId: number, channelId: number): Promi
  */
 export async function testChannel(
   projectId: number,
-  data: Pick<IChannel, 'type' | 'channelConfig'>,
+  data: Pick<IChannel<EChannelType>, 'type' | 'channelConfig'>,
 ): Promise<ITestChannelResult> {
   const res = await request.post(
     `/api/v2/collaboration/projects/${projectId}/notification/channels/test`,
@@ -71,7 +75,10 @@ export async function testChannel(
  * @param data 通道
  * @returns `result: IChannel` 通道
  */
-export async function createChannel(projectId: number, data: IChannel): Promise<IChannel> {
+export async function createChannel(
+  projectId: number,
+  data: IChannel<EChannelType>,
+): Promise<IChannel<EChannelType>> {
   const res = await request.post(
     `/api/v2/collaboration/projects/${projectId}/notification/channels`,
     {
@@ -91,8 +98,8 @@ export async function createChannel(projectId: number, data: IChannel): Promise<
 export async function editChannel(
   projectId: number,
   channelId: number,
-  data: IChannel,
-): Promise<IChannel> {
+  data: IChannel<EChannelType>,
+): Promise<IChannel<EChannelType>> {
   const res = await request.put(
     `/api/v2/collaboration/projects/${projectId}/notification/channels/${channelId}`,
     {
@@ -108,7 +115,10 @@ export async function editChannel(
  * @param channelId 通道ID
  * @returns `result: IChannel` 被删除的通道
  */
-export async function deleteChannel(projectId: number, channelId: number): Promise<IChannel> {
+export async function deleteChannel(
+  projectId: number,
+  channelId: number,
+): Promise<IChannel<EChannelType>> {
   const res = await request.delete(
     `/api/v2/collaboration/projects/${projectId}/notification/channels/${channelId}`,
   );

@@ -15,7 +15,7 @@ import {
   ITableLoadOptions,
   ITablePagination,
 } from '@/component/CommonTable/interface';
-import { IChannel, IPolicy, TBatchUpdatePolicy } from '@/d.ts/projectNotification';
+import { EChannelType, IChannel, IPolicy, TBatchUpdatePolicy } from '@/d.ts/projectNotification';
 import { useSetState } from 'ahooks';
 import { getPolicyColumns } from './columns';
 import { EPolicyFormMode, TPolicyForm } from './interface';
@@ -115,7 +115,7 @@ const Policy: React.FC<{
     message.error(`${batchOrNot}${currentEnabled}失败`);
   };
 
-  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel, 'channelConfig'>) => {
+  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => {
     setSelectedChannelId(channel?.id);
     setDetailDrawerOpen(true);
   };

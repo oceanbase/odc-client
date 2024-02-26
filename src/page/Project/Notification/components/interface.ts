@@ -14,7 +14,7 @@ export const TimeUnitMap = {
 export const EChannelTypeMap = {
   [EChannelType.DING_TALK]: '钉钉',
   [EChannelType.FEI_SHU]: '飞书',
-  [EChannelType.WE_COM]: '微信',
+  [EChannelType.WE_COM]: '企业微信',
   [EChannelType.WEBHOOK]: '自定义webhook',
 };
 export const ELanguageMap = {
