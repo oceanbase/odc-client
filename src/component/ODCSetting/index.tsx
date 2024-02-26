@@ -155,7 +155,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   function reset() {
     Modal.confirm({
       title: '确定要恢复默认设置吗？',
-      onOk: () => {},
+      onOk: async () => {
+        await setting.resetUserConfig();
+      },
     });
   }
 

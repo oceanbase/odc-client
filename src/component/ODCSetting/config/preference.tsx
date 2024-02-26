@@ -15,7 +15,7 @@ const preferenceDefaultGroup: ODCSettingGroup = {
 const perferenceSettings: IODCSetting[] = [
   {
     label: '主题',
-    key: 'appearance.scheme',
+    key: 'odc.appearance.scheme',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',
@@ -51,7 +51,7 @@ const perferenceSettings: IODCSetting[] = [
   },
   {
     label: '语言',
-    key: 'appearance.language',
+    key: 'odc.appearance.language',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',
@@ -62,7 +62,7 @@ const perferenceSettings: IODCSetting[] = [
           options={[
             {
               label: '当前系统语言',
-              value: 'auto',
+              value: 'FollowSystem',
             },
           ].concat(localeList)}
           value={value}

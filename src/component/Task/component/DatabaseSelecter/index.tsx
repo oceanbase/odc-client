@@ -32,12 +32,15 @@ interface IProps {
   onChange?: (newValue: any[]) => void;
 }
 
-const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
+const DatabaseSelecter: React.FC<IProps> = function ({
+  projectId,
+  value: checkedKeys = [],
+  onChange,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
   const [targetSearchValue, setTargetSearchValue] = useState(null);
   const [databaseList, setDatabaseList] = useState<any[]>([]);
-  const [checkedKeys, setCheckedKeys] = useState<string[]>([]);
 
   const loadExportObjects = async () => {
     setIsLoading(true);
@@ -56,7 +59,6 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
   const handleReset = () => {
     setSourceSearchValue(null);
     setTargetSearchValue(null);
-    setCheckedKeys([]);
   };
 
   useEffect(() => {
@@ -66,17 +68,10 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
     }
   }, [projectId]);
 
-  useEffect(() =>{
-    const value = checkedKeys?.map((id) =>({ id }));
-    onChange(value);
-  }, [checkedKeys]);
-
   const getCheckedTreeData = () => {
     const validDatabaseList =
       databaseList
-        ?.filter((item) =>
-          checkedKeys?.includes(item.id)
-        )
+        ?.filter((item) => checkedKeys?.includes(item.id))
         ?.filter((item) => {
           return !targetSearchValue?.length
             ? true
@@ -96,9 +91,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
 
   const handleDelete = ({ key }: DataNode) => {
     const nodeKey = key as string;
-    setCheckedKeys(
-      checkedKeys.filter((key) => key !== nodeKey),
-    );
+    onChange(checkedKeys.filter((key) => key !== nodeKey));
   };
 
   function getTreeData(validDatabaseList: any[]) {
@@ -107,7 +100,9 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
         title: (
           <Space>
             <Text>{item?.name}</Text>
-            <Text type="secondary" ellipsis>{item?.dataSource?.name}</Text>
+            <Text type="secondary" ellipsis>
+              {item?.dataSource?.name}
+            </Text>
           </Space>
         ),
         key: item?.id,
@@ -134,7 +129,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
   }
 
   const handleSwitchSelectAll = () => {
-    setCheckedKeys(checkAll ? [] : allTreeDataKeys);
+    onChange(checkAll ? [] : allTreeDataKeys);
   };
 
   const handleSearch = (value) => {
@@ -142,7 +137,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
   };
 
   const allTreeDataKeys = getAllTreeDataKeys();
-  const checkAll = allTreeDataKeys.length && allTreeDataKeys.length === checkedKeys.length;
+  const checkAll = allTreeDataKeys?.length && allTreeDataKeys.length === checkedKeys.length;
   const allTreeData = getAllTreeData();
   const selectedTreeData = getCheckedTreeData();
   const allTreeDataCount = allTreeDataKeys?.length;
@@ -176,7 +171,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
               treeData={allTreeData}
               checkedKeys={checkedKeys}
               onCheck={(_checkedKeys) => {
-                setCheckedKeys(_checkedKeys as string[]);
+                onChange(_checkedKeys as string[]);
               }}
             />
           </ExportCard>
@@ -189,7 +184,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
           extra={
             <Popconfirm
               onConfirm={() => {
-                setCheckedKeys([]);
+                onChange([]);
               }}
               placement="left"
               title="确定要清空已选对象吗？"
@@ -206,7 +201,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, onChange }) {
               autoExpandParent
               checkable={false}
               selectable={false}
-              height={300}  
+              height={300}
               className={styles.selectedTree}
               treeData={selectedTreeData}
               titleRender={(node) => {

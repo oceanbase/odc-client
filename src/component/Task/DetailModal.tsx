@@ -71,7 +71,8 @@ interface IProps {
   detailId: number;
   visible: boolean;
   partitionPlan?: IConnectionPartitionPlan;
-  onReloadList: () => void;
+  enabledAction?: boolean;
+  onReloadList?: () => void;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
   onPartitionPlanChange?: (value: IConnectionPartitionPlan) => void;
 }
@@ -95,7 +96,7 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, partitionPlan } = props;
+  const { type, visible, detailId, partitionPlan, enabledAction = true } = props;
   const [task, setTask] = useState<
     TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>
   >(null);
@@ -417,7 +418,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     logType,
     isLoading: loading,
     isSplit: ![TaskType.ASYNC, TaskType.EXPORT_RESULT_SET].includes(task?.type),
-    taskTools: (
+    taskTools: enabledAction ? (
       <TaskTools
         isDetailModal
         disabledSubmit={disabledSubmit}
@@ -429,7 +430,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
       />
-    ),
+    ) : null,
   };
 
   return (

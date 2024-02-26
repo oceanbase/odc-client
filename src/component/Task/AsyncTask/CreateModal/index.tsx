@@ -118,9 +118,11 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const isRollback = !!asyncTaskData?.type;
   const isReTry = asyncTaskData?.task && !isRollback;
-  const initSqlContent = isRollback ? (asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql) : asyncTaskData?.task?.parameters?.sqlContent;
+  const initSqlContent = isRollback
+    ? asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql
+    : asyncTaskData?.task?.parameters?.sqlContent || asyncTaskData?.sql;
   const initRollbackContent = isRollback ? '' : asyncTaskData?.task?.parameters?.rollbackSqlContent;
-  
+
   const loadEditData = async () => {
     const { task, type, objectId } = asyncTaskData;
     const {
@@ -145,10 +147,10 @@ const CreateModal: React.FC<IProps> = (props) => {
     } = parameters ?? {};
     let sqlContentType = null;
     let rollbackContentType = null;
-    if(isRollback){
+    if (isRollback) {
       sqlContentType = rollbackSqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
       rollbackContentType = SQLContentType.TEXT;
-    }else{
+    } else {
       sqlContentType = sqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
       rollbackContentType = rollbackSqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
     }
@@ -169,7 +171,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       sqlFiles: undefined,
       rollbackSqlFiles: undefined,
     };
-    if(isRollback){
+    if (isRollback) {
       formData.sqlContent = rollbackSqlContent;
       formData.rollbackSqlContent = '';
       if (type === RollbackType.REF) {
@@ -182,7 +184,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           formData.sqlFiles = files;
         }
       }
-    }else{
+    } else {
       if (sqlContentType === SQLContentType.FILE) {
         const files = getFilesByIds(sqlObjectIds, sqlObjectNames);
         formData.sqlFiles = files;

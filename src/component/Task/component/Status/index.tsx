@@ -31,7 +31,7 @@ import {
   LoadingOutlined,
   StopFilled,
 } from '@ant-design/icons';
-import { Space } from 'antd';
+import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
 import { isCycleTask } from '../../helper';
@@ -555,29 +555,37 @@ const StatusLabel: React.FC<IProps> = (props) => {
   }
   const statusObj = statusInfo[_status];
   return (
-    <Space
-      style={{
-        overflow: 'hidden',
-        maxWidth: '100%',
-      }}
-      size={5}
+    <Tooltip
+      title={
+        type === TaskType.STRUCTURE_COMPARISON && _status === TaskStatus.EXECUTING
+          ? '查询数据库对象元信息中'
+          : null
+      }
     >
-      {statusObj ? (
-        <>
-          {statusObj.icon}
-          <span
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              maxWidth: '100%',
-            }}
-          >
-            {statusObj.text}
-          </span>
-          {!isNil(progress) && _status === TaskStatus.EXECUTING ? ` (${progress}%) ` : null}
-        </>
-      ) : null}
-    </Space>
+      <Space
+        style={{
+          overflow: 'hidden',
+          maxWidth: '100%',
+        }}
+        size={5}
+      >
+        {statusObj ? (
+          <>
+            {statusObj.icon}
+            <span
+              style={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                maxWidth: '100%',
+              }}
+            >
+              {statusObj.text}
+            </span>
+            {!isNil(progress) && _status === TaskStatus.EXECUTING ? ` (${progress}%) ` : null}
+          </>
+        ) : null}
+      </Space>
+    </Tooltip>
   );
 };
 export default StatusLabel;
