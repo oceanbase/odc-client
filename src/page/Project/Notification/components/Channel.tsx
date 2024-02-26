@@ -54,7 +54,7 @@ const Channel: React.FC<{
   const [detailDrawerOpen, setDetailDrawerOpen] = useState<boolean>(false);
   const [formDrawerOpen, setFormDrawerOpen] = useState<boolean>(false);
   const [channelsList, setChannelsList] =
-    useState<IResponseData<Omit<IChannel, 'channelConfig'>>>();
+    useState<IResponseData<Omit<IChannel<EChannelType>, 'channelConfig'>>>();
   const loadChannels = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { name, type } = filters ?? {};
@@ -98,7 +98,7 @@ const Channel: React.FC<{
     needReload && tableRef?.current?.reload();
   };
 
-  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel, 'channelConfig'>) => {
+  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => {
     setSelectedChannelId(channel?.id);
     setDetailDrawerOpen(true);
   };
@@ -155,6 +155,14 @@ const Channel: React.FC<{
   );
 };
 
+const docUrlMap = {
+  [EChannelType.DING_TALK]:
+    'https://help.aliyun.com/zh/arms/alarm-operation-center/obtain-the-webhook-url-of-a-dingtalk-chatbot',
+  [EChannelType.FEI_SHU]: 'https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot',
+  [EChannelType.WE_COM]: 'https://help.aliyun.com/zh/arms/alarm-operation-center/wecom-chatbots',
+  [EChannelType.WEBHOOK]: null,
+};
+
 export const FromChannelDrawer: React.FC<{
   projectId: number;
   channelId?: number;
@@ -162,12 +170,13 @@ export const FromChannelDrawer: React.FC<{
   setFormDrawerOpen: (formDrawerOpen: boolean) => void;
   closedCallback?: (needReload?: boolean) => void;
 }> = ({ projectId, channelId, formDrawerOpen, setFormDrawerOpen, closedCallback }) => {
-  const [formRef] = useForm<IChannel>();
-  const [currentChannel, setCurrentChannel] = useState<IChannel>();
+  const [formRef] = useForm<IChannel<EChannelType>>();
+  const [currentChannel, setCurrentChannel] = useState<IChannel<EChannelType>>();
   const [hasEdit, setHasEdit] = useState<boolean>(false);
   const [testChannelSuccess, setTestChannelSuccess] = useState<boolean>(false);
   const [testChannelErrorMessage, setTestChannelErrorMessage] = useState<string>(null);
   const [testLoading, setTestLoading] = useState<boolean>(false);
+  const tip = `配置{"key":"value"}来验证json结构的返回结果，验证返回结果中包含配置中的所有key、value，则认为发送成功`;
   const loadChannelDetail = async (channelId) => {
     const channel = await detailChannel(projectId, channelId);
     if (channel) {
@@ -210,6 +219,7 @@ export const FromChannelDrawer: React.FC<{
     result.id ??= channelId;
     let data;
     if (result?.type === EChannelType.WEBHOOK) {
+      // @ts-ignore
       result.channelConfig.atMobiles = null;
     }
     if (channelId) {
@@ -226,6 +236,9 @@ export const FromChannelDrawer: React.FC<{
     message.error(channelId ? '保存失败' : '新建失败');
   };
   const handleFieldsChange = (changedFields, allFields) => {
+    if (changedFields?.[0]?.name?.join('') === 'description') {
+      return;
+    }
     setHasEdit(true);
     setTestChannelSuccess(false);
     if (changedFields?.[0]?.name?.join('') === ['channelConfig', 'language'].join('')) {
@@ -298,6 +311,7 @@ export const FromChannelDrawer: React.FC<{
           !channelId && {
             type: EChannelType.DING_TALK,
             channelConfig: {
+              httpMethod: 'POST',
               language: ELanguage.ZH_CN,
               contentTemplate: EContentTemplateMap[ELanguage.ZH_CN],
               rateLimitConfig: null,
@@ -351,49 +365,108 @@ export const FromChannelDrawer: React.FC<{
           </Radio.Group>
         </Form.Item>
         <Form.Item name="channelConfig">
-          <Form.Item
-            label={
-              <Space>
-                <div>Webhook 地址</div>
-                <a // TODO
-                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
-                  target={'_blank'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  rel="noreferrer"
-                >
-                  如何配置
-                </a>
-              </Space>
-            }
-            name={['channelConfig', 'webhook']}
-            requiredMark="optional"
-            validateTrigger="onBlur"
-            rules={[
-              {
-                required: true,
-                message: '通道名称不能为空',
-              },
-            ]}
-          >
-            <Input placeholder="请输入钉钉群机器人 Webhook 地址" />
-          </Form.Item>
-          <Form.Item label="签名密钥" name={['channelConfig', 'sign']} requiredMark="optional">
-            <Input placeholder="若开启签名校验，请输入密钥" />
-          </Form.Item>
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
-              const hasAtMobiles = getFieldValue('type') !== EChannelType.WEBHOOK;
-              return hasAtMobiles ? (
-                <Form.Item
-                  label="指定用户"
-                  name={['channelConfig', 'atMobiles']}
-                  requiredMark="optional"
-                >
-                  <Select mode="tags" placeholder="请输入用户手机号" />
-                </Form.Item>
-              ) : null;
+              const type = getFieldValue('type');
+              const isWebhook = type === EChannelType.WEBHOOK;
+              const hasSign = [EChannelType.DING_TALK, EChannelType.FEI_SHU]?.includes(type);
+              const hasAtMobiles = [EChannelType.DING_TALK, EChannelType.WE_COM]?.includes(type);
+              return (
+                <>
+                  <Form.Item
+                    label={
+                      <Space>
+                        <div>Webhook 地址</div>
+                        {docUrlMap?.[type] && (
+                          <a
+                            href={docUrlMap[type]}
+                            target={'_blank'}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            rel="noreferrer"
+                          >
+                            如何配置
+                          </a>
+                        )}
+                      </Space>
+                    }
+                    name={['channelConfig', 'webhook']}
+                    requiredMark="optional"
+                    validateTrigger="onBlur"
+                    rules={[
+                      {
+                        required: true,
+                        message: '通道名称不能为空',
+                      },
+                    ]}
+                  >
+                    <Input placeholder="请输入钉钉群机器人 Webhook 地址" />
+                  </Form.Item>
+                  {hasSign ? (
+                    <Form.Item
+                      label="签名密钥"
+                      name={['channelConfig', 'sign']}
+                      requiredMark="optional"
+                    >
+                      <Input placeholder="若开启签名校验，请输入密钥" />
+                    </Form.Item>
+                  ) : null}
+                  {isWebhook ? (
+                    <Form.Item noStyle shouldUpdate>
+                      <Form.Item
+                        label="代理"
+                        requiredMark="optional"
+                        name={['channelConfig', 'httpProxy']}
+                      >
+                        <Input placeholder="请输入" />
+                      </Form.Item>
+                      <Form.Item label="请求方法" name={['channelConfig', 'httpMethod']}>
+                        <Radio.Group>
+                          <Radio value="POST">POST</Radio>
+                          <Radio value="GET">GET</Radio>
+                          <Radio value="PUT">PUT</Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      <Form.Item
+                        label="Header"
+                        requiredMark="optional"
+                        name={['channelConfig', 'headersTemplate']}
+                      >
+                        <Input.TextArea
+                          placeholder="请输入header，赞不支持模版，为空表示不使用header参数，多个header的格式为key1:value1; key2: value2"
+                          rows={4}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        label="Body"
+                        requiredMark="optional"
+                        name={['channelConfig', 'bodyTemplate']}
+                      >
+                        <Input.TextArea
+                          placeholder="请输入body模版，可通过输入$(message)引用通知消息，为空表示不使用HTTP body"
+                          rows={4}
+                        />
+                      </Form.Item>
+                      <Form.Item label="Response校验" required requiredMark="optional">
+                        <Form.Item noStyle name={['channelConfig', 'responseValidation']}>
+                          <Input.TextArea placeholder="请输入" rows={4} />
+                        </Form.Item>
+                        <div className={styles.tip}>{tip}</div>
+                      </Form.Item>
+                    </Form.Item>
+                  ) : null}
+                  {hasAtMobiles ? (
+                    <Form.Item
+                      label="指定用户"
+                      name={['channelConfig', 'atMobiles']}
+                      requiredMark="optional"
+                    >
+                      <Select mode="tags" placeholder="请输入用户手机号" />
+                    </Form.Item>
+                  ) : null}
+                </>
+              );
             }}
           </Form.Item>
           <Form.Item
@@ -436,7 +509,7 @@ export const FromChannelDrawer: React.FC<{
                 <span style={{ color: 'var(--neutral-black45-color)' }}>
                   {'可通过输入${ } 引入标签，'}
                 </span>
-                <a // TODO
+                <a // TODO: 等待文档链接
                   href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
                   target={'_blank'}
                   onClick={(e) => {
@@ -473,7 +546,7 @@ export const DetailChannelDrawer: React.FC<{
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: (oepn: boolean) => void;
 }> = ({ projectId, channelId, detailDrawerOpen, setDetailDrawerOpen }) => {
-  const [channel, setChannel] = useState<IChannel>();
+  const [channel, setChannel] = useState<IChannel<EChannelType>>();
   const handleOnClose = () => {
     setDetailDrawerOpen(false);
   };
@@ -495,6 +568,9 @@ export const DetailChannelDrawer: React.FC<{
     let result = `${timeUnitText}不超过${rateLimitConfig?.limit}次`;
     return result;
   }
+  const isWebhook = channel?.type === EChannelType.WEBHOOK;
+  const hasSign = [EChannelType.DING_TALK, EChannelType.FEI_SHU]?.includes(channel?.type);
+  const hasAtMobiles = [EChannelType.DING_TALK, EChannelType.WE_COM]?.includes(channel?.type);
   return (
     <Drawer
       title="推送通道详情"
@@ -511,12 +587,39 @@ export const DetailChannelDrawer: React.FC<{
         <Descriptions.Item label="Webhook地址">
           {channel?.channelConfig?.webhook || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="签名密钥">
-          {channel?.channelConfig?.sign || '-'}
-        </Descriptions.Item>
-        <Descriptions.Item label="指定用户">
-          {channel?.channelConfig?.atMobiles?.join('、') || '-'}
-        </Descriptions.Item>
+        {hasSign && (
+          <Descriptions.Item label="签名密钥">
+            {(channel as IChannel<EChannelType.DING_TALK | EChannelType.FEI_SHU>)?.channelConfig
+              ?.sign || '-'}
+          </Descriptions.Item>
+        )}
+        {hasAtMobiles && (
+          <Descriptions.Item label="指定用户">
+            {(
+              channel as IChannel<EChannelType.DING_TALK | EChannelType.WE_COM>
+            )?.channelConfig?.atMobiles?.join('、') || '-'}
+          </Descriptions.Item>
+        )}
+        {isWebhook && (
+          <>
+            <Descriptions.Item label="代理">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.httpProxy || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="请求方法">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.httpMethod || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Header">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.headersTemplate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Body">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.bodyTemplate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Response校验">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.responseValidation ||
+                '-'}
+            </Descriptions.Item>
+          </>
+        )}
         <Descriptions.Item label="消息限流设置">
           {channel?.channelConfig?.rateLimitConfig
             ? parseRateLimitConfigToText(channel?.channelConfig?.rateLimitConfig)
