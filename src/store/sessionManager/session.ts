@@ -84,6 +84,8 @@ class SessionStore {
     delimiterLoading: boolean;
     obVersion: string;
     tableColumnInfoVisible: boolean;
+    fullLinkATraceEnabled: boolean;
+    continueExecutionOnError: boolean;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
@@ -91,6 +93,8 @@ class SessionStore {
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
     tableColumnInfoVisible: true,
+    fullLinkATraceEnabled: true,
+    continueExecutionOnError: true,
   };
 
   /**
@@ -204,7 +208,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.initSessionStatus();
+      await this.initSessionStatus(true);
       if (!this.transState) {
         return false;
       }
@@ -347,7 +351,7 @@ class SessionStore {
   }
 
   @action
-  public async initSessionStatus() {
+  public async initSessionStatus(init: boolean = false) {
     try {
       const data = await getSessionStatus(this.sessionId);
 
@@ -355,8 +359,14 @@ class SessionStore {
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
-      this.params.tableColumnInfoVisible =
-        setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
+      if (init) {
+        this.params.tableColumnInfoVisible =
+          setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
+        this.params.fullLinkATraceEnabled =
+          setting.configurations['odc.sqlexecute.default.fullLinkATraceEnabled'] === 'true';
+        this.params.continueExecutionOnError =
+          setting.configurations['odc.sqlexecute.default.continueExecutionOnError'] === 'true';
+      }
       if (data?.session) {
         this.transState = data?.session;
       }
@@ -483,6 +493,14 @@ class SessionStore {
   @action
   public changeColumnInfoVisible = async (v: boolean) => {
     this.params.tableColumnInfoVisible = v;
+  };
+  @action
+  public changeFullTraceDiagnosisEnabled = async (v: boolean) => {
+    this.params.fullLinkATraceEnabled = v;
+  };
+  @action
+  public changeContinueExecutionOnError = async (v: boolean) => {
+    this.params.continueExecutionOnError = v;
   };
 }
 
