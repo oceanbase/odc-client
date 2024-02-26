@@ -15,7 +15,7 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask, getCycleTaskDetail } from '@/common/network/task';
+import { createTask, getCycleTaskDetail, getRealSqlList } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -44,6 +44,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import DatabaseSelect from '../../component/DatabaseSelect';
+import SQLPreviewModal from '../../component/SQLPreviewModal';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
@@ -151,6 +152,8 @@ export const getVariableValue = (
 };
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [previewSql, setPreviewSQL] = useState('');
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
@@ -288,6 +291,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     });
   };
+  const handleCloseSQLPreviewModal = () => {
+    setPreviewModalVisible(false);
+    setPreviewSQL('');
+  };
   const handleSubmit = () => {
     form
       .validateFields()
@@ -368,6 +375,39 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
+  const handleSQLPreview = () => {
+    form
+      .validateFields()
+      .then(async (values) => {
+        const { variables, tables: _tables, archiveRange } = values;
+        const parameters = {
+          variables: getVariables(variables),
+          tables:
+            archiveRange === IArchiveRange.ALL
+              ? tables?.map((item) => {
+                  return {
+                    tableName: item?.tableName,
+                    conditionExpression: '',
+                  };
+                })
+              : _tables,
+        };
+        const sqls = await getRealSqlList(parameters);
+        if (sqls) {
+          setPreviewModalVisible(true);
+          setPreviewSQL(sqls?.join('\n'));
+        }
+      })
+      .catch((errorInfo) => {
+        console.error(JSON.stringify(errorInfo));
+      });
+  };
+
+  const handleConfirmTask = () => {
+    handleCloseSQLPreviewModal();
+    handleSubmit();
+  };
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -377,17 +417,17 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(false);
   };
 
-  const getDrawerTitle = () =>{
+  const getDrawerTitle = () => {
     let title = '新建数据归档';
-    if(dataArchiveEditId){
-      if(isEdit){
+    if (dataArchiveEditId) {
+      if (isEdit) {
         title = '编辑数据归档';
-      }else{
+      } else {
         title = '再次发起数据归档';
       }
     }
     return title;
-  }
+  };
 
   useEffect(() => {
     if (!dataArchiveVisible) {
@@ -428,7 +468,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+          <Button type="primary" loading={confirmLoading} onClick={handleSQLPreview}>
             {
               isEdit
                 ? formatMessage({
@@ -578,8 +618,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 required: true,
                 message: formatMessage({
-                  id:
-                    'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
+                  id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
                 }), //'请选择插入策略'
               },
             ]}
@@ -590,6 +629,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         </FormItemPanel>
         <DescriptionInput />
       </Form>
+      <SQLPreviewModal
+        sql={previewSql}
+        visible={previewModalVisible}
+        onClose={handleCloseSQLPreviewModal}
+        onOk={handleConfirmTask}
+      />
     </Drawer>
   );
 };

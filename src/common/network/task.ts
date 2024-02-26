@@ -64,6 +64,26 @@ export async function createTask(data: Partial<CreateTaskRecord>): Promise<numbe
   });
   return res?.data?.contents?.length || 0;
 }
+
+/**
+ * SQL 预览
+ */
+export async function getRealSqlList(data: {
+  variables: {
+    name: string;
+    pattern: string;
+  }[];
+  tables: {
+    tableName: string;
+    conditionExpression: string;
+  }[];
+}): Promise<string[]> {
+  const res = await request.post('/api/v2/dlm/getRealSqlList', {
+    data,
+  });
+  return res?.data || [];
+}
+
 /**
  * 新建结构比对工单
  * @param data
