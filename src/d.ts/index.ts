@@ -81,7 +81,7 @@ export interface IUserConfig {
   'odc.sqlexecute.default.mysqlAutoCommitMode': AutoCommitMode;
   'odc.sqlexecute.default.fetchColumnInfo': 'true' | 'false';
   'odc.sqlexecute.default.queryLimit': string;
-  'odc.sqlexecute.default.fullTraceDiagnosisEnabled': 'true' | 'false';
+  'odc.sqlexecute.default.fullLinkATraceEnabled': 'true' | 'false';
   'odc.sqlexecute.default.continueExecutionOnError': 'true' | 'false';
   'odc.sqlexecute.default.objectDraggingOption': DragInsertType;
   'odc.editor.style.theme': 'OceanBase' | 'VSCode';

@@ -38,18 +38,15 @@ const SQLConfig: React.FC<IProps> = function (props) {
   const { session, pageKey } = useContext(SQLConfigContext);
   const [queryLimitValue, setQueryLimitValue] = useState(1);
   const [showSessionParam, setShowSessionParam] = useState(false);
-  const [tableColumnInfoVisibleValue, setTableColumnInfoVisibleValue] = useState(true);
   const [visible, setVisible] = useState(false);
   const queryLimit = session?.params?.queryLimit;
   const tableColumnInfoVisible = session?.params.tableColumnInfoVisible;
+  const fullLinkATraceEnabled = session?.params.fullLinkATraceEnabled;
+  const continueExecutionOnError = session?.params.continueExecutionOnError;
 
   useEffect(() => {
     setQueryLimitValue(session?.params.queryLimit);
   }, [queryLimit]);
-
-  useEffect(() => {
-    setTableColumnInfoVisibleValue(tableColumnInfoVisible);
-  }, [tableColumnInfoVisible]);
 
   const handleSetQueryLimit = async () => {
     const success = await session.setQueryLimit(queryLimitValue);
@@ -153,11 +150,43 @@ const SQLConfig: React.FC<IProps> = function (props) {
             })} /*关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时*/
           >
             <Switch
-              checked={tableColumnInfoVisibleValue}
+              size="small"
+              checked={tableColumnInfoVisible}
               onChange={handleColumnInfoVisibleChange}
             />
           </Tooltip>
         </Row>
+        <Row
+          style={{
+            lineHeight: '28px',
+            marginTop: 12,
+          }}
+        >
+          报错继续执行
+        </Row>
+        <Row style={{ width: '100%' }}>
+          <Switch
+            size="small"
+            checked={continueExecutionOnError}
+            onChange={session?.changeContinueExecutionOnError}
+          />
+        </Row>
+        <Row
+          style={{
+            lineHeight: '28px',
+            marginTop: 12,
+          }}
+        >
+          开启全链路诊断
+        </Row>
+        <Row style={{ width: '100%' }}>
+          <Switch
+            size="small"
+            checked={fullLinkATraceEnabled}
+            onChange={session?.changeFullTraceDiagnosisEnabled}
+          />
+        </Row>
+
         <Row
           style={{
             marginTop: 18,

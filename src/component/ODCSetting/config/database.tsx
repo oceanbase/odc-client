@@ -123,7 +123,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '开启全链路诊断',
-    key: 'odc.sqlexecute.default.fullTraceDiagnosisEnabled',
+    key: 'odc.sqlexecute.default.fullLinkATraceEnabled',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
