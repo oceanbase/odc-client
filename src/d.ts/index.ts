@@ -2222,6 +2222,7 @@ export type TaskRecordParameters =
   | IApplyDatabasePermissionTaskParams;
 
 export interface ITaskResult {
+  autoModifyTimeout?: boolean;
   containQuery: boolean;
   errorRecordsFilePath: string;
   failCount: number;
