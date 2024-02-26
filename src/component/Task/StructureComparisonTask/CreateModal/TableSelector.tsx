@@ -99,17 +99,22 @@ const TableSelector: React.FC<{
           onSearch={(v) => setSourceSearchValue(v)}
         >
           <Spin spinning={loading}>
-            <Tree
-              showIcon
-              selectable={false}
-              checkable
-              autoExpandParent
-              treeData={allTreeData}
-              checkedKeys={checkedKeys}
-              defaultExpandAll
-              onCheck={handleCheck}
-              className={styles.tree}
-            />
+            {allTreeData?.length ? (
+              <Tree
+                showIcon
+                selectable={false}
+                checkable
+                autoExpandParent
+                treeData={allTreeData}
+                checkedKeys={checkedKeys}
+                defaultExpandAll
+                onCheck={handleCheck}
+                height={295}
+                className={styles.tree}
+              />
+            ) : (
+              <div style={{ height: '300px' }}></div>
+            )}
           </Spin>
         </ExportCard>
       </div>
@@ -136,6 +141,7 @@ const TableSelector: React.FC<{
             selectable={false}
             treeData={selectedTreeData}
             showIcon
+            height={295}
             titleRender={(node) => {
               return (
                 <div className={styles.node}>

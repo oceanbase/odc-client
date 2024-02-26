@@ -19,7 +19,7 @@ const editorKeymapGroup: ODCSettingGroup = {
 const editorSettings: IODCSetting[] = [
   {
     label: '主题',
-    key: 'editor.style.theme',
+    key: 'odc.editor.style.theme',
     group: editorGroup,
     secondGroup: editorPreferenceGroup,
     storeType: 'server',
@@ -44,7 +44,7 @@ const editorSettings: IODCSetting[] = [
   },
   {
     label: '字体',
-    key: 'editor.style.fontSize',
+    key: 'odc.editor.style.fontSize',
     group: editorGroup,
     secondGroup: editorPreferenceGroup,
     storeType: 'server',
@@ -54,15 +54,15 @@ const editorSettings: IODCSetting[] = [
           options={[
             {
               label: '小',
-              value: 'small',
+              value: 'Small',
             },
             {
               label: '正常',
-              value: 'middle',
+              value: 'Normal',
             },
             {
               label: '大',
-              value: 'large',
+              value: 'Large',
             },
           ]}
           value={value}
@@ -73,7 +73,7 @@ const editorSettings: IODCSetting[] = [
   },
   {
     label: '运行 SQL',
-    key: 'editor.shortcut.executeStatement',
+    key: 'odc.editor.shortcut.executeStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
     storeType: 'server',
@@ -83,7 +83,7 @@ const editorSettings: IODCSetting[] = [
   },
   {
     label: '运行所选 SQL',
-    key: 'editor.shortcut.executeCurrentStatement',
+    key: 'odc.editor.shortcut.executeCurrentStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
     storeType: 'server',

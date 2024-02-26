@@ -375,9 +375,14 @@ export const LDAPPartForm: React.FC<{
             URL
           </HelpDoc>
         }
-        rules={[requiredRule]}
+        rules={[
+          {
+            message: '请输入server',
+            ...requiredRule,
+          },
+        ]}
       >
-        <Input addonBefore="LDAP//:" placeholder="请输入，如：cn=admin,dc=example,dc=com" />
+        <Input placeholder="请输入，如：ldap://11.124.9.78/dc=example,dc=com" />
       </Form.Item>
 
       <Form.Item
@@ -387,7 +392,12 @@ export const LDAPPartForm: React.FC<{
             用户 DN
           </HelpDoc>
         }
-        rules={[requiredRule]}
+        rules={[
+          {
+            message: '请输入managerDn',
+            ...requiredRule,
+          },
+        ]}
       >
         <Input placeholder="请输入，如：cn=admin,dc=example,dc=com" />
       </Form.Item>
@@ -399,13 +409,24 @@ export const LDAPPartForm: React.FC<{
               访问密码
             </HelpDoc>
           }
-          rules={[requiredRule]}
+          rules={[
+            {
+              message: '请输入访问密码',
+              ...requiredRule,
+            },
+          ]}
         >
           <Input placeholder="请输入" />
         </Form.Item>
       ) : null}
       <Form.Item
         name={['ssoParameter', 'userSearchFilter']}
+        rules={[
+          {
+            message: '请输入userSearchFilter',
+            ...requiredRule,
+          },
+        ]}
         label={
           <HelpDoc
             leftText
@@ -420,6 +441,12 @@ export const LDAPPartForm: React.FC<{
       </Form.Item>
       <Form.Item
         name={['ssoParameter', 'userSearchBase']}
+        rules={[
+          {
+            message: '请输入userSearchBase',
+            ...requiredRule,
+          },
+        ]}
         label={
           <HelpDoc
             leftText

@@ -18,7 +18,7 @@ const accountPrivacyGroup: ODCSettingGroup = {
 const accountSettings: IODCSetting[] = [
   {
     label: '默认空间',
-    key: 'account.defaultOrganizationType',
+    key: 'odc.account.defaultOrganizationType',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
     storeType: 'server',
@@ -43,7 +43,7 @@ const accountSettings: IODCSetting[] = [
   },
   {
     label: '用户行为分析',
-    key: 'account.userBehaviorAnalysisEnabled',
+    key: 'odc.account.userBehaviorAnalysisEnabled',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
     storeType: 'server',
@@ -53,11 +53,11 @@ const accountSettings: IODCSetting[] = [
           options={[
             {
               label: '开启',
-              value: true,
+              value: 'true',
             },
             {
               label: '关闭',
-              value: false,
+              value: 'false',
             },
           ]}
           value={value}

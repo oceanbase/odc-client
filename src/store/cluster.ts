@@ -26,7 +26,7 @@ export interface ICluster {
   instanceId?: string;
   vpcId?: string;
   version?: string;
-  type: 'CLUSTER' | 'MYSQL_TENANT' | 'ORACLE_TENANT';
+  type: 'CLUSTER' | 'MYSQL_TENANT' | 'ORACLE_TENANT' | 'MYSQL_SERVERLESS' | 'ORACLE_SERVERLESS';
   status: 'ONLINE' | 'OTHERS';
 }
 
@@ -62,22 +62,29 @@ export class ClusterStore {
       if (result) {
         let newTenantMap = { ...this.tenantListMap };
         this.clusterList = result.map((item) => {
-          if (item.type === 'CLUSTER') {
-            newTenantMap[item.id] = item.tenants?.map((tenant) => {
-              return {
-                tenantName: tenant.name,
-                tenantId: tenant.id,
-                tenantMode: tenant.tenantMode,
-              };
-            });
-          } else {
-            let tenants = newTenantMap[item.id] || [];
-            tenants.push({
-              tenantName: item.name,
-              tenantId: item.id,
-              tenantMode: item.type === 'MYSQL_TENANT' ? 'MySQL' : 'ORACLE',
-            });
-            newTenantMap[item.id] = tenants;
+          switch (item.type) {
+            case 'CLUSTER': {
+              newTenantMap[item.id] = item.tenants?.map((tenant) => {
+                return {
+                  tenantName: tenant.name,
+                  tenantId: tenant.id,
+                  tenantMode: tenant.tenantMode,
+                };
+              });
+              break;
+            }
+            default: {
+              let tenants = newTenantMap[item.id] || [];
+              tenants.push({
+                tenantName: item.name,
+                tenantId: item.id,
+                tenantMode: ['MYSQL_TENANT', 'MYSQL_SERVERLESS'].includes(item.type)
+                  ? 'MySQL'
+                  : 'ORACLE',
+              });
+              newTenantMap[item.id] = tenants;
+              break;
+            }
           }
           return {
             instanceName: item.name,

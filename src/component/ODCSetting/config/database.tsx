@@ -30,7 +30,7 @@ const databaseObjectGroup: ODCSettingGroup = {
 const databaseSettings: IODCSetting[] = [
   {
     label: 'MYSQL 提交模式',
-    key: 'sqlexecute.default.mysqlAutoCommitMode',
+    key: 'odc.sqlexecute.default.mysqlAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
     storeType: 'server',
@@ -59,7 +59,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: 'Oracle 提交模式',
-    key: 'sqlexecute.default.oracleAutoCommitMode',
+    key: 'odc.sqlexecute.default.oracleAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
     storeType: 'server',
@@ -88,7 +88,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '获取结果集列信息',
-    key: 'sqlexecute.default.fetchColumnInfo',
+    key: 'odc.sqlexecute.default.fetchColumnInfo',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
     storeType: 'server',
@@ -98,11 +98,11 @@ const databaseSettings: IODCSetting[] = [
           options={[
             {
               label: '是',
-              value: true,
+              value: 'true',
             },
             {
               label: '否',
-              value: false,
+              value: 'false',
             },
           ]}
           value={value}
@@ -113,7 +113,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '查询条数限制',
-    key: 'sqlexecute.default.queryLimit',
+    key: 'odc.sqlexecute.default.queryLimit',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
     storeType: 'server',
@@ -123,7 +123,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '开启全链路诊断',
-    key: 'sqlexecute.default.fullTraceDiagnosisEnabled',
+    key: 'odc.sqlexecute.default.fullTraceDiagnosisEnabled',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -133,11 +133,11 @@ const databaseSettings: IODCSetting[] = [
           options={[
             {
               label: '是',
-              value: true,
+              value: 'true',
             },
             {
               label: '否',
-              value: false,
+              value: 'false',
             },
           ]}
           value={value}
@@ -148,7 +148,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '报错继续执行',
-    key: 'sqlexecute.default.continueExecutionOnError',
+    key: 'odc.sqlexecute.default.continueExecutionOnError',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -158,11 +158,11 @@ const databaseSettings: IODCSetting[] = [
           options={[
             {
               label: '是',
-              value: true,
+              value: 'true',
             },
             {
               label: '否',
-              value: false,
+              value: 'false',
             },
           ]}
           value={value}
@@ -173,7 +173,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: 'Delimiter 设置',
-    key: 'sqlexecute.default.delimiter',
+    key: 'odc.sqlexecute.default.delimiter',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -210,7 +210,7 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: '对象拖放生成语句类型',
-    key: 'sqlexecute.default.objectDraggingOption',
+    key: 'odc.sqlexecute.default.objectDraggingOption',
     group: databaseGroup,
     secondGroup: databaseObjectGroup,
     storeType: 'server',

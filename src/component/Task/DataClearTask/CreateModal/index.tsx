@@ -15,9 +15,9 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask } from '@/common/network/task';
+import { createTask, getCycleTaskDetail } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
-import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   CreateTaskRecord,
@@ -29,23 +29,26 @@ import {
   TaskPageScope,
   TaskPageType,
   TaskType,
+  IDataClearJobParameters,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb } from '@/util/utils';
+import { mbToKb, kbToMb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
+import moment from 'moment';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import FormItemPanel from '@/component/FormItemPanel';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
+import { getVariableValue } from '../../DataArchiveTask/CreateModal';
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
@@ -94,7 +97,7 @@ const getVariables = (
 };
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
-  const [formData, setFormData] = useState(null);
+  const { dataClearVisible, dataClearTaskData } = modalStore;
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
@@ -102,24 +105,55 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
-  const databaseName = database?.name;
-  const loadTables = async () => {
-    const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
-    setTables(tables);
-  };
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-  const { dataClearVisible, SQLPlanEditId } = modalStore;
-  const isEdit = !!SQLPlanEditId;
-  const setFormStatus = (fieldName: string, errorMessage: string) => {
-    form.setFields([
-      {
-        name: [fieldName],
-        errors: errorMessage ? [errorMessage] : [],
-      },
-    ]);
+  const databaseName = database?.name;
+  const editTaskId = dataClearTaskData?.id;
+  const isEdit = !!editTaskId && dataClearTaskData?.type === 'EDIT';
+
+  const loadTables = async () => {
+    const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
+    setTables(tables);
+  };
+
+  const loadEditData = async (editId: number) => {
+    const data = await getCycleTaskDetail<IDataClearJobParameters>(editId);
+    const {
+      jobParameters,
+      description,
+      triggerConfig: { triggerStrategy, cronExpression, hours, days, startAt },
+    } = data;
+    const { sourceDatabaseId, rateLimit, tables, variables } = jobParameters;
+    const formData = {
+      databaseId: sourceDatabaseId,
+      rowLimit: rateLimit?.rowLimit,
+      dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
+      tables,
+      variables: getVariableValue(variables),
+      archiveRange: IArchiveRange.PORTION,
+      triggerStrategy,
+      startAt: undefined,
+      description,
+    };
+
+    if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
+      formData.triggerStrategy = TaskExecStrategy.TIMER;
+      const crontab = {
+        mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        dateType: triggerStrategy as any,
+        cronString: cronExpression,
+        hour: hours,
+        dayOfMonth: days,
+        dayOfWeek: days,
+      };
+      setCrontab(crontab);
+    }
+    if (triggerStrategy === TaskExecStrategy.START_AT) {
+      formData.startAt = moment(startAt);
+    }
+    form.setFieldsValue(formData);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -207,7 +241,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const parameters = {
           type: TaskJobType.DATA_DELETE,
           operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
-          taskId: SQLPlanEditId,
+          taskId: editTaskId,
           scheduleTaskParameters: {
             databaseId,
             variables: getVariables(variables),
@@ -267,10 +301,20 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(true);
   };
   const handleReset = () => {
-    setFormData(null);
     form?.resetFields();
     setCrontab(null);
     setHasEdit(false);
+  };
+  const getDrawerTitle = () => {
+    let title = '新建数据清理';
+    if (editTaskId) {
+      if (isEdit) {
+        title = '编辑数据清理';
+      } else {
+        title = '再次发起数据清理';
+      }
+    }
+    return title;
   };
   useEffect(() => {
     if (!dataClearVisible) {
@@ -283,20 +327,19 @@ const CreateModal: React.FC<IProps> = (props) => {
       form.setFieldValue('tables', [null]);
     }
   }, [database?.id]);
+
+  useEffect(() => {
+    if (editTaskId) {
+      loadEditData(editTaskId);
+    }
+  }, [editTaskId]);
+
   return (
     <Drawer
       destroyOnClose
       className={styles['data-archive']}
       width={760}
-      title={
-        isEdit
-          ? formatMessage({
-              id: 'odc.DataClearTask.CreateModal.EditDataCleanup',
-            }) //编辑数据清理
-          : formatMessage({
-              id: 'odc.DataClearTask.CreateModal.CreateDataCleanup',
-            }) //新建数据清理
-      }
+      title={getDrawerTitle()}
       footer={
         <Space>
           <Button
