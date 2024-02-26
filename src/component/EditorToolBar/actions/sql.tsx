@@ -24,6 +24,9 @@ import sqlStore from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { SaveOutlined } from '@ant-design/icons';
 import { ToolBarActions } from '..';
+import setting from '@/store/setting';
+import { KeyCode } from 'monaco-editor';
+import { getKeyCodeText } from '@/component/Input/Keymap/keycodemap';
 
 const sqlActions: ToolBarActions = {
   SQL_SAVE: {
@@ -59,9 +62,9 @@ const sqlActions: ToolBarActions = {
   },
 
   SQL_EXEC: {
-    name: formatMessage({
-      id: 'odc.EditorToolBar.actions.sql.RunF',
-    }),
+    name: () =>
+      '运行 ' +
+      getKeyCodeText(setting.configurations['odc.editor.shortcut.executeStatement']).join(''),
 
     icon: 'SQL_RUN',
     statusFunc: (ctx: SQLPage) => {
@@ -94,9 +97,11 @@ const sqlActions: ToolBarActions = {
   },
 
   SQL_EXEC_SECTION: {
-    name: formatMessage({
-      id: 'odc.EditorToolBar.actions.sql.RunTheCurrentStatementF',
-    }),
+    name: () =>
+      '运行当前语句 ' +
+      getKeyCodeText(setting.configurations['odc.editor.shortcut.executeCurrentStatement']).join(
+        '',
+      ),
 
     icon: 'SQL_RUN_SECTION',
     statusFunc: (ctx: SQLPage) => {

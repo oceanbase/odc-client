@@ -1,10 +1,10 @@
-import { Button, Col, Form, Modal, Row, Space, Tabs, Typography } from 'antd';
+import { Button, Col, Form, Modal, Row, Space, Tabs, Typography, message } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup, odcSettingMap } from './config';
 
 import styles from './index.less';
 import { inject, observer } from 'mobx-react';
-import { ModalStore } from '@/store/modal';
+import modal, { ModalStore } from '@/store/modal';
 import setting from '@/store/setting';
 import { IUserConfig } from '@/d.ts';
 import { getODCSetting, saveODCSetting } from '@/util/client';
@@ -32,7 +32,10 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       }
     >();
     odcSetting.forEach((setting) => {
-      const { group, secondGroup, key, render } = setting;
+      const { group, secondGroup, key, render, storeType } = setting;
+      if (!isClient() && storeType === 'local') {
+        return;
+      }
       if (!result.has(group.key)) {
         result.set(group.key, {
           ...group,
@@ -143,12 +146,16 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     /**
      * submit serverData
      */
-    await setting.updateUserConfig(serverData as any);
+    const isSuccess = await setting.updateUserConfig(serverData as any);
     /**
      * submit localData
      */
     if (isClient()) {
       await saveODCSetting(JSON.stringify(localData));
+    }
+    if (isSuccess) {
+      message.success('保存成功');
+      modalStore.changeOdcSettingVisible(false);
     }
   }
 
@@ -156,7 +163,11 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     Modal.confirm({
       title: '确定要恢复默认设置吗？',
       onOk: async () => {
-        await setting.resetUserConfig();
+        const isSuccess = await setting.resetUserConfig();
+        if (isSuccess) {
+          message.success('已恢复到默认配置');
+          modalStore.changeOdcSettingVisible(false);
+        }
       },
     });
   }
@@ -238,6 +249,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           <Tabs
             tabBarGutter={0}
             size="small"
+            moreIcon={false}
             tabPosition="right"
             items={Array.from(data.values()).map((g) => {
               return {

@@ -22,6 +22,7 @@ import { Component, ComponentType, ReactNode } from 'react';
 import { ContainerQuery } from 'react-container-query';
 import { IConStatus } from '../Toolbar/statefulIcon';
 import { ACTIONS, ACTION_GROUPS } from './config';
+import { isFunction } from 'lodash';
 interface IProps {
   ctx: any;
   actionGroupKey: string;
@@ -51,7 +52,7 @@ interface ToolBarCommonAction<T> {
   action?: (ctx: T) => Promise<void>;
 }
 interface ToolBarMenuAction<T> {
-  name: string;
+  name: string | (() => string);
   icon?: string | ComponentType;
   type?: string;
   isVisible?: (ctx: T) => boolean;
@@ -136,7 +137,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
             key={actionKey}
             status={status}
             icon={icon}
-            text={name}
+            text={isFunction(name) ? name() : name}
             menu={{
               items: menu?.map((menuItem, menuIndex) => {
                 return {
@@ -181,7 +182,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
             status={status}
             type={type}
             key={`${j}-${actionKey}`}
-            text={name}
+            text={isFunction(name) ? name() : name}
             isShowText={isShowText || itemIsShowText}
             icon={icon}
             onClick={async () => {

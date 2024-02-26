@@ -99,7 +99,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
 
   useEffect(() => {
     if (visible) {
-      setValue(settingStore.configurations['sqlexecute.defaultObjectDraggingOption']);
+      setValue(settingStore.configurations['odc.sqlexecute.default.objectDraggingOption']);
     }
   }, [visible, settingStore.configurations]);
 

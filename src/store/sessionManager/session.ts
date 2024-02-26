@@ -33,6 +33,7 @@ import { action, observable, runInAction } from 'mobx';
 import settingStore from '../setting';
 import DatabaseStore from './database';
 import { ISupportFeature } from './type';
+import setting from '../setting';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -354,6 +355,8 @@ class SessionStore {
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
+      this.params.tableColumnInfoVisible =
+        setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
       if (data?.session) {
         this.transState = data?.session;
       }

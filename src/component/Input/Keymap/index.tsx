@@ -1,7 +1,7 @@
 import { useControllableValue } from 'ahooks';
 import { Select, Tag } from 'antd';
 import React, { useMemo } from 'react';
-import { KEY_CODE_MAP } from './keycodemap';
+import { KEY_CODE_MAP, getKeyCodeText } from './keycodemap';
 import { KeyCode } from 'monaco-editor';
 import { BaseSelectRef, CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { PlusOutlined } from '@ant-design/icons';
@@ -20,14 +20,7 @@ const KeymapInput: React.FC<IProps> = (props) => {
   const selectRef = React.useRef<BaseSelectRef>(null);
 
   const displayValue = useMemo(() => {
-    const splitValues = value?.split(',')?.filter(Boolean) || [];
-    return splitValues.reduce((acc, cur) => {
-      if (acc.length) {
-        acc.push('+');
-      }
-      acc.push(KeyCode[cur]);
-      return acc;
-    }, []);
+    return getKeyCodeText(value);
   }, [value]);
 
   function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
