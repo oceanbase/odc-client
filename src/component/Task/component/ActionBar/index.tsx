@@ -503,8 +503,8 @@ const ActionBar: React.FC<IProps> = inject(
       const downloadSQLBtn = {
         key: 'downloadSQL',
         text: '下载 SQL',
-        disabled: disableBtn,
-        isExpired: disableBtn,
+        disabled: disableBtn || !structureComparisonData?.storageObjectId,
+        isExpired: disableBtn || !structureComparisonData?.storageObjectId,
         tip: '暂不可用',
         type: 'button',
         action: async () => {

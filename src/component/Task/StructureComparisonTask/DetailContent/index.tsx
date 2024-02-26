@@ -25,7 +25,7 @@ import {
   IResponseDataPage,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { downloadFile, getFormatDateTime } from '@/util/utils';
 import { ConfigProvider, Descriptions, Divider, Empty, Modal, Tabs } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import SearchFilter from '@/component/SearchFilter';
@@ -37,6 +37,7 @@ import styles from './index.less';
 import {
   getStructrueComparison,
   getStructrueComparisonDetail,
+  getStructureComparisonTaskFile,
   getTaskResult,
 } from '@/common/network/task';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -192,9 +193,20 @@ const CompareTable: React.FC<{
   );
 };
 const SQLPreview: React.FC<{
+  task: TaskDetail<IStructureComparisonTaskParams>;
   comparisonResult: IComparisonResultData;
   datasourceType: ConnectType;
-}> = ({ comparisonResult, datasourceType }) => {
+}> = ({ task, comparisonResult, datasourceType }) => {
+  const sqlDownload = async () => {
+    if (comparisonResult?.storageObjectId) {
+      const fileUrl = await getStructureComparisonTaskFile(task?.id, [
+        `${comparisonResult?.storageObjectId}`,
+      ]);
+      fileUrl?.forEach((url) => {
+        url && downloadFile(url);
+      });
+    }
+  };
   return (
     <div>
       <div className={styles.tip}>
@@ -205,7 +217,7 @@ const SQLPreview: React.FC<{
           marginTop: '8px',
         }}
       >
-        {comparisonResult?.totalChangeScript ? (
+        {comparisonResult?.id && comparisonResult?.totalChangeScript ? (
           <div className={styles?.sqlContent}>
             <MonacoEditor
               readOnly
@@ -226,7 +238,14 @@ const SQLPreview: React.FC<{
             <Empty
               description={
                 <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
-                  正在比对中，暂无数据
+                  {comparisonResult?.id && comparisonResult?.overSizeLimit ? (
+                    <div>
+                      当前 SQL 文件超过 1 兆，暂不支持预览，请 <a onClick={sqlDownload}>下载 SQL</a>{' '}
+                      进行查看
+                    </div>
+                  ) : (
+                    '正在比对中，暂无数据'
+                  )}
                 </span>
               }
             />
@@ -264,7 +283,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
       const data = await getStructrueComparison((currentResult as any)?.taskId, {
         ...params,
       } as any);
-      if (data?.storageObjectId) {
+      if (data?.id) {
         modalStore?.updateStructureComparisonDataMap(task?.id, {
           database: task?.relatedDatabase,
           storageObjectId: data?.storageObjectId,
@@ -340,6 +359,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         key: '2',
         children: (
           <SQLPreview
+            task={task}
             comparisonResult={comparisonResult}
             datasourceType={task?.database?.dataSource?.type}
           />

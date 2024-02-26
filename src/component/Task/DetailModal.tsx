@@ -33,12 +33,10 @@ import type {
   IDataArchiveJobParameters,
   IDataClearJobParameters,
   IPartitionPlanParams,
-  IApplyPermissionTaskParams,
   IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
   TaskRecord,
-  IIPartitionPlanTaskDetail,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -110,6 +108,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
+  const timerRef = useRef(null);
   const hasFlow = !!task?.nodeList?.find(
     (node) =>
       node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.PRE_CHECK,
@@ -137,6 +136,28 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     });
   };
 
+  const loop = (timeout: number = 0) => {
+    timerRef.current = setTimeout(async () => {
+      const currentTask = await getTaskDetail(detailId);
+      if (
+        currentTask &&
+        [
+          TaskStatus.EXECUTION_SUCCEEDED,
+          TaskStatus.EXECUTION_FAILED,
+          TaskStatus.EXECUTION_EXPIRED,
+          TaskStatus.APPROVAL_EXPIRED,
+          TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
+        ].includes(currentTask?.status)
+      ) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+        getResult();
+      } else {
+        loop(2000);
+      }
+      setTask(currentTask);
+    }, timeout);
+  };
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
     setLoading(false);
@@ -154,6 +175,18 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         });
       } else {
         setDisabledSubmit(false);
+      }
+      if (
+        data?.type === TaskType.STRUCTURE_COMPARISON &&
+        ![
+          TaskStatus.EXECUTION_SUCCEEDED,
+          TaskStatus.EXECUTION_FAILED,
+          TaskStatus.EXECUTION_EXPIRED,
+          TaskStatus.APPROVAL_EXPIRED,
+          TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
+        ].includes(data?.status)
+      ) {
+        loop();
       }
     }
   };
@@ -248,19 +281,23 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     if (!task || isLoop) {
       getCycleTask();
     }
-
-    if (detailType === TaskDetailType.LOG) {
-      getLog();
+    switch (detailType) {
+      case TaskDetailType.LOG: {
+        getLog();
+        break;
+      }
+      case TaskDetailType.EXECUTE_RECORD: {
+        getExecuteRecord();
+        break;
+      }
+      case TaskDetailType.OPERATION_RECORD: {
+        getOperationRecord();
+        break;
+      }
+      default: {
+        break;
+      }
     }
-
-    if (detailType === TaskDetailType.EXECUTE_RECORD) {
-      getExecuteRecord();
-    }
-
-    if (detailType === TaskDetailType.OPERATION_RECORD) {
-      getOperationRecord();
-    }
-
     if (isLoop) {
       clockRef.current = setTimeout(() => {
         loadCycleTaskData();
@@ -418,8 +455,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     logType,
     isLoading: loading,
     isSplit: ![TaskType.ASYNC, TaskType.EXPORT_RESULT_SET].includes(task?.type),
-    taskTools: (
-      enabledAction ? 
+    taskTools: enabledAction ? (
       <TaskTools
         isDetailModal
         disabledSubmit={disabledSubmit}
@@ -431,8 +467,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
       />
-      : null
-    ),
+    ) : null,
   };
 
   return (
