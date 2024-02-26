@@ -25,8 +25,9 @@ export interface IComparisonResultData {
     data: IResponseData<IComparisonResult>;
   };
   id: number;
+  overSizeLimit: boolean;
   storageObjectId?: number;
-  totalChangeScript: string;
+  totalChangeScript?: string;
 }
 
 export interface IStructrueComparisonDetail {
