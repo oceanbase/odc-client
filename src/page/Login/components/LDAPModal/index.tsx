@@ -62,10 +62,9 @@ export const LDAPLogin: React.FC<{
         testId: res.testId,
         registrationId: res?.testRegistrationId,
       });
-
       if (!result?.successful) {
         setIsSubmiting(false);
-        return message.error('测试登录失败！');
+        return message.error(result?.errMsg || '测试登录失败！');
       } else {
         channel.send(ChannelMap.LDAP_TEST, {
           isSuccess: true,
