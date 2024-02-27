@@ -29,14 +29,27 @@ import { DefaultOptionType } from 'antd/es/select';
 interface IProps {
   projectId: number;
   onSuccess: () => void;
+  /**
+   * 数据库负责人的限制个数
+   */
+  maxOwnerCount?: number;
 }
-export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
+
+export default function AddDataBaseButton({ projectId, onSuccess, maxOwnerCount = 3 }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
+  /**
+   * 存储当前选择的数据的的负责人
+   * 目前用于限制负责人的个数
+   */
+  const [ownerIds, setOwnerIds] = useState<number[]>([]);
   const [form] = Form.useForm<{
     databaseIds: number[];
     ownerIds?: number[];
   }>();
+  /**
+   *  去重后的项目成员作为库Owner的可选项
+   */
   const projectUserOptions: DefaultOptionType[] = useMemo(() => {
     const userMap = new Map<number, DefaultOptionType>();
     project?.members?.forEach((mem) => {
@@ -45,11 +58,12 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
         userMap.set(id, {
           value: id,
           label: name,
+          disabled: !(ownerIds.length < maxOwnerCount || ownerIds.includes(id)),
         });
       }
     });
     return [...userMap.values()];
-  }, [project?.members]);
+  }, [project?.members, ownerIds, maxOwnerCount]);
   const { run, loading } = useRequest(updateDataBase, {
     manual: true,
   });
@@ -129,6 +143,9 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
               fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true, true);
+            }
+            if (changedValues.hasOwnProperty('ownerIds')) {
+              setOwnerIds(changedValues.ownerIds);
             }
           }}
         >
@@ -261,8 +278,8 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               mode="multiple"
               placeholder={formatMessage({
                 id: 'odc.Database.AddDataBaseButton.SelectDatabaseOwner',
-              })}
-              /*请选择数据库负责人*/ style={{
+              })} /*请选择数据库负责人*/
+              style={{
                 width: '100%',
               }}
               optionFilterProp="children"
