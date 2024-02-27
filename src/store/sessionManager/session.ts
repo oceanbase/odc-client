@@ -84,7 +84,7 @@ class SessionStore {
     delimiterLoading: boolean;
     obVersion: string;
     tableColumnInfoVisible: boolean;
-    fullLinkATraceEnabled: boolean;
+    fullLinkTraceEnabled: boolean;
     continueExecutionOnError: boolean;
   } = {
     autoCommit: true,
@@ -93,7 +93,7 @@ class SessionStore {
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
     tableColumnInfoVisible: true,
-    fullLinkATraceEnabled: true,
+    fullLinkTraceEnabled: true,
     continueExecutionOnError: true,
   };
 
@@ -362,8 +362,8 @@ class SessionStore {
       if (init) {
         this.params.tableColumnInfoVisible =
           setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
-        this.params.fullLinkATraceEnabled =
-          setting.configurations['odc.sqlexecute.default.fullLinkATraceEnabled'] === 'true';
+        this.params.fullLinkTraceEnabled =
+          setting.configurations['odc.sqlexecute.default.fullLinkTraceEnabled'] === 'true';
         this.params.continueExecutionOnError =
           setting.configurations['odc.sqlexecute.default.continueExecutionOnError'] === 'true';
       }
@@ -496,7 +496,7 @@ class SessionStore {
   };
   @action
   public changeFullTraceDiagnosisEnabled = async (v: boolean) => {
-    this.params.fullLinkATraceEnabled = v;
+    this.params.fullLinkTraceEnabled = v;
   };
   @action
   public changeContinueExecutionOnError = async (v: boolean) => {
