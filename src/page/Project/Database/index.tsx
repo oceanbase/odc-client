@@ -208,9 +208,18 @@ const Database: React.FC<IProps> = ({ id }) => {
             }),
             //项目角色
             dataIndex: 'owners',
-            width: 170,
+            ellipsis: true,
+            width: 160,
             render(v) {
-              return v?.map(({ name }) => name)?.join(' | ');
+              return v?.length > 0 ? (
+                v.map(({ name }) => name)?.join(' | ')
+              ) : (
+                <span style={{ color: 'var(--text-color-hint)' }}>
+                  {formatMessage({
+                    id: 'odc.Project.Database.OwnerEmptyText',
+                  })}
+                </span>
+              );
             },
           },
           {
@@ -298,7 +307,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             }),
             //操作
             dataIndex: 'actions',
-            width: 200,
+            width: 170,
             render(_, record) {
               if (!record.existed) {
                 return '-';

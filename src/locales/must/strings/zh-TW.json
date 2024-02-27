@@ -4702,6 +4702,7 @@
   "odc.Env.components.InnerEnvironment.RuleType": "規則類型",
   "odc.Project.Database.DatabaseName": "資料庫名稱",
   "odc.Project.Database.Owner": "負責人",
+  "odc.Project.Database.OwnerEmptyText": "未設置",
   "odc.Project.Sensitive.SensitiveColumn": "敏感列",
   "odc.Project.Database.LogOnToTheDatabase": "登入資料庫",
   "odc.Form.DBTypeItem.DataSourceType": "資料來源類型",

@@ -5057,6 +5057,7 @@
   "odc.Env.components.InnerEnvironment.RuleType": "Rule Type",
   "odc.Project.Database.DatabaseName": "Database Name",
   "odc.Project.Database.Owner": "Database Owner",
+  "odc.Project.Database.OwnerEmptyText": "Not set",
   "odc.Project.Sensitive.SensitiveColumn": "Sensitive Column",
   "odc.Project.Database.LogOnToTheDatabase": "Log on to Database",
   "odc.Form.DBTypeItem.DataSourceType": "Data Source Type",

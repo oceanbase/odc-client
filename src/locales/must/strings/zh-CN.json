@@ -2893,6 +2893,7 @@
   "odc.components.SensitiveRule.Cancel": "取消",
   "odc.Project.Database.DatabaseName": "数据库名称",
   "odc.Project.Database.Owner": "负责人",
+  "odc.Project.Database.OwnerEmptyText": "未设置",
   "odc.ExternalIntegration.SqlInterceptor.AreYouSureYouWant": "是否确认删除{title}？",
   "odc.components.SensitiveColumn.Disable": "禁用",
   "odc.component.CommonDetailModal.TaskTools.Rollback": "回滚",
