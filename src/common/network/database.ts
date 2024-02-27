@@ -36,7 +36,7 @@ export async function listDatabases(
    */
   containsUnassigned?: boolean,
   existed?: boolean,
-  includesPermittedAction?: boolean
+  includesPermittedAction?: boolean,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -48,7 +48,7 @@ export async function listDatabases(
       environmentId,
       containsUnassigned,
       existed,
-      includesPermittedAction
+      includesPermittedAction,
     },
   });
 
@@ -70,11 +70,16 @@ export async function createDataBase(database: DeepPartial<IDatabase>): Promise<
   return res?.data;
 }
 
-export async function updateDataBase(databaseIds: number[], projectId: number): Promise<Boolean> {
+export async function updateDataBase(
+  databaseIds: number[],
+  projectId: number,
+  ownerIds: number[],
+): Promise<Boolean> {
   const res = await request.post(`/api/v2/database/databases/transfer`, {
     data: {
       databaseIds,
       projectId,
+      ownerIds,
     },
   });
   return res?.data;
