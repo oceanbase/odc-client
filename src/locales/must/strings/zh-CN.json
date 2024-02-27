@@ -3174,6 +3174,7 @@
   "odc.Env.components.EditRuleDrawer.Edit": "编辑",
   "odc.component.FormModal.Disable": "停用",
   "odc.component.AuthNode.Role": "角色",
+  "odc.component.AuthNode.Role.DatabaseOwner": "数据库负责人",
   "odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist": "个人空间不存在！",
   "odc.component.ResourceSelector.const.DataSource": "数据源",
   "odc.SensitiveRule.components.FormSensitiveRuleDrawer.TableName": "表名",

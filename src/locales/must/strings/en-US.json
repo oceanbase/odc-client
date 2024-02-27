@@ -5247,6 +5247,7 @@
   "odc.Datasource.Info.AreYouSureYouWant": "Are you sure you want to delete it?",
   "odc.DataClearTask.DetailContent.DataCleansing": "Data Cleanup",
   "odc.component.AuthNode.Role": "Role",
+  "odc.component.AuthNode.Role.DatabaseOwner": "DataBase Owner",
   "odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist": "The personal workspace does not exist.",
   "odc.component.ResourceSelector.const.DataSource": "Data Source",
   "odc.page.Secure.interface.NoNeedToImprove": "Improvement Not Required",

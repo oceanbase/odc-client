@@ -4825,6 +4825,7 @@
   "odc.DataClearTask.DetailContent.DataCleansing": "資料清理",
   "odc.Datasource.Info.AreYouSureYouWant": "確認刪除嗎？",
   "odc.component.AuthNode.Role": "角色",
+  "odc.component.AuthNode.Role.DatabaseOwner": "資料庫負責人",
   "odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist": "個人空間不存在！",
   "odc.component.ResourceSelector.const.DataSource": "資料來源",
   "odc.page.Secure.interface.NoNeedToImprove": "無需改進",

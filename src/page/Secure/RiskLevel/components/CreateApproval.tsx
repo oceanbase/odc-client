@@ -15,16 +15,23 @@
  */
 
 import { getIntegrationList, getResourceRoles } from '@/common/network/manager';
-import { IntegrationType } from '@/d.ts';
+import { IManagerResourceType, IntegrationType } from '@/d.ts';
 import { projectRoleTextMap } from '@/page/Project/User';
 import { useEffect, useState } from 'react';
 import FormModal from '../../Approval/component/FormModal';
+import { formatMessage } from '@/util/intl';
 interface ICreateApprovalProps {
   editId: number;
   formModalVisible: boolean;
   setFormModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   reloadData: () => void;
 }
+/**
+ * 数据库类型的Role文本映射
+ */
+const databaseRoleTextMap = {
+  OWNER: formatMessage({ id: 'odc.component.AuthNode.Role.DatabaseOwner' }) /* 数据库负责人 */,
+};
 const CreateApproval: React.FC<ICreateApprovalProps> = ({
   editId,
   formModalVisible,
@@ -36,10 +43,14 @@ const CreateApproval: React.FC<ICreateApprovalProps> = ({
 
   const loadRoles = async () => {
     const res = await getResourceRoles();
-    const roles = res?.contents.map(({ roleName, id }) => ({
-      name: projectRoleTextMap?.[roleName],
-      id,
-    }));
+    const roles = res?.contents.map(({ roleName, id, resourceType }) => {
+      const textMap =
+        resourceType === IManagerResourceType.database ? databaseRoleTextMap : projectRoleTextMap;
+      return {
+        name: textMap?.[roleName],
+        id,
+      };
+    });
     setRoles(roles);
   };
   const loadIntegrations = async () => {
