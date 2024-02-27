@@ -46,6 +46,7 @@ import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
 import tracert from '@/util/tracert';
+import SettingItem from './SettingItem';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -187,6 +188,7 @@ const Sider: React.FC<IProps> = function (props) {
         </Space>
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>
+        <SettingItem collapsed={collapsed} />
         <HelpItem>
           <MenuItem
             disableTip={true}

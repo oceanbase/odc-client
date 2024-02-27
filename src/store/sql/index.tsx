@@ -176,11 +176,15 @@ export class SQLStore {
       this.runningPageKey.add(pageKey);
       !!isSection && this.isRunningSection.add(pageKey);
       const showTableColumnInfo = session?.params?.tableColumnInfoVisible;
+      const fullLinkTraceEnabled = session?.params?.fullLinkTraceEnabled;
+      const continueExecutionOnError = session?.params?.continueExecutionOnError;
       record = await executeSQL(
         {
           sql,
           queryLimit: session?.params.queryLimit || undefined,
           showTableColumnInfo,
+          continueExecutionOnError,
+          fullLinkTraceEnabled,
         },
         sessionId,
         dbName,

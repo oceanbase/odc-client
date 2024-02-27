@@ -34,6 +34,7 @@ import ActivityBarButton from './ActivityBarButton';
 import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
+import SettingItem from '@/layout/SpaceContainer/Sider/SettingItem';
 
 interface IProps {}
 
@@ -113,6 +114,7 @@ const ActivityBar: React.FC<IProps> = function () {
       </div>
       <div className={styles.bottom}>
         <Space size={12} direction="vertical">
+          <SettingItem collapsed={true} />
           <HelpItem>
             <MenuItem
               disableTip={true}
@@ -121,7 +123,7 @@ const ActivityBar: React.FC<IProps> = function () {
               label={formatMessage({ id: 'odc.Index.Sider.Help' })} /*帮助*/
             />
           </HelpItem>
-          <MineItem enableTheme={true}>
+          <MineItem>
             <MenuItem
               disableTip={true}
               icon={UserOutlined}

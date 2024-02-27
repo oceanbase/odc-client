@@ -18,6 +18,8 @@
  * 提供给render的服务
  */
 import { app, dialog, ipcMain, shell } from 'electron';
+import fs from 'fs';
+import path from 'path';
 import MainServer from '../server/main';
 import { default as clientLog } from '../utils/log';
 import feedbackImpl from './feedback';
@@ -85,5 +87,22 @@ export function initRenderService() {
     } else {
       return path?.[0];
     }
+  });
+
+  ipcMain.handle('saveODCSetting', (e, settingText: string) => {
+    const savePath = path.resolve(app.getPath('exe'), 'setting.json');
+    /**
+     * 保存内容settingText到文件 setting.json
+     */
+    fs.writeFileSync(savePath, settingText);
+    return savePath;
+  });
+
+  ipcMain.handle('getODCSetting', (e) => {
+    const savePath = path.resolve(app.getPath('exe'), 'setting.json');
+    /**
+     * 保存内容settingText到文件 setting.json
+     */
+    return fs.readFileSync(savePath).toString();
   });
 }

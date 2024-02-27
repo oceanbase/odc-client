@@ -15,14 +15,21 @@
  */
 
 import Action from '@/component/Action';
-import { CommonTableMode, ITableLoadOptions, ITableInstance } from '@/component/CommonTable/interface';
+import {
+  CommonTableMode,
+  ITableLoadOptions,
+  ITableInstance,
+} from '@/component/CommonTable/interface';
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import TaskDetailModal from '@/component/Task/DetailModal';
-import { databasePermissionTypeFilters, databasePermissionTypeMap,
-  databasePermissionStatusFilters } from '../';
+import {
+  databasePermissionTypeFilters,
+  databasePermissionTypeMap,
+  databasePermissionStatusFilters,
+} from '../';
 import StatusLabel from '../Status';
 import SearchFilter from '@/component/SearchFilter';
 import CommonTable from '@/component/CommonTable';
@@ -31,7 +38,7 @@ import React, { useState } from 'react';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
-  onOpenDetail: (task: { id: number; }, visible: boolean) => void;
+  onOpenDetail: (task: { id: number }, visible: boolean) => void;
   onReclaim: (id: number[]) => void;
 }) => {
   const { filters, sorter } = params.paramOptions ?? {};
@@ -42,11 +49,7 @@ const getColumns = (params: {
       ellipsis: true,
       filterDropdown: (props) => {
         return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.databaseName}
-            placeholder='请输入'
-          />
+          <SearchFilter {...props} selectedKeys={filters?.databaseName} placeholder="请输入" />
         );
       },
       filterIcon: (filtered) => (
@@ -66,11 +69,7 @@ const getColumns = (params: {
       width: 188,
       filterDropdown: (props) => {
         return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.dataSourceName}
-            placeholder='请输入'
-          />
+          <SearchFilter {...props} selectedKeys={filters?.dataSourceName} placeholder="请输入" />
         );
       },
       filterIcon: (filtered) => (
@@ -88,13 +87,7 @@ const getColumns = (params: {
       title: '工单编号',
       width: 128,
       filterDropdown: (props) => {
-        return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.ticketId}
-            placeholder='请输入'
-          />
-        );
+        return <SearchFilter {...props} selectedKeys={filters?.ticketId} placeholder="请输入" />;
       },
       filterIcon: (filtered) => (
         <SearchOutlined
@@ -109,13 +102,13 @@ const getColumns = (params: {
         return (
           <Action.Link
             onClick={() => {
-              params?.onOpenDetail({ id: ticketId}, true);
+              params?.onOpenDetail({ id: ticketId }, true);
             }}
           >
             {ticketId}
           </Action.Link>
-        )
-      }
+        );
+      },
     },
     {
       dataIndex: 'type',
@@ -123,7 +116,7 @@ const getColumns = (params: {
       width: 120,
       filters: databasePermissionTypeFilters,
       filteredValue: filters?.type || null,
-      render: (type) => databasePermissionTypeMap[type].text
+      render: (type) => databasePermissionTypeMap[type].text,
     },
     {
       dataIndex: 'expireTime',
@@ -138,7 +131,7 @@ const getColumns = (params: {
       width: 104,
       filters: databasePermissionStatusFilters,
       filteredValue: filters?.status || null,
-      render: (status) => (<StatusLabel status={status} />)
+      render: (status) => <StatusLabel status={status} />,
     },
     {
       dataIndex: 'action',
@@ -174,10 +167,20 @@ interface IProps {
 }
 
 const TaskApplyList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, description, tableRef, onReclaim, onLoad, onChange } = props;
+  const {
+    projectId,
+    isOwner,
+    dataSource,
+    params,
+    description,
+    tableRef,
+    onReclaim,
+    onLoad,
+    onChange,
+  } = props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
-  
+
   const handleDetailVisible = (task: { id: number }, visible: boolean = false) => {
     const { id } = task ?? {};
     setDetailId(id);
@@ -188,7 +191,7 @@ const TaskApplyList: React.FC<IProps> = (props) => {
     paramOptions: params,
     onOpenDetail: handleDetailVisible,
     onReclaim: onReclaim,
-  })
+  });
 
   return (
     <>
@@ -200,7 +203,7 @@ const TaskApplyList: React.FC<IProps> = (props) => {
           enabledSearch: false,
         }}
         titleContent={{
-          description
+          description,
         }}
         rowSelecter={
           isOwner
@@ -208,7 +211,7 @@ const TaskApplyList: React.FC<IProps> = (props) => {
                 options: [
                   {
                     okText: '批量回收',
-                    onOk: onReclaim
+                    onOk: onReclaim,
                   },
                 ],
               }
@@ -217,7 +220,7 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) =>(isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

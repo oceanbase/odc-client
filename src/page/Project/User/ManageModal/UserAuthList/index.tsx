@@ -15,12 +15,19 @@
  */
 
 import Action from '@/component/Action';
-import { CommonTableMode, ITableLoadOptions, ITableInstance } from '@/component/CommonTable/interface';
+import {
+  CommonTableMode,
+  ITableLoadOptions,
+  ITableInstance,
+} from '@/component/CommonTable/interface';
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import type { IResponseData } from '@/d.ts';
-import { databasePermissionTypeFilters, databasePermissionTypeMap,
-  databasePermissionStatusFilters } from '../';
+import {
+  databasePermissionTypeFilters,
+  databasePermissionTypeMap,
+  databasePermissionStatusFilters,
+} from '../';
 import StatusLabel from '../Status';
 import SearchFilter from '@/component/SearchFilter';
 import CommonTable from '@/component/CommonTable';
@@ -39,11 +46,7 @@ const getColumns = (params: {
       ellipsis: true,
       filterDropdown: (props) => {
         return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.databaseName}
-            placeholder='请输入'
-          />
+          <SearchFilter {...props} selectedKeys={filters?.databaseName} placeholder="请输入" />
         );
       },
       filterIcon: (filtered) => (
@@ -63,11 +66,7 @@ const getColumns = (params: {
       width: 188,
       filterDropdown: (props) => {
         return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.dataSourceName}
-            placeholder='请输入'
-          />
+          <SearchFilter {...props} selectedKeys={filters?.dataSourceName} placeholder="请输入" />
         );
       },
       filterIcon: (filtered) => (
@@ -86,7 +85,7 @@ const getColumns = (params: {
       width: 120,
       filters: databasePermissionTypeFilters,
       filteredValue: filters?.type || null,
-      render: (type) => databasePermissionTypeMap[type].text
+      render: (type) => databasePermissionTypeMap[type].text,
     },
     {
       dataIndex: 'expireTime',
@@ -101,7 +100,7 @@ const getColumns = (params: {
       width: 104,
       filters: databasePermissionStatusFilters,
       filteredValue: filters?.status || null,
-      render: (status) => (<StatusLabel status={status} />)
+      render: (status) => <StatusLabel status={status} />,
     },
     {
       dataIndex: 'action',
@@ -137,11 +136,21 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, description, tableRef, onReclaim, onLoad, onChange } = props;
+  const {
+    projectId,
+    isOwner,
+    dataSource,
+    params,
+    description,
+    tableRef,
+    onReclaim,
+    onLoad,
+    onChange,
+  } = props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
-  })
+  });
 
   return (
     <>
@@ -153,7 +162,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
           enabledSearch: false,
         }}
         titleContent={{
-          description
+          description,
         }}
         rowSelecter={
           isOwner
@@ -161,7 +170,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
                 options: [
                   {
                     okText: '批量回收',
-                    onOk: onReclaim
+                    onOk: onReclaim,
                   },
                 ],
               }
@@ -170,7 +179,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) =>(isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

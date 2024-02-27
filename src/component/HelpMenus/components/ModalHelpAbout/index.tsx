@@ -22,7 +22,6 @@ import { GithubFilled } from '@ant-design/icons';
 import pkg from '../../../../../package.json';
 import styles from './index.less';
 import setting from '@/store/setting';
-console.log(RELEASE_DATE);
 export default class ModalHelp extends PureComponent<{
   showModal: boolean;
   onCancel: () => void;

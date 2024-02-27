@@ -15,7 +15,14 @@
  */
 
 import { createTask } from '@/common/network/task';
-import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IServerMockTable } from '@/d.ts';
+import {
+  ConnectionMode,
+  TaskExecStrategy,
+  TaskPageScope,
+  TaskPageType,
+  TaskType,
+  IServerMockTable,
+} from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
@@ -52,7 +59,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       const taskDetailObj: {
         tables: IServerMockTable;
       } = JSON.parse(taskDetail);
-      const { tableName, whetherTruncate, totalCount, strategy, batchSize } = taskDetailObj?.tables?.[0] ?? {};
+      const { tableName, whetherTruncate, totalCount, strategy, batchSize } =
+        taskDetailObj?.tables?.[0] ?? {};
       const formData = {
         databaseId,
         tableName,
@@ -61,7 +69,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         strategy,
         batchSize,
         executionStrategy,
-        description
+        description,
       };
       formRef.current?.setFieldsValue(formData);
     };
@@ -124,8 +132,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     message.warning(
                       formatMessage(
                         {
-                          id:
-                            'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
+                          id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
                         },
 
                         { editingColumnColumnName: editingColumn.columnName },

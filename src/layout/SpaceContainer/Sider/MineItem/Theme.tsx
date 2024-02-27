@@ -20,7 +20,6 @@ import { Menu } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import DropMenu from '../DropMenu';
-import MenuItem from '../DropMenu/MenuItem';
 
 interface IProps {
   settingStore?: SettingStore;
