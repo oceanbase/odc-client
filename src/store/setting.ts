@@ -67,7 +67,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     editorTheme: {
       VSCode: 'vs-dark',
       OceanBase: 'obdark',
-      'VSCode-HC': 'hc-dark',
+      'VSCode-HC': 'hc-black',
       GitHub: 'githubDark',
       Monokai: 'monokai',
     },
