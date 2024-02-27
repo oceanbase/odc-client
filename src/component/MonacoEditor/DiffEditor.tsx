@@ -4,6 +4,7 @@ import styles from './index.less';
 import { SettingStore } from '@/store/setting';
 import { inject, observer } from 'mobx-react';
 import classNames from 'classnames';
+import { getFontSize } from './config';
 
 export interface IDiffEditor {
   settingStore?: SettingStore;
@@ -30,7 +31,8 @@ const DiffEditor = inject('settingStore')(
       } = props;
       const domRef = useRef<HTMLDivElement | null>(null);
       const editorRef = useRef<monaco.editor.IStandaloneDiffEditor>();
-      const settingTheme = settingStore.theme.editorTheme;
+      const settingTheme =
+        settingStore.theme.editorTheme?.[settingStore.configurations['odc.editor.style.theme']];
       const [split, setSplit] = useState<boolean>(defaultSplit);
       useImperativeHandle(ref, () => ({
         switchSplit: (v: boolean) => {
@@ -43,6 +45,16 @@ const DiffEditor = inject('settingStore')(
         }
         return theme;
       }, [theme, settingTheme]);
+
+      useEffect(() => {
+        const fontSize = settingStore.configurations['odc.editor.style.fontSize'];
+        if (fontSize && editorRef.current) {
+          editorRef.current.updateOptions({
+            fontSize: getFontSize(fontSize),
+          });
+        }
+      }, [settingStore.configurations?.['odc.editor.style.fontSize']]);
+
       const initEditor = async () => {
         const originalModel = monaco.editor.createModel(source, language);
         const modifiedModel = monaco.editor.createModel(modifie, language);

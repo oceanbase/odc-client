@@ -290,7 +290,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       'odc.editor.shortcut.executeCurrentStatement': executeCurrentStatement,
       'odc.editor.shortcut.executeStatement': executeStatement,
     } = setting.configurations;
-    console.log(executeCurrentStatement, executeStatement);
     this.actions?.forEach((action) => {
       action.dispose();
     });
@@ -298,7 +297,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.editor.addAction({
         id: 'sql_download',
         label: 'download',
-        keybindings: [KeyMod.CtrlCmd | KeyCode.KeyD],
+        keybindings: [KeyMod.WinCtrl | KeyCode.KeyD],
         run: () => this.handleDownload(),
       }),
       this.editor.addAction({

@@ -2,7 +2,7 @@ import { useControllableValue } from 'ahooks';
 import { Select, Tag } from 'antd';
 import React, { useMemo } from 'react';
 import { KEY_CODE_MAP, getKeyCodeText } from './keycodemap';
-import { KeyCode } from 'monaco-editor';
+import { KeyCode, KeyMod } from 'monaco-editor';
 import { BaseSelectRef, CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -28,17 +28,23 @@ const KeymapInput: React.FC<IProps> = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (keyCode === 8) {
+      // del
       setValue('');
       return;
     }
     const monacoKeyCode = KEY_CODE_MAP[keyCode];
     let mod = [];
-    (metaKey || ctrlKey) && mod.push(KeyCode.Ctrl);
+    metaKey && mod.push(KeyCode.Meta);
+    ctrlKey && mod.push(KeyCode.Ctrl);
     shiftKey && mod.push(KeyCode.Shift);
     altKey && mod.push(KeyCode.Alt);
-    let isSpecialKey = [KeyCode.Ctrl, KeyCode.Shift, KeyCode.Alt, KeyCode.Meta].includes(
-      monacoKeyCode,
-    );
+    let isSpecialKey = [
+      KeyCode.Ctrl,
+      KeyCode.Shift,
+      KeyCode.Alt,
+      KeyCode.Meta,
+      KeyCode.Meta,
+    ].includes(monacoKeyCode);
     const value = isSpecialKey ? [...mod] : [...mod, monacoKeyCode];
     setValue(value.join(','));
   }
