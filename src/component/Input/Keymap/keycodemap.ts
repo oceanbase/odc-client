@@ -1,3 +1,4 @@
+import { isMac } from '@/util/env';
 import { KeyCode, KeyMod } from 'monaco-editor';
 
 export const KEY_CODE_MAP: Record<number, KeyCode> = {
@@ -117,10 +118,10 @@ export const KEY_CODE_MAP: Record<number, KeyCode> = {
 };
 
 const convertMap = {
-  [KeyCode.Ctrl]: KeyMod.CtrlCmd,
+  [KeyCode.Ctrl]: KeyMod.WinCtrl,
+  [KeyCode.Meta]: KeyMod.CtrlCmd,
   [KeyCode.Shift]: KeyMod.Shift,
   [KeyCode.Alt]: KeyMod.Alt,
-  [KeyCode.Meta]: KeyMod.WinCtrl,
 };
 
 export function getKeyCodeText(code: string) {
@@ -128,6 +129,14 @@ export function getKeyCodeText(code: string) {
   return splitValues.reduce((acc, cur) => {
     if (acc.length) {
       acc.push('+');
+    }
+    if (parseInt(cur) === KeyCode.Meta) {
+      if (isMac()) {
+        acc.push('⌘');
+      } else {
+        acc.push('Win');
+      }
+      return acc;
     }
     acc.push(KeyCode[cur]);
     return acc;

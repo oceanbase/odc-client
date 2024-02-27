@@ -33,7 +33,7 @@ import login from './login';
 export const themeKey = 'odc-theme';
 
 interface IThemeConfig {
-  editorTheme: string;
+  editorTheme: Record<string, string>;
   className: string;
   sheetTheme: string;
   cmdTheme: 'dark' | 'white';
@@ -49,7 +49,10 @@ export enum EThemeConfigKey {
 const themeConfig: { [key: string]: IThemeConfig } = {
   [EThemeConfigKey.ODC_WHITE]: {
     key: EThemeConfigKey.ODC_WHITE,
-    editorTheme: 'obwhite',
+    editorTheme: {
+      VSCode: 'vs',
+      OceanBase: 'obwhite',
+    },
     className: 'odc-white',
     sheetTheme: 'white',
     cmdTheme: 'white',
@@ -58,7 +61,10 @@ const themeConfig: { [key: string]: IThemeConfig } = {
   },
   [EThemeConfigKey.ODC_DARK]: {
     key: EThemeConfigKey.ODC_DARK,
-    editorTheme: 'obdark',
+    editorTheme: {
+      VSCode: 'vs-dark',
+      OceanBase: 'obdark',
+    },
     className: 'odc-dark',
     sheetTheme: 'dark',
     cmdTheme: 'dark',
