@@ -17,10 +17,11 @@
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
-import { Button, Col, Form, message, Modal, Row, Select, Tooltip } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
@@ -46,18 +47,20 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
       },
     ],
   });
-  const { data: dataSource, loading: dataSourceLoading, run: fetchDataSource } = useRequest(
-    getConnectionDetail,
-    {
-      manual: true,
-    },
-  );
-  const { data: databases, loading: databasesListLoading, run: fetchDatabases } = useRequest(
-    listDatabases,
-    {
-      manual: true,
-    },
-  );
+  const {
+    data: dataSource,
+    loading: dataSourceLoading,
+    run: fetchDataSource,
+  } = useRequest(getConnectionDetail, {
+    manual: true,
+  });
+  const {
+    data: databases,
+    loading: databasesListLoading,
+    run: fetchDatabases,
+  } = useRequest(listDatabases, {
+    manual: true,
+  });
   function close() {
     setOpen(false);
     form.resetFields();
@@ -81,21 +84,24 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   }
   return (
     <>
-      <Button
-        onClick={() => setOpen(true)}
-        type="primary"
-        disabled={
-          project?.currentUserResourceRoles?.filter((roles) =>
-            [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
-          )?.length === 0
-        }
-      >
-        {
-          formatMessage({
-            id: 'odc.Database.AddDataBaseButton.AddDatabase',
-          }) /*添加数据库*/
-        }
-      </Button>
+      <Space size={12}>
+        <Button
+          onClick={() => setOpen(true)}
+          type="primary"
+          disabled={
+            project?.currentUserResourceRoles?.filter((roles) =>
+              [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
+            )?.length === 0
+          }
+        >
+          {
+            formatMessage({
+              id: 'odc.Database.AddDataBaseButton.AddDatabase',
+            }) /*添加数据库*/
+          }
+        </Button>
+        <ApplyDatabasePermissionButton label="申请库权限" projectId={projectId} />
+      </Space>
       <Modal
         open={open}
         title={formatMessage({
@@ -154,8 +160,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                             isDisabled
                               ? formatMessage(
                                   {
-                                    id:
-                                      'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
+                                    id: 'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
                                   },
                                   {
                                     itemProjectName: item?.projectName,
