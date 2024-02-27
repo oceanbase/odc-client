@@ -2,6 +2,7 @@ import RadioItem from '../Item/RadioItem';
 import { IODCSetting, ODCSettingGroup } from '../config';
 import InputItem from '../Item/InputItem';
 import KeymapInput from '@/component/Input/Keymap';
+import SelectItem from '../Item/SelectItem';
 
 const editorGroup: ODCSettingGroup = {
   label: '编辑器',
@@ -25,7 +26,7 @@ const editorSettings: IODCSetting[] = [
     storeType: 'server',
     render: (value, onChange) => {
       return (
-        <RadioItem
+        <SelectItem
           options={[
             {
               label: 'OceanBase',
@@ -34,6 +35,18 @@ const editorSettings: IODCSetting[] = [
             {
               label: 'VSCode',
               value: 'VSCode',
+            },
+            {
+              label: 'VSCode-HC',
+              value: 'VSCode-HC',
+            },
+            {
+              label: 'GitHub',
+              value: 'GitHub',
+            },
+            {
+              label: 'Monokai',
+              value: 'Monokai',
             },
           ]}
           value={value}

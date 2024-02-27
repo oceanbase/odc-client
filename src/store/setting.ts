@@ -52,6 +52,9 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     editorTheme: {
       VSCode: 'vs',
       OceanBase: 'obwhite',
+      'VSCode-HC': 'hc-light',
+      GitHub: 'github',
+      Monokai: 'vs',
     },
     className: 'odc-white',
     sheetTheme: 'white',
@@ -64,6 +67,9 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     editorTheme: {
       VSCode: 'vs-dark',
       OceanBase: 'obdark',
+      'VSCode-HC': 'hc-dark',
+      GitHub: 'githubDark',
+      Monokai: 'monokai',
     },
     className: 'odc-dark',
     sheetTheme: 'dark',
