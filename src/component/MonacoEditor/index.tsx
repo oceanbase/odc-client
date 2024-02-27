@@ -30,6 +30,7 @@ import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
 import logger from '@/util/logger';
 import { getFontSize } from './config';
+import { apply as themeApply } from './plugins/theme';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -154,6 +155,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       ),
     );
     markerPluginApply(editorRef.current.getModel());
+    themeApply();
     logger.debug('init plugin done');
   }
 
