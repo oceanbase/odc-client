@@ -41,7 +41,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
   const [visible, setVisible] = useState(false);
   const queryLimit = session?.params?.queryLimit;
   const tableColumnInfoVisible = session?.params.tableColumnInfoVisible;
-  const fullLinkATraceEnabled = session?.params.fullLinkATraceEnabled;
+  const fullLinkTraceEnabled = session?.params.fullLinkTraceEnabled;
   const continueExecutionOnError = session?.params.continueExecutionOnError;
 
   useEffect(() => {
@@ -182,7 +182,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
         <Row style={{ width: '100%' }}>
           <Switch
             size="small"
-            checked={fullLinkATraceEnabled}
+            checked={fullLinkTraceEnabled}
             onChange={session?.changeFullTraceDiagnosisEnabled}
           />
         </Row>
