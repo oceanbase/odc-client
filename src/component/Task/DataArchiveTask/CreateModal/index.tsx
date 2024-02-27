@@ -15,7 +15,7 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask, getCycleTaskDetail, getRealSqlList } from '@/common/network/task';
+import { createTask, getCycleTaskDetail, previewSqlStatements } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -392,7 +392,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 })
               : _tables,
         };
-        const sqls = await getRealSqlList(parameters);
+        const sqls = await previewSqlStatements(parameters);
         if (sqls) {
           setPreviewModalVisible(true);
           setPreviewSQL(sqls?.join('\n'));

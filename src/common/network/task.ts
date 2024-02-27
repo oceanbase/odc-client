@@ -68,7 +68,7 @@ export async function createTask(data: Partial<CreateTaskRecord>): Promise<numbe
 /**
  * SQL 预览
  */
-export async function getRealSqlList(data: {
+export async function previewSqlStatements(data: {
   variables: {
     name: string;
     pattern: string;
@@ -78,10 +78,10 @@ export async function getRealSqlList(data: {
     conditionExpression: string;
   }[];
 }): Promise<string[]> {
-  const res = await request.post('/api/v2/dlm/getRealSqlList', {
+  const res = await request.post('api/v2/dlm/previewSqlStatements', {
     data,
   });
-  return res?.data || [];
+  return res?.data?.contents || [];
 }
 
 /**
