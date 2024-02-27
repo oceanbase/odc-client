@@ -32,7 +32,11 @@ interface IProps {
   onChange?: (newValue: any[]) => void;
 }
 
-const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checkedKeys = [], onChange }) {
+const DatabaseSelecter: React.FC<IProps> = function ({
+  projectId,
+  value: checkedKeys = [],
+  onChange,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
   const [targetSearchValue, setTargetSearchValue] = useState(null);
@@ -67,9 +71,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
   const getCheckedTreeData = () => {
     const validDatabaseList =
       databaseList
-        ?.filter((item) =>
-          checkedKeys?.includes(item.id)
-        )
+        ?.filter((item) => checkedKeys?.includes(item.id))
         ?.filter((item) => {
           return !targetSearchValue?.length
             ? true
@@ -98,7 +100,9 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
         title: (
           <Space>
             <Text>{item?.name}</Text>
-            <Text type="secondary" ellipsis>{item?.dataSource?.name}</Text>
+            <Text type="secondary" ellipsis>
+              {item?.dataSource?.name}
+            </Text>
           </Space>
         ),
         key: item?.id,
@@ -197,7 +201,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
               autoExpandParent
               checkable={false}
               selectable={false}
-              height={300}  
+              height={300}
               className={styles.selectedTree}
               treeData={selectedTreeData}
               titleRender={(node) => {

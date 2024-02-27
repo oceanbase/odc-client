@@ -28,6 +28,8 @@ export interface IExecuteSQLParams {
   sql: string;
   queryLimit?: number;
   showTableColumnInfo?: boolean;
+  continueExecutionOnError?: boolean;
+  fullLinkTraceEnabled?: boolean;
   tag?: string;
   /**
    * 是否拆分执行，传空的话像等于true

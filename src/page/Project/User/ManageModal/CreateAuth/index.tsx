@@ -15,20 +15,14 @@
  */
 
 import { addDatabasePermissions } from '@/common/network/project';
-import {
-  Button,
-  Drawer,
-  Form,
-  Modal,
-  Select,
-  Space,
-  message,
-  DatePicker,
-  Checkbox
-} from 'antd';
+import { Button, Drawer, Form, Modal, Select, Space, message, DatePicker, Checkbox } from 'antd';
 import React, { useState } from 'react';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
-import { permissionOptions, expireTimeOptions, getExpireTime } from '@/component/Task/ApplyDatabasePermission/CreateModal';
+import {
+  permissionOptions,
+  expireTimeOptions,
+  getExpireTime,
+} from '@/component/Task/ApplyDatabasePermission/CreateModal';
 import styles from './index.less';
 
 const CheckboxGroup = Checkbox.Group;
@@ -44,7 +38,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -72,13 +66,19 @@ const CreateModal: React.FC<IProps> = (props) => {
     form
       .validateFields()
       .then(async (values) => {
-        const { databases: databaseIds, types, expireTime, isCustomExpireTime, customExpireTime } = values;
+        const {
+          databases: databaseIds,
+          types,
+          expireTime,
+          isCustomExpireTime,
+          customExpireTime,
+        } = values;
         const data = {
           projectId,
           databaseIds,
           types,
           expireTime: getExpireTime(expireTime, customExpireTime, isCustomExpireTime),
-          userId
+          userId,
         };
         setConfirmLoading(true);
         const res = await addDatabasePermissions(data);
@@ -100,14 +100,19 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Button onClick={() =>{
-        handleModalVisizble();
-      }} type='primary'>新增授权</Button>
+      <Button
+        onClick={() => {
+          handleModalVisizble();
+        }}
+        type="primary"
+      >
+        新增授权
+      </Button>
       <Drawer
         destroyOnClose
         className={styles.createModal}
         width={816}
-        title='新增授权'
+        title="新增授权"
         footer={
           <Space>
             <Button
@@ -137,7 +142,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <Form.Item name="databases" label="数据库" required>
             <DatabaseSelecter projectId={projectId} />
-          </Form.Item>   
+          </Form.Item>
           <Form.Item
             name="types"
             label="权限类型"
@@ -174,7 +179,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 return (
                   isCustomExpireTime && (
                     <Form.Item
-                      label='结束日期'
+                      label="结束日期"
                       name="customExpireTime"
                       rules={[
                         {

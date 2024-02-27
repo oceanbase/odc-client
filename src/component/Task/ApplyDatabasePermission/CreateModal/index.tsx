@@ -29,7 +29,7 @@ import {
   Input,
   message,
   DatePicker,
-  Checkbox
+  Checkbox,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
@@ -45,28 +45,28 @@ const CheckboxGroup = Checkbox.Group;
 const MAX_DATE = '9999-12-31 23:59:59';
 const MAX_DATE_LABEL = '9999-12-31';
 
-export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) =>{
-  if(isCustomExpireTime){
+export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) => {
+  if (isCustomExpireTime) {
     return customExpireTime?.valueOf();
-  }else{
+  } else {
     const [offset, unit] = expireTime.split(',') ?? [];
     return offset === 'never' ? moment(MAX_DATE)?.valueOf() : moment().add(offset, unit)?.valueOf();
   }
-}
+};
 
-export const getExpireTimeLabel = (expireTime) =>{
+export const getExpireTimeLabel = (expireTime) => {
   const label = moment(expireTime).format('YYYY-MM-DD');
   return label === MAX_DATE_LABEL ? '永不过期' : label;
-}
+};
 
 const Label: React.FC<{
   text: string;
   docKey: string;
-}> = ({ text, docKey }) =>(
+}> = ({ text, docKey }) => (
   <HelpDoc leftText isTip doc={docKey}>
     {text}
   </HelpDoc>
-)
+);
 
 export const permissionOptionsMap = {
   [DatabasePermissionType.QUERY]: {
@@ -77,21 +77,21 @@ export const permissionOptionsMap = {
   [DatabasePermissionType.EXPORT]: {
     text: '导出',
     docKey: 'ApplyDatabasePermissionExportTip',
-    value: DatabasePermissionType.EXPORT
+    value: DatabasePermissionType.EXPORT,
   },
   [DatabasePermissionType.CHANGE]: {
     text: '变更',
     docKey: 'ApplyDatabasePermissionChangeTip',
-    value: DatabasePermissionType.CHANGE
+    value: DatabasePermissionType.CHANGE,
   },
 };
 
-export const permissionOptions = Object.values(permissionOptionsMap)?.map(({ text, docKey, ...rest }) =>(
-  {
+export const permissionOptions = Object.values(permissionOptionsMap)?.map(
+  ({ text, docKey, ...rest }) => ({
     ...rest,
-    label: <Label text={text} docKey={docKey} />
-  }
-));
+    label: <Label text={text} docKey={docKey} />,
+  }),
+);
 
 export const expireTimeOptions = [
   {
@@ -125,7 +125,7 @@ export const expireTimeOptions = [
   {
     label: '自定义',
     value: 'custom',
-  }
+  },
 ];
 
 interface IProps {
@@ -147,7 +147,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   }));
   const projectId = Form.useWatch('projectId', form);
 
-  const disabledDate = current => {
+  const disabledDate = (current) => {
     return current && current < moment().endOf('day');
   };
 
@@ -185,10 +185,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         const { projectId, databases, types, expireTime, customExpireTime, applyReason } = values;
         const isCustomExpireTime = expireTime?.startsWith('custom');
         const parameters = {
-          project:{
-            id: projectId
+          project: {
+            id: projectId,
           },
-          databases: databases?.map(id => ({ id })),
+          databases: databases?.map((id) => ({ id })),
           types,
           expireTime: getExpireTime(expireTime, customExpireTime, isCustomExpireTime),
           applyReason,
@@ -221,31 +221,31 @@ const CreateModal: React.FC<IProps> = (props) => {
         project: { id: projectId },
         databases,
         types,
-        applyReason
-       },
+        applyReason,
+      },
       executionStrategy,
     } = task;
     const formData = {
       projectId,
       executionStrategy,
-      databases: databases?.map(item => item.id),
+      databases: databases?.map((item) => item.id),
       types,
-      applyReason
+      applyReason,
     };
     form.setFieldsValue(formData);
   };
 
-  const handleResetDatabase = () =>{
+  const handleResetDatabase = () => {
     form.setFieldValue('databases', []);
-  }
+  };
 
   useEffect(() => {
     const { projectId } = applyDatabasePermissionData ?? {};
     if (applyDatabasePermissionData?.task) {
       loadEditData();
-    }else{
+    } else {
       form.setFieldsValue({
-        projectId: projectId || props?.projectId
+        projectId: projectId || props?.projectId,
       });
     }
   }, [applyDatabasePermissionData]);
@@ -255,7 +255,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.createModal}
       width={816}
-      title='申请库权限'
+      title="申请库权限"
       footer={
         <Space>
           <Button
@@ -278,7 +278,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       <Form
         name="basic"
         initialValues={{
-          databases: []
+          databases: [],
         }}
         layout="vertical"
         requiredMark="optional"
@@ -345,7 +345,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               return (
                 isCustomExpireTime && (
                   <Form.Item
-                    label='结束日期'
+                    label="结束日期"
                     name="customExpireTime"
                     rules={[
                       {
