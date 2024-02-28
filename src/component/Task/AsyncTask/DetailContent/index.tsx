@@ -223,7 +223,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               )}
             </div>
             {result?.autoModifyTimeout && (
-              <Tooltip title="变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 48 小时">
+              <Tooltip
+                title={`变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 ${executionTimeout} 小时`}
+              >
                 <div
                   style={{
                     display: 'flex',
