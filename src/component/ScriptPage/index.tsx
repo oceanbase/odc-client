@@ -27,7 +27,7 @@ import { SettingStore } from '@/store/setting';
 import { default as snippet, default as snippetStore } from '@/store/snippet';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
-import { Layout } from 'antd';
+import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { PureComponent } from 'react';
 import SplitPane from 'react-split-pane';
@@ -168,6 +168,10 @@ export default class ScriptPage extends PureComponent<IProps> {
               ) {
                 const position = (ctx.editor as IEditor)?.getPosition();
                 if (!position) {
+                  return;
+                }
+                if (snippetStore.snippetDragging.databaseId !== session.database.databaseId) {
+                  message.warn('该对象不属于当前数据库');
                   return;
                 }
                 const CLOSE_INSERT_PROMPT = localStorage.getItem(CLOSE_INSERT_PROMPT_KEY);

@@ -49,6 +49,7 @@ export interface ISnippet extends EditorSnippet {
   type?: EditorSnippetType;
   userId?: number;
   objType?: DbObjectType;
+  databaseId?: number;
 } // 枚举不能继承，暂时这样处理
 
 export const EnumSnippetType = { ...EditorSnippetType, ALL: 'ALL' };

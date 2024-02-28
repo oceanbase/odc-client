@@ -50,7 +50,7 @@ const TreeNodeMenu = (props: IProps) => {
         }
         node.doubleClick?.(dbSession, node, databaseFrom);
       }}
-      className={classNames("ant-tree-title", styles.fullWidthTitle)}
+      className={classNames('ant-tree-title', styles.fullWidthTitle)}
     >
       {node.title}
       {node.warning ? (
@@ -76,6 +76,7 @@ const TreeNodeMenu = (props: IProps) => {
           prefix: node.title?.toString(),
           body: node.title?.toString(),
           objType: node.dbObjectType,
+          databaseId: dbSession?.database?.databaseId,
         };
       }}
     >
