@@ -57,7 +57,7 @@ export interface IDatabase {
  */
 export interface IDatabaseOwner {
   accountName: string;
-  userId: number;
+  id: number;
   name: string;
 }
 

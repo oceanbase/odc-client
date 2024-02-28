@@ -42,7 +42,9 @@ const CreateApproval: React.FC<ICreateApprovalProps> = ({
   const [integrations, setIntegrations] = useState([]);
 
   const loadRoles = async () => {
-    const res = await getResourceRoles();
+    const res = await getResourceRoles({
+      resourceType: [IManagerResourceType.project, IManagerResourceType.database],
+    });
     const roles = res?.contents.map(({ roleName, id, resourceType }) => {
       const textMap =
         resourceType === IManagerResourceType.database ? databaseRoleTextMap : projectRoleTextMap;

@@ -48,14 +48,10 @@ import datasourceStatus from '@/store/datasourceStatus';
 import { observer } from 'mobx-react';
 import StatusName from './StatusName';
 import ChangeOwnerModal from '@/page/Project/Database/ChangeOwnerModal';
+import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 interface IProps {
   id: string;
 }
-
-/**
- * 数据库负责人的最大个数
- */
-const DB_OWNER_MAX_COUNT = 3;
 
 const Database: React.FC<IProps> = ({ id }) => {
   const { project } = useContext(ProjectContext);
@@ -307,7 +303,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             }),
             //操作
             dataIndex: 'actions',
-            width: 170,
+            width: 236,
             render(_, record) {
               if (!record.existed) {
                 return '-';
@@ -417,11 +413,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                   <Action.Link
                     key="changeOwner"
                     onClick={() => {
-                      // TODO tracert.click('a3112.b64002.c330858.d367387');
+                      // TODO tracert.click('id');
                       setChangeOwnerModalVisible(true);
                       setDatabase(record);
                     }}
-                    // TODO disabled={!hasChangeAuth || disableTransfer}
+                    // TODO disabled={权限|配置}
                   >
                     {
                       formatMessage({

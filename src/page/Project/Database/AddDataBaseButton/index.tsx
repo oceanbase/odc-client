@@ -26,6 +26,7 @@ import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/da
 import ProjectContext from '../../ProjectContext';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { DefaultOptionType } from 'antd/es/select';
+import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 interface IProps {
   projectId: number;
   onSuccess: () => void;
@@ -35,7 +36,11 @@ interface IProps {
   maxOwnerCount?: number;
 }
 
-export default function AddDataBaseButton({ projectId, onSuccess, maxOwnerCount = 3 }: IProps) {
+export default function AddDataBaseButton({
+  projectId,
+  onSuccess,
+  maxOwnerCount = DB_OWNER_MAX_COUNT,
+}: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
   /**

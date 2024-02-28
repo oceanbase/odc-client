@@ -13,14 +13,15 @@
  * limitations under the License.
  */
 
+import { updateDataBase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
+import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 import { formatMessage } from '@/util/intl';
+import { useRequest } from 'ahooks';
 import { Form, Modal, Select, message } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../../ProjectContext';
-import { updateDataBase } from '@/common/network/database';
-import { useRequest } from 'ahooks';
 
 interface IProps {
   visible: boolean;
@@ -35,7 +36,7 @@ export default function ChangeOwnerModal({
   database,
   close,
   onSuccess,
-  maxOwnerCount = 3,
+  maxOwnerCount = DB_OWNER_MAX_COUNT,
 }: IProps) {
   const { project } = useContext(ProjectContext);
 
@@ -87,6 +88,14 @@ export default function ChangeOwnerModal({
       onSuccess();
     }
   }, [database?.id, database?.project?.id, close, onSuccess]);
+
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue({
+        ownerIds: database?.owners?.map(({ id }) => id) || [],
+      });
+    }
+  }, [visible]);
 
   return (
     <Modal
