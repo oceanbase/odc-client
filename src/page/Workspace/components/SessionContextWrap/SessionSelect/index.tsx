@@ -15,11 +15,11 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
-import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
+import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
@@ -32,6 +32,9 @@ import SessionDropdown from './SessionDropdown';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
 import login from '@/store/login';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
 
 export default function SessionSelect({
   readonly,
@@ -40,9 +43,21 @@ export default function SessionSelect({
   dialectTypes?: ConnectionMode[];
 }) {
   const context = useContext(SessionContext);
+  const resourceTreeContext = useContext(ResourceTreeContext);
+  const activityContext = useContext(ActivityBarContext);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330994');
   }, []);
+
+  function focusDataBase(e: React.MouseEvent) {
+    const datasourceId = context?.session?.odcDatabase?.dataSource?.id;
+    const databaseId = context?.session?.odcDatabase?.id;
+    activityContext.setActiveKey(ActivityBarItemType.Database);
+    resourceTreeContext.setSelectDatasourceId(datasourceId);
+    resourceTreeContext.setCurrentDatabaseId(databaseId);
+    e.stopPropagation();
+    e.preventDefault();
+  }
 
   function renderProject() {
     const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.dbIcon;
@@ -138,6 +153,7 @@ export default function SessionSelect({
             />
             <span style={{ lineHeight: 1 }}>{context?.session?.odcDatabase?.name}</span>
             <DownOutlined />
+            <AimOutlined className={styles.aim} onClick={focusDataBase} />
             <Space
               size={1}
               split={<Divider type="vertical" />}
