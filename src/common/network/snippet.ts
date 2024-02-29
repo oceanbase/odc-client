@@ -56,3 +56,9 @@ export async function deleteCustomerSnippet(snippet: ISnippet) {
   });
   return res?.data;
 }
+
+export async function getBuiltinSnippets(): Promise<ISnippet[]> {
+  const res = await request.get('/api/v2/snippet/builtinSnippets');
+  const snippets = res?.data?.contents || [];
+  return snippets;
+}

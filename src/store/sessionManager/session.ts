@@ -34,6 +34,8 @@ import settingStore from '../setting';
 import DatabaseStore from './database';
 import { ISupportFeature } from './type';
 import setting from '../setting';
+import { getBuiltinSnippets } from '@/common/network/snippet';
+import { ISnippet } from '../snippet';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -47,6 +49,8 @@ class SessionStore {
   public collations: string[] = [];
   @observable
   public dataTypes: IDataType[] = [];
+
+  public snippets: ISnippet[] = [];
 
   @observable
   public odcDatabase: IDatabase;
@@ -488,6 +492,12 @@ class SessionStore {
       this.params.queryLimit = num;
     }
     return isSuccess;
+  };
+
+  @action
+  public addBuiltinSnippets = async () => {
+    const data = await getBuiltinSnippets();
+    this.snippets = data;
   };
 
   @action
