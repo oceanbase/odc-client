@@ -496,7 +496,7 @@ class SessionStore {
 
   @action
   public addBuiltinSnippets = async () => {
-    const data = await getBuiltinSnippets();
+    const data = await getBuiltinSnippets(this.sessionId);
     this.snippets = data;
   };
 
