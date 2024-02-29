@@ -44,14 +44,14 @@ devDependencies:
     specifier: ^0.2.1
     version: 0.2.1(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
-    specifier: ^2.0.1
-    version: 2.0.1(prettier@2.8.8)(typescript@4.9.5)
+    specifier: ^2.0.2
+    version: 2.0.2(prettier@2.8.8)(typescript@4.9.5)
   '@oceanbase-odc/ob-parser-js':
     specifier: ^3.0.1
     version: 3.0.1
   '@oceanbase-odc/ob-react-data-grid':
-    specifier: ^3.0.9
-    version: 3.0.9(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2)
+    specifier: ^3.0.10
+    version: 3.0.10(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2)
   '@sentry/react':
     specifier: ^7.88.0
     version: 7.98.0(react@17.0.2)
@@ -3349,8 +3349,8 @@ packages:
       monaco-editor: 0.36.1
     dev: true
 
-  /@oceanbase-odc/ob-intl-cli@2.0.1(prettier@2.8.8)(typescript@4.9.5):
-    resolution: {integrity: sha512-x3uT+Tuab4slk/MQIy4TYEU3PzlizsUIzL2Epm3wkspYlP8dok8CB9S2pEVvo+c2IQO7Jm9ikzyvG3llpaR4CQ==}
+  /@oceanbase-odc/ob-intl-cli@2.0.2(prettier@2.8.8)(typescript@4.9.5):
+    resolution: {integrity: sha512-QL6VSsWCC6dYzc4HE2Cdo+Bp6TKjqgjxu3OcKBldn72CF5IfBdjw5docb80jVhUbwrsMrPEk5wyIdkWHqIoWkA==}
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -3401,8 +3401,8 @@ packages:
       lodash: 4.17.21
     dev: true
 
-  /@oceanbase-odc/ob-react-data-grid@3.0.9(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-ZVDVloabx+QU/UMuOgpiQfzMqHHKPmpQv7gPepC5P9GiyYb4zmOngPXKOejjSFDASJcj85TLgADb7U/Cvi1aCQ==}
+  /@oceanbase-odc/ob-react-data-grid@3.0.10(antd@4.24.15)(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3)(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-GFnmVThgQG25F0akyBmEQKnUhjdnibT33qXb1wo2XhNPILwiI+uvItNRzzO0t4kHKdUbnAJ2rqTLPYQFTUv1xg==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       antd: ^4.15.3
@@ -3669,7 +3669,7 @@ packages:
       postcss: '>=7.0.0'
       postcss-syntax: '>=0.36.2'
     dependencies:
-      '@babel/core': 7.23.6
+      '@babel/core': 7.23.9
       postcss: 8.4.33
       postcss-syntax: 0.36.2(postcss@8.4.33)
     transitivePeerDependencies:
@@ -4185,7 +4185,7 @@ packages:
     resolution: {integrity: sha512-hy8b7Y1J8OGe6LbAjj3xniQrj3v6lsivCcrmf4TzSgPzLkhIeKgc5IZnT7ReIqmEuodjfO8EYAuoFvIrHi/+jQ==}
     deprecated: This is a stub types definition. history provides its own type definitions, so you do not need this installed.
     dependencies:
-      history: 5.3.0
+      history: 4.10.1
     dev: true
 
   /@types/hoist-non-react-statics@3.3.5:
@@ -5150,7 +5150,7 @@ packages:
       babel-plugin-import: 1.13.8
       babel-plugin-styled-components: 2.1.4(@babel/core@7.23.9)(styled-components@6.1.1)
       dayjs: 1.11.10
-      dva-core: 2.0.4(redux@4.2.1)
+      dva-core: 2.0.4(redux@3.7.2)
       dva-immer: 1.0.1(dva@2.5.0-beta.2)
       dva-loading: 3.0.24(dva-core@2.0.4)
       event-emitter: 0.3.5
@@ -6921,6 +6921,21 @@ packages:
       fsevents: 2.3.3
     dev: true
 
+  /chokidar@3.6.0:
+    resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
+    engines: {node: '>= 8.10.0'}
+    dependencies:
+      anymatch: 3.1.3
+      braces: 3.0.2
+      glob-parent: 5.1.2
+      is-binary-path: 2.1.0
+      is-glob: 4.0.3
+      normalize-path: 3.0.0
+      readdirp: 3.6.0
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+
   /chownr@1.1.4:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
     dev: true
@@ -8068,7 +8083,7 @@ packages:
       warning: 3.0.0
     dev: true
 
-  /dva-core@2.0.4(redux@4.2.1):
+  /dva-core@2.0.4(redux@3.7.2):
     resolution: {integrity: sha512-Zh39llFyItu9HKXKfCZVf9UFtDTcypdAjGBew1S+wK8BGVzFpm1GPTdd6uIMeg7O6STtCvt2Qv+RwUut1GFynA==}
     peerDependencies:
       redux: 4.x
@@ -8078,7 +8093,7 @@ packages:
       global: 4.4.0
       invariant: 2.2.4
       is-plain-object: 2.0.4
-      redux: 4.2.1
+      redux: 3.7.2
       redux-saga: 0.16.2
       warning: 3.0.0
     dev: true
@@ -8099,7 +8114,7 @@ packages:
       dva-core: ^1.1.0 || ^1.5.0-0 || ^1.6.0-0
     dependencies:
       '@babel/runtime': 7.23.9
-      dva-core: 2.0.4(redux@4.2.1)
+      dva-core: 2.0.4(redux@3.7.2)
     dev: true
 
   /dva@2.5.0-beta.2(react-dom@17.0.2)(react@17.0.2):
@@ -9568,7 +9583,7 @@ packages:
     dependencies:
       '@babel/code-frame': 7.23.5
       chalk: 4.1.2
-      chokidar: 3.5.3
+      chokidar: 3.6.0
       cosmiconfig: 7.1.0
       deepmerge: 4.3.1
       fs-extra: 10.1.0
@@ -13025,12 +13040,6 @@ packages:
       isarray: 0.0.1
     dev: true
 
-  /path-to-regexp@1.8.0:
-    resolution: {integrity: sha512-n43JRhlUKUAlibEJhPeir1ncUID16QnEjNpwzNdO3Lm4ywrBpBZ5oLD0I6br9evr1Y9JTqwRtAh7JLoOzAQdVA==}
-    dependencies:
-      isarray: 0.0.1
-    dev: true
-
   /path-to-regexp@2.4.0:
     resolution: {integrity: sha512-G6zHoVqC6GGTQkZwF4lkuEyMbVOjoBKAEybQUypI1WTkqinCOrq2x6U2+phkJ1XsEMTy4LjtwPI7HW+NVrRR2w==}
     dev: true
@@ -14166,7 +14175,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
       async-validator: 4.2.5
-      rc-util: 5.38.1(react-dom@17.0.2)(react@17.0.2)
+      rc-util: 5.38.2(react-dom@17.0.2)(react@17.0.2)
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
     dev: true
@@ -14608,6 +14617,18 @@ packages:
       react-is: 18.2.0
     dev: true
 
+  /rc-util@5.38.2(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-yRGRPKyi84H7NkRSP6FzEIYBdUt4ufdsmXUZ7qM2H5qoByPax70NnGPkfo36N+UKUnUBj2f2Q2eUbwYMuAsIOQ==}
+    peerDependencies:
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+    dependencies:
+      '@babel/runtime': 7.23.9
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+      react-is: 18.2.0
+    dev: true
+
   /rc-virtual-list@3.11.3(react-dom@17.0.2)(react@17.0.2):
     resolution: {integrity: sha512-tu5UtrMk/AXonHwHxUogdXAWynaXsrx1i6dsgg+lOo/KJSF8oBAcprh1z5J3xgnPJD5hXxTL58F8s8onokdt0Q==}
     engines: {node: '>=8.x'}
@@ -14830,7 +14851,7 @@ packages:
   /react-redux@8.1.3(@types/react-dom@16.9.24)(@types/react@16.14.56)(react-dom@17.0.2)(react@17.0.2)(redux@4.2.1):
     resolution: {integrity: sha512-n0ZrutD7DaX/j9VscF+uTALI3oUPa/pO4Z3soOBIjuRn/FzVu6aehhysxZCLi6y7duMf52WNZGMl7CtuK5EnRw==}
     peerDependencies:
-      '@types/react': ^16.0.0
+      '@types/react': ^16.8 || ^17.0 || ^18.0
       '@types/react-dom': ^16.8 || ^17.0 || ^18.0
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
@@ -14937,7 +14958,7 @@ packages:
       hoist-non-react-statics: 2.5.5
       invariant: 2.2.4
       loose-envify: 1.4.0
-      path-to-regexp: 1.8.0
+      path-to-regexp: 1.7.0
       prop-types: 15.8.1
       react: 17.0.2
       warning: 4.0.3
@@ -17540,7 +17561,7 @@ packages:
     resolution: {integrity: sha512-1XfIxnUXzyswPAPXo1P3Pdx2mq/pIqZICkWN60Hby0d9Iqb+MEIpqgYVlbflvHdrp2YR/q3jyKWRPJJ100yxaw==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
-      '@types/react': ^16.0.0
+      '@types/react': '>=16.8'
       react: '>=16.8'
     peerDependenciesMeta:
       '@types/react':
@@ -17689,7 +17710,7 @@ packages:
       graceful-fs: 4.2.11
       neo-async: 2.6.2
     optionalDependencies:
-      chokidar: 3.5.3
+      chokidar: 3.6.0
       watchpack-chokidar2: 2.0.1
     transitivePeerDependencies:
       - supports-color

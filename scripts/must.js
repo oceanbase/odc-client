@@ -71,6 +71,8 @@ const config = {
   },
   sourceLang: 'zh-CN',
   targetLang: 'en-US',
+  /** @description 执行clear命令时需要清除的冗余文案的语言类型，当该属性为空数组或缺失该属性时，将会把sourceLang作为执行clear命令的参数。 */
+  clearLangs: ['zh-CN', 'en-US', 'zh-TW'],
   matchFunc: matchText,
   injectContent: {
     import: "import { formatMessage } from '@/util/intl';\n",

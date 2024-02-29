@@ -5,6 +5,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import {
+  ConnectionMode,
   CreateStructureComparisonTaskRecord,
   TaskExecStrategy,
   TaskPageType,
@@ -33,8 +34,8 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   async function handleSubmit() {
-    setConfirmLoading(true);
     const rawData = await form.validateFields().catch();
+    setConfirmLoading(true);
     rawData.taskType = TaskType.STRUCTURE_COMPARISON;
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
@@ -55,7 +56,6 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   };
   const handleReset = () => {
     form?.resetFields();
-    // crontabRef.current?.resetFields();
     setHasEdit(false);
   };
 
@@ -119,6 +119,13 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             type={TaskType.STRUCTURE_COMPARISON}
             label="源端数据库"
             projectId={projectId}
+            filters={{
+              dialectTypes: [
+                ConnectionMode.MYSQL,
+                ConnectionMode.OB_MYSQL,
+                ConnectionMode.OB_ORACLE,
+              ],
+            }}
             placeholder={'请选择'}
           />
           <DatabaseSelect

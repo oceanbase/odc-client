@@ -15,7 +15,7 @@
  */
 
 import { IResponseData } from '@/d.ts';
-import { IRule, IRuleSet, RuleType } from '@/d.ts/rule';
+import { IRule, RuleType } from '@/d.ts/rule';
 import request from '@/util/request';
 
 export async function updateRule(rulesetId: number, ruleId: number, rule: IRule): Promise<boolean> {
@@ -25,7 +25,12 @@ export async function updateRule(rulesetId: number, ruleId: number, rule: IRule)
   return ret?.successful;
 }
 
-export async function listRules(rulesetId: number, params: any): Promise<IResponseData<IRule>> {
+export async function listRules(
+  rulesetId: number,
+  params: {
+    types: RuleType;
+  },
+): Promise<IResponseData<IRule>> {
   const ret = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules`, {
     params,
   });

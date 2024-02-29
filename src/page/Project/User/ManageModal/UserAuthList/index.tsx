@@ -19,7 +19,6 @@ import { CommonTableMode, ITableLoadOptions, ITableInstance } from '@/component/
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import type { IResponseData } from '@/d.ts';
-import DetailModal from '../DetailModal';
 import { databasePermissionTypeFilters, databasePermissionTypeMap,
   databasePermissionStatusFilters } from '../';
 import StatusLabel from '../Status';
@@ -30,7 +29,6 @@ import React, { useState } from 'react';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
-  onOpenDetail: (id: number, visible: boolean) => void;
   onReclaim: (id: number[]) => void;
 }) => {
   const { filters, sorter } = params.paramOptions ?? {};
@@ -140,22 +138,8 @@ interface IProps {
 
 const UserAuthList: React.FC<IProps> = (props) => {
   const { projectId, isOwner, dataSource, params, description, tableRef, onReclaim, onLoad, onChange } = props;
-  const [detailId, setDetailId] = useState(null);
-  const [detailVisible, setDetailVisible] = useState(false);
-  
-  const handleDetailVisible = (id: number, visible: boolean = false) => {
-    setDetailId(id);
-    setDetailVisible(visible);
-  };
-
-  const handleDetailClose = () => {
-    setDetailId(null);
-    setDetailVisible(false);
-  };
-  
   const columns = getColumns({
     paramOptions: params,
-    onOpenDetail: handleDetailVisible,
     onReclaim: onReclaim,
   })
 
@@ -198,7 +182,6 @@ const UserAuthList: React.FC<IProps> = (props) => {
           },
         }}
       />
-      <DetailModal detailId={detailId} visible={detailVisible} onClose={handleDetailClose} />
     </>
   );
 };

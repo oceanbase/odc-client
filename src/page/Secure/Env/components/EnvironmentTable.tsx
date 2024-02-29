@@ -25,7 +25,7 @@ import {
 } from '@/component/CommonTable/interface';
 import { IRule, RuleType } from '@/d.ts/rule';
 import { message, Spin } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { getColumns } from './column';
 import EditRuleDrawer from './EditRuleDrawer';
 import styles from './index.less';
@@ -64,7 +64,7 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
    * 获取不同规范规则类型以及支持的数据源类型，用于筛选。
    */
   const handleStatsRule = async () => {
-    const rawData = await statsRules(currentEnvironment?.id, ruleType);
+    const rawData = await statsRules(currentEnvironment?.rulesetId, ruleType);
     setSubTypeFilters(
       rawData?.subTypes?.distinct?.map((d) => ({
         text: d,
@@ -86,7 +86,7 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
     const { pagination = null, filters = null } = args ?? {};
     const { subTypes, supportedDialectTypes, level, name } = filters ?? {};
     handleStatsRule();
-    const rulesets = await listRules(currentEnvironment?.id, {
+    const rulesets = await listRules(currentEnvironment?.rulesetId, {
       types: ruleType,
     });
     let filteredRules: IRule[] = rulesets?.contents;
@@ -211,11 +211,6 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
     ruleType === RuleType.SQL_CHECK
       ? rawColumns
       : rawColumns.filter((column) => column?.key !== 'level');
-  useEffect(() => {
-    if (ruleType) {
-      getRules();
-    }
-  }, [ruleType]);
   return (
     <>
       <div className={styles.spin}>
