@@ -237,20 +237,22 @@ export default inject('userStore')(
       async function testLDAP() {
         channelStatusRef.current = false;
         setTestInfo('');
-        const data = await form.validateFields([
-          'name',
-          'type',
-          ['ssoParameter', 'server'],
-          ['ssoParameter', 'managerDn'],
-          ['ssoParameter', 'managerPassword'],
-          ['ssoParameter', 'userSearchBase'],
-          ['ssoParameter', 'userSearchFilter'],
-          ['ssoParameter', 'groupSearchBase'],
-          ['ssoParameter', 'groupSearchFilter'],
-          ['ssoParameter', 'groupSearchSubtree'],
-          ['mappingRule', 'userProfileViewType'],
-          ['mappingRule', 'nestedAttributeField'],
-        ]);
+        const data = await form
+          .validateFields([
+            'name',
+            'type',
+            ['ssoParameter', 'server'],
+            ['ssoParameter', 'managerDn'],
+            ['ssoParameter', 'managerPassword'],
+            ['ssoParameter', 'userSearchBase'],
+            ['ssoParameter', 'userSearchFilter'],
+            ['ssoParameter', 'groupSearchBase'],
+            ['ssoParameter', 'groupSearchFilter'],
+            ['ssoParameter', 'groupSearchSubtree'],
+            ['mappingRule', 'userProfileViewType'],
+            ['mappingRule', 'nestedAttributeField'],
+          ])
+          .catch();
         const copyData = cloneDeep(data);
         if (copyData.type !== ISSOType.LDAP) return;
         if (!isEdit) {
@@ -350,8 +352,7 @@ export default inject('userStore')(
               {
                 max: 64,
                 message: formatMessage({
-                  id:
-                    'odc.src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.TheConfigurationNameDoesNot',
+                  id: 'odc.src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.TheConfigurationNameDoesNot',
                 }), //'配置名称不超过 64 个字符'
               },
             ]}

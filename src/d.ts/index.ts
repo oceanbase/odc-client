@@ -582,6 +582,7 @@ export enum AuditEventDialectType {
   OB_ORACLE = 'OB_ORACLE',
   ORACLE = 'ORACLE',
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -640,6 +641,7 @@ export type ISQLScript = IScriptMeta;
 
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   ORACLE = 'ORACLE',
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
@@ -2235,7 +2237,7 @@ export interface ITaskResult {
   rollbackPlanResult?: {
     error: string;
     generated: boolean;
-    objectId: string;
+    resultFileDownloadUrl: string;
     success: boolean;
   };
 }
@@ -2999,6 +3001,7 @@ export enum ConnectType {
   CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   ORACLE = 'ORACLE',
 }
 

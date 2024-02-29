@@ -26,8 +26,10 @@ import {
   getJavaLogPath,
   getJavaPath,
   getRendererPath,
+  getSetting,
 } from '../utils';
 import log from '../utils/log';
+import { writeFileSync } from 'fs';
 
 class MainServer {
   static _mainServer: MainServer = null;
@@ -255,14 +257,30 @@ class MainServer {
     }
     // https://stackoverflow.com/questions/10232192/exec-display-stdout-live
     try {
+      const setting = getSetting();
+      let jvmOptions = [],
+        odcOptions;
+      if (setting) {
+        jvmOptions = setting['client.jvm.params'].split('\n');
+        const odcProperties = setting['client.start.params'];
+        if (odcProperties) {
+          const fileTempPath = path.resolve(app.getPath('userData'), 'odc.temp.properties');
+          writeFileSync(fileTempPath, odcProperties);
+          odcOptions = fileTempPath;
+          log.info('odc system propeties ', odcOptions, setting['client.start.params']);
+        }
+      }
+      log.info('jvmOptions:', jvmOptions.join(' '));
       javaChildProcess = spawn(
         javaBin,
         [
           `-Dodc.log.directory=${javaLogDir}`,
           `-Dfile.encoding=UTF-8`,
           `-Duser.language=en-US`,
+          ...jvmOptions,
           '-jar',
           this.jarPath,
+          odcOptions ? `--spring.config.import="optional:file:${odcOptions}"` : '',
         ],
         {
           // 一定要设置，默认值为 '/'，会影响到后端日志文件的存放路径

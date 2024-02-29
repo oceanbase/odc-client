@@ -54,7 +54,9 @@ export function getModelService(
     async getTableColumns(tableName: string, dbName?: string) {
       const realTableName = getRealNameInDatabase(
         tableName,
-        sessionFunc()?.connection?.dialectType === ConnectionMode.OB_ORACLE,
+        [ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(
+          sessionFunc()?.connection?.dialectType,
+        ),
       );
       if (!hasConnect(sessionFunc())) {
         return;

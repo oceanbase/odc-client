@@ -19,7 +19,8 @@ import { CommonTableMode, ITableLoadOptions, ITableInstance } from '@/component/
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import type { IResponseData } from '@/d.ts';
-import DetailModal from '../DetailModal';
+import { TaskType } from '@/d.ts';
+import TaskDetailModal from '@/component/Task/DetailModal';
 import { databasePermissionTypeFilters, databasePermissionTypeMap,
   databasePermissionStatusFilters } from '../';
 import StatusLabel from '../Status';
@@ -30,7 +31,7 @@ import React, { useState } from 'react';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
-  onOpenDetail: (id: number, visible: boolean) => void;
+  onOpenDetail: (task: { id: number; }, visible: boolean) => void;
   onReclaim: (id: number[]) => void;
 }) => {
   const { filters, sorter } = params.paramOptions ?? {};
@@ -104,6 +105,17 @@ const getColumns = (params: {
       ),
       filteredValue: filters?.ticketId || null,
       filters: [],
+      render: (ticketId) => {
+        return (
+          <Action.Link
+            onClick={() => {
+              params?.onOpenDetail({ id: ticketId}, true);
+            }}
+          >
+            {ticketId}
+          </Action.Link>
+        )
+      }
     },
     {
       dataIndex: 'type',
@@ -137,7 +149,7 @@ const getColumns = (params: {
         return (
           <Action.Link
             disabled={record?.status === DatabasePermissionStatus.EXPIRED}
-            onClick={async () => {
+            onClick={() => {
               params?.onReclaim([record.id]);
             }}
           >
@@ -166,14 +178,10 @@ const TaskApplyList: React.FC<IProps> = (props) => {
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   
-  const handleDetailVisible = (id: number, visible: boolean = false) => {
+  const handleDetailVisible = (task: { id: number }, visible: boolean = false) => {
+    const { id } = task ?? {};
     setDetailId(id);
     setDetailVisible(visible);
-  };
-
-  const handleDetailClose = () => {
-    setDetailId(null);
-    setDetailVisible(false);
   };
 
   const columns = getColumns({
@@ -221,7 +229,13 @@ const TaskApplyList: React.FC<IProps> = (props) => {
           },
         }}
       />
-      <DetailModal detailId={detailId} visible={detailVisible} onClose={handleDetailClose} />
+      <TaskDetailModal
+        type={TaskType.APPLY_DATABASE_PERMISSION}
+        detailId={detailId}
+        visible={detailVisible}
+        enabledAction={false}
+        onDetailVisible={handleDetailVisible}
+      />
     </>
   );
 };

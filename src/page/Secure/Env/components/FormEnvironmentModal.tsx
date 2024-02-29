@@ -46,6 +46,18 @@ export const FormEnvironmentModal: React.FC<{
     }
     message.error(currentEnvironment ? '保存失败' : '新建失败');
   };
+
+  // TODO: waiting for new API
+  // const checkNameRepeat = async (ruler, value) => {
+  //   const name = value?.trim();
+  //   if (!name) {
+  //     return;
+  //   }
+  //   const isRepeat = await getEnvironmentExists(name);
+  //   if (isRepeat) {
+  //     throw new Error();
+  //   }
+  // };
   useEffect(() => {
     if (formEnvironmentModalOpen) {
       if (isEdit) {
@@ -81,21 +93,36 @@ export const FormEnvironmentModal: React.FC<{
       }
     >
       <Form form={formRef} layout="vertical" requiredMark="optional">
-        <Form.Item
-          label="环境名称"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: '请输入环境名称',
-            },
-            {
-              max: 8,
-              message: '环境名称最大长度为8',
-            },
-          ]}
-        >
-          <Input disabled={isEdit} style={{ width: '240px' }} placeholder="请输入环境名称" />
+        <Form.Item label="环境名称" required>
+          <Form.Item
+            name="name"
+            noStyle
+            rules={[
+              {
+                required: true,
+                message: '请输入环境名称',
+              },
+              {
+                max: 8,
+                message: '已超过 8 个字符',
+              },
+              {
+                message: '名称首位存在空格',
+                validator: async (ruler, value) => {
+                  if (value?.startsWith(' ')) {
+                    throw new Error();
+                  }
+                },
+              },
+              // {
+              //   message: '环境名称已存在',
+              //   validator: checkNameRepeat,
+              // }
+            ]}
+          >
+            <Input disabled={isEdit} style={{ width: '240px' }} placeholder="请输入环境名称" />
+          </Form.Item>
+          <div className={styles.envNameTip}>新建之后无法修改</div>
         </Form.Item>
         <Form.Item
           label="标签样式"

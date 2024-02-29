@@ -54,8 +54,8 @@ const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
   deterministic: true,
 };
 
-const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
-  [ConnectType.MYSQL]: {
+const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
+  [ConnectType.DORIS]: {
     connection: {
       address: {
         items: ['ip', 'port'],
@@ -69,9 +69,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     features: {
       task: [
         TaskType.ASYNC,
-        TaskType.DATAMOCK,
         TaskType.SQL_PLAN,
-        TaskType.DATA_ARCHIVE,
         TaskType.DATA_DELETE,
         TaskType.IMPORT,
         TaskType.EXPORT,
@@ -95,13 +93,12 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     sql: {
       language: 'mysql',
       escapeChar: '`',
-      caseSensitivity: true,
     },
   },
 };
 
 if (haveOCP()) {
-  delete items[ConnectType.MYSQL];
+  delete items[ConnectType.DORIS];
 }
 
 export default items;

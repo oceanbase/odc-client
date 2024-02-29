@@ -19,7 +19,7 @@ class Channel {
    * 根据通道名称添加通道
    * @param channelName
    */
-  private addSingle(channelName: ChannelMap) {
+  addSingle(channelName: ChannelMap) {
     if (!this.isExists(channelName)) {
       this.channelMap.set(channelName, new BroadcastChannel(channelName));
       logger.log(`[Channel] ${channelName} is active.`);
@@ -35,7 +35,7 @@ class Channel {
    */
   add(channelName: ChannelMap | ChannelMap[]) {
     if (Array.isArray(channelName)) {
-      channelName.forEach(this.addSingle);
+      channelName.forEach((_channelName) => this.addSingle(_channelName));
       return this;
     }
     return this.addSingle(channelName);
@@ -75,7 +75,7 @@ class Channel {
     callback: (data?: any) => void,
     callbackedClose: boolean = false,
   ) {
-    if (this.channelMap.has(channelName)) {
+    if (this.isExists(channelName)) {
       this.channelMap.get(channelName).addEventListener('message', ({ data }) => {
         callback?.(data);
         callbackedClose && this.close(channelName);

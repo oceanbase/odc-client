@@ -163,7 +163,7 @@ export function getCellFormatter(
 }
 
 function getEditor(columnType: string, dbMode: ConnectionMode) {
-  const isOracle = dbMode === ConnectionMode.OB_ORACLE;
+  const isOracle = [ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(dbMode);
   switch (columnType) {
     case 'TIME': {
       return TimeEditor;
