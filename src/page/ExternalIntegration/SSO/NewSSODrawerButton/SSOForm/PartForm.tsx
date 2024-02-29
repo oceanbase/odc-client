@@ -20,7 +20,7 @@ import {
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Form, Input, Select, Space, Switch, Typography } from 'antd';
+import { Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
 import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import { requiredRule } from '.';
@@ -501,6 +501,50 @@ export const LDAPPartForm: React.FC<{
               value: false,
             },
           ]}
+        />
+      </Form.Item>
+      <Form.Item
+        name={['ssoParameter', 'loginFailedLimit']}
+        label={
+          <HelpDoc leftText title="设置为0表示不设置最大连续登录失败次数">
+            loginFailedLimit
+          </HelpDoc>
+        }
+        rules={[
+          {
+            ...requiredRule,
+            message: '请输入最大连续登录失败次数',
+          },
+        ]}
+        initialValue={5}
+      >
+        <InputNumber
+          style={{ width: '200px' }}
+          min={0}
+          placeholder={'最大连续登录失败次数'}
+          addonAfter="次"
+        />
+      </Form.Item>
+      <Form.Item
+        name={['ssoParameter', 'lockTimeSeconds']}
+        label={
+          <HelpDoc leftText title="多少秒后重置登录次数">
+            lockTimeSeconds
+          </HelpDoc>
+        }
+        rules={[
+          {
+            ...requiredRule,
+            message: '请输入登录次数重置时间',
+          },
+        ]}
+        initialValue={600}
+      >
+        <InputNumber
+          style={{ width: '200px' }}
+          min={0}
+          placeholder={'登录次数重置时间'}
+          addonAfter="秒"
         />
       </Form.Item>
     </>

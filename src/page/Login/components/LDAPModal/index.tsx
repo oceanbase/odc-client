@@ -5,7 +5,7 @@ import { UserStore } from '@/store/login';
 import channel, { ChannelMap } from '@/util/broadcastChannel';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Divider, Form, Input, message } from 'antd';
+import { Alert, Button, Divider, Form, Input, message } from 'antd';
 import useForm from 'antd/lib/form/hooks/useForm';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
@@ -45,6 +45,7 @@ export const LDAPLogin: React.FC<{
       mode: ELDAPMode;
       data: ISSOConfig;
     }>();
+    const [errorMessage, setErrorMessage] = useState<string>(null);
     const handleTest = async () => {
       const data = await form.validateFields().catch();
       if (isSubmiting) {
@@ -64,13 +65,14 @@ export const LDAPLogin: React.FC<{
       });
       if (!result?.successful) {
         setIsSubmiting(false);
-        return message.error(result?.errMsg || '测试登录失败！');
+        setErrorMessage(result?.errMsg);
       } else {
         channel.send(ChannelMap.LDAP_TEST, {
           isSuccess: true,
           testId: res.testId,
         });
         setIsSubmiting(false);
+        setErrorMessage(null);
       }
     };
     const handleLogin = async () => {
@@ -83,8 +85,10 @@ export const LDAPLogin: React.FC<{
         username: data?.username,
         password: data?.password,
       });
+      console.log(result);
       if (result?.successful) {
         message.success(formatMessage({ id: 'login.login.success' }));
+        setErrorMessage(null);
         await userStore.getOrganizations();
         const isSuccess = await userStore.switchCurrentOrganization();
         if (!isSuccess) {
@@ -104,7 +108,7 @@ export const LDAPLogin: React.FC<{
           toDefaultProjectPage();
         }
       } else {
-        message.error('LDAP 登录失败，请检查输入项是否正确！');
+        setErrorMessage(result?.errMsg);
         console.error(result);
       }
       setIsSubmiting(false);
@@ -151,21 +155,39 @@ export const LDAPLogin: React.FC<{
                 handleTest={handleTest}
                 handleLogin={handleLogin}
               />
+              {errorMessage && (
+                <Alert
+                  type="error"
+                  showIcon={true}
+                  className={`${prefix}-alert`}
+                  message={errorMessage}
+                />
+              )}
             </div>
           </div>
         </div>
       );
     }
     return (
-      <LDAPLoginContent
-        isSubmiting={isSubmiting}
-        isTest={isTest}
-        prefix={prefix}
-        form={form}
-        switchSSOLoginType={switchSSOLoginType}
-        handleTest={handleTest}
-        handleLogin={handleLogin}
-      />
+      <>
+        <LDAPLoginContent
+          isSubmiting={isSubmiting}
+          isTest={isTest}
+          prefix={prefix}
+          form={form}
+          switchSSOLoginType={switchSSOLoginType}
+          handleTest={handleTest}
+          handleLogin={handleLogin}
+        />
+        {errorMessage && (
+          <Alert
+            type="error"
+            showIcon={true}
+            className={`${prefix}-alert`}
+            message={errorMessage}
+          />
+        )}
+      </>
     );
   }),
 );

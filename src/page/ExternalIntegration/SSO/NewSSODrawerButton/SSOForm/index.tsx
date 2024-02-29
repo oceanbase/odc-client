@@ -249,6 +249,8 @@ export default inject('userStore')(
             ['ssoParameter', 'groupSearchBase'],
             ['ssoParameter', 'groupSearchFilter'],
             ['ssoParameter', 'groupSearchSubtree'],
+            ['ssoParameter', 'loginFailedLimit'],
+            ['ssoParameter', 'lockTimeSeconds'],
             ['mappingRule', 'userProfileViewType'],
             ['mappingRule', 'nestedAttributeField'],
           ])
