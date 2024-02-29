@@ -69,7 +69,7 @@ export default function AddDataBaseButton({
     });
     return [...userMap.values()];
   }, [project?.members, ownerIds, maxOwnerCount]);
-  const { run, loading } = useRequest(updateDataBase, {
+  const { run, loading: saveDatabaseLoading } = useRequest(updateDataBase, {
     manual: true,
   });
   const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
@@ -139,6 +139,7 @@ export default function AddDataBaseButton({
         })}
         /*添加数据库*/ onOk={submit}
         onCancel={close}
+        confirmLoading={saveDatabaseLoading}
       >
         <Form
           requiredMark={'optional'}

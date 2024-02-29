@@ -40,7 +40,7 @@ export default function ChangeOwnerModal({
 }: IProps) {
   const { project } = useContext(ProjectContext);
 
-  const { run: startUpdateDataBase, loading: savingOwner } = useRequest(updateDataBase, {
+  const { run: startUpdateDataBase, loading: saveOwnerLoading } = useRequest(updateDataBase, {
     manual: true,
   });
 
@@ -106,7 +106,7 @@ export default function ChangeOwnerModal({
         }) //'修改负责人'
       }
       open={visible}
-      confirmLoading={savingOwner}
+      confirmLoading={saveOwnerLoading}
       onCancel={() => {
         form.resetFields();
         close();
