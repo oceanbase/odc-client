@@ -247,6 +247,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         {},
         { cid: this.getSession()?.odcDatabase?.id, dbName: this.getSession()?.odcDatabase?.name },
       );
+      /**
+       * 异步加载内置片段
+       */
+      this.getSession()?.addBuiltinSnippets();
     } else if (this.props.settingStore.configurations !== this.config) {
       this.bindEditorKeymap();
     }

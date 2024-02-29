@@ -125,5 +125,17 @@ export function getModelService(
         desc: func.status,
       }));
     },
+    async getSnippets() {
+      const session = sessionFunc();
+      if (session) {
+        return session.snippets.map((item) => {
+          return {
+            label: item.prefix || '',
+            documentation: item.description || '',
+            insertText: item.body || '',
+          };
+        });
+      }
+    },
   };
 }
