@@ -41,6 +41,7 @@ export interface SelectItemProps {
   value: string | number;
 }
 export enum Expression {
+  ENVIRONMENT_NAME = 'ENVIRONMENT_NAME',
   ENVIRONMENT_ID = 'ENVIRONMENT_ID',
   TASK_TYPE = 'TASK_TYPE',
   SQL_CHECK_RESULT = 'SQL_CHECK_RESULT',
@@ -48,7 +49,7 @@ export enum Expression {
   DATABASE_NAME = 'DATABASE_NAME',
 }
 export const ExpressionMap = {
-  [Expression.ENVIRONMENT_ID]: formatMessage({
+  [Expression.ENVIRONMENT_NAME]: formatMessage({
     id: 'odc.src.page.Secure.RiskLevel.Environment',
   }), //'环境'
   [Expression.TASK_TYPE]: formatMessage({

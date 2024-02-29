@@ -41,7 +41,7 @@ const Condition = ({
   remove,
   removeGroup,
   setShowConditionGroup,
-  environmentIdMap,
+  environmentMap,
   taskTypeIdMap,
   sqlCheckResultIdMap,
   environmentOptions,
@@ -62,7 +62,7 @@ const Condition = ({
       value: string;
     }[]
   >(environmentOptions);
-  const [valueMap, setValueMap] = useState<{ [key in string | number]: string }>(environmentIdMap);
+  const [valueMap, setValueMap] = useState<{ [key in string | number]: string }>(environmentMap);
   const [isMultiple, setIsMultiple] = useState<boolean>(
     checkMultipleOrTags(condition?.operator) || false,
   );
@@ -72,9 +72,9 @@ const Condition = ({
   const initCondition = () => {
     handleOperatorChange(operator);
     switch (expression) {
-      case Expression.ENVIRONMENT_ID: {
+      case Expression.ENVIRONMENT_NAME: {
         setValueOptions(environmentOptions);
-        setValueMap(environmentIdMap);
+        setValueMap(environmentMap);
         return;
       }
       case Expression.TASK_TYPE: {
@@ -99,7 +99,7 @@ const Condition = ({
       }
       default: {
         setValueOptions(environmentOptions);
-        setValueMap(environmentIdMap);
+        setValueMap(environmentMap);
         return;
       }
     }
@@ -110,9 +110,7 @@ const Condition = ({
       if (checkIsProNameOrDBName(expression)) {
         setIsInputComponent(false);
         setIsTags(true);
-        console.log(99, value);
       } else {
-        console.log(101, value);
         const data = formRef.getFieldsValue()?.conditions;
         if (parentIsRoot && !firstTimeLoadRef.current) {
           if (!firstTimeLoadRef.current) {
@@ -200,8 +198,8 @@ const Condition = ({
           }
           options={[
             {
-              label: ExpressionMap[Expression.ENVIRONMENT_ID],
-              value: Expression.ENVIRONMENT_ID,
+              label: ExpressionMap[Expression.ENVIRONMENT_NAME],
+              value: Expression.ENVIRONMENT_NAME,
             },
             {
               label: ExpressionMap[Expression.PROJECT_NAME],
