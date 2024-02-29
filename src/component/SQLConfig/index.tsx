@@ -219,6 +219,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
         title=""
         content={session ? renderContent() : null}
         open={visible}
+        showArrow={false}
         onOpenChange={(v) => {
           setVisible(v);
         }}
