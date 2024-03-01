@@ -1,4 +1,4 @@
-.partitionTable {
+.table {
   .tableRrow {
     background: var(--background-primary-color);
   }
@@ -22,6 +22,9 @@
       .ant-table-cell {
         border-right: 1px solid var(--odc-border-color);
         border-bottom: 1px solid var(--odc-border-color);
+        &.ant-table-selection-column {
+          line-height: inherit;
+        }
       }
     }
     .ant-table-thead {
@@ -35,4 +38,19 @@
 .suffix:global(.ant-tag) {
   padding: 0 11px;
   line-height: 27px;
+}
+
+.noMarginBottom {
+  margin-bottom: 0;
+}
+
+.table {
+  :global {
+    .ant-table-tbody {
+      background: #fff;
+      .ant-table-cell {
+        line-height: 0;
+      }
+    }
+  }
 }

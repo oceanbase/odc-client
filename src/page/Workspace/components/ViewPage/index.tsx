@@ -17,7 +17,7 @@
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IResultSet, IView } from '@/d.ts';
@@ -477,7 +477,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                                   position: 'relative',
                                 }}
                               >
-                                <SQLCodeEditorDDL
+                                <SQLCodePreviewer
                                   readOnly
                                   key={view.ddl}
                                   defaultValue={`${view.ddl};`}

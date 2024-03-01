@@ -20,7 +20,7 @@ import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
@@ -46,7 +46,7 @@ interface IProps {
 const AsyncTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow, result } = props;
   const parameters = task?.parameters;
-  const executionTimeout = parameters.timeoutMillis / 1000 / 60 / 60;
+  const executionTimeout = milliSecondsToHour(parameters.timeoutMillis);
   const riskLevel = task?.riskLevel;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   return (

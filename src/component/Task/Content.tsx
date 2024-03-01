@@ -18,7 +18,6 @@ import { formatMessage } from '@/util/intl';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   IAlterScheduleTaskParams,
-  IConnectionPartitionPlan,
   IDataArchiveJobParameters,
   IResponseData,
   ISqlPlayJobParameters,
@@ -26,7 +25,6 @@ import type {
   TaskStatus,
 } from '@/d.ts';
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
-import type { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
 import type { TaskStore } from '@/store/task';
 import { getPreTime } from '@/util/utils';
@@ -43,7 +41,6 @@ import { message } from 'antd';
 import { useSetState } from 'ahooks';
 interface IProps {
   taskStore?: TaskStore;
-  userStore?: UserStore;
   modalStore?: ModalStore;
   pageKey?: TaskPageType;
   tabHeight?: number;
@@ -57,7 +54,6 @@ interface IState {
   detailId: number;
   detailType: TaskType;
   detailVisible: boolean;
-  partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
   tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
@@ -69,12 +65,11 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     detailId: props.taskStore?.defaultOpenTaskId,
     detailType: props.taskStore?.defauleOpenTaskType,
     detailVisible: !!props.taskStore?.defaultOpenTaskId,
-    partitionPlan: null,
     tasks: null,
     cycleTasks: null,
     status: null,
   });
-  const { detailId, detailType, detailVisible, partitionPlan, cycleTasks, tasks } = state;
+  const { detailId, detailType, detailVisible, cycleTasks, tasks } = state;
   const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
 
   const tableRef = React.createRef<ITableInstance>();
@@ -203,11 +198,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
       cycleTasks,
     });
   };
-  const handlePartitionPlanChange = (value: IConnectionPartitionPlan) => {
-    setState({
-      partitionPlan: value,
-    });
-  };
+
   const reloadList = () => {
     tableRef.current.reload();
   };
@@ -275,8 +266,6 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         type={detailType}
         detailId={detailId}
         visible={detailVisible}
-        partitionPlan={partitionPlan}
-        onPartitionPlanChange={handlePartitionPlanChange}
         onDetailVisible={handleDetailVisible}
         onReloadList={reloadList}
       />
