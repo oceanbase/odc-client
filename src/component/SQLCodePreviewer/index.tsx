@@ -17,12 +17,12 @@
 /**
  * 编辑器（只读）的场景下，也可以具备编辑的能力（格式化）
  * 说明：当前odc编辑器在（只读）模式下，不具备可编辑的原生能力（格式化）
- * 场景：目前只用于DDL查看场景
+ * 场景：仅需要查看格式化后的 SQL，不需要具备编辑能力的场景
  */
 import React from 'react';
 import MonacoEditor, { IEditor, IProps } from '../MonacoEditor';
 
-export class SQLCodeEditorDDL extends React.PureComponent<IProps> {
+export class SQLCodePreviewer extends React.PureComponent<IProps> {
   render() {
     return (
       <>

@@ -19,9 +19,9 @@ import { SQLContent } from '@/component/SQLContent';
 import { operationTypeMap } from '@/component/Task/component/CommonDetailModal/TaskOperationRecord';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import type { CycleTaskDetail, ISqlPlayJobParameters, TaskOperationType } from '@/d.ts';
-import { ConnectionMode, TaskType } from '@/d.ts';
+import { TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
@@ -58,7 +58,7 @@ interface IProps {
 const SqlPlanTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow, operationType } = props;
   const { jobParameters, triggerConfig, allowConcurrent } = task ?? {};
-  const executionTimeout = jobParameters?.timeoutMillis / 1000 / 60 / 60;
+  const executionTimeout = milliSecondsToHour(jobParameters?.timeoutMillis);
 
   return (
     <>

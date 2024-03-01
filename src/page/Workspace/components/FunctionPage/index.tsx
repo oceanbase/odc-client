@@ -34,7 +34,7 @@ import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import { PLType } from '@/constant/plType';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
 import { FunctionPage as FunctionPageModel } from '@/store/helper/page/pages';
@@ -353,7 +353,7 @@ class FunctionPage extends Component<
                         />
                       </Toolbar>
                       <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                        <SQLCodeEditorDDL
+                        <SQLCodePreviewer
                           readOnly
                           defaultValue={(func && func.ddl) || ''}
                           language={

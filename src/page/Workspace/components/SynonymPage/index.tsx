@@ -16,7 +16,7 @@
 
 import { getSynonym } from '@/common/network/synonym';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
@@ -270,7 +270,7 @@ class SynonymPage extends Component<
                         />
                       </Toolbar>
                       <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                        <SQLCodeEditorDDL
+                        <SQLCodePreviewer
                           readOnly
                           defaultValue={(synonym && synonym.ddl) || ''}
                           language={

@@ -16,7 +16,7 @@
 
 import { getType } from '@/common/network/type';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { enableTypeEdit } from '@/constant';
@@ -320,7 +320,7 @@ class TypePage extends Component<
                         />
                       </Toolbar>
                       <ToolContentWrpper>
-                        <SQLCodeEditorDDL
+                        <SQLCodePreviewer
                           readOnly
                           value={type?.ddl || ''}
                           language={

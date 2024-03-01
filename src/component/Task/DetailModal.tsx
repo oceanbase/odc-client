@@ -28,15 +28,14 @@ import type { ILog } from '@/component/Task/component/Log';
 import type {
   CycleTaskDetail,
   IAsyncTaskParams,
-  IConnectionPartitionPlan,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
   IDataClearJobParameters,
   IPartitionPlanParams,
-  IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
   TaskRecord,
+  IIPartitionPlanTaskDetail,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -68,11 +67,9 @@ interface IProps {
   type: TaskType;
   detailId: number;
   visible: boolean;
-  partitionPlan?: IConnectionPartitionPlan;
   enabledAction?: boolean;
   onReloadList?: () => void;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
-  onPartitionPlanChange?: (value: IConnectionPartitionPlan) => void;
 }
 
 const taskContentMap = {
@@ -94,7 +91,7 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, partitionPlan, enabledAction = true } = props;
+  const { type, visible, detailId, enabledAction = true } = props;
   const [task, setTask] = useState<
     TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>
   >(null);
@@ -129,13 +126,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   let taskContent = null;
   let getItems = null;
 
-  const handlePartitionPlansChange = (values: IPartitionPlanRecord[]) => {
-    props.onPartitionPlanChange({
-      ...partitionPlan,
-      tablePartitionPlans: values,
-    });
-  };
-
   const loop = (timeout: number = 0) => {
     timerRef.current = setTimeout(async () => {
       const currentTask = await getTaskDetail(detailId);
@@ -163,19 +153,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     setLoading(false);
     if (data) {
       setTask(data);
-      if (data.type === TaskType.PARTITION_PLAN) {
-        const connectionPartitionPlan = (data?.parameters as IPartitionPlanParams)
-          ?.connectionPartitionPlan;
-        props.onPartitionPlanChange({
-          ...connectionPartitionPlan,
-          tablePartitionPlans: connectionPartitionPlan.tablePartitionPlans?.map((item, index) => ({
-            ...item,
-            id: index,
-          })),
-        });
-      } else {
-        setDisabledSubmit(false);
-      }
+      setDisabledSubmit(false);
       if (
         data?.type === TaskType.STRUCTURE_COMPARISON &&
         ![
@@ -338,13 +316,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   }, [task, visible, detailId]);
 
-  useEffect(() => {
-    if (partitionPlan) {
-      const disabledSubmit = partitionPlan?.tablePartitionPlans?.some((item) => !item.detail);
-      setDisabledSubmit(disabledSubmit);
-    }
-  }, [partitionPlan]);
-
   const handleDetailTypeChange = (type: TaskDetailType) => {
     setDetailType(type);
   };
@@ -381,11 +352,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     case TaskType.PARTITION_PLAN: {
       taskContent = (
         <PartitionTaskContent
-          task={task as TaskDetail<IPartitionPlanParams>}
+          task={task as IIPartitionPlanTaskDetail<IPartitionPlanParams>}
           result={result}
           hasFlow={hasFlow}
-          partitionPlans={partitionPlan?.tablePartitionPlans}
-          onPartitionPlansChange={handlePartitionPlansChange}
         />
       );
       break;
@@ -485,14 +454,11 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         getItems={getItems}
       />
       <ApprovalModal
-        type={type}
         id={
           isCycleTask(type) || type === TaskType.ALTER_SCHEDULE ? task?.approveInstanceId : detailId
         }
         visible={approvalVisible}
-        status={task?.status}
         approvalStatus={approvalStatus}
-        partitionPlan={partitionPlan}
         onReload={handleReloadData}
         onCancel={() => {
           handleApprovalVisible(false);

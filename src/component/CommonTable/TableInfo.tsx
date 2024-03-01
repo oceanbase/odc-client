@@ -27,7 +27,7 @@ interface IProps<T> extends IRowSelecter<T> {
 }
 
 export const TableInfo: React.FC<IProps<unknown>> = (props) => {
-  const { options, selectedRowKeys, onCancelSelect, onSelectAllRows } = props;
+  const { options, selectedRowKeys, hideSelectAll, onCancelSelect, onSelectAllRows } = props;
   return (
     <div className={styles.infoWrap}>
       <Alert
@@ -45,13 +45,15 @@ export const TableInfo: React.FC<IProps<unknown>> = (props) => {
                 /*已选择{selectedRowKeysLength}项*/
               }
             </span>
-            <span className={styles.btn} onClick={onSelectAllRows}>
-              {
-                formatMessage({
-                  id: 'odc.component.CommonTable.TableInfo.SelectAll',
-                }) /*全选所有*/
-              }
-            </span>
+            {!hideSelectAll && (
+              <span className={styles.btn} onClick={onSelectAllRows}>
+                {
+                  formatMessage({
+                    id: 'odc.component.CommonTable.TableInfo.SelectAll',
+                  }) /*全选所有*/
+                }
+              </span>
+            )}
             <span className={styles.btn} onClick={onCancelSelect}>
               {
                 formatMessage({
