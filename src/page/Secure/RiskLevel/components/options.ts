@@ -106,7 +106,7 @@ export const initOptions = async ({
   const envMap = {};
   envOptions?.forEach(({ value, label, id }) => {
     envMap[value] = label;
-    envMap[id] = value;
+    envMap[` id:${id}`] = value;
   });
   setEnvironmentMap(envMap);
   setEnvironmentOptions(envOptions);
