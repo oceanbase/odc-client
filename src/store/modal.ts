@@ -168,6 +168,7 @@ export class ModalStore {
     number,
     {
       database: IDatabase;
+      overSizeLimit: boolean;
       storageObjectId: number;
       totalChangeScript: string;
       status: SubTaskStatus;
@@ -176,6 +177,7 @@ export class ModalStore {
     number,
     {
       database: IDatabase;
+      overSizeLimit: boolean;
       storageObjectId: number;
       totalChangeScript: string;
       status: SubTaskStatus;
@@ -436,6 +438,7 @@ export class ModalStore {
     taskId?: number,
     structureComparisonData?: {
       database: IDatabase;
+      overSizeLimit: boolean;
       storageObjectId: number;
       totalChangeScript: string;
       status: SubTaskStatus;

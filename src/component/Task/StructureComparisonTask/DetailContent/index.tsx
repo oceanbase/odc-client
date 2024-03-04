@@ -286,6 +286,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
       if (data?.id) {
         modalStore?.updateStructureComparisonDataMap(task?.id, {
           database: task?.relatedDatabase,
+          overSizeLimit: data?.overSizeLimit,
           storageObjectId: data?.storageObjectId,
           totalChangeScript: data?.totalChangeScript,
           status: (currentResult as any)?.status,
@@ -313,6 +314,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             database: null,
             storageObjectId: null,
             totalChangeScript: null,
+            overSizeLimit: null,
             status: (currentResult as any)?.status,
           });
           loop(2000);
