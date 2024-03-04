@@ -66,13 +66,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     form
       .validateFields()
       .then(async (values) => {
-        const {
-          databases: databaseIds,
-          types,
-          expireTime,
-          isCustomExpireTime,
-          customExpireTime,
-        } = values;
+        const { databases: databaseIds, types, expireTime, customExpireTime } = values;
+        const isCustomExpireTime = expireTime?.startsWith('custom');
         const data = {
           projectId,
           databaseIds,
