@@ -565,7 +565,8 @@ export const DetailChannelDrawer: React.FC<{
   }, [detailDrawerOpen]);
   function parseRateLimitConfigToText(rateLimitConfig: IRateLimitConfig) {
     const timeUnitText = TimeUnitMap?.[rateLimitConfig?.timeUnit];
-    let result = `${timeUnitText}不超过${rateLimitConfig?.limit}次`;
+    const rateLimitConfigLimit = rateLimitConfig?.limit;
+    let result = timeUnitText + `不超过${rateLimitConfigLimit}次`;
     return result;
   }
   const isWebhook = channel?.type === EChannelType.WEBHOOK;

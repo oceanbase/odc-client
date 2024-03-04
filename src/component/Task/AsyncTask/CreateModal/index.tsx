@@ -485,7 +485,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.asyncTask}
       width={905}
-      title={`${isReTry ? '重新发起' : '新建'}数据库变更`}
+      title={isReTry ? '重新发起数据库变更' : '新建数据库变更'}
       footer={
         <Space>
           <Button
