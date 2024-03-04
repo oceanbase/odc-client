@@ -82,6 +82,8 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [showConditionGroup, setShowConditionGroup] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [currentRiskDetectRuleId, setCurrentRiskDetectRuleId] = useState<number>(null);
+  const isDefaultLevel = currentRiskLevel?.level === 0;
+
   const handleCreateRiskDetectRule = async (rootNode): Promise<boolean> => {
     const res = await createRiskDetectRules({
       riskLevelId: currentRiskLevel?.id,
@@ -164,7 +166,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     if (root?.type === EConditionType.CONDITION) {
       if (root?.expression === Expression.ENVIRONMENT_ID) {
         root.expression = Expression.ENVIRONMENT_NAME;
-        root.value = envMap?.[root?.value];
+        root.value = envMap?.[` id:${root?.value}`];
       }
       return root;
     }
@@ -541,6 +543,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             {empty ? (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
                 <Action.Button
+                  disabled={isDefaultLevel}
                   onClick={async () => {
                     setIsEdit(true);
                     setShowConditionGroup(false);
@@ -557,6 +560,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             ) : (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
                 <Action.Button
+                  disabled={isDefaultLevel}
                   onClick={async () => {
                     setIsEdit(true);
                     setShowConditionGroup(false);
@@ -574,7 +578,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
 
             {currentRiskDetectRuleId && (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.delete)}>
-                <Action.Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
+                <Action.Button
+                  disabled={isDefaultLevel}
+                  danger
+                  onClick={() => handleDelete(currentRiskDetectRuleId)}
+                >
                   {
                     formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.EmptyRules',
