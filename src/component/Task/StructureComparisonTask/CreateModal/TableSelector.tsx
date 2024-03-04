@@ -120,7 +120,7 @@ const TableSelector: React.FC<{
       </div>
       <div className={classNames(styles.content, styles.hasIconTree)}>
         <ExportCard
-          title={`已选 ${checkedKeys?.length} 项`}
+          title={`已选表(${checkedKeys?.length})`}
           onSearch={(v) => setTargetSearchValue(v)}
           extra={
             <Popconfirm

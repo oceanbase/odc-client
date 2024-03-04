@@ -140,7 +140,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             }}
             placeholder={'仅支持选择同一项目内数据库'}
           />
-          <Form.Item label="对比范围" name={['parameters', 'comparisonScope']}>
+          <Form.Item label="对比范围" name={['parameters', 'comparisonScope']} required>
             <Radio.Group>
               <Radio value={EComparisonScope.PART}>
                 {comparisonScopeMap[EComparisonScope.PART]}
@@ -156,7 +156,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
               }
               return (
                 <Form.Item
-                  label="对比对象"
+                  label="比对对象"
                   name={['parameters', 'tableNamesToBeCompared']}
                   rules={[
                     {
