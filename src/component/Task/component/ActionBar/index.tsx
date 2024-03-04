@@ -375,6 +375,11 @@ const ActionBar: React.FC<IProps> = inject(
         task?.type === TaskType.STRUCTURE_COMPARISON &&
         structureComparisonData &&
         ![SubTaskStatus.DONE, SubTaskStatus.FAILED].includes(structureComparisonData?.status);
+      const noAction =
+        SubTaskStatus.DONE === structureComparisonData?.status &&
+        ((structureComparisonData?.overSizeLimit && structureComparisonData?.storageObjectId) ||
+          (!structureComparisonData?.overSizeLimit &&
+            !(structureComparisonData?.totalChangeScript?.length > 0)));
       const viewBtn = {
         key: 'view',
         text: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.See' }), // 查看
@@ -521,9 +526,9 @@ const ActionBar: React.FC<IProps> = inject(
       const structrueComparisonBySQL = {
         key: 'structrueComparisonBySQL',
         text: '发起结构同步',
-        isExpired: disableBtn,
-        disabled: disableBtn,
-        tip: '暂不可用',
+        isExpired: disableBtn || noAction,
+        disabled: disableBtn || noAction,
+        tip: noAction ? '结构一致，无需发起结构同步' : '暂不可用',
         type: 'button',
         isPrimary: true,
         action: async () => {
