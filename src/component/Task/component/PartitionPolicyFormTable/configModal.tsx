@@ -192,7 +192,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               partitionKeyInvoker: isDateType
                 ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
                 : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
-              ...item.option.partitionKeyConfigs[index],
+              ...item.option.partitionKeyConfigs?.[index],
               type,
             };
           }),
@@ -345,8 +345,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           formData.template.partitionNameInvoker =
             PARTITION_NAME_INVOKER.CUSTOM_PARTITION_NAME_GENERATOR;
           formData.template.partitionNameInvokerParameters = {
-            generateExpr,
-            intervalGenerateExpr,
+            partitionNameGeneratorConfig: {
+              generateExpr,
+              intervalGenerateExpr,
+            },
           };
         }
 
@@ -544,7 +546,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 id: 'src.component.Task.component.PartitionPolicyFormTable.D50C1358',
               }) /*"分区类型"*/
             }
-          >{`${tableLabels}${moreText}`}</Descriptions.Item>
+          >
+            Range
+          </Descriptions.Item>
         </Descriptions>
         <Form.Item
           name="strategies"
