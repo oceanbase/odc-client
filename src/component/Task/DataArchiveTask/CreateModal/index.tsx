@@ -160,10 +160,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [tables, setTables] = useState<ITable[]>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
-  const { session, database } = useDBSession(databaseId);
-  const databaseName = database?.name;
+  const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
+
   const loadTables = async () => {
-    const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
+    const tables = await getTableListByDatabaseName(sourceDBSession?.sessionId, sourceDB?.name);
     setTables(tables);
   };
   const crontabRef = useRef<{
@@ -193,7 +193,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
     const formData = {
       databaseId: sourceDatabaseId,
-      targetDatabase: targetDataBaseId,
+      targetDataBaseId: targetDataBaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       deleteAfterMigration,
@@ -302,7 +302,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const {
           startAt,
           databaseId,
-          targetDatabase,
+          targetDataBaseId,
           variables,
           tables: _tables,
           deleteAfterMigration,
@@ -319,7 +319,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           taskId: dataArchiveEditId,
           scheduleTaskParameters: {
             sourceDatabaseId: databaseId,
-            targetDataBaseId: targetDatabase,
+            targetDataBaseId,
             variables: getVariables(variables),
             tables:
               archiveRange === IArchiveRange.ALL
@@ -327,6 +327,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     return {
                       tableName: item?.tableName,
                       conditionExpression: '',
+                      targetTableName: '',
                     };
                   })
                 : _tables,
@@ -388,6 +389,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   return {
                     tableName: item?.tableName,
                     conditionExpression: '',
+                    targetTableName: '',
                   };
                 })
               : _tables,
@@ -434,14 +436,15 @@ const CreateModal: React.FC<IProps> = (props) => {
       handleReset();
     }
   }, [dataArchiveVisible]);
+
   useEffect(() => {
-    if (database?.id) {
+    if (sourceDB?.id) {
       loadTables();
       if (!isEdit) {
         form.setFieldValue('tables', [null]);
       }
     }
-  }, [database?.id]);
+  }, [sourceDB?.id]);
 
   useEffect(() => {
     if (dataArchiveEditId) {
@@ -509,12 +512,12 @@ const CreateModal: React.FC<IProps> = (props) => {
             label={formatMessage({
               id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
             })}
-            /*目标数据库*/ name="targetDatabase"
+            /*目标数据库*/ name="targetDataBaseId"
             projectId={projectId}
           />
         </Space>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
-          <ArchiveRange tables={tables} />
+          <ArchiveRange enabledTargetTable tables={tables} />
           <VariableConfig form={form} />
         </Space>
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
