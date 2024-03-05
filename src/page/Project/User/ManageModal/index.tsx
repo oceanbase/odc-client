@@ -34,21 +34,21 @@ const { Text } = Typography;
 const descMap = {
   [PermissionSourceType.TICKET_APPLICATION]: '通过工单申请的数据库权限',
   [PermissionSourceType.USER_AUTHORIZATION]: '通过管理员赋予的数据库权限',
-}
+};
 
 export const databasePermissionTypeMap = {
   [DatabasePermissionType.QUERY]: {
     text: '查询',
-    value: DatabasePermissionType.QUERY
+    value: DatabasePermissionType.QUERY,
   },
   [DatabasePermissionType.EXPORT]: {
     text: '导出',
-    value: DatabasePermissionType.EXPORT
+    value: DatabasePermissionType.EXPORT,
   },
   [DatabasePermissionType.CHANGE]: {
     text: '变更',
-    value: DatabasePermissionType.CHANGE
-  }
+    value: DatabasePermissionType.CHANGE,
+  },
 };
 
 export const databasePermissionTypeFilters = Object.values(databasePermissionTypeMap);
@@ -65,19 +65,19 @@ interface IProps {
 const ManageModal: React.FC<IProps> = (props) => {
   const { visible, isOwner, projectId, userId, onClose } = props;
   const [dataSource, setDataSource] = useState<IResponseData<IDatabasePermission>>(null);
-  const [authorizationType, setAuthorizationType] = useState(PermissionSourceType.TICKET_APPLICATION);
+  const [authorizationType, setAuthorizationType] = useState(
+    PermissionSourceType.TICKET_APPLICATION,
+  );
   const [params, setParams] = useState<ITableLoadOptions>(null);
   const tableRef = useRef<ITableInstance>();
-  const description  = descMap[authorizationType];
+  const description = descMap[authorizationType];
 
   const handleChangeKey = (e) => {
     setAuthorizationType(e.target.value);
     setParams(null);
   };
 
-  const loadData = async (
-    args?: ITableLoadOptions,
-  ) => {
+  const loadData = async (args?: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { databaseName, dataSourceName, ticketId, type, status } = filters ?? {};
     const { column, order } = sorter ?? {};
@@ -106,20 +106,16 @@ const ManageModal: React.FC<IProps> = (props) => {
     loadData(args);
   };
 
-  const handleReload = () =>{
+  const handleReload = () => {
     tableRef.current?.reload();
-  }
+  };
 
   const handleReclaim = async (ids: number[]) => {
     const isBatch = ids?.length > 1;
     const title = isBatch ? '确认要批量回收权限吗？' : '确认要回收权限吗？';
     Modal.confirm({
       title,
-      content: (
-        <Text type='secondary'>
-          回收后不可撤回
-        </Text>
-      ),
+      content: <Text type="secondary">回收后不可撤回</Text>,
       cancelText: '取消',
       okText: '确定',
       centered: true,
@@ -140,13 +136,13 @@ const ManageModal: React.FC<IProps> = (props) => {
     }
   }, [userId, projectId, authorizationType, visible]);
 
-  const handleSwitchUserTab = () =>{
-    if(authorizationType === PermissionSourceType.USER_AUTHORIZATION){
+  const handleSwitchUserTab = () => {
+    if (authorizationType === PermissionSourceType.USER_AUTHORIZATION) {
       handleReload();
-    }else{
+    } else {
       setAuthorizationType(PermissionSourceType.USER_AUTHORIZATION);
     }
-  }
+  };
 
   return (
     <Drawer
@@ -155,20 +151,15 @@ const ManageModal: React.FC<IProps> = (props) => {
       title="管理库权限"
       destroyOnClose
       className={styles.detailDrawer}
-      footer={
-        <Space>
-          <Button onClick={() => {}}>确定</Button>
-        </Space>
-      }
+      footer={null}
       onClose={() => {
         onClose();
       }}
     >
-      <Space className={styles.header} direction='vertical' size={5}>
-        {
-          isOwner && 
+      <Space className={styles.header} direction="vertical" size={5}>
+        {isOwner && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
-        }
+        )}
         <Text strong>授权记录</Text>
         <Radio.Group onChange={handleChangeKey} value={authorizationType}>
           <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>工单申请</Radio.Button>
@@ -177,7 +168,7 @@ const ManageModal: React.FC<IProps> = (props) => {
       </Space>
       <div className={styles.content}>
         {authorizationType === PermissionSourceType.TICKET_APPLICATION ? (
-          <TaskApplyList 
+          <TaskApplyList
             projectId={projectId}
             dataSource={dataSource}
             description={description}

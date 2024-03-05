@@ -146,8 +146,9 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <Form.List name={[name, 'pattern']}>
                   {(subFields, { add: _add, remove: _remove }) => {
                     const disabledAdd = subFields.length >= 3;
-                    const required = !!Object.values(variables[index].pattern?.[0] ?? {})?.join('')
-                      ?.length;
+                    const required = !!Object.values(variables?.[index]?.pattern?.[0] ?? {})?.join(
+                      '',
+                    )?.length;
                     return (
                       <div className={styles.infoBlock}>
                         {subFields.map(({ key, name, ...restField }) => (
@@ -159,8 +160,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose',
+                                    id: 'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose',
                                   }), //'请选择'
                                 },
                               ]}
@@ -179,8 +179,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataClearTask.CreateModal.PleaseEnter',
+                                    id: 'odc.src.component.Task.DataClearTask.CreateModal.PleaseEnter',
                                   }), //'请输入'
                                 },
                               ]}
@@ -199,8 +198,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose.1',
+                                    id: 'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose.1',
                                   }), //'请选择'
                                 },
                               ]}

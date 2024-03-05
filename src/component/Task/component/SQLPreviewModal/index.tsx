@@ -15,7 +15,7 @@
  */
 
 import { Modal } from 'antd';
-import CommonIDE from '@/component/CommonIDE';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 
 function SQLPreviewModal(props: {
   sql?: string;
@@ -41,7 +41,15 @@ function SQLPreviewModal(props: {
       onCancel={onClose}
       onOk={onOk}
     >
-      <CommonIDE bordered language="sql" initialSQL={sql} />
+      <div
+        style={{
+          height: '100%',
+          position: 'relative',
+          border: '1px solid var(--odc-border-color)',
+        }}
+      >
+        <SQLCodePreviewer readOnly language="sql" value={sql} />
+      </div>
     </Modal>
   );
 }
