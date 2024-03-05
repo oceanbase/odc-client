@@ -33,11 +33,11 @@ export async function listEnvironments(
  * @param data
  * @returns
  */
-export async function createEnvironment(data: Partial<IEnvironment>): Promise<boolean> {
+export async function createEnvironment(data: Partial<IEnvironment>): Promise<IEnvironment> {
   const res = await request.post(`/api/v2/collaboration/environments`, {
     data,
   });
-  return res?.successful;
+  return res;
 }
 /**
  * 删除自定义环境
@@ -57,11 +57,11 @@ export async function deleteEnvironment(environmentId: number): Promise<boolean>
 export async function updateEnvironment(
   environmentId: number,
   data: Pick<IEnvironment, 'description' | 'style'>,
-): Promise<boolean> {
+): Promise<IEnvironment> {
   const res = await request.put(`/api/v2/collaboration/environments/${environmentId}`, {
     data,
   });
-  return res?.successful;
+  return res;
 }
 /**
  * 修改环境的启用状态
