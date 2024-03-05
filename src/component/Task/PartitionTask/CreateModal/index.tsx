@@ -143,13 +143,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               __id: index,
               containsCreateStrategy,
               containsDropStrategy,
-              strategies: getStrategyByConfig(config),
+              strategies: [],
               tableName,
               partitionMode,
               option: {
-                partitionKeyConfigs: partition.partitionOption.columnNames.map((name) => ({
+                partitionKeyConfigs: partition.partitionOption?.columnNames?.map((name) => ({
                   name,
-                })),
+                })) ?? [
+                  {
+                    name: partition.partitionOption?.expression,
+                  },
+                ],
               },
             };
           }),
