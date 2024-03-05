@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -22,7 +23,7 @@ import React from 'react';
 
 export const databasePermissionStatusMap = {
   [DatabasePermissionStatus.EXPIRED]: {
-    text: '已过期',
+    text: formatMessage({ id: 'src.page.Project.User.ManageModal.Status.F648282E' }), //'已过期'
     value: DatabasePermissionStatus.EXPIRED,
     icon: (
       <StopFilled
@@ -30,10 +31,10 @@ export const databasePermissionStatusMap = {
           color: 'var(--icon-color-disable)',
         }}
       />
-    )
+    ),
   },
   [DatabasePermissionStatus.EXPIRING]: {
-    text: '即将过期',
+    text: formatMessage({ id: 'src.page.Project.User.ManageModal.Status.CDAFC981' }), //'即将过期'
     value: DatabasePermissionStatus.EXPIRING,
     icon: (
       <ExclamationCircleFilled
@@ -44,12 +45,10 @@ export const databasePermissionStatusMap = {
     ),
   },
   [DatabasePermissionStatus.NOT_EXPIRED]: {
-    text: '生效中',
+    text: formatMessage({ id: 'src.page.Project.User.ManageModal.Status.F7C8A70D' }), //'生效中'
     value: DatabasePermissionStatus.NOT_EXPIRED,
-    icon: (
-      <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />
-    )
-  }
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
+  },
 };
 
 interface IProps {
@@ -84,10 +83,9 @@ const StatusLabel: React.FC<IProps> = (props) => {
           >
             {statusInfo.text}
           </span>
-          {
-            status === DatabasePermissionStatus.EXPIRING &&
+          {status === DatabasePermissionStatus.EXPIRING && (
             <HelpDoc leftText isTip doc="ApplyDatabasePermissionExpiringTip" />
-          }
+          )}
         </>
       ) : null}
     </Space>

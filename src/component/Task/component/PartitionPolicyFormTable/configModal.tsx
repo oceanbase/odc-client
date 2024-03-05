@@ -55,27 +55,27 @@ export enum NameRuleType {
 
 export const intervalPrecisionOptions = [
   {
-    label: '秒',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.436BC171' }), //'秒'
     value: 63,
   },
   {
-    label: '分',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.0E0CEBAC' }), //'分'
     value: 31,
   },
   {
-    label: '时',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.9EC2D1FF' }), //'时'
     value: 15,
   },
   {
-    label: '日',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1E11DFEA' }), //'日'
     value: 7,
   },
   {
-    label: '月',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1FB1ABDC' }), //'月'
     value: 3,
   },
   {
-    label: '年',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.069255DB' }), //'年'
     value: 1,
   },
 ];
@@ -95,11 +95,11 @@ const StrategyOptions = Object.keys(TaskPartitionStrategyMap)?.map((key) => ({
 
 const nameRuleOptions = [
   {
-    label: '前缀 + 后缀',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.EB655A6C' }), //'前缀 + 后缀'
     value: NameRuleType.PRE_SUFFIX,
   },
   {
-    label: '自定义',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.AB4964B2' }), //'自定义'
     value: NameRuleType.CUSTOM,
   },
 ];
@@ -464,7 +464,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
 
   return (
     <Drawer
-      title={isBatch ? '批量设置分区策略' : '设置分区策略'}
+      title={
+        isBatch
+          ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.C3B6B344' })
+          : formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.F441A07F' })
+      }
       open={visible}
       destroyOnClose
       width={720}
@@ -478,7 +482,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button onClick={handlePreview}>预览 SQL</Button>
+          <Button onClick={handlePreview}>
+            {
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
+              }) /* 预览 SQL */
+            }
+          </Button>
           {isBatch ? (
             <Popconfirm
               overlayStyle={{ width: '216px' }}
@@ -521,16 +531,34 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         onChange={handleChange}
       >
         <Descriptions column={1}>
-          <Descriptions.Item label="分区表">{`${tableLabels}${moreText}`}</Descriptions.Item>
-          <Descriptions.Item label="分区类型">{`${tableLabels}${moreText}`}</Descriptions.Item>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.AE09B3CB',
+              }) /*"分区表"*/
+            }
+          >{`${tableLabels}${moreText}`}</Descriptions.Item>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.D50C1358',
+              }) /*"分区类型"*/
+            }
+          >{`${tableLabels}${moreText}`}</Descriptions.Item>
         </Descriptions>
         <Form.Item
           name="strategies"
-          label="分区策略"
+          label={
+            formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyFormTable.7632AF45',
+            }) /*"分区策略"*/
+          }
           rules={[
             {
               required: true,
-              message: '请选择',
+              message: formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.CD65E4CD',
+              }), //'请选择'
             },
           ]}
         >
@@ -538,51 +566,103 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         </Form.Item>
         {isCreateConfigVisible && (
           <Alert
-            message="当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"
+            message={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
+              }) /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
+            }
             type="warning"
             style={{ marginBottom: '8px' }}
             showIcon
           />
         )}
+
         {isCreateConfigVisible && (
-          <FormItemPanel keepExpand label="创建分区">
+          <FormItemPanel
+            keepExpand
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.8686ABA2',
+              }) /*"创建分区"*/
+            }
+          >
             <Form.Item
               required
               name="generateCount"
-              label="预创建分区数量"
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.C0FD367F',
+                }) /*"预创建分区数量"*/
+              }
               rules={[
                 {
                   required: true,
-                  message: '请输入预创建分区数量',
+                  message: formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.16355175',
+                  }), //'请输入预创建分区数量'
                 },
               ]}
             >
-              <InputNumber placeholder="请输入" min={0} style={{ width: 100 }} />
+              <InputNumber
+                placeholder={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.F4F136CA',
+                  }) /*"请输入"*/
+                }
+                min={0}
+                style={{ width: 100 }}
+              />
             </Form.Item>
             <Form.Item
               required
               label={
                 <Space>
-                  <span>创建规则</span>
-                  <Action.Link>如何配置</Action.Link>
+                  <span>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.C28CD656' /*创建规则*/,
+                      }) /* 创建规则 */
+                    }
+                  </span>
+                  <Action.Link>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.DF75EB9E' /*如何配置*/,
+                      }) /* 如何配置 */
+                    }
+                  </Action.Link>
                 </Space>
               }
             >
               <EditTable form={form} />
             </Form.Item>
             <Form.Item
-              label="命名方式"
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.C49FCEB6',
+                }) /*"命名方式"*/
+              }
               name="nameRuleType"
               rules={[
                 {
                   required: true,
-                  message: '请选择',
+                  message: formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.87D4D0BB',
+                  }), //'请选择'
                 },
               ]}
             >
               <Select options={nameRuleOptions} style={{ width: 120 }} />
             </Form.Item>
-            <Form.Item label="命名规则" required style={{ marginBottom: '0' }}>
+            <Form.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.D82DD59C',
+                }) /*"命名规则"*/
+              }
+              required
+              style={{ marginBottom: '0' }}
+            >
               <Space size={8} align="start" style={{ width: '100%' }}>
                 {isCustomRuleType ? (
                   <Space>
@@ -591,12 +671,25 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       rules={[
                         {
                           required: true,
-                          message: '请输入表达式',
+                          message: formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.E5DA1FA4',
+                          }), //'请输入表达式'
                         },
                       ]}
                       style={{ width: 320 }}
                     >
-                      <Input placeholder="请输入表达式" addonBefore="表达式" />
+                      <Input
+                        placeholder={
+                          formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.23B74BBB',
+                          }) /*"请输入表达式"*/
+                        }
+                        addonBefore={
+                          formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.D97787FE',
+                          }) /*"表达式"*/
+                        }
+                      />
                     </Form.Item>
                   </Space>
                 ) : (
@@ -607,34 +700,63 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       rules={[
                         {
                           required: true,
-                          message: '请输入前缀',
+                          message: formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.4293BED4',
+                          }), //'请输入前缀'
                         },
                         {
                           pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
-                          message: '仅支持英文/数字/下划线，且以英文开头',
+                          message: formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.F70A7891',
+                          }), //'仅支持英文/数字/下划线，且以英文开头'
                         },
                         {
                           max: 32,
-                          message: '不超过32个字符',
+                          message: formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.D76C944C',
+                          }), //'不超过32个字符'
                         },
                       ]}
                       style={{ width: 140 }}
                     >
-                      <Input addonBefore="前缀" placeholder="请输入前缀" />
+                      <Input
+                        addonBefore={
+                          formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.7D91EBA7',
+                          }) /*"前缀"*/
+                        }
+                        placeholder={
+                          formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.D2573F4C',
+                          }) /*"请输入前缀"*/
+                        }
+                      />
                     </Form.Item>
                     <Input.Group compact>
-                      <Tag className={styles.suffix}>后缀</Tag>
+                      <Tag className={styles.suffix}>
+                        {
+                          formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
+                          }) /* 后缀 */
+                        }
+                      </Tag>
                       <Form.Item
                         name="fromCurrentTime"
                         rules={[
                           {
                             required: true,
-                            message: '请选择',
+                            message: formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
+                            }), //'请选择'
                           },
                         ]}
                       >
                         <Select
-                          placeholder="请选择"
+                          placeholder={
+                            formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
+                            }) /*"请选择"*/
+                          }
                           optionLabelProp="label"
                           options={startDateOptions}
                           style={{ width: 135 }}
@@ -646,24 +768,40 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           rules={[
                             {
                               required: true,
-                              message: '请选择',
+                              message: formatMessage({
+                                id: 'src.component.Task.component.PartitionPolicyFormTable.E89659CE',
+                              }), //'请选择'
                             },
                           ]}
                         >
-                          <DatePicker showTime placeholder="请选择" />
+                          <DatePicker
+                            showTime
+                            placeholder={
+                              formatMessage({
+                                id: 'src.component.Task.component.PartitionPolicyFormTable.05D91017',
+                              }) /*"请选择"*/
+                            }
+                          />
                         </Form.Item>
                       )}
+
                       <Form.Item
                         name="namingSuffixExpression"
                         rules={[
                           {
                             required: true,
-                            message: '请选择后缀',
+                            message: formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.7183DAA0',
+                            }), //'请选择后缀'
                           },
                         ]}
                       >
                         <Select
-                          placeholder="请选择"
+                          placeholder={
+                            formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.0259BAC2',
+                            }) /*"请选择"*/
+                          }
                           style={{ width: 124 }}
                           options={suffixOptions}
                         />
@@ -674,30 +812,62 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               </Space>
             </Form.Item>
             <Space direction="vertical" size={2}>
-              <Action.Link onClick={handleTest}>测试生成</Action.Link>
-              {!!ruleExample && <Text type="secondary">示例名称: {ruleExample}</Text>}
+              <Action.Link onClick={handleTest}>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.8067C91E' /*测试生成*/,
+                  }) /* 测试生成 */
+                }
+              </Action.Link>
+              {!!ruleExample && (
+                <Text type="secondary">
+                  {formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.797EC6B1' /*示例名称:*/,
+                  })}
+                  {ruleExample}
+                </Text>
+              )}
             </Space>
             {isCustomRuleType ? (
               <Form.Item
                 name="intervalGenerateExpr"
-                label="命名间隔"
+                label={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
+                  }) /*"命名间隔"*/
+                }
                 rules={[
                   {
                     required: true,
-                    message: '请输入',
+                    message: formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.FB42838A',
+                    }), //'请输入'
                   },
                 ]}
               >
-                <Input style={{ width: 180 }} placeholder="请输入" />
+                <Input
+                  style={{ width: 180 }}
+                  placeholder={
+                    formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.07788524',
+                    }) /*"请输入"*/
+                  }
+                />
               </Form.Item>
             ) : (
               <Form.Item
                 name="interval"
-                label="命名间隔"
+                label={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.85FFB10E',
+                  }) /*"命名间隔"*/
+                }
                 rules={[
                   {
                     required: true,
-                    message: '请输入',
+                    message: formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.BC96D1C3',
+                    }), //'请输入'
                   },
                 ]}
               >
@@ -709,13 +879,19 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       rules={[
                         {
                           required: true,
-                          message: '请选择',
+                          message: formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.A464079B',
+                          }), //'请选择'
                         },
                       ]}
                       noStyle
                     >
                       <Select
-                        placeholder="请选择"
+                        placeholder={
+                          formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.572D785C',
+                          }) /*"请选择"*/
+                        }
                         options={intervalPrecisionOptions}
                         style={{ width: 60 }}
                       />
@@ -727,48 +903,93 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             )}
           </FormItemPanel>
         )}
+
         {isDropConfigVisible && (
           <Alert
-            message="当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"
+            message={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
+              }) /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
+            }
             type="warning"
             style={{ marginBottom: '8px' }}
             showIcon
           />
         )}
+
         {isDropConfigVisible && (
-          <FormItemPanel keepExpand label="删除分区">
+          <FormItemPanel
+            keepExpand
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.40F7E641',
+              }) /*"删除分区"*/
+            }
+          >
             <Space size={40} align="start">
               <Form.Item
                 required
                 name="keepLatestCount"
                 label={
                   <HelpDoc doc="partitionInterval" leftText>
-                    分区保留数量
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.7D6F23AE' /*分区保留数量*/,
+                      }) /* 分区保留数量 */
+                    }
                   </HelpDoc>
                 }
                 rules={[
                   {
                     required: true,
-                    message: '请输入',
+                    message: formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.967356C8',
+                    }), //'请输入'
                   },
                 ]}
               >
-                <InputNumber placeholder="请输入" min={0} style={{ width: 100 }} />
+                <InputNumber
+                  placeholder={
+                    formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.94B98AF7',
+                    }) /*"请输入"*/
+                  }
+                  min={0}
+                  style={{ width: 100 }}
+                />
               </Form.Item>
               <Form.Item
                 required
                 name="reloadIndexes"
-                label="删除后是否重建索引"
+                label={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.3C92777E',
+                  }) /*"删除后是否重建索引"*/
+                }
                 rules={[
                   {
                     required: true,
-                    message: '请选择',
+                    message: formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.393D1F82',
+                    }), //'请选择'
                   },
                 ]}
               >
                 <Radio.Group>
-                  <Radio value={true}>是</Radio>
-                  <Radio value={false}>否</Radio>
+                  <Radio value={true}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.77C8BE4D' /*是*/,
+                      }) /* 是 */
+                    }
+                  </Radio>
+                  <Radio value={false}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.E374E7C8' /*否*/,
+                      }) /* 否 */
+                    }
+                  </Radio>
                 </Radio.Group>
               </Form.Item>
             </Space>

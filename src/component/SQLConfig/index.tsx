@@ -162,7 +162,11 @@ const SQLConfig: React.FC<IProps> = function (props) {
             marginTop: 12,
           }}
         >
-          报错继续执行
+          {
+            formatMessage({
+              id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
+            }) /* 报错继续执行 */
+          }
         </Row>
         <Row style={{ width: '100%' }}>
           <Switch
@@ -177,7 +181,11 @@ const SQLConfig: React.FC<IProps> = function (props) {
             marginTop: 12,
           }}
         >
-          开启全链路诊断
+          {
+            formatMessage({
+              id: 'src.component.SQLConfig.C03B2372' /*开启全链路诊断*/,
+            }) /* 开启全链路诊断 */
+          }
         </Row>
         <Row style={{ width: '100%' }}>
           <Switch

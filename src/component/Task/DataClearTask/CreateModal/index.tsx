@@ -62,11 +62,11 @@ export const variable = {
 
 const deleteByUniqueKeyOptions = [
   {
-    label: '是',
+    label: formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.ED9CFF17' }), //'是'
     value: true,
   },
   {
-    label: '否',
+    label: formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.CC3EF591' }), //'否'
     value: false,
   },
 ];
@@ -223,6 +223,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.DataClearTask.CreateModal.Cancel',
       }),
@@ -364,12 +365,12 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(false);
   };
   const getDrawerTitle = () => {
-    let title = '新建数据清理';
+    let title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.268C0069' }); //'新建数据清理'
     if (editTaskId) {
       if (isEdit) {
-        title = '编辑数据清理';
+        title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.A5BAF884' });
       } else {
-        title = '再次发起数据清理';
+        title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.2856A9BB' });
       }
     }
     return title;
@@ -517,12 +518,18 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <ThrottleFormItem />
           <Form.Item
-            label="使用主键清理"
+            label={
+              formatMessage({
+                id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
+              }) /*"使用主键清理"*/
+            }
             name="deleteByUniqueKey"
             rules={[
               {
                 required: true,
-                message: '请选择',
+                message: formatMessage({
+                  id: 'src.component.Task.DataClearTask.CreateModal.23542D89',
+                }), //'请选择'
               },
             ]}
           >

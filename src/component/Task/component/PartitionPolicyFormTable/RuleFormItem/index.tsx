@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 import {
   Form,
@@ -20,14 +21,22 @@ const { Text } = Typography;
 
 const startDateOptionValues = [
   {
-    label: '当前时间',
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.88D572DE',
+    }), //'当前时间'
     value: START_DATE.CURRENT_DATE,
-    description: '从实际执行的时间开始创建',
+    description: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.684CAF92',
+    }), //'从实际执行的时间开始创建'
   },
   {
-    label: '指定时间',
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9CDC5E14',
+    }), //'指定时间'
     value: START_DATE.CUSTOM_DATE,
-    description: '从指定的某个时间开始创建',
+    description: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.0E0ADD3E',
+    }), //'从指定的某个时间开始创建'
   },
 ];
 
@@ -39,6 +48,7 @@ export const startDateOptions = startDateOptionValues.map(({ label, value, descr
         <Text type="secondary">{description}</Text>
       </div>
     ),
+
     value,
   };
 });
@@ -127,18 +137,30 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   rules={[
                     {
                       required: true,
-                      message: '请输入',
+                      message: formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.DE258551',
+                      }), //'请输入'
                     },
                   ]}
                   help={EmptyHelp}
                 >
                   <Input
-                    placeholder="请输入 SQL 表达式生成分区下界"
+                    placeholder={
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.D749A5F7',
+                      }) /*"请输入 SQL 表达式生成分区下界"*/
+                    }
                     {...getFieldProps(generateExprError)}
                   />
                 </Form.Item>
                 <Input.Group compact>
-                  <Tag className={styles.suffix}>间隔</Tag>
+                  <Tag className={styles.suffix}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
+                      }) /* 间隔 */
+                    }
+                  </Tag>
                   <Form.Item
                     {...field}
                     name={[field.name, 'intervalGenerateExpr']}
@@ -147,19 +169,34 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     rules={[
                       {
                         required: true,
-                        message: '请输入',
+                        message: formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.8368A05F',
+                        }), //'请输入'
                       },
                     ]}
                     help={EmptyHelp}
                   >
-                    <Input placeholder="请输入" {...getFieldProps(intervalGenerateExprError)} />
+                    <Input
+                      placeholder={
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.609871AF',
+                        }) /*"请输入"*/
+                      }
+                      {...getFieldProps(intervalGenerateExprError)}
+                    />
                   </Form.Item>
                 </Input.Group>
               </>
             ) : (
               <>
                 <Input.Group compact>
-                  <Tag className={styles.suffix}>起始</Tag>
+                  <Tag className={styles.suffix}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.C6AB94A8' /*起始*/,
+                      }) /* 起始 */
+                    }
+                  </Tag>
                   <Form.Item
                     {...field}
                     name={[field.name, 'fromCurrentTime']}
@@ -189,14 +226,20 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   rules={[
                     {
                       required: true,
-                      message: '请输入',
+                      message: formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.2F986FD8',
+                      }), //'请输入'
                     },
                   ]}
                   help={EmptyHelp}
                 >
                   <InputNumber
                     min={0}
-                    addonBefore="间隔"
+                    addonBefore={
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.5FE030CF',
+                      }) /*"间隔"*/
+                    }
                     addonAfter={
                       <Form.Item
                         {...field}
@@ -204,7 +247,9 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                         rules={[
                           {
                             required: true,
-                            message: '请选择',
+                            message: formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.7FB4A416',
+                            }), //'请选择'
                           },
                         ]}
                         noStyle

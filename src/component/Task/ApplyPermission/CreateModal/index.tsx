@@ -33,29 +33,29 @@ export const projectRoleMap = {
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Administrator',
     }),
     //'管理员'
-    description: '拥有项目内的所有权限'
+    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.92D261DD' }), //'拥有项目内的所有权限'
   },
   [ProjectRole.DEVELOPER]: {
-    label: '开发者',
-    description: '允许登录所有数据库、执行 SQL、提交工单，通常是开发人员',
+    label: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.AF13A500' }), //'开发者'
+    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.012F2C58' }), //'允许登录所有数据库、执行 SQL、提交工单，通常是开发人员'
   },
   [ProjectRole.DBA]: {
     label: 'DBA',
-    description: '在开发者的基础上，还可以管理敏感列、添加/转移数据库等'
+    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.211C9AC8' }), //'在开发者的基础上，还可以管理敏感列、添加/转移数据库等'
   },
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.SecurityAdministrator',
     }),
     //'安全管理员'
-    description: '在参与者的基础上还可以管理敏感列'
+    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.B35D50C9' }), //'在参与者的基础上还可以管理敏感列'
   },
   [ProjectRole.PARTICIPANT]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Participant',
     }),
     //'参与者'
-    description: '允许查看项目基本信息，并自助申请库权限和提交工单'
+    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.ED069A06' }), //'允许查看项目基本信息，并自助申请库权限和提交工单'
   },
 };
 interface IProps {
@@ -79,6 +79,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Text type="secondary">{role?.description}</Text>
         </div>
       ),
+
       name: roleName,
       value: id,
     };
@@ -149,8 +150,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         if (res) {
           message.success(
             formatMessage({
-              id:
-                'odc.src.component.Task.ApplyPermission.CreateModal.SuccessfulApplicationForProjectPermissions',
+              id: 'odc.src.component.Task.ApplyPermission.CreateModal.SuccessfulApplicationForProjectPermissions',
             }), //'申请项目权限成功！'
           );
           openTasksPage(
@@ -184,8 +184,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.Cancel',
               }) /* 
-         取消
-         */
+          取消
+          */
             }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
@@ -193,8 +193,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.NewlyBuilt',
               }) /* 
-         新建
-         */
+          新建
+          */
             }
           </Button>
         </Space>
@@ -298,8 +298,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               required: true,
               message: formatMessage({
-                id:
-                  'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription',
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription',
               }), //'请输入原因描述'
             },
             {
@@ -314,8 +313,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             rows={6}
             placeholder={
               formatMessage({
-                id:
-                  'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription.1',
+                id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription.1',
               }) /* 请输入原因描述 */
             }
           />

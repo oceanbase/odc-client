@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -23,27 +24,47 @@ import styles from './index.less';
 const columns = [
   {
     dataIndex: 'partitionKey',
-    title: '分区键',
+    title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.8086D142' }), //'分区键'
     ellipsis: true,
     width: 100,
   },
   {
     dataIndex: 'partitionOption',
-    title: '创建细则',
+    title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.B25F63D5' }), //'创建细则'
     ellipsis: true,
     render: (_, record) => {
       return (
         <Descriptions className={styles.rules} column={1} size="small">
-          <Descriptions.Item label="创建方式">
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.D94AE82A',
+              }) /*"创建方式"*/
+            }
+          >
             {record?.partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR
-              ? '自定义'
-              : '顺序递增'}
+              ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C9467B5B' })
+              : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.F057FAAF' })}
           </Descriptions.Item>
-          <Descriptions.Item label="起始">
-            {record?.fromCurrentTime ? '当前时间' : '指定时间'}
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.FD28073C',
+              }) /*"起始"*/
+            }
+          >
+            {record?.fromCurrentTime
+              ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.02D5A436' })
+              : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5' })}
           </Descriptions.Item>
 
-          <Descriptions.Item label="间隔">
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
+              }) /*"间隔"*/
+            }
+          >
             {record?.partitionKeyInvokerParameters?.generateParameter?.interval ||
               record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr}
           </Descriptions.Item>

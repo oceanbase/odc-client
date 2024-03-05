@@ -100,7 +100,14 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             }) /*添加数据库*/
           }
         </Button>
-        <ApplyDatabasePermissionButton label="申请库权限" projectId={projectId} />
+        <ApplyDatabasePermissionButton
+          label={
+            formatMessage({
+              id: 'src.page.Project.Database.AddDataBaseButton.B54F6D7D',
+            }) /*"申请库权限"*/
+          }
+          projectId={projectId}
+        />
       </Space>
       <Modal
         open={open}
@@ -177,6 +184,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                               marginRight: 4,
                             }}
                           />
+
                           {item.name}
                         </Tooltip>
                       </Select.Option>
@@ -231,6 +239,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                           id: 'odc.Database.AddDataBaseButton.BoundProject',
                         }) /*- 已绑定项目：*/
                       }
+
                       {p.project?.name}
                     </Select.Option>
                   );

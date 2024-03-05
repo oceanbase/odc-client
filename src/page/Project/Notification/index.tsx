@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -41,18 +42,19 @@ const Notification: React.FC<{
 }> = ({ id }) => {
   const items: MenuItem[] = [
     {
-      label: '推送记录',
+      label: formatMessage({ id: 'src.page.Project.Notification.3538B93C' }), //'推送记录'
       key: 'message',
     },
     {
-      label: '推送规则',
+      label: formatMessage({ id: 'src.page.Project.Notification.25A341FB' }), //'推送规则'
       key: 'policy',
     },
     {
-      label: '推送通道',
+      label: formatMessage({ id: 'src.page.Project.Notification.87BBE655' }), //'推送通道'
       key: 'channel',
     },
   ];
+
   const [key, setKey] = useState<string>(items?.[0]?.key as string);
   const Component = contentMap?.[key]?.component;
   const handleItemOnClick = (key: string) => {

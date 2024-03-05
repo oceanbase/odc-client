@@ -87,13 +87,19 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
               <span className={styles.userName}>{userName}</span>
             </Tooltip>
           ),
+
           key: 'username',
         },
         {
           key: 'user-role',
           label: (
             <Tooltip placement="right" title={RoleNames}>
-              <span className={styles.userRoles}>角色：{RoleNames}</span>
+              <span className={styles.userRoles}>
+                {formatMessage({
+                  id: 'src.layout.SpaceContainer.Sider.MineItem.642BE38F' /*角色：*/,
+                })}
+                {RoleNames}
+              </span>
             </Tooltip>
           ),
         },

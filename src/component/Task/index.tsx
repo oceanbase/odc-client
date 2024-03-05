@@ -53,8 +53,8 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
       };
     case TaskType.STRUCTURE_COMPARISON: {
       return {
-        [TaskExecStrategy.AUTO]: '自动执行',
-        [TaskExecStrategy.MANUAL]: '手动执行',
+        [TaskExecStrategy.AUTO]: formatMessage({ id: 'src.component.Task.9B79BD20' }), //'自动执行'
+        [TaskExecStrategy.MANUAL]: formatMessage({ id: 'src.component.Task.0B2B1D60' }), //'手动执行'
       };
     }
     default:
@@ -98,6 +98,7 @@ const TaskManaerPage: React.FC<IProps> = (props) => {
           defaultTaskType={defaultTaskType}
           defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
         />
+
         <CreateModals projectId={projectId} theme="white" />
       </div>
     </>

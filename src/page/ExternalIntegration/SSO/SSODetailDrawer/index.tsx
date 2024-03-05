@@ -111,7 +111,13 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
             <Descriptions.Item label="URL">
               {configJson?.ssoParameter?.server || '-'}
             </Descriptions.Item>
-            <Descriptions.Item label="用户 DN">
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.F86DB093',
+                }) /*"用户 DN"*/
+              }
+            >
               {configJson?.ssoParameter?.managerDn || '-'}
             </Descriptions.Item>
             <Descriptions.Item label="userSearchFilter">
@@ -194,6 +200,7 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
                 {configJson?.mappingRule?.userAccountNameField}
               </Descriptions.Item>
             )}
+
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.SSO.SSODetailDrawer.UserNicknameField',

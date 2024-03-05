@@ -36,7 +36,7 @@ const columns = [
   },
   {
     dataIndex: 'targetTableName',
-    title: '目标表名',
+    title: formatMessage({ id: 'src.component.Task.DataArchiveTask.DetailContent.8D9A2CED' }), //'目标表名'
     ellipsis: true,
     width: 190,
   },

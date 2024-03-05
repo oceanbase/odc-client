@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import {
   detailMessage,
   getChannelsList,
@@ -79,6 +80,7 @@ const Message: React.FC<{
         messageId={selectedMessageId}
         handleCloseMessageDetailDrawer={handleCloseMessageDetailDrawer}
       />
+
       <CommonTable
         ref={tableRef}
         key="MessageCommonTable"
@@ -121,25 +123,69 @@ const DetailDrawer: React.FC<{
   }, [formDrawerOpen, messageId]);
   return (
     <Drawer
-      title="推送记录详情"
+      title={
+        formatMessage({
+          id: 'src.page.Project.Notification.components.7E3088E2',
+        }) /*"推送记录详情"*/
+      }
       width={520}
       onClose={handleCloseMessageDetailDrawer}
       open={formDrawerOpen}
       destroyOnClose
     >
       <Descriptions column={1}>
-        <Descriptions.Item label="事件">{message?.title || '-'}</Descriptions.Item>
-        <Descriptions.Item label="消息通道">{message?.channel?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="生效时间">
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'src.page.Project.Notification.components.68CAD20E' }) /*"事件"*/
+          }
+        >
+          {message?.title || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.48F9F94C',
+            }) /*"消息通道"*/
+          }
+        >
+          {message?.channel?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.DA2AAC4F',
+            }) /*"生效时间"*/
+          }
+        >
           {message?.createTime ? getLocalFormatDateTime(message?.createTime) : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="最后推送时间">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.9A3FA11B',
+            }) /*"最后推送时间"*/
+          }
+        >
           {message?.lastSentTime ? getLocalFormatDateTime(message?.lastSentTime) : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="推送状态">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.A6D3B9A2',
+            }) /*"推送状态"*/
+          }
+        >
           {EMessageStatusMap?.[message?.status] || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="消息内容">{null}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.56685F5A',
+            }) /*"消息内容"*/
+          }
+        >
+          {null}
+        </Descriptions.Item>
       </Descriptions>
       <pre
         style={{

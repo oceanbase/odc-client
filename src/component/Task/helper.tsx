@@ -167,8 +167,8 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
         {
           value: TaskPageType.STRUCTURE_COMPARISON,
-          label: '结构比对',
-          //无锁结构变更
+          label: formatMessage({ id: 'src.component.Task.223677D8' }), //'结构比对'
+
           enabled: true,
         },
         {
@@ -234,7 +234,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
         {
           value: TaskPageType.APPLY_DATABASE_PERMISSION,
-          label: '申请库权限',
+          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
           enabled: !isClient() && !isPersonal,
         },
       ],

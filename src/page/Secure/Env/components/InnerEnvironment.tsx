@@ -78,11 +78,19 @@ const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
     const successful = await setEnabled(currentEnvironment?.id, !currentEnvironment.enabled);
     setLoading(false);
     if (successful) {
-      message.success(currentEnvironment.enabled ? '禁用成功' : '启用成功');
+      message.success(
+        currentEnvironment.enabled
+          ? formatMessage({ id: 'src.page.Secure.Env.components.E525BC4C' })
+          : formatMessage({ id: 'src.page.Secure.Env.components.213BB360' }),
+      );
       await initEnvironment(currentEnvironment?.id);
       return;
     }
-    message.error(currentEnvironment.enabled ? '禁用失败' : '启用失败');
+    message.error(
+      currentEnvironment.enabled
+        ? formatMessage({ id: 'src.page.Secure.Env.components.F65C4578' })
+        : formatMessage({ id: 'src.page.Secure.Env.components.DF240284' }),
+    );
   };
   return (
     <div className={styles.innerEnv}>
@@ -93,6 +101,7 @@ const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
         handleDeleteEnvironment={handleDeleteEnvironment}
         handleUpdateEnvironment={handleUpdateEnvironment}
       />
+
       <Tabs
         type="card"
         size="small"
@@ -114,6 +123,7 @@ const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
           },
         ]}
       />
+
       <div
         style={{
           height: '100%',

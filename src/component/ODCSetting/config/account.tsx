@@ -1,23 +1,24 @@
+import { formatMessage } from '@/util/intl';
 import RadioItem from '../Item/RadioItem';
 import { IODCSetting, ODCSettingGroup } from '../config';
 import { SpaceType } from '@/d.ts/_index';
 
 const accountGroup: ODCSettingGroup = {
-  label: '账号',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.01FFDFB6' }), //'账号'
   key: 'account',
 };
 const accountSpaceGroup: ODCSettingGroup = {
-  label: '空间',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.2D3DF155' }), //'空间'
   key: 'accountSpace',
 };
 const accountPrivacyGroup: ODCSettingGroup = {
-  label: '隐私',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.CE327E25' }), //'隐私'
   key: 'accountPrivacy',
 };
 
 const accountSettings: IODCSetting[] = [
   {
-    label: '默认空间',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.099F3C40' }), //'默认空间'
     key: 'odc.account.defaultOrganizationType',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
@@ -27,11 +28,11 @@ const accountSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '团队空间',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.A846B841' }), //'团队空间'
               value: SpaceType.SYNERGY,
             },
             {
-              label: '个人空间',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.5C426BEE' }), //'个人空间'
               value: SpaceType.PRIVATE,
             },
           ]}
@@ -42,7 +43,7 @@ const accountSettings: IODCSetting[] = [
     },
   },
   {
-    label: '用户行为分析',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.7925A54D' }), //'用户行为分析'
     key: 'odc.account.userBehaviorAnalysisEnabled',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
@@ -52,11 +53,11 @@ const accountSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '开启',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.E78E7A5E' }), //'开启'
               value: 'true',
             },
             {
-              label: '关闭',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.BE020520' }), //'关闭'
               value: 'false',
             },
           ]}

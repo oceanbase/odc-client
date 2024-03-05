@@ -61,7 +61,7 @@ const EnvironmentInfo: React.FC<{
           <Space size={0}>
             <RiskLevelLabel content={name} color={style} />
             {!enabled && (
-              <Tooltip title={'环境已被禁用'}>
+              <Tooltip title={formatMessage({ id: 'src.page.Secure.Env.components.60756A4B' })}>
                 <ExclamationCircleFilled
                   style={{
                     color: 'var(--function-gold6-color)',
@@ -79,14 +79,22 @@ const EnvironmentInfo: React.FC<{
             loading={loading}
             disabled={loading}
           >
-            {enabled ? '禁用' : '启用'}
+            {enabled
+              ? formatMessage({ id: 'src.page.Secure.Env.components.A4A3A31E' })
+              : formatMessage({ id: 'src.page.Secure.Env.components.63058F33' })}
           </Button>
           {builtIn ? null : (
             <Dropdown
               menu={{
                 items: [
-                  { label: '编辑环境', key: 'edit' },
-                  { label: '删除环境', key: 'delete' },
+                  {
+                    label: formatMessage({ id: 'src.page.Secure.Env.components.FF5B44FE' }), //'编辑环境'
+                    key: 'edit',
+                  },
+                  {
+                    label: formatMessage({ id: 'src.page.Secure.Env.components.75B57B74' }), //'删除环境'
+                    key: 'delete',
+                  },
                 ],
                 onClick: handleMenuOnClick,
               }}

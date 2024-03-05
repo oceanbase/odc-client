@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useEffect } from 'react';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
 import SessionContext from '../context';
@@ -66,6 +67,7 @@ const SelectItem: React.FC<IProps> = ({
                         content={database?.data?.environment?.name}
                         color={database?.data?.environment?.style}
                       />
+
                       <Icon
                         component={dbIcon?.component}
                         style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
@@ -88,8 +90,20 @@ const SelectItem: React.FC<IProps> = ({
             split={<Divider type="vertical" />}
             style={{ color: 'var(--text-color-hint)' }}
           >
-            {login.isPrivateSpace() ? null : <span>项目：{database?.data?.project?.name}</span>}
-            <span>数据源：{database?.data?.dataSource?.name}</span>
+            {login.isPrivateSpace() ? null : (
+              <span>
+                {formatMessage({
+                  id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
+                })}
+                {database?.data?.project?.name}
+              </span>
+            )}
+            <span>
+              {formatMessage({
+                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,
+              })}
+              {database?.data?.dataSource?.name}
+            </span>
           </Space>
         ) : null}
       </Space>

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -31,7 +32,11 @@ const DBPermissionTableDrawer: React.FC<IProps> = function ({ visible, dataSourc
       width={832}
       destroyOnClose
       open={visible}
-      title='权限检查结果'
+      title={
+        formatMessage({
+          id: 'src.page.Workspace.components.SQLResultSet.B81C8729',
+        }) /*'权限检查结果'*/
+      }
       footer={
         <Space
           style={{
@@ -39,13 +44,17 @@ const DBPermissionTableDrawer: React.FC<IProps> = function ({ visible, dataSourc
           }}
         >
           <Button onClick={onClose}>
-            关闭
+            {
+              formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.2C272DCF' /*关闭*/,
+              }) /* 关闭 */
+            }
           </Button>
         </Space>
       }
       onClose={onClose}
     >
-     <DBPermissionTableContent dataSource={dataSource} />
+      <DBPermissionTableContent dataSource={dataSource} />
     </Drawer>
   );
 };

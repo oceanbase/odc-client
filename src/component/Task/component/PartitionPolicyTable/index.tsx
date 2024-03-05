@@ -50,11 +50,11 @@ export const getStrategyLabelByConfig = (config: Partial<IPartitionTableConfig>)
 
 const configStatusFilters = [
   {
-    text: '已启用',
+    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.AB027BA5' }), //'已启用'
     value: true,
   },
   {
-    text: '已终止',
+    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.53F091D2' }), //'已终止'
     value: false,
   },
 ];
@@ -68,12 +68,24 @@ const ConfigStatusRender: React.FC<IConfigStatusRender> = (enabled) => {
       {enabled ? (
         <>
           <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />
-          <span>已启用</span>
+          <span>
+            {
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.274DB973' /*已启用*/,
+              }) /* 已启用 */
+            }
+          </span>
         </>
       ) : (
         <>
           <StopFilled style={{ color: 'var(--icon-color-disable)' }} />
-          <span>已终止</span>
+          <span>
+            {
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.C7EDE8D6' /*已终止*/,
+              }) /* 已终止 */
+            }
+          </span>
         </>
       )}
     </Space>
@@ -112,7 +124,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
 
   const columns = [
     {
-      title: '分区表',
+      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.43CFD7CB' }), //'分区表'
       key: 'tableName',
       dataIndex: 'tableName',
       width: 114,
@@ -130,27 +142,35 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       filterIcon: (filtered) => (
         <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
       ),
+
       filters: [],
     },
     {
       dataIndex: 'type',
-      title: '类型',
+      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.5C3A7795' }), //'类型'
       ellipsis: true,
       width: 114,
       render: () => <span>Range</span>,
     },
     {
-      title: '分区策略',
+      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.CE0CCA9F' }), //'分区策略'
       key: 'containsStrategy',
       dataIndex: 'containsStrategy',
       ellipsis: true,
       render: (_, record) => {
         const label = getStrategyLabelByConfig(record);
-        return <span>已设置{label}</span>;
+        return (
+          <span>
+            {formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyTable.84B9C347' /*已设置*/,
+            })}
+            {label}
+          </span>
+        );
       },
     },
     {
-      title: '状态',
+      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.1CFAC78A' }), //'状态'
       key: 'enabled',
       dataIndex: 'enabled',
       width: 80,
@@ -159,7 +179,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       render: ConfigStatusRender,
     },
     {
-      title: '操作',
+      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.768A8D6A' }), //'操作'
       key: 'action',
       render: (enabled, record) => {
         return (
@@ -169,7 +189,11 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
                 handleConfig(record?.id);
               }}
             >
-              查看
+              {
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.BF0C419E' /*查看*/,
+                }) /* 查看 */
+              }
             </Action.Link>
           </Space>
         );
@@ -223,6 +247,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
           },
         }}
       />
+
       <ConfigDrawer
         visible={visible}
         config={activeConfig}

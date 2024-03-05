@@ -68,10 +68,16 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
               id: 'odc.src.component.Task.PartitionTask.DetailContent.Partition',
             }) /* 
           分区计划
-         */
+          */
           }
         </Descriptions.Item>
-        <Descriptions.Item label="数据库">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.F74A95F4',
+            }) /*"数据库"*/
+          }
+        >
           <Space size={2}>
             <span>{task?.database?.name || '-'}</span>
             <Text type="secondary">{task?.database?.dataSource?.name}</Text>
@@ -95,21 +101,48 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
         <CycleDescriptionItem
           triggerConfig={creationTrigger}
           nextFireTimes={createTriggerNextFireTimes}
-          label="创建策略执行周期"
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.5FC1C8E8',
+            }) /*"创建策略执行周期"*/
+          }
         />
       )}
+
       {droppingTrigger && (
         <CycleDescriptionItem
           triggerConfig={droppingTrigger}
           nextFireTimes={dropTriggerNextFireTimes}
-          label="删除策略执行周期"
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.380BE45E',
+            }) /*"删除策略执行周期"*/
+          }
         />
       )}
+
       <Descriptions column={2}>
-        <Descriptions.Item label="任务错误处理">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.63D30920',
+            }) /*"任务错误处理"*/
+          }
+        >
           {ErrorStrategyMap[errorStrategy]}
         </Descriptions.Item>
-        <Descriptions.Item label="执行超时时间">{executionTimeout || '-'}小时</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.477F07A5',
+            }) /*"执行超时时间"*/
+          }
+        >
+          {executionTimeout || '-'}
+          {formatMessage({
+            id: 'src.component.Task.PartitionTask.DetailContent.B08D0E80' /*小时*/,
+          })}
+        </Descriptions.Item>
         <Descriptions.Item
           span={2}
           label={

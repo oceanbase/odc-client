@@ -107,7 +107,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 </div>
                 {enabledTargetTable && (
                   <div>
-                    目标表
+                    {formatMessage({
+                      id: 'src.component.Task.DataArchiveTask.CreateModal.50BCBA55' /*目标表*/,
+                    })}
+
                     <Text type="secondary">
                       {
                         formatMessage({
@@ -160,9 +163,16 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         </Form.Item>
                         {enabledTargetTable && (
                           <Form.Item {...restField} name={[name, 'targetTableName']}>
-                            <Input placeholder="请输入" />
+                            <Input
+                              placeholder={
+                                formatMessage({
+                                  id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                }) /*"请输入"*/
+                              }
+                            />
                           </Form.Item>
                         )}
+
                         {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
                       </div>
                     ))}

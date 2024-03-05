@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -117,6 +118,7 @@ export default class ScriptPage extends PureComponent<IProps> {
           {showSessionSelect && (
             <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
           )}
+
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {
@@ -171,7 +173,11 @@ export default class ScriptPage extends PureComponent<IProps> {
                   return;
                 }
                 if (snippetStore.snippetDragging.databaseId !== session.database.databaseId) {
-                  message.warn('该对象不属于当前数据库');
+                  message.warn(
+                    formatMessage({
+                      id: 'src.component.ScriptPage.D0B6C37B' /*'该对象不属于当前数据库'*/,
+                    }),
+                  );
                   return;
                 }
                 const CLOSE_INSERT_PROMPT = localStorage.getItem(CLOSE_INSERT_PROMPT_KEY);
@@ -244,6 +250,7 @@ export default class ScriptPage extends PureComponent<IProps> {
         ) : (
           this.renderPanels()
         )}
+
         <StatusBar statusBar={statusBar} />
         <TemplateInsertModal
           session={session}
@@ -276,6 +283,7 @@ export default class ScriptPage extends PureComponent<IProps> {
             );
           }}
         />
+
         <CustomDragLayer />
       </Layout>
     );

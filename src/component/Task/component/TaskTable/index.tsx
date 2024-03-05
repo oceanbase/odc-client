@@ -121,8 +121,12 @@ export const TaskTypeMap = {
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
   }), //'申请项目权限'
-  [TaskType.APPLY_DATABASE_PERMISSION]: '申请库权限',
-  [TaskType.STRUCTURE_COMPARISON]: '结构比对',
+  [TaskType.APPLY_DATABASE_PERMISSION]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.E1E161BA',
+  }), //'申请库权限'
+  [TaskType.STRUCTURE_COMPARISON]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.80E1D16A',
+  }), //'结构比对'
 };
 export const getStatusFilters = (status: {
   [key: string]: {
@@ -149,6 +153,7 @@ interface IProps {
     | TaskRecord<TaskRecordParameters>
     | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
   >;
+
   isMultiPage?: boolean;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
@@ -255,6 +260,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
@@ -309,6 +315,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.candidateApprovers || null,
           filters: [],
           render: (candidateApprovers) =>
@@ -345,6 +352,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.creator || null,
           filters: [],
           render: (creator) => {
@@ -400,6 +408,7 @@ const TaskTable: React.FC<IProps> = inject(
           ),
         },
       ];
+
       return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
     }
     const handleChange = (params: ITableLoadOptions) => {
@@ -436,6 +445,7 @@ const TaskTable: React.FC<IProps> = inject(
                       <DownOutlined />
                     </Button>
                   ),
+
                   menu: {
                     onClick: ({ key }) => {
                       props.onMenuClick(key as TaskPageType);
@@ -515,6 +525,7 @@ const TaskTable: React.FC<IProps> = inject(
                     }}
                   />
                 );
+
                 return content;
               },
             },

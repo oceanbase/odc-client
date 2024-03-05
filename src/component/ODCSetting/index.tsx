@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Button, Col, Form, Modal, Row, Space, Tabs, Typography, message } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup, odcSettingMap } from './config';
@@ -154,18 +155,20 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       await saveODCSetting(JSON.stringify(localData));
     }
     if (isSuccess) {
-      message.success('保存成功');
+      message.success(formatMessage({ id: 'src.component.ODCSetting.E6DD81BF' /*'保存成功'*/ }));
       modalStore.changeOdcSettingVisible(false);
     }
   }
 
   function reset() {
     Modal.confirm({
-      title: '确定要恢复默认设置吗？',
+      title: formatMessage({ id: 'src.component.ODCSetting.647A18AA' }), //'确定要恢复默认设置吗？'
       onOk: async () => {
         const isSuccess = await setting.resetUserConfig();
         if (isSuccess) {
-          message.success('已恢复到默认配置');
+          message.success(
+            formatMessage({ id: 'src.component.ODCSetting.654799D1' /*'已恢复到默认配置'*/ }),
+          );
           modalStore.changeOdcSettingVisible(false);
         }
       },
@@ -175,10 +178,18 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   function footerRender() {
     return (
       <Space>
-        <Button onClick={() => modalStore.changeOdcSettingVisible(false)}>取消</Button>
-        <Button onClick={reset}>恢复默认设置</Button>
+        <Button onClick={() => modalStore.changeOdcSettingVisible(false)}>
+          {formatMessage({ id: 'src.component.ODCSetting.995A8948' /*取消*/ }) /* 取消 */}
+        </Button>
+        <Button onClick={reset}>
+          {
+            formatMessage({
+              id: 'src.component.ODCSetting.82931AF2' /*恢复默认设置*/,
+            }) /* 恢复默认设置 */
+          }
+        </Button>
         <Button type="primary" onClick={save}>
-          保存
+          {formatMessage({ id: 'src.component.ODCSetting.AB9A3FA4' /*保存*/ }) /* 保存 */}
         </Button>
       </Space>
     );
@@ -189,7 +200,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       width={760}
       open={modalStore.odcSettingVisible}
       onCancel={() => modalStore.changeOdcSettingVisible(false)}
-      title="设置"
+      title={formatMessage({ id: 'src.component.ODCSetting.AEB0A2EF' }) /*"设置"*/}
       footer={footerRender()}
     >
       <div className={styles.box}>

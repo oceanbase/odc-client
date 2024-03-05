@@ -110,7 +110,11 @@ export default function UpdateUserModal({
               {
                 label: (
                   <HelpDoc leftText doc="projectDev">
-                    开发者
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.UpdateUserModal.09F81F9F' /*开发者*/,
+                      }) /* 开发者 */
+                    }
                   </HelpDoc>
                 ),
 
