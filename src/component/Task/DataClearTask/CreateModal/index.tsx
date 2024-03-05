@@ -59,12 +59,25 @@ export const variable = {
   format: '',
   pattern: [null],
 };
+
+const deleteByUniqueKeyOptions = [
+  {
+    label: '是',
+    value: true,
+  },
+  {
+    label: '否',
+    value: false,
+  },
+];
+
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
+  deleteByUniqueKey: false,
 };
 interface IProps {
   modalStore?: ModalStore;
@@ -128,12 +141,13 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       triggerConfig: { triggerStrategy, cronExpression, hours, days, startAt },
     } = data;
-    const { sourceDatabaseId, rateLimit, tables, variables } = jobParameters;
+    const { sourceDatabaseId, rateLimit, tables, variables, deleteByUniqueKey } = jobParameters;
     const formData = {
       databaseId: sourceDatabaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       tables,
+      deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
       triggerStrategy,
@@ -245,6 +259,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
+          deleteByUniqueKey,
         } = values;
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -252,6 +267,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           taskId: editTaskId,
           scheduleTaskParameters: {
             databaseId,
+            deleteByUniqueKey,
             variables: getVariables(variables),
             tables:
               archiveRange === IArchiveRange.ALL
@@ -500,6 +516,18 @@ const CreateModal: React.FC<IProps> = (props) => {
           keepExpand
         >
           <ThrottleFormItem />
+          <Form.Item
+            label="使用主键清理"
+            name="deleteByUniqueKey"
+            rules={[
+              {
+                required: true,
+                message: '请选择',
+              },
+            ]}
+          >
+            <Radio.Group options={deleteByUniqueKeyOptions} />
+          </Form.Item>
         </FormItemPanel>
         <DescriptionInput />
       </Form>

@@ -2270,6 +2270,7 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
@@ -2291,6 +2292,7 @@ export interface IDataClearJobParameters {
   sourceDatabaseName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
+  deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;

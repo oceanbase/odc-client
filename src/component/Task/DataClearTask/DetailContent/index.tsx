@@ -215,6 +215,9 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             onOk={handleDataSizeLimit}
           />
         </Descriptions.Item>
+        <Descriptions.Item label="使用主键清理">
+          {jobParameters?.deleteByUniqueKey ? '是' : '否'}
+        </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataClearTask.DetailContent.Description',
