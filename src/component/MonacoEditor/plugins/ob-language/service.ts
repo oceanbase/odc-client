@@ -114,7 +114,10 @@ export function getModelService(
       return [];
     },
     async getSchemaList() {
-      return [sessionFunc()?.database?.dbName].filter(Boolean);
+      if (!Object.keys(sessionFunc()?.allIdentities).length) {
+        sessionFunc()?.queryIdentities();
+      }
+      return Object.keys(sessionFunc()?.allIdentities);
     },
     async getFunctions() {
       if (!sessionFunc()?.database.functions) {
