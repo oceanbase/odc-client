@@ -15,7 +15,7 @@ export const FormEnvironmentModal: React.FC<{
   formEnvironmentModalOpen: boolean;
   options: SelectProps['options'];
   handleCancelFormModal: () => void;
-  callback: () => void;
+  callback: (environmentId: number) => void;
 }> = ({
   isEdit = false,
   currentEnvironment = null,
@@ -31,22 +31,22 @@ export const FormEnvironmentModal: React.FC<{
       return;
     }
     const formData = await formRef.validateFields()?.catch();
-    let successful;
+    let result;
     setLoading(true);
     if (isEdit) {
-      successful = await updateEnvironment(currentEnvironment?.id, formData);
+      result = await updateEnvironment(currentEnvironment?.id, formData);
     } else {
       formData.enabled = true;
-      successful = await createEnvironment(formData);
+      result = await createEnvironment(formData);
     }
     setLoading(false);
-    if (successful) {
+    if (result?.successful) {
       message.success(
         currentEnvironment
           ? formatMessage({ id: 'src.page.Secure.Env.components.6BD18E5A' })
           : formatMessage({ id: 'src.page.Secure.Env.components.CEAD4978' }),
       );
-      currentEnvironment && (await callback?.());
+      currentEnvironment && (await callback?.(result?.data?.id));
       return;
     }
     message.error(
@@ -143,11 +143,7 @@ export const FormEnvironmentModal: React.FC<{
             <Input
               disabled={isEdit}
               style={{ width: '240px' }}
-              placeholder={
-                formatMessage({
-                  id: 'src.page.Secure.Env.components.29F0242B',
-                }) /*"请输入环境名称"*/
-              }
+              placeholder={'请输入，8个字符以内'}
             />
           </Form.Item>
           <div className={styles.envNameTip}>

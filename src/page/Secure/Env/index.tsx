@@ -115,9 +115,9 @@ const Environment = () => {
       },
     });
   };
-  const callback = async () => {
+  const callback = async (environmentId: number = null) => {
     setFormEnvironmentModalOpen(false);
-    await initEnvironment(currentEnvironment?.id);
+    await initEnvironment(environmentId || currentEnvironment?.id);
     setIsEdit(null);
   };
   const loadIntegrations = async () => {
