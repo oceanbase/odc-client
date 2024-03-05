@@ -411,9 +411,8 @@ const Database: React.FC<IProps> = ({ id }) => {
                     </Tooltip>
                   </Action.Link>
                   <Action.Link
-                    key="changeOwner"
+                    key={'changeOwner'}
                     onClick={() => {
-                      // TODO tracert.click('id');
                       setChangeOwnerModalVisible(true);
                       setDatabase(record);
                     }}

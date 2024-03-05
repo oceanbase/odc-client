@@ -85,6 +85,20 @@ export async function updateDataBase(
   return res?.data;
 }
 
+export async function updateDataBaseOwner(
+  databaseIds: number[],
+  projectId: number,
+  ownerIds: number[],
+): Promise<Boolean> {
+  const res = await request.put(`/api/v2/database/databases/owner/${projectId}`, {
+    data: {
+      databaseIds,
+      ownerIds,
+    },
+  });
+  return res?.data;
+}
+
 export async function getDatabase(
   databaseId: number,
   ignoreError?: boolean,

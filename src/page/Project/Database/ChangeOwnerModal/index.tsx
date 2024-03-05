@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { updateDataBase } from '@/common/network/database';
+import { updateDataBaseOwner } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 import { formatMessage } from '@/util/intl';
@@ -40,7 +40,7 @@ export default function ChangeOwnerModal({
 }: IProps) {
   const { project } = useContext(ProjectContext);
 
-  const { run: startUpdateDataBase, loading: saveOwnerLoading } = useRequest(updateDataBase, {
+  const { run: startUpdateDataBase, loading: saveOwnerLoading } = useRequest(updateDataBaseOwner, {
     manual: true,
   });
 
