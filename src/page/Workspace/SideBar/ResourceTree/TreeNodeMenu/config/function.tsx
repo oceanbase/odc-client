@@ -194,6 +194,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
+      },
       async run(session, node) {
         const func: IFunction = node.data;
         const { plPage, isNew } = await openFunctionEditPageByFuncName(

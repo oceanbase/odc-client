@@ -80,6 +80,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       ],
       obclient: true,
       recycleBin: false,
+      plRun: true,
       sessionManage: true,
       sqlExplain: true,
       export: {

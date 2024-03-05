@@ -132,6 +132,7 @@ export interface IDataSourceModeConfig {
     plEdit?: boolean;
     anonymousBlock?: boolean;
     supportOBProxy?: boolean;
+    plRun?: boolean;
     export: {
       fileLimit: boolean;
       snapshot: boolean;

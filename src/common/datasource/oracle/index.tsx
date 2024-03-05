@@ -75,13 +75,13 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       recycleBin: false,
       sqlExplain: false,
       sessionManage: true,
-      compile: true,
+      compile: false,
       plEdit: true,
       anonymousBlock: true,
       supportOBProxy: false,
       export: {
-        fileLimit: true,
-        snapshot: true,
+        fileLimit: false,
+        snapshot: false,
       },
     },
     schema: {

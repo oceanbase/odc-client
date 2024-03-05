@@ -190,10 +190,13 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
-
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
+      },
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
+
       async run(session, node) {
         const proc: IProcedure = node.data;
         const { plPage, isNew } = await openProcedureEditPageByProName(

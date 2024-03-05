@@ -77,6 +77,7 @@ const items: Record<
       sqlExplain: true,
       sessionManage: true,
       supportOBProxy: true,
+      plRun: true,
       export: {
         fileLimit: true,
         snapshot: true,
