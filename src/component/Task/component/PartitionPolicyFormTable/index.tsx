@@ -131,13 +131,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           <div className={styles.rangConfig}>
             {label?.length ? (
               <Space>
-                <span>
-                  {
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.92C4082E' /*已设置:&nbsp;*/,
-                    }) /* 已设置:&nbsp; */
-                  }
-                </span>
+                <span>已设置:</span>
                 <span>{label}</span>
               </Space>
             ) : (
@@ -178,7 +172,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   function handleFilter(data: ITableConfig[]) {
     const { tableName } = filters ?? {};
     return data
-      ?.filter((item) => (isOnlyNoSetTable ? !item?.option : true))
+      ?.filter((item) => (isOnlyNoSetTable ? !item?.strategies?.length : true))
       ?.filter((item) => {
         return tableName?.[0] ? item.tableName.indexOf(tableName[0]) > -1 : true;
       });
