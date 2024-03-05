@@ -241,6 +241,9 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
+      },
       actionType: actionTypes.update,
       async run(session, node) {
         const pkgInfo = node.pkg;

@@ -67,6 +67,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       sqlExplain: true,
       compile: true,
       plEdit: true,
+      plRun: true,
       anonymousBlock: true,
       supportOBProxy: true,
       export: {
