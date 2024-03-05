@@ -57,7 +57,11 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
       {disabled ? (
         <Tooltip
           placement={'right'}
-          title={`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`}
+          title={
+            formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.7885F651',
+            }) /*`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`*/
+          }
         >
           <div className={styles.textoverflow}>{db.name}</div>
         </Tooltip>
@@ -70,6 +74,7 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
           <div className={styles.textoverflow}>{db.name}</div>
         </Popover>
       )}
+
       <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
     </>
   );
@@ -247,6 +252,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                 <div className={styles.textoverflow}>{item.name}</div>
               </Popover>
             ),
+
             icon: <StatusIcon item={item} />,
             key: item.id,
             selectable: true,
@@ -370,6 +376,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                   }}
                 />
               ),
+
               key: item.id,
               selectable: false,
               isLeaf: false,
@@ -457,6 +464,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                   ]}
                 />
               )}
+
               <Input
                 size="small"
                 value={searchValue}

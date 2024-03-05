@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -33,8 +34,9 @@ const SettingItem: React.FC<IProps> = function ({ collapsed }) {
         }}
         icon={SettingOutlined}
         collapsed={collapsed}
-        label={'设置'}
+        label={formatMessage({ id: 'src.layout.SpaceContainer.Sider.SettingItem.CBBE0F8B' })}
       />
+
       <ODCSetting />
     </>
   );

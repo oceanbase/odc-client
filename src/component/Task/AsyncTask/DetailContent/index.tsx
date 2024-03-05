@@ -94,8 +94,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
             }) /* 
-           数据库变更
-           */
+          数据库变更
+          */
           }
         </Descriptions.Item>
         {hasFlow && (
@@ -134,6 +134,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <SimpleTextItem
         label={
           <Space>
@@ -167,6 +168,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <Descriptions
         column={2}
         style={{
@@ -224,7 +226,12 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             </div>
             {result?.autoModifyTimeout && (
               <Tooltip
-                title={`变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 ${executionTimeout} 小时`}
+                title={
+                  formatMessage(
+                    { id: 'src.component.Task.AsyncTask.DetailContent.07EB87E6' },
+                    { executionTimeout: executionTimeout },
+                  ) /*`变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 ${executionTimeout} 小时`*/
+                }
               >
                 <div
                   style={{
@@ -261,6 +268,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             {getFormatDateTime(task?.executionTime)}
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           span={2}
           label={
@@ -277,6 +285,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           span={2}

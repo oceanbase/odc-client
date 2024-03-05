@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -45,7 +46,11 @@ const CycleDescriptionItem: React.FC<IProps> = (props) => {
           className={styles['next-time']}
           expandIcon={({ isActive }) => (
             <SimpleTextItem
-              label="下一次执行时间"
+              label={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.DetailContent.9E174828',
+                }) /*"下一次执行时间"*/
+              }
               content={
                 <Space>
                   {getFormatDateTime(nextFireTimes?.[0])}

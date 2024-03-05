@@ -68,6 +68,7 @@ export const InsertActionOptions = [
     value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   },
 ];
+
 export const variable = {
   name: '',
   format: '',
@@ -274,6 +275,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.DataArchiveTask.CreateModal.Cancel',
       }),
@@ -420,12 +422,12 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   const getDrawerTitle = () => {
-    let title = '新建数据归档';
+    let title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.81AF31F1' }); //'新建数据归档'
     if (dataArchiveEditId) {
       if (isEdit) {
-        title = '编辑数据归档';
+        title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.77394106' });
       } else {
-        title = '再次发起数据归档';
+        title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.364BA033' });
       }
     }
     return title;

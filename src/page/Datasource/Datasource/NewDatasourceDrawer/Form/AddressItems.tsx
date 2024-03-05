@@ -66,8 +66,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                 }}
                 label={
                   formatMessage({
-                    id:
-                      'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.HostIPDomainName',
+                    id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.HostIPDomainName',
                   }) //"主机 IP/域名"
                 }
                 rules={[
@@ -184,7 +183,15 @@ const AddressItems: React.FC<IProps> = function (props) {
                   const serviceName = getFieldValue('serviceName');
                   const type = isNil(serviceName) ? 'sid' : 'serviceName';
                   return (
-                    <Form.Item required label="数据库" shouldUpdate>
+                    <Form.Item
+                      required
+                      label={
+                        formatMessage({
+                          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.BDA4C2AB',
+                        }) /*"数据库"*/
+                      }
+                      shouldUpdate
+                    >
                       <Space.Compact block>
                         <div style={{ width: '30%' }}>
                           <Select
@@ -197,7 +204,9 @@ const AddressItems: React.FC<IProps> = function (props) {
                                 value: 'sid',
                               },
                               {
-                                label: '服务名',
+                                label: formatMessage({
+                                  id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.C2435F5F',
+                                }), //'服务名'
                                 value: 'serviceName',
                               },
                             ]}

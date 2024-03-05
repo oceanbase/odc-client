@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -32,21 +33,25 @@ import styles from './index.less';
 const { Text } = Typography;
 
 const descMap = {
-  [PermissionSourceType.TICKET_APPLICATION]: '通过工单申请的数据库权限',
-  [PermissionSourceType.USER_AUTHORIZATION]: '通过管理员赋予的数据库权限',
+  [PermissionSourceType.TICKET_APPLICATION]: formatMessage({
+    id: 'src.page.Project.User.ManageModal.052E4C60',
+  }), //'通过工单申请的数据库权限'
+  [PermissionSourceType.USER_AUTHORIZATION]: formatMessage({
+    id: 'src.page.Project.User.ManageModal.3A14AB40',
+  }), //'通过管理员赋予的数据库权限'
 };
 
 export const databasePermissionTypeMap = {
   [DatabasePermissionType.QUERY]: {
-    text: '查询',
+    text: formatMessage({ id: 'src.page.Project.User.ManageModal.CDB8A0AA' }), //'查询'
     value: DatabasePermissionType.QUERY,
   },
   [DatabasePermissionType.EXPORT]: {
-    text: '导出',
+    text: formatMessage({ id: 'src.page.Project.User.ManageModal.6CDF0607' }), //'导出'
     value: DatabasePermissionType.EXPORT,
   },
   [DatabasePermissionType.CHANGE]: {
-    text: '变更',
+    text: formatMessage({ id: 'src.page.Project.User.ManageModal.2DDCB471' }), //'变更'
     value: DatabasePermissionType.CHANGE,
   },
 };
@@ -112,17 +117,29 @@ const ManageModal: React.FC<IProps> = (props) => {
 
   const handleReclaim = async (ids: number[]) => {
     const isBatch = ids?.length > 1;
-    const title = isBatch ? '确认要批量回收权限吗？' : '确认要回收权限吗？';
+    const title = isBatch
+      ? formatMessage({ id: 'src.page.Project.User.ManageModal.A23DCE27' })
+      : formatMessage({ id: 'src.page.Project.User.ManageModal.8B929D18' });
     Modal.confirm({
       title,
-      content: <Text type="secondary">回收后不可撤回</Text>,
-      cancelText: '取消',
-      okText: '确定',
+      content: (
+        <Text type="secondary">
+          {
+            formatMessage({
+              id: 'src.page.Project.User.ManageModal.B7377F46' /*回收后不可撤回*/,
+            }) /* 回收后不可撤回 */
+          }
+        </Text>
+      ),
+      cancelText: formatMessage({ id: 'src.page.Project.User.ManageModal.2FE8276F' }), //'取消'
+      okText: formatMessage({ id: 'src.page.Project.User.ManageModal.1C087F21' }), //'确定'
       centered: true,
       onOk: async () => {
         const res = await reclaimPermission(projectId, ids);
         if (res) {
-          message.success('操作成功');
+          message.success(
+            formatMessage({ id: 'src.page.Project.User.ManageModal.B3D76C33' /*'操作成功'*/ }),
+          );
           tableRef.current?.resetSelectedRows();
           handleReload();
         }
@@ -148,7 +165,7 @@ const ManageModal: React.FC<IProps> = (props) => {
     <Drawer
       open={visible}
       width={925}
-      title="管理库权限"
+      title={formatMessage({ id: 'src.page.Project.User.ManageModal.211FFE62' }) /*"管理库权限"*/}
       destroyOnClose
       className={styles.detailDrawer}
       footer={null}
@@ -160,10 +177,29 @@ const ManageModal: React.FC<IProps> = (props) => {
         {isOwner && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}
-        <Text strong>授权记录</Text>
+
+        <Text strong>
+          {
+            formatMessage({
+              id: 'src.page.Project.User.ManageModal.12DB9111' /*授权记录*/,
+            }) /* 授权记录 */
+          }
+        </Text>
         <Radio.Group onChange={handleChangeKey} value={authorizationType}>
-          <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>工单申请</Radio.Button>
-          <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>用户授权</Radio.Button>
+          <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>
+            {
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.1DCD8093' /*工单申请*/,
+              }) /* 工单申请 */
+            }
+          </Radio.Button>
+          <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>
+            {
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.28BC85BF' /*用户授权*/,
+              }) /* 用户授权 */
+            }
+          </Radio.Button>
         </Radio.Group>
       </Space>
       <div className={styles.content}>

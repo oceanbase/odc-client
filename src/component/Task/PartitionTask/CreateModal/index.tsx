@@ -444,6 +444,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 : null
             }
           />
+
           <Form.Item required className={styles.tableWrapper}>
             <PartitionPolicyFormTable
               databaseId={databaseId}
@@ -456,7 +457,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           <Form.Item>
             <Crontab
               ref={crontabRef}
-              title="创建策略执行周期"
+              title={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.FE8DED05',
+                }) /*"创建策略执行周期"*/
+              }
               initialValue={crontab}
               onValueChange={(value) => {
                 handleCrontabChange(value);
@@ -465,9 +470,21 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           </Form.Item>
           <Form.Item name="isCustomStrategy" valuePropName="checked">
             <Checkbox>
-              <span>自定义删除策略执行周期</span>
+              <span>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.BE341FCE' /*自定义删除策略执行周期*/,
+                  }) /* 自定义删除策略执行周期 */
+                }
+              </span>
               <Paragraph>
-                <Text type="secondary">未勾选时，删除策略执行周期将与创建一致</Text>
+                <Text type="secondary">
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
+                    }) /* 未勾选时，删除策略执行周期将与创建一致 */
+                  }
+                </Text>
               </Paragraph>
             </Checkbox>
           </Form.Item>
@@ -475,7 +492,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             <Form.Item>
               <Crontab
                 ref={crontabDropRef}
-                title="删除策略执行周期"
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.4E5BCFE8',
+                  }) /*"删除策略执行周期"*/
+                }
                 initialValue={crontab}
                 onValueChange={(value) => {
                   handleCrontabChange(value, true);
@@ -483,43 +504,90 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               />
             </Form.Item>
           )}
-          <FormItemPanel label="任务设置" keepExpand>
+
+          <FormItemPanel
+            label={
+              formatMessage({
+                id: 'src.component.Task.PartitionTask.CreateModal.5E1CE4EC',
+              }) /*"任务设置"*/
+            }
+            keepExpand
+          >
             <Form.Item
-              label="任务错误处理"
+              label={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.0B2DB017',
+                }) /*"任务错误处理"*/
+              }
               name="errorStrategy"
               rules={[
                 {
                   required: true,
-                  message: '请选择任务错误处理',
+                  message: formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.6C651A64',
+                  }), //'请选择任务错误处理'
                 },
               ]}
             >
               <Radio.Group>
-                <Radio value={TaskErrorStrategy.ABORT}>停止任务</Radio>
-                <Radio value={TaskErrorStrategy.CONTINUE}>忽略错误继续任务</Radio>
+                <Radio value={TaskErrorStrategy.ABORT}>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.A8B04845' /*停止任务*/,
+                    }) /* 停止任务 */
+                  }
+                </Radio>
+                <Radio value={TaskErrorStrategy.CONTINUE}>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.E454F701' /*忽略错误继续任务*/,
+                    }) /* 忽略错误继续任务 */
+                  }
+                </Radio>
               </Radio.Group>
             </Form.Item>
           </FormItemPanel>
-          <Form.Item label="执行超时时间" required>
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.PartitionTask.CreateModal.59540029',
+              }) /*"执行超时时间"*/
+            }
+            required
+          >
             <Form.Item
-              label="小时"
+              label={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.0A49F493',
+                }) /*"小时"*/
+              }
               name="timeoutMillis"
               rules={[
                 {
                   required: true,
-                  message: '请输入超时时间',
+                  message: formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.05B817DF',
+                  }), //'请输入超时时间'
                 },
                 {
                   type: 'number',
                   max: 480,
-                  message: '最大不超过480小时',
+                  message: formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.25D1BD6D',
+                  }), //'最大不超过480小时'
                 },
               ]}
               noStyle
             >
               <InputNumber min={0} precision={1} />
             </Form.Item>
-            <span style={{ marginLeft: '5px' }}>小时</span>
+            <span style={{ marginLeft: '5px' }}>
+              {
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.53678847' /*小时*/,
+                }) /* 小时 */
+              }
+            </span>
           </Form.Item>
           <Form.Item
             name="description"
@@ -529,7 +597,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           >
             <Input.TextArea
               rows={5}
-              placeholder="请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"
+              placeholder={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.026392ED',
+                }) /*"请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"*/
+              }
             />
           </Form.Item>
         </Form>

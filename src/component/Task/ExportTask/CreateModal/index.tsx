@@ -74,6 +74,7 @@ class CreateModal extends React.Component<IProps, IState> {
           dbObjectType: modalStore.exportModalData.type,
         },
       ];
+
       if (
         modalStore.exportModalData?.type === DbObjectType.package &&
         modalStore.exportModalData?.exportPkgBody
@@ -104,6 +105,7 @@ class CreateModal extends React.Component<IProps, IState> {
       key: FormType.Config,
     },
   ];
+
   private handleClose = () => {
     this.props.modalStore.changeExportModal(false);
     this.resetFormData();
@@ -345,7 +347,11 @@ class CreateModal extends React.Component<IProps, IState> {
                     target="__blank"
                     href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381191"
                   >
-                    详情
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.ExportTask.CreateModal.5DF92911' /*详情*/,
+                      }) /* 详情 */
+                    }
                   </a>
                 </>
 

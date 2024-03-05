@@ -55,7 +55,11 @@ interface IProps {
 }
 
 const Crontab = (props, ref) => {
-  const { initialValue = null, title = '定时周期', onValueChange } = props;
+  const {
+    initialValue = null,
+    title = formatMessage({ id: 'src.component.Crontab.D7390DC8' }),
+    onValueChange,
+  } = props;
   const [value, setValue] = useState(() => {
     return merge({}, defaultCronTabValue, initialValue);
   });

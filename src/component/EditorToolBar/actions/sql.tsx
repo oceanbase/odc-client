@@ -63,8 +63,9 @@ const sqlActions: ToolBarActions = {
 
   SQL_EXEC: {
     name: () =>
-      '运行 ' +
-      getKeyCodeText(setting.configurations['odc.editor.shortcut.executeStatement']).join(''),
+      /*'运行 '*/ formatMessage({
+        id: 'src.component.EditorToolBar.actions.C07F15B8' /*'运行 '*/,
+      }) + getKeyCodeText(setting.configurations['odc.editor.shortcut.executeStatement']).join(''),
 
     icon: 'SQL_RUN',
     statusFunc: (ctx: SQLPage) => {
@@ -98,7 +99,9 @@ const sqlActions: ToolBarActions = {
 
   SQL_EXEC_SECTION: {
     name: () =>
-      '运行当前语句 ' +
+      /*'运行当前语句 '*/ formatMessage({
+        id: 'src.component.EditorToolBar.actions.3BDAC881' /*'运行当前语句 '*/,
+      }) +
       getKeyCodeText(setting.configurations['odc.editor.shortcut.executeCurrentStatement']).join(
         '',
       ),

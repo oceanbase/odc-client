@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -44,14 +45,22 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
 
   return (
     <Drawer
-      title="SQL 预览"
+      title={
+        formatMessage({
+          id: 'src.component.Task.component.PartitionPolicyFormTable.PreviewSQLModal.C02356A3',
+        }) /*"SQL 预览"*/
+      }
       open={visible}
       destroyOnClose
       width={840}
       onClose={onClose}
       footer={
         <Button style={{ float: 'right' }} onClick={onClose}>
-          关闭
+          {
+            formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyFormTable.PreviewSQLModal.7E1FC0D5' /*关闭*/,
+            }) /* 关闭 */
+          }
         </Button>
       }
     >
@@ -67,6 +76,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
         })}
         onChange={handleChange}
       />
+
       <div className={styles.wrapper}>
         <SQLCodePreviewer readOnly language="sql" value={activePreview?.sqls?.join('\n') ?? ''} />
       </div>

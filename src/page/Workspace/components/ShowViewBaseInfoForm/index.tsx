@@ -78,7 +78,12 @@ class ShowViewBaseInfoForm extends Component<IProps> {
         >
           <Input disabled={true} />
         </Form.Item>
-        <Form.Item name="comment" label={'注释'}>
+        <Form.Item
+          name="comment"
+          label={formatMessage({
+            id: 'src.page.Workspace.components.ShowViewBaseInfoForm.BAFEE497',
+          })}
+        >
           <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} disabled={true} />
         </Form.Item>
       </Form>

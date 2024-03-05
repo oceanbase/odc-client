@@ -79,9 +79,11 @@ export default function SessionSelect({
                 component={DBIcon?.component}
                 style={{ fontSize: 14, marginLeft: 2, verticalAlign: 'middle' }}
               />
+
               {context?.session?.odcDatabase?.name}
             </>
           )}
+
           <DownOutlined />
         </Space>
       </Popover>
@@ -101,6 +103,7 @@ export default function SessionSelect({
             component={DBIcon?.component}
             style={{ fontSize: 16, verticalAlign: 'text-top', color: DBIcon?.color }}
           />
+
           <span style={{ verticalAlign: 'top' }}>{context?.session?.connection?.name}</span>
           {!context.datasourceMode && (
             <>
@@ -108,6 +111,7 @@ export default function SessionSelect({
               {context?.session?.odcDatabase?.name}
             </>
           )}
+
           <DownOutlined />
         </Space>
       </Popover>
@@ -142,6 +146,7 @@ export default function SessionSelect({
               component={dsStyle?.icon?.component}
               style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
             />
+
             <span style={{ lineHeight: 1 }}>{context?.session?.connection?.name}</span>
             <DownOutlined />
           </Space>
@@ -151,6 +156,7 @@ export default function SessionSelect({
               component={dsStyle?.dbIcon?.component}
               style={{ fontSize: 16, verticalAlign: 'middle' }}
             />
+
             <span style={{ lineHeight: 1 }}>{context?.session?.odcDatabase?.name}</span>
             <DownOutlined />
             <AimOutlined className={styles.aim} onClick={focusDataBase} />
@@ -160,14 +166,26 @@ export default function SessionSelect({
               style={{ color: 'var(--text-color-hint)', marginLeft: 8 }}
             >
               {login.isPrivateSpace() ? null : (
-                <span>项目：{context?.session?.odcDatabase?.project?.name}</span>
+                <span>
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+                  })}
+                  {context?.session?.odcDatabase?.project?.name}
+                </span>
               )}
-              <span>数据源：{context?.session?.odcDatabase?.dataSource?.name}</span>
+
+              <span>
+                {formatMessage({
+                  id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+                })}
+                {context?.session?.odcDatabase?.dataSource?.name}
+              </span>
             </Space>
           </Space>
         )}
       </Popover>
     );
+
     if (readonly) {
       return (
         <>

@@ -155,6 +155,7 @@ export const LDAPLogin: React.FC<{
                 handleTest={handleTest}
                 handleLogin={handleLogin}
               />
+
               {errorMessage && (
                 <Alert
                   type="error"
@@ -179,6 +180,7 @@ export const LDAPLogin: React.FC<{
           handleTest={handleTest}
           handleLogin={handleLogin}
         />
+
         {errorMessage && (
           <Alert
             type="error"
@@ -211,13 +213,14 @@ const LDAPLoginContent = ({
           margin: '12px 0px 28px',
         }}
       />
+
       <div
         style={{
           fontSize: '24px',
           marginBottom: '50px',
         }}
       >
-        LDAP 登录
+        {formatMessage({ id: 'src.page.Login.components.LDAPModal.95DA8BD0' /*LDAP 登录*/ })}
       </div>
       <div>
         <Form
@@ -232,13 +235,13 @@ const LDAPLoginContent = ({
             rules={[
               {
                 required: true,
-                message: '账号不能为空',
+                message: formatMessage({ id: 'src.page.Login.components.LDAPModal.A50C8198' }), //'账号不能为空'
               },
             ]}
           >
             <Input
               prefix={<UserOutlined />}
-              placeholder={'请输入 LDAP 账号'}
+              placeholder={formatMessage({ id: 'src.page.Login.components.LDAPModal.B5335F6F' })}
               onFocus={() => {
                 setFocusInput('username');
               }}
@@ -255,7 +258,7 @@ const LDAPLoginContent = ({
             rules={[
               {
                 required: true,
-                message: 'LDAP 密码不能为空',
+                message: formatMessage({ id: 'src.page.Login.components.LDAPModal.AA5AB5DA' }), //'LDAP 密码不能为空'
               },
             ]}
           >
@@ -263,7 +266,7 @@ const LDAPLoginContent = ({
               visibilityToggle={false}
               autoComplete="current-password"
               prefix={<LockOutlined />}
-              placeholder={'请输入 LDAP 密码'}
+              placeholder={formatMessage({ id: 'src.page.Login.components.LDAPModal.9C1F7A9B' })}
               onFocus={() => {
                 setFocusInput('password');
               }}
@@ -282,11 +285,19 @@ const LDAPLoginContent = ({
             className={`${prefix}-submit-btn`}
             onClick={isTest ? handleTest : handleLogin}
           >
-            登录
+            {
+              formatMessage({
+                id: 'src.page.Login.components.LDAPModal.B82B6C2B' /*登录*/,
+              }) /* 登录 */
+            }
           </Button>
           {switchSSOLoginType ? (
             <Button style={{ marginTop: '20px' }} block type="link" onClick={switchSSOLoginType}>
-              返回上一步
+              {
+                formatMessage({
+                  id: 'src.page.Login.components.LDAPModal.F8E8B25F' /*返回上一步*/,
+                }) /* 返回上一步 */
+              }
             </Button>
           ) : null}
         </Form>

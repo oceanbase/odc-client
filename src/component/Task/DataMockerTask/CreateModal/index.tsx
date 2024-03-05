@@ -108,7 +108,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         destroyOnClose
         width={960}
         className="o-adaptive-drawer"
-        title={isReTry ? '再次发起模拟数据' : '新建模拟数据'}
+        title={
+          isReTry
+            ? formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.5DA6FB52' })
+            : formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5' })
+        }
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>

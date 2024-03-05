@@ -35,7 +35,7 @@ export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
   }),
-  [ProjectRole.DEVELOPER]: '开发者',
+  [ProjectRole.DEVELOPER]: formatMessage({ id: 'src.page.Project.User.A0288936' }), //'开发者'
   [ProjectRole.DBA]: 'DBA',
   [ProjectRole.SECURITY_ADMINISTRATOR]: formatMessage({
     id: 'odc.src.page.Project.User.SecurityAdministrator',
@@ -144,7 +144,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                 <Space size={5}>
                   {name}
                   <Tag style={{ border: 'none' }} color="blue">
-                    我
+                    {formatMessage({ id: 'src.page.Project.User.15775BB9' /*我*/ }) /* 我 */}
                   </Tag>
                 </Space>
               ) : (
@@ -215,7 +215,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       showManageModal(record.id);
                     }}
                   >
-                    管理库权限
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
+                      }) /* 管理库权限 */
+                    }
                   </Action.Link>
                 </Action.Group>
               );
@@ -252,6 +256,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           context.project?.members?.filter((m) => m.id === editUserId)?.map((m) => m.role) || []
         }
       />
+
       <ManageModal
         visible={manageModalVisiable}
         projectId={context.project?.id}

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -105,6 +106,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             </Text>
           </Space>
         ),
+
         key: item?.id,
         icon: <Icon component={DatabaseSvg} />,
       };
@@ -157,7 +159,14 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                   onChange={handleSwitchSelectAll}
                   style={{ marginRight: '8px' }}
                 />
-                <span>全部</span>
+
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.component.DatabaseSelecter.99F8392B' /*全部*/,
+                    }) /* 全部 */
+                  }
+                </span>
                 <Text type="secondary">({allTreeDataCount})</Text>
               </Space>
             }
@@ -179,7 +188,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
       </div>
       <div className={classnames(styles.content, styles.hasIconTree)}>
         <ExportCard
-          title={`已选 ${selectedTreeDataCount} 项`}
+          title={
+            formatMessage(
+              { id: 'src.component.Task.component.DatabaseSelecter.D06DB16B' },
+              { selectedTreeDataCount: selectedTreeDataCount },
+            ) /*`已选 ${selectedTreeDataCount} 项`*/
+          }
           onSearch={(v) => setTargetSearchValue(v)}
           extra={
             <Popconfirm
@@ -187,9 +201,19 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 onChange([]);
               }}
               placement="left"
-              title="确定要清空已选对象吗？"
+              title={
+                formatMessage({
+                  id: 'src.component.Task.component.DatabaseSelecter.2FB288CA',
+                }) /*"确定要清空已选对象吗？"*/
+              }
             >
-              <a>清空</a>
+              <a>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.component.DatabaseSelecter.302B4FB5' /*清空*/,
+                  }) /* 清空 */
+                }
+              </a>
             </Popconfirm>
           }
           disabled

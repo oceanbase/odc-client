@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -42,11 +43,19 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'databaseName',
-      title: '数据库',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.8E0CB3F5' }), //'数据库'
       ellipsis: true,
       filterDropdown: (props) => {
         return (
-          <SearchFilter {...props} selectedKeys={filters?.databaseName} placeholder="请输入" />
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.databaseName}
+            placeholder={
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.UserAuthList.AD0486C8',
+              }) /*"请输入"*/
+            }
+          />
         );
       },
       filterIcon: (filtered) => (
@@ -56,17 +65,26 @@ const getColumns = (params: {
           }}
         />
       ),
+
       filteredValue: filters?.databaseName || null,
       filters: [],
     },
     {
       dataIndex: 'dataSourceName',
-      title: '所属数据源',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.62E06B89' }), //'所属数据源'
       ellipsis: true,
       width: 188,
       filterDropdown: (props) => {
         return (
-          <SearchFilter {...props} selectedKeys={filters?.dataSourceName} placeholder="请输入" />
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.dataSourceName}
+            placeholder={
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.UserAuthList.C3B2211E',
+              }) /*"请输入"*/
+            }
+          />
         );
       },
       filterIcon: (filtered) => (
@@ -76,12 +94,13 @@ const getColumns = (params: {
           }}
         />
       ),
+
       filteredValue: filters?.dataSourceName || null,
       filters: [],
     },
     {
       dataIndex: 'type',
-      title: '权限类型',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.CE23A38D' }), //'权限类型'
       width: 120,
       filters: databasePermissionTypeFilters,
       filteredValue: filters?.type || null,
@@ -89,14 +108,14 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'expireTime',
-      title: '过期时间',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.19A27247' }), //'过期时间'
       width: 138,
       sorter: true,
       render: getExpireTimeLabel,
     },
     {
       dataIndex: 'status',
-      title: '状态',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.83F63FE7' }), //'状态'
       width: 104,
       filters: databasePermissionStatusFilters,
       filteredValue: filters?.status || null,
@@ -104,7 +123,7 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.29348DE1' }), //'操作'
       ellipsis: true,
       width: 65,
       render: (_, record) => {
@@ -115,7 +134,11 @@ const getColumns = (params: {
               params?.onReclaim([record.id]);
             }}
           >
-            回收
+            {
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.UserAuthList.583E307F' /*回收*/,
+              }) /* 回收 */
+            }
           </Action.Link>
         );
       },
@@ -169,7 +192,9 @@ const UserAuthList: React.FC<IProps> = (props) => {
             ? {
                 options: [
                   {
-                    okText: '批量回收',
+                    okText: formatMessage({
+                      id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F7',
+                    }), //'批量回收'
                     onOk: onReclaim,
                   },
                 ],

@@ -46,12 +46,12 @@ interface ITableFilter {
 
 const ActionFilters = [
   {
-    text: '创建策略',
-    value: '创建策略',
+    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.CB8E9B9E' }), //'创建策略'
+    value: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1CF98543' }), //'创建策略'
   },
   {
-    text: '删除策略',
-    value: '删除策略',
+    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.04BF5ADD' }), //'删除策略'
+    value: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.FD99EEF0' }), //'删除策略'
   },
 ];
 
@@ -75,23 +75,41 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
   const columns = [
     {
-      title: 'Range 分区表',
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyFormTable.E6BC178D',
+      }), //'Range 分区表'
       key: 'tableName',
       dataIndex: 'tableName',
       ellipsis: true,
       filterDropdown: (props) => {
-        return <SearchFilter {...props} placeholder="请输入表名" />;
+        return (
+          <SearchFilter
+            {...props}
+            placeholder={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.90B10A59',
+              }) /*"请输入表名"*/
+            }
+          />
+        );
       },
       filterIcon: (filtered) => (
         <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
       ),
+
       filters: [],
       render: (tableName, record) => {
         return (
           <Space size={5}>
             {tableName}
             {(record?.containsCreateStrategy || record?.containsDropStrategy) && (
-              <Tooltip title="当前表已存在分区策略，重新设置后将覆盖原有策略">
+              <Tooltip
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
+                  }) /*"当前表已存在分区策略，重新设置后将覆盖原有策略"*/
+                }
+              >
                 <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />
               </Tooltip>
             )}
@@ -100,7 +118,9 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
       },
     },
     {
-      title: '分区策略',
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyFormTable.787E8B6F',
+      }), //'分区策略'
       key: 'action',
       width: 430,
       filterIcon: <FilterOutlined />,
@@ -111,13 +131,26 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           <div className={styles.rangConfig}>
             {label?.length ? (
               <Space>
-                <span>已设置:&nbsp;</span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.92C4082E' /*已设置:&nbsp;*/,
+                    }) /* 已设置:&nbsp; */
+                  }
+                </span>
                 <span>{label}</span>
               </Space>
             ) : (
               <span>-</span>
             )}
-            <Tooltip title="设置分区策略">
+
+            <Tooltip
+              title={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
+                }) /*"设置分区策略"*/
+              }
+            >
               <EditOutlined
                 onClick={() => {
                   handleConfig(record?.__id);
@@ -166,15 +199,29 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         mode={CommonTableMode.SMALL}
         ref={tableRef}
         titleContent={{
-          title: '分区策略',
-          description: '仅支持 Range 分区表，可设置对应的分区创建和删除策略',
+          title: formatMessage({
+            id: 'src.component.Task.component.PartitionPolicyFormTable.4737EBD4',
+          }), //'分区策略'
+          description: formatMessage({
+            id: 'src.component.Task.component.PartitionPolicyFormTable.9E6847BC',
+          }), //'仅支持 Range 分区表，可设置对应的分区创建和删除策略'
         }}
         filterContent={{
           enabledSearch: false,
           filters: [
             {
               render: () => {
-                return enabledFilter && <Checkbox onChange={onChange}>仅显示未设置的表</Checkbox>;
+                return (
+                  enabledFilter && (
+                    <Checkbox onChange={onChange}>
+                      {
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.51D8B2E7' /*仅显示未设置的表*/,
+                        }) /* 仅显示未设置的表 */
+                      }
+                    </Checkbox>
+                  )
+                );
               },
             },
           ],
@@ -188,7 +235,15 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           renderCell(checked, record, index, node: React.ReactElement) {
             if (node?.props?.disabled) {
               return (
-                <Tooltip title="该表的分区和已经勾选的表分区不同，无法批量设置">{node}</Tooltip>
+                <Tooltip
+                  title={
+                    formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
+                    }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
+                  }
+                >
+                  {node}
+                </Tooltip>
               );
             }
             return node;

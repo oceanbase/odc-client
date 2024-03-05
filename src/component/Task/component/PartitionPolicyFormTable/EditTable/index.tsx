@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 import { Form, Select } from 'antd';
 import type { FormInstance } from 'antd';
@@ -10,30 +11,42 @@ const TABLE_ROW_HEIGHT = 72;
 
 const columns = [
   {
-    title: '分区键',
+    title: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.6B748774',
+    }), //'分区键'
     width: '80px',
   },
   {
-    title: '字段类型',
+    title: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.F56607BB',
+    }), //'字段类型'
     width: '80px',
   },
   {
-    title: '创建方式',
+    title: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.1E12C404',
+    }), //'创建方式'
     width: '108px',
   },
   {
-    title: '细则',
+    title: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.3ADF7B62',
+    }), //'细则'
     width: '380px',
   },
 ];
 
 const TypeOptions = [
   {
-    label: '顺序递增',
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.397A9C98',
+    }), //'顺序递增'
     value: PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
   },
   {
-    label: '自定义',
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.1ED9B737',
+    }), //'自定义'
     value: PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
   },
 ];

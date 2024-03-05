@@ -7,29 +7,29 @@ import SelectItem from '../Item/SelectItem';
 import { DragInsertTypeText } from '@/constant/label';
 
 const databaseGroup: ODCSettingGroup = {
-  label: '数据库',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.9EC92943' }), //'数据库'
   key: 'database',
 };
 const databaseSessionGroup: ODCSettingGroup = {
-  label: '会话',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.EFD575F1' }), //'会话'
   key: 'databaseSession',
 };
 const databaseResultsetGroup: ODCSettingGroup = {
-  label: '结果集',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.C54009C6' }), //'结果集'
   key: 'databaseResultset',
 };
 const databaseSQLExecuteGroup: ODCSettingGroup = {
-  label: 'SQL执行',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.EBC355E0' }), //'SQL执行'
   key: 'databaseSQLExecute',
 };
 const databaseObjectGroup: ODCSettingGroup = {
-  label: '对象',
+  label: formatMessage({ id: 'src.component.ODCSetting.config.A427BB81' }), //'对象'
   key: 'databaseObject',
 };
 
 const databaseSettings: IODCSetting[] = [
   {
-    label: 'MYSQL 提交模式',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.515B1C11' }), //'MYSQL 提交模式'
     key: 'odc.sqlexecute.default.mysqlAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
@@ -58,7 +58,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: 'Oracle 提交模式',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.11D89046' }), //'Oracle 提交模式'
     key: 'odc.sqlexecute.default.oracleAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
@@ -87,7 +87,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '获取结果集列信息',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.F785B55E' }), //'获取结果集列信息'
     key: 'odc.sqlexecute.default.fetchColumnInfo',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
@@ -97,11 +97,11 @@ const databaseSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '是',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.C5306019' }), //'是'
               value: 'true',
             },
             {
-              label: '否',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.DE21D1E7' }), //'否'
               value: 'false',
             },
           ]}
@@ -112,7 +112,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '查询条数限制',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.B86084FC' }), //'查询条数限制'
     key: 'odc.sqlexecute.default.queryLimit',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
@@ -122,7 +122,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '开启全链路诊断',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.90CA6EA7' }), //'开启全链路诊断'
     key: 'odc.sqlexecute.default.fullLinkTraceEnabled',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
@@ -132,11 +132,11 @@ const databaseSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '是',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.92F1D86D' }), //'是'
               value: 'true',
             },
             {
-              label: '否',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.517C6CA7' }), //'否'
               value: 'false',
             },
           ]}
@@ -147,7 +147,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '报错继续执行',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.E78B48B0' }), //'报错继续执行'
     key: 'odc.sqlexecute.default.continueExecutionOnError',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
@@ -157,11 +157,11 @@ const databaseSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '是',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.DB70BE72' }), //'是'
               value: 'true',
             },
             {
-              label: '否',
+              label: formatMessage({ id: 'src.component.ODCSetting.config.B0184654' }), //'否'
               value: 'false',
             },
           ]}
@@ -172,7 +172,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: 'Delimiter 设置',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.56F5CB81' }), //'Delimiter 设置'
     key: 'odc.sqlexecute.default.delimiter',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
@@ -209,7 +209,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '对象拖放生成语句类型',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.2761E32D' }), //'对象拖放生成语句类型'
     key: 'odc.sqlexecute.default.objectDraggingOption',
     group: databaseGroup,
     secondGroup: databaseObjectGroup,

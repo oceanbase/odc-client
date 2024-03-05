@@ -500,17 +500,17 @@ const ActionBar: React.FC<IProps> = inject(
         }),
         disabled: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
         isExpired: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
-        tip: '文件下载链接已超时，请重新发起工单。',
-        //下载
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.F20AAC3F' }), //'文件下载链接已超时，请重新发起工单。'
+
         action: download,
         type: 'button',
       };
       const downloadSQLBtn = {
         key: 'downloadSQL',
-        text: '下载 SQL',
+        text: formatMessage({ id: 'src.component.Task.component.ActionBar.DBA6CB6E' }), //'下载 SQL'
         disabled: disableBtn || !structureComparisonData?.storageObjectId,
         isExpired: disableBtn || !structureComparisonData?.storageObjectId,
-        tip: '暂不可用',
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.A79907A3' }), //'暂不可用'
         type: 'button',
         action: async () => {
           if (structureComparisonData?.storageObjectId) {
@@ -525,10 +525,12 @@ const ActionBar: React.FC<IProps> = inject(
       };
       const structrueComparisonBySQL = {
         key: 'structrueComparisonBySQL',
-        text: '发起结构同步',
+        text: formatMessage({ id: 'src.component.Task.component.ActionBar.46F2F0ED' }), //'发起结构同步'
         isExpired: disableBtn || noAction,
         disabled: disableBtn || noAction,
-        tip: noAction ? '结构一致，无需发起结构同步' : '暂不可用',
+        tip: noAction
+          ? formatMessage({ id: 'src.component.Task.component.ActionBar.D98B5B62' })
+          : formatMessage({ id: 'src.component.Task.component.ActionBar.4BF7D8BF' }),
         type: 'button',
         isPrimary: true,
         action: async () => {
@@ -721,7 +723,7 @@ const ActionBar: React.FC<IProps> = inject(
 
       const reTryBtn = {
         key: 'reTry',
-        text: '再次发起',
+        text: formatMessage({ id: 'src.component.Task.component.ActionBar.C324AD20' }), //'再次发起'
         type: 'button',
         action: handleReTryCycleTask,
       };

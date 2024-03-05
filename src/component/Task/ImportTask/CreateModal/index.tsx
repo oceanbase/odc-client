@@ -98,6 +98,7 @@ class CreateModal extends React.Component<IProps, IState> {
       key: 'config',
     },
   ];
+
   private closeSelf = () => {
     if (!this.state.isFormChanged) {
       this.props.modalStore.changeImportModal(false);
@@ -481,7 +482,11 @@ class CreateModal extends React.Component<IProps, IState> {
                     target="__blank"
                     href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381200"
                   >
-                    详情
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.ImportTask.CreateModal.70AD4872' /*详情*/,
+                      }) /* 详情 */
+                    }
                   </a>
                 </>
 
