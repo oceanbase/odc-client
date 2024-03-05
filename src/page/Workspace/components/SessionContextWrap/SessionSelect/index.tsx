@@ -134,7 +134,7 @@ export default function SessionSelect({
     const fromDataSource = context.datasourceMode;
 
     const dsStyle = getDataSourceStyleByConnectType(context?.session?.connection?.type);
-    const content = (
+    const databaseItem = (
       <Popover
         overlayClassName={styles.pop}
         placement="bottomLeft"
@@ -159,48 +159,55 @@ export default function SessionSelect({
 
             <span style={{ lineHeight: 1 }}>{context?.session?.odcDatabase?.name}</span>
             <DownOutlined />
-            <AimOutlined className={styles.aim} onClick={focusDataBase} />
-            <Space
-              size={1}
-              split={<Divider type="vertical" />}
-              style={{ color: 'var(--text-color-hint)', marginLeft: 8 }}
-            >
-              {login.isPrivateSpace() ? null : (
-                <span>
-                  {formatMessage({
-                    id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
-                  })}
-                  {context?.session?.odcDatabase?.project?.name}
-                </span>
-              )}
-
-              <span>
-                {formatMessage({
-                  id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
-                })}
-                {context?.session?.odcDatabase?.dataSource?.name}
-              </span>
-            </Space>
           </Space>
         )}
       </Popover>
     );
+    const aimItem = <AimOutlined className={styles.aim} onClick={focusDataBase} />;
+    const datasourceAndProjectItem = !fromDataSource ? (
+      <Space
+        size={1}
+        split={<Divider type="vertical" />}
+        style={{ color: 'var(--text-color-hint)' }}
+      >
+        {login.isPrivateSpace() ? null : (
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+            })}
+            {context?.session?.odcDatabase?.project?.name}
+          </span>
+        )}
+
+        <span>
+          {formatMessage({
+            id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+          })}
+          {context?.session?.odcDatabase?.dataSource?.name}
+        </span>
+      </Space>
+    ) : null;
 
     if (readonly) {
       return (
         <>
           {renderEnv()}
-          <div className={classNames(styles.readonly)}>{content}</div>
+          <div className={classNames(styles.readonly)}>
+            {databaseItem}
+            {datasourceAndProjectItem}
+          </div>
         </>
       );
     }
     return (
-      <SessionDropdown>
-        <div className={styles.content}>
-          {renderEnv()}
-          <div>{content}</div>
-        </div>
-      </SessionDropdown>
+      <div className={styles.content}>
+        {renderEnv()}
+        <SessionDropdown>
+          <div>{databaseItem}</div>
+        </SessionDropdown>
+        <div>{aimItem}</div>
+        <div>{datasourceAndProjectItem}</div>
+      </div>
     );
   }
 

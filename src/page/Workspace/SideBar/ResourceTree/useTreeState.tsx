@@ -50,6 +50,10 @@ export default function useTreeState(id: string) {
       treeContext.setCurrentDatabaseId(cid);
     }
     if (expanded && !loadedKeys?.includes(node.key)) {
+      /**
+       * 只允许在onload内部修改expandedKeys
+       * 触发onload可以保证node是加载成功的，并且在loadedkeys中，避免请求失败无限循环
+       */
       return;
     }
     cache[id] = Object.assign({}, cache[id], { expandedKeys: [...expandedKeys] });
