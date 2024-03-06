@@ -19,23 +19,57 @@ import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { Button, Col, Form, message, Modal, Row, Select, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
-import { ProjectRole } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
+import { DefaultOptionType } from 'antd/es/select';
+import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 interface IProps {
   projectId: number;
   onSuccess: () => void;
+  /**
+   * 数据库负责人的限制个数
+   */
+  maxOwnerCount?: number;
 }
-export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
+
+export default function AddDataBaseButton({
+  projectId,
+  onSuccess,
+  maxOwnerCount = DB_OWNER_MAX_COUNT,
+}: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
+  /**
+   * 存储当前选择的数据的的负责人
+   * 目前用于限制负责人的个数
+   */
+  const [ownerIds, setOwnerIds] = useState<number[]>([]);
   const [form] = Form.useForm<{
     databaseIds: number[];
+    ownerIds?: number[];
   }>();
-  const { run, loading } = useRequest(updateDataBase, {
+  /**
+   *  去重后的项目成员作为库Owner的可选项
+   */
+  const projectUserOptions: DefaultOptionType[] = useMemo(() => {
+    const userMap = new Map<number, DefaultOptionType>();
+    project?.members?.forEach((mem) => {
+      const { id, name } = mem;
+      if (!userMap.has(id)) {
+        userMap.set(id, {
+          value: id,
+          label: name,
+          disabled: !(ownerIds.length < maxOwnerCount || ownerIds.includes(id)),
+        });
+      }
+    });
+    return [...userMap.values()];
+  }, [project?.members, ownerIds, maxOwnerCount]);
+  const { run, loading: saveDatabaseLoading } = useRequest(updateDataBase, {
     manual: true,
   });
   const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
@@ -46,18 +80,20 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
       },
     ],
   });
-  const { data: dataSource, loading: dataSourceLoading, run: fetchDataSource } = useRequest(
-    getConnectionDetail,
-    {
-      manual: true,
-    },
-  );
-  const { data: databases, loading: databasesListLoading, run: fetchDatabases } = useRequest(
-    listDatabases,
-    {
-      manual: true,
-    },
-  );
+  const {
+    data: dataSource,
+    loading: dataSourceLoading,
+    run: fetchDataSource,
+  } = useRequest(getConnectionDetail, {
+    manual: true,
+  });
+  const {
+    data: databases,
+    loading: databasesListLoading,
+    run: fetchDatabases,
+  } = useRequest(listDatabases, {
+    manual: true,
+  });
   function close() {
     setOpen(false);
     form.resetFields();
@@ -67,7 +103,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     if (!formData) {
       return;
     }
-    const isSuccess = await run(formData?.databaseIds, projectId);
+    const isSuccess = await run(formData?.databaseIds, projectId, formData?.ownerIds);
     if (isSuccess) {
       message.success(
         formatMessage({
@@ -103,6 +139,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
         })}
         /*添加数据库*/ onOk={submit}
         onCancel={close}
+        confirmLoading={saveDatabaseLoading}
       >
         <Form
           requiredMark={'optional'}
@@ -112,6 +149,9 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
               fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true, true);
+            }
+            if (changedValues.hasOwnProperty('ownerIds')) {
+              setOwnerIds(changedValues.ownerIds);
             }
           }}
         >
@@ -154,8 +194,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                             isDisabled
                               ? formatMessage(
                                   {
-                                    id:
-                                      'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
+                                    id: 'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
                                   },
                                   {
                                     itemProjectName: item?.projectName,
@@ -233,6 +272,25 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
                 return <Select.Option key={p.id}>{p.name}</Select.Option>;
               })}
             </Select>
+          </Form.Item>
+          <Form.Item
+            name="ownerIds"
+            label={formatMessage({
+              id: 'odc.Database.AddDataBaseButton.DatabaseOwner',
+            })} /*負責人*/
+          >
+            <Select
+              allowClear
+              mode="multiple"
+              placeholder={formatMessage({
+                id: 'odc.Database.AddDataBaseButton.SelectDatabaseOwner',
+              })} /*请选择数据库负责人*/
+              style={{
+                width: '100%',
+              }}
+              optionFilterProp="children"
+              options={projectUserOptions}
+            />
           </Form.Item>
         </Form>
       </Modal>
