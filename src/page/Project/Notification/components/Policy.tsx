@@ -338,13 +338,7 @@ const FormPolicyModal: React.FC<{
                   {menu}
                   <Divider style={{ margin: '0px' }} />
                   <div onClick={() => setChannelFormDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-                    <Button type="link">
-                      {
-                        formatMessage({
-                          id: 'src.page.Project.Notification.components.47C8853E' /*新建消息通道*/,
-                        }) /* 新建消息通道 */
-                      }
-                    </Button>
+                    <Button type="link">新建推送通道</Button>
                   </div>
                 </>
               )}

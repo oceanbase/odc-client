@@ -84,7 +84,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
         }}
         type="primary"
       >
-        {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.CreateSsoIntegration' }) /*新建 SSO 集成*/}
+        新建登录集成
       </Button>
       <Drawer
         width={520}

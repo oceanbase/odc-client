@@ -121,7 +121,7 @@ const tabs = [
     key: IPageType.Project_Sensitive,
   },
   {
-    tab: formatMessage({ id: 'src.page.Project.9197A72C' }), //'消息通知'
+    tab: '消息',
     key: IPageType.Project_Notification,
   },
   {
