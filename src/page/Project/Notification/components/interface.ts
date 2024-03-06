@@ -20,26 +20,23 @@ export const EChannelTypeMap = {
     id: 'src.page.Project.Notification.components.F80DF1C7',
   }), //'飞书'
   [EChannelType.WE_COM]: formatMessage({ id: 'src.page.Project.Notification.components.A41C487F' }), //'企业微信'
-  [EChannelType.WEBHOOK]: formatMessage({
-    id: 'src.page.Project.Notification.components.617AFC70',
-  }), //'自定义webhook'
+  [EChannelType.WEBHOOK]: '自定义',
 };
 export const ELanguageMap = {
-  [ELanguage.ZH_CN]: formatMessage({ id: 'src.page.Project.Notification.components.1BFBC1A9' }), //'中文'
+  [ELanguage.ZH_CN]: '简体中文',
   [ELanguage.ZH_TW]: formatMessage({ id: 'src.page.Project.Notification.components.739AD573' }), //'繁体中文'
   [ELanguage.EN_US]: formatMessage({ id: 'src.page.Project.Notification.components.21BD64D9' }), //'英文'
 };
 export const EContentTemplateMap = {
-  [ELanguage.ZH_CN]: formatMessage({ id: 'src.page.Project.Notification.components.A7DBBE1D' }),
-
-  [ELanguage.ZH_TW]: formatMessage({ id: 'src.page.Project.Notification.components.D5DC58D0' }),
-
-  [ELanguage.EN_US]: `### ODC \${taskType}-\${taskStatus}
-  - task ID: \${taskId}
-  - project: \${projectName}
-  - database: \${databaseName}
-  - creator: \${creatorName}
-  - trigger time: \${triggerTime}`,
+  // @oic-line-ignore
+  [ELanguage.ZH_CN]:
+    '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}',
+  // @oic-line-ignore
+  [ELanguage.ZH_TW]:
+    '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}',
+  // @oic-line-ignore
+  [ELanguage.EN_US]:
+    '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}',
 };
 export const EMessageStatusMap = {
   [EMessageStatus.CREATED]: formatMessage({

@@ -111,15 +111,7 @@ const Channel: React.FC<{
   const operationOptions = [
     {
       type: IOperationOptionType.button,
-      content: (
-        <span>
-          {
-            formatMessage({
-              id: 'src.page.Project.Notification.components.9709DF4E' /*新建通道*/,
-            }) /* 新建通道 */
-          }
-        </span>
-      ),
+      content: <span>新建推送通道</span>,
       isPrimary: true,
       onClick: () => {
         setFormDrawerOpen(true);
@@ -314,11 +306,7 @@ export const FromChannelDrawer: React.FC<{
       open={formDrawerOpen}
       destroyOnClose
       closable
-      title={
-        channelId
-          ? formatMessage({ id: 'src.page.Project.Notification.components.9CF32BBF' })
-          : formatMessage({ id: 'src.page.Project.Notification.components.F689C8B8' })
-      }
+      title={channelId ? '编辑推送通道' : '新建推送通道'}
       width={520}
       onClose={handleFormDrawerClose}
       footer={
@@ -386,7 +374,7 @@ export const FromChannelDrawer: React.FC<{
           rules={[
             {
               required: true,
-              message: formatMessage({ id: 'src.page.Project.Notification.components.D41EF6A2' }), //'通道名称不能为空'
+              message: '请输入',
             },
             {
               message: formatMessage({ id: 'src.page.Project.Notification.components.CA33D8AB' }), //'通道名称已存在'
@@ -475,9 +463,7 @@ export const FromChannelDrawer: React.FC<{
                     rules={[
                       {
                         required: true,
-                        message: formatMessage({
-                          id: 'src.page.Project.Notification.components.AAAA3457',
-                        }), //'通道名称不能为空'
+                        message: '请输入',
                       },
                     ]}
                   >
@@ -689,19 +675,20 @@ export const FromChannelDrawer: React.FC<{
               </div>
             </Form.Item>
           </Form.Item>
-          <FormItemPanel keepExpand noPaddingBottom>
-            <Form.Item
-              label={
-                formatMessage({
-                  id: 'src.page.Project.Notification.components.ACDD499F',
-                }) /*"消息限流设置"*/
-              }
-              name={['channelConfig', 'rateLimitConfig']}
-              shouldUpdate
-            >
-              <CheckboxWithTip />
-            </Form.Item>
-          </FormItemPanel>
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.ACDD499F',
+              }) /*"消息限流设置"*/
+            }
+          >
+            <FormItemPanel keepExpand noPaddingBottom>
+              <Form.Item name={['channelConfig', 'rateLimitConfig']} shouldUpdate>
+                <CheckboxWithTip />
+              </Form.Item>
+            </FormItemPanel>
+          </Form.Item>
+
           <Form.Item
             label={
               formatMessage({ id: 'src.page.Project.Notification.components.9AD8F3D8' }) /*"描述"*/
@@ -964,6 +951,9 @@ const CheckboxWithTip: React.FC<{
                         id: 'src.page.Project.Notification.components.E773F39A',
                       }) /*"消息次数限制"*/
                     }
+                    style={{
+                      marginTop: '16px',
+                    }}
                   >
                     <Space>
                       <Form.Item name={['channelConfig', 'rateLimitConfig', 'timeUnit']}>
@@ -993,6 +983,7 @@ const CheckboxWithTip: React.FC<{
                             }) /*"不超过"*/
                           }
                           style={{ width: '145px' }}
+                          min={1}
                           addonAfter={
                             formatMessage({
                               id: 'src.page.Project.Notification.components.90C16E2F',
@@ -1015,13 +1006,7 @@ const CheckboxWithTip: React.FC<{
                   >
                     <Radio.Group>
                       <Radio value={EOverLimitStrategy.THROWN}>
-                        <HelpDoc
-                          isTip
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
-                          })}
-                        >
+                        <HelpDoc isTip leftText title={'忽略已超出限流的消息，不再重发'}>
                           {
                             formatMessage({
                               id: 'src.page.Project.Notification.components.91FA1DA5' /*忽略*/,
@@ -1030,13 +1015,7 @@ const CheckboxWithTip: React.FC<{
                         </HelpDoc>
                       </Radio>
                       <Radio value={EOverLimitStrategy.RESEND}>
-                        <HelpDoc
-                          isTip
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
-                          })}
-                        >
+                        <HelpDoc isTip leftText title={'限流时间过后，将自动重发超出限流的消息'}>
                           {
                             formatMessage({
                               id: 'src.page.Project.Notification.components.AB93FA16' /*重发*/,
