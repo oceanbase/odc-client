@@ -33,8 +33,11 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       }
     >();
     odcSetting.forEach((setting) => {
-      const { group, secondGroup, key, render, storeType } = setting;
+      const { group, secondGroup, key, render, storeType, disabledInClient } = setting;
       if (!isClient() && storeType === 'local') {
+        return;
+      }
+      if (isClient() && disabledInClient) {
         return;
       }
       if (!result.has(group.key)) {
