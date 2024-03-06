@@ -122,8 +122,8 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
 
         return (
           <Space
-            style={{ width: '364px', verticalAlign: 'middle' }}
-            size={4}
+            style={{ width: '374px', verticalAlign: 'middle' }}
+            size={2}
             direction="vertical"
             align="start"
           >
@@ -133,7 +133,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   {...field}
                   name={[field.name, 'generateExpr']}
                   className={styles.noMarginBottom}
-                  style={{ width: '364px' }}
+                  style={{ width: '374px' }}
                   rules={[
                     {
                       required: true,
@@ -165,7 +165,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     {...field}
                     name={[field.name, 'intervalGenerateExpr']}
                     className={styles.noMarginBottom}
-                    style={{ width: '316px' }}
+                    style={{ width: '326px' }}
                     rules={[
                       {
                         required: true,
@@ -257,7 +257,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                         <Select options={intervalPrecisionOptions} style={{ width: 60 }} />
                       </Form.Item>
                     }
-                    style={{ width: 260 }}
+                    style={{ width: 243 }}
                     {...getFieldProps(intervalError, 'prefix')}
                   />
                 </Form.Item>
