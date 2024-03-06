@@ -17,8 +17,9 @@ import { formatMessage } from '@/util/intl';
 
 import DisplayTable from '@/component/DisplayTable';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { Descriptions } from 'antd';
+import { Descriptions, Space, Tooltip } from 'antd';
 import React from 'react';
+import { getIntervalPrecisionLabel } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 import styles from './index.less';
 
 const columns = [
@@ -46,18 +47,31 @@ const columns = [
               ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C9467B5B' })
               : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.F057FAAF' })}
           </Descriptions.Item>
-          <Descriptions.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyTable.FD28073C',
-              }) /*"起始"*/
-            }
-          >
-            {record?.fromCurrentTime
-              ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.02D5A436' })
-              : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5' })}
-          </Descriptions.Item>
-
+          {record?.partitionKeyInvoker === PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR ? (
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.FD28073C',
+                }) /*"起始"*/
+              }
+            >
+              {record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime
+                ? formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyTable.02D5A436',
+                  })
+                : formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5',
+                  })}
+            </Descriptions.Item>
+          ) : (
+            <Descriptions.Item label="表达式">
+              <Tooltip
+                title={record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr}
+              >
+                {record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr}
+              </Tooltip>
+            </Descriptions.Item>
+          )}
           <Descriptions.Item
             label={
               formatMessage({
@@ -65,8 +79,16 @@ const columns = [
               }) /*"间隔"*/
             }
           >
-            {record?.partitionKeyInvokerParameters?.generateParameter?.interval ||
-              record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr}
+            {record?.partitionKeyInvokerParameters?.generateParameter?.interval ? (
+              <Space size={5}>
+                {record?.partitionKeyInvokerParameters?.generateParameter?.interval}
+                {getIntervalPrecisionLabel(
+                  record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision,
+                )}
+              </Space>
+            ) : (
+              record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr
+            )}
           </Descriptions.Item>
         </Descriptions>
       );

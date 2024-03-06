@@ -80,6 +80,10 @@ export const intervalPrecisionOptions = [
   },
 ];
 
+export const getIntervalPrecisionLabel = (value) => {
+  return intervalPrecisionOptions?.find((item) => item.value === value)?.label;
+};
+
 const defaultInitialValues = {
   strategies: [TaskPartitionStrategy.CREATE, TaskPartitionStrategy.DROP],
   nameRuleType: NameRuleType.PRE_SUFFIX,

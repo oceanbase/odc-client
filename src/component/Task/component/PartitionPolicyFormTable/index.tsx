@@ -118,11 +118,17 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
       },
     },
     {
+      title: '已有分区数量',
+      key: 'definitionCount',
+      dataIndex: 'definitionCount',
+      width: 120,
+    },
+    {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.787E8B6F',
       }), //'分区策略'
       key: 'action',
-      width: 430,
+      width: 310,
       filterIcon: <FilterOutlined />,
       filters: ActionFilters,
       render: (_, record) => {

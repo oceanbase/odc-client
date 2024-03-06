@@ -44,12 +44,12 @@ import {
   Typography,
   Radio,
   InputNumber,
+  Alert,
 } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PartitionPolicyFormTable from '../../component/PartitionPolicyFormTable';
-import { getStrategyByConfig } from '../../component/PartitionPolicyTable';
 import { START_DATE } from '../../component/PartitionPolicyFormTable/const';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import Crontab from '@/component/Crontab';
@@ -70,6 +70,7 @@ export interface ITableConfig {
   containsCreateStrategy: boolean;
   containsDropStrategy: boolean;
   tableName: string;
+  definitionCount?: number;
   generateCount?: number;
   nameRuleType?: string;
   generateExpr?: string;
@@ -130,6 +131,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const loadData = async () => {
       if (sessionId && databaseId) {
         const res = await getPartitionPlanTables(sessionId, databaseId);
+        const hasPartitionPlan = res?.contents?.some(
+          (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
+        );
+        setHasPartitionPlan(hasPartitionPlan);
         setTableConfigs(
           res?.contents?.map((config, index) => {
             const {
@@ -145,6 +150,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               containsDropStrategy,
               strategies: [],
               tableName,
+              definitionCount: partition?.partitionDefinitions?.length,
               partitionMode,
               option: {
                 partitionKeyConfigs: partition.partitionOption?.columnNames?.map((name) => ({
@@ -301,11 +307,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
               tableConfig.partitionNameInvokerParameters = {
                 partitionNameGeneratorConfig: {
+                  ...currentTimeParameter,
                   namingPrefix,
                   namingSuffixExpression,
                   interval,
                   intervalPrecision,
-                  fromCurrentTime: true,
                 },
               };
             } else {
@@ -437,18 +443,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             timeoutMillis: 2,
           }}
         >
-          <DatabaseSelect
-            projectId={projectId}
-            type={TaskType.PARTITION_PLAN}
-            extra={
-              hasPartitionPlan
-                ? formatMessage({
-                    id: 'odc.src.component.Task.PartitionTask.CreateModal.TheCurrentDatabaseAlreadyHas',
-                  }) //'当前数据库已存在一个分区计划，任务审批通过后，原分区计划将终止'
-                : null
-            }
-          />
-
+          <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
+          {hasPartitionPlan && (
+            <Alert
+              message="当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"
+              type="warning"
+              style={{ marginBottom: '8px' }}
+              showIcon
+            />
+          )}
           <Form.Item required className={styles.tableWrapper}>
             <PartitionPolicyFormTable
               databaseId={databaseId}
