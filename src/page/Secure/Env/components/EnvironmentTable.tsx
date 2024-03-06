@@ -32,6 +32,7 @@ import styles from './index.less';
 import tracert from '@/util/tracert';
 import { IEnvironment } from '@/d.ts/environment';
 import { IManagerIntegration } from '@/d.ts';
+import modal from 'antd/lib/modal';
 
 interface IEnvironmentProps {
   currentEnvironment: IEnvironment;
@@ -180,25 +181,33 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
     tracert.click(!rule.enabled ? 'a3112.b64008.c330923.d367476' : 'a3112.b64008.c330923.d367477', {
       ruleId: rule.id,
     });
-    const updateResult =
-      (await updateRule(rulesetId, rule.id, {
-        ...rule,
-        enabled: !rule.enabled,
-      })) || false;
-    if (updateResult) {
-      message.success(
-        formatMessage({
-          id: 'odc.src.page.Secure.Env.components.UpdateCompleted',
-        }), //'更新成功'
-      );
-      tableRef.current?.reload(argsRef.current || {});
-    } else {
-      message.error(
-        formatMessage({
-          id: 'odc.src.page.Secure.Env.components.UpdateFailure',
-        }), //'更新失败'
-      );
+    const isCloseDisabledPLDebug =
+      rule?.metadata?.type === RuleType.SQL_CONSOLE && rule?.metadata?.id === 6 && rule?.enabled;
+    const switchRuleStatus = async () => {
+      const successful =
+        (await updateRule(rulesetId, rule.id, {
+          ...rule,
+          enabled: !rule.enabled,
+        })) || false;
+      if (successful) {
+        message.success(rule.enabled ? '禁用成功' : '启用成功');
+        tableRef.current?.reload(argsRef.current || {});
+      } else {
+        message.error(rule.enabled ? '禁用失败' : '启用失败');
+      }
+    };
+    if (isCloseDisabledPLDebug) {
+      return modal.confirm({
+        title: '确认禁用？',
+        centered: true,
+        content: rule?.metadata?.description,
+        cancelText: '取消',
+        okText: '确认',
+        onCancel: () => {},
+        onOk: switchRuleStatus,
+      });
     }
+    switchRuleStatus();
   };
   const rawColumns = getColumns({
     subTypeFilters,
