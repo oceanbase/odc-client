@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { updateEnvironment, createEnvironment } from '@/common/network/env';
+import { updateEnvironment, createEnvironment, getEnvironmentExists } from '@/common/network/env';
 import { EnvColorMap } from '@/constant';
 import { IEnvironment } from '@/d.ts/environment';
 import { message, Modal, Button, Form, Input, Tag, Select, SelectProps } from 'antd';
@@ -30,16 +30,19 @@ export const FormEnvironmentModal: React.FC<{
     if (isEdit && currentEnvironment?.builtIn) {
       return;
     }
-    const formData = await formRef.validateFields()?.catch();
     let result;
-    setLoading(true);
     if (isEdit) {
+      const formData = await formRef.validateFields(['style'])?.catch();
+      setLoading(true);
       result = await updateEnvironment(currentEnvironment?.id, formData);
+      setLoading(false);
     } else {
+      const formData = await formRef.validateFields()?.catch();
       formData.enabled = true;
+      setLoading(true);
       result = await createEnvironment(formData);
+      setLoading(false);
     }
-    setLoading(false);
     if (result?.successful) {
       message.success(
         currentEnvironment
@@ -56,17 +59,16 @@ export const FormEnvironmentModal: React.FC<{
     );
   };
 
-  // TODO: waiting for new API
-  // const checkNameRepeat = async (ruler, value) => {
-  //   const name = value?.trim();
-  //   if (!name) {
-  //     return;
-  //   }
-  //   const isRepeat = await getEnvironmentExists(name);
-  //   if (isRepeat) {
-  //     throw new Error();
-  //   }
-  // };
+  const checkNameRepeat = async (ruler, value) => {
+    const name = value?.trim();
+    if (!name) {
+      return;
+    }
+    const result = await getEnvironmentExists(name);
+    if (result?.exists) {
+      throw new Error(result?.errorMessage);
+    }
+  };
   useEffect(() => {
     if (formEnvironmentModalOpen) {
       if (isEdit) {
@@ -117,6 +119,8 @@ export const FormEnvironmentModal: React.FC<{
           <Form.Item
             name="name"
             noStyle
+            validateTrigger="onBlur"
+            validateFirst={true}
             rules={[
               {
                 required: true,
@@ -134,10 +138,9 @@ export const FormEnvironmentModal: React.FC<{
                   }
                 },
               },
-              // {
-              //   message: '环境名称已存在',
-              //   validator: checkNameRepeat,
-              // }
+              {
+                validator: checkNameRepeat,
+              },
             ]}
           >
             <Input

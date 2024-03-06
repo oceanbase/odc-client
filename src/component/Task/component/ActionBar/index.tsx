@@ -371,10 +371,14 @@ const ActionBar: React.FC<IProps> = inject(
       const { status, completeTime = 0 } = _task;
       const structureComparisonData =
         modalStore?.structureComparisonDataMap?.get(_task?.id) || null;
+      // 文件过期判断。
+      const isExpired = Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000 || false;
+      // 结构比对工单详情 任务未得到执行结果前禁用按钮。
       const disableBtn =
         task?.type === TaskType.STRUCTURE_COMPARISON &&
         structureComparisonData &&
         ![SubTaskStatus.DONE, SubTaskStatus.FAILED].includes(structureComparisonData?.status);
+      // 结构比对结果均为一致时，无须发起数据库变更任务。
       const noAction =
         SubTaskStatus.DONE === structureComparisonData?.status &&
         ((structureComparisonData?.overSizeLimit && structureComparisonData?.storageObjectId) ||
@@ -498,8 +502,8 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Download',
         }),
-        disabled: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
-        isExpired: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
+        disabled: isExpired,
+        isExpired,
         tip: formatMessage({ id: 'src.component.Task.component.ActionBar.F20AAC3F' }), //'文件下载链接已超时，请重新发起工单。'
 
         action: download,
@@ -563,7 +567,9 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.DownloadQueryResults',
         }),
-
+        disabled: isExpired,
+        isExpired,
+        tip: '文件下载链接已超时，请重新发起工单。',
         //下载查询结果
         action: downloadViewResult,
         type: 'button',
