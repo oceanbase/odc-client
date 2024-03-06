@@ -32,6 +32,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
   const { visible, previewData, onClose } = props;
   const [activeKey, setActiveKey] = useState(previewData?.[0]?.tableName);
   const activePreview = previewData?.find((item) => item.tableName === activeKey);
+  const sql = activePreview?.sqls?.join('\n') ?? '';
 
   const handleChange = (key) => {
     setActiveKey(key);
@@ -51,7 +52,6 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
         }) /*"SQL 预览"*/
       }
       open={visible}
-      destroyOnClose
       width={840}
       onClose={onClose}
       footer={
@@ -78,7 +78,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
       />
 
       <div className={styles.wrapper}>
-        <SQLCodePreviewer readOnly language="sql" value={activePreview?.sqls?.join('\n') ?? ''} />
+        <SQLCodePreviewer readOnly language="sql" value={sql} />
       </div>
     </Drawer>
   );

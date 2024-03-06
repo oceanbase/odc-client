@@ -284,7 +284,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                             label: formatMessage({
                               id: 'workspace.window.table.propstab.partition',
                             }),
-                            childen: (
+                            children: (
                               <Spin spinning={false}>
                                 <TablePartitions />
                               </Spin>
