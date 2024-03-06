@@ -23,6 +23,7 @@ const accountSettings: IODCSetting[] = [
     group: accountGroup,
     secondGroup: accountSpaceGroup,
     storeType: 'server',
+    disabledInClient: true,
     render: (value, onChange) => {
       return (
         <RadioItem
@@ -47,6 +48,7 @@ const accountSettings: IODCSetting[] = [
     key: 'odc.account.userBehaviorAnalysisEnabled',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
+    disabledInClient: true,
     storeType: 'server',
     render: (value, onChange) => {
       return (
