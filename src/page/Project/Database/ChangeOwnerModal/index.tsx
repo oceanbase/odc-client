@@ -130,6 +130,8 @@ export default function ChangeOwnerModal({
         >
           <Select
             allowClear
+            showSearch
+            optionFilterProp="label"
             mode="multiple"
             placeholder={formatMessage({
               id: 'odc.Database.ChangeOwnerModal.SelectDatabaseOwner',
@@ -138,7 +140,6 @@ export default function ChangeOwnerModal({
             style={{
               width: '100%',
             }}
-            optionFilterProp="children"
             options={projectUserOptions}
           />
         </Form.Item>
