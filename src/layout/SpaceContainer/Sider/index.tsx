@@ -127,15 +127,23 @@ const Sider: React.FC<IProps> = function (props) {
               }
             />
           </Link>
-          <Link to={`/${IPageType.Datasource}`}>
-            <MenuItem
-              key={IPageType.Datasource}
-              selected={selected === IPageType.Datasource}
-              icon={LinkOutlined}
-              collapsed={collapsed}
-              label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
-            />
-          </Link>
+          <AccessResourceTypePermission
+            permissions={[
+              createPermission(IManagerResourceType.resource, actionTypes.read),
+              createPermission(IManagerResourceType.resource, actionTypes.update),
+              createPermission(IManagerResourceType.resource, actionTypes.create),
+            ]}
+          >
+            <Link to={`/${IPageType.Datasource}`}>
+              <MenuItem
+                key={IPageType.Datasource}
+                selected={selected === IPageType.Datasource}
+                icon={LinkOutlined}
+                collapsed={collapsed}
+                label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
+              />
+            </Link>
+          </AccessResourceTypePermission>
           <AccessResourceTypePermission
             permissions={[
               createPermission(IManagerResourceType.user, actionTypes.read),
