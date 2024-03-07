@@ -18,6 +18,7 @@ interface IProps {
 
 const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const [formRef] = Form.useForm();
+  const [changed, setChanged] = useState(false);
   const formBoxRef = React.createRef<HTMLDivElement>();
   const scrollSwitcher = useRef<Boolean>(true);
   const data = useMemo(() => {
@@ -110,6 +111,21 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     };
   }
 
+  function close(force: boolean = false) {
+    if (changed && !force) {
+      Modal.confirm({
+        title: '确认要取消修改配置吗？',
+        onOk: () => {
+          setChanged(false);
+          modalStore.changeOdcSettingVisible(false);
+        },
+      });
+    } else {
+      setChanged(false);
+      modalStore.changeOdcSettingVisible(false);
+    }
+  }
+
   async function loadData() {
     let data = setting.configurations || {};
     if (isClient()) {
@@ -159,7 +175,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     }
     if (isSuccess) {
       message.success(formatMessage({ id: 'src.component.ODCSetting.E6DD81BF' /*'保存成功'*/ }));
-      modalStore.changeOdcSettingVisible(false);
+      close(true);
     }
   }
 
@@ -172,7 +188,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           message.success(
             formatMessage({ id: 'src.component.ODCSetting.654799D1' /*'已恢复到默认配置'*/ }),
           );
-          modalStore.changeOdcSettingVisible(false);
+          close(true);
         }
       },
     });
@@ -181,7 +197,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   function footerRender() {
     return (
       <Space>
-        <Button onClick={() => modalStore.changeOdcSettingVisible(false)}>
+        <Button onClick={() => close()}>
           {formatMessage({ id: 'src.component.ODCSetting.995A8948' /*取消*/ }) /* 取消 */}
         </Button>
         <Button onClick={reset}>
@@ -202,13 +218,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       wrapClassName={styles.modal}
       width={760}
       open={modalStore.odcSettingVisible}
-      onCancel={() => modalStore.changeOdcSettingVisible(false)}
+      onCancel={() => close()}
       title={formatMessage({ id: 'src.component.ODCSetting.AEB0A2EF' }) /*"设置"*/}
       footer={footerRender()}
     >
       <div className={styles.box}>
         <div ref={formBoxRef} className={styles.content}>
-          <Form form={formRef} layout="vertical">
+          <Form form={formRef} layout="vertical" onValuesChange={() => setChanged(true)}>
             {Array.from(data.values()).map((groupData) => {
               return (
                 <React.Fragment key={groupData.key}>
