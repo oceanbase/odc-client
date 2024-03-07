@@ -29,7 +29,7 @@ export const SimpleTextItem: React.FC<{
   direction?: 'row' | 'column';
   className?: string;
 }> = (props) => {
-  const { label, content, direction = 'row', className='' } = props;
+  const { label, content, direction = 'row', className = '' } = props;
   return (
     <div
       className={className}
