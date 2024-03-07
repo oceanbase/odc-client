@@ -40,7 +40,7 @@ const startDateOptionValues = [
   },
 ];
 
-export const startDateOptions = startDateOptionValues.map(({ label, value, description }) => {
+const startDateOptions = startDateOptionValues.map(({ label, value, description }) => {
   return {
     label: (
       <div>
@@ -205,6 +205,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     <Select
                       optionLabelProp="label"
                       options={startDateOptions}
+                      dropdownMatchSelectWidth={224}
                       style={{ width: 135 }}
                     />
                   </Form.Item>

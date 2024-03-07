@@ -105,7 +105,9 @@ const TaskContent: React.FC<IProps> = (props) => {
             columns={getConnectionColumns()}
             dataSource={parameters?.databases}
             scroll={null}
+            showQuickJumper={false}
             showSizeChanger={false}
+            pageSize={10}
           />
         }
         direction="column"
