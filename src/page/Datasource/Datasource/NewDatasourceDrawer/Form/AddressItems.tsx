@@ -220,7 +220,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                         </div>
                         <Form.Item
                           rules={[{ required: true }]}
-                          style={{ width: '70%' }}
+                          style={{ width: '70%', marginLeft: -1 }}
                           name={type}
                           label=""
                         >
