@@ -77,3 +77,20 @@ export async function setEnabled(environmentId: number, enabled: boolean) {
   });
   return res?.successful;
 }
+
+/**
+ * 环境名场重复校验接口
+ * @param environmentName 环境名称
+ * @returns
+ */
+export async function getEnvironmentExists(environmentName: string): Promise<{
+  errorMessage: string;
+  exists: boolean;
+}> {
+  const res = await request.post(`/api/v2/collaboration/environments/exists`, {
+    params: {
+      name: environmentName,
+    },
+  });
+  return res?.data;
+}
