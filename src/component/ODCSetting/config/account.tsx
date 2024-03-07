@@ -47,7 +47,7 @@ const accountSettings: IODCSetting[] = [
     label: formatMessage({ id: 'src.component.ODCSetting.config.7925A54D' }), //'用户行为分析'
     key: 'odc.account.userBehaviorAnalysisEnabled',
     group: accountGroup,
-    secondGroup: accountSpaceGroup,
+    secondGroup: accountPrivacyGroup,
     disabledInClient: true,
     storeType: 'server',
     render: (value, onChange) => {
