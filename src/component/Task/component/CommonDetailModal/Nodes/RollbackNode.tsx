@@ -102,8 +102,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
                     <span>
                       {
                         formatMessage({
-                          id:
-                            'odc.CommonDetailModal.Nodes.RollbackNode.ARollbackSchemeIsSuccessfully',
+                          id: 'odc.CommonDetailModal.Nodes.RollbackNode.ARollbackSchemeIsSuccessfully',
                         }) /*成功生成回滚方案*/
                       }
                     </span>
@@ -113,8 +112,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
                   <span>
                     {
                       formatMessage({
-                        id:
-                          'odc.CommonDetailModal.Nodes.RollbackNode.UnableToGenerateRollbackScheme',
+                        id: 'odc.CommonDetailModal.Nodes.RollbackNode.UnableToGenerateRollbackScheme',
                       }) /*无法生成回滚方案*/
                     }
                   </span>

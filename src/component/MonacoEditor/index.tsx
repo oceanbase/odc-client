@@ -20,7 +20,7 @@ import * as monaco from 'monaco-editor';
 
 import odc from '@/plugins/odc';
 import SessionStore from '@/store/sessionManager/session';
-import { SettingStore } from '@/store/setting';
+import setting, { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
@@ -29,6 +29,8 @@ import * as groovy from './plugins/languageSupport/groovy';
 import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
 import logger from '@/util/logger';
+import { getFontSize } from './config';
+import { apply as themeApply } from './plugins/theme';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -76,7 +78,8 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     onEditorCreated,
   } = props;
   const [innerValue, _setInnerValue] = useState<string>(defaultValue);
-  const settingTheme = settingStore.theme.editorTheme;
+  const settingTheme =
+    settingStore.theme.editorTheme?.[settingStore.configurations['odc.editor.style.theme']];
   function setInnerValue(v: string) {
     if (readOnly) {
       return;
@@ -124,6 +127,15 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     }
   }, [readOnly, themeValue]);
 
+  useEffect(() => {
+    const fontSize = setting.configurations['odc.editor.style.fontSize'];
+    if (fontSize && editorRef.current) {
+      editorRef.current.updateOptions({
+        fontSize: getFontSize(fontSize),
+      });
+    }
+  }, [setting.configurations?.['odc.editor.style.fontSize']]);
+
   async function initPlugin() {
     const module = await import('./plugins/ob-language/index');
     if (!editorRef.current?.getModel?.()) {
@@ -143,6 +155,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       ),
     );
     markerPluginApply(editorRef.current.getModel());
+    themeApply();
     logger.debug('init plugin done');
   }
 
@@ -154,6 +167,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       lineNumbers: showLineNumbers ? 'on' : 'off',
       lineNumbersMinChars: showLineNumbers ? 5 : 0,
       minimap: { enabled: false },
+      fontSize: getFontSize(settingStore.configurations['odc.editor.style.fontSize']),
       automaticLayout: true,
       unicodeHighlight: {
         invisibleCharacters: false,

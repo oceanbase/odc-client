@@ -196,6 +196,9 @@ const plActions: ToolBarActions = {
       return IConStatus.INIT;
     },
     isVisible(ctx: PLPage) {
+      if (!getDataSourceModeConfig(ctx.getSession()?.connection?.type)?.features?.plRun) {
+        return false;
+      }
       const plSchema = ctx.getFormatPLSchema();
       return plSchema.plType != plType.PKG_HEAD && plSchema.plType != plType.PKG_BODY;
     },

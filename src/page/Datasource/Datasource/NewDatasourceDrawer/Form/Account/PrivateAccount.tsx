@@ -83,12 +83,22 @@ const PrivateAccount: React.FC<IProps> = function (props) {
         /*数据库账号*/
       >
         {formContext?.dataSourceConfig?.role ? (
-          <Form.Item rules={[{ required: true }]} label="角色" name={'userRole'}>
+          <Form.Item
+            rules={[{ required: true }]}
+            label={
+              formatMessage({
+                id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.Account.C21B3C92',
+              }) /*"角色"*/
+            }
+            name={'userRole'}
+          >
             <Select
               style={{ width: '100%' }}
               options={[
                 {
-                  label: '默认',
+                  label: formatMessage({
+                    id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.Account.445C8BBC',
+                  }), //'默认'
                   value: 'NORMAL',
                 },
                 {
@@ -197,6 +207,7 @@ const PrivateAccount: React.FC<IProps> = function (props) {
             passwordValidStatus === 'error' ? formContext?.testResult?.errorMessage : null
           }
         />
+
         <Row>
           <Space size={12}>
             <Action.Link

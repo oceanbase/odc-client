@@ -15,11 +15,11 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
-import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
+import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
@@ -32,6 +32,9 @@ import SessionDropdown from './SessionDropdown';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
 import login from '@/store/login';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
 
 export default function SessionSelect({
   readonly,
@@ -40,9 +43,21 @@ export default function SessionSelect({
   dialectTypes?: ConnectionMode[];
 }) {
   const context = useContext(SessionContext);
+  const resourceTreeContext = useContext(ResourceTreeContext);
+  const activityContext = useContext(ActivityBarContext);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330994');
   }, []);
+
+  function focusDataBase(e: React.MouseEvent) {
+    const datasourceId = context?.session?.odcDatabase?.dataSource?.id;
+    const databaseId = context?.session?.odcDatabase?.id;
+    activityContext.setActiveKey(ActivityBarItemType.Database);
+    resourceTreeContext.setSelectDatasourceId(datasourceId);
+    resourceTreeContext.setCurrentDatabaseId(databaseId);
+    e.stopPropagation();
+    e.preventDefault();
+  }
 
   function renderProject() {
     const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.dbIcon;
@@ -64,9 +79,11 @@ export default function SessionSelect({
                 component={DBIcon?.component}
                 style={{ fontSize: 14, marginLeft: 2, verticalAlign: 'middle' }}
               />
+
               {context?.session?.odcDatabase?.name}
             </>
           )}
+
           <DownOutlined />
         </Space>
       </Popover>
@@ -86,6 +103,7 @@ export default function SessionSelect({
             component={DBIcon?.component}
             style={{ fontSize: 16, verticalAlign: 'text-top', color: DBIcon?.color }}
           />
+
           <span style={{ verticalAlign: 'top' }}>{context?.session?.connection?.name}</span>
           {!context.datasourceMode && (
             <>
@@ -93,6 +111,7 @@ export default function SessionSelect({
               {context?.session?.odcDatabase?.name}
             </>
           )}
+
           <DownOutlined />
         </Space>
       </Popover>
@@ -115,7 +134,7 @@ export default function SessionSelect({
     const fromDataSource = context.datasourceMode;
 
     const dsStyle = getDataSourceStyleByConnectType(context?.session?.connection?.type);
-    const content = (
+    const databaseItem = (
       <Popover
         overlayClassName={styles.pop}
         placement="bottomLeft"
@@ -127,6 +146,7 @@ export default function SessionSelect({
               component={dsStyle?.icon?.component}
               style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
             />
+
             <span style={{ lineHeight: 1 }}>{context?.session?.connection?.name}</span>
             <DownOutlined />
           </Space>
@@ -136,37 +156,58 @@ export default function SessionSelect({
               component={dsStyle?.dbIcon?.component}
               style={{ fontSize: 16, verticalAlign: 'middle' }}
             />
+
             <span style={{ lineHeight: 1 }}>{context?.session?.odcDatabase?.name}</span>
             <DownOutlined />
-            <Space
-              size={1}
-              split={<Divider type="vertical" />}
-              style={{ color: 'var(--text-color-hint)', marginLeft: 8 }}
-            >
-              {login.isPrivateSpace() ? null : (
-                <span>项目：{context?.session?.odcDatabase?.project?.name}</span>
-              )}
-              <span>数据源：{context?.session?.odcDatabase?.dataSource?.name}</span>
-            </Space>
           </Space>
         )}
       </Popover>
     );
+    const aimItem = <AimOutlined className={styles.aim} onClick={focusDataBase} />;
+    const datasourceAndProjectItem = !fromDataSource ? (
+      <Space
+        size={1}
+        split={<Divider type="vertical" />}
+        style={{ color: 'var(--text-color-hint)' }}
+      >
+        {login.isPrivateSpace() ? null : (
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+            })}
+            {context?.session?.odcDatabase?.project?.name}
+          </span>
+        )}
+
+        <span>
+          {formatMessage({
+            id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+          })}
+          {context?.session?.odcDatabase?.dataSource?.name}
+        </span>
+      </Space>
+    ) : null;
+
     if (readonly) {
       return (
         <>
           {renderEnv()}
-          <div className={classNames(styles.readonly)}>{content}</div>
+          <div className={classNames(styles.readonly)}>
+            {databaseItem}
+            {datasourceAndProjectItem}
+          </div>
         </>
       );
     }
     return (
-      <SessionDropdown>
-        <div className={styles.content}>
-          {renderEnv()}
-          <div>{content}</div>
-        </div>
-      </SessionDropdown>
+      <div className={styles.content}>
+        {renderEnv()}
+        <SessionDropdown>
+          <div>{databaseItem}</div>
+        </SessionDropdown>
+        <div>{aimItem}</div>
+        <div>{datasourceAndProjectItem}</div>
+      </div>
     );
   }
 

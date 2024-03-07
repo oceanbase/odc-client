@@ -485,7 +485,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.asyncTask}
       width={905}
-      title={`${isReTry ? '重新发起' : '新建'}数据库变更`}
+      title={
+        isReTry
+          ? formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.E400CC8B' })
+          : formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6' })
+      }
       footer={
         <Space>
           <Button
@@ -702,6 +706,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             }}
           />
         )}
+
         {lintResultSet?.length > 0 && (
           <LintResultTable
             ctx={editorRef?.current?.editor}
@@ -712,6 +717,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             baseOffset={0}
           />
         )}
+
         <Divider />
         <Form.Item
           label={formatMessage({

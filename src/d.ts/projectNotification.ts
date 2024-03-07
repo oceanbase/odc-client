@@ -31,7 +31,7 @@ export enum EChannelType {
   DING_TALK = 'DingTalk',
   // 飞书
   FEI_SHU = 'Feishu',
-  // 微信
+  // 企业微信
   WE_COM = 'WeCom',
   // 自定义webhook
   WEBHOOK = 'Webhook',
@@ -53,13 +53,9 @@ export enum ELanguage {
   ZH_TW = 'zh-TW',
   EN_US = 'en-US',
 }
-export interface IChannelConfig {
+export interface IBasChannelConfig {
   /** @description 通道 webhook地址 */
   webhook: string;
-  /** @description 通道 webhook指定用户手机号 */
-  atMobiles?: string[];
-  /** @description 通道 签名密钥 */
-  sign?: string;
   /** @description 通道 标题模版 */
   titleTemplate?: string;
   /** @description 通道 内容模版 */
@@ -69,7 +65,40 @@ export interface IChannelConfig {
   /** @description 通道 模版语言 */
   language: ELanguage;
 }
-export interface IChannel {
+interface WebhookConfig extends IBasChannelConfig {
+  /** @description 通道 自定义WebHook 请求方法 */
+  httpMethod: string;
+  /** @description 通道 自定义WebHook 代理 */
+  httpProxy: string;
+  /** @description 通道 自定义WebHook Headers */
+  headersTemplate?: string;
+  /** @description 通道 自定义WebHook Body */
+  bodyTemplate?: string;
+  /** @description 通道 自定义WebHook Response */
+  responseValidation: string;
+}
+interface DingTalkConfig extends IBasChannelConfig {
+  /** @description 通道 webhook指定用户手机号 */
+  atMobiles?: string[];
+  /** @description 通道 签名密钥 */
+  sign?: string;
+}
+interface FeishuConfig extends IBasChannelConfig {
+  /** @description 通道 签名密钥 */
+  sign?: string;
+}
+interface WeComConfig extends IBasChannelConfig {
+  /** @description 通道 webhook指定用户手机号 */
+  atMobiles?: string[];
+}
+type ChannelConfigMap<T extends EChannelType> = T extends EChannelType.DING_TALK
+  ? DingTalkConfig
+  : T extends EChannelType.WE_COM
+  ? WeComConfig
+  : T extends EChannelType.FEI_SHU
+  ? FeishuConfig
+  : WebhookConfig;
+export interface IChannel<T extends EChannelType> {
   /** @description 通道 通道ID */
   id?: number;
   /** @description 通道名称 */
@@ -87,9 +116,9 @@ export interface IChannel {
   /** @description 通道所属项目ID */
   projectId: number;
   /** @description 通道 类型 */
-  type: EChannelType;
+  type: T;
   /** @description 通道 属性 */
-  channelConfig: IChannelConfig;
+  channelConfig: ChannelConfigMap<T>;
   /** @description 通道 描述 */
   description?: string;
 }
@@ -111,14 +140,14 @@ export interface IPolicy {
   policyMetadataId?: number;
   matchExpression: string;
   enabled: boolean;
-  channels: IChannel[];
+  channels: IChannel<EChannelType>[];
   eventName: string;
 }
 export type TBatchUpdatePolicy = {
   id?: number;
   policyMetadataId?: number;
   enabled?: boolean;
-  channels: Pick<IChannel, 'id'>[];
+  channels: Pick<IChannel<EChannelType>, 'id'>[];
 };
 // #endregion
 
@@ -132,7 +161,7 @@ export interface IMessage {
   status: EMessageStatus;
   retryTimes: number;
   errorMessage: string;
-  channel: IChannel;
+  channel: IChannel<EChannelType>;
   lastSentTime?: number;
   title: string;
   content: string;

@@ -16,7 +16,7 @@
 
 import { getTriggerByName } from '@/common/network/trigger';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
@@ -566,7 +566,7 @@ class TriggerPage extends Component<
                         />
                       </Toolbar>
                       <ToolContentWrpper>
-                        <SQLCodeEditorDDL
+                        <SQLCodePreviewer
                           readOnly
                           defaultValue={(trigger && trigger.ddl) || ''}
                           language={

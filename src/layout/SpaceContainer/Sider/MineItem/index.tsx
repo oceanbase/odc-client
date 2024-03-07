@@ -16,7 +16,6 @@
 
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import ChangeLockPwd from '@/component/LoginMenus/ChangeLockPwdModal';
-import UserConfig from '@/component/LoginMenus/UserConfig';
 import RecordPopover, { RecordRef } from '@/component/RecordPopover/index2';
 import { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
@@ -29,8 +28,6 @@ import DropMenu from '../DropMenu';
 
 import { ModalStore } from '@/store/modal';
 import styles from './index.less';
-import Locale from './Locale';
-import Theme from './Theme';
 import tracert from '@/util/tracert';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 
@@ -38,16 +35,9 @@ interface IProps {
   userStore?: UserStore;
   settingStore?: SettingStore;
   modalStore?: ModalStore;
-  enableTheme?: boolean;
 }
 
-const MineItem: React.FC<IProps> = function ({
-  children,
-  userStore,
-  settingStore,
-  modalStore,
-  enableTheme,
-}) {
+const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore, modalStore }) {
   const { user } = userStore;
   const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const [changeLockPwdModalVisible, setChangeLockPwdModalVisible] = useState(false);
@@ -63,11 +53,6 @@ const MineItem: React.FC<IProps> = function ({
         ?.join(' | ')
     : '-';
   const userName = `${user?.name}(${user?.accountName})`;
-
-  function onConfigClick() {
-    tracert.click('a3112.b46782.c330850.d367365');
-    modalStore.changeUserConfigModal(true);
-  }
 
   const onChangePassword = async (data: { currentPassword: string; newPassword: string }) => {
     setChangePasswordLoading(true);
@@ -102,13 +87,19 @@ const MineItem: React.FC<IProps> = function ({
               <span className={styles.userName}>{userName}</span>
             </Tooltip>
           ),
+
           key: 'username',
         },
         {
           key: 'user-role',
           label: (
             <Tooltip placement="right" title={RoleNames}>
-              <span className={styles.userRoles}>角色：{RoleNames}</span>
+              <span className={styles.userRoles}>
+                {formatMessage({
+                  id: 'src.layout.SpaceContainer.Sider.MineItem.642BE38F' /*角色：*/,
+                })}
+                {RoleNames}
+              </span>
             </Tooltip>
           ),
         },
@@ -140,24 +131,7 @@ const MineItem: React.FC<IProps> = function ({
         },
       });
     }
-    menu.push({
-      label: <Locale />,
-      key: 'locale',
-    });
 
-    if (enableTheme) {
-      menu.push({
-        label: <Theme />,
-        key: 'theme',
-      });
-    }
-    menu.push({
-      key: 'config',
-      label: formatMessage({
-        id: 'odc.Sider.MineItem.Preferences',
-      }),
-      onClick: onConfigClick,
-    });
     if (settingStore.enablePersonalRecord) {
       menu.push({
         key: 'record',
@@ -204,12 +178,6 @@ const MineItem: React.FC<IProps> = function ({
       >
         {children}
       </DropMenu>
-      <UserConfig
-        visible={modalStore?.userConfigModalVisible}
-        onCloseModal={() => {
-          modalStore.changeUserConfigModal(false);
-        }}
-      />
 
       {!isClient() && havePasswordLogin ? (
         <ChangePasswordModal

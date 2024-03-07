@@ -32,7 +32,7 @@ const { Option } = Select;
 
 class ShowViewBaseInfoForm extends Component<IProps> {
   public render() {
-    const { viewName, checkOption, definer } = this.props.model ?? {};
+    const { viewName, checkOption, definer, comment } = this.props.model ?? {};
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
@@ -42,6 +42,7 @@ class ShowViewBaseInfoForm extends Component<IProps> {
       viewName: viewName,
       checkOption: checkOption || CheckOption.NONE,
       definer: definer,
+      comment,
     };
 
     if (!viewName) {
@@ -76,6 +77,14 @@ class ShowViewBaseInfoForm extends Component<IProps> {
           label={formatMessage({ id: 'workspace.window.createView.definer' })}
         >
           <Input disabled={true} />
+        </Form.Item>
+        <Form.Item
+          name="comment"
+          label={formatMessage({
+            id: 'src.page.Workspace.components.ShowViewBaseInfoForm.BAFEE497',
+          })}
+        >
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} disabled={true} />
         </Form.Item>
       </Form>
     );

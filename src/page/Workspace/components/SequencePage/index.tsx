@@ -17,7 +17,7 @@
 import { getSequence } from '@/common/network/sequence';
 import { IEditor } from '@/component/MonacoEditor';
 import ObjectInfoView from '@/component/ObjectInfoView';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { ConnectionMode, ISequence } from '@/d.ts';
@@ -313,7 +313,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                       />
                     </Toolbar>
                     <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                      <SQLCodeEditorDDL
+                      <SQLCodePreviewer
                         readOnly
                         defaultValue={(sequence && sequence.ddl) || ''}
                         language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}

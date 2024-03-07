@@ -14,89 +14,92 @@
  * limitations under the License.
  */
 
-import { checkConnectionPartitionPlan, createTask, getPartitionPlan } from '@/common/network/task';
+import { createTask, getPartitionPlanTables } from '@/common/network/task';
 import {
-  IPartitionPlanRecord,
   TaskPageScope,
   TaskPageType,
   TaskType,
   TaskExecStrategy,
-  ICycleTaskTriggerConfig,
+  PARTITION_KEY_INVOKER,
+  PARTITION_NAME_INVOKER,
+  TaskPartitionStrategy,
+  TaskErrorStrategy,
+  IPartitionPlanKeyType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
+import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { isClient } from '@/util/env';
+import { hourToMilliSeconds } from '@/util/utils';
+import FormItemPanel from '@/component/FormItemPanel';
 import {
   Button,
   Drawer,
   Form,
   Input,
   Modal,
-  Select,
   Space,
   Tooltip,
+  Checkbox,
+  Typography,
   Radio,
-  DatePicker,
+  InputNumber,
+  Alert,
 } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { FieldTimeOutlined } from '@ant-design/icons';
-import PartitionPolicyTable from '../../../../page/Workspace/components/PartitionPolicyTable';
+import PartitionPolicyFormTable from '../../component/PartitionPolicyFormTable';
+import { START_DATE } from '../../component/PartitionPolicyFormTable/const';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
 import styles from './index.less';
+
+const { Paragraph, Text } = Typography;
+
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
   FIRST_DAY_OF_MONTH = 'FIRST_DAY_OF_MONTH',
   LAST_DAY_OF_MONTH = 'LAST_DAY_OF_MONTH',
   NONE = 'NONE',
 }
-export const inspectOptions = [
-  {
-    label: formatMessage({
-      id: 'odc.components.PartitionDrawer.NoInspectionRequired',
-    }),
-    //无需巡检
-    value: IPartitionPlanInspectTriggerStrategy.NONE,
-    desc: '',
-  },
-  {
-    label: formatMessage({
-      id: 'odc.components.PartitionDrawer.EveryDay',
-    }),
-    //每天
-    value: IPartitionPlanInspectTriggerStrategy.EVERY_DAY,
-    desc: formatMessage({
-      id: 'odc.components.PartitionDrawer.EveryDayCheckTheNewly',
-    }), //每天，定时检查连接内新增的分区表，并生成新的分区计划任务
-  },
-  {
-    label: formatMessage({
-      id: 'odc.components.PartitionDrawer.FirstDayOfEachMonth',
-    }),
-    //每月第一天
-    value: IPartitionPlanInspectTriggerStrategy.FIRST_DAY_OF_MONTH,
-    desc: formatMessage({
-      id: 'odc.components.PartitionDrawer.OnTheFirstDayOf',
-    }), //每月第一天，定时检查连接内新增的分区表，并生成新的分区计划任务
-  },
-  {
-    label: formatMessage({
-      id: 'odc.components.PartitionDrawer.LastDayOfEachMonth',
-    }),
-    //每月最后一天
-    value: IPartitionPlanInspectTriggerStrategy.LAST_DAY_OF_MONTH,
-    desc: formatMessage({
-      id: 'odc.components.PartitionDrawer.OnTheLastDayOf',
-    }), //每月最后一天，定时检查连接内新增的分区表，并生成新的分区计划任务
-  },
-];
 
-// 4.0.0 版本不支持 巡检周期设置
-export const enabledInspectTriggerStrategy = false;
+export interface ITableConfig {
+  __id: number;
+  containsCreateStrategy: boolean;
+  containsDropStrategy: boolean;
+  tableName: string;
+  definitionCount?: number;
+  generateCount?: number;
+  nameRuleType?: string;
+  generateExpr?: string;
+  keepLatestCount?: number;
+  reloadIndexes?: boolean;
+  namingPrefix?: string;
+  namingSuffixExpression?: string;
+  fromCurrentTime?: START_DATE;
+  baseTimestampMillis?: number;
+  interval?: string;
+  intervalPrecision?: number;
+  intervalGenerateExpr?: string;
+  strategies?: TaskPartitionStrategy[];
+  partitionMode?: string;
+  option: {
+    partitionKeyConfigs: {
+      name: string;
+      type?: IPartitionPlanKeyType;
+      partitionKeyInvoker?: PARTITION_KEY_INVOKER;
+      fromCurrentTime?: START_DATE;
+      baseTimestampMillis?: number;
+      generateExpr?: string;
+      interval?: string;
+      intervalPrecision?: number;
+      intervalGenerateExpr?: string;
+    }[];
+  };
+}
+
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
   projectId?: number;
@@ -105,37 +108,72 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
     const { modalStore, projectId } = props;
     const { partitionVisible } = modalStore;
-    const [partitionPlans, setPartitionPlans] = useState<IPartitionPlanRecord[]>();
+    const [tableConfigs, setTableConfigs] = useState<ITableConfig[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [disabledSubmit, setDisabledSubmit] = useState(true);
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
     const [crontab, setCrontab] = useState<ICrontab>(null);
+    const [dropCrontab, setDropCrontab] = useState<ICrontab>(null);
     const [form] = Form.useForm();
+    const isCustomStrategy = Form.useWatch('isCustomStrategy', form);
+    const databaseId = Form.useWatch('databaseId', form);
+    const { session } = useDBSession(databaseId);
+    const sessionId = session?.sessionId;
     const crontabRef = useRef<{
       setValue: (value: ICrontab) => void;
       resetFields: () => void;
     }>();
-    const databaseId = Form.useWatch('databaseId', form);
+    const crontabDropRef = useRef<{
+      setValue: (value: ICrontab) => void;
+      resetFields: () => void;
+    }>();
+
     const loadData = async () => {
-      if (!databaseId) {
-        return;
+      if (sessionId && databaseId) {
+        const res = await getPartitionPlanTables(sessionId, databaseId);
+        const hasPartitionPlan = res?.contents?.some(
+          (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
+        );
+        setHasPartitionPlan(hasPartitionPlan);
+        setTableConfigs(
+          res?.contents?.map((config, index) => {
+            const {
+              containsCreateStrategy,
+              containsDropStrategy,
+              name: tableName,
+              partition,
+              partitionMode,
+            } = config;
+            return {
+              __id: index,
+              containsCreateStrategy,
+              containsDropStrategy,
+              strategies: [],
+              tableName,
+              definitionCount: partition?.partitionDefinitions?.length,
+              partitionMode,
+              option: {
+                partitionKeyConfigs: partition.partitionOption?.columnNames?.map((name) => ({
+                  name,
+                })) ?? [
+                  {
+                    name: partition.partitionOption?.expression,
+                  },
+                ],
+              },
+            };
+          }),
+        );
       }
-      const res = await getPartitionPlan({
-        databaseId,
-      });
-      setPartitionPlans(
-        res?.tablePartitionPlans?.map((item, index) => ({
-          ...item,
-          id: index,
-        })),
-      );
     };
+
     const onClose = useCallback(() => {
       form?.resetFields();
       setCrontab(null);
+      setDropCrontab(null);
       setDisabledSubmit(true);
       setHasPartitionPlan(false);
-      setPartitionPlans([]);
+      setTableConfigs([]);
       modalStore.changePartitionModal(false);
     }, [modalStore]);
     const closeWithConfirm = useCallback(() => {
@@ -150,44 +188,176 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         },
       });
     }, [onClose]);
-    const handleCrontabChange = (crontab) => {
-      setCrontab(crontab);
+
+    const handleCrontabChange = (crontab, isCustomStrategy = false) => {
+      if (isCustomStrategy) {
+        setDropCrontab(crontab);
+      } else {
+        setCrontab(crontab);
+      }
     };
+
     const handleSubmit = async () => {
       try {
         const values = await form.validateFields();
-        const { description, databaseId, triggerStrategy, startAt } = values;
-        // 4.0.0 禁止设置 巡检周期，保留一个默认值：无需巡检
-        const inspectTriggerStrategy = IPartitionPlanInspectTriggerStrategy.NONE;
+        const { description, databaseId, timeoutMillis, errorStrategy } = values;
+        const partitionTableConfigs = tableConfigs
+          ?.filter((config) => config?.strategies?.length)
+          ?.map((config) => {
+            const {
+              generateCount,
+              nameRuleType,
+              generateExpr,
+              keepLatestCount,
+              reloadIndexes,
+              namingPrefix,
+              namingSuffixExpression,
+              fromCurrentTime,
+              baseTimestampMillis,
+              interval,
+              intervalPrecision,
+              intervalGenerateExpr,
+              tableName,
+              strategies,
+              option,
+            } = config;
+            const partitionKeyConfigs: {
+              partitionKeyInvoker: PARTITION_KEY_INVOKER;
+              strategy: TaskPartitionStrategy;
+              partitionKeyInvokerParameters: Record<string, any>;
+            }[] =
+              option?.partitionKeyConfigs?.map((item) => {
+                const {
+                  name: partitionKey,
+                  partitionKeyInvoker,
+                  fromCurrentTime,
+                  baseTimestampMillis,
+                  generateExpr,
+                  interval,
+                  intervalPrecision,
+                  intervalGenerateExpr,
+                } = item;
+
+                if (partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR) {
+                  return {
+                    partitionKey,
+                    partitionKeyInvoker,
+                    strategy: TaskPartitionStrategy.CREATE,
+                    partitionKeyInvokerParameters: {
+                      generateCount,
+                      partitionKey,
+                      generateParameter: {
+                        generateExpr,
+                        intervalGenerateExpr,
+                      },
+                    },
+                  };
+                } else {
+                  const currentTimeParameter = {
+                    fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
+                    baseTimestampMillis: baseTimestampMillis?.valueOf(),
+                  };
+                  if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
+                    delete currentTimeParameter.baseTimestampMillis;
+                  }
+                  return {
+                    partitionKey,
+                    partitionKeyInvoker,
+                    strategy: TaskPartitionStrategy.CREATE,
+                    partitionKeyInvokerParameters: {
+                      generateCount,
+                      partitionKey,
+                      generateParameter: {
+                        ...currentTimeParameter,
+                        interval,
+                        intervalPrecision,
+                      },
+                    },
+                  };
+                }
+              }) ?? [];
+
+            if (strategies?.includes(TaskPartitionStrategy.DROP)) {
+              partitionKeyConfigs.push({
+                partitionKeyInvoker: PARTITION_KEY_INVOKER.KEEP_MOST_LATEST_GENERATOR,
+                strategy: TaskPartitionStrategy.DROP,
+                partitionKeyInvokerParameters: {
+                  keepLatestCount,
+                  reloadIndexes,
+                },
+              });
+            }
+            const tableConfig = {
+              tableName,
+              partitionKeyConfigs: partitionKeyConfigs?.filter((item) =>
+                strategies?.includes(item.strategy),
+              ),
+              partitionNameInvoker: '',
+              partitionNameInvokerParameters: {},
+            };
+            if (nameRuleType === 'PRE_SUFFIX') {
+              const currentTimeParameter = {
+                fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
+                baseTimestampMillis: baseTimestampMillis?.valueOf(),
+              };
+              if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
+                delete currentTimeParameter.baseTimestampMillis;
+              }
+              tableConfig.partitionNameInvoker =
+                PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
+              tableConfig.partitionNameInvokerParameters = {
+                partitionNameGeneratorConfig: {
+                  ...currentTimeParameter,
+                  namingPrefix,
+                  namingSuffixExpression,
+                  interval,
+                  intervalPrecision,
+                },
+              };
+            } else {
+              tableConfig.partitionNameInvoker =
+                PARTITION_NAME_INVOKER.CUSTOM_PARTITION_NAME_GENERATOR;
+              tableConfig.partitionNameInvokerParameters = {
+                partitionNameGeneratorConfig: {
+                  generateExpr,
+                  intervalGenerateExpr,
+                },
+              };
+            }
+            if (strategies?.length === 1 && strategies?.includes(TaskPartitionStrategy.DROP)) {
+              delete tableConfig.partitionNameInvokerParameters;
+            }
+            return tableConfig;
+          });
         const params = {
           taskType: TaskType.PARTITION_PLAN,
           description,
           projectId,
           databaseId,
           parameters: {
-            connectionPartitionPlan: {
-              databaseId,
-              inspectEnable: inspectTriggerStrategy !== IPartitionPlanInspectTriggerStrategy.NONE,
-              inspectTriggerStrategy,
-              tablePartitionPlans: partitionPlans,
-              triggerConfig: {
-                triggerStrategy,
-              } as ICycleTaskTriggerConfig,
-            },
+            databaseId,
+            enabled: true,
+            partitionTableConfigs,
+            creationTrigger: null,
+            droppingTrigger: null,
+            timeoutMillis: hourToMilliSeconds(timeoutMillis),
+            errorStrategy,
           },
         };
-        if (triggerStrategy === TaskExecStrategy.TIMER) {
-          const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
-          params.parameters.connectionPartitionPlan.triggerConfig = {
+        const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = crontab;
+        params.parameters.creationTrigger = {
+          triggerStrategy: (mode === 'custom' ? 'CRON' : dateType) as TaskExecStrategy,
+          days: dateType === CrontabDateType.weekly ? dayOfWeek : dayOfMonth,
+          hours: hour,
+          cronExpression: cronString,
+        };
+        if (isCustomStrategy) {
+          const { mode, dateType, cronString, hour, dayOfMonth, dayOfWeek } = dropCrontab;
+          params.parameters.droppingTrigger = {
             triggerStrategy: (mode === 'custom' ? 'CRON' : dateType) as TaskExecStrategy,
             days: dateType === CrontabDateType.weekly ? dayOfWeek : dayOfMonth,
             hours: hour,
             cronExpression: cronString,
-          };
-        } else if (triggerStrategy === TaskExecStrategy.START_AT) {
-          params.parameters.connectionPartitionPlan.triggerConfig = {
-            triggerStrategy: TaskExecStrategy.START_AT,
-            startAt: startAt?.valueOf(),
           };
         }
         setConfirmLoading(true);
@@ -201,31 +371,22 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         console.log(e);
       }
     };
-    const handlePlansConfigChange = (values: IPartitionPlanRecord[]) => {
-      const newPartitionPlans = partitionPlans?.map((item) => {
-        const planValue = values.find((value) => value.id === item.id);
+    const handlePlansConfigChange = (configs: any[]) => {
+      const newConfigs = tableConfigs?.map((item) => {
+        const planValue = configs.find((value) => value.__id === item.__id);
         return planValue ? planValue : item;
       });
-      setPartitionPlans(newPartitionPlans);
-    };
-    const checkPartitionPlanExist = async () => {
-      const isExist = await checkConnectionPartitionPlan(databaseId);
-      setHasPartitionPlan(isExist);
+      setTableConfigs(newConfigs);
     };
     useEffect(() => {
-      if (partitionVisible && databaseId) {
-        checkPartitionPlanExist();
-      }
-    }, [partitionVisible, databaseId]);
-    useEffect(() => {
-      if (partitionPlans?.length) {
-        const disabledSubmit = partitionPlans?.some((item) => !item.detail);
+      if (tableConfigs?.length) {
+        const disabledSubmit = tableConfigs?.some((item) => !item.strategies);
         setDisabledSubmit(disabledSubmit);
       }
-    }, [partitionPlans]);
+    }, [tableConfigs]);
     useEffect(() => {
       loadData();
-    }, [databaseId]);
+    }, [databaseId, sessionId]);
     return (
       <Drawer
         open={partitionVisible}
@@ -278,116 +439,162 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           layout="vertical"
           requiredMark="optional"
           initialValues={{
-            inspectTriggerStrategy: IPartitionPlanInspectTriggerStrategy.NONE,
-            triggerStrategy: TaskExecStrategy.TIMER,
+            errorStrategy: TaskErrorStrategy.ABORT,
+            timeoutMillis: 2,
           }}
         >
-          <DatabaseSelect
-            projectId={projectId}
-            type={TaskType.PARTITION_PLAN}
-            extra={
-              hasPartitionPlan
-                ? formatMessage({
-                    id:
-                      'odc.src.component.Task.PartitionTask.CreateModal.TheCurrentDatabaseAlreadyHas',
-                  }) //'当前数据库已存在一个分区计划，任务审批通过后，原分区计划将终止'
-                : null
-            }
-          />
-          {enabledInspectTriggerStrategy && (
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const inspectTriggerStrategy = getFieldValue('inspectTriggerStrategy');
-                const option = inspectOptions?.find(
-                  (item) => item.value === inspectTriggerStrategy,
-                );
-                return (
-                  <Form.Item
-                    label={formatMessage({
-                      id: 'odc.components.PartitionDrawer.InspectionCycle',
-                    })}
-                    /*巡检周期*/ name="inspectTriggerStrategy"
-                    required
-                    extra={option.desc}
-                  >
-                    <Select
-                      style={{
-                        width: 120,
-                      }}
-                      options={inspectOptions}
-                    />
-                  </Form.Item>
-                );
-              }}
-            </Form.Item>
+          <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
+          {hasPartitionPlan && (
+            <Alert
+              message="当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"
+              type="warning"
+              style={{ marginBottom: '8px' }}
+              showIcon
+            />
           )}
           <Form.Item required className={styles.tableWrapper}>
-            <PartitionPolicyTable
-              partitionPlans={partitionPlans}
+            <PartitionPolicyFormTable
+              databaseId={databaseId}
+              sessionId={sessionId}
+              tableConfigs={tableConfigs}
               onPlansConfigChange={handlePlansConfigChange}
               onLoad={loadData}
             />
           </Form.Item>
+          <Form.Item>
+            <Crontab
+              ref={crontabRef}
+              title={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.FE8DED05',
+                }) /*"创建策略执行周期"*/
+              }
+              initialValue={crontab}
+              onValueChange={(value) => {
+                handleCrontabChange(value);
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="isCustomStrategy" valuePropName="checked">
+            <Checkbox>
+              <span>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.BE341FCE' /*自定义删除策略执行周期*/,
+                  }) /* 自定义删除策略执行周期 */
+                }
+              </span>
+              <Paragraph>
+                <Text type="secondary">
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
+                    }) /* 未勾选时，删除策略执行周期将与创建一致 */
+                  }
+                </Text>
+              </Paragraph>
+            </Checkbox>
+          </Form.Item>
+          {isCustomStrategy && (
+            <Form.Item>
+              <Crontab
+                ref={crontabDropRef}
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.4E5BCFE8',
+                  }) /*"删除策略执行周期"*/
+                }
+                initialValue={crontab}
+                onValueChange={(value) => {
+                  handleCrontabChange(value, true);
+                }}
+              />
+            </Form.Item>
+          )}
+
+          <FormItemPanel
+            label={
+              formatMessage({
+                id: 'src.component.Task.PartitionTask.CreateModal.5E1CE4EC',
+              }) /*"任务设置"*/
+            }
+            keepExpand
+          >
+            <Form.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.0B2DB017',
+                }) /*"任务错误处理"*/
+              }
+              name="errorStrategy"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.6C651A64',
+                  }), //'请选择任务错误处理'
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={TaskErrorStrategy.ABORT}>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.A8B04845' /*停止任务*/,
+                    }) /* 停止任务 */
+                  }
+                </Radio>
+                <Radio value={TaskErrorStrategy.CONTINUE}>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.E454F701' /*忽略错误继续任务*/,
+                    }) /* 忽略错误继续任务 */
+                  }
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+          </FormItemPanel>
           <Form.Item
             label={
               formatMessage({
-                id: 'odc.src.component.Task.PartitionTask.CreateModal.ImplementationModalities',
-              }) /* 执行方式 */
+                id: 'src.component.Task.PartitionTask.CreateModal.59540029',
+              }) /*"执行超时时间"*/
             }
-            name="triggerStrategy"
             required
           >
-            <Radio.Group>
-              {/**
-                 * <Radio.Button value={TaskExecStrategy.START_NOW}>
-                    立即执行
-                  </Radio.Button>
-                  {!isClient() ? (
-                    <Radio.Button value={TaskExecStrategy.START_AT}>
-                      定时执行
-                    </Radio.Button>
-                  ) : null}
-                 */}
-              <Radio.Button value={TaskExecStrategy.TIMER}>
+            <Form.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.0A49F493',
+                }) /*"小时"*/
+              }
+              name="timeoutMillis"
+              rules={[
                 {
-                  formatMessage({
-                    id: 'odc.src.component.Task.PartitionTask.CreateModal.CycleExecution',
-                  }) /* 周期执行 */
-                }
-              </Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              const triggerStrategy = getFieldValue('triggerStrategy') || [];
-              if (triggerStrategy === TaskExecStrategy.START_AT) {
-                return (
-                  <Form.Item
-                    name="startAt"
-                    label={
-                      formatMessage({
-                        id: 'odc.src.component.Task.PartitionTask.CreateModal.ExecutionTime',
-                      }) /* 执行时间 */
-                    }
-                    required
-                  >
-                    <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
-                  </Form.Item>
-                );
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.05B817DF',
+                  }), //'请输入超时时间'
+                },
+                {
+                  type: 'number',
+                  max: 480,
+                  message: formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.25D1BD6D',
+                  }), //'最大不超过480小时'
+                },
+              ]}
+              noStyle
+            >
+              <InputNumber min={0} precision={1} />
+            </Form.Item>
+            <span style={{ marginLeft: '5px' }}>
+              {
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.53678847' /*小时*/,
+                }) /* 小时 */
               }
-              if (triggerStrategy === TaskExecStrategy.TIMER) {
-                return (
-                  <Form.Item>
-                    <Crontab
-                      ref={crontabRef}
-                      initialValue={crontab}
-                      onValueChange={handleCrontabChange}
-                    />
-                  </Form.Item>
-                );
-              }
-              return null;
-            }}
+            </span>
           </Form.Item>
           <Form.Item
             name="description"
@@ -397,9 +604,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           >
             <Input.TextArea
               rows={5}
-              placeholder={formatMessage({
-                id: 'odc.components.PartitionDrawer.EnterAComment',
-              })} /*请输入备注*/
+              placeholder={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.026392ED',
+                }) /*"请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"*/
+              }
             />
           </Form.Item>
         </Form>

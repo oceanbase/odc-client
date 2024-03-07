@@ -146,6 +146,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Approving',
     }), //审批中
@@ -159,6 +160,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Approving',
     }), //审批中
@@ -176,6 +178,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ToBeExecuted',
     }), //待执行
@@ -189,6 +192,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Queuing',
     }), //排队中
@@ -202,6 +206,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Executing',
     }), //执行中
@@ -215,6 +220,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ExecutionSucceeded',
     }), //执行成功
@@ -228,6 +234,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ApprovalFailed',
     }), //审批不通过
@@ -241,6 +248,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ExecutionExpiration',
     }), //执行过期
@@ -254,6 +262,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ApprovalExpired.1',
     }), //审批过期
@@ -267,6 +276,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.PendingExecutionExpiration',
     }),
@@ -282,6 +292,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Failed.2',
     }), //执行失败
@@ -295,6 +306,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.src.component.Task.component.Status.PreExaminationFailure',
     }), //'预检查失败'
@@ -307,6 +319,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.RollbackFailed',
     }), //回滚失败
@@ -320,6 +333,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.RolledBack',
     }), //已回滚
@@ -333,6 +347,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Terminated',
     }), //已终止
@@ -346,6 +361,7 @@ export const status = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Completed',
     }), //已完成
@@ -362,6 +378,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Approving',
     }), //审批中
@@ -375,6 +392,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ApprovalFailed',
     }), //审批不通过
@@ -388,6 +406,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.ApprovalExpired.1',
     }), //审批过期
@@ -401,6 +420,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Enabled',
     }), //已启用
@@ -414,6 +434,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Disabled',
     }), //已禁用
@@ -427,6 +448,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Terminated',
     }), //已终止
@@ -440,6 +462,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.Completed',
     }), //已完成
@@ -453,6 +476,7 @@ export const cycleStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.ExecutionFailed',
     }), //执行失败
@@ -469,6 +493,7 @@ export const subTaskStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.Completed',
     }), //已完成
@@ -482,6 +507,7 @@ export const subTaskStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.Canceled',
     }), //已取消
@@ -495,6 +521,7 @@ export const subTaskStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.Failed',
     }), //失败
@@ -508,6 +535,7 @@ export const subTaskStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.Created',
     }), //已创建
@@ -521,6 +549,7 @@ export const subTaskStatus = {
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.Status.Running',
     }), //执行中
@@ -558,7 +587,7 @@ const StatusLabel: React.FC<IProps> = (props) => {
     <Tooltip
       title={
         type === TaskType.STRUCTURE_COMPARISON && _status === TaskStatus.EXECUTING
-          ? '查询数据库对象元信息中'
+          ? formatMessage({ id: 'src.component.Task.component.Status.050B579F' })
           : null
       }
     >

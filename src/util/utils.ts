@@ -579,6 +579,16 @@ export function formatTimeTemplatMicroSeconds(time: number): string {
   return formatTimeTemplate(BigNumber(time).div(1000000).toNumber());
 }
 
+export const hourToMilliSeconds = (hour: number) => {
+  const milliSeconds = hour ? hour * 60 * 60 * 1000 : undefined;
+  return milliSeconds;
+};
+
+export const milliSecondsToHour = (seconds: number) => {
+  const hour = seconds ? seconds / 60 / 60 / 1000 : undefined;
+  return hour;
+};
+
 export const hourToSeconds = (hour: number) => {
   const seconds = hour ? hour * 60 * 60 : undefined;
   return seconds;

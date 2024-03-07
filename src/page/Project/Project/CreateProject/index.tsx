@@ -151,7 +151,11 @@ export default React.forwardRef<{
         name={'developer'}
         label={
           <HelpDoc leftText doc="projectDev">
-            开发者
+            {
+              formatMessage({
+                id: 'src.page.Project.Project.CreateProject.AD525382' /*开发者*/,
+              }) /* 开发者 */
+            }
           </HelpDoc>
         }
       >
@@ -176,8 +180,8 @@ export default React.forwardRef<{
               formatMessage({
                 id: 'odc.src.page.Project.Project.CreateProject.SecurityAdministrator',
               }) /* 
-              安全管理员
-             */
+          安全管理员
+          */
             }
           </HelpDoc>
         }
@@ -203,8 +207,8 @@ export default React.forwardRef<{
               formatMessage({
                 id: 'odc.src.page.Project.Project.CreateProject.Participant',
               }) /* 
-              参与者
-             */
+          参与者
+          */
             }
           </HelpDoc>
         }

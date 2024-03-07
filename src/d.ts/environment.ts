@@ -19,6 +19,7 @@ import type { ProjectUser } from './project';
 export interface IEnvironment {
   id: number;
   name: string;
+  originalName?: string;
   description: string;
   rulesetId: number;
   rulesetName: string;

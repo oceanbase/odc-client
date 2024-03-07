@@ -114,7 +114,10 @@ export function getModelService(
       return [];
     },
     async getSchemaList() {
-      return [sessionFunc()?.database?.dbName].filter(Boolean);
+      if (!Object.keys(sessionFunc()?.allIdentities).length) {
+        sessionFunc()?.queryIdentities();
+      }
+      return Object.keys(sessionFunc()?.allIdentities);
     },
     async getFunctions() {
       if (!sessionFunc()?.database.functions) {
@@ -124,6 +127,18 @@ export function getModelService(
         name: func.funName,
         desc: func.status,
       }));
+    },
+    async getSnippets() {
+      const session = sessionFunc();
+      if (session) {
+        return session.snippets.map((item) => {
+          return {
+            label: item.prefix || '',
+            documentation: item.description || '',
+            insertText: item.body || '',
+          };
+        });
+      }
     },
   };
 }

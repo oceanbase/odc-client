@@ -110,6 +110,9 @@ interface IWorkSpaceExecuteSQLModalProps {
 
 export class ModalStore {
   @observable
+  public odcSettingVisible: boolean = false;
+
+  @observable
   public exportModalVisible: boolean;
 
   @observable
@@ -165,6 +168,7 @@ export class ModalStore {
     number,
     {
       database: IDatabase;
+      overSizeLimit: boolean;
       storageObjectId: number;
       totalChangeScript: string;
       status: SubTaskStatus;
@@ -173,6 +177,7 @@ export class ModalStore {
     number,
     {
       database: IDatabase;
+      overSizeLimit: boolean;
       storageObjectId: number;
       totalChangeScript: string;
       status: SubTaskStatus;
@@ -187,9 +192,6 @@ export class ModalStore {
 
   @observable
   public createSQLPlanVisible: boolean = false;
-
-  @observable
-  public userConfigModalVisible: boolean = false;
 
   @observable
   public sensitiveColumnVisible: boolean = false;
@@ -436,6 +438,7 @@ export class ModalStore {
     taskId?: number,
     structureComparisonData?: {
       database: IDatabase;
+      overSizeLimit: boolean;
       storageObjectId: number;
       totalChangeScript: string;
       status: SubTaskStatus;
@@ -462,11 +465,6 @@ export class ModalStore {
   }
 
   @action
-  public changeUserConfigModal(isShow: boolean = true) {
-    this.userConfigModalVisible = isShow;
-  }
-
-  @action
   public changeCreateDDLAlterTaskModal(isShow: boolean = true) {
     this.createDDLAlterVisible = isShow;
   }
@@ -486,6 +484,11 @@ export class ModalStore {
     this.sensitiveColumnVisible = isShow;
   }
 
+  @action
+  public changeOdcSettingVisible(isShow: boolean = true) {
+    this.odcSettingVisible = isShow;
+  }
+
   @action clear() {
     this.exportModalVisible = false;
     this.exportModalData = null;
@@ -496,7 +499,7 @@ export class ModalStore {
     this.createAsyncTaskVisible = false;
     this.createResultSetExportTaskVisible = false;
     this.createSQLPlanVisible = false;
-    this.userConfigModalVisible = false;
+
     this.applyPermissionVisible = false;
     this.applyDatabasePermissionVisible = false;
     this.partitionVisible = false;
@@ -507,6 +510,7 @@ export class ModalStore {
     this.versionModalVisible = false;
     this.sensitiveColumnVisible = false;
     this.createDDLAlterVisible = false;
+    this.odcSettingVisible = false;
   }
 }
 

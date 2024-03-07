@@ -185,6 +185,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           label={
             formatMessage({
@@ -216,6 +217,17 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           />
         </Descriptions.Item>
         <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.DataClearTask.DetailContent.2D1A14AB',
+            }) /*"使用主键清理"*/
+          }
+        >
+          {jobParameters?.deleteByUniqueKey
+            ? formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.D2882643' })
+            : formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.834E7D89' })}
+        </Descriptions.Item>
+        <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataClearTask.DetailContent.Description',
           })}
@@ -229,6 +241,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({

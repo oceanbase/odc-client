@@ -50,11 +50,16 @@ const defaultCronTabValue = {
 
 interface IProps {
   initialValue?: ICrontab;
+  title?: string;
   onValueChange: (value: ICrontab) => void;
 }
 
 const Crontab = (props, ref) => {
-  const { initialValue = null, onValueChange } = props;
+  const {
+    initialValue = null,
+    title = formatMessage({ id: 'src.component.Crontab.D7390DC8' }),
+    onValueChange,
+  } = props;
   const [value, setValue] = useState(() => {
     return merge({}, defaultCronTabValue, initialValue);
   });
@@ -142,13 +147,7 @@ const Crontab = (props, ref) => {
   return (
     <div className={styles['crontab-editor']}>
       <div className={styles.header}>
-        <span>
-          {
-            formatMessage({
-              id: 'odc.component.Crontab.TimingPeriod',
-            }) /*定时周期*/
-          }
-        </span>
+        <span>{title}</span>
         <Space>
           <Space split="|" size={0}>
             <Button

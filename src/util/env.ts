@@ -18,6 +18,10 @@ export function isClient(): boolean {
   return ENV_target === 'client';
 }
 
+export function isMac(): boolean {
+  return /macintosh|mac os x/i.test(navigator.userAgent);
+}
+
 /**
  * 是否接入了OCP
  */

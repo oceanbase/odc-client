@@ -15,7 +15,7 @@
  */
 import { formatMessage } from '@/util/intl';
 import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
-import React, { Key, useContext, useEffect, useMemo, useState } from 'react';
+import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './index.less';
 import Icon, { SearchOutlined } from '@ant-design/icons';
 import tracert from '@/util/tracert';
@@ -57,7 +57,11 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
       {disabled ? (
         <Tooltip
           placement={'right'}
-          title={`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`}
+          title={
+            formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.7885F651',
+            }) /*`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`*/
+          }
         >
           <div className={styles.textoverflow}>{db.name}</div>
         </Tooltip>
@@ -70,6 +74,7 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
           <div className={styles.textoverflow}>{db.name}</div>
         </Popover>
       )}
+
       <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
     </>
   );
@@ -99,6 +104,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   const context = useContext(SessionContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const treeRef = useRef(null);
   const { datasourceId } = useParams<{
     datasourceId: string;
   }>();
@@ -191,6 +197,17 @@ const SessionDropdown: React.FC<IProps> = function ({
   }, [data?.contents]);
 
   useEffect(() => {
+    const databaseId = context?.databaseId;
+    const db = data?.contents.find((db) => db.id === databaseId);
+    if (db) {
+      setExpandedKeys([db.dataSource.id]);
+      setTimeout(() => {
+        treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
+      }, 500);
+    }
+  }, [data?.contents]);
+
+  useEffect(() => {
     if (dataGroup?.allDatasources) {
       dataSourceStatusStore.asyncUpdateStatus(dataGroup?.allDatasources?.map((a) => a.id));
     }
@@ -235,6 +252,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                 <div className={styles.textoverflow}>{item.name}</div>
               </Popover>
             ),
+
             icon: <StatusIcon item={item} />,
             key: item.id,
             selectable: true,
@@ -358,6 +376,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                   }}
                 />
               ),
+
               key: item.id,
               selectable: false,
               isLeaf: false,
@@ -368,6 +387,47 @@ const SessionDropdown: React.FC<IProps> = function ({
       }
     }
   }
+
+  function TreeRender() {
+    return (
+      <Tree
+        ref={treeRef}
+        expandAction="click"
+        className={styles.tree}
+        key={from}
+        onSelect={async (_, info) => {
+          const key = info.node?.key?.toString();
+          let dbId, dsId;
+          if (context.datasourceMode) {
+            dsId = toInteger(key);
+          } else {
+            dbId = toInteger(key?.replace('db:', ''));
+          }
+          setLoading(true);
+          try {
+            await context.selectSession(dbId, dsId, from);
+          } catch (e) {
+            console.error(e);
+          } finally {
+            setLoading(false);
+          }
+          setIsOpen(false);
+        }}
+        selectedKeys={[
+          context?.datasourceMode ? context?.datasourceId : `db:${context?.databaseId}`,
+        ].filter(Boolean)}
+        height={215}
+        expandedKeys={expandedKeys}
+        onExpand={(expandedKeys) => {
+          setExpandedKeys(expandedKeys);
+        }}
+        showIcon
+        blockNode={true}
+        treeData={treeData()}
+      />
+    );
+  }
+
   return (
     <Popover
       trigger={['click']}
@@ -404,6 +464,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                   ]}
                 />
               )}
+
               <Input
                 size="small"
                 value={searchValue}
@@ -426,36 +487,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                 overflow: 'hidden',
               }}
             >
-              <Tree
-                expandAction="click"
-                className={styles.tree}
-                key={from}
-                onSelect={async (_, info) => {
-                  const key = info.node?.key?.toString();
-                  let dbId, dsId;
-                  if (context.datasourceMode) {
-                    dsId = toInteger(key);
-                  } else {
-                    dbId = toInteger(key?.replace('db:', ''));
-                  }
-                  setLoading(true);
-                  try {
-                    await context.selectSession(dbId, dsId, from);
-                  } catch (e) {
-                    console.error(e);
-                  } finally {
-                    setLoading(false);
-                  }
-                  setIsOpen(false);
-                }}
-                selectedKeys={[
-                  context?.datasourceMode ? context?.datasourceId : `db:${context?.databaseId}`,
-                ].filter(Boolean)}
-                height={215}
-                showIcon
-                blockNode={true}
-                treeData={treeData()}
-              />
+              {TreeRender()}
             </div>
           </div>
         </Spin>

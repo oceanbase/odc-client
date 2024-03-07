@@ -20,6 +20,8 @@ import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
 import { EComparisonScope } from './task';
+import { EThemeConfigKey } from '@/store/setting';
+import { SpaceType } from './_index';
 
 export interface IUser {
   email: string;
@@ -74,12 +76,22 @@ export enum SQL_OBJECT_TYPE {
 
 // 个人配置
 export interface IUserConfig {
-  'sqlexecute.defaultDelimiter': string;
-  'sqlexecute.oracleAutoCommitMode': AutoCommitMode;
-  'sqlexecute.mysqlAutoCommitMode': AutoCommitMode;
-  'sqlexecute.defaultQueryLimit': string; // 大数值
-  'connect.sessionMode': SQLSessionMode;
-  'sqlexecute.defaultObjectDraggingOption': DragInsertType;
+  'odc.sqlexecute.default.delimiter': string;
+  'odc.sqlexecute.default.oracleAutoCommitMode': AutoCommitMode;
+  'odc.sqlexecute.default.mysqlAutoCommitMode': AutoCommitMode;
+  'odc.sqlexecute.default.fetchColumnInfo': 'true' | 'false';
+  'odc.sqlexecute.default.queryLimit': string;
+  'odc.sqlexecute.default.fullLinkTraceEnabled': 'true' | 'false';
+  'odc.sqlexecute.default.continueExecutionOnError': 'true' | 'false';
+  'odc.sqlexecute.default.objectDraggingOption': DragInsertType;
+  'odc.editor.style.theme': 'OceanBase' | 'VSCode';
+  'odc.editor.style.fontSize': 'Small' | 'Normal' | 'Large';
+  'odc.editor.shortcut.executeStatement': string;
+  'odc.editor.shortcut.executeCurrentStatement': string;
+  'odc.appearance.scheme': EThemeConfigKey;
+  'odc.appearance.language': 'FollowSystem' | string;
+  'odc.account.defaultOrganizationType': SpaceType;
+  'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
 }
 
 // 系统配置
@@ -2223,6 +2235,7 @@ export type TaskRecordParameters =
   | IApplyDatabasePermissionTaskParams;
 
 export interface ITaskResult {
+  autoModifyTimeout?: boolean;
   containQuery: boolean;
   errorRecordsFilePath: string;
   failCount: number;
@@ -2258,6 +2271,7 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
@@ -2279,6 +2293,7 @@ export interface IDataClearJobParameters {
   sourceDatabaseName?: string;
   targetDataBaseId: number;
   targetDatabaseName?: string;
+  deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
@@ -2511,9 +2526,7 @@ export interface IMockDataParams {
   dbMode?: ConnectionMode;
 }
 
-export interface IPartitionPlanParams {
-  connectionPartitionPlan: IConnectionPartitionPlan;
-}
+export interface IPartitionPlanParams extends IPartitionPlan {}
 
 export interface ICycleTaskTriggerConfig {
   cronExpression?: string;
@@ -2586,15 +2599,6 @@ export interface IStructureComparisonTaskParams {
   sourceDatabaseId: number;
   tableNamesToBeCompared?: string[];
   targetDatabaseId: number;
-}
-
-export interface IConnectionPartitionPlan {
-  databaseId: number;
-  flowInstanceId?: number;
-  inspectEnable: boolean;
-  inspectTriggerStrategy: string;
-  tablePartitionPlans: IPartitionPlanRecord[];
-  triggerConfig: ICycleTaskTriggerConfig;
 }
 
 export enum TaskExecStrategy {
@@ -3141,32 +3145,127 @@ export interface IMaskPolicy {
   }[];
 }
 
-export interface IPartitionPlanRecordDetail {
-  isAutoPartition: boolean;
-  preCreatePartitionCount: number;
-  expirePeriod: number;
-  expirePeriodUnit: IPartitionPlanPeriodUnit;
-  partitionInterval: number;
-  partitionIntervalUnit: IPartitionPlanPeriodUnit;
-  partitionNamingPrefix: string;
-  partitionNamingSuffixExpression: string;
+export enum TaskPartitionStrategy {
+  DROP = 'DROP',
+  CREATE = 'CREATE',
 }
 
-export interface IPartitionPlanRecord {
-  flowInstanceId?: number;
+export interface IPartitionTableConfig {
+  partitionNameInvoker: PARTITION_NAME_INVOKER;
+  partitionNameInvokerParameters?: Record<string, any>;
+  partitionKeyConfigs?: IPartitionKeyConfig[];
   id?: number;
-  schemaName: string;
-  tableName: string;
-  partitionCount: number;
-  detail?: IPartitionPlanRecordDetail;
+  enabled?: boolean;
+  tableName?: string;
+  partitionType?: string;
+  containsCreateStrategy?: boolean;
+  containsDropStrategy?: boolean;
+  reloadIndexes?: boolean;
+}
+
+export interface IPartitionTablePreviewConfig {
+  tableNames: string[];
+  template: IPartitionTableConfig;
+}
+
+export enum PARTITION_NAME_INVOKER {
+  CUSTOM_PARTITION_NAME_GENERATOR = 'CUSTOM_PARTITION_NAME_GENERATOR',
+  DATE_BASED_PARTITION_NAME_GENERATOR = 'DATE_BASED_PARTITION_NAME_GENERATOR',
+}
+
+export enum PARTITION_KEY_INVOKER {
+  CUSTOM_GENERATOR = 'CUSTOM_GENERATOR',
+  TIME_INCREASING_GENERATOR = 'TIME_INCREASING_GENERATOR',
+  KEEP_MOST_LATEST_GENERATOR = 'KEEP_MOST_LATEST_GENERATOR',
+}
+
+export enum TaskErrorStrategy {
+  CONTINUE = 'CONTINUE',
+  ABORT = 'ABORT',
+}
+
+export interface IPartitionKeyConfig {
+  partitionKey: string;
+  partitionKeyInvoker: PARTITION_KEY_INVOKER;
+  strategy: TaskPartitionStrategy;
+  partitionKeyInvokerParameters: Record<string, any>;
 }
 
 export interface IPartitionPlan {
-  connectionId: number;
-  flowInstanceId: number;
-  inspectEnable: boolean;
-  inspectTriggerStrategy: string;
-  tablePartitionPlans: IPartitionPlanRecord[];
+  creationTrigger: ICycleTaskTriggerConfig;
+  createTriggerNextFireTimes: number[];
+  droppingTrigger: ICycleTaskTriggerConfig;
+  dropTriggerNextFireTimes: number[];
+  databaseId: number;
+  enabled: boolean;
+  id: number;
+  maxErrors: number;
+  timeoutMillis: number;
+  partitionTableConfigs: IPartitionTableConfig[];
+  errorStrategy: TaskErrorStrategy;
+}
+
+export interface IPartitionPlanTable {
+  DDL: string;
+  columns: {
+    name: string;
+    typeName: string;
+  }[];
+  constraints: unknown;
+  containsCreateStrategy: boolean;
+  containsDropStrategy: boolean;
+  reloadIndexes: boolean;
+  ddl: string;
+  inTablegroup: boolean;
+  indexes: unknown;
+  name: string;
+  owner: unknown;
+  partition: {
+    partitionDefinitions: {
+      comment: string;
+      dataDirectory: string;
+      indexDirectory: string;
+      maxRows: number;
+      maxValues: string[];
+      minRows: number;
+      name: string;
+      ordinalPosition: unknown;
+      type: string;
+      valuesList: unknown;
+    }[];
+    partitionKeyTypes: {
+      name: string;
+      precision: number;
+      scale?: number;
+    }[];
+    partitionOption: {
+      automatic: unknown;
+      columnNames: string[];
+      expression: string;
+      partitionsNum: number;
+      type: string;
+      verticalColumnNames: unknown;
+    };
+    schemaName: string;
+    subpartition: unknown;
+    subpartitionTemplated: boolean;
+    tableName: string;
+    warning: unknown;
+  };
+  partitionMode: string;
+  rangePartitioned: number;
+  schemaName: string;
+  stats: unknown;
+  strategies: TaskPartitionStrategy[];
+  tableOptions: unknown;
+  warning: unknown;
+}
+
+export interface IPartitionPlanKeyType {
+  name: string;
+  precision: number;
+  scale: number;
+  localizedMessage?: string;
 }
 
 export enum IPartitionPlanPeriodUnit {

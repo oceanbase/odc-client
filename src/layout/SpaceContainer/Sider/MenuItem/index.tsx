@@ -27,6 +27,7 @@ interface IProps {
   selected?: boolean;
   disableTip?: boolean;
   showDot?: boolean;
+  onClick?: () => void;
 }
 
 export default function ({
@@ -36,6 +37,7 @@ export default function ({
   selected,
   disableTip,
   showDot,
+  onClick,
   ...rest
 }: IProps) {
   if (collapsed) {
@@ -43,6 +45,7 @@ export default function ({
       return (
         <Icon
           {...rest}
+          onClick={onClick}
           className={classNames(styles.collapsedIcon, {
             [styles.selected]: selected,
           })}
@@ -54,6 +57,7 @@ export default function ({
       <Tooltip title={label} placement="right">
         <Badge dot={showDot}>
           <Icon
+            onClick={onClick}
             className={classNames(styles.collapsedIcon, {
               [styles.selected]: selected,
             })}
@@ -64,7 +68,11 @@ export default function ({
     );
   }
   return (
-    <div {...rest} className={classNames(styles.item, { [styles.selected]: selected })}>
+    <div
+      {...rest}
+      onClick={onClick}
+      className={classNames(styles.item, { [styles.selected]: selected })}
+    >
       <Icon style={{ fontSize: 14 }} component={icon} />
       <span style={{ marginLeft: 12, lineHeight: 1, flex: 1 }}>{label}</span>
     </div>

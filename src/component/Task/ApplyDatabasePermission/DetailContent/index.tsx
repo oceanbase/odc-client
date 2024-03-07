@@ -26,14 +26,18 @@ const getConnectionColumns = () => {
   return [
     {
       dataIndex: 'name',
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.component.Task.ApplyDatabasePermission.DetailContent.3EE454F2',
+      }), //'数据库'
       ellipsis: true,
       width: 339,
     },
 
     {
       dataIndex: 'dataSourceName',
-      title: '所属数据源',
+      title: formatMessage({
+        id: 'src.component.Task.ApplyDatabasePermission.DetailContent.CE83F40A',
+      }), //'所属数据源'
       ellipsis: true,
     },
   ];
@@ -45,23 +49,56 @@ interface IProps {
 const TaskContent: React.FC<IProps> = (props) => {
   const { task } = props;
   const parameters = task?.parameters;
-  
+
   return (
     <>
       <Descriptions column={1}>
-        <Descriptions.Item label="任务编号">{task?.id}</Descriptions.Item>
-        <Descriptions.Item label="任务类型">申请库权限</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.1FA7FD5C',
+            }) /*"任务编号"*/
+          }
+        >
+          {task?.id}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.AFAA55EA',
+            }) /*"任务类型"*/
+          }
+        >
+          {
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.176A9CCE' /*申请库权限*/,
+            }) /* 申请库权限 */
+          }
+        </Descriptions.Item>
       </Descriptions>
       <Divider
         style={{
           marginTop: 4,
         }}
       />
+
       <Descriptions column={1}>
-        <Descriptions.Item label="申请项目">{parameters?.project?.name}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.476FEE55',
+            }) /*"申请项目"*/
+          }
+        >
+          {parameters?.project?.name}
+        </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem
-        label="申请数据库"
+        label={
+          formatMessage({
+            id: 'src.component.Task.ApplyDatabasePermission.DetailContent.D9B4FF74',
+          }) /*"申请数据库"*/
+        }
         content={
           <DisplayTable
             rowKey="id"
@@ -73,24 +110,65 @@ const TaskContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <Divider
         style={{
           marginTop: 4,
         }}
       />
+
       <Descriptions column={1}>
-        <Descriptions.Item label="权限类型">{parameters?.types?.map(key => permissionOptionsMap[key].text)?.join(', ')}</Descriptions.Item>
-        <Descriptions.Item label="权限有效期">{getExpireTimeLabel(parameters?.expireTime)}</Descriptions.Item>
-        <Descriptions.Item label="申请原因">{parameters?.applyReason}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.CF7D0545',
+            }) /*"权限类型"*/
+          }
+        >
+          {parameters?.types?.map((key) => permissionOptionsMap[key].text)?.join(', ')}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.8AAD2AC1',
+            }) /*"权限有效期"*/
+          }
+        >
+          {getExpireTimeLabel(parameters?.expireTime)}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.265A918A',
+            }) /*"申请原因"*/
+          }
+        >
+          {parameters?.applyReason}
+        </Descriptions.Item>
       </Descriptions>
       <Divider
         style={{
           marginTop: 4,
         }}
       />
+
       <Descriptions column={1}>
-        <Descriptions.Item label="创建人">{task?.creator?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.2C812515',
+            }) /*"创建人"*/
+          }
+        >
+          {task?.creator?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.80FC915E',
+            }) /*"创建时间"*/
+          }
+        >
           {getFormatDateTime(task?.createTime)}
         </Descriptions.Item>
       </Descriptions>

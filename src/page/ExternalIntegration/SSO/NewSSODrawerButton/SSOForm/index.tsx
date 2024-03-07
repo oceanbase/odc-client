@@ -123,7 +123,11 @@ export default inject('userStore')(
         time: number = 1,
       ) {
         if (loginWindow.current?.closed && !channelStatusRef?.current) {
-          message.error('窗口异常关闭，请等待窗口创建，输入账号密码点击登录后完成连接测试！');
+          message.error(
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.DCD2CBF1' /*'窗口异常关闭，请等待窗口创建，输入账号密码点击登录后完成连接测试！'*/,
+            }),
+          );
           channel.close([ChannelMap.LDAP_MAIN, ChannelMap.LDAP_TEST]);
           clearTimeout(timer.current);
           timer.current = null;
@@ -225,7 +229,11 @@ export default inject('userStore')(
             ChannelMap.ODC_SSO_TEST,
             (data) => {
               if (data?.isSuccess && !loginWindow.current?.closed) {
-                message.success('测试登录成功！');
+                message.success(
+                  formatMessage({
+                    id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.C5D23829' /*'测试登录成功！'*/,
+                  }),
+                );
                 loginWindow.current?.close();
                 fetchTestInfo(res?.testId);
               }
@@ -249,6 +257,8 @@ export default inject('userStore')(
             ['ssoParameter', 'groupSearchBase'],
             ['ssoParameter', 'groupSearchFilter'],
             ['ssoParameter', 'groupSearchSubtree'],
+            ['ssoParameter', 'loginFailedLimit'],
+            ['ssoParameter', 'lockTimeSeconds'],
             ['mappingRule', 'userProfileViewType'],
             ['mappingRule', 'nestedAttributeField'],
           ])
@@ -292,7 +302,11 @@ export default inject('userStore')(
               `[${ChannelMap.LDAP_MAIN}]: current component received the message from LDAPModal`,
               data,
             );
-            message.success('测试登录成功！');
+            message.success(
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.565EDD98' /*'测试登录成功！'*/,
+              }),
+            );
             !loginWindow.current?.closed && loginWindow.current?.close();
             fetchTestInfo(data?.testId);
           }
@@ -694,6 +708,7 @@ export default inject('userStore')(
                       }}
                       component={PlusOutlined}
                     />
+
                     {
                       formatMessage({
                         id: 'odc.NewSSODrawerButton.SSOForm.Add',

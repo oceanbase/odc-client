@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { approveTask, rejectTask, updatePartitionPlan } from '@/common/network/task';
-import { IConnectionPartitionPlan, TaskStatus, TaskType } from '@/d.ts';
+import { approveTask, rejectTask } from '@/common/network/task';
 import type { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, message, Modal, Space } from 'antd';
@@ -27,19 +26,16 @@ const { TextArea } = Input;
 
 interface IProps {
   taskStore?: TaskStore;
-  type: TaskType;
   id: number;
   visible: boolean;
-  status?: TaskStatus;
   approvalStatus: boolean;
-  partitionPlan?: IConnectionPartitionPlan;
   onCancel: () => void;
   onReload: () => void;
 }
 
 const ApprovalModal: React.FC<IProps> = inject('taskStore')(
   observer((props) => {
-    const { taskStore, type, id, visible, status, approvalStatus, partitionPlan, onCancel } = props;
+    const { taskStore, id, visible, approvalStatus, onCancel } = props;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const formRef = useRef(null);
 
@@ -49,12 +45,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
     };
 
     const handleApprove = async (value: string) => {
-      let res = null;
-      if (type === TaskType.PARTITION_PLAN && status === TaskStatus.WAIT_FOR_CONFIRM) {
-        res = await updatePartitionPlan(id, partitionPlan);
-      } else {
-        res = await approveTask(props.id, value);
-      }
+      const res = await approveTask(id, value);
       props?.onReload();
       handleCancel();
       if (res) {
@@ -67,7 +58,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
       }
     };
     const handleReject = async (value: string) => {
-      const res = await rejectTask(props.id, value);
+      const res = await rejectTask(id, value);
       handleCancel();
       if (res) {
         taskStore.getTaskMetaInfo();
@@ -154,8 +145,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
               <TextArea
                 rows={5}
                 placeholder={formatMessage({
-                  id:
-                    'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
+                  id: 'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
                 })} /*请输入处理意见，200字以内*/
               />
             </Form.Item>

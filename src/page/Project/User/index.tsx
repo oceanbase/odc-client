@@ -35,7 +35,7 @@ export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
   }),
-  [ProjectRole.DEVELOPER]: '开发者',
+  [ProjectRole.DEVELOPER]: formatMessage({ id: 'src.page.Project.User.A0288936' }), //'开发者'
   [ProjectRole.DBA]: 'DBA',
   [ProjectRole.SECURITY_ADMINISTRATOR]: formatMessage({
     id: 'odc.src.page.Project.User.SecurityAdministrator',
@@ -51,7 +51,7 @@ interface IProps {
 const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
-  const isOwner = project?.currentUserResourceRoles?.some(item => item === ProjectRole.OWNER);
+  const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
@@ -65,17 +65,19 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
         roles: ProjectRole[];
       }
     >();
-    context?.project?.members?.forEach((mem) => {
-      const { id, role } = mem;
-      if (userMap.has(id)) {
-        userMap.get(id).roles.push(role);
-      } else {
-        userMap.set(id, {
-          ...mem,
-          roles: [role],
-        });
-      }
-    });
+    context?.project?.members
+      ?.sort((item) => (userStore?.user?.id == item.id ? -1 : 1))
+      ?.forEach((mem) => {
+        const { id, role } = mem;
+        if (userMap.has(id)) {
+          userMap.get(id).roles.push(role);
+        } else {
+          userMap.set(id, {
+            ...mem,
+            roles: [role],
+          });
+        }
+      });
     return [...userMap.values()];
   }, [context?.project?.members]);
   useEffect(() => {
@@ -138,8 +140,15 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             dataIndex: 'name',
             render(name, _) {
               const isMe = userStore?.user?.id === _.id;
-              return (
-                isMe ? <Space size={5}>{name}<Tag style={{ border: 'none' }} color="blue">我</Tag></Space> : name
+              return isMe ? (
+                <Space size={5}>
+                  {name}
+                  <Tag style={{ border: 'none' }} color="blue">
+                    {formatMessage({ id: 'src.page.Project.User.15775BB9' /*我*/ }) /* 我 */}
+                  </Tag>
+                </Space>
+              ) : (
+                name
               );
             },
           },
@@ -206,7 +215,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       showManageModal(record.id);
                     }}
                   >
-                    管理库权限
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
+                      }) /* 管理库权限 */
+                    }
                   </Action.Link>
                 </Action.Group>
               );
@@ -243,6 +256,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           context.project?.members?.filter((m) => m.id === editUserId)?.map((m) => m.role) || []
         }
       />
+
       <ManageModal
         visible={manageModalVisiable}
         projectId={context.project?.id}

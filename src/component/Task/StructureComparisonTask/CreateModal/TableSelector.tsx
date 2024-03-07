@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Popconfirm, Spin, Tree } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
@@ -93,7 +94,12 @@ const TableSelector: React.FC<{
     <div className={styles.doubleExportCardContainer}>
       <div className={styles.content}>
         <ExportCard
-          title={`选择源表 (${checkedKeys?.length}/${treeData?.length})`}
+          title={
+            formatMessage(
+              { id: 'src.component.Task.StructureComparisonTask.CreateModal.8C047E8D' },
+              { checkedKeysLength: checkedKeys?.length, treeDataLength: treeData?.length },
+            ) /*`选择源表 (${checkedKeys?.length}/${treeData?.length})`*/
+          }
           hasSelectAll={false}
           onSelectAll={() => setCheckedKeys(allTreeData?.map((node) => node?.key) as string[])}
           onSearch={(v) => setSourceSearchValue(v)}
@@ -120,7 +126,12 @@ const TableSelector: React.FC<{
       </div>
       <div className={classNames(styles.content, styles.hasIconTree)}>
         <ExportCard
-          title={`已选 ${checkedKeys?.length} 项`}
+          title={
+            formatMessage(
+              { id: 'src.component.Task.StructureComparisonTask.CreateModal.199215C7' },
+              { checkedKeysLength: checkedKeys?.length },
+            ) /*`已选表(${checkedKeys?.length})`*/
+          }
           onSearch={(v) => setTargetSearchValue(v)}
           extra={
             <Popconfirm
@@ -128,9 +139,19 @@ const TableSelector: React.FC<{
                 setCheckedKeys([]);
               }}
               placement="left"
-              title="确定要清空已选对象吗？"
+              title={
+                formatMessage({
+                  id: 'src.component.Task.StructureComparisonTask.CreateModal.C8820D9E',
+                }) /*"确定要清空已选对象吗？"*/
+              }
             >
-              <a>清空</a>
+              <a>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.StructureComparisonTask.CreateModal.4CA31C77' /*清空*/,
+                  }) /* 清空 */
+                }
+              </a>
             </Popconfirm>
           }
           disabled

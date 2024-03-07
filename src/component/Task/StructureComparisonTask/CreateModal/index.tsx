@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, Modal, Radio, Space, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useState } from 'react';
@@ -40,12 +41,20 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
     if (result) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.CreateModal.EFCABB82' /*'新建成功'*/,
+        }),
+      );
       modalStore.changeStructureComparisonModal(false);
       openTasksPage(TaskPageType.STRUCTURE_COMPARISON);
       return;
     }
-    message.error('新建失败');
+    message.error(
+      formatMessage({
+        id: 'src.component.Task.StructureComparisonTask.CreateModal.B4FAB9EC' /*'新建失败'*/,
+      }),
+    );
   }
 
   const { data: database, run } = useRequest(getDatabase, {
@@ -62,7 +71,9 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消此 结构比对吗？',
+        title: formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.CreateModal.738226AC',
+        }), //'确认取消此 结构比对吗？'
         centered: true,
         onOk: () => {
           modalStore.changeStructureComparisonModal(false);
@@ -85,16 +96,28 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   return (
     <Drawer
       open={structureComparisonVisible}
-      title={'新建结构比对'}
+      title={formatMessage({
+        id: 'src.component.Task.StructureComparisonTask.CreateModal.45DB3909',
+      })}
       width={720}
       closable
       onClose={() => handleCancel(hasEdit)}
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
-            <Button onClick={() => handleCancel(hasEdit)}>取消</Button>
+            <Button onClick={() => handleCancel(hasEdit)}>
+              {
+                formatMessage({
+                  id: 'src.component.Task.StructureComparisonTask.CreateModal.A8C717F6' /*取消*/,
+                }) /* 取消 */
+              }
+            </Button>
             <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
-              新建
+              {
+                formatMessage({
+                  id: 'src.component.Task.StructureComparisonTask.CreateModal.F516C53B' /*新建*/,
+                }) /* 新建 */
+              }
             </Button>
           </Space>
         </div>
@@ -117,7 +140,11 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             name={['parameters', 'sourceDatabaseId']}
             width={'336px'}
             type={TaskType.STRUCTURE_COMPARISON}
-            label="源端数据库"
+            label={
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.1D072B46',
+              }) /*"源端数据库"*/
+            }
             projectId={projectId}
             filters={{
               dialectTypes: [
@@ -126,21 +153,39 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
                 ConnectionMode.OB_ORACLE,
               ],
             }}
-            placeholder={'请选择'}
+            placeholder={formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.84D445B8',
+            })}
           />
+
           <DatabaseSelect
             name={['parameters', 'targetDatabaseId']}
             width={'336px'}
             type={TaskType.STRUCTURE_COMPARISON}
-            label="目标端数据库"
+            label={
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.4A2B46E4',
+              }) /*"目标端数据库"*/
+            }
             projectId={projectId}
             filters={{
               dialectTypes: [database?.data?.dataSource?.dialectType],
               projectId: database?.data?.project?.id,
             }}
-            placeholder={'仅支持选择同一项目内数据库'}
+            placeholder={formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.CBAA34FD',
+            })}
           />
-          <Form.Item label="对比范围" name={['parameters', 'comparisonScope']}>
+
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.25F05D36',
+              }) /*"对比范围"*/
+            }
+            name={['parameters', 'comparisonScope']}
+            required
+          >
             <Radio.Group>
               <Radio value={EComparisonScope.PART}>
                 {comparisonScopeMap[EComparisonScope.PART]}
@@ -156,12 +201,18 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
               }
               return (
                 <Form.Item
-                  label="对比对象"
+                  label={
+                    formatMessage({
+                      id: 'src.component.Task.StructureComparisonTask.CreateModal.8B06E600',
+                    }) /*"比对对象"*/
+                  }
                   name={['parameters', 'tableNamesToBeCompared']}
                   rules={[
                     {
                       required: true,
-                      message: '请选择对比对象',
+                      message: formatMessage({
+                        id: 'src.component.Task.StructureComparisonTask.CreateModal.BCA1854E',
+                      }), //'请选择对比对象'
                     },
                   ]}
                 >
@@ -174,8 +225,22 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             }}
           </Form.Item>
         </Form.Item>
-        <FormItemPanel label="任务设置" keepExpand>
-          <Form.Item label="执行方式" name="executionStrategy">
+        <FormItemPanel
+          label={
+            formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.DAB1623C',
+            }) /*"任务设置"*/
+          }
+          keepExpand
+        >
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.EE50E3DC',
+              }) /*"执行方式"*/
+            }
+            name="executionStrategy"
+          >
             <Radio.Group>
               <Radio value={TaskExecStrategy.AUTO}>
                 {taskExecStrategyMap?.[TaskExecStrategy.AUTO]}
@@ -187,17 +252,31 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           </Form.Item>
         </FormItemPanel>
         <Form.Item
-          label="描述"
+          label={
+            formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.52828286',
+            }) /*"描述"*/
+          }
           name="description"
           requiredMark="optional"
           rules={[
             {
               max: 200,
-              message: '描述不超过 200 个字符',
+              message: formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.FBBFFC4C',
+              }), //'描述不超过 200 个字符'
             },
           ]}
         >
-          <Input.TextArea placeholder="请输入描述，200字以内；" maxLength={200} rows={6} />
+          <Input.TextArea
+            placeholder={
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.67E284BD',
+              }) /*"请输入描述，200字以内；"*/
+            }
+            maxLength={200}
+            rows={6}
+          />
         </Form.Item>
       </Form>
     </Drawer>

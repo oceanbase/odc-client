@@ -56,7 +56,7 @@ export default function AddDataSourceDropdown(props: IProps) {
       key: 'batchImport',
     });
     return result;
-  }, [dorisConnectTypes,mysqlConnectTypes, obConnectTypes]);
+  }, [dorisConnectTypes, mysqlConnectTypes, obConnectTypes]);
   return (
     <Dropdown
       menu={{

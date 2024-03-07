@@ -30,10 +30,15 @@ const columns = [
     dataIndex: 'conditionExpression',
     title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.ArchiveRange.FilterConditions' }), //过滤条件
     ellipsis: true,
-    width: 150,
     render: (value) => {
       return <Tooltip title={value}>{value ?? '-'}</Tooltip>;
     },
+  },
+  {
+    dataIndex: 'targetTableName',
+    title: formatMessage({ id: 'src.component.Task.DataArchiveTask.DetailContent.8D9A2CED' }), //'目标表名'
+    ellipsis: true,
+    width: 190,
   },
 ];
 

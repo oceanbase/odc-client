@@ -54,7 +54,7 @@ const Channel: React.FC<{
   const [detailDrawerOpen, setDetailDrawerOpen] = useState<boolean>(false);
   const [formDrawerOpen, setFormDrawerOpen] = useState<boolean>(false);
   const [channelsList, setChannelsList] =
-    useState<IResponseData<Omit<IChannel, 'channelConfig'>>>();
+    useState<IResponseData<Omit<IChannel<EChannelType>, 'channelConfig'>>>();
   const loadChannels = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { name, type } = filters ?? {};
@@ -75,16 +75,22 @@ const Channel: React.FC<{
   };
   const handleDelete = (channelId: number) => {
     return Modal.confirm({
-      title: '确认要删除此通道吗？',
-      content: '删除后，关联工单事件的消息推送将不再生效。',
+      title: formatMessage({ id: 'src.page.Project.Notification.components.C66FA7EF' }), //'确认要删除此通道吗？'
+      content: formatMessage({ id: 'src.page.Project.Notification.components.C6EB2CE0' }), //'删除后，关联工单事件的消息推送将不再生效。'
       onOk: async () => {
         const result = await deleteChannel(projectId, channelId);
         if (result) {
-          message.success('删除成功!');
+          message.success(
+            formatMessage({
+              id: 'src.page.Project.Notification.components.00F5D0D6' /*'删除成功!'*/,
+            }),
+          );
           tableRef?.current?.reload?.();
           return;
         }
-        message.error('删除失败');
+        message.error(
+          formatMessage({ id: 'src.page.Project.Notification.components.FBB6B2D7' /*'删除失败'*/ }),
+        );
       },
       onCancel: () => {},
     });
@@ -98,14 +104,14 @@ const Channel: React.FC<{
     needReload && tableRef?.current?.reload();
   };
 
-  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel, 'channelConfig'>) => {
+  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => {
     setSelectedChannelId(channel?.id);
     setDetailDrawerOpen(true);
   };
   const operationOptions = [
     {
       type: IOperationOptionType.button,
-      content: <span>新建通道</span>,
+      content: <span>新建推送通道</span>,
       isPrimary: true,
       onClick: () => {
         setFormDrawerOpen(true);
@@ -134,6 +140,7 @@ const Channel: React.FC<{
         detailDrawerOpen={detailDrawerOpen}
         setDetailDrawerOpen={setDetailDrawerOpen}
       />
+
       <CommonTable
         key="ChannelCommonTable"
         ref={tableRef}
@@ -155,6 +162,14 @@ const Channel: React.FC<{
   );
 };
 
+const docUrlMap = {
+  [EChannelType.DING_TALK]:
+    'https://help.aliyun.com/zh/arms/alarm-operation-center/obtain-the-webhook-url-of-a-dingtalk-chatbot',
+  [EChannelType.FEI_SHU]: 'https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot',
+  [EChannelType.WE_COM]: 'https://help.aliyun.com/zh/arms/alarm-operation-center/wecom-chatbots',
+  [EChannelType.WEBHOOK]: null,
+};
+
 export const FromChannelDrawer: React.FC<{
   projectId: number;
   channelId?: number;
@@ -162,12 +177,13 @@ export const FromChannelDrawer: React.FC<{
   setFormDrawerOpen: (formDrawerOpen: boolean) => void;
   closedCallback?: (needReload?: boolean) => void;
 }> = ({ projectId, channelId, formDrawerOpen, setFormDrawerOpen, closedCallback }) => {
-  const [formRef] = useForm<IChannel>();
-  const [currentChannel, setCurrentChannel] = useState<IChannel>();
+  const [formRef] = useForm<IChannel<EChannelType>>();
+  const [currentChannel, setCurrentChannel] = useState<IChannel<EChannelType>>();
   const [hasEdit, setHasEdit] = useState<boolean>(false);
   const [testChannelSuccess, setTestChannelSuccess] = useState<boolean>(false);
   const [testChannelErrorMessage, setTestChannelErrorMessage] = useState<string>(null);
   const [testLoading, setTestLoading] = useState<boolean>(false);
+  const tip = formatMessage({ id: 'src.page.Project.Notification.components.0963E13A' }); //`配置{"key":"value"}来验证json结构的返回结果，验证返回结果中包含配置中的所有key、value，则认为发送成功`
   const loadChannelDetail = async (channelId) => {
     const channel = await detailChannel(projectId, channelId);
     if (channel) {
@@ -175,7 +191,11 @@ export const FromChannelDrawer: React.FC<{
       formRef?.setFieldsValue(channel);
       return;
     }
-    message.error('加载通道数据失败');
+    message.error(
+      formatMessage({
+        id: 'src.page.Project.Notification.components.A2B52297' /*'加载通道数据失败'*/,
+      }),
+    );
   };
   const handleTestChannel = async () => {
     setTestChannelErrorMessage(null);
@@ -184,10 +204,18 @@ export const FromChannelDrawer: React.FC<{
     const result = await testChannel(projectId, channel);
     if (result?.active) {
       setTestChannelSuccess(true);
-      message.success('测试消息发送成功！');
+      message.success(
+        formatMessage({
+          id: 'src.page.Project.Notification.components.A50DD7D6' /*'测试消息发送成功！'*/,
+        }),
+      );
     } else {
       setTestChannelSuccess(false);
-      message.error('测试消息发送失败！');
+      message.error(
+        formatMessage({
+          id: 'src.page.Project.Notification.components.494A6AA0' /*'测试消息发送失败！'*/,
+        }),
+      );
       setTestChannelErrorMessage(result?.errorMessage);
     }
     setTestLoading(false);
@@ -196,7 +224,9 @@ export const FromChannelDrawer: React.FC<{
     if (hasEdit) {
       return Modal.confirm({
         centered: true,
-        title: channelId ? '确认关闭编辑通道？' : '确认关闭新建通道？',
+        title: channelId
+          ? formatMessage({ id: 'src.page.Project.Notification.components.1E5D8CF3' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.5ED12758' }),
         onOk: () => {
           setFormDrawerOpen(false);
         },
@@ -210,6 +240,7 @@ export const FromChannelDrawer: React.FC<{
     result.id ??= channelId;
     let data;
     if (result?.type === EChannelType.WEBHOOK) {
+      // @ts-ignore
       result.channelConfig.atMobiles = null;
     }
     if (channelId) {
@@ -218,14 +249,25 @@ export const FromChannelDrawer: React.FC<{
       data = await createChannel(projectId, result);
     }
     if (data) {
-      message.success(channelId ? '保存成功' : '新建成功');
+      message.success(
+        channelId
+          ? formatMessage({ id: 'src.page.Project.Notification.components.E4112EC6' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.A1ADE4ED' }),
+      );
       setFormDrawerOpen(false);
       closedCallback?.(true);
       return;
     }
-    message.error(channelId ? '保存失败' : '新建失败');
+    message.error(
+      channelId
+        ? formatMessage({ id: 'src.page.Project.Notification.components.CD9CDC1F' })
+        : formatMessage({ id: 'src.page.Project.Notification.components.562D512A' }),
+    );
   };
   const handleFieldsChange = (changedFields, allFields) => {
+    if (changedFields?.[0]?.name?.join('') === 'description') {
+      return;
+    }
     setHasEdit(true);
     setTestChannelSuccess(false);
     if (changedFields?.[0]?.name?.join('') === ['channelConfig', 'language'].join('')) {
@@ -264,18 +306,30 @@ export const FromChannelDrawer: React.FC<{
       open={formDrawerOpen}
       destroyOnClose
       closable
-      title={channelId ? '编辑通道' : '新建通道'}
+      title={channelId ? '编辑推送通道' : '新建推送通道'}
       width={520}
       onClose={handleFormDrawerClose}
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
-            <Button onClick={handleFormDrawerClose}>取消</Button>
+            <Button onClick={handleFormDrawerClose}>
+              {
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.BA80DE5A' /*取消*/,
+                }) /* 取消 */
+              }
+            </Button>
             <Button onClick={handleTestChannel} loading={testLoading}>
-              发送测试消息
+              {
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.0ED8B37C' /*发送测试消息*/,
+                }) /* 发送测试消息 */
+              }
             </Button>
             <Button disabled={!testChannelSuccess} type="primary" onClick={handleFormDrawerSubmit}>
-              {channelId ? '保存' : '新建'}
+              {channelId
+                ? formatMessage({ id: 'src.page.Project.Notification.components.F21F4A25' })
+                : formatMessage({ id: 'src.page.Project.Notification.components.3FA9FBAE' })}
             </Button>
           </Space>
         </div>
@@ -290,6 +344,7 @@ export const FromChannelDrawer: React.FC<{
           style={{ marginBottom: '8px' }}
         />
       )}
+
       <Form
         form={formRef}
         layout="vertical"
@@ -298,6 +353,7 @@ export const FromChannelDrawer: React.FC<{
           !channelId && {
             type: EChannelType.DING_TALK,
             channelConfig: {
+              httpMethod: 'POST',
               language: ELanguage.ZH_CN,
               contentTemplate: EContentTemplateMap[ELanguage.ZH_CN],
               rateLimitConfig: null,
@@ -307,31 +363,45 @@ export const FromChannelDrawer: React.FC<{
         }
       >
         <Form.Item
-          label="通道名称"
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.E6860CB3',
+            }) /*"通道名称"*/
+          }
           name="name"
           requiredMark="optional"
           validateTrigger="onBlur"
           rules={[
             {
               required: true,
-              message: '通道名称不能为空',
+              message: '请输入',
             },
             {
-              message: '通道名称已存在',
+              message: formatMessage({ id: 'src.page.Project.Notification.components.CA33D8AB' }), //'通道名称已存在'
               validator: checkNameRepeat,
             },
           ]}
         >
-          <Input placeholder="请输入通道名称" />
+          <Input
+            placeholder={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.4E72988A',
+              }) /*"请输入通道名称"*/
+            }
+          />
         </Form.Item>
         <Form.Item
-          label="通道类型"
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.6A1DF023',
+            }) /*"通道类型"*/
+          }
           name="type"
           requiredMark="optional"
           rules={[
             {
               required: true,
-              message: '请选择通道类型',
+              message: formatMessage({ id: 'src.page.Project.Notification.components.7C80562E' }), //'请选择通道类型'
             },
           ]}
         >
@@ -351,53 +421,193 @@ export const FromChannelDrawer: React.FC<{
           </Radio.Group>
         </Form.Item>
         <Form.Item name="channelConfig">
-          <Form.Item
-            label={
-              <Space>
-                <div>Webhook 地址</div>
-                <a // TODO
-                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
-                  target={'_blank'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  rel="noreferrer"
-                >
-                  如何配置
-                </a>
-              </Space>
-            }
-            name={['channelConfig', 'webhook']}
-            requiredMark="optional"
-            validateTrigger="onBlur"
-            rules={[
-              {
-                required: true,
-                message: '通道名称不能为空',
-              },
-            ]}
-          >
-            <Input placeholder="请输入钉钉群机器人 Webhook 地址" />
-          </Form.Item>
-          <Form.Item label="签名密钥" name={['channelConfig', 'sign']} requiredMark="optional">
-            <Input placeholder="若开启签名校验，请输入密钥" />
-          </Form.Item>
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
-              const hasAtMobiles = getFieldValue('type') !== EChannelType.WEBHOOK;
-              return hasAtMobiles ? (
-                <Form.Item
-                  label="指定用户"
-                  name={['channelConfig', 'atMobiles']}
-                  requiredMark="optional"
-                >
-                  <Select mode="tags" placeholder="请输入用户手机号" />
-                </Form.Item>
-              ) : null;
+              const type = getFieldValue('type');
+              const isWebhook = type === EChannelType.WEBHOOK;
+              const hasSign = [EChannelType.DING_TALK, EChannelType.FEI_SHU]?.includes(type);
+              const hasAtMobiles = [EChannelType.DING_TALK, EChannelType.WE_COM]?.includes(type);
+              return (
+                <>
+                  <Form.Item
+                    label={
+                      <Space>
+                        <div>
+                          {
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.D55443F5' /*Webhook 地址*/,
+                            }) /* Webhook 地址 */
+                          }
+                        </div>
+                        {docUrlMap?.[type] && (
+                          <a
+                            href={docUrlMap[type]}
+                            target={'_blank'}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            rel="noreferrer"
+                          >
+                            {
+                              formatMessage({
+                                id: 'src.page.Project.Notification.components.E5532E71' /*如何配置*/,
+                              }) /* 如何配置 */
+                            }
+                          </a>
+                        )}
+                      </Space>
+                    }
+                    name={['channelConfig', 'webhook']}
+                    requiredMark="optional"
+                    validateTrigger="onBlur"
+                    rules={[
+                      {
+                        required: true,
+                        message: '请输入',
+                      },
+                    ]}
+                  >
+                    <Input
+                      placeholder={
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.514F5656',
+                        }) /*"请输入钉钉群机器人 Webhook 地址"*/
+                      }
+                    />
+                  </Form.Item>
+                  {hasSign ? (
+                    <Form.Item
+                      label={
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.BE20D900',
+                        }) /*"签名密钥"*/
+                      }
+                      name={['channelConfig', 'sign']}
+                      requiredMark="optional"
+                    >
+                      <Input
+                        placeholder={
+                          formatMessage({
+                            id: 'src.page.Project.Notification.components.A3866291',
+                          }) /*"若开启签名校验，请输入密钥"*/
+                        }
+                      />
+                    </Form.Item>
+                  ) : null}
+                  {isWebhook ? (
+                    <Form.Item noStyle shouldUpdate>
+                      <Form.Item
+                        label={
+                          formatMessage({
+                            id: 'src.page.Project.Notification.components.8062E4B6',
+                          }) /*"代理"*/
+                        }
+                        requiredMark="optional"
+                        name={['channelConfig', 'httpProxy']}
+                      >
+                        <Input
+                          placeholder={
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.753E4F73',
+                            }) /*"请输入"*/
+                          }
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        label={
+                          formatMessage({
+                            id: 'src.page.Project.Notification.components.DFE43F9E',
+                          }) /*"请求方法"*/
+                        }
+                        name={['channelConfig', 'httpMethod']}
+                      >
+                        <Radio.Group>
+                          <Radio value="POST">POST</Radio>
+                          <Radio value="GET">GET</Radio>
+                          <Radio value="PUT">PUT</Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      <Form.Item
+                        label="Header"
+                        requiredMark="optional"
+                        name={['channelConfig', 'headersTemplate']}
+                      >
+                        <Input.TextArea
+                          placeholder={
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.B318E408',
+                            }) /*"请输入header，赞不支持模版，为空表示不使用header参数，多个header的格式为key1:value1; key2: value2"*/
+                          }
+                          rows={4}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        label="Body"
+                        requiredMark="optional"
+                        name={['channelConfig', 'bodyTemplate']}
+                      >
+                        <Input.TextArea
+                          placeholder={
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.130EA25D',
+                            }) /*"请输入body模版，可通过输入$(message)引用通知消息，为空表示不使用HTTP body"*/
+                          }
+                          rows={4}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        label={
+                          formatMessage({
+                            id: 'src.page.Project.Notification.components.A1BCCE0E',
+                          }) /*"Response校验"*/
+                        }
+                        required
+                        requiredMark="optional"
+                      >
+                        <Form.Item noStyle name={['channelConfig', 'responseValidation']}>
+                          <Input.TextArea
+                            placeholder={
+                              formatMessage({
+                                id: 'src.page.Project.Notification.components.C752DB2D',
+                              }) /*"请输入"*/
+                            }
+                            rows={4}
+                          />
+                        </Form.Item>
+                        <div className={styles.tip}>{tip}</div>
+                      </Form.Item>
+                    </Form.Item>
+                  ) : null}
+                  {hasAtMobiles ? (
+                    <Form.Item
+                      label={
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.3B557A1D',
+                        }) /*"指定用户"*/
+                      }
+                      name={['channelConfig', 'atMobiles']}
+                      requiredMark="optional"
+                    >
+                      <Select
+                        mode="tags"
+                        placeholder={
+                          formatMessage({
+                            id: 'src.page.Project.Notification.components.8CA4B168',
+                          }) /*"请输入用户手机号"*/
+                        }
+                      />
+                    </Form.Item>
+                  ) : null}
+                </>
+              );
             }}
           </Form.Item>
           <Form.Item
-            label="推送消息模版"
+            label={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.099A08A2',
+              }) /*"推送消息模版"*/
+            }
             style={{
               marginBottom: '1px',
             }}
@@ -408,7 +618,9 @@ export const FromChannelDrawer: React.FC<{
               rules={[
                 {
                   required: true,
-                  message: '请选择通道类型',
+                  message: formatMessage({
+                    id: 'src.page.Project.Notification.components.EA00E8BD',
+                  }), //'请选择通道类型'
                 },
               ]}
               style={{
@@ -426,17 +638,27 @@ export const FromChannelDrawer: React.FC<{
                 rules={[
                   {
                     required: true,
-                    message: '消息模版不能为空',
+                    message: formatMessage({
+                      id: 'src.page.Project.Notification.components.87BD7057',
+                    }), //'消息模版不能为空'
                   },
                 ]}
               >
-                <Input.TextArea rows={5} maxLength={200} placeholder="请输入消息模版" />
+                <Input.TextArea
+                  rows={5}
+                  maxLength={200}
+                  placeholder={
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.16067FAA',
+                    }) /*"请输入消息模版"*/
+                  }
+                />
               </Form.Item>
               <div>
                 <span style={{ color: 'var(--neutral-black45-color)' }}>
-                  {'可通过输入${ } 引入标签，'}
+                  {formatMessage({ id: 'src.page.Project.Notification.components.D0CF8521' })}
                 </span>
-                <a // TODO
+                <a // TODO: 等待文档链接
                   href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
                   target={'_blank'}
                   onClick={(e) => {
@@ -444,22 +666,45 @@ export const FromChannelDrawer: React.FC<{
                   }}
                   rel="noreferrer"
                 >
-                  查看标签说明
+                  {
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.E3748BB5' /*查看标签说明*/,
+                    }) /* 查看标签说明 */
+                  }
                 </a>
               </div>
             </Form.Item>
           </Form.Item>
-          <FormItemPanel keepExpand noPaddingBottom>
-            <Form.Item
-              label="消息限流设置"
-              name={['channelConfig', 'rateLimitConfig']}
-              shouldUpdate
-            >
-              <CheckboxWithTip />
-            </Form.Item>
-          </FormItemPanel>
-          <Form.Item label="描述" name="description" requiredMark="optional">
-            <Input.TextArea maxLength={200} rows={6} placeholder="请输入描述，200字以内" />
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.ACDD499F',
+              }) /*"消息限流设置"*/
+            }
+          >
+            <FormItemPanel keepExpand noPaddingBottom>
+              <Form.Item name={['channelConfig', 'rateLimitConfig']} shouldUpdate>
+                <CheckboxWithTip />
+              </Form.Item>
+            </FormItemPanel>
+          </Form.Item>
+
+          <Form.Item
+            label={
+              formatMessage({ id: 'src.page.Project.Notification.components.9AD8F3D8' }) /*"描述"*/
+            }
+            name="description"
+            requiredMark="optional"
+          >
+            <Input.TextArea
+              maxLength={200}
+              rows={6}
+              placeholder={
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.DC9065DF',
+                }) /*"请输入描述，200字以内"*/
+              }
+            />
           </Form.Item>
         </Form.Item>
       </Form>
@@ -473,7 +718,7 @@ export const DetailChannelDrawer: React.FC<{
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: (oepn: boolean) => void;
 }> = ({ projectId, channelId, detailDrawerOpen, setDetailDrawerOpen }) => {
-  const [channel, setChannel] = useState<IChannel>();
+  const [channel, setChannel] = useState<IChannel<EChannelType>>();
   const handleOnClose = () => {
     setDetailDrawerOpen(false);
   };
@@ -492,37 +737,142 @@ export const DetailChannelDrawer: React.FC<{
   }, [detailDrawerOpen]);
   function parseRateLimitConfigToText(rateLimitConfig: IRateLimitConfig) {
     const timeUnitText = TimeUnitMap?.[rateLimitConfig?.timeUnit];
-    let result = `${timeUnitText}不超过${rateLimitConfig?.limit}次`;
+    const rateLimitConfigLimit = rateLimitConfig?.limit;
+    let result =
+      timeUnitText +
+      formatMessage(
+        { id: 'src.page.Project.Notification.components.EE8B3451' },
+        { rateLimitConfigLimit: rateLimitConfigLimit },
+      ); //`不超过${rateLimitConfigLimit}次`
     return result;
   }
+  const isWebhook = channel?.type === EChannelType.WEBHOOK;
+  const hasSign = [EChannelType.DING_TALK, EChannelType.FEI_SHU]?.includes(channel?.type);
+  const hasAtMobiles = [EChannelType.DING_TALK, EChannelType.WE_COM]?.includes(channel?.type);
   return (
     <Drawer
-      title="推送通道详情"
+      title={
+        formatMessage({
+          id: 'src.page.Project.Notification.components.139882C5',
+        }) /*"推送通道详情"*/
+      }
       width={520}
       open={detailDrawerOpen}
       closable
       onClose={handleOnClose}
     >
       <Descriptions column={1}>
-        <Descriptions.Item label="通道名称">{channel?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="通道类型">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.82FB9375',
+            }) /*"通道名称"*/
+          }
+        >
+          {channel?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.6CDFEC70',
+            }) /*"通道类型"*/
+          }
+        >
           {EChannelTypeMap?.[channel?.type] || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="Webhook地址">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.F40AD99E',
+            }) /*"Webhook地址"*/
+          }
+        >
           {channel?.channelConfig?.webhook || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="签名密钥">
-          {channel?.channelConfig?.sign || '-'}
-        </Descriptions.Item>
-        <Descriptions.Item label="指定用户">
-          {channel?.channelConfig?.atMobiles?.join('、') || '-'}
-        </Descriptions.Item>
-        <Descriptions.Item label="消息限流设置">
+        {hasSign && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.1D7A027D',
+              }) /*"签名密钥"*/
+            }
+          >
+            {(channel as IChannel<EChannelType.DING_TALK | EChannelType.FEI_SHU>)?.channelConfig
+              ?.sign || '-'}
+          </Descriptions.Item>
+        )}
+
+        {hasAtMobiles && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.2DFCA81C',
+              }) /*"指定用户"*/
+            }
+          >
+            {(
+              channel as IChannel<EChannelType.DING_TALK | EChannelType.WE_COM>
+            )?.channelConfig?.atMobiles?.join('、') || '-'}
+          </Descriptions.Item>
+        )}
+
+        {isWebhook && (
+          <>
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.2724965A',
+                }) /*"代理"*/
+              }
+            >
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.httpProxy || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.95A710C5',
+                }) /*"请求方法"*/
+              }
+            >
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.httpMethod || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Header">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.headersTemplate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Body">
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.bodyTemplate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.E00F566E',
+                }) /*"Response校验"*/
+              }
+            >
+              {(channel as IChannel<EChannelType.WEBHOOK>)?.channelConfig?.responseValidation ||
+                '-'}
+            </Descriptions.Item>
+          </>
+        )}
+
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.8B494D6C',
+            }) /*"消息限流设置"*/
+          }
+        >
           {channel?.channelConfig?.rateLimitConfig
             ? parseRateLimitConfigToText(channel?.channelConfig?.rateLimitConfig)
             : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="消息模版">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.page.Project.Notification.components.A78D1371',
+            }) /*"消息模版"*/
+          }
+        >
           {ELanguageMap?.[channel?.channelConfig?.language] || '-'}
         </Descriptions.Item>
       </Descriptions>
@@ -536,7 +886,13 @@ export const DetailChannelDrawer: React.FC<{
         {channel?.channelConfig?.contentTemplate || '-'}
       </pre>
       <Descriptions column={1}>
-        <Descriptions.Item label="描述">{channel?.description || '-'}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({ id: 'src.page.Project.Notification.components.DCC955A7' }) /*"描述"*/
+          }
+        >
+          {channel?.description || '-'}
+        </Descriptions.Item>
       </Descriptions>
     </Drawer>
   );
@@ -574,16 +930,31 @@ const CheckboxWithTip: React.FC<{
               })}
             >
               <Checkbox checked={checked} onChange={() => handleCheckboxOnChange()}>
-                <span style={{ userSelect: 'none' }}>使用消息限流</span>
+                <span style={{ userSelect: 'none' }}>
+                  {
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.DD7AFBF7' /*使用消息限流*/,
+                    }) /* 使用消息限流 */
+                  }
+                </span>
               </Checkbox>
               <div className={classNames(styles.rateLimitConfigTip)}>
                 {rateLimitConfig
-                  ? '使用消息限流，可在规定时间内接收消息，避免忽略重要消息'
-                  : '不使用消息限流，短时间内可能会收到过多消息，导致重要消息淹没'}
+                  ? formatMessage({ id: 'src.page.Project.Notification.components.6A310F2D' })
+                  : formatMessage({ id: 'src.page.Project.Notification.components.ED0EC433' })}
               </div>
               {rateLimitConfig ? (
                 <Form.Item noStyle shouldUpdate>
-                  <Form.Item label="消息次数限制">
+                  <Form.Item
+                    label={
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.E773F39A',
+                      }) /*"消息次数限制"*/
+                    }
+                    style={{
+                      marginTop: '16px',
+                    }}
+                  >
                     <Space>
                       <Form.Item name={['channelConfig', 'rateLimitConfig', 'timeUnit']}>
                         <Select
@@ -606,15 +977,28 @@ const CheckboxWithTip: React.FC<{
                       </Form.Item>
                       <Form.Item name={['channelConfig', 'rateLimitConfig', 'limit']}>
                         <InputNumber
-                          addonBefore="不超过"
+                          addonBefore={
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.713896D2',
+                            }) /*"不超过"*/
+                          }
                           style={{ width: '145px' }}
-                          addonAfter="次"
+                          min={1}
+                          addonAfter={
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.90C16E2F',
+                            }) /*"次"*/
+                          }
                         />
                       </Form.Item>
                     </Space>
                   </Form.Item>
                   <Form.Item
-                    label="超出限流处理策略"
+                    label={
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.0785D0CB',
+                      }) /*"超出限流处理策略"*/
+                    }
                     name={['channelConfig', 'rateLimitConfig', 'overLimitStrategy']}
                     style={{
                       marginBottom: '8px',
@@ -622,25 +1006,21 @@ const CheckboxWithTip: React.FC<{
                   >
                     <Radio.Group>
                       <Radio value={EOverLimitStrategy.THROWN}>
-                        <HelpDoc
-                          isTip
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
-                          })}
-                        >
-                          忽略
+                        <HelpDoc isTip leftText title={'忽略已超出限流的消息，不再重发'}>
+                          {
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.91FA1DA5' /*忽略*/,
+                            }) /* 忽略 */
+                          }
                         </HelpDoc>
                       </Radio>
                       <Radio value={EOverLimitStrategy.RESEND}>
-                        <HelpDoc
-                          isTip
-                          leftText
-                          title={formatMessage({
-                            id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
-                          })}
-                        >
-                          重发
+                        <HelpDoc isTip leftText title={'限流时间过后，将自动重发超出限流的消息'}>
+                          {
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.AB93FA16' /*重发*/,
+                            }) /* 重发 */
+                          }
                         </HelpDoc>
                       </Radio>
                     </Radio.Group>
@@ -683,6 +1063,7 @@ const LangagueTab: React.FC<{
       children: null,
     },
   ];
+
   return (
     <Tabs
       activeKey={tabKey}

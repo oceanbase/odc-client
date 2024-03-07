@@ -23,7 +23,7 @@ import useForm from 'antd/es/form/hooks/useForm';
 import classnames from 'classnames';
 import _ from 'lodash';
 import Condition from './Condition';
-import { SelectItemProps } from '../interface';
+import { Expression, SelectItemProps } from '../interface';
 import TreeTitle from './TreeTitle';
 import {
   createRiskDetectRules,
@@ -71,19 +71,19 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [originRootNode, setOriginRootNode] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [empty, setEmpty] = useState<boolean>(true);
-  const [environmentIdMap, setEnvironmentIdMap] = useState<{ [key in string | number]: string }>(
-    {},
-  );
+  const [environmentMap, setEnvironmentMap] = useState<{ [key in string | number]: string }>({});
   const [taskTypeIdMap, setTaskTypeIdMap] = useState<{ [key in string | number]: string }>({});
-  const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<
-    { [key in string | number]: string }
-  >({});
+  const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
   const [environmentOptions, setEnvironmentOptions] = useState<SelectItemProps[]>([]);
   const [taskTypeOptions, setTaskTypeOptions] = useState<SelectItemProps[]>([]);
   const [sqlCheckResultOptions, setSqlCheckResultOptions] = useState<SelectItemProps[]>([]);
   const [showConditionGroup, setShowConditionGroup] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [currentRiskDetectRuleId, setCurrentRiskDetectRuleId] = useState<number>(null);
+  const isDefaultLevel = currentRiskLevel?.level === 0;
+
   const handleCreateRiskDetectRule = async (rootNode): Promise<boolean> => {
     const res = await createRiskDetectRules({
       riskLevelId: currentRiskLevel?.id,
@@ -126,7 +126,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       conditions: conditions,
     });
   };
-  const initRootNode = async () => {
+  const initRootNode = async (envMap) => {
     if (currentRiskLevel) {
       const rd = await listRiskDetectRules({
         riskLevelId: currentRiskLevel?.id,
@@ -136,7 +136,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       } else {
         setEmpty(true);
       }
-      rd?.rootNode && setRootNode(rd?.rootNode);
+      rd?.rootNode && setRootNode(transferIdToName(rd?.rootNode, envMap));
       rd?.rootNode &&
         setRootBoolOperator(
           (rd?.rootNode as IConditionGroup)?.booleanOperator || EBooleanOperator.AND,
@@ -148,18 +148,33 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   };
   const initInnerRiskLevel = async () => {
     setLoading(true);
-    await initOptions({
-      setEnvironmentIdMap,
+    const envMap = await initOptions({
+      setEnvironmentMap,
       setEnvironmentOptions,
       setTaskTypeIdMap,
       setTaskTypeOptions,
       setSqlCheckResultIdMap,
       setSqlCheckResultOptions,
     });
-    const rootNode = await initRootNode();
+    const rootNode = await initRootNode(envMap);
     parseRootNode(rootNode);
     formRef.resetFields();
     setLoading(false);
+  };
+  // 自定义环境为了方便拓展，需要将原来值为ENVIRONMENT_ID的expression修改为ENVIRONMENT_NAME。
+  const transferIdToName = (root, envMap) => {
+    if (root?.type === EConditionType.CONDITION) {
+      if (root?.expression === Expression.ENVIRONMENT_ID) {
+        root.expression = Expression.ENVIRONMENT_NAME;
+        root.value = envMap?.[` id:${root?.value}`];
+      }
+      return root;
+    }
+    if (root?.type === EConditionType.CONDITION_GROUP && root?.children?.length) {
+      root.children = root?.children?.map((node) => transferIdToName(node, envMap));
+      return root;
+    }
+    return root;
   };
   const handleSubmit = async () => {
     const formData = await formRef.validateFields()?.catch();
@@ -197,7 +212,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       memoryReload();
       setOriginRootNode(null);
       setRootNode(null);
-      await initRootNode();
+      await initRootNode(environmentMap);
       setIsEdit(false);
       formRef.resetFields();
     } else {
@@ -222,7 +237,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
         }), //'删除成功'
       );
       memoryReload();
-      initRootNode();
+      initRootNode(environmentMap);
       formRef.resetFields();
       setRootNode(null);
       setOriginRootNode(null);
@@ -346,7 +361,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                     remove={inRemove}
                                                     removeGroup={remove}
                                                     setShowConditionGroup={setShowConditionGroup}
-                                                    environmentIdMap={taskTypeIdMap}
+                                                    environmentMap={taskTypeIdMap}
                                                     taskTypeIdMap={taskTypeIdMap}
                                                     sqlCheckResultIdMap={sqlCheckResultIdMap}
                                                     environmentOptions={environmentOptions}
@@ -368,8 +383,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                   >
                                                     {
                                                       formatMessage({
-                                                        id:
-                                                          'odc.src.page.Secure.RiskLevel.components.AddConditions',
+                                                        id: 'odc.src.page.Secure.RiskLevel.components.AddConditions',
                                                       }) /* 
                                                     添加条件
                                                    */
@@ -397,7 +411,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                     remove={remove}
                                     removeGroup={remove}
                                     setShowConditionGroup={setShowConditionGroup}
-                                    environmentIdMap={taskTypeIdMap}
+                                    environmentMap={taskTypeIdMap}
                                     taskTypeIdMap={taskTypeIdMap}
                                     sqlCheckResultIdMap={sqlCheckResultIdMap}
                                     environmentOptions={environmentOptions}
@@ -464,8 +478,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                               >
                                 {
                                   formatMessage({
-                                    id:
-                                      'odc.src.page.Secure.RiskLevel.components.AddConditionGroup',
+                                    id: 'odc.src.page.Secure.RiskLevel.components.AddConditionGroup',
                                   }) /* 
                                 添加条件组
                                */
@@ -486,7 +499,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             key={currentRiskLevel?.id}
             empty={empty}
             rootNode={originRootNode}
-            environmentIdMap={environmentIdMap}
+            environmentMap={environmentMap}
             taskTypeIdMap={taskTypeIdMap}
             sqlCheckResultIdMap={sqlCheckResultIdMap}
           />
@@ -530,6 +543,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             {empty ? (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
                 <Action.Button
+                  disabled={isDefaultLevel}
                   onClick={async () => {
                     setIsEdit(true);
                     setShowConditionGroup(false);
@@ -546,6 +560,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             ) : (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
                 <Action.Button
+                  disabled={isDefaultLevel}
                   onClick={async () => {
                     setIsEdit(true);
                     setShowConditionGroup(false);
@@ -563,7 +578,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
 
             {currentRiskDetectRuleId && (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.delete)}>
-                <Action.Button danger onClick={() => handleDelete(currentRiskDetectRuleId)}>
+                <Action.Button
+                  disabled={isDefaultLevel}
+                  danger
+                  onClick={() => handleDelete(currentRiskDetectRuleId)}
+                >
                   {
                     formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.EmptyRules',

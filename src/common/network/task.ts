@@ -18,12 +18,15 @@ import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/Creat
 import {
   CommonTaskLogType,
   CreateTaskRecord,
+  IPartitionTablePreviewConfig,
   CycleTaskDetail,
   IAsyncTaskResultSet,
   ICycleSubTaskRecord,
   ICycleTaskRecord,
   IFunction,
   IPartitionPlan,
+  IPartitionPlanTable,
+  IPartitionPlanKeyType,
   IResponseData,
   ISubTaskRecords,
   ITaskResult,
@@ -64,6 +67,48 @@ export async function createTask(data: Partial<CreateTaskRecord>): Promise<numbe
   });
   return res?.data?.contents?.length || 0;
 }
+
+/**
+ * 预览分区计划 SQL
+ */
+export async function previewPartitionPlans(
+  sessionId: string,
+  data: IPartitionTablePreviewConfig,
+): Promise<
+  IResponseData<{
+    partitionName: string;
+    sqls: string[];
+    tableName: string;
+  }>
+> {
+  const res = await request.post(
+    `/api/v2/datasource/sessions/${sessionId}/partitionPlans/latest/preview`,
+    {
+      data,
+    },
+  );
+  return res?.data || [];
+}
+
+/**
+ * SQL 预览
+ */
+export async function previewSqlStatements(data: {
+  variables: {
+    name: string;
+    pattern: string;
+  }[];
+  tables: {
+    tableName: string;
+    conditionExpression: string;
+  }[];
+}): Promise<string[]> {
+  const res = await request.post('api/v2/dlm/previewSqlStatements', {
+    data,
+  });
+  return res?.data?.contents || [];
+}
+
 /**
  * 新建结构比对工单
  * @param data
@@ -364,39 +409,60 @@ export async function getStructureComparisonTaskFile(
 }
 
 /**
- * 查询分区详情
+ * 查询分区候选表集合
  */
-export async function getPartitionPlan(params: {
-  databaseId?: number;
-  isFilterManagedTable?: boolean;
-}): Promise<IPartitionPlan> {
-  const res = await request.get('/api/v2/partitionPlan/partitionPlans', {
-    params,
-  });
-  return res?.data;
-}
-
-/**
- * 更新分区计划
- */
-export async function updatePartitionPlan(id, data: Partial<CreateTaskRecord>): Promise<boolean> {
-  const res = await request.put(`/api/v2/partitionPlan/partitionPlans/${id}`, {
-    data,
-  });
-  return !!res?.data;
-}
-
-/**
- * 检查当前连接下是否已存在分区计划
- */
-export async function checkConnectionPartitionPlan(id: number): Promise<boolean> {
-  const res = await request.get('/api/v2/partitionPlan/partitionPlans/exists', {
-    params: {
-      databaseId: id,
+export async function getPartitionPlanTables(
+  sessionId: string,
+  databaseId: number,
+): Promise<IResponseData<IPartitionPlanTable>> {
+  const res = await request.get(
+    `/api/v2/connect/sessions/${sessionId}/databases/${databaseId}/candidatePartitionPlanTables`,
+    {
+      params: {
+        sessionId,
+        databaseId,
+      },
     },
-  });
+  );
   return res?.data;
 }
+
+/**
+ * 查询分区候选表分区键类型集合
+ */
+export async function getPartitionPlanKeyDataTypes(
+  sessionId: string,
+  databaseId: number,
+  tableName: string,
+): Promise<IResponseData<IPartitionPlanKeyType>> {
+  const res = await request.get(
+    `/api/v2/connect/sessions/${sessionId}/databases/${databaseId}/candidatePartitionPlanTables/${tableName}/getPartitionKeyDataTypes`,
+    {
+      params: {
+        sessionId,
+        databaseId,
+        tableName,
+      },
+    },
+  );
+  return res?.data;
+}
+
+/**
+ * 查询分区策略详情
+ */
+export async function getPartitionPlan(taskId: number): Promise<IPartitionPlan> {
+  const res = await request.get(
+    `/api/v2/flow/flowInstances/${taskId}/tasks/partitionPlans/getDetail`,
+    {
+      params: {
+        id: taskId,
+      },
+    },
+  );
+  return res?.data;
+}
+
 /*
  * 发起结构分析任务
  */

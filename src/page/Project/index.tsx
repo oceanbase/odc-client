@@ -37,18 +37,20 @@ import Sensitive from './Sensitive';
 import tracert from '@/util/tracert';
 const ExtraContent = ({ projectId }) => {
   const [disabled, setDisabled] = useState(false);
-  
+
   const getLoginDatabaseAuth = async () => {
     const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
-    const hasLoginDatabaseAuth = res.contents?.some(item => !!item.authorizedPermissionTypes.length);
+    const hasLoginDatabaseAuth = res.contents?.some(
+      (item) => !!item.authorizedPermissionTypes.length,
+    );
     setDisabled(!hasLoginDatabaseAuth);
   };
 
-  useEffect(() =>{
-    if(projectId){
+  useEffect(() => {
+    if (projectId) {
       getLoginDatabaseAuth();
     }
-  }, [projectId])
+  }, [projectId]);
 
   return (
     <Space size={12}>
@@ -119,7 +121,7 @@ const tabs = [
     key: IPageType.Project_Sensitive,
   },
   {
-    tab: '消息通知',
+    tab: '消息',
     key: IPageType.Project_Notification,
   },
   {
@@ -130,6 +132,7 @@ const tabs = [
     key: IPageType.Project_Setting,
   },
 ];
+
 const Index: React.FC<IProps> = function () {
   const params = useParams<{
     id: string;
@@ -202,11 +205,13 @@ const Index: React.FC<IProps> = function () {
         IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
+
       [ProjectRole.DEVELOPER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
         IPageType.Project_User,
       ],
+
       [ProjectRole.OWNER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
@@ -215,12 +220,14 @@ const Index: React.FC<IProps> = function () {
         IPageType.Project_User,
         IPageType.Project_Notification,
       ],
+
       [ProjectRole.SECURITY_ADMINISTRATOR]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
         IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
+
       [ProjectRole.PARTICIPANT]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
@@ -247,9 +254,7 @@ const Index: React.FC<IProps> = function () {
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
       tabList={displayTabs}
       tabActiveKey={page}
-      tabBarExtraContent={
-        <ExtraContent projectId={projectId} />
-      }
+      tabBarExtraContent={<ExtraContent projectId={projectId} />}
       containerWrapStyle={
         [IPageType.Project_Notification].includes(page)
           ? {

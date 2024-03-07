@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,12 +16,19 @@
  */
 
 import Action from '@/component/Action';
-import { CommonTableMode, ITableLoadOptions, ITableInstance } from '@/component/CommonTable/interface';
+import {
+  CommonTableMode,
+  ITableLoadOptions,
+  ITableInstance,
+} from '@/component/CommonTable/interface';
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import type { IResponseData } from '@/d.ts';
-import { databasePermissionTypeFilters, databasePermissionTypeMap,
-  databasePermissionStatusFilters } from '../';
+import {
+  databasePermissionTypeFilters,
+  databasePermissionTypeMap,
+  databasePermissionStatusFilters,
+} from '../';
 import StatusLabel from '../Status';
 import SearchFilter from '@/component/SearchFilter';
 import CommonTable from '@/component/CommonTable';
@@ -35,14 +43,18 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'databaseName',
-      title: '数据库',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.8E0CB3F5' }), //'数据库'
       ellipsis: true,
       filterDropdown: (props) => {
         return (
           <SearchFilter
             {...props}
             selectedKeys={filters?.databaseName}
-            placeholder='请输入'
+            placeholder={
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.UserAuthList.AD0486C8',
+              }) /*"请输入"*/
+            }
           />
         );
       },
@@ -53,12 +65,13 @@ const getColumns = (params: {
           }}
         />
       ),
+
       filteredValue: filters?.databaseName || null,
       filters: [],
     },
     {
       dataIndex: 'dataSourceName',
-      title: '所属数据源',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.62E06B89' }), //'所属数据源'
       ellipsis: true,
       width: 188,
       filterDropdown: (props) => {
@@ -66,7 +79,11 @@ const getColumns = (params: {
           <SearchFilter
             {...props}
             selectedKeys={filters?.dataSourceName}
-            placeholder='请输入'
+            placeholder={
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.UserAuthList.C3B2211E',
+              }) /*"请输入"*/
+            }
           />
         );
       },
@@ -77,35 +94,36 @@ const getColumns = (params: {
           }}
         />
       ),
+
       filteredValue: filters?.dataSourceName || null,
       filters: [],
     },
     {
       dataIndex: 'type',
-      title: '权限类型',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.CE23A38D' }), //'权限类型'
       width: 120,
       filters: databasePermissionTypeFilters,
       filteredValue: filters?.type || null,
-      render: (type) => databasePermissionTypeMap[type].text
+      render: (type) => databasePermissionTypeMap[type].text,
     },
     {
       dataIndex: 'expireTime',
-      title: '过期时间',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.19A27247' }), //'过期时间'
       width: 138,
       sorter: true,
       render: getExpireTimeLabel,
     },
     {
       dataIndex: 'status',
-      title: '状态',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.83F63FE7' }), //'状态'
       width: 104,
       filters: databasePermissionStatusFilters,
       filteredValue: filters?.status || null,
-      render: (status) => (<StatusLabel status={status} />)
+      render: (status) => <StatusLabel status={status} />,
     },
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.29348DE1' }), //'操作'
       ellipsis: true,
       width: 65,
       render: (_, record) => {
@@ -116,7 +134,11 @@ const getColumns = (params: {
               params?.onReclaim([record.id]);
             }}
           >
-            回收
+            {
+              formatMessage({
+                id: 'src.page.Project.User.ManageModal.UserAuthList.583E307F' /*回收*/,
+              }) /* 回收 */
+            }
           </Action.Link>
         );
       },
@@ -137,11 +159,21 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, description, tableRef, onReclaim, onLoad, onChange } = props;
+  const {
+    projectId,
+    isOwner,
+    dataSource,
+    params,
+    description,
+    tableRef,
+    onReclaim,
+    onLoad,
+    onChange,
+  } = props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
-  })
+  });
 
   return (
     <>
@@ -153,15 +185,17 @@ const UserAuthList: React.FC<IProps> = (props) => {
           enabledSearch: false,
         }}
         titleContent={{
-          description
+          description,
         }}
         rowSelecter={
           isOwner
             ? {
                 options: [
                   {
-                    okText: '批量回收',
-                    onOk: onReclaim
+                    okText: formatMessage({
+                      id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F7',
+                    }), //'批量回收'
+                    onOk: onReclaim,
                   },
                 ],
               }
@@ -170,7 +204,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) =>(isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

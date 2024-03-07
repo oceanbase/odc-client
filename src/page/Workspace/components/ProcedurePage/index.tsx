@@ -34,7 +34,7 @@ import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 // @ts-ignore
 import { getProcedureByProName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page';
@@ -352,7 +352,7 @@ class ProcedurePage extends Component<
                         />
                       </Toolbar>
                       <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                        <SQLCodeEditorDDL
+                        <SQLCodePreviewer
                           readOnly
                           defaultValue={(procedure && procedure.ddl) || ''}
                           language={

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import CommonTable from '@/component/CommonTable';
 import { Button, Divider, Form, Modal, Select, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
@@ -15,7 +16,7 @@ import {
   ITableLoadOptions,
   ITablePagination,
 } from '@/component/CommonTable/interface';
-import { IChannel, IPolicy, TBatchUpdatePolicy } from '@/d.ts/projectNotification';
+import { EChannelType, IChannel, IPolicy, TBatchUpdatePolicy } from '@/d.ts/projectNotification';
 import { useSetState } from 'ahooks';
 import { getPolicyColumns } from './columns';
 import { EPolicyFormMode, TPolicyForm } from './interface';
@@ -104,18 +105,32 @@ const Policy: React.FC<{
       });
     }
     const result = await batchUpdatePolicy(projectId, policies);
-    const batchOrNot = isSingle ? '' : '批量';
-    const currentEnabled = policies?.[0]?.enabled ? '启用' : '停用';
+    const batchOrNot = isSingle
+      ? ''
+      : formatMessage({ id: 'src.page.Project.Notification.components.204A73A2' });
+    const currentEnabled = policies?.[0]?.enabled
+      ? formatMessage({ id: 'src.page.Project.Notification.components.2F564E6C' })
+      : formatMessage({ id: 'src.page.Project.Notification.components.253CEF9B' });
     if (result) {
-      message.success(`${batchOrNot}${currentEnabled}成功`);
+      message.success(
+        formatMessage(
+          { id: 'src.page.Project.Notification.components.384BEEC7' },
+          { batchOrNot: batchOrNot, currentEnabled: currentEnabled },
+        ),
+      ); //`${batchOrNot}${currentEnabled}成功`
       setFormModalOpen(false);
       tableRef.current?.reload();
       return;
     }
-    message.error(`${batchOrNot}${currentEnabled}失败`);
+    message.error(
+      formatMessage(
+        { id: 'src.page.Project.Notification.components.FA694A40' },
+        { batchOrNot: batchOrNot, currentEnabled: currentEnabled },
+      ),
+    ); //`${batchOrNot}${currentEnabled}失败`
   };
 
-  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel, 'channelConfig'>) => {
+  const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => {
     setSelectedChannelId(channel?.id);
     setDetailDrawerOpen(true);
   };
@@ -129,7 +144,7 @@ const Policy: React.FC<{
   const rowSelector: IRowSelecter<IPolicy> = {
     options: [
       {
-        okText: '批量启用',
+        okText: formatMessage({ id: 'src.page.Project.Notification.components.765E371C' }), //'批量启用'
         onOk: (keys) => {
           handleSwitchPoliciesStatus(
             {
@@ -143,7 +158,7 @@ const Policy: React.FC<{
         },
       },
       {
-        okText: '批量停用',
+        okText: formatMessage({ id: 'src.page.Project.Notification.components.0A9B6A90' }), //'批量停用'
         onOk: (keys) => {
           handleSwitchPoliciesStatus(
             {
@@ -157,7 +172,7 @@ const Policy: React.FC<{
         },
       },
       {
-        okText: '批量添加通道',
+        okText: formatMessage({ id: 'src.page.Project.Notification.components.784354AA' }), //'批量添加通道'
         onOk: (keys) => {
           handleUpdatePolicies({
             mode: EPolicyFormMode.BATCH,
@@ -180,12 +195,14 @@ const Policy: React.FC<{
           tableRef.current?.reload(argsRef.current);
         }}
       />
+
       <DetailChannelDrawer
         projectId={projectId}
         channelId={selectedChannelId}
         detailDrawerOpen={detailDrawerOpen}
         setDetailDrawerOpen={setDetailDrawerOpen}
       />
+
       <CommonTable
         ref={tableRef}
         key="PolicyCommonTable"
@@ -246,12 +263,20 @@ const FormPolicyModal: React.FC<{
     }
     const result = await batchUpdatePolicy(projectId, policies);
     if (result) {
-      message.success(isSingle ? '操作成功' : '批量操作成功');
+      message.success(
+        isSingle
+          ? formatMessage({ id: 'src.page.Project.Notification.components.A45206CB' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.3548BA07' }),
+      );
       setFormModalOpen(false);
       callback?.();
       return;
     }
-    message.error(isSingle ? '操作失败' : '批量操作失败');
+    message.error(
+      isSingle
+        ? formatMessage({ id: 'src.page.Project.Notification.components.8B8225C4' })
+        : formatMessage({ id: 'src.page.Project.Notification.components.84AACFA4' }),
+    );
   }
   async function loadOptions() {
     const channels = await getChannelsList(projectId);
@@ -277,7 +302,11 @@ const FormPolicyModal: React.FC<{
   return (
     <>
       <Modal
-        title="添加推送通道"
+        title={
+          formatMessage({
+            id: 'src.page.Project.Notification.components.5620243C',
+          }) /*"添加推送通道"*/
+        }
         width={520}
         open={formModalOpen}
         closable
@@ -287,10 +316,21 @@ const FormPolicyModal: React.FC<{
         onOk={onSubmit}
       >
         <Form form={formRef} layout="vertical">
-          <Form.Item label="推送通道" name="channelIds">
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.page.Project.Notification.components.64150C4D',
+              }) /*"推送通道"*/
+            }
+            name="channelIds"
+          >
             <Select
               mode="multiple"
-              placeholder="请选择"
+              placeholder={
+                formatMessage({
+                  id: 'src.page.Project.Notification.components.71558A86',
+                }) /*"请选择"*/
+              }
               options={options}
               style={{ width: '320px' }}
               dropdownRender={(menu) => (
@@ -298,7 +338,7 @@ const FormPolicyModal: React.FC<{
                   {menu}
                   <Divider style={{ margin: '0px' }} />
                   <div onClick={() => setChannelFormDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-                    <Button type="link">新建消息通道</Button>
+                    <Button type="link">新建推送通道</Button>
                   </div>
                 </>
               )}

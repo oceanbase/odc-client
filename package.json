@@ -13,8 +13,8 @@
   },
   "scripts": {
     "start": "max dev",
-    "oic:extract": "oic --configPath /Users/ccj/work/oceanbase-developer-center/scripts/must.js --extract all",
-    "oic:clear": "oic --configPath /Users/ccj/work/oceanbase-developer-center/scripts/must.js --clear",
+    "oic:extract": "oic --configPath ./scripts/must.js --extract all",
+    "oic:clear": "oic --configPath ./scripts/must.js --clear",
     "dev:client": "concurrently \"UMI_ENV=client npm run dev\" \"npm run build-main-dev\"",
     "start-electron": "electron --inspect=5858 -w ./dist/main/main.js",
     "analyze": "ANALYZE=1 cross-env NODE_OPTIONS=--max_old_space_size=6096 max build",
@@ -71,8 +71,8 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.0.0",
-    "@oceanbase-odc/monaco-plugin-ob": "^0.2.1",
-    "@oceanbase-odc/ob-intl-cli": "^2.0.2",
+    "@oceanbase-odc/monaco-plugin-ob": "^0.2.2",
+    "@oceanbase-odc/ob-intl-cli": "^2.0.4",
     "@oceanbase-odc/ob-parser-js": "^3.0.1",
     "@oceanbase-odc/ob-react-data-grid": "^3.0.10",
     "@sentry/react": "^7.88.0",

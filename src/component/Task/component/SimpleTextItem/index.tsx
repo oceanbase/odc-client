@@ -27,10 +27,12 @@ export const SimpleTextItem: React.FC<{
   label: React.ReactNode;
   content: React.ReactNode;
   direction?: 'row' | 'column';
+  className?: string;
 }> = (props) => {
-  const { label, content, direction = 'row' } = props;
+  const { label, content, direction = 'row', className = '' } = props;
   return (
     <div
+      className={className}
       style={{
         display: 'flex',
         fontSize: 12,

@@ -23,12 +23,13 @@ import ApplyDatabasePermissionCreateModal from './CreateModal';
 
 interface IProps extends ButtonProps {
   label: React.ReactNode;
+  projectId?: number;
   modalStore?: ModalStore;
 }
 
 const ApplyDatabasePermissionButton: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { label, modalStore, ...rest } = props;
+    const { label, projectId, modalStore, ...rest } = props;
 
     const handleApplyDatabasePermission = () => {
       modalStore.changeApplyDatabasePermissionModal(true);
@@ -39,7 +40,7 @@ const ApplyDatabasePermissionButton: React.FC<IProps> = inject('modalStore')(
         <Button {...rest} onClick={handleApplyDatabasePermission}>
           <Space size={4}>{label}</Space>
         </Button>
-        <ApplyDatabasePermissionCreateModal />
+        <ApplyDatabasePermissionCreateModal projectId={projectId} />
       </>
     );
   }),

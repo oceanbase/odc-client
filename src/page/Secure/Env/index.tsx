@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -97,7 +98,7 @@ const Environment = () => {
   };
   const handleDeleteEnvironment = async () => {
     return Modal.confirm({
-      title: '确认删除该环境么？',
+      title: formatMessage({ id: 'src.page.Secure.Env.65EAAB75' }), //'确认删除该环境么？'
       onCancel: () => {},
       onOk: async () => {
         if (currentEnvironment?.builtIn) {
@@ -106,17 +107,17 @@ const Environment = () => {
         const successful = await deleteEnvironment(currentEnvironment?.id);
         if (successful) {
           await initEnvironment();
-          message.success('删除成功');
+          message.success(formatMessage({ id: 'src.page.Secure.Env.9D97D589' /*'删除成功'*/ }));
           setIsEdit(null);
           return;
         }
-        message.error('删除失败');
+        message.error(formatMessage({ id: 'src.page.Secure.Env.F0BFC158' /*'删除失败'*/ }));
       },
     });
   };
-  const callback = async () => {
+  const callback = async (environmentId: number = null) => {
     setFormEnvironmentModalOpen(false);
-    await initEnvironment(currentEnvironment?.id);
+    await initEnvironment(environmentId || currentEnvironment?.id);
     setIsEdit(null);
   };
   const loadIntegrations = async () => {
@@ -143,7 +144,9 @@ const Environment = () => {
         <SecureSider
           extra={
             <div className={styles.extra}>
-              <div className={styles.groupTitle}>全部环境</div>
+              <div className={styles.groupTitle}>
+                {formatMessage({ id: 'src.page.Secure.Env.48529F6E' /*全部环境*/ }) /* 全部环境 */}
+              </div>
               <Icon
                 component={PlusOutlined}
                 style={{ cursor: 'pointer' }}
@@ -167,6 +170,7 @@ const Environment = () => {
             callback={callback}
             handleCancelFormModal={handleCancelFormModal}
           />
+
           <InnerEnvironment
             integrations={integrations}
             integrationsIdMap={integrationsIdMap}

@@ -41,11 +41,11 @@ devDependencies:
     specifier: ^4.0.0
     version: 4.8.1(react-dom@17.0.2)(react@17.0.2)
   '@oceanbase-odc/monaco-plugin-ob':
-    specifier: ^0.2.1
-    version: 0.2.1(monaco-editor@0.36.1)
+    specifier: ^0.2.2
+    version: 0.2.2(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
-    specifier: ^2.0.2
-    version: 2.0.2(prettier@2.8.8)(typescript@4.9.5)
+    specifier: ^2.0.4
+    version: 2.0.4(prettier@2.8.8)(typescript@4.9.5)
   '@oceanbase-odc/ob-parser-js':
     specifier: ^3.0.1
     version: 3.0.1
@@ -3338,8 +3338,8 @@ packages:
       fastq: 1.16.0
     dev: true
 
-  /@oceanbase-odc/monaco-plugin-ob@0.2.1(monaco-editor@0.36.1):
-    resolution: {integrity: sha512-qU4JYQAOWMnU0b1n84tUydpqlR1NZy9IJewEYTOAkRspNdw6/yH3+c/ZpDm4OtFTNmrnsINC+cQ/PW2hIPjjZw==}
+  /@oceanbase-odc/monaco-plugin-ob@0.2.2(monaco-editor@0.36.1):
+    resolution: {integrity: sha512-FjewRgoTQWfq4yPrxio3gHvEUomXM+Erybcc3m0aDYLwoa/sObwswy99zL1kjxQC8DCxFsFrRuKVFQgAS/jINQ==}
     peerDependencies:
       monaco-editor: ^0.34.1
     dependencies:
@@ -3349,8 +3349,8 @@ packages:
       monaco-editor: 0.36.1
     dev: true
 
-  /@oceanbase-odc/ob-intl-cli@2.0.2(prettier@2.8.8)(typescript@4.9.5):
-    resolution: {integrity: sha512-QL6VSsWCC6dYzc4HE2Cdo+Bp6TKjqgjxu3OcKBldn72CF5IfBdjw5docb80jVhUbwrsMrPEk5wyIdkWHqIoWkA==}
+  /@oceanbase-odc/ob-intl-cli@2.0.4(prettier@2.8.8)(typescript@4.9.5):
+    resolution: {integrity: sha512-nxp4vkoO84hxxMCLp1l2dSByxXUPKDxs+fukG1V38KzfLEXXFKpsHrvP2YFzTZ+paBXb442ci7fx0StpusscMA==}
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -3897,7 +3897,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -3907,7 +3906,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -3917,7 +3915,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -3927,7 +3924,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -4185,7 +4181,7 @@ packages:
     resolution: {integrity: sha512-hy8b7Y1J8OGe6LbAjj3xniQrj3v6lsivCcrmf4TzSgPzLkhIeKgc5IZnT7ReIqmEuodjfO8EYAuoFvIrHi/+jQ==}
     deprecated: This is a stub types definition. history provides its own type definitions, so you do not need this installed.
     dependencies:
-      history: 4.10.1
+      history: 5.3.0
     dev: true
 
   /@types/hoist-non-react-statics@3.3.5:

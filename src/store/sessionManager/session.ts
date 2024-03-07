@@ -33,6 +33,9 @@ import { action, observable, runInAction } from 'mobx';
 import settingStore from '../setting';
 import DatabaseStore from './database';
 import { ISupportFeature } from './type';
+import setting from '../setting';
+import { getBuiltinSnippets } from '@/common/network/snippet';
+import { ISnippet } from '../snippet';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -46,6 +49,8 @@ class SessionStore {
   public collations: string[] = [];
   @observable
   public dataTypes: IDataType[] = [];
+
+  public snippets: ISnippet[] = [];
 
   @observable
   public odcDatabase: IDatabase;
@@ -83,6 +88,8 @@ class SessionStore {
     delimiterLoading: boolean;
     obVersion: string;
     tableColumnInfoVisible: boolean;
+    fullLinkTraceEnabled: boolean;
+    continueExecutionOnError: boolean;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
@@ -90,6 +97,8 @@ class SessionStore {
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
     tableColumnInfoVisible: true,
+    fullLinkTraceEnabled: true,
+    continueExecutionOnError: true,
   };
 
   /**
@@ -203,7 +212,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.initSessionStatus();
+      await this.initSessionStatus(true);
       if (!this.transState) {
         return false;
       }
@@ -346,7 +355,7 @@ class SessionStore {
   }
 
   @action
-  public async initSessionStatus() {
+  public async initSessionStatus(init: boolean = false) {
     try {
       const data = await getSessionStatus(this.sessionId);
 
@@ -354,6 +363,14 @@ class SessionStore {
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
+      if (init) {
+        this.params.tableColumnInfoVisible =
+          setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
+        this.params.fullLinkTraceEnabled =
+          setting.configurations['odc.sqlexecute.default.fullLinkTraceEnabled'] === 'true';
+        this.params.continueExecutionOnError =
+          setting.configurations['odc.sqlexecute.default.continueExecutionOnError'] === 'true';
+      }
       if (data?.session) {
         this.transState = data?.session;
       }
@@ -478,8 +495,22 @@ class SessionStore {
   };
 
   @action
+  public addBuiltinSnippets = async () => {
+    const data = await getBuiltinSnippets(this.sessionId);
+    this.snippets = data;
+  };
+
+  @action
   public changeColumnInfoVisible = async (v: boolean) => {
     this.params.tableColumnInfoVisible = v;
+  };
+  @action
+  public changeFullTraceDiagnosisEnabled = async (v: boolean) => {
+    this.params.fullLinkTraceEnabled = v;
+  };
+  @action
+  public changeContinueExecutionOnError = async (v: boolean) => {
+    this.params.continueExecutionOnError = v;
   };
 }
 

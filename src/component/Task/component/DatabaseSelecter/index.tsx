@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -32,7 +33,11 @@ interface IProps {
   onChange?: (newValue: any[]) => void;
 }
 
-const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checkedKeys = [], onChange }) {
+const DatabaseSelecter: React.FC<IProps> = function ({
+  projectId,
+  value: checkedKeys = [],
+  onChange,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
   const [targetSearchValue, setTargetSearchValue] = useState(null);
@@ -67,9 +72,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
   const getCheckedTreeData = () => {
     const validDatabaseList =
       databaseList
-        ?.filter((item) =>
-          checkedKeys?.includes(item.id)
-        )
+        ?.filter((item) => checkedKeys?.includes(item.id))
         ?.filter((item) => {
           return !targetSearchValue?.length
             ? true
@@ -98,9 +101,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
         title: (
           <Space>
             <Text>{item?.name}</Text>
-            <Text type="secondary" ellipsis>{item?.dataSource?.name}</Text>
+            <Text type="secondary" ellipsis>
+              {item?.dataSource?.name}
+            </Text>
           </Space>
         ),
+
         key: item?.id,
         icon: <Icon component={DatabaseSvg} />,
       };
@@ -153,7 +159,14 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
                   onChange={handleSwitchSelectAll}
                   style={{ marginRight: '8px' }}
                 />
-                <span>全部</span>
+
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.component.DatabaseSelecter.99F8392B' /*全部*/,
+                    }) /* 全部 */
+                  }
+                </span>
                 <Text type="secondary">({allTreeDataCount})</Text>
               </Space>
             }
@@ -175,7 +188,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
       </div>
       <div className={classnames(styles.content, styles.hasIconTree)}>
         <ExportCard
-          title={`已选 ${selectedTreeDataCount} 项`}
+          title={
+            formatMessage(
+              { id: 'src.component.Task.component.DatabaseSelecter.D06DB16B' },
+              { selectedTreeDataCount: selectedTreeDataCount },
+            ) /*`已选 ${selectedTreeDataCount} 项`*/
+          }
           onSearch={(v) => setTargetSearchValue(v)}
           extra={
             <Popconfirm
@@ -183,9 +201,19 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
                 onChange([]);
               }}
               placement="left"
-              title="确定要清空已选对象吗？"
+              title={
+                formatMessage({
+                  id: 'src.component.Task.component.DatabaseSelecter.2FB288CA',
+                }) /*"确定要清空已选对象吗？"*/
+              }
             >
-              <a>清空</a>
+              <a>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.component.DatabaseSelecter.302B4FB5' /*清空*/,
+                  }) /* 清空 */
+                }
+              </a>
             </Popconfirm>
           }
           disabled
@@ -197,7 +225,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({ projectId, value: checked
               autoExpandParent
               checkable={false}
               selectable={false}
-              height={300}  
+              height={300}
               className={styles.selectedTree}
               treeData={selectedTreeData}
               titleRender={(node) => {

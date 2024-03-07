@@ -60,15 +60,14 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
-      task: Object.values(TaskType).filter(
-        (type) => ![TaskType.SHADOW, TaskType.PARTITION_PLAN].includes(type),
-      ),
+      task: Object.values(TaskType).filter((type) => ![TaskType.SHADOW].includes(type)),
       obclient: true,
       recycleBin: true,
       sessionManage: true,
       sqlExplain: true,
       compile: true,
       plEdit: true,
+      plRun: true,
       anonymousBlock: true,
       supportOBProxy: true,
       export: {
@@ -100,13 +99,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) =>
-          ![
-            TaskType.SHADOW,
-            TaskType.DATA_ARCHIVE,
-            TaskType.DATA_DELETE,
-            TaskType.PARTITION_PLAN,
-          ].includes(type),
+        (type) => ![TaskType.SHADOW, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type),
       ),
       obclient: true,
       recycleBin: true,

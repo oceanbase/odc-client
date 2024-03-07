@@ -30,6 +30,7 @@
     http://editorconfig.org*
     http://www.apache.org*
     https://dev.mysql.com*
+    https://open.feishu.cn*
 
 --------------------------------------------------------
 # Should use GLOB wildcard to config and analysis the ignored folder

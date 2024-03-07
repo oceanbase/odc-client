@@ -17,10 +17,11 @@
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { useContext, useMemo, useState } from 'react';
-import { Button, Col, Form, message, Modal, Row, Select, Tooltip } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
@@ -117,21 +118,31 @@ export default function AddDataBaseButton({
   }
   return (
     <>
-      <Button
-        onClick={() => setOpen(true)}
-        type="primary"
-        disabled={
-          project?.currentUserResourceRoles?.filter((roles) =>
-            [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
-          )?.length === 0
-        }
-      >
-        {
-          formatMessage({
-            id: 'odc.Database.AddDataBaseButton.AddDatabase',
-          }) /*添加数据库*/
-        }
-      </Button>
+      <Space size={12}>
+        <Button
+          onClick={() => setOpen(true)}
+          type="primary"
+          disabled={
+            project?.currentUserResourceRoles?.filter((roles) =>
+              [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
+            )?.length === 0
+          }
+        >
+          {
+            formatMessage({
+              id: 'odc.Database.AddDataBaseButton.AddDatabase',
+            }) /*添加数据库*/
+          }
+        </Button>
+        <ApplyDatabasePermissionButton
+          label={
+            formatMessage({
+              id: 'src.page.Project.Database.AddDataBaseButton.B54F6D7D',
+            }) /*"申请库权限"*/
+          }
+          projectId={projectId}
+        />
+      </Space>
       <Modal
         open={open}
         title={formatMessage({
@@ -211,6 +222,7 @@ export default function AddDataBaseButton({
                               marginRight: 4,
                             }}
                           />
+
                           {item.name}
                         </Tooltip>
                       </Select.Option>
@@ -265,6 +277,7 @@ export default function AddDataBaseButton({
                           id: 'odc.Database.AddDataBaseButton.BoundProject',
                         }) /*- 已绑定项目：*/
                       }
+
                       {p.project?.name}
                     </Select.Option>
                   );
@@ -281,6 +294,7 @@ export default function AddDataBaseButton({
           >
             <Select
               allowClear
+              showSearch
               mode="multiple"
               placeholder={formatMessage({
                 id: 'odc.Database.AddDataBaseButton.SelectDatabaseOwner',
@@ -288,7 +302,7 @@ export default function AddDataBaseButton({
               style={{
                 width: '100%',
               }}
-              optionFilterProp="children"
+              optionFilterProp="label"
               options={projectUserOptions}
             />
           </Form.Item>

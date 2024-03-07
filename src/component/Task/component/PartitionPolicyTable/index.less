@@ -1,0 +1,61 @@
+.partitionTable {
+  .tableRrow {
+    background: var(--background-primary-color);
+  }
+  .rangConfig {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  :global {
+    .ant-spin-container {
+      padding-bottom: 40px;
+    }
+    .ant-table-tbody > tr.ant-table-row-selected > td {
+      background: var(--background-primary-color);
+    }
+    .ant-table-row,
+    .ant-table-thead {
+      .ant-table-cell:first-child {
+        border-left: 1px solid var(--odc-border-color);
+      }
+      .ant-table-cell {
+        border-right: 1px solid var(--odc-border-color);
+        border-bottom: 1px solid var(--odc-border-color);
+      }
+    }
+    .ant-table-thead {
+      .ant-table-cell {
+        border-top: 1px solid var(--odc-border-color);
+      }
+    }
+  }
+}
+
+.suffix:global(.ant-tag) {
+  padding: 0 11px;
+  line-height: 27px;
+}
+
+.configDrawer {
+  :global {
+    .ant-drawer-body {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  .sqlWrapper {
+    flex: 1;
+  }
+  .sqlContent {
+    height: 100%;
+  }
+}
+
+.rules {
+  :global {
+    .ant-descriptions-row > td {
+      padding-bottom: 2px;
+    }
+  }
+}

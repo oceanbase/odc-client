@@ -20,7 +20,7 @@ import {
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Form, Input, Select, Space, Switch, Typography } from 'antd';
+import { Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
 import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import { requiredRule } from '.';
@@ -367,122 +367,236 @@ export const LDAPPartForm: React.FC<{
 }> = ({ isEdit }) => {
   return (
     <>
-      <Typography.Title level={5}>LDAP 信息</Typography.Title>
+      <Typography.Title level={5}>
+        {
+          formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.452BC9D2' /*LDAP 信息*/,
+          }) /* LDAP 信息 */
+        }
+      </Typography.Title>
       <Form.Item
         name={['ssoParameter', 'server']}
         label={
-          <HelpDoc leftText title="LDAP 服务器访问地址">
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.C9C6091D',
+              }) /*"LDAP 服务器访问地址"*/
+            }
+          >
             URL
           </HelpDoc>
         }
         rules={[
           {
-            message: '请输入server',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.DBB95C01',
+            }), //'请输入server'
             ...requiredRule,
           },
         ]}
       >
-        <Input placeholder="请输入，如：ldap://11.124.9.78/dc=example,dc=com" />
+        <Input
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.D0229F31',
+            }) /*"请输入，如：ldap://11.124.9.78/dc=example,dc=com"*/
+          }
+        />
       </Form.Item>
 
       <Form.Item
         name={['ssoParameter', 'managerDn']}
         label={
-          <HelpDoc leftText title="用于访问 LDAP 的用户 DN">
-            用户 DN
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.14B65EC7',
+              }) /*"用于访问 LDAP 的用户 DN"*/
+            }
+          >
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.88A5F823' /*用户 DN*/,
+            })}
           </HelpDoc>
         }
         rules={[
           {
-            message: '请输入managerDn',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.9DBF4E00',
+            }), //'请输入managerDn'
             ...requiredRule,
           },
         ]}
       >
-        <Input placeholder="请输入，如：cn=admin,dc=example,dc=com" />
+        <Input
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.B2735BBD',
+            }) /*"请输入，如：cn=admin,dc=example,dc=com"*/
+          }
+        />
       </Form.Item>
       {!isEdit ? (
         <Form.Item
           name={['ssoParameter', 'managerPassword']}
           label={
-            <HelpDoc leftText title="用于访问 LDAP 服务器的密码">
-              访问密码
+            <HelpDoc
+              leftText
+              title={
+                formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.8C506EE9',
+                }) /*"用于访问 LDAP 服务器的密码"*/
+              }
+            >
+              {
+                formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.DC978DE4' /*访问密码*/,
+                }) /* 访问密码 */
+              }
             </HelpDoc>
           }
           rules={[
             {
-              message: '请输入访问密码',
+              message: formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.4DF22947',
+              }), //'请输入访问密码'
               ...requiredRule,
             },
           ]}
         >
-          <Input placeholder="请输入" />
+          <Input
+            placeholder={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.93F4243B',
+              }) /*"请输入"*/
+            }
+          />
         </Form.Item>
       ) : null}
       <Form.Item
         name={['ssoParameter', 'userSearchFilter']}
         rules={[
           {
-            message: '请输入userSearchFilter',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.A12483CB',
+            }), //'请输入userSearchFilter'
             ...requiredRule,
           },
         ]}
         label={
           <HelpDoc
             leftText
-            title="用户查询的过滤条件，可以基于用户的属性（如用户
-        名、邮箱、部门等）来过滤搜索结果"
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.80683796',
+              }) /*"用户查询的过滤条件，可以基于用户的属性（如用户
+                  名、邮箱、部门等）来过滤搜索结果"*/
+            }
           >
             userSearchFilter
           </HelpDoc>
         }
       >
-        <Input placeholder="请输入，如：uid={$username$}" />
+        <Input
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.67DB56FF',
+            }) /*"请输入，如：uid={$username$}"*/
+          }
+        />
       </Form.Item>
       <Form.Item
         name={['ssoParameter', 'userSearchBase']}
         rules={[
           {
-            message: '请输入userSearchBase',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.573C0B46',
+            }), //'请输入userSearchBase'
             ...requiredRule,
           },
         ]}
         label={
           <HelpDoc
             leftText
-            title="指定在搜索用户（user）时使用的起始点或基准点，
-        用于限定在哪个部分或组织单位下搜索用户对象"
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.4250536F',
+              }) /*"指定在搜索用户（user）时使用的起始点或基准点，
+                  用于限定在哪个部分或组织单位下搜索用户对象"*/
+            }
           >
             userSearchBase
           </HelpDoc>
         }
       >
-        <Input placeholder="请输入，如：ou=people" />
+        <Input
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.03CD0A4A',
+            }) /*"请输入，如：ou=people"*/
+          }
+        />
       </Form.Item>
       <Form.Item
         name={['ssoParameter', 'groupSearchBase']}
         label={
-          <HelpDoc leftText title="搜索群组查询时使用的起始点或基准点">
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.2E3212A5',
+              }) /*"搜索群组查询时使用的起始点或基准点"*/
+            }
+          >
             groupSearchBase
           </HelpDoc>
         }
       >
-        <Input placeholder="请输入" />
+        <Input
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.487EBC10',
+            }) /*"请输入"*/
+          }
+        />
       </Form.Item>
       <Form.Item
         name={['ssoParameter', 'groupSearchFilter']}
         label={
-          <HelpDoc leftText title="搜索群组查询的过滤条件">
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.C793F4C6',
+              }) /*"搜索群组查询的过滤条件"*/
+            }
+          >
             groupSearchFilter
           </HelpDoc>
         }
       >
-        <Input placeholder="请输入" />
+        <Input
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.405C3356',
+            }) /*"请输入"*/
+          }
+        />
       </Form.Item>
       <Form.Item
         name={['ssoParameter', 'groupSearchSubtree']}
         label={
-          <HelpDoc leftText title="指定是否在搜索群组时包括子树的参数">
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.80A8006E',
+              }) /*"指定是否在搜索群组时包括子树的参数"*/
+            }
+          >
             groupSearchSubtree
           </HelpDoc>
         }
@@ -490,7 +604,11 @@ export const LDAPPartForm: React.FC<{
         initialValue={false}
       >
         <Select
-          placeholder="请输入"
+          placeholder={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.65316D1D',
+            }) /*"请输入"*/
+          }
           options={[
             {
               label: 'true',
@@ -501,6 +619,80 @@ export const LDAPPartForm: React.FC<{
               value: false,
             },
           ]}
+        />
+      </Form.Item>
+      <Form.Item
+        name={['ssoParameter', 'loginFailedLimit']}
+        label={
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.F360A8FE',
+              }) /*"设置为0表示不设置最大连续登录失败次数"*/
+            }
+          >
+            loginFailedLimit
+          </HelpDoc>
+        }
+        rules={[
+          {
+            ...requiredRule,
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.591F82D8',
+            }), //'请输入最大连续登录失败次数'
+          },
+        ]}
+        initialValue={5}
+      >
+        <InputNumber
+          style={{ width: '200px' }}
+          min={0}
+          placeholder={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.E8087E7D',
+          })}
+          addonAfter={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.5E8157A1',
+            }) /*"次"*/
+          }
+        />
+      </Form.Item>
+      <Form.Item
+        name={['ssoParameter', 'lockTimeSeconds']}
+        label={
+          <HelpDoc
+            leftText
+            title={
+              formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.7AC603F1',
+              }) /*"多少秒后重置登录次数"*/
+            }
+          >
+            lockTimeSeconds
+          </HelpDoc>
+        }
+        rules={[
+          {
+            ...requiredRule,
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.E1E62ABD',
+            }), //'请输入登录次数重置时间'
+          },
+        ]}
+        initialValue={600}
+      >
+        <InputNumber
+          style={{ width: '200px' }}
+          min={0}
+          placeholder={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.19909602',
+          })}
+          addonAfter={
+            formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.5FCE84A1',
+            }) /*"秒"*/
+          }
         />
       </Form.Item>
     </>

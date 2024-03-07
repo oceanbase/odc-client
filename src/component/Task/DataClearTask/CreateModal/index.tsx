@@ -15,7 +15,7 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask, getCycleTaskDetail } from '@/common/network/task';
+import { createTask, getCycleTaskDetail, previewSqlStatements } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
@@ -29,7 +29,7 @@ import {
   TaskPageScope,
   TaskPageType,
   TaskType,
-  IDataClearJobParameters
+  IDataClearJobParameters,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -48,6 +48,7 @@ import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import FormItemPanel from '@/component/FormItemPanel';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
+import SQLPreviewModal from '../../component/SQLPreviewModal';
 import { getVariableValue } from '../../DataArchiveTask/CreateModal';
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -58,12 +59,25 @@ export const variable = {
   format: '',
   pattern: [null],
 };
+
+const deleteByUniqueKeyOptions = [
+  {
+    label: formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.ED9CFF17' }), //'是'
+    value: true,
+  },
+  {
+    label: formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.CC3EF591' }), //'否'
+    value: false,
+  },
+];
+
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
+  deleteByUniqueKey: false,
 };
 interface IProps {
   modalStore?: ModalStore;
@@ -98,6 +112,8 @@ const getVariables = (
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
   const { dataClearVisible, dataClearTaskData } = modalStore;
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [previewSql, setPreviewSQL] = useState('');
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
@@ -125,17 +141,13 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       triggerConfig: { triggerStrategy, cronExpression, hours, days, startAt },
     } = data;
-    const {
-      sourceDatabaseId,
-      rateLimit,
-      tables,
-      variables,
-    } = jobParameters;
+    const { sourceDatabaseId, rateLimit, tables, variables, deleteByUniqueKey } = jobParameters;
     const formData = {
       databaseId: sourceDatabaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       tables,
+      deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
       triggerStrategy,
@@ -211,6 +223,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.DataClearTask.CreateModal.Cancel',
       }),
@@ -228,6 +241,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     });
   };
+  const handleCloseSQLPreviewModal = () => {
+    setPreviewModalVisible(false);
+    setPreviewSQL('');
+  };
+
   const handleSubmit = () => {
     form
       .validateFields()
@@ -242,6 +260,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
+          deleteByUniqueKey,
         } = values;
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -249,6 +268,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           taskId: editTaskId,
           scheduleTaskParameters: {
             databaseId,
+            deleteByUniqueKey,
             variables: getVariables(variables),
             tables:
               archiveRange === IArchiveRange.ALL
@@ -302,6 +322,40 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
+
+  const handleSQLPreview = () => {
+    form
+      .validateFields()
+      .then(async (values) => {
+        const { variables, tables: _tables, archiveRange } = values;
+        const parameters = {
+          variables: getVariables(variables),
+          tables:
+            archiveRange === IArchiveRange.ALL
+              ? tables?.map((item) => {
+                  return {
+                    tableName: item?.tableName,
+                    conditionExpression: '',
+                  };
+                })
+              : _tables,
+        };
+        const sqls = await previewSqlStatements(parameters);
+        if (sqls) {
+          setPreviewModalVisible(true);
+          setPreviewSQL(sqls?.join('\n'));
+        }
+      })
+      .catch((errorInfo) => {
+        console.error(JSON.stringify(errorInfo));
+      });
+  };
+
+  const handleConfirmTask = () => {
+    handleCloseSQLPreviewModal();
+    handleSubmit();
+  };
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -310,17 +364,17 @@ const CreateModal: React.FC<IProps> = (props) => {
     setCrontab(null);
     setHasEdit(false);
   };
-  const getDrawerTitle = () =>{
-    let title = '新建数据清理';
-    if(editTaskId){
-      if(isEdit){
-        title = '编辑数据清理';
-      }else{
-        title = '再次发起数据清理';
+  const getDrawerTitle = () => {
+    let title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.268C0069' }); //'新建数据清理'
+    if (editTaskId) {
+      if (isEdit) {
+        title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.A5BAF884' });
+      } else {
+        title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.2856A9BB' });
       }
     }
     return title;
-  }
+  };
   useEffect(() => {
     if (!dataClearVisible) {
       handleReset();
@@ -358,7 +412,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+          <Button type="primary" loading={confirmLoading} onClick={handleSQLPreview}>
             {
               isEdit
                 ? formatMessage({
@@ -463,9 +517,33 @@ const CreateModal: React.FC<IProps> = (props) => {
           keepExpand
         >
           <ThrottleFormItem />
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
+              }) /*"使用主键清理"*/
+            }
+            name="deleteByUniqueKey"
+            rules={[
+              {
+                required: true,
+                message: formatMessage({
+                  id: 'src.component.Task.DataClearTask.CreateModal.23542D89',
+                }), //'请选择'
+              },
+            ]}
+          >
+            <Radio.Group options={deleteByUniqueKeyOptions} />
+          </Form.Item>
         </FormItemPanel>
         <DescriptionInput />
       </Form>
+      <SQLPreviewModal
+        sql={previewSql}
+        visible={previewModalVisible}
+        onClose={handleCloseSQLPreviewModal}
+        onOk={handleConfirmTask}
+      />
     </Drawer>
   );
 };

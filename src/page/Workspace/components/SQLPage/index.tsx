@@ -36,6 +36,7 @@ import {
   ISqlExecuteResultStatus,
   ISQLScript,
   ITableColumn,
+  IUserConfig,
 } from '@/d.ts';
 import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
@@ -55,7 +56,7 @@ import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { IDisposable, KeyMod, KeyCode } from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
@@ -64,6 +65,8 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
+import setting, { SettingStore } from '@/store/setting';
+import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -105,6 +108,7 @@ interface ISQLPageState {
 interface IProps {
   params?: ISQLPageParams;
   sqlStore?: SQLStore;
+  settingStore?: SettingStore;
   userStore?: UserStore;
   pageStore?: PageStore;
   sessionManagerStore?: SessionManagerStore;
@@ -121,7 +125,7 @@ interface IProps {
   onSetUnsavedModalContent?: (title: string) => void;
 }
 
-@inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore', 'modalStore')
+@inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore', 'modalStore', 'settingStore')
 @observer
 export class SQLPage extends Component<IProps, ISQLPageState> {
   public readonly state: ISQLPageState = {
@@ -162,6 +166,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   private timer: number | undefined;
 
   private _session: SessionStore;
+
+  private actions: IDisposable[];
+  private config: Partial<IUserConfig>;
 
   constructor(props) {
     super(props);
@@ -240,6 +247,12 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         {},
         { cid: this.getSession()?.odcDatabase?.id, dbName: this.getSession()?.odcDatabase?.name },
       );
+      /**
+       * 异步加载内置片段
+       */
+      this.getSession()?.addBuiltinSnippets();
+    } else if (this.props.settingStore.configurations !== this.config) {
+      this.bindEditorKeymap();
     }
   }
 
@@ -273,33 +286,49 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
    * ======== SQL相关 ===========
    */
 
+  public bindEditorKeymap = () => {
+    if (!this.editor) {
+      return;
+    }
+    const {
+      'odc.editor.shortcut.executeCurrentStatement': executeCurrentStatement,
+      'odc.editor.shortcut.executeStatement': executeStatement,
+    } = setting.configurations;
+    this.actions?.forEach((action) => {
+      action.dispose();
+    });
+    this.actions = [
+      this.editor.addAction({
+        id: 'sql_download',
+        label: 'download',
+        keybindings: [KeyMod.WinCtrl | KeyCode.KeyD],
+        run: () => this.handleDownload(),
+      }),
+      this.editor.addAction({
+        id: 'sql_save',
+        label: 'save',
+        keybindings: [KeyMod.CtrlCmd | KeyCode.KeyS],
+        run: () => this.saveScript(),
+      }),
+      this.editor.addAction({
+        id: 'sql_executeSql',
+        label: 'execute',
+        keybindings: executeStatement ? [getKeyCodeValue(executeStatement)] : [],
+        run: () => this.handleExecuteSQL(),
+      }),
+      this.editor.addAction({
+        id: 'sql_executeSelectedSql',
+        label: 'executeSelected',
+        keybindings: executeCurrentStatement ? [getKeyCodeValue(executeCurrentStatement)] : [],
+        run: () => this.handleExecuteSelectedSQL(),
+      }),
+    ];
+    this.config = setting.configurations;
+  };
+
   public handleEditorCreated = (editor: IEditor) => {
     this.editor = editor; // 快捷键绑定
-
-    this.editor.addAction({
-      id: 'sql_download',
-      label: 'download',
-      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD],
-      run: () => this.handleDownload(),
-    });
-    this.editor.addAction({
-      id: 'sql_save',
-      label: 'save',
-      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
-      run: () => this.saveScript(),
-    });
-    this.editor.addAction({
-      id: 'sql_executeSql',
-      label: 'execute',
-      keybindings: [monaco.KeyCode.F8, monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
-      run: () => this.handleExecuteSQL(),
-    });
-    this.editor.addAction({
-      id: 'sql_executeSelectedSql',
-      label: 'executeSelected',
-      keybindings: [monaco.KeyCode.F9],
-      run: () => this.handleExecuteSelectedSQL(),
-    });
+    this.bindEditorKeymap();
     this.debounceHighlightSelectionLine();
     //  编辑光标位置变化事件
     this.editor.onDidChangeCursorPosition(() => {
@@ -496,14 +525,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }; // 保存 SQL
 
   public handleCreateSQL = async (script: ISQLScript) => {
-    const {
-      userStore,
-      pageStore,
-      pageKey,
-      onSetUnsavedModalContent,
-      onChangeSaved,
-      params,
-    } = this.props;
+    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
+      this.props;
     let existedScriptId;
     const newFiles = await newScript(
       [new File([params.scriptText], script.objectName)],
@@ -674,12 +697,12 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlStore.lockResultSet(pageKey, key);
   };
 
-  public handleCheckDatabasePermission = (result: IExecuteTaskResult) =>{
+  public handleCheckDatabasePermission = (result: IExecuteTaskResult) => {
     this.setState({
       unauthorizedDatabases: result?.unauthorizedDatabases,
-      unauthorizedSql: result?.unauthorizedSql
-    })
-  }
+      unauthorizedSql: result?.unauthorizedSql,
+    });
+  };
 
   public onUpdateEditing = (resultSetIndex: number, editing: boolean) => {
     const resultSets = this.props.sqlStore.resultSets.get(this.props.pageKey);
@@ -1095,7 +1118,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       sqlChanged,
       baseOffset,
       unauthorizedDatabases,
-      unauthorizedSql
+      unauthorizedSql,
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
