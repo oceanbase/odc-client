@@ -138,7 +138,7 @@ export default function ChangeOwnerModal({
             style={{
               width: '100%',
             }}
-            optionFilterProp="children"
+            optionFilterProp="label"
             options={projectUserOptions}
           />
         </Form.Item>
