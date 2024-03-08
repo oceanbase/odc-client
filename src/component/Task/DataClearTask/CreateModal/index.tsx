@@ -141,9 +141,9 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       triggerConfig: { triggerStrategy, cronExpression, hours, days, startAt },
     } = data;
-    const { sourceDatabaseId, rateLimit, tables, variables, deleteByUniqueKey } = jobParameters;
+    const { databaseId, rateLimit, tables, variables, deleteByUniqueKey } = jobParameters;
     const formData = {
-      databaseId: sourceDatabaseId,
+      databaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       tables,
@@ -375,6 +375,11 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
     return title;
   };
+
+  const handleDBChange = () => {
+    form.setFieldValue('tables', [null]);
+  };
+
   useEffect(() => {
     if (!dataClearVisible) {
       handleReset();
@@ -383,7 +388,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (database?.id) {
       loadTables();
-      form.setFieldValue('tables', [null]);
     }
   }, [database?.id]);
 
@@ -445,6 +449,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               id: 'odc.DataClearTask.CreateModal.SourceDatabase',
             })}
             /*源端数据库*/ projectId={projectId}
+            onChange={handleDBChange}
           />
         </Space>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
