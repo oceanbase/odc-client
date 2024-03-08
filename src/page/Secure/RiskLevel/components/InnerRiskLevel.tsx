@@ -166,7 +166,9 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
     if (root?.type === EConditionType.CONDITION) {
       if (root?.expression === Expression.ENVIRONMENT_ID) {
         root.expression = Expression.ENVIRONMENT_NAME;
-        root.value = envMap?.[` id:${root?.value}`];
+        root.value = Array.isArray(root?.value)
+          ? root?.value?.map((item) => envMap?.[` id:${item}`] || item)
+          : envMap?.[` id:${root?.value}`] || root?.value;
       }
       return root;
     }
