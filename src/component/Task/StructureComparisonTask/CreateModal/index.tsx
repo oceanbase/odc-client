@@ -41,11 +41,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
     if (result) {
-      message.success(
-        formatMessage({
-          id: 'src.component.Task.StructureComparisonTask.CreateModal.EFCABB82' /*'新建成功'*/,
-        }),
-      );
+      message.success('工单创建成功');
       modalStore.changeStructureComparisonModal(false);
       openTasksPage(TaskPageType.STRUCTURE_COMPARISON);
       return;

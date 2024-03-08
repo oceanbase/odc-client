@@ -86,7 +86,8 @@ const ActionBar: React.FC<IProps> = inject(
       result,
     } = props;
     const isOwner = user?.id === task?.creator?.id;
-    const isApprovable = task?.approvable;
+    const isApprover = task?.approvable;
+    const isOwnerAndApprover = isOwner && isApprover;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
     const disabledApproval =
@@ -588,28 +589,28 @@ const ActionBar: React.FC<IProps> = inject(
           case TaskStatus.CANCELLED:
           case TaskStatus.PRE_CHECK_FAILED:
           case TaskStatus.COMPLETED: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn];
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.EXECUTING: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn, stopBtn];
               if (task.type === TaskType.STRUCTURE_COMPARISON) {
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.EXECUTION_SUCCEEDED: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn];
               if (task.type === TaskType.EXPORT && settingStore.enableDataExport) {
                 if (isClient()) {
@@ -627,27 +628,28 @@ const ActionBar: React.FC<IProps> = inject(
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
             }
-            if (isApprovable) {
+
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.WAIT_FOR_CONFIRM:
           case TaskStatus.APPROVING: {
-            if (isOwner && isApprovable) {
+            if (isOwnerAndApprover) {
               tools = [reTryBtn, stopBtn, rejectBtn, approvalBtn];
             } else {
               if (isOwner) {
                 tools = [reTryBtn, stopBtn];
               }
-              if (isApprovable) {
+              if (isApprover) {
                 tools = [rejectBtn, approvalBtn];
               }
             }
             break;
           }
           case TaskStatus.WAIT_FOR_EXECUTION: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               const _executeBtn = { ...executeBtn };
               if (task?.executionStrategy === TaskExecStrategy.TIMER) {
                 _executeBtn.disabled = true;
@@ -668,7 +670,7 @@ const ActionBar: React.FC<IProps> = inject(
                   ? [reTryBtn, stopBtn]
                   : [reTryBtn, stopBtn, _executeBtn];
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
@@ -777,12 +779,12 @@ const ActionBar: React.FC<IProps> = inject(
 
       switch (status) {
         case TaskStatus.APPROVING: {
-          if (isOwner && isApprovable) {
+          if (isOwnerAndApprover) {
             tools = [viewBtn, stopBtn, approvalBtn, rejectBtn];
           } else {
             if (isOwner) {
               tools = [viewBtn, stopBtn];
-            } else if (isApprovable) {
+            } else if (isApprover) {
               tools = [viewBtn, approvalBtn, rejectBtn];
             } else {
               tools = [viewBtn];
@@ -795,7 +797,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.ENABLED: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn, editBtn, disableBtn];
           } else {
             tools = [viewBtn];
@@ -804,7 +806,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.APPROVAL_EXPIRED:
         case TaskStatus.TERMINATION: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn];
           } else {
             tools = [viewBtn];
@@ -812,7 +814,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.PAUSE: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn, editBtn, enableBtn];
           } else {
             tools = [viewBtn];
@@ -820,7 +822,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.COMPLETED: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn];
             if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
               tools.push(reTryBtn);
