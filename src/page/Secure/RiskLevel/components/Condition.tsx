@@ -72,6 +72,7 @@ const Condition = ({
   const initCondition = () => {
     handleOperatorChange(operator);
     switch (expression) {
+      case Expression.ENVIRONMENT_ID:
       case Expression.ENVIRONMENT_NAME: {
         setValueOptions(environmentOptions);
         setValueMap(environmentMap);

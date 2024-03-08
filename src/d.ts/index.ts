@@ -344,6 +344,7 @@ export interface ITaskFlow {
   id: number;
   name: string;
   builtIn: boolean;
+  externalApproval?: boolean;
   approvalExpirationIntervalSeconds: number;
   executionExpirationIntervalSeconds: number;
   waitExecutionExpirationIntervalSeconds: number;
