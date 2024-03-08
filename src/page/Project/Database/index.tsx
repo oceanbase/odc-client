@@ -49,6 +49,7 @@ import { observer } from 'mobx-react';
 import StatusName from './StatusName';
 import ChangeOwnerModal from '@/page/Project/Database/ChangeOwnerModal';
 import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
+import { ProjectRole } from '@/d.ts/project';
 interface IProps {
   id: string;
 }
@@ -321,6 +322,10 @@ const Database: React.FC<IProps> = ({ id }) => {
               const hasQueryAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.QUERY,
               );
+              const curRoles = project?.currentUserResourceRoles || [];
+              const hasChangeOwnerAuth = curRoles.some((role) =>
+                [ProjectRole.OWNER, ProjectRole.DBA].includes(role),
+              );
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -416,7 +421,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setChangeOwnerModalVisible(true);
                       setDatabase(record);
                     }}
-                    // TODO disabled={权限|配置}
+                    disabled={!hasChangeOwnerAuth}
                   >
                     {
                       formatMessage({

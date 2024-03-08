@@ -69,17 +69,17 @@ const Row: React.FC<ITableRowProps> = (props) => {
   };
 
   return (
-    <tr>
-      <td style={{ width: columns[0].width }}>
+    <div className={styles.row}>
+      <div className={styles.td}>
         <div className={styles.content}>{column?.name}</div>
-      </td>
-      <td style={{ width: columns[1].width }}>
+      </div>
+      <div className={styles.td}>
         <div className={styles.content}>
           {column?.type?.localizedMessage || column?.type?.dataTypeName}
         </div>
-      </td>
-      <td style={{ width: columns[2].width }}>
-        <div className={styles.content}>
+      </div>
+      <div className={styles.td}>
+        <div className={styles.typeSelect}>
           <Form.Item
             {...field}
             name={[field.name, 'partitionKeyInvoker']}
@@ -94,13 +94,13 @@ const Row: React.FC<ITableRowProps> = (props) => {
             />
           </Form.Item>
         </div>
-      </td>
-      <td style={{ width: columns[3].width }}>
-        <div className={styles.content}>
+      </div>
+      <div className={styles.td}>
+        <div className={styles.ruleFormItem}>
           <RuleFormItem field={field} />
         </div>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };
 
@@ -136,26 +136,16 @@ interface IEditTableProps {
 const EditTable: React.FC<IEditTableProps> = (props) => {
   const { form } = props;
   return (
-    <>
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.thead}>
-            {columns?.map((item) => {
-              return (
-                <th className={styles.theadCell} style={{ width: item?.width }}>
-                  {item?.title}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-      </table>
-      <table className={styles.table}>
-        <tbody>
-          <TableForm form={form} />
-        </tbody>
-      </table>
-    </>
+    <div className={styles.editTable}>
+      <div className={styles.thead}>
+        {columns?.map((item) => {
+          return <div className={styles.theadCell}>{item?.title}</div>;
+        })}
+      </div>
+      <div className={styles.table}>
+        <TableForm form={form} />
+      </div>
+    </div>
   );
 };
 

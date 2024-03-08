@@ -371,6 +371,8 @@ export default {
     </p>
   ),
 
+  partitionKeepLatestCount: <p>超出数量后，仅保留最近若干个分区，其他分区均删除</p>,
+
   expirePeriod: (
     <p>
       {
