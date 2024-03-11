@@ -29,6 +29,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -120,6 +121,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       }) /*导入*/,
       actionType: actionTypes.update,
       ellipsis: true,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       isHide: (session) => {
         return (
           !setting.enableDBImport ||
@@ -143,6 +147,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ],
 
       ellipsis: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -180,8 +187,11 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       ellipsis: true,
       isHide: (session) => {
-        return !setting.enableMockdata || !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
-          TaskType.DATAMOCK,
+        return (
+          !setting.enableMockdata ||
+          !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+            TaskType.DATAMOCK,
+          )
         );
       },
       actionType: actionTypes.update,
@@ -327,6 +337,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ],
       actionType: actionTypes.delete,
       ellipsis: true,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;

@@ -16,6 +16,8 @@
 
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
+import { DatabasePermissionType } from '@/d.ts/database';
+import SessionStore from '@/store/sessionManager/session';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { Badge, Dropdown, Tooltip } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
@@ -26,6 +28,13 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
+
+export const hasExportPermission = (dbSession: SessionStore) => {
+  return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
+};
+export const hasChangePermission = (dbSession: SessionStore) => {
+  return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+};
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip } = props;

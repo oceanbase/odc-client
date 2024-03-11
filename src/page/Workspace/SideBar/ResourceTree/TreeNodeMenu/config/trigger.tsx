@@ -23,6 +23,7 @@ import {
   openTriggerViewPage,
 } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
@@ -192,6 +193,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -232,6 +236,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const trigger: ITrigger = node.data || {};
         Modal.confirm({
