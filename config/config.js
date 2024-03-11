@@ -38,7 +38,7 @@ const config = {
       content: version,
     },
   ],
-  devtool: enableSourceMap ? "hidden-cheap-module-source-map" : (process.env.NODE_ENV === 'development' ? 'cheap-module-source-map' : false),
+  devtool: enableSourceMap ? "cheap-module-source-map" : (process.env.NODE_ENV === 'development' ? 'cheap-module-source-map' : false),
 
   antd: {
     import: true,
