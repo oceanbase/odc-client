@@ -21,7 +21,7 @@ import VariableConfigTable from '@/component/Task/component/VariableConfigTable'
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import { updateLimiterConfig } from '@/common/network/task';
 import setting from '@/store/setting';
-import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
+import type { CycleTaskDetail, IDataClearJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
@@ -33,7 +33,7 @@ import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 const { Panel } = Collapse;
 const { Text } = Typography;
 interface IProps {
-  task: CycleTaskDetail<IDataArchiveJobParameters>;
+  task: CycleTaskDetail<IDataClearJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
   onReload?: () => void;

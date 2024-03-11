@@ -173,12 +173,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
                   setConfirmLoading(false);
                   if (isSuccess) {
-                    message.success(
-                      formatMessage({
-                        id: 'odc.component.DataMockerDrawer.CreatedSuccessfully',
-                      }),
-                      // 创建成功！
-                    );
+                    message.success('工单创建成功');
                     onClose();
                     openTasksPage(TaskPageType.DATAMOCK, TaskPageScope.CREATED_BY_CURRENT_USER);
                   }

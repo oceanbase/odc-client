@@ -25,7 +25,7 @@ export const getEnvironmentOptions = async () => {
     return {
       id: rd?.id,
       label: rd?.name,
-      value: rd?.originalName,
+      value: rd?.originalName || rd?.id,
     };
   });
   return newEnvOptions;
