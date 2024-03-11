@@ -12,7 +12,7 @@ console.log('git last commit: ', version);
  */
 const disableBrowserUpdate = process.env.DISABLE_BROWSER_UPDATE;
 
-let enableSourceMap = false;
+let enableSourceMap = process.env.ENABLE_SOURCEMAP === "true";
 
 console.log(disableBrowserUpdate);
 
