@@ -15,7 +15,7 @@
  */
 
 import DisplayTable from '@/component/DisplayTable';
-import StatusLabel, { subTaskStatus } from '@/component/Task/component/Status';
+import StatusLabel, { subTaskStatus, status } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import { IAsyncTaskParams, SubTaskType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -50,12 +50,15 @@ const TaskLabelMap = {
   },
 };
 
-const statusFilters = Object.keys(subTaskStatus).map((key) => {
-  return {
-    text: subTaskStatus?.[key].text,
-    value: key,
-  };
-});
+const getStatusFilters = (isSubTask) => {
+  const statusMap = isSubTask ? subTaskStatus : status;
+  return Object.keys(statusMap).map((key) => {
+    return {
+      text: statusMap?.[key].text,
+      value: key,
+    };
+  });
+};
 
 const getJobFilter = (taskType: TaskType) => {
   return Object.keys(TaskLabelMap[taskType])?.map((key) => ({
@@ -75,6 +78,7 @@ const getConnectionColumns = (params: {
   const { taskType, taskId, showLog, onReloadList, onDetailVisible, onLogVisible } = params;
   const jobFilter = getJobFilter(taskType);
   const isSqlPlan = taskType === TaskType.SQL_PLAN;
+  const statusFilters = getStatusFilters(!isSqlPlan);
   return [
     {
       dataIndex: 'id',

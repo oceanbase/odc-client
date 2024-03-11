@@ -344,6 +344,7 @@ export interface ITaskFlow {
   id: number;
   name: string;
   builtIn: boolean;
+  externalApproval?: boolean;
   approvalExpirationIntervalSeconds: number;
   executionExpirationIntervalSeconds: number;
   waitExecutionExpirationIntervalSeconds: number;
@@ -2288,10 +2289,8 @@ export interface IDataArchiveJobParameters {
 export interface IDataClearJobParameters {
   deleteAfterMigration: boolean;
   name: string;
-  sourceDatabaseId: number;
-  sourceDatabaseName?: string;
-  targetDataBaseId: number;
-  targetDatabaseName?: string;
+  databaseId: number;
+  databaseName?: string;
   deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;

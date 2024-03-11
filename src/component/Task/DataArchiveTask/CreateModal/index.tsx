@@ -433,6 +433,10 @@ const CreateModal: React.FC<IProps> = (props) => {
     return title;
   };
 
+  const handleDBChange = () => {
+    form.setFieldValue('tables', [null]);
+  };
+
   useEffect(() => {
     if (!dataArchiveVisible) {
       handleReset();
@@ -442,9 +446,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (sourceDB?.id) {
       loadTables();
-      if (!isEdit) {
-        form.setFieldValue('tables', [null]);
-      }
     }
   }, [sourceDB?.id]);
 
@@ -507,6 +508,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
             })}
             /*源端数据库*/ projectId={projectId}
+            onChange={handleDBChange}
           />
 
           <DatabaseSelect
