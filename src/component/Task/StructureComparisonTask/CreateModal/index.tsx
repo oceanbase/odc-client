@@ -79,6 +79,9 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
       modalStore.changeStructureComparisonModal(false);
     }
   };
+  const resetTargetDatabase = async () => {
+    await form.setFieldValue(['parameters', 'targetDatabaseId'], null);
+  };
   useEffect(() => {
     if (!structureComparisonVisible) {
       handleReset();
@@ -87,6 +90,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   useEffect(() => {
     if (sourceDatabaseId) {
       run(sourceDatabaseId);
+      targetDatabaseId && resetTargetDatabase();
     }
   }, [sourceDatabaseId]);
   return (
@@ -157,6 +161,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           <DatabaseSelect
             name={['parameters', 'targetDatabaseId']}
             width={'336px'}
+            disabled={!sourceDatabaseId}
             type={TaskType.STRUCTURE_COMPARISON}
             label={
               formatMessage({
