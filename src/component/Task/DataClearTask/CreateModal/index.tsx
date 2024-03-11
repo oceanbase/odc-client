@@ -364,17 +364,6 @@ const CreateModal: React.FC<IProps> = (props) => {
     setCrontab(null);
     setHasEdit(false);
   };
-  const getDrawerTitle = () => {
-    let title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.268C0069' }); //'新建数据清理'
-    if (editTaskId) {
-      if (isEdit) {
-        title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.A5BAF884' });
-      } else {
-        title = formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.2856A9BB' });
-      }
-    }
-    return title;
-  };
 
   const handleDBChange = () => {
     form.setFieldValue('tables', [null]);
@@ -402,7 +391,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles['data-archive']}
       width={760}
-      title={getDrawerTitle()}
+      title={
+        isEdit
+          ? formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.A5BAF884' })
+          : formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.268C0069' }) //'新建数据清理'
+      }
       footer={
         <Space>
           <Button
