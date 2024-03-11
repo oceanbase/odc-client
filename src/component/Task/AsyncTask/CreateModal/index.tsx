@@ -117,7 +117,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const isRollback = !!asyncTaskData?.type;
-  const isReTry = asyncTaskData?.task && !isRollback;
   const initSqlContent = isRollback
     ? asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql
     : asyncTaskData?.task?.parameters?.sqlContent || asyncTaskData?.sql;
@@ -485,11 +484,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.asyncTask}
       width={905}
-      title={
-        isReTry
-          ? formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.E400CC8B' })
-          : formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6' })
-      }
+      title={formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6' })}
       footer={
         <Space>
           <Button

@@ -421,18 +421,6 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(false);
   };
 
-  const getDrawerTitle = () => {
-    let title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.81AF31F1' }); //'新建数据归档'
-    if (dataArchiveEditId) {
-      if (isEdit) {
-        title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.77394106' });
-      } else {
-        title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.364BA033' });
-      }
-    }
-    return title;
-  };
-
   const handleDBChange = () => {
     form.setFieldValue('tables', [null]);
   };
@@ -460,7 +448,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles['data-archive']}
       width={760}
-      title={getDrawerTitle()}
+      title={
+        isEdit
+          ? formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.77394106' })
+          : formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.81AF31F1' }) //'新建数据归档'
+      }
       footer={
         <Space>
           <Button
