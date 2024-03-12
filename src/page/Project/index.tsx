@@ -15,6 +15,7 @@
  */
 
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import TooltipAction from '@/component/TooltipAction';
 import { formatMessage } from '@/util/intl';
 import { Button, Menu, Space } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -54,20 +55,22 @@ const ExtraContent = ({ projectId }) => {
 
   return (
     <Space size={12}>
-      <Button
-        onClick={() => {
-          tracert.click('a3112.b64002.c330858.d367386');
-          gotoSQLWorkspace(projectId);
-        }}
-        type="primary"
-        disabled={disabled}
-      >
-        {
-          formatMessage({
-            id: 'odc.page.Project.LogOnToTheDatabase',
-          }) /*登录数据库*/
-        }
-      </Button>
+      <TooltipAction title={disabled ? '暂无权限' : ''}>
+        <Button
+          onClick={() => {
+            tracert.click('a3112.b64002.c330858.d367386');
+            gotoSQLWorkspace(projectId);
+          }}
+          type="primary"
+          disabled={disabled}
+        >
+          {
+            formatMessage({
+              id: 'odc.page.Project.LogOnToTheDatabase',
+            }) /*登录数据库*/
+          }
+        </Button>
+      </TooltipAction>
     </Space>
   );
 };

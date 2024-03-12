@@ -290,6 +290,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
                       disabled={!hasExportAuth}
+                      tooltip={!hasExportAuth ? '暂无权限' : ''}
                     >
                       {
                         formatMessage({
@@ -306,6 +307,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
                       disabled={!hasChangeAuth}
+                      tooltip={!hasChangeAuth ? '暂无权限' : ''}
                     >
                       {
                         formatMessage({
@@ -321,6 +323,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                     disabled={!hasChangeAuth}
+                    tooltip={!hasChangeAuth ? '暂无权限' : ''}
                   >
                     {
                       formatMessage({
@@ -335,6 +338,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
                     disabled={!hasLoginAuth}
+                    tooltip={!hasLoginAuth ? '暂无权限' : ''}
                   >
                     {
                       formatMessage({
@@ -350,6 +354,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setDatabase(record);
                     }}
                     disabled={!hasChangeAuth || disableTransfer}
+                    tooltip={!hasChangeAuth || disableTransfer ? '暂无权限' : ''}
                   >
                     <Tooltip
                       title={
