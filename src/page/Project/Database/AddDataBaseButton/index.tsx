@@ -18,6 +18,7 @@ import { getConnectionDetail, getConnectionList } from '@/common/network/connect
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
+import TooltipAction from '@/component/TooltipAction';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
@@ -61,6 +62,10 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   } = useRequest(listDatabases, {
     manual: true,
   });
+  const disabledAction =
+    project?.currentUserResourceRoles?.filter((roles) =>
+      [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
+    )?.length === 0;
   function close() {
     setOpen(false);
     form.resetFields();
@@ -85,21 +90,15 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   return (
     <>
       <Space size={12}>
-        <Button
-          onClick={() => setOpen(true)}
-          type="primary"
-          disabled={
-            project?.currentUserResourceRoles?.filter((roles) =>
-              [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
-            )?.length === 0
-          }
-        >
-          {
-            formatMessage({
-              id: 'odc.Database.AddDataBaseButton.AddDatabase',
-            }) /*添加数据库*/
-          }
-        </Button>
+        <TooltipAction title={disabledAction ? '暂无权限' : ''}>
+          <Button onClick={() => setOpen(true)} type="primary" disabled={disabledAction}>
+            {
+              formatMessage({
+                id: 'odc.Database.AddDataBaseButton.AddDatabase',
+              }) /*添加数据库*/
+            }
+          </Button>
+        </TooltipAction>
         <ApplyDatabasePermissionButton
           label={
             formatMessage({

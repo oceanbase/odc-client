@@ -20,6 +20,7 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import TooltipAction from '@/component/TooltipAction';
 import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
@@ -115,13 +116,15 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
-          {
-            formatMessage({
-              id: 'odc.Project.User.AddMembers',
-            }) /*添加成员*/
-          }
-        </Button>
+        <TooltipAction title={!isOwner ? '暂无权限' : ''}>
+          <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+            {
+              formatMessage({
+                id: 'odc.Project.User.AddMembers',
+              }) /*添加成员*/
+            }
+          </Button>
+        </TooltipAction>
       }
       extra={
         <FilterIcon onClick={context.reloadProject}>
@@ -187,6 +190,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
+                    tooltip={disabled ? '暂无权限' : ''}
                   >
                     {
                       formatMessage({
@@ -201,7 +205,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
-                    <Action.Link key={'import'} disabled={disabled}>
+                    <Action.Link
+                      key={'import'}
+                      disabled={disabled}
+                      tooltip={disabled ? '暂无权限' : ''}
+                    >
                       {
                         formatMessage({
                           id: 'odc.Project.User.Remove',
@@ -211,6 +219,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                   </Popconfirm>
                   <Action.Link
                     disabled={disabled && !isMe}
+                    tooltip={disabled && !isMe ? '暂无权限' : ''}
                     onClick={() => {
                       showManageModal(record.id);
                     }}
