@@ -186,6 +186,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ],
 
       ellipsis: true,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       isHide: (session) => {
         return (
           !setting.enableMockdata ||
