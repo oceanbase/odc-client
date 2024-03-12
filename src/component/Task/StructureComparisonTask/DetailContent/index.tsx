@@ -98,9 +98,7 @@ const CompareTable: React.FC<{
   const tableRef = useRef<ITableInstance>(null);
   const columns = [
     {
-      title: formatMessage({
-        id: 'src.component.Task.StructureComparisonTask.DetailContent.322E747A',
-      }), //'对比表'
+      title: '比对表',
       key: 'dbObjectName',
       dataIndex: 'dbObjectName',
       filters: [],
@@ -123,9 +121,7 @@ const CompareTable: React.FC<{
       ),
     },
     {
-      title: formatMessage({
-        id: 'src.component.Task.StructureComparisonTask.DetailContent.04A0E2C5',
-      }), //'对比结果'
+      title: '比对结果',
       key: 'operationType',
       dataIndex: 'operationType',
       filters: [
@@ -243,7 +239,7 @@ const SQLPreview: React.FC<{
           marginTop: '8px',
         }}
       >
-        {comparisonResult?.id && comparisonResult?.totalChangeScript ? (
+        {comparisonResult?.id && !comparisonResult?.overSizeLimit ? (
           <div className={styles?.sqlContent}>
             <MonacoEditor
               readOnly
@@ -383,9 +379,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     }, []);
     const tabItems = [
       {
-        label: formatMessage({
-          id: 'src.component.Task.StructureComparisonTask.DetailContent.7DFCBE9E',
-        }), //'对比的表'
+        label: '比对的表',
         key: '1',
         children: (
           <CompareTable
