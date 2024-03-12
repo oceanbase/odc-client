@@ -32,7 +32,7 @@ export const FormEnvironmentModal: React.FC<{
     }
     let result;
     if (isEdit) {
-      const formData = await formRef.validateFields(['style'])?.catch();
+      const formData = await formRef.validateFields(['style', 'description'])?.catch();
       setLoading(true);
       result = await updateEnvironment(currentEnvironment?.id, formData);
       setLoading(false);
