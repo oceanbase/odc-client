@@ -421,16 +421,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(false);
   };
 
-  const getDrawerTitle = () => {
-    let title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.81AF31F1' }); //'新建数据归档'
-    if (dataArchiveEditId) {
-      if (isEdit) {
-        title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.77394106' });
-      } else {
-        title = formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.364BA033' });
-      }
-    }
-    return title;
+  const handleDBChange = () => {
+    form.setFieldValue('tables', [null]);
   };
 
   useEffect(() => {
@@ -442,9 +434,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (sourceDB?.id) {
       loadTables();
-      if (!isEdit) {
-        form.setFieldValue('tables', [null]);
-      }
     }
   }, [sourceDB?.id]);
 
@@ -459,7 +448,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles['data-archive']}
       width={760}
-      title={getDrawerTitle()}
+      title={
+        isEdit
+          ? formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.77394106' })
+          : formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.81AF31F1' }) //'新建数据归档'
+      }
       footer={
         <Space>
           <Button
@@ -507,6 +500,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
             })}
             /*源端数据库*/ projectId={projectId}
+            onChange={handleDBChange}
           />
 
           <DatabaseSelect

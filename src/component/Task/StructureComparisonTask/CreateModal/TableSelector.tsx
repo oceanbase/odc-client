@@ -84,8 +84,20 @@ const TableSelector: React.FC<{
       setLoading(false);
     }
   };
+  const resetTableSelector = () => {
+    setSourceSearchValue(null);
+    setTargetSearchValue(null);
+    setLoading(false);
+    setCheckedKeys([]);
+    setTreeData([]);
+  };
   useEffect(() => {
-    if (sessionId && targetDatabaseId) {
+    if (!targetDatabaseId) {
+      resetTableSelector();
+      return;
+    }
+    if (sessionId) {
+      resetTableSelector();
       loadTableListByDatabaseName();
     }
   }, [sessionId, targetDatabaseId]);

@@ -27,7 +27,7 @@ export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 export const ENABLED_SYS_FROM_ITEM = false;
 
 export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) => {
-  let _permissions = null;
+  let _permissions = [];
   switch (taskType) {
     case TaskType.EXPORT:
       _permissions = [DatabasePermissionType.EXPORT];
@@ -38,7 +38,7 @@ export const hasPermission = (taskType: TaskType, permissions: DatabasePermissio
     default:
       _permissions = [DatabasePermissionType.CHANGE];
   }
-  return permissions?.some((item) => _permissions.includes(item));
+  return _permissions.every((item) => permissions?.includes(item));
 };
 
 export const isCycleTask = (type: TaskType) => {
@@ -226,29 +226,19 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
       }), //'权限申请'
       group: [
         {
+          value: TaskPageType.APPLY_DATABASE_PERMISSION,
+          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
+          enabled: !isClient() && !isPersonal,
+        },
+        {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
           label: formatMessage({
             id: 'odc.src.component.Task.ApplicationProjectPermissions',
           }), //'申请项目权限'
           enabled: !isClient() && !isPersonal,
         },
-        {
-          value: TaskPageType.APPLY_DATABASE_PERMISSION,
-          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
-          enabled: !isClient() && !isPersonal,
-        },
       ],
     },
-    // {
-    //   groupName: '权限申请',
-    //   group: [
-    //     {
-    //       value: TaskPageType.SENSITIVE_COLUMN,
-    //       label: '敏感列',
-    //       enabled: true,
-    //     },
-    //   ],
-    // },
   ];
 };
 

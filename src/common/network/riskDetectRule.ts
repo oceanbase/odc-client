@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IRiskDetectRule, RiskDetectRuleCondition, RootNode } from '@/d.ts/riskDetectRule';
+import { IRiskDetectRule, RootNode } from '@/d.ts/riskDetectRule';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import request from '@/util/request';
 
