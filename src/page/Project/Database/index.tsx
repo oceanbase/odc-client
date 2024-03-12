@@ -71,7 +71,16 @@ const Database: React.FC<IProps> = ({ id }) => {
     params.current.current = current;
     params.current.environmentId = environmentId;
     const res = await listDatabases(
-      parseInt(id), null, current, pageSize, name, environmentId, null, null, true);
+      parseInt(id),
+      null,
+      current,
+      pageSize,
+      name,
+      environmentId,
+      null,
+      null,
+      true,
+    );
     if (res) {
       datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
       setData(res?.contents);
@@ -141,9 +150,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
-                const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
-                const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
-                const disabled = !hasChangeAuth && !hasQueryAuth;
+              const disabled = !record.authorizedPermissionTypes?.length;
               if (!record.existed) {
                 return disabled ? (
                   <div className={styles.disable}>{name}</div>
@@ -266,9 +273,13 @@ const Database: React.FC<IProps> = ({ id }) => {
               const disableTransfer =
                 !!record?.dataSource?.projectId &&
                 !config?.schema?.innerSchema?.includes(record?.name);
-              const hasExportAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
-              const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
-              const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
+              const hasExportAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.EXPORT,
+              );
+              const hasChangeAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              );
+              const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -323,7 +334,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
-                    disabled={!hasQueryAuth}
+                    disabled={!hasLoginAuth}
                   >
                     {
                       formatMessage({

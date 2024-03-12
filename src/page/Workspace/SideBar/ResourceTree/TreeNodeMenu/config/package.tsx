@@ -301,6 +301,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
       ellipsis: true,
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node, databaseFrom) {
         packageMenusConfig[ResourceNodeType.Package]
           .find((item) => item.key === 'DELETE')
