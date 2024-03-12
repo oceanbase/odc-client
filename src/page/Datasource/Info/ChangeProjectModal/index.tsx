@@ -54,7 +54,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
       onOk={async () => {
         const value = await form.validateFields();
         console.log(value);
-        const isSuccess = await updateDataBase([database?.id], value.project);
+        const isSuccess = await updateDataBase([database?.id], value.project, []);
         if (isSuccess) {
           message.success(
             formatMessage({

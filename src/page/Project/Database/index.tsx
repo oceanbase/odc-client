@@ -47,15 +47,23 @@ import setting from '@/store/setting';
 import datasourceStatus from '@/store/datasourceStatus';
 import { observer } from 'mobx-react';
 import StatusName from './StatusName';
+import ChangeOwnerModal from '@/page/Project/Database/ChangeOwnerModal';
+import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
+import { ProjectRole } from '@/d.ts/project';
 interface IProps {
   id: string;
 }
+
 const Database: React.FC<IProps> = ({ id }) => {
   const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [data, setData] = useState<IDatabase[]>([]);
   const [visible, setVisible] = useState(false);
+  /**
+   * 修改负责人弹窗显示与隐藏
+   */
+  const [changeOwnerModalVisible, setChangeOwnerModalVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
   const params = useRef({
     pageSize: 0,
@@ -113,7 +121,13 @@ const Database: React.FC<IProps> = ({ id }) => {
   const statusMap = datasourceStatus.statusMap;
   return (
     <TableCard
-      title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
+      title={
+        <AddDataBaseButton
+          onSuccess={() => reload()}
+          projectId={parseInt(id)}
+          maxOwnerCount={DB_OWNER_MAX_COUNT}
+        />
+      }
       extra={
         <Space>
           <Input.Search
@@ -150,7 +164,14 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
-              const disabled = !record.authorizedPermissionTypes?.length;
+              const hasChangeAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              );
+              const hasQueryAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.QUERY,
+              );
+              const disabled = !hasChangeAuth && !hasQueryAuth;
+
               if (!record.existed) {
                 return disabled ? (
                   <div className={styles.disable}>{name}</div>
@@ -176,6 +197,26 @@ const Database: React.FC<IProps> = ({ id }) => {
                     gotoSQLWorkspace(toInteger(id), null, record.id);
                   }}
                 />
+              );
+            },
+          },
+          {
+            title: formatMessage({
+              id: 'odc.Project.Database.Owner',
+            }),
+            //项目角色
+            dataIndex: 'owners',
+            ellipsis: true,
+            width: 160,
+            render(v) {
+              return v?.length > 0 ? (
+                v.map(({ name }) => name)?.join(' | ')
+              ) : (
+                <span style={{ color: 'var(--text-color-hint)' }}>
+                  {formatMessage({
+                    id: 'odc.Project.Database.OwnerEmptyText',
+                  })}
+                </span>
               );
             },
           },
@@ -264,7 +305,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             }),
             //操作
             dataIndex: 'actions',
-            width: 200,
+            width: 236,
             render(_, record) {
               if (!record.existed) {
                 return '-';
@@ -279,7 +320,17 @@ const Database: React.FC<IProps> = ({ id }) => {
               const hasChangeAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.CHANGE,
               );
+
+              const hasQueryAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.QUERY,
+              );
+              const curRoles = project?.currentUserResourceRoles || [];
+              const hasChangeOwnerAuth = curRoles.some((role) =>
+                [ProjectRole.OWNER, ProjectRole.DBA].includes(role),
+              );
+
               const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
+
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -363,11 +414,25 @@ const Database: React.FC<IProps> = ({ id }) => {
                       {
                         formatMessage({
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
-                        }) /* 
+                        }) /*
                       修改所属项目
                      */
                       }
                     </Tooltip>
+                  </Action.Link>
+                  <Action.Link
+                    key={'changeOwner'}
+                    onClick={() => {
+                      setChangeOwnerModalVisible(true);
+                      setDatabase(record);
+                    }}
+                    disabled={!hasChangeOwnerAuth}
+                  >
+                    {
+                      formatMessage({
+                        id: 'odc.src.page.Project.Database.ModifyOwner',
+                      }) /* 修改负责人*/
+                    }
                   </Action.Link>
                 </Action.Group>
               );
@@ -390,6 +455,13 @@ const Database: React.FC<IProps> = ({ id }) => {
         database={database}
         close={() => setVisible(false)}
         onSuccess={() => reload()}
+      />
+      <ChangeOwnerModal
+        visible={changeOwnerModalVisible}
+        database={database}
+        close={() => setChangeOwnerModalVisible(false)}
+        onSuccess={() => reload()}
+        maxOwnerCount={DB_OWNER_MAX_COUNT}
       />
 
       <ExportTaskCreateModal />

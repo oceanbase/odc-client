@@ -145,8 +145,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
               <TextArea
                 rows={5}
                 placeholder={formatMessage({
-                  id:
-                    'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
+                  id: 'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
                 })} /*请输入处理意见，200字以内*/
               />
             </Form.Item>
