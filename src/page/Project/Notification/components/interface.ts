@@ -22,6 +22,13 @@ export const EChannelTypeMap = {
   [EChannelType.WE_COM]: formatMessage({ id: 'src.page.Project.Notification.components.A41C487F' }), //'企业微信'
   [EChannelType.WEBHOOK]: '自定义',
 };
+
+export const WebhookPlaceholderMap = {
+  [EChannelType.DING_TALK]: '请输入钉钉群机器人 Webhook 地址',
+  [EChannelType.FEI_SHU]: '请输入飞书群机器人 Webhook 地址',
+  [EChannelType.WE_COM]: '请输入企业微信群机器人 Webhook 地址',
+  [EChannelType.WEBHOOK]: '请输入 Webhook 地址',
+};
 export const ELanguageMap = {
   [ELanguage.ZH_CN]: '简体中文',
   [ELanguage.ZH_TW]: formatMessage({ id: 'src.page.Project.Notification.components.739AD573' }), //'繁体中文'
