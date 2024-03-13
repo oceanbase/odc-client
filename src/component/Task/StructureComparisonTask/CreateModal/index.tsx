@@ -178,15 +178,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             })}
           />
 
-          <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.CreateModal.25F05D36',
-              }) /*"对比范围"*/
-            }
-            name={['parameters', 'comparisonScope']}
-            required
-          >
+          <Form.Item label={'比对范围'} name={['parameters', 'comparisonScope']} required>
             <Radio.Group>
               <Radio value={EComparisonScope.PART}>
                 {comparisonScopeMap[EComparisonScope.PART]}
@@ -240,6 +232,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
                 id: 'src.component.Task.StructureComparisonTask.CreateModal.EE50E3DC',
               }) /*"执行方式"*/
             }
+            required
             name="executionStrategy"
           >
             <Radio.Group>
