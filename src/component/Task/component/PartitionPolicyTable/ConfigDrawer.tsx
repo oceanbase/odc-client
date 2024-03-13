@@ -21,9 +21,24 @@ import { getStrategyLabelByConfig } from './index';
 import ConfigTable from './ConfigTable';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import type { IPartitionTableConfig } from '@/d.ts';
-import { TaskPartitionStrategy, PARTITION_NAME_INVOKER } from '@/d.ts';
+import { TaskPartitionStrategy, PARTITION_NAME_INVOKER, PARTITION_KEY_INVOKER } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import styles from './index.less';
+
+const periodUnits = [
+  {
+    label: '年',
+    value: 1,
+  },
+  {
+    label: '月',
+    value: 2,
+  },
+  {
+    label: '日',
+    value: 5,
+  },
+];
 
 interface IProps {
   visible: boolean;
@@ -43,6 +58,27 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const createKeyConfigs = config?.partitionKeyConfigs?.filter(
     (item) => item?.strategy === TaskPartitionStrategy.CREATE,
   );
+
+  const getNamingSuffix = () => {
+    const isFromCurrentTime =
+      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.fromCurrentTime;
+    const baseTimestampMillis =
+      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.baseTimestampMillis;
+    const suffixExpression =
+      partitionNameInvokerParameters.partitionNameGeneratorConfig.namingSuffixExpression;
+    const suffix = [isFromCurrentTime ? '当前时间' : '指定时间'];
+    if (!isFromCurrentTime && !!baseTimestampMillis) {
+      suffix.push(getFormatDateTime(baseTimestampMillis));
+    }
+    if (suffixExpression) {
+      suffix.push(`时间格式: ${suffixExpression}`);
+    }
+    return suffix.filter(Boolean).join(', ');
+  };
+
+  const getUnitLabel = (periodUnit) => {
+    return periodUnits?.find((item) => item.value === periodUnit)?.label;
+  };
 
   const handleClose = () => {
     onClose();
@@ -148,17 +184,8 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 },
               )}
               <Space size={2}>
-                后缀:
-                {partitionNameInvokerParameters?.partitionNameGeneratorConfig?.fromCurrentTime
-                  ? '当前时间'
-                  : '指定时间'}
-                {partitionNameInvokerParameters?.partitionNameGeneratorConfig
-                  ?.baseTimestampMillis &&
-                  getFormatDateTime(
-                    partitionNameInvokerParameters?.partitionNameGeneratorConfig
-                      ?.baseTimestampMillis,
-                  )}
-                {partitionNameInvokerParameters.partitionNameGeneratorConfig.namingSuffixExpression}
+                <span>后缀:</span>
+                {getNamingSuffix()}
               </Space>
             </Space>
           ) : (
@@ -171,35 +198,29 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             )
           )}
         </Descriptions.Item>
-        {dropKeyConfig && (
-          <>
-            <Descriptions.Item
-              label={
-                formatMessage({
-                  id: 'src.component.Task.component.PartitionPolicyTable.C67810D3',
-                }) /*"分区保留数量"*/
-              }
-            >
-              {dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                formatMessage({
-                  id: 'src.component.Task.component.PartitionPolicyTable.D209E3BF',
-                }) /*"删除后是否重置索引"*/
-              }
-            >
-              {dropKeyConfig?.partitionKeyInvokerParameters?.reloadIndexes
-                ? formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyTable.88E93248',
-                  })
-                : formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyTable.A5E08D34',
-                  })}
-            </Descriptions.Item>
-          </>
-        )}
       </Descriptions>
+      {dropKeyConfig && (
+        <SimpleTextItem
+          label="删除规则"
+          content={
+            dropKeyConfig?.partitionKeyInvoker ===
+            PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_DROP_GENERATOR ? (
+              <div>
+                保留最近 {dropKeyConfig?.partitionKeyInvokerParameters?.expirePeriod}个
+                {getUnitLabel(dropKeyConfig?.partitionKeyInvokerParameters?.periodUnit)}
+                的分区，不重建全局索引
+              </div>
+            ) : (
+              <div>
+                保留最近{dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}个分区，
+                {dropKeyConfig?.partitionKeyInvokerParameters?.reloadIndexes ? '重建' : '不重建'}
+                全局索引
+              </div>
+            )
+          }
+          direction="column"
+        />
+      )}
     </Drawer>
   );
 };
