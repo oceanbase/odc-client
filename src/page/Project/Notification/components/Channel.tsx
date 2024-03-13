@@ -33,6 +33,8 @@ import {
   EChannelType,
   ELanguage,
   EOverLimitStrategy,
+  EOverLimitStrategyMap,
+  EOverLimitStrategyTipMap,
   ETimeUnit,
   IChannel,
   IRateLimitConfig,
@@ -854,7 +856,6 @@ export const DetailChannelDrawer: React.FC<{
             </Descriptions.Item>
           </>
         )}
-
         <Descriptions.Item
           label={
             formatMessage({
@@ -866,6 +867,21 @@ export const DetailChannelDrawer: React.FC<{
             ? parseRateLimitConfigToText(channel?.channelConfig?.rateLimitConfig)
             : '-'}
         </Descriptions.Item>
+        {channel?.channelConfig?.rateLimitConfig?.overLimitStrategy && (
+          <Descriptions.Item label={'超出限流处理策略'}>
+            <HelpDoc
+              isTip
+              leftText
+              title={
+                EOverLimitStrategyTipMap?.[
+                  channel?.channelConfig?.rateLimitConfig?.overLimitStrategy
+                ]
+              }
+            >
+              {EOverLimitStrategyMap?.[channel?.channelConfig?.rateLimitConfig?.overLimitStrategy]}
+            </HelpDoc>
+          </Descriptions.Item>
+        )}
         <Descriptions.Item
           label={
             formatMessage({
@@ -1006,21 +1022,21 @@ const CheckboxWithTip: React.FC<{
                   >
                     <Radio.Group>
                       <Radio value={EOverLimitStrategy.THROWN}>
-                        <HelpDoc isTip leftText title={'忽略已超出限流的消息，不再重发'}>
-                          {
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.91FA1DA5' /*忽略*/,
-                            }) /* 忽略 */
-                          }
+                        <HelpDoc
+                          isTip
+                          leftText
+                          title={EOverLimitStrategyTipMap?.[EOverLimitStrategy.THROWN]}
+                        >
+                          {EOverLimitStrategyMap?.[EOverLimitStrategy.THROWN]}
                         </HelpDoc>
                       </Radio>
                       <Radio value={EOverLimitStrategy.RESEND}>
-                        <HelpDoc isTip leftText title={'限流时间过后，将自动重发超出限流的消息'}>
-                          {
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.AB93FA16' /*重发*/,
-                            }) /* 重发 */
-                          }
+                        <HelpDoc
+                          isTip
+                          leftText
+                          title={EOverLimitStrategyTipMap?.[EOverLimitStrategy.RESEND]}
+                        >
+                          {EOverLimitStrategyMap?.[EOverLimitStrategy.RESEND]}
                         </HelpDoc>
                       </Radio>
                     </Radio.Group>

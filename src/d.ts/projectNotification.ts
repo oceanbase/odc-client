@@ -43,6 +43,14 @@ export enum EOverLimitStrategy {
   // 重发
   RESEND = 'RESEND',
 }
+export const EOverLimitStrategyMap = {
+  [EOverLimitStrategy.THROWN]: '忽略',
+  [EOverLimitStrategy.RESEND]: '重发',
+};
+export const EOverLimitStrategyTipMap = {
+  [EOverLimitStrategy.THROWN]: '忽略已超出限流的消息，不再重发',
+  [EOverLimitStrategy.RESEND]: '限流时间过后，将自动重发超出限流的消息',
+};
 export interface IRateLimitConfig {
   timeUnit: ETimeUnit;
   limit: number;
