@@ -79,6 +79,7 @@ export interface LoginProps extends FormProps {
   showAuthCode?: boolean;
   showOtherLoginButton?: boolean;
   ssoLoginType?: ESSOLgoinType;
+  ssoLoginName?: string;
   authCodeImg?: string;
   onShowRegisterChange?: (isShow: boolean) => void;
   onShowActivateChange?: (isShow: boolean) => void;
@@ -103,6 +104,7 @@ const Login: React.FC<LoginProps> = (props) => {
     showAuthCode,
     showOtherLoginButton,
     ssoLoginType,
+    ssoLoginName,
     authCodeImg,
     onAuthCodeImgChange,
     style = {},
@@ -206,7 +208,7 @@ const Login: React.FC<LoginProps> = (props) => {
                   />
                 </>
               ) : isLDAPLogin ? (
-                <LDAPLogin switchSSOLoginType={switchSSOLoginType} />
+                <LDAPLogin ssoLoginName={ssoLoginName} switchSSOLoginType={switchSSOLoginType} />
               ) : (
                 <>
                   <img src={logo} alt="" className={`${prefix}-logo`} />
@@ -215,6 +217,7 @@ const Login: React.FC<LoginProps> = (props) => {
                     otherLoginProps={otherLoginProps}
                     locale={locale}
                     ssoLoginType={ssoLoginType}
+                    ssoLoginName={ssoLoginName}
                     switchSSOLoginType={switchSSOLoginType}
                     errorMessage={alertProps?.message}
                     showAuthCode={showAuthCode}
