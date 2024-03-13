@@ -28,6 +28,9 @@ const columns = [
     title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.8086D142' }), //'分区键'
     ellipsis: true,
     width: 100,
+    render: (partitionKey) => {
+      return partitionKey || '-';
+    },
   },
   {
     dataIndex: 'partitionOption',
@@ -47,7 +50,10 @@ const columns = [
               ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C9467B5B' })
               : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.F057FAAF' })}
           </Descriptions.Item>
-          {record?.partitionKeyInvoker === PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR ? (
+          {[
+            PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
+            PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
+          ].includes(record?.partitionKeyInvoker) ? (
             <Descriptions.Item
               label={
                 formatMessage({

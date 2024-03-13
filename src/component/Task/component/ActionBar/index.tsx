@@ -193,17 +193,11 @@ const ActionBar: React.FC<IProps> = inject(
           return;
         }
         default: {
-          const {
-            database: { id: databaseId } = {},
-            executionStrategy,
-            executionTime,
-            parameters,
-            description,
-          } = task;
+          const { database, executionStrategy, executionTime, parameters, description } = task;
           const data = {
             taskType: type,
             parameters,
-            databaseId,
+            databaseId: database?.id,
             executionStrategy,
             executionTime,
             description,
