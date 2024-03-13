@@ -43,7 +43,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     projectId,
     filters = null,
     width,
-    placeholder = null,
+    placeholder,
     disabled = false,
     onChange,
   } = props;

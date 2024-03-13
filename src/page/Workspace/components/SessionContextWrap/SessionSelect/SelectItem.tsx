@@ -28,7 +28,7 @@ const SelectItem: React.FC<IProps> = ({
   projectId,
   filters = null,
   width,
-  placeholder = null,
+  placeholder = '请选择',
   disabled = false,
   onChange,
 }) => {
