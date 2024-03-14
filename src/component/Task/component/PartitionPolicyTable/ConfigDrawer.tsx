@@ -65,7 +65,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     const baseTimestampMillis =
       partitionNameInvokerParameters?.partitionNameGeneratorConfig?.baseTimestampMillis;
     const suffixExpression =
-      partitionNameInvokerParameters.partitionNameGeneratorConfig.namingSuffixExpression;
+      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingSuffixExpression;
     const suffix = [isFromCurrentTime ? '当前时间' : '指定时间'];
     if (!isFromCurrentTime && !!baseTimestampMillis) {
       suffix.push(getFormatDateTime(baseTimestampMillis));
@@ -83,7 +83,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const handleClose = () => {
     onClose();
   };
-
+  const unitLabel = getUnitLabel(dropKeyConfig?.partitionKeyInvokerParameters?.periodUnit);
   return (
     <Drawer
       title={
@@ -137,7 +137,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           {getStrategyLabelByConfig(config)}
         </Descriptions.Item>
       </Descriptions>
-      {createKeyConfigs?.length && (
+      {createKeyConfigs?.length > 0 && (
         <>
           <Descriptions column={1}>
             <Descriptions.Item
@@ -180,7 +180,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 { id: 'src.component.Task.component.PartitionPolicyTable.1D7346EE' },
                 {
                   partitionNameInvokerParametersPartitionNameGeneratorConfigNamingPrefix:
-                    partitionNameInvokerParameters.partitionNameGeneratorConfig.namingPrefix,
+                    partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix,
                 },
               )}
               <Space size={2}>
@@ -193,7 +193,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               { id: 'src.component.Task.component.PartitionPolicyTable.59CEB82C' },
               {
                 partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
-                  partitionNameInvokerParameters.partitionNameGeneratorConfig.generateExpr,
+                  partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
               },
             )
           )}
@@ -206,15 +206,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             dropKeyConfig?.partitionKeyInvoker ===
             PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_DROP_GENERATOR ? (
               <div>
-                保留最近 {dropKeyConfig?.partitionKeyInvokerParameters?.expirePeriod}个
-                {getUnitLabel(dropKeyConfig?.partitionKeyInvokerParameters?.periodUnit)}
-                的分区，不重建全局索引
+                {`保留最近${dropKeyConfig?.partitionKeyInvokerParameters?.expirePeriod}个${unitLabel}的分区，不重建全局索引`}
               </div>
             ) : (
               <div>
-                保留最近{dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}个分区，
-                {dropKeyConfig?.partitionKeyInvokerParameters?.reloadIndexes ? '重建' : '不重建'}
-                全局索引
+                {dropKeyConfig?.partitionKeyInvokerParameters?.reloadIndexes
+                  ? `保留最近${dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}个分区，重建全局索引`
+                  : `保留最近${dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}个分区，不重建全局索引`}
               </div>
             )
           }

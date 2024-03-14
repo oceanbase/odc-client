@@ -34,16 +34,19 @@ export const ELanguageMap = {
   [ELanguage.ZH_TW]: formatMessage({ id: 'src.page.Project.Notification.components.739AD573' }), //'繁体中文'
   [ELanguage.EN_US]: formatMessage({ id: 'src.page.Project.Notification.components.21BD64D9' }), //'英文'
 };
+// @oic-line-ignore
+const EContentTemplateMap_ZH_CN =
+  '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}';
+// @oic-line-ignore
+const EContentTemplateMap_ZH_TW =
+  '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}';
+// @oic-line-ignore
+const EContentTemplateMap_EN_US =
+  '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}';
 export const EContentTemplateMap = {
-  // @oic-line-ignore
-  [ELanguage.ZH_CN]:
-    '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}',
-  // @oic-line-ignore
-  [ELanguage.ZH_TW]:
-    '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}',
-  // @oic-line-ignore
-  [ELanguage.EN_US]:
-    '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}',
+  [ELanguage.ZH_CN]: EContentTemplateMap_ZH_CN,
+  [ELanguage.ZH_TW]: EContentTemplateMap_ZH_TW,
+  [ELanguage.EN_US]: EContentTemplateMap_EN_US,
 };
 export const EMessageStatusMap = {
   [EMessageStatus.CREATED]: formatMessage({
