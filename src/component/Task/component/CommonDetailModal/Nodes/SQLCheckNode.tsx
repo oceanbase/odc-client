@@ -81,19 +81,7 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                 >
                   {showCount && (
                     <>
-                      {
-                        formatMessage({
-                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
-                        }) /*存在*/
-                      }
-
-                      {issueCount}
-                      {
-                        formatMessage({
-                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
-                        }) /*个问题*/
-                      }
-
+                      {`存在${issueCount}个问题`}
                       {issueCount > 0 && (
                         <a
                           style={{
@@ -154,14 +142,7 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                     }) /* 权限检查结果 */
                   }
                 >
-                  {formatMessage({
-                    id: 'src.component.Task.component.CommonDetailModal.Nodes.23342D6D' /*存在*/,
-                  })}
-
-                  {unauthorizedDatabases?.length}
-                  {formatMessage({
-                    id: 'src.component.Task.component.CommonDetailModal.Nodes.B70BB654' /*个问题*/,
-                  })}
+                  {`存在${unauthorizedDatabases?.length}个问题`}
                   <a
                     style={{
                       marginLeft: 5,
