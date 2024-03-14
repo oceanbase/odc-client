@@ -2455,6 +2455,7 @@ export interface IAsyncTaskParams {
   rollbackSqlObjectNames: string[];
   generateRollbackPlan: boolean;
   parentFlowInstanceId?: number;
+  retryTimes: number;
 }
 
 export interface IApplyPermissionTaskParams {
