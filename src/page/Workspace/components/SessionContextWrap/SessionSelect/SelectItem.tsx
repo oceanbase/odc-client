@@ -10,6 +10,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
+import { DEFALT_WIDTH } from './const';
 
 interface IProps {
   value?: number;
@@ -56,7 +57,7 @@ const SelectItem: React.FC<IProps> = ({
         <SessionDropdown
           projectId={projectId}
           filters={filters}
-          width={width || 320}
+          width={width || DEFALT_WIDTH}
           taskType={taskType}
         >
           <Select
@@ -83,7 +84,7 @@ const SelectItem: React.FC<IProps> = ({
                 placeholder
               )
             }
-            style={{ width: width || 320 }}
+            style={{ width: width || DEFALT_WIDTH }}
             open={false}
           />
         </SessionDropdown>

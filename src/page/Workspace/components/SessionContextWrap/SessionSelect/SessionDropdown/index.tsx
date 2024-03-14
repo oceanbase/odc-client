@@ -43,6 +43,7 @@ import { inject, observer } from 'mobx-react';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
 
 interface IDatabasesTitleProps {
   db: IDatabase;
@@ -483,8 +484,9 @@ const SessionDropdown: React.FC<IProps> = function ({
             </Space.Compact>
             <div
               style={{
-                height: '215px',
+                height: DEFALT_HEIGHT,
                 marginTop: 10,
+                width: width || DEFALT_WIDTH,
                 overflow: 'hidden',
               }}
             >
