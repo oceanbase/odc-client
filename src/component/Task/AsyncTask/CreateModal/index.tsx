@@ -143,6 +143,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       rollbackSqlObjectNames,
       rollbackSqlContent,
       generateRollbackPlan,
+      retryTimes = 0,
     } = parameters ?? {};
     let sqlContentType = null;
     let rollbackContentType = null;
@@ -169,6 +170,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       errorStrategy,
       sqlFiles: undefined,
       rollbackSqlFiles: undefined,
+      retryTimes,
     };
     if (isRollback) {
       formData.sqlContent = rollbackSqlContent;
@@ -348,6 +350,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           queryLimit,
           delimiter,
+          retryTimes,
         } = values;
         const sqlFileIdAndNames = getFileIdAndNames(sqlFiles);
         const rollbackSqlFileIdAndNames = getFileIdAndNames(rollbackSqlFiles);
@@ -366,6 +369,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           rollbackSqlObjectNames: rollbackSqlFileIdAndNames?.names,
           queryLimit,
           delimiter,
+          retryTimes,
         };
         if (!checkFileSizeAmount(sqlFiles) || !checkFileSizeAmount(rollbackSqlFiles)) {
           return;
@@ -521,6 +525,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
           databaseId: asyncTaskData?.databaseId,
+          retryTimes: 0,
         }}
         layout="vertical"
         requiredMark="optional"
@@ -878,6 +883,18 @@ const CreateModal: React.FC<IProps> = (props) => {
           })}
           /*任务设置*/ keepExpand
         >
+          <Form.Item
+            label="SQL 重试次数"
+            name="retryTimes"
+            rules={[
+              {
+                required: true,
+                message: '请输入',
+              },
+            ]}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',
