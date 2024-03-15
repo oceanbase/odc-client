@@ -17,6 +17,7 @@
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
+import { getPartitionPlanKeyDataTypes } from '@/common/network/task';
 import { formatMessage } from '@/util/intl';
 import {
   EditOutlined,
@@ -24,6 +25,7 @@ import {
   SearchOutlined,
   ExclamationCircleFilled,
 } from '@ant-design/icons';
+import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import { Checkbox, Tooltip, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import ConfigDrawer from './configModal';
@@ -36,6 +38,7 @@ interface IProps {
   databaseId: number;
   enabledFilter?: boolean;
   tableConfigs?: ITableConfig[];
+  createdOriginTableConfigs?: ITableConfig[];
   onLoad?: () => Promise<any>;
   onPlansConfigChange?: (values: ITableConfig[]) => void;
 }
@@ -61,6 +64,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     databaseId,
     enabledFilter = true,
     tableConfigs,
+    createdOriginTableConfigs,
     onLoad,
     onPlansConfigChange,
   } = props;
@@ -135,7 +139,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         const label = getStrategyLabel(record?.strategies);
         return (
           <div className={styles.rangConfig}>
-            {label?.length ? (
+            {label?.length && record?.__isCreate ? (
               <Space>
                 <span>已设置:</span>
                 <span>{label}</span>
@@ -163,16 +167,66 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     },
   ];
 
+  const loadKeyTypes = async (keys: any[]) => {
+    const tableName = tableConfigs?.find((item) => keys.includes(item.__id))?.tableName;
+    const activeConfigs = tableConfigs?.filter((item) => keys.includes(item.__id));
+    const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, tableName);
+    const createdOriginTableConfig = createdOriginTableConfigs?.find(
+      (item) => item?.tableName === tableName,
+    );
+    const isInit = activeConfigs?.some((item) => !item?.__isCreate);
+    let partitionConfig = activeConfigs?.[0];
+    if (!!createdOriginTableConfig && isInit) {
+      const isLengthEqual =
+        createdOriginTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
+      const isValidOriginPartitionKeyConfigs = isLengthEqual
+        ? res?.contents?.every((item, index) => {
+            const partitionKeyInvokers = [PARTITION_KEY_INVOKER.CUSTOM_GENERATOR];
+            if (item?.localizedMessage) {
+              partitionKeyInvokers.push(PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR);
+            }
+            return partitionKeyInvokers.includes(
+              createdOriginTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
+            );
+          })
+        : false;
+      if (isValidOriginPartitionKeyConfigs) {
+        partitionConfig = createdOriginTableConfig;
+      }
+    }
+
+    const values = activeConfigs.map((item) => {
+      return {
+        ...partitionConfig,
+        ...item,
+        option: {
+          partitionKeyConfigs: res?.contents?.map((type, index) => {
+            const isDateType = !!type?.localizedMessage;
+            return {
+              partitionKeyInvoker: isDateType
+                ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
+                : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
+              ...partitionConfig?.option?.partitionKeyConfigs?.[index],
+              type,
+            };
+          }),
+        },
+      };
+    });
+    onPlansConfigChange(values);
+    setVisible(true);
+  };
+
   const handleBatchConfig = (keys: string[]) => {
     setActiveConfigKeys(keys);
     setIsBatch(true);
-    setVisible(true);
+    loadKeyTypes(keys);
   };
 
   function handleConfig(key: string) {
     setActiveConfigKeys([key]);
     setIsBatch(false);
-    setVisible(true);
+    loadKeyTypes([key]);
   }
 
   function handleFilter(data: ITableConfig[]) {
@@ -284,7 +338,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         visible={visible}
         isBatch={isBatch}
         sessionId={sessionId}
-        databaseId={databaseId}
         configs={activeConfigs}
         onChange={onPlansConfigChange}
         onClose={() => {
