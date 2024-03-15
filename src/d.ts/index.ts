@@ -3186,7 +3186,7 @@ export enum TaskErrorStrategy {
 }
 
 export interface IPartitionKeyConfig {
-  partitionKey: string;
+  partitionKey?: string;
   partitionKeyInvoker: PARTITION_KEY_INVOKER;
   strategy: TaskPartitionStrategy;
   partitionKeyInvokerParameters: Record<string, any>;
@@ -3202,6 +3202,7 @@ export interface IPartitionPlan {
   id: number;
   maxErrors: number;
   timeoutMillis: number;
+  partitionTableConfig: IPartitionTableConfig;
   partitionTableConfigs: IPartitionTableConfig[];
   errorStrategy: TaskErrorStrategy;
 }
@@ -3253,6 +3254,7 @@ export interface IPartitionPlanTable {
     tableName: string;
     warning: unknown;
   };
+  partitionPlanTableConfig: IPartitionTableConfig;
   partitionMode: string;
   rangePartitioned: number;
   schemaName: string;
