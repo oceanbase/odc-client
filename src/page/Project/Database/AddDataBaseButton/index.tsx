@@ -90,7 +90,7 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   return (
     <>
       <Space size={12}>
-        <TooltipAction title={disabledAction ? '暂无权限' : ''}>
+        <TooltipAction title={disabledAction ? '暂无权限，请先申请数据库权限' : ''}>
           <Button onClick={() => setOpen(true)} type="primary" disabled={disabledAction}>
             {
               formatMessage({

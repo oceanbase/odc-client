@@ -105,6 +105,8 @@ export const intervalPrecisionOptions = [
   },
 ];
 
+const INTERVAL_PRECISION_DAY_VALUE = 7;
+
 export const getIntervalPrecisionLabel = (value) => {
   return intervalPrecisionOptions?.find((item) => item.value === value)?.label;
 };
@@ -113,7 +115,6 @@ const defaultInitialValues = {
   strategies: [TaskPartitionStrategy.CREATE, TaskPartitionStrategy.DROP],
   nameRuleType: NameRuleType.PRE_SUFFIX,
   interval: 1,
-  intervalPrecision: 63,
   reloadIndexes: true,
 };
 
@@ -137,7 +138,6 @@ interface IProps {
   visible: boolean;
   isBatch: boolean;
   sessionId: string;
-  databaseId: number;
   configs: ITableConfig[];
   onClose: () => void;
   onChange?: (values: ITableConfig[]) => void;
@@ -175,7 +175,7 @@ export const getUnitLabel = (value: number) => {
 };
 
 const ConfigDrawer: React.FC<IProps> = (props) => {
-  const { visible, configs, isBatch, sessionId, databaseId, onClose } = props;
+  const { visible, configs, isBatch, sessionId, onClose } = props;
   const [previewSQLVisible, setPreviewSQLVisible] = useState(false);
   const [ruleExample, setRuleExample] = useState('');
   const [previewData, setPreviewData] = useState<
@@ -192,7 +192,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
   const isCustomRuleType = nameRuleType === NameRuleType.CUSTOM;
   const tableNames = configs?.map((item) => item.tableName);
-  const firstTableName = tableNames?.[0];
 
   const tableLen = configs?.length;
   const moreText =
@@ -209,33 +208,12 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     ?.map((item) => item?.tableName)
     ?.join('; ');
 
-  const loadKeyTypes = async () => {
-    const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, firstTableName);
-    const values = configs.map((item) => {
-      return {
-        ...item,
-        option: {
-          partitionKeyConfigs: res?.contents?.map((type, index) => {
-            const isDateType = !!type?.localizedMessage;
-            return {
-              partitionKeyInvoker: isDateType
-                ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
-                : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
-              ...item.option.partitionKeyConfigs?.[index],
-              type,
-            };
-          }),
-        },
-      };
-    });
-    props.onChange(values);
-  };
-
   const handlePlansConfigChange = (value: ITableConfig) => {
     const values = configs?.map((item) => {
       return {
         ...item,
         ...value,
+        __isCreate: true,
       };
     });
     props.onChange(values);
@@ -246,19 +224,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     onClose();
   };
 
-  const handleOk = () => {
-    form
-      .validateFields()
-      .then((data) => {
-        handlePlansConfigChange(data);
-        handleClose();
-      })
-      .catch((error) => {
-        console.error(JSON.stringify(error));
-      });
-  };
-
-  const handlePreview = () => {
+  const handlePreview = (isPreview: boolean = true) => {
     form
       .validateFields()
       .then(async (data) => {
@@ -386,8 +352,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         }
         const res = await previewPartitionPlans(sessionId, formData);
         if (res?.contents?.length) {
-          setPreviewSQLVisible(true);
-          setPreviewData(res?.contents);
+          if (isPreview) {
+            setPreviewSQLVisible(true);
+            setPreviewData(res?.contents);
+          } else {
+            handlePlansConfigChange(data);
+            handleClose();
+          }
         }
       })
       .catch((error) => {
@@ -470,6 +441,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       });
   };
 
+  const handleOk = () => {
+    handlePreview(false);
+  };
+
   const handleClosePreviewSQL = () => {
     setPreviewSQLVisible(false);
   };
@@ -477,12 +452,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const handleChange = () => {
     setRuleExample('');
   };
-
-  useEffect(() => {
-    if (visible && databaseId && sessionId && firstTableName) {
-      loadKeyTypes();
-    }
-  }, [databaseId, sessionId, firstTableName, visible]);
 
   useEffect(() => {
     if (visible) {
@@ -514,7 +483,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button onClick={handlePreview}>
+          <Button
+            onClick={() => {
+              handlePreview();
+            }}
+          >
             {
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
@@ -922,12 +895,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       noStyle
                     >
                       <Select
-                        placeholder={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.572D785C',
-                          }) /*"请选择"*/
-                        }
-                        options={intervalPrecisionOptions}
+                        options={intervalPrecisionOptions?.filter(
+                          (item) => item.value <= INTERVAL_PRECISION_DAY_VALUE,
+                        )}
                         style={{ width: 60 }}
                       />
                     </Form.Item>

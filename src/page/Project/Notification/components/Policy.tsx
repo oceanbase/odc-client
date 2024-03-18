@@ -89,6 +89,29 @@ const Policy: React.FC<{
     setPolicyForm(formType);
     setFormModalOpen(true);
   };
+  /**
+   *
+   * @param isSingle 是否为单独点击操作
+   * @param enabled 是否启用
+   * @param isSuccessful 操作结果是否成功
+   * @returns string
+   */
+  const getMessageFormEnableAndResult = (
+    isSingle: boolean,
+    enabled: boolean,
+    isSuccessful: boolean,
+  ) => {
+    if (isSuccessful) {
+      if (enabled) {
+        return isSingle ? '启用成功' : '批量启用成功';
+      }
+      return isSingle ? '禁用成功' : '批量禁用成功';
+    }
+    if (enabled) {
+      return isSingle ? '启用失败' : '批量启用失败';
+    }
+    return isSingle ? '禁用失败' : '批量禁用失败';
+  };
   const handleSwitchPoliciesStatus = async (formData: TPolicyForm, enabled?: boolean) => {
     const isSingle = formData.mode === EPolicyFormMode.SINGLE;
 
@@ -105,29 +128,14 @@ const Policy: React.FC<{
       });
     }
     const result = await batchUpdatePolicy(projectId, policies);
-    const batchOrNot = isSingle
-      ? ''
-      : formatMessage({ id: 'src.page.Project.Notification.components.204A73A2' });
-    const currentEnabled = policies?.[0]?.enabled
-      ? formatMessage({ id: 'src.page.Project.Notification.components.2F564E6C' })
-      : formatMessage({ id: 'src.page.Project.Notification.components.253CEF9B' });
     if (result) {
-      message.success(
-        formatMessage(
-          { id: 'src.page.Project.Notification.components.384BEEC7' },
-          { batchOrNot: batchOrNot, currentEnabled: currentEnabled },
-        ),
-      ); //`${batchOrNot}${currentEnabled}成功`
+      message.success(getMessageFormEnableAndResult(isSingle, policies?.[0]?.enabled, true));
       setFormModalOpen(false);
+      tableRef.current?.resetSelectedRows();
       tableRef.current?.reload();
       return;
     }
-    message.error(
-      formatMessage(
-        { id: 'src.page.Project.Notification.components.FA694A40' },
-        { batchOrNot: batchOrNot, currentEnabled: currentEnabled },
-      ),
-    ); //`${batchOrNot}${currentEnabled}失败`
+    message.error(getMessageFormEnableAndResult(isSingle, policies?.[0]?.enabled, false));
   };
 
   const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => {
@@ -192,6 +200,7 @@ const Policy: React.FC<{
         setFormModalOpen={setFormModalOpen}
         policyForm={policyForm}
         callback={() => {
+          tableRef.current?.resetSelectedRows();
           tableRef.current?.reload(argsRef.current);
         }}
       />

@@ -25,6 +25,7 @@ import {
   TaskPartitionStrategy,
   TaskErrorStrategy,
   IPartitionPlanKeyType,
+  IPartitionTableConfig,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
@@ -58,6 +59,17 @@ import styles from './index.less';
 
 const { Paragraph, Text } = Typography;
 
+const historyPartitionKeyInvokers = [
+  PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
+  PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_DROP_GENERATOR,
+];
+
+const validPartitionKeyInvokers = [
+  PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
+  PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
+  PARTITION_KEY_INVOKER.KEEP_MOST_LATEST_GENERATOR,
+];
+
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
   FIRST_DAY_OF_MONTH = 'FIRST_DAY_OF_MONTH',
@@ -67,6 +79,7 @@ export enum IPartitionPlanInspectTriggerStrategy {
 
 export interface ITableConfig {
   __id: number;
+  __isCreate?: boolean;
   containsCreateStrategy: boolean;
   containsDropStrategy: boolean;
   tableName: string;
@@ -100,6 +113,46 @@ export interface ITableConfig {
   };
 }
 
+const getOriginTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableConfig[] = (
+  tableConfigs,
+) => {
+  const originPartitionTableConfigs = tableConfigs?.map((config) => {
+    const dropKeyConfig = config?.partitionKeyConfigs?.find(
+      (item) => item?.strategy === TaskPartitionStrategy.DROP,
+    );
+    const createKeyConfigs = config?.partitionKeyConfigs?.filter(
+      (item) => item?.strategy === TaskPartitionStrategy.CREATE,
+    );
+    const keyConfigs = createKeyConfigs?.map((keyConfig) => {
+      const { partitionKey, partitionKeyInvoker, partitionKeyInvokerParameters } = keyConfig;
+      const { generateParameter, generateCount } = partitionKeyInvokerParameters ?? {};
+      return {
+        name: partitionKey,
+        partitionKeyInvoker,
+        generateCount,
+        ...generateParameter,
+        fromCurrentTime: generateParameter?.fromCurrentTime ? START_DATE.CURRENT_DATE : undefined,
+      };
+    });
+    const dropPartitionKeyInvokerParameters = dropKeyConfig?.partitionKeyInvokerParameters ?? {};
+    const { partitionNameGeneratorConfig } = config?.partitionNameInvokerParameters ?? {};
+    const tableConfig = {
+      ...dropPartitionKeyInvokerParameters,
+      ...partitionNameGeneratorConfig,
+      fromCurrentTime: partitionNameGeneratorConfig?.fromCurrentTime
+        ? START_DATE.CURRENT_DATE
+        : undefined,
+      tableName: config?.tableName,
+      generateCount: keyConfigs?.[0]?.generateCount,
+      option: {
+        partitionKeyConfigs: keyConfigs,
+      },
+    };
+    return tableConfig;
+  });
+  return originPartitionTableConfigs;
+};
+
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
   projectId?: number;
@@ -114,6 +167,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
     const [crontab, setCrontab] = useState<ICrontab>(null);
     const [dropCrontab, setDropCrontab] = useState<ICrontab>(null);
+    const [createdOriginTableConfigs, setCreatedOriginTableConfigs] = useState<ITableConfig[]>([]);
+    const [historyOriginTableConfigs, setHistoryOriginTableConfigs] = useState<
+      IPartitionTableConfig[]
+    >([]);
     const [form] = Form.useForm();
     const isCustomStrategy = Form.useWatch('isCustomStrategy', form);
     const databaseId = Form.useWatch('databaseId', form);
@@ -134,9 +191,29 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         const hasPartitionPlan = res?.contents?.some(
           (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
         );
+        const allPartitionPlanTableConfigs = res?.contents
+          ?.map((item) => item?.partitionPlanTableConfig)
+          ?.filter(Boolean);
+        const createdOriginTableConfigs = getOriginTableConfigs(
+          allPartitionPlanTableConfigs?.filter(({ partitionKeyConfigs }) => {
+            return partitionKeyConfigs?.some((item) =>
+              validPartitionKeyInvokers.includes(item?.partitionKeyInvoker),
+            );
+          }),
+        );
+        const historyOriginTableConfigs = allPartitionPlanTableConfigs?.filter(
+          ({ partitionKeyConfigs }) => {
+            return partitionKeyConfigs?.some((item) =>
+              historyPartitionKeyInvokers.includes(item?.partitionKeyInvoker),
+            );
+          },
+        );
+        setCreatedOriginTableConfigs(createdOriginTableConfigs);
+        setHistoryOriginTableConfigs(historyOriginTableConfigs);
         setHasPartitionPlan(hasPartitionPlan);
         setTableConfigs(
           res?.contents?.map((config, index) => {
+            const strategies = [];
             const {
               containsCreateStrategy,
               containsDropStrategy,
@@ -144,11 +221,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               partition,
               partitionMode,
             } = config;
+            if (containsCreateStrategy) {
+              strategies.push(TaskPartitionStrategy.CREATE);
+            }
+            if (containsDropStrategy) {
+              strategies.push(TaskPartitionStrategy.DROP);
+            }
             return {
               __id: index,
               containsCreateStrategy,
               containsDropStrategy,
-              strategies: [],
+              strategies,
               tableName,
               definitionCount: partition?.partitionDefinitions?.length,
               partitionMode,
@@ -201,7 +284,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       try {
         const values = await form.validateFields();
         const { description, databaseId, timeoutMillis, errorStrategy } = values;
-        const partitionTableConfigs = tableConfigs
+        let partitionTableConfigs: IPartitionTableConfig[] = tableConfigs
           ?.filter((config) => config?.strategies?.length)
           ?.map((config) => {
             const {
@@ -292,7 +375,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               partitionKeyConfigs: partitionKeyConfigs?.filter((item) =>
                 strategies?.includes(item.strategy),
               ),
-              partitionNameInvoker: '',
+              partitionNameInvoker: null,
               partitionNameInvokerParameters: {},
             };
             if (nameRuleType === 'PRE_SUFFIX') {
@@ -329,6 +412,9 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             }
             return tableConfig;
           });
+        if (historyOriginTableConfigs?.length) {
+          partitionTableConfigs = partitionTableConfigs.concat(historyOriginTableConfigs);
+        }
         const params = {
           taskType: TaskType.PARTITION_PLAN,
           description,
@@ -457,6 +543,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               databaseId={databaseId}
               sessionId={sessionId}
               tableConfigs={tableConfigs}
+              createdOriginTableConfigs={createdOriginTableConfigs}
               onPlansConfigChange={handlePlansConfigChange}
               onLoad={loadData}
             />
