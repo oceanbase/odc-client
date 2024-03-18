@@ -290,7 +290,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
                       disabled={!hasExportAuth}
-                      tooltip={!hasExportAuth ? '暂无权限' : ''}
+                      tooltip={!hasExportAuth ? '暂无导出权限，请先申请数据库权限' : ''}
                     >
                       {
                         formatMessage({
@@ -307,7 +307,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
                       disabled={!hasChangeAuth}
-                      tooltip={!hasChangeAuth ? '暂无权限' : ''}
+                      tooltip={!hasChangeAuth ? '暂无变更权限，请先申请数据库权限' : ''}
                     >
                       {
                         formatMessage({
@@ -323,7 +323,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                     disabled={!hasChangeAuth}
-                    tooltip={!hasChangeAuth ? '暂无权限' : ''}
+                    tooltip={!hasChangeAuth ? '暂无变更权限，请先申请数据库权限' : ''}
                   >
                     {
                       formatMessage({

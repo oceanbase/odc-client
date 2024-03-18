@@ -173,7 +173,7 @@ const ManageModal: React.FC<IProps> = (props) => {
         onClose();
       }}
     >
-      <Space className={styles.header} direction="vertical" size={5}>
+      <Space className={styles.header} direction="vertical" size={12}>
         {isOwner && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}

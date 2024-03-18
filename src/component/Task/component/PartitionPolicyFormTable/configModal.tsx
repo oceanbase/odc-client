@@ -115,7 +115,6 @@ const defaultInitialValues = {
   strategies: [TaskPartitionStrategy.CREATE, TaskPartitionStrategy.DROP],
   nameRuleType: NameRuleType.PRE_SUFFIX,
   interval: 1,
-  intervalPrecision: 63,
   reloadIndexes: true,
 };
 
@@ -896,11 +895,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       noStyle
                     >
                       <Select
-                        placeholder={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.572D785C',
-                          }) /*"请选择"*/
-                        }
                         options={intervalPrecisionOptions?.filter(
                           (item) => item.value <= INTERVAL_PRECISION_DAY_VALUE,
                         )}
