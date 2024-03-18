@@ -187,6 +187,19 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
               return (
                 <Action.Group size={3}>
                   <Action.Link
+                    disabled={disabled && !isMe}
+                    tooltip={disabled && !isMe ? '暂无权限' : ''}
+                    onClick={() => {
+                      showManageModal(record.id);
+                    }}
+                  >
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
+                      }) /* 管理库权限 */
+                    }
+                  </Action.Link>
+                  <Action.Link
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
@@ -217,19 +230,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       }
                     </Action.Link>
                   </Popconfirm>
-                  <Action.Link
-                    disabled={disabled && !isMe}
-                    tooltip={disabled && !isMe ? '暂无权限' : ''}
-                    onClick={() => {
-                      showManageModal(record.id);
-                    }}
-                  >
-                    {
-                      formatMessage({
-                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
-                      }) /* 管理库权限 */
-                    }
-                  </Action.Link>
                 </Action.Group>
               );
             },
