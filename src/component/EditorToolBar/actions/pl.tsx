@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
-import plType from '@/constant/plType';
+import plType, { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
@@ -196,10 +196,14 @@ const plActions: ToolBarActions = {
       return IConStatus.INIT;
     },
     isVisible(ctx: PLPage) {
-      if (!getDataSourceModeConfig(ctx.getSession()?.connection?.type)?.features?.plRun) {
+      const plSchema = ctx.getFormatPLSchema();
+      const isAnonymous = plSchema.plType === PLType.ANONYMOUSBLOCK;
+      if (
+        !getDataSourceModeConfig(ctx.getSession()?.connection?.type)?.features?.plRun &&
+        !isAnonymous
+      ) {
         return false;
       }
-      const plSchema = ctx.getFormatPLSchema();
       return plSchema.plType != plType.PKG_HEAD && plSchema.plType != plType.PKG_BODY;
     },
     async action(ctx: PLPage) {
