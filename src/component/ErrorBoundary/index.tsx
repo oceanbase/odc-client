@@ -48,7 +48,9 @@ export default class ErrorBoundary extends React.Component {
     });
   }
   public render() {
-    const isChunkError = this.state.errorStack?.toString().includes('ChunkLoadError');
+    const isChunkError =
+      this.state.errorStack?.toString().includes('ChunkLoadError') ||
+      this.state.errorStack?.toString().includes('Loading CSS chunk');
     if (isChunkError) {
       return (
         <Result
