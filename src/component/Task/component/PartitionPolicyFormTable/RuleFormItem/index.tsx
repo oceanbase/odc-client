@@ -77,10 +77,11 @@ const getFieldProps: (
 
 interface TableFormProps {
   field: any;
+  precision: number;
 }
 
 const RuleFormItem: React.FC<TableFormProps> = (props) => {
-  const { field } = props;
+  const { field, precision } = props;
 
   return (
     <Form.Item shouldUpdate={true} className={styles.noMarginBottom}>
@@ -119,6 +120,9 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
           'interval',
         ]);
         const isCustom = partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR;
+        const validIntervalPrecisionOptions = intervalPrecisionOptions?.filter(
+          (item) => item.value <= precision,
+        );
 
         return (
           <Space
@@ -255,7 +259,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                         ]}
                         noStyle
                       >
-                        <Select options={intervalPrecisionOptions} style={{ width: 60 }} />
+                        <Select options={validIntervalPrecisionOptions} style={{ width: 60 }} />
                       </Form.Item>
                     }
                     style={{ width: 243 }}

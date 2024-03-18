@@ -97,7 +97,7 @@ const Row: React.FC<ITableRowProps> = (props) => {
       </div>
       <div className={styles.td}>
         <div className={styles.ruleFormItem}>
-          <RuleFormItem field={field} />
+          <RuleFormItem field={field} precision={column?.type?.precision} />
         </div>
       </div>
     </div>

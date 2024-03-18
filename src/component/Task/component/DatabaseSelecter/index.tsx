@@ -172,13 +172,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                   style={{ marginRight: '8px' }}
                 />
 
-                <span>
-                  {
-                    formatMessage({
-                      id: 'src.component.Task.component.DatabaseSelecter.99F8392B' /*全部*/,
-                    }) /* 全部 */
-                  }
-                </span>
+                <span>选择数据库</span>
                 <Text type="secondary">({allTreeDataCount})</Text>
               </Space>
             }

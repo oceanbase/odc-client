@@ -139,6 +139,9 @@ export const AuditEventMetaMap = {
   [AuditEventActionType.DATABASE_PERMISSION_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.5B4CDCAF',
   }), //'库权限管理'
+  [AuditEventType.AUTOMATION_RULE_MANAGEMENT]: '自动授权规则管理',
+  [AuditEventType.NOTIFICATION_MANAGEMENT]: '消息推送管理',
+  [AuditEventType.SENSITIVE_COLUMN_MANAGEMENT]: '敏感列管理',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -602,6 +605,23 @@ export const AuditEventActionMap = {
   [AuditEventActionType.REVOKE_DATABASE_PERMISSION]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.BBF6BE0C',
   }), //'回收库权限管理'
+  // 自动授权规则
+  [AuditEventActionType.CREATE_AUTOMATION_RULE]: '创建自动授权规则',
+  [AuditEventActionType.ENABLE_AUTOMATION_RULE]: '启用自动授权规则',
+  [AuditEventActionType.DISABLE_AUTOMATION_RULE]: '禁用自动授权规则',
+  [AuditEventActionType.UPDATE_AUTOMATION_RULE]: '修改自动授权规则',
+  [AuditEventActionType.DELETE_AUTOMATION_RULE]: '删除自动授权规则',
+  // 推送通道
+  [AuditEventActionType.CREATE_NOTIFICATION_CHANNEL]: '创建推送通道',
+  [AuditEventActionType.UPDATE_NOTIFICATION_CHANNEL]: '修改推送通道',
+  [AuditEventActionType.DELETE_NOTIFICATION_CHANNEL]: '删除推送通道',
+  [AuditEventActionType.BATCH_UPDATE_NOTIFICATION_POLICIES]: '更新推送规则',
+  // 敏感列
+  [AuditEventActionType.BATCH_CREATE_SENSITIVE_COLUMNS]: '批量创建敏感列',
+  [AuditEventActionType.BATCH_UPDATE_SENSITIVE_COLUMNS]: '批量更新敏感列',
+  [AuditEventActionType.BATCH_DELETE_SENSITIVE_COLUMNS]: '批量删除敏感列',
+  [AuditEventActionType.ENABLE_SENSITIVE_COLUMN]: '启用敏感列',
+  [AuditEventActionType.DISABLE_SENSITIVE_COLUMN]: '禁用敏感列',
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
   const metas =
