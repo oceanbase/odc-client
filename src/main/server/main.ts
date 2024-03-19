@@ -148,7 +148,14 @@ class MainServer {
             data += chunk;
           });
           resp.on('end', () => {
-            resolve(JSON.parse(data));
+            let result;
+            try {
+              result = JSON.parse(data);
+              resolve(result);
+            } catch (e) {
+              log.error('parse data error', result);
+              reject(e);
+            }
           });
         }).on('error', (err) => {
           log.info('check server with resp err');
@@ -222,10 +229,12 @@ class MainServer {
     let javaLogDir = getJavaLogPath();
     let JAVA_HOME;
     let javaBin = 'java';
+    let jspawnhelper;
     const java = getJavaPath();
     if (java) {
       JAVA_HOME = java.JAVA_HOME;
       javaBin = java.javaBin;
+      jspawnhelper = java.jspawnhelper;
       log.info('platform:', process.platform);
       if (process.platform === 'darwin') {
         /**
@@ -233,7 +242,9 @@ class MainServer {
          */
         log.info('添加 java 执行权限');
         const result = spawnSync('chmod', ['a+x', javaBin]);
-        log.info(result.error, result.stderr?.toString());
+        const result2 = spawnSync('chmod', ['a+x', jspawnhelper]);
+        log.info('javaBin:', result.error, result.stderr?.toString());
+        log.info('jspawnhelper: ', result2.error, result2.stderr?.toString());
       }
     }
     let env = {
