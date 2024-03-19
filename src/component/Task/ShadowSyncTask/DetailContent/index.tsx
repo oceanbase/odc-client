@@ -22,6 +22,7 @@ import {
   ShadowTableSyncTaskResult,
 } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import StructAnalysisResult from '@/component/Task/ShadowSyncTask/CreateModal/StructConfigPanel/StructAnalysisResult';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import { ConnectionMode, TaskDetail, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -136,7 +137,7 @@ export function getItems(
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
           //所属数据库
-          task?.database?.name || '-',
+          <DatabaseLabel database={task?.database} />,
         ],
         [
           formatMessage({

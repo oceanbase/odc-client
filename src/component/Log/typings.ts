@@ -122,6 +122,7 @@ export interface LogProps {
    * @description 指定日志语言类型，详见：Highlight组件语言支持情况
    */
   language?: string;
+  downloadUrl?: string;
 }
 
 // eslint-disable-next-line

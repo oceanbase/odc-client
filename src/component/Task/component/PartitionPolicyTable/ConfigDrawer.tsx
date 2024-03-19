@@ -151,6 +151,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             </Descriptions.Item>
           </Descriptions>
           <SimpleTextItem
+            showSplit={false}
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyTable.AD71486A',
