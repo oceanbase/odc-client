@@ -277,13 +277,11 @@ export class UserStore {
     if (sessionOrganization) {
       return sessionOrganization;
     }
-    let personalOrganization: IOrganization = this.organizations?.find(
-      (item) => item.type === SpaceType.PRIVATE,
-    );
+
     const firstOrganization = this.organizations?.find(
       (item) => item.type === setting.configurations['odc.account.defaultOrganizationType'],
     );
-    let defaultOrganization = firstOrganization || personalOrganization;
+    let defaultOrganization = firstOrganization || this.organizations?.[0];
     return defaultOrganization;
   }
 
