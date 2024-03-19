@@ -847,9 +847,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.FB42838A',
-                    }), //'请输入'
+                    message: '请输入表达式',
                   },
                 ]}
               >

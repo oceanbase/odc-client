@@ -46,6 +46,7 @@ import {
   Radio,
   InputNumber,
   Alert,
+  Divider,
 } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
@@ -538,7 +539,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               showIcon
             />
           )}
-          <Form.Item required className={styles.tableWrapper}>
+          <Form.Item label="分区策略" required className={styles.tableWrapper}>
             <PartitionPolicyFormTable
               databaseId={databaseId}
               sessionId={sessionId}
@@ -548,6 +549,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               onLoad={loadData}
             />
           </Form.Item>
+          <Divider />
           <Form.Item>
             <Crontab
               ref={crontabRef}
@@ -571,15 +573,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   }) /* 自定义删除策略执行周期 */
                 }
               </span>
-              <Paragraph>
-                <Text type="secondary">
-                  {
-                    formatMessage({
-                      id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
-                    }) /* 未勾选时，删除策略执行周期将与创建一致 */
-                  }
-                </Text>
-              </Paragraph>
+              {!isCustomStrategy && (
+                <Paragraph>
+                  <Text type="secondary">
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
+                      }) /* 未勾选时，删除策略执行周期将与创建一致 */
+                    }
+                  </Text>
+                </Paragraph>
+              )}
             </Checkbox>
           </Form.Item>
           {isCustomStrategy && (

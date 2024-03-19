@@ -66,6 +66,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           log={log}
           logType={logType}
           isLoading={isLoading}
+          downloadUrl={result?.fullLogDownloadUrl}
           onLogTypeChange={onLogTypeChange}
         />
       );

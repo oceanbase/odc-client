@@ -61,19 +61,30 @@ const getColumns = (applyTask: (projectId: number, databaseId: number) => void) 
       title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.F84FA469' }), //'操作'
       width: '164px',
       ellipsis: true,
-      render: (action, _) => (
-        <Action.Link
-          onClick={async () => {
-            applyTask?.(_?.project?.id, _?.id);
-          }}
-        >
-          {
-            formatMessage({
-              id: 'src.page.Workspace.components.SQLResultSet.0B7D4FBE' /*申请*/,
-            }) /* 申请 */
-          }
-        </Action.Link>
-      ),
+      render: (action, _) => {
+        const disabled = !_.applicable;
+        let tooltip = null;
+        if (disabled) {
+          tooltip = _.project?.id
+            ? '无法申请数据库权限：没有加入数据库所属项目'
+            : '无法申请数据库权限：数据库没有归属项目';
+        }
+        return (
+          <Action.Link
+            disabled={disabled}
+            tooltip={tooltip}
+            onClick={async () => {
+              applyTask?.(_?.project?.id, _?.id);
+            }}
+          >
+            {
+              formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.0B7D4FBE' /*申请*/,
+              }) /* 申请 */
+            }
+          </Action.Link>
+        );
+      },
     },
   ];
 };

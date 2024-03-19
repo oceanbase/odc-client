@@ -24,6 +24,7 @@ import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { InfoCircleOutlined } from '@ant-design/icons';
 export const ErrorStrategy = {
@@ -70,7 +71,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据库 */
           }
         >
-          {task?.database?.name || '-'}
+          <DatabaseLabel database={task?.database} />
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
