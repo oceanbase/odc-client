@@ -2266,6 +2266,7 @@ export interface ITaskResult {
   records: string[];
   successCount: number;
   zipFileDownloadUrl: string;
+  fullLogDownloadUrl: string;
   writeCount: number;
   conflictCount: number;
   ignoreCount: number;

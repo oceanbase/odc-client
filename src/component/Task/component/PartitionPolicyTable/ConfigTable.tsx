@@ -111,6 +111,7 @@ const ConfigTable: React.FC<IProps> = (props) => {
 
   return (
     <DisplayTable
+      bordered
       rowKey="partitionKey"
       columns={columns}
       dataSource={configs}

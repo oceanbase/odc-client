@@ -253,9 +253,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         mode={CommonTableMode.SMALL}
         ref={tableRef}
         titleContent={{
-          title: formatMessage({
-            id: 'src.component.Task.component.PartitionPolicyFormTable.4737EBD4',
-          }), //'分区策略'
           description: formatMessage({
             id: 'src.component.Task.component.PartitionPolicyFormTable.9E6847BC',
           }), //'仅支持 Range 分区表，可设置对应的分区创建和删除策略'

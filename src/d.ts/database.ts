@@ -57,4 +57,5 @@ export interface IUnauthorizedDatabase {
   project: IProject;
   dataSource: IDatasource;
   environment: IEnvironment;
+  applicable: boolean;
 }
