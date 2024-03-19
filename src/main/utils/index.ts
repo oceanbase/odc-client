@@ -216,14 +216,23 @@ export function getJavaPath() {
     JAVA_HOME: basePath,
     javaBin:
       isMac || isLinux ? path.join(basePath, '/bin/java') : path.join(basePath, '/bin/java.exe'),
+    jspawnhelper:
+      isMac || isLinux
+        ? path.join(basePath, '/lib/jspawnhelper')
+        : path.join(basePath, '/lib/jspawnhelper.exe'),
   };
 }
 
-export function getSetting(): Record<string, string> {
+export function getSettingPath() {
   const isDevelopment = process.env.NODE_ENV === 'development';
   let basePath = isDevelopment
     ? path.join(process.cwd(), 'build/setting.json')
     : path.join(process.resourcesPath || '', 'setting.json');
+  return basePath;
+}
+
+export function getSetting(): Record<string, string> {
+  let basePath = getSettingPath();
   if (!fs.existsSync(basePath)) {
     return null;
   }
