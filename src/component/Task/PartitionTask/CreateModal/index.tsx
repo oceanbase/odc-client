@@ -161,7 +161,7 @@ interface IProps extends Pick<DrawerProps, 'visible'> {
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
     const { modalStore, projectId } = props;
-    const { partitionVisible } = modalStore;
+    const { partitionVisible, partitionData } = modalStore;
     const [tableConfigs, setTableConfigs] = useState<ITableConfig[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [disabledSubmit, setDisabledSubmit] = useState(true);
@@ -474,6 +474,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     useEffect(() => {
       loadData();
     }, [databaseId, sessionId]);
+
+    useEffect(() => {
+      const databaseId = partitionData?.databaseId;
+      if (databaseId) {
+        form.setFieldsValue({
+          databaseId,
+        });
+      }
+    }, [partitionData?.databaseId]);
     return (
       <Drawer
         open={partitionVisible}
