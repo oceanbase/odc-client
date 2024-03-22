@@ -125,14 +125,20 @@ const TreeNodeMenu = (props: IProps) => {
           key: item.key || index,
           className: styles.ellipsis,
           disabled: disabledItem,
-          children: item.children.map((child) => {
-            clickMap[child.key] = child;
-            return {
-              key: child.key,
-              className: styles.ellipsis,
-              label: child.text,
-            };
-          }),
+          children: item.children
+            .map((child) => {
+              const isHideChild = child.isHide ? child.isHide(dbSession, node) : false;
+              if (isHideChild) {
+                return null;
+              }
+              clickMap[child.key] = child;
+              return {
+                key: child.key,
+                className: styles.ellipsis,
+                label: child.text,
+              };
+            })
+            ?.filter(Boolean),
         };
       } else {
         menuItem = {

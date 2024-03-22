@@ -170,6 +170,25 @@ const suffixOptions = [
   },
 ];
 
+const DropConfigMessage = formatMessage({
+  id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
+}); /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
+
+const CreateConfigMessage = formatMessage({
+  id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
+}); /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
+
+export const getAlertMessage = (strategies: TaskPartitionStrategy[]) => {
+  const messages = [];
+  if (strategies?.includes(TaskPartitionStrategy.DROP)) {
+    messages.push(DropConfigMessage);
+  }
+  if (strategies?.includes(TaskPartitionStrategy.CREATE)) {
+    messages.push(CreateConfigMessage);
+  }
+  return messages;
+};
+
 export const getUnitLabel = (value: number) => {
   return intervalPrecisionOptions.find((item) => item.value === value)?.label;
 };
@@ -188,6 +207,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const strategies = Form.useWatch('strategies', form);
   const nameRuleType = Form.useWatch('nameRuleType', form);
   const fromCurrentTime = Form.useWatch('fromCurrentTime', form);
+  const alertMessage = getAlertMessage(strategies);
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
   const isCustomRuleType = nameRuleType === NameRuleType.CUSTOM;
@@ -571,13 +591,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         >
           <Checkbox.Group options={StrategyOptions} />
         </Form.Item>
-        {isCreateConfigVisible && (
+        {!!alertMessage.length && (
           <Alert
-            message={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
-              }) /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
-            }
+            message={alertMessage?.map((item) => (
+              <div>{item}</div>
+            ))}
             type="warning"
             style={{ marginBottom: '8px' }}
             showIcon
@@ -675,6 +693,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   <Space>
                     <Form.Item
                       name="generateExpr"
+                      className={styles.noMarginBottom}
                       rules={[
                         {
                           required: true,
@@ -703,6 +722,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   <Space size={8} align="start">
                     <Form.Item
                       validateFirst
+                      className={styles.noMarginBottom}
                       name="namingPrefix"
                       rules={[
                         {
@@ -749,6 +769,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       </Tag>
                       <Form.Item
                         name="fromCurrentTime"
+                        className={styles.noMarginBottom}
                         rules={[
                           {
                             required: true,
@@ -773,6 +794,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       {fromCurrentTime === START_DATE.CUSTOM_DATE && (
                         <Form.Item
                           name="baseTimestampMillis"
+                          className={styles.noMarginBottom}
                           rules={[
                             {
                               required: true,
@@ -795,6 +817,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
 
                       <Form.Item
                         name="namingSuffixExpression"
+                        className={styles.noMarginBottom}
                         rules={[
                           {
                             required: true,
@@ -819,7 +842,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 )}
               </Space>
             </Form.Item>
-            <Space direction="vertical" size={2}>
+            <Space direction="vertical" size={4} className={styles.testBlock}>
               <Action.Link onClick={handleTest}>
                 {
                   formatMessage({
@@ -829,9 +852,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               </Action.Link>
               {!!ruleExample && (
                 <Text type="secondary">
-                  {formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.797EC6B1' /*示例名称:*/,
-                  })}
+                  分区名示例:
                   {ruleExample}
                 </Text>
               )}
@@ -905,19 +926,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               </Form.Item>
             )}
           </FormItemPanel>
-        )}
-
-        {isDropConfigVisible && (
-          <Alert
-            message={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
-              }) /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
-            }
-            type="warning"
-            style={{ marginBottom: '8px' }}
-            showIcon
-          />
         )}
 
         {isDropConfigVisible && (

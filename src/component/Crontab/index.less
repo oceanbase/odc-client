@@ -7,9 +7,15 @@
   }
   .content {
     width: 100%;
+    display: grid;
+    grid-gap: 8px;
     &.default-mode {
       padding: 8px;
       background: var(--background-tertraiy-color);
+      grid-template-columns: 120px 210px 1fr;
+      &.daily {
+        grid-template-columns: 120px 1fr;
+      }
     }
   }
   .custom-editor {
