@@ -27,7 +27,7 @@ interface IProps {
 }
 
 const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) => {
-  const { structureComparisonVisible } = modalStore;
+  const { structureComparisonVisible, structureComparisonTaskData } = modalStore;
   const [form] = useForm<CreateStructureComparisonTaskRecord>();
   const taskExecStrategyMap = getTaskExecStrategyMap(TaskType.STRUCTURE_COMPARISON);
   const sourceDatabaseId = Form.useWatch(['parameters', 'sourceDatabaseId'], form);
@@ -93,6 +93,14 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
       targetDatabaseId && resetTargetDatabase();
     }
   }, [sourceDatabaseId]);
+
+  useEffect(() => {
+    const databaseId = structureComparisonTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldValue(['parameters', 'sourceDatabaseId'], databaseId);
+    }
+  }, [structureComparisonTaskData?.databaseId]);
+
   return (
     <Drawer
       open={structureComparisonVisible}

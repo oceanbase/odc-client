@@ -386,6 +386,15 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   }, [editTaskId]);
 
+  useEffect(() => {
+    const databaseId = dataClearTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [dataClearTaskData?.databaseId]);
+
   return (
     <Drawer
       destroyOnClose

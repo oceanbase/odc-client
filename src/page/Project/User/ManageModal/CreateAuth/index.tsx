@@ -106,21 +106,13 @@ const CreateModal: React.FC<IProps> = (props) => {
         }}
         type="primary"
       >
-        {
-          formatMessage({
-            id: 'src.page.Project.User.ManageModal.CreateAuth.67243BDA' /*新增授权*/,
-          }) /* 新增授权 */
-        }
+        新增库授权
       </Button>
       <Drawer
         destroyOnClose
         className={styles.createModal}
         width={816}
-        title={
-          formatMessage({
-            id: 'src.page.Project.User.ManageModal.CreateAuth.6F4F2A2B',
-          }) /*"新增授权"*/
-        }
+        title="新增库授权"
         footer={
           <Space>
             <Button

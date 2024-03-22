@@ -224,7 +224,9 @@ const ActionBar: React.FC<IProps> = inject(
           type: 'EDIT',
         });
       } else {
-        props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
+        props.modalStore.changeCreateSQLPlanTaskModal(true, {
+          id: task?.id,
+        });
       }
     };
 

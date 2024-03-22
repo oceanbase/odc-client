@@ -38,7 +38,7 @@ interface IProps {
   databaseId: number;
   enabledFilter?: boolean;
   tableConfigs?: ITableConfig[];
-  createdOriginTableConfigs?: ITableConfig[];
+  createdTableConfigs?: ITableConfig[];
   onLoad?: () => Promise<any>;
   onPlansConfigChange?: (values: ITableConfig[]) => void;
 }
@@ -64,7 +64,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     databaseId,
     enabledFilter = true,
     tableConfigs,
-    createdOriginTableConfigs,
+    createdTableConfigs,
     onLoad,
     onPlansConfigChange,
   } = props;
@@ -171,14 +171,12 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const tableName = tableConfigs?.find((item) => keys.includes(item.__id))?.tableName;
     const activeConfigs = tableConfigs?.filter((item) => keys.includes(item.__id));
     const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, tableName);
-    const createdOriginTableConfig = createdOriginTableConfigs?.find(
-      (item) => item?.tableName === tableName,
-    );
+    const createdTableConfig = createdTableConfigs?.find((item) => item?.tableName === tableName);
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
-    if (!!createdOriginTableConfig && isInit) {
+    if (!!createdTableConfig && isInit) {
       const isLengthEqual =
-        createdOriginTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
+        createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
       const isValidOriginPartitionKeyConfigs = isLengthEqual
         ? res?.contents?.every((item, index) => {
             const partitionKeyInvokers = [PARTITION_KEY_INVOKER.CUSTOM_GENERATOR];
@@ -186,12 +184,12 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
               partitionKeyInvokers.push(PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR);
             }
             return partitionKeyInvokers.includes(
-              createdOriginTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
+              createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
             );
           })
         : false;
       if (isValidOriginPartitionKeyConfigs) {
-        partitionConfig = createdOriginTableConfig;
+        partitionConfig = createdTableConfig;
       }
     }
 

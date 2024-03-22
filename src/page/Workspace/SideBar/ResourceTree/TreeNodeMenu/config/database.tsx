@@ -19,7 +19,9 @@ import { IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import login from '@/store/login';
 import setting from '@/store/setting';
+import modal from '@/store/modal';
 import { formatMessage } from '@/util/intl';
+import { isClient } from '@/util/env';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import tracert from '@/util/tracert';
@@ -67,6 +69,189 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         const database: IDatabase = node.data;
         openOBClientPage(database?.dataSource?.id, database?.id);
       },
+    },
+    {
+      key: 'TASK_EXPORT_MENU',
+      text: ['数据导出'],
+      ellipsis: true,
+      children: [
+        {
+          key: 'TASK_EXPORT',
+          text: ['导出'],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableDBExport;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeExportModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_EXPORT_RESULT_SET',
+          text: ['导出结果集'],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableDBExport;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateResultSetExportTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+      ],
+    },
+    {
+      key: 'TASK_DATA_DEVELOP',
+      text: ['数据研发'],
+      ellipsis: true,
+      children: [
+        {
+          key: 'TASK_IMPORT',
+          text: ['导入'],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableDBImport;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeImportModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_MOCKDATA',
+          text: ['模拟数据'],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableMockdata;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeDataMockerModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_ASYNC',
+          text: ['数据库变更'],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableAsyncTask;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateAsyncTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_ONLINE_SCHEMA_CHANGE',
+          text: ['无锁结构变更'],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableOSC;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateDDLAlterTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_SHADOW',
+          text: ['影子表同步'],
+          ellipsis: true,
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeShadowSyncVisible(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_STRUCTURE_COMPARISON',
+          text: ['结构比对'],
+          ellipsis: true,
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeStructureComparisonModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+      ],
+    },
+    {
+      key: 'TASK_CYCLE_MENU',
+      text: ['定时任务'],
+      ellipsis: true,
+      children: [
+        {
+          key: 'TASK_SQL_PLAN',
+          text: ['SQL 计划'],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateSQLPlanTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_PARTITION_PLAN',
+          text: ['分区计划'],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changePartitionModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_DATA_ARCHIVE',
+          text: ['数据归档'],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeDataArchiveModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_DATA_DELETE',
+          text: ['数据清理'],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeDataClearModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+      ],
     },
   ],
 };

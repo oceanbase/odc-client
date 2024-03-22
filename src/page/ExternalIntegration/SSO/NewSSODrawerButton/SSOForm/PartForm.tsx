@@ -621,6 +621,15 @@ export const LDAPPartForm: React.FC<{
           ]}
         />
       </Form.Item>
+      {/* <SomeFetureInODC430 tip='use it after 424'/> */}
+    </>
+  );
+};
+const SomeFetureInODC430: React.FC<{
+  tip: string;
+}> = ({ tip }) => {
+  return (
+    <>
       <Form.Item
         name={['ssoParameter', 'loginFailedLimit']}
         label={
