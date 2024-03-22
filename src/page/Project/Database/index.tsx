@@ -110,7 +110,13 @@ const Database: React.FC<IProps> = ({ id }) => {
       default:
     }
   };
-  const statusMap = datasourceStatus.statusMap;
+  const renderDisabledDBWithTip = (name: React.ReactNode) => {
+    return (
+      <span className={styles.disable}>
+        <Tooltip title={'当前账号的项目成员角色没有该库的操作权限，请先申请库权限'}>{name}</Tooltip>
+      </span>
+    );
+  };
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
@@ -150,10 +156,18 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
-              const disabled = !record.authorizedPermissionTypes?.length;
+              const disabled = !record?.authorizedPermissionTypes?.length;
               if (!record.existed) {
                 return disabled ? (
-                  <div className={styles.disable}>{name}</div>
+                  <HelpDoc
+                    leftText
+                    isTip={false}
+                    title={formatMessage({
+                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                    })} /*当前数据库不存在*/
+                  >
+                    {renderDisabledDBWithTip(name)}
+                  </HelpDoc>
                 ) : (
                   <HelpDoc
                     leftText
@@ -167,7 +181,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                 );
               }
               return disabled ? (
-                <div className={styles.disable}>{name}</div>
+                renderDisabledDBWithTip(name)
               ) : (
                 <StatusName
                   item={record}
