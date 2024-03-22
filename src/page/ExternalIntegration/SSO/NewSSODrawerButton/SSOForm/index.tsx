@@ -48,6 +48,7 @@ import { cloneDeep } from 'lodash';
 import channel, { ChannelMap } from '@/util/broadcastChannel';
 import logger from '@/util/logger';
 import { OAUTH2PartForm, LDAPPartForm, OIDCPartForm } from './PartForm';
+import { useWatch } from 'antd/lib/form/Form';
 
 export const requiredRule = {
   required: true,
@@ -75,7 +76,12 @@ export default inject('userStore')(
         form: FormInstance<ISSOConfig>;
       }>,
     ) {
+      const [form] = Form.useForm<ISSOConfig>();
+      const type = useWatch('type', form);
+      const userProfileViewType = useWatch(['mappingRule', 'userProfileViewType'], form);
+      const userNickNameField = useWatch(['mappingRule', 'userNickNameField'], form);
       const loginWindow = useRef<Window>();
+
       const channelStatusRef = useRef<boolean>(false);
       const timer = useRef<NodeJS.Timer>();
       const [showExtraConfig, setShowExtraConfig] = useState(!!isEdit);
@@ -86,7 +92,6 @@ export default inject('userStore')(
         _setTestInfo(v);
         onTestInfoChanged(v);
       }
-      const [form] = Form.useForm<ISSOConfig>();
       useImperativeHandle(
         ref,
         () => {
@@ -257,8 +262,8 @@ export default inject('userStore')(
             ['ssoParameter', 'groupSearchBase'],
             ['ssoParameter', 'groupSearchFilter'],
             ['ssoParameter', 'groupSearchSubtree'],
-            ['ssoParameter', 'loginFailedLimit'],
-            ['ssoParameter', 'lockTimeSeconds'],
+            // ['ssoParameter', 'loginFailedLimit'],
+            // ['ssoParameter', 'lockTimeSeconds'],
             ['mappingRule', 'userProfileViewType'],
             ['mappingRule', 'nestedAttributeField'],
           ])
@@ -327,6 +332,21 @@ export default inject('userStore')(
           },
         });
       }
+      const getPartForm = (type: ISSOType) => {
+        if (type === ISSOType.OAUTH2) {
+          return (
+            <OAUTH2PartForm
+              isEdit={isEdit}
+              showExtraConfig={showExtraConfig}
+              setShowExtraConfig={setShowExtraConfig}
+            />
+          );
+        } else if (type === ISSOType.LDAP) {
+          return <LDAPPartForm isEdit={isEdit} />;
+        } else {
+          return <OIDCPartForm isEdit={isEdit} />;
+        }
+      };
       const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
         userStore?.organizationId
       }-test`;
@@ -415,111 +435,82 @@ export default inject('userStore')(
             />
           </Form.Item>
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const type = getFieldValue(['type']);
-              if (type === ISSOType.OAUTH2) {
-                return (
-                  <OAUTH2PartForm
-                    isEdit={isEdit}
-                    showExtraConfig={showExtraConfig}
-                    setShowExtraConfig={setShowExtraConfig}
-                  />
-                );
-              } else if (type === ISSOType.LDAP) {
-                return <LDAPPartForm isEdit={isEdit} />;
-              } else {
-                return <OIDCPartForm isEdit={isEdit} />;
-              }
-            }}
+            {getPartForm(type)}
           </Form.Item>
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const type = getFieldValue(['type']);
-              return type !== ISSOType.LDAP ? (
-                <Form.Item
-                  rules={[requiredRule]}
-                  name={['mappingRule', 'userProfileViewType']}
-                  label={formatMessage({
-                    id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
-                  })} /*用户信息数据结构类型*/
-                >
-                  <Select
-                    options={[
-                      {
-                        label: 'FLAT',
-                        value: 'FLAT',
-                      },
-                      {
-                        label: 'NESTED',
-                        value: 'NESTED',
-                      },
-                    ]}
-                    style={{
-                      width: 200,
-                    }}
-                    placeholder={formatMessage({
-                      id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                    })} /*请输入*/
-                  />
-                </Form.Item>
-              ) : null;
-            }}
+            {type !== ISSOType.LDAP ? (
+              <Form.Item
+                rules={[requiredRule]}
+                name={['mappingRule', 'userProfileViewType']}
+                label={formatMessage({
+                  id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+                })} /*用户信息数据结构类型*/
+              >
+                <Select
+                  options={[
+                    {
+                      label: 'FLAT',
+                      value: 'FLAT',
+                    },
+                    {
+                      label: 'NESTED',
+                      value: 'NESTED',
+                    },
+                  ]}
+                  style={{
+                    width: 200,
+                  }}
+                  placeholder={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                  })} /*请输入*/
+                />
+              </Form.Item>
+            ) : null}
           </Form.Item>
           <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              const userProfileViewType = getFieldValue(['mappingRule', 'userProfileViewType']);
-              if (userProfileViewType === 'NESTED') {
-                return (
-                  <Form.Item
-                    label={formatMessage({
-                      id: 'odc.NewSSODrawerButton.SSOForm.ObtainNestedUserData',
-                    })}
-                    /*获取嵌套用户数据*/ name={['mappingRule', 'nestedAttributeField']}
-                    rules={[requiredRule]}
-                  >
-                    <Input
-                      style={{
-                        width: '100%',
-                      }}
-                      placeholder={formatMessage({
-                        id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                      })} /*请输入*/
-                    />
-                  </Form.Item>
-                );
-              }
-            }}
+            {userProfileViewType === 'NESTED' && (
+              <Form.Item
+                label={formatMessage({
+                  id: 'odc.NewSSODrawerButton.SSOForm.ObtainNestedUserData',
+                })}
+                /*获取嵌套用户数据*/ name={['mappingRule', 'nestedAttributeField']}
+                rules={[requiredRule]}
+              >
+                <Input
+                  style={{
+                    width: '100%',
+                  }}
+                  placeholder={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                  })} /*请输入*/
+                />
+              </Form.Item>
+            )}
           </Form.Item>
-
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const type = getFieldValue(['type']);
-              return (
-                <Form.Item>
-                  <HelpDoc
-                    leftText
-                    title={
-                      formatMessage(
-                        {
-                          id: 'odc.NewSSODrawerButton.SSOForm.ASeparateCallbackWhitelistIs',
-                        },
-                        {
-                          redirectUrl: redirectUrl,
-                        },
-                      ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
-                    }
-                  >
-                    <a onClick={() => testByType(type)}>
-                      {
-                        formatMessage({
-                          id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
-                        }) /*测试连接*/
-                      }
-                    </a>
-                  </HelpDoc>
-                </Form.Item>
-              );
-            }}
+            <Form.Item>
+              <HelpDoc
+                leftText
+                title={
+                  formatMessage(
+                    {
+                      id: 'odc.NewSSODrawerButton.SSOForm.ASeparateCallbackWhitelistIs',
+                    },
+                    {
+                      redirectUrl: redirectUrl,
+                    },
+                  ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
+                }
+              >
+                <a onClick={() => testByType(type)}>
+                  {
+                    formatMessage({
+                      id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
+                    }) /*测试连接*/
+                  }
+                </a>
+              </HelpDoc>
+            </Form.Item>
           </Form.Item>
           {testInfo ? (
             <Alert
@@ -563,87 +554,74 @@ export default inject('userStore')(
             }
           </Typography.Title>
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const type = getFieldValue('type');
-              if (type !== ISSOType.LDAP) {
-                return (
-                  <Form.Item
-                    rules={[requiredRule]}
-                    name={['mappingRule', 'userAccountNameField']}
-                    label={formatMessage({
-                      id: 'odc.NewSSODrawerButton.SSOForm.UsernameField',
-                    })} /*用户名字段*/
-                  >
-                    <Input
-                      style={{
-                        width: 200,
-                      }}
-                      placeholder={formatMessage({
-                        id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                      })} /*请输入*/
-                    />
-                  </Form.Item>
-                );
-              }
-            }}
+            {type !== ISSOType.LDAP && (
+              <Form.Item
+                rules={[requiredRule]}
+                name={['mappingRule', 'userAccountNameField']}
+                label={formatMessage({
+                  id: 'odc.NewSSODrawerButton.SSOForm.UsernameField',
+                })} /*用户名字段*/
+              >
+                <Input
+                  style={{
+                    width: 200,
+                  }}
+                  placeholder={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                  })} /*请输入*/
+                />
+              </Form.Item>
+            )}
           </Form.Item>
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const userNickNameField = getFieldValue(['mappingRule', 'userNickNameField']);
-              return (
-                <Form.Item
-                  rules={[requiredRule]}
-                  name={['mappingRule', 'userNickNameField']}
-                  label={formatMessage({
-                    id: 'odc.NewSSODrawerButton.SSOForm.UserNicknameField',
-                  })} /*用户昵称字段*/
-                >
-                  <Select
-                    mode="tags"
-                    defaultValue={userNickNameField ? userNickNameField : undefined}
-                    style={{
-                      width: 200,
-                    }}
-                    placeholder={formatMessage({
-                      id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                    })} /*请输入*/
-                  />
-                </Form.Item>
-              );
-            }}
+            <Form.Item
+              rules={[requiredRule]}
+              name={['mappingRule', 'userNickNameField']}
+              label={formatMessage({
+                id: 'odc.NewSSODrawerButton.SSOForm.UserNicknameField',
+              })} /*用户昵称字段*/
+            >
+              <Select
+                mode="tags"
+                defaultValue={userNickNameField ? userNickNameField : undefined}
+                style={{
+                  width: 200,
+                }}
+                placeholder={formatMessage({
+                  id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                })} /*请输入*/
+              />
+            </Form.Item>
           </Form.Item>
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const type = getFieldValue(['type']);
-              return type === ISSOType.LDAP ? (
-                <Form.Item
-                  rules={[requiredRule]}
-                  name={['mappingRule', 'userProfileViewType']}
-                  label={formatMessage({
-                    id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
-                  })} /*用户信息数据结构类型*/
-                >
-                  <Select
-                    options={[
-                      {
-                        label: 'FLAT',
-                        value: 'FLAT',
-                      },
-                      {
-                        label: 'NESTED',
-                        value: 'NESTED',
-                      },
-                    ]}
-                    style={{
-                      width: 200,
-                    }}
-                    placeholder={formatMessage({
-                      id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
-                    })} /*请输入*/
-                  />
-                </Form.Item>
-              ) : null;
-            }}
+            {type === ISSOType.LDAP ? (
+              <Form.Item
+                rules={[requiredRule]}
+                name={['mappingRule', 'userProfileViewType']}
+                label={formatMessage({
+                  id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+                })} /*用户信息数据结构类型*/
+              >
+                <Select
+                  options={[
+                    {
+                      label: 'FLAT',
+                      value: 'FLAT',
+                    },
+                    {
+                      label: 'NESTED',
+                      value: 'NESTED',
+                    },
+                  ]}
+                  style={{
+                    width: 200,
+                  }}
+                  placeholder={formatMessage({
+                    id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                  })} /*请输入*/
+                />
+              </Form.Item>
+            ) : null}
           </Form.Item>
           <Form.List name={['mappingRule', 'extraInfo']}>
             {(fields, operation) => {
