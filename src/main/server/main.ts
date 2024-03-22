@@ -270,14 +270,12 @@ class MainServer {
     try {
       const setting = getSetting();
       let jvmOptions = [],
-        odcOptions;
+        odcOptions = [];
       if (setting) {
         jvmOptions = setting['client.jvm.params'].split('\n');
         const odcProperties = setting['client.start.params'];
         if (odcProperties) {
-          const fileTempPath = path.resolve(app.getPath('userData'), 'odc.temp.properties');
-          writeFileSync(fileTempPath, odcProperties);
-          odcOptions = fileTempPath;
+          odcOptions = odcProperties.split('\n').map((item) => '--' + item);
           log.info('odc system propeties ', odcOptions, setting['client.start.params']);
         }
       }
@@ -291,7 +289,7 @@ class MainServer {
           ...jvmOptions,
           '-jar',
           this.jarPath,
-          odcOptions ? `--spring.config.import="optional:file:${odcOptions}"` : '',
+          ...odcOptions,
         ],
         {
           // 一定要设置，默认值为 '/'，会影响到后端日志文件的存放路径
