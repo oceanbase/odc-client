@@ -17,7 +17,7 @@ import { formatMessage } from '@/util/intl';
 
 import { deleteEnvironment, listEnvironments } from '@/common/network/env';
 import { getIntegrationList } from '@/common/network/manager';
-import { IManagerIntegration, IntegrationType } from '@/d.ts';
+import { IManagerIntegration, IManagerResourceType, IntegrationType, actionTypes } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
 import { RuleType } from '@/d.ts/rule';
 import { useLayoutEffect, useState } from 'react';
@@ -29,6 +29,7 @@ import styles from './index.less';
 import Icon, { PlusOutlined } from '@ant-design/icons';
 import { Modal, SelectProps, message } from 'antd';
 import { FormEnvironmentModal } from './components/FormEnvironmentModal';
+import { Acess, createPermission } from '@/component/Acess';
 
 // 从Environment数组中生成Sider中的Item数据
 function genEnv(env: IEnvironment): {
@@ -149,11 +150,16 @@ const Environment = () => {
               <div className={styles.groupTitle}>
                 {formatMessage({ id: 'src.page.Secure.Env.48529F6E' /*全部环境*/ }) /* 全部环境 */}
               </div>
-              <Icon
-                component={PlusOutlined}
-                style={{ cursor: 'pointer' }}
-                onClick={handleCreateEnvironment}
-              />
+              <Acess
+                fallback={null}
+                {...createPermission(IManagerResourceType.environment, actionTypes.create)}
+              >
+                <Icon
+                  component={PlusOutlined}
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleCreateEnvironment}
+                />
+              </Acess>
             </div>
           }
           loading={loading}
