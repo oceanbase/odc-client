@@ -12,6 +12,7 @@ import {
   Typography,
 } from 'antd';
 import { CloseCircleFilled } from '@ant-design/icons';
+import HelpDoc from '@/component/helpDoc';
 import { intervalPrecisionOptions } from '../configModal';
 import { START_DATE } from '../const';
 import { PARTITION_KEY_INVOKER } from '@/d.ts';
@@ -146,27 +147,25 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   help={EmptyHelp}
                 >
                   <Input
-                    placeholder={
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.D749A5F7',
-                      }) /*"请输入 SQL 表达式生成分区下界"*/
-                    }
+                    placeholder="请输入 SQL 表达式生成分区上界，可引用变量如 ${INTERVAL}"
                     {...getFieldProps(generateExprError)}
                   />
                 </Form.Item>
                 <Input.Group compact>
                   <Tag className={styles.suffix}>
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
-                      }) /* 间隔 */
-                    }
+                    <HelpDoc leftText isTip title="INTERVAL 初始值及增长步长">
+                      {
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
+                        }) /* 间隔 */
+                      }
+                    </HelpDoc>
                   </Tag>
                   <Form.Item
                     {...field}
                     name={[field.name, 'intervalGenerateExpr']}
                     className={styles.noMarginBottom}
-                    style={{ width: '326px' }}
+                    style={{ width: '306px' }}
                     rules={[
                       {
                         required: true,
