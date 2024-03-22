@@ -101,21 +101,18 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
         const generateExprError = getFieldError([
           'option',
           'partitionKeyConfigs',
-          'columns',
           field.name,
           'generateExpr',
         ]);
         const intervalGenerateExprError = getFieldError([
           'option',
           'partitionKeyConfigs',
-          'columns',
           field.name,
           'intervalGenerateExpr',
         ]);
         const intervalError = getFieldError([
           'option',
           'partitionKeyConfigs',
-          'columns',
           field.name,
           'interval',
         ]);
