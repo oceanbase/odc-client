@@ -125,6 +125,7 @@ const Database: React.FC<IProps> = ({ id }) => {
           <Input.Search
             onSearch={(v) => {
               setSearchValue(v);
+              params.current.current = 1;
               reload(v);
             }}
             placeholder={formatMessage({
@@ -396,6 +397,7 @@ const Database: React.FC<IProps> = ({ id }) => {
         dataSource={data}
         pagination={{
           total,
+          current: params.current.current,
         }}
         loadData={(page, filters) => {
           const pageSize = page.pageSize;
