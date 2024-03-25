@@ -335,7 +335,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     };
     const loop = (timeout: number = 0) => {
       timerRef.current = setTimeout(async () => {
-        if (taskEndRef.current) {
+        if (!detailModalOpen || taskEndRef.current) {
           return;
         }
         const currentResult = await getTaskResult(task?.id);

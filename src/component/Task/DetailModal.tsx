@@ -64,6 +64,7 @@ import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 
 interface IProps {
+  taskOpenRef?: React.RefObject<boolean>;
   type: TaskType;
   detailId: number;
   visible: boolean;
@@ -91,7 +92,7 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, enabledAction = true } = props;
+  const { type, visible, detailId, enabledAction = true, taskOpenRef } = props;
   const [task, setTask] = useState<
     | TaskDetail<TaskRecordParameters>
     | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
@@ -128,6 +129,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   let getItems = null;
 
   const loop = (timeout: number = 0) => {
+    if (!taskOpenRef?.current) {
+      return;
+    }
     timerRef.current = setTimeout(async () => {
       const currentTask = await getTaskDetail(detailId);
       if (
