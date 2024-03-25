@@ -40,12 +40,11 @@ import { CommonStore } from '@/store/common';
 import { PageStore } from '@/store/page';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { clone } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { history } from '@umijs/max';
 import TitleButton from '../TitleButton';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import datasourceStatus, { DataSourceStatusStore } from '@/store/datasourceStatus';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
 
 interface IProps {
   width: number;
@@ -76,7 +75,6 @@ const List: React.FC<IProps> = forwardRef(function (
   const versionRef = useRef<number>(0);
   const context = useContext(ParamContext);
   const { searchValue, connectType, sortType } = context;
-
   const connectionList = useMemo(() => {
     return _connectionList.map((c) => {
       return {
@@ -348,19 +346,23 @@ const List: React.FC<IProps> = forwardRef(function (
   );
 });
 
-function AutoSizerWrap(props, ref) {
-  return (
-    <AutoSizer>
-      {({ width, height }) => {
-        return <List ref={ref} width={width} height={height} {...props} />;
-      }}
-    </AutoSizer>
-  );
-}
-
-export default inject(
+const ListWrap = inject(
   'commonStore',
   'pageStore',
   'clusterStore',
   'dataSourceStatusStore',
-)(observer(forwardRef(AutoSizerWrap)));
+)(observer(List));
+
+function AutoSizerWrap(props, ref) {
+  return (
+    <>
+      <AutoSizer>
+        {({ width, height }) => {
+          return <ListWrap ref={ref} width={width} height={height} {...props} />;
+        }}
+      </AutoSizer>
+    </>
+  );
+}
+
+export default forwardRef(AutoSizerWrap);

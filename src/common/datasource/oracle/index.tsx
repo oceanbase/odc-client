@@ -75,6 +75,7 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       recycleBin: false,
       sqlExplain: false,
       sessionManage: true,
+      disableTriggerSwitch: true,
       compile: false,
       plEdit: true,
       anonymousBlock: true,
