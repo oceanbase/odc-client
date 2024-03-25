@@ -35,6 +35,7 @@ export interface IExecuteSQLParams {
    * 是否拆分执行，传空的话像等于true
    */
   split?: boolean;
+  addROWID?: boolean;
 }
 export interface ISQLExecuteTaskSQL {
   sqlTuple: {

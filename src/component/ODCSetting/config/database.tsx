@@ -112,6 +112,31 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
+    label: '获取 RowId',
+    key: 'odc.sqlexecute.default.addInternalRowId',
+    group: databaseGroup,
+    secondGroup: databaseResultsetGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: formatMessage({ id: 'src.component.ODCSetting.config.C5306019' }), //'是'
+              value: 'true',
+            },
+            {
+              label: formatMessage({ id: 'src.component.ODCSetting.config.DE21D1E7' }), //'否'
+              value: 'false',
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
+  {
     label: formatMessage({ id: 'src.component.ODCSetting.config.B86084FC' }), //'查询条数限制'
     key: 'odc.sqlexecute.default.queryLimit',
     group: databaseGroup,

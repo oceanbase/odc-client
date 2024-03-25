@@ -83,6 +83,7 @@ export interface IUserConfig {
   'odc.sqlexecute.default.queryLimit': string;
   'odc.sqlexecute.default.fullLinkTraceEnabled': 'true' | 'false';
   'odc.sqlexecute.default.continueExecutionOnError': 'true' | 'false';
+  'odc.sqlexecute.default.addInternalRowId': 'true' | 'false';
   'odc.sqlexecute.default.objectDraggingOption': DragInsertType;
   'odc.editor.style.theme': 'OceanBase' | 'VSCode';
   'odc.editor.style.fontSize': 'Small' | 'Normal' | 'Large';
