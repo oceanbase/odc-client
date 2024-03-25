@@ -120,7 +120,15 @@ const Channel: React.FC<{
   const operationOptions = [
     {
       type: IOperationOptionType.button,
-      content: <span>新建推送通道</span>,
+      content: (
+        <span>
+          {
+            formatMessage({
+              id: 'src.page.Project.Notification.components.5909ABDC' /*新建推送通道*/,
+            }) /* 新建推送通道 */
+          }
+        </span>
+      ),
       isPrimary: true,
       onClick: () => {
         setFormDrawerOpen(true);
@@ -375,7 +383,11 @@ export const FromChannelDrawer: React.FC<{
       open={formDrawerOpen}
       destroyOnClose
       closable
-      title={channelId ? '编辑推送通道' : '新建推送通道'}
+      title={
+        channelId
+          ? formatMessage({ id: 'src.page.Project.Notification.components.086256DF' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.9A35D4DD' })
+      }
       width={520}
       onClose={handleFormDrawerClose}
       footer={
@@ -443,7 +455,7 @@ export const FromChannelDrawer: React.FC<{
           rules={[
             {
               required: true,
-              message: '请输入',
+              message: formatMessage({ id: 'src.page.Project.Notification.components.2E3BEDFA' }), //'请输入'
             },
             {
               message: formatMessage({ id: 'src.page.Project.Notification.components.CA33D8AB' }), //'通道名称已存在'
@@ -528,7 +540,9 @@ export const FromChannelDrawer: React.FC<{
                     rules={[
                       {
                         required: true,
-                        message: '请输入',
+                        message: formatMessage({
+                          id: 'src.page.Project.Notification.components.982731E2',
+                        }), //'请输入'
                       },
                     ]}
                   >
@@ -557,7 +571,13 @@ export const FromChannelDrawer: React.FC<{
                       </Form.Item>
                       {channelId && (
                         <a className={styles?.modifyBtn} onClick={modifySwitch}>
-                          {hasChangeSign ? '取消修改' : '修改密钥'}
+                          {hasChangeSign
+                            ? formatMessage({
+                                id: 'src.page.Project.Notification.components.042EAFE9',
+                              })
+                            : formatMessage({
+                                id: 'src.page.Project.Notification.components.2EE5076E',
+                              })}
                         </a>
                       )}
                     </>
@@ -922,6 +942,7 @@ export const DetailChannelDrawer: React.FC<{
             </Descriptions.Item>
           </>
         )}
+
         <Descriptions.Item
           label={
             formatMessage({
@@ -934,7 +955,9 @@ export const DetailChannelDrawer: React.FC<{
             : '-'}
         </Descriptions.Item>
         {channel?.channelConfig?.rateLimitConfig?.overLimitStrategy && (
-          <Descriptions.Item label={'超出限流处理策略'}>
+          <Descriptions.Item
+            label={formatMessage({ id: 'src.page.Project.Notification.components.C91AC4BD' })}
+          >
             <HelpDoc
               isTip
               leftText
@@ -948,6 +971,7 @@ export const DetailChannelDrawer: React.FC<{
             </HelpDoc>
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           label={
             formatMessage({

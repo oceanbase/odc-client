@@ -206,7 +206,14 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         >
           {ErrorStrategy[parameters?.errorStrategy]}
         </Descriptions.Item>
-        <Descriptions.Item span={2} label="SQL 重试次数">
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'src.component.Task.AsyncTask.DetailContent.1F4ECA8A',
+            }) /*"SQL 重试次数"*/
+          }
+        >
           {parameters?.retryTimes ?? 0}
         </Descriptions.Item>
         <Descriptions.Item

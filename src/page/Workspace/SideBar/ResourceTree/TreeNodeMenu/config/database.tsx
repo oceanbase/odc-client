@@ -72,12 +72,20 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'TASK_EXPORT_MENU',
-      text: ['数据导出'],
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.503FF376',
+        }) /*'数据导出'*/,
+      ],
       ellipsis: true,
       children: [
         {
           key: 'TASK_EXPORT',
-          text: ['导出'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.0A419755',
+            }) /*'导出'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBExport;
@@ -91,7 +99,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_EXPORT_RESULT_SET',
-          text: ['导出结果集'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.42C44540',
+            }) /*'导出结果集'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBExport;
@@ -107,12 +119,20 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'TASK_DATA_DEVELOP',
-      text: ['数据研发'],
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.9552E3A1',
+        }) /*'数据研发'*/,
+      ],
       ellipsis: true,
       children: [
         {
           key: 'TASK_IMPORT',
-          text: ['导入'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.2CFE4C42',
+            }) /*'导入'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBImport;
@@ -126,7 +146,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_MOCKDATA',
-          text: ['模拟数据'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.59BFC33A',
+            }) /*'模拟数据'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableMockdata;
@@ -140,7 +164,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_ASYNC',
-          text: ['数据库变更'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.E6CFD4DD',
+            }) /*'数据库变更'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableAsyncTask;
@@ -154,7 +182,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_ONLINE_SCHEMA_CHANGE',
-          text: ['无锁结构变更'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.6844939F',
+            }) /*'无锁结构变更'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableOSC;
@@ -168,7 +200,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_SHADOW',
-          text: ['影子表同步'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.1ACCD0B1',
+            }) /*'影子表同步'*/,
+          ],
           ellipsis: true,
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -179,7 +215,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_STRUCTURE_COMPARISON',
-          text: ['结构比对'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.3DDBBFA6',
+            }) /*'结构比对'*/,
+          ],
           ellipsis: true,
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -192,12 +232,20 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'TASK_CYCLE_MENU',
-      text: ['定时任务'],
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E',
+        }) /*'定时任务'*/,
+      ],
       ellipsis: true,
       children: [
         {
           key: 'TASK_SQL_PLAN',
-          text: ['SQL 计划'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.82D835BA',
+            }) /*'SQL 计划'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -211,7 +259,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_PARTITION_PLAN',
-          text: ['分区计划'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.481C5DF5',
+            }) /*'分区计划'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -225,7 +277,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_DATA_ARCHIVE',
-          text: ['数据归档'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.983B20EC',
+            }) /*'数据归档'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -239,7 +295,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_DATA_DELETE',
-          text: ['数据清理'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.51FA0E16',
+            }) /*'数据清理'*/,
+          ],
           ellipsis: true,
           isHide(_, node) {
             return isClient();

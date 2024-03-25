@@ -100,7 +100,7 @@ const Environment = () => {
   const handleDeleteEnvironment = async () => {
     return Modal.confirm({
       title: formatMessage({ id: 'src.page.Secure.Env.65EAAB75' }), //'确认删除该环境么？'
-      content: '删除后不可撤回',
+      content: formatMessage({ id: 'src.page.Secure.Env.CFE6811F' }), //'删除后不可撤回'
       centered: true,
       onCancel: () => {},
       onOk: async () => {

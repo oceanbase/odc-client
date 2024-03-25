@@ -26,15 +26,15 @@ import styles from './index.less';
 
 const periodUnits = [
   {
-    label: '年',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.8EFB4C32' }), //'年'
     value: 1,
   },
   {
-    label: '月',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.CD3BF6C6' }), //'月'
     value: 2,
   },
   {
-    label: '日',
+    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.42293F67' }), //'日'
     value: 5,
   },
 ];
@@ -65,7 +65,12 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       partitionNameInvokerParameters?.partitionNameGeneratorConfig?.refPartitionKey;
     const suffix = [`${refPartitionKey ?? '-'}`];
     if (suffixExpression) {
-      suffix.push(`时间格式: ${suffixExpression}`);
+      suffix.push(
+        formatMessage(
+          { id: 'src.component.Task.component.PartitionPolicyTable.6C49E8F4' },
+          { suffixExpression: suffixExpression },
+        ),
+      ); //`时间格式: ${suffixExpression}`
     }
     return suffix.filter(Boolean).join(', ');
   };
@@ -78,6 +83,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     onClose();
   };
   const unitLabel = getUnitLabel(dropKeyConfig?.partitionKeyInvokerParameters?.periodUnit);
+  const expirePeriod = dropKeyConfig?.partitionKeyInvokerParameters?.expirePeriod;
   return (
     <Drawer
       title={
@@ -160,6 +166,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           />
         </>
       )}
+
       <Descriptions style={{ marginTop: '8px' }} column={1}>
         <Descriptions.Item
           label={
@@ -178,7 +185,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 },
               )}
               <Space size={2}>
-                <span>后缀:</span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyTable.68E34A9C' /*后缀:*/,
+                    }) /* 后缀: */
+                  }
+                </span>
                 {getNamingSuffix()}
               </Space>
             </Space>
@@ -195,18 +208,39 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       </Descriptions>
       {dropKeyConfig && (
         <SimpleTextItem
-          label="删除规则"
+          label={
+            formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyTable.C395F5C1',
+            }) /*"删除规则"*/
+          }
           content={
             dropKeyConfig?.partitionKeyInvoker ===
             PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_DROP_GENERATOR ? (
               <div>
-                {`保留最近${dropKeyConfig?.partitionKeyInvokerParameters?.expirePeriod}个${unitLabel}的分区，不重建全局索引`}
+                {
+                  formatMessage(
+                    { id: 'src.component.Task.component.PartitionPolicyTable.A6ED90AD' },
+                    { expirePeriod: expirePeriod, unitLabel: unitLabel },
+                  ) /*`保留最近${expirePeriod}个${unitLabel}的分区，不重建全局索引`*/
+                }
               </div>
             ) : (
               <div>
                 {dropKeyConfig?.partitionKeyInvokerParameters?.reloadIndexes
-                  ? `保留最近${dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}个分区，重建全局索引`
-                  : `保留最近${dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount}个分区，不重建全局索引`}
+                  ? formatMessage(
+                      { id: 'src.component.Task.component.PartitionPolicyTable.E664CA38' },
+                      {
+                        dropKeyConfigPartitionKeyInvokerParametersKeepLatestCount:
+                          dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount,
+                      },
+                    )
+                  : formatMessage(
+                      { id: 'src.component.Task.component.PartitionPolicyTable.F0A2151E' },
+                      {
+                        dropKeyConfigPartitionKeyInvokerParametersKeepLatestCount:
+                          dropKeyConfig?.partitionKeyInvokerParameters?.keepLatestCount,
+                      },
+                    )}
               </div>
             )
           }

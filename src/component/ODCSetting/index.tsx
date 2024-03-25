@@ -114,7 +114,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   function close(force: boolean = false) {
     if (changed && !force) {
       Modal.confirm({
-        title: '确认要取消修改配置吗？',
+        title: formatMessage({ id: 'src.component.ODCSetting.983C51BC' }), //'确认要取消修改配置吗？'
         onOk: () => {
           setChanged(false);
           modalStore.changeOdcSettingVisible(false);

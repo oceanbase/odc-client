@@ -29,7 +29,9 @@ const SelectItem: React.FC<IProps> = ({
   projectId,
   filters = null,
   width,
-  placeholder = '请选择',
+  placeholder = formatMessage({
+    id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.66A17FFD',
+  }),
   disabled = false,
   onChange,
 }) => {
@@ -102,6 +104,7 @@ const SelectItem: React.FC<IProps> = ({
                 {database?.data?.project?.name}
               </span>
             )}
+
             <span>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,

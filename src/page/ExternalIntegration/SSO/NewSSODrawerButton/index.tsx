@@ -84,11 +84,17 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
         }}
         type="primary"
       >
-        新建登录集成
+        {
+          formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.5B2934AC' /*新建登录集成*/,
+          }) /* 新建登录集成 */
+        }
       </Button>
       <Drawer
         width={520}
-        title={'新建登录集成'}
+        title={formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.506C2E48',
+        })}
         open={open}
         onClose={() => {
           setOpen(false);

@@ -146,7 +146,7 @@ export const FormEnvironmentModal: React.FC<{
             <Input
               disabled={isEdit}
               style={{ width: '240px' }}
-              placeholder={'请输入，8个字符以内'}
+              placeholder={formatMessage({ id: 'src.page.Secure.Env.components.228DEEEE' })}
             />
           </Form.Item>
           <div className={styles.envNameTip}>

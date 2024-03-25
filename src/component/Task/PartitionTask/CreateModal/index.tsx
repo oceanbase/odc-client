@@ -536,13 +536,26 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
           {hasPartitionPlan && (
             <Alert
-              message="当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"
+              message={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.518BD6F7',
+                }) /*"当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"*/
+              }
               type="warning"
               style={{ marginBottom: '8px' }}
               showIcon
             />
           )}
-          <Form.Item label="分区策略" required className={styles.tableWrapper}>
+
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.PartitionTask.CreateModal.3383DFA3',
+              }) /*"分区策略"*/
+            }
+            required
+            className={styles.tableWrapper}
+          >
             <PartitionPolicyFormTable
               databaseId={databaseId}
               sessionId={sessionId}

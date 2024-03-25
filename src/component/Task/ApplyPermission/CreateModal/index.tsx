@@ -148,7 +148,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success('工单创建成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.ApplyPermission.CreateModal.1F08D7C5' /*'工单创建成功'*/,
+            }),
+          );
           openTasksPage(
             TaskPageType.APPLY_PROJECT_PERMISSION,
             TaskPageScope.CREATED_BY_CURRENT_USER,

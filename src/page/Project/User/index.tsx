@@ -116,7 +116,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   return (
     <TableCard
       title={
-        <TooltipAction title={!isOwner ? '暂无权限' : ''}>
+        <TooltipAction
+          title={!isOwner ? formatMessage({ id: 'src.page.Project.User.0C0586E8' }) : ''}
+        >
           <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
             {
               formatMessage({
@@ -188,7 +190,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                 <Action.Group size={3}>
                   <Action.Link
                     disabled={disabled && !isMe}
-                    tooltip={disabled && !isMe ? '暂无权限' : ''}
+                    tooltip={
+                      disabled && !isMe
+                        ? formatMessage({ id: 'src.page.Project.User.907FD906' })
+                        : ''
+                    }
                     onClick={() => {
                       showManageModal(record.id);
                     }}
@@ -203,7 +209,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
-                    tooltip={disabled ? '暂无权限' : ''}
+                    tooltip={
+                      disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -221,7 +229,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     <Action.Link
                       key={'import'}
                       disabled={disabled}
-                      tooltip={disabled ? '暂无权限' : ''}
+                      tooltip={
+                        disabled ? formatMessage({ id: 'src.page.Project.User.FE2F4924' }) : ''
+                      }
                     >
                       {
                         formatMessage({

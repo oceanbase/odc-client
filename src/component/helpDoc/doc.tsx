@@ -371,7 +371,15 @@ export default {
     </p>
   ),
 
-  partitionKeepLatestCount: <p>超出数量后，仅保留最近若干个分区，其他分区均删除</p>,
+  partitionKeepLatestCount: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.69D23502' /*超出数量后，仅保留最近若干个分区，其他分区均删除*/,
+        }) /* 超出数量后，仅保留最近若干个分区，其他分区均删除 */
+      }
+    </p>
+  ),
 
   expirePeriod: (
     <p>
@@ -500,6 +508,7 @@ export default {
       }
     </p>
   ),
+
   projectDBA: (
     <p>
       {
@@ -509,6 +518,7 @@ export default {
       }
     </p>
   ),
+
   projectDev: (
     <p>
       {
@@ -518,6 +528,7 @@ export default {
       }
     </p>
   ),
+
   projectSA: (
     <p>
       {
@@ -527,6 +538,7 @@ export default {
       }
     </p>
   ),
+
   participant: (
     <p>
       {
@@ -536,6 +548,7 @@ export default {
       }
     </p>
   ),
+
   dataArchiveTimeDoc: (
     <p>
       {
@@ -602,7 +615,7 @@ export default {
     <p>
       {formatMessage({
         id: 'src.component.helpDoc.AEEC5916' /*关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
-            将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障*/,
+      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障*/,
       })}
     </p>
   ),
@@ -616,6 +629,7 @@ export default {
       }
     </p>
   ),
+
   ApplyDatabasePermissionExportTip: (
     <p>
       {
@@ -625,14 +639,15 @@ export default {
       }
     </p>
   ),
+
   ApplyDatabasePermissionChangeTip: (
     <p>
       {
         formatMessage({
           id: 'src.component.helpDoc.5373CF9E' /*新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL
-            计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）*/,
+      计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）*/,
         }) /* 新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL
-          计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束） */
+    计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束） */
       }
     </p>
   ),
@@ -646,6 +661,7 @@ export default {
       }
     </p>
   ),
+
   copiedRulesetId: (
     <p>
       {
@@ -655,10 +671,23 @@ export default {
       }
     </p>
   ),
+
   userManageTip: (
     <>
-      <p>工单授权：用户通过工单申请的权限</p>
-      <p>用户权限：项目管理员/DBA授予的权限</p>
+      <p>
+        {
+          formatMessage({
+            id: 'src.component.helpDoc.38CAE676' /*工单授权：用户通过工单申请的权限*/,
+          }) /* 工单授权：用户通过工单申请的权限 */
+        }
+      </p>
+      <p>
+        {
+          formatMessage({
+            id: 'src.component.helpDoc.188E681E' /*用户权限：项目管理员/DBA授予的权限*/,
+          }) /* 用户权限：项目管理员/DBA授予的权限 */
+        }
+      </p>
     </>
   ),
 };

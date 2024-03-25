@@ -103,14 +103,22 @@ const Policy: React.FC<{
   ) => {
     if (isSuccessful) {
       if (enabled) {
-        return isSingle ? '启用成功' : '批量启用成功';
+        return isSingle
+          ? formatMessage({ id: 'src.page.Project.Notification.components.1FEA773B' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.35494597' });
       }
-      return isSingle ? '禁用成功' : '批量禁用成功';
+      return isSingle
+        ? formatMessage({ id: 'src.page.Project.Notification.components.EF079B62' })
+        : formatMessage({ id: 'src.page.Project.Notification.components.4E04D835' });
     }
     if (enabled) {
-      return isSingle ? '启用失败' : '批量启用失败';
+      return isSingle
+        ? formatMessage({ id: 'src.page.Project.Notification.components.868F9EE8' })
+        : formatMessage({ id: 'src.page.Project.Notification.components.A075A0DF' });
     }
-    return isSingle ? '禁用失败' : '批量禁用失败';
+    return isSingle
+      ? formatMessage({ id: 'src.page.Project.Notification.components.A4655370' })
+      : formatMessage({ id: 'src.page.Project.Notification.components.EB30B7E4' });
   };
   const handleSwitchPoliciesStatus = async (formData: TPolicyForm, enabled?: boolean) => {
     const isSingle = formData.mode === EPolicyFormMode.SINGLE;
@@ -347,7 +355,13 @@ const FormPolicyModal: React.FC<{
                   {menu}
                   <Divider style={{ margin: '0px' }} />
                   <div onClick={() => setChannelFormDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-                    <Button type="link">新建推送通道</Button>
+                    <Button type="link">
+                      {
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.E4C2708A' /*新建推送通道*/,
+                        }) /* 新建推送通道 */
+                      }
+                    </Button>
                   </div>
                 </>
               )}

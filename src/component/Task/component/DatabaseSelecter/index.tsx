@@ -119,6 +119,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             </Text>
           </Space>
         ),
+
         key: item?.id,
         icon: <Icon component={DatabaseSvg} />,
       };
@@ -172,7 +173,13 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                   style={{ marginRight: '8px' }}
                 />
 
-                <span>选择数据库</span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.component.DatabaseSelecter.D17AE43F' /*选择数据库*/,
+                    }) /* 选择数据库 */
+                  }
+                </span>
                 <Text type="secondary">({allTreeDataCount})</Text>
               </Space>
             }

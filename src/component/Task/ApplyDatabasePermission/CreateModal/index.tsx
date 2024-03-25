@@ -212,7 +212,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success('工单创建成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.8B9755E4' /*'工单创建成功'*/,
+            }),
+          );
           openTasksPage(
             TaskPageType.APPLY_DATABASE_PERMISSION,
             TaskPageScope.CREATED_BY_CURRENT_USER,

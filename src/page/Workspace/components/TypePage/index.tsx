@@ -58,7 +58,7 @@ const TypeCodeMap = {
   OBJECT: formatMessage({ id: 'odc.components.TypePage.Object' }), // 对象
   VARRAY: formatMessage({ id: 'odc.components.TypePage.Array' }), // 数组
   TABLE: formatMessage({ id: 'odc.components.TypePage.Table' }), // 表
-  COLLECTION: '集合',
+  COLLECTION: formatMessage({ id: 'src.page.Workspace.components.TypePage.ACF1EB3E' }), //'集合'
 };
 interface IProps {
   sqlStore: SQLStore;
