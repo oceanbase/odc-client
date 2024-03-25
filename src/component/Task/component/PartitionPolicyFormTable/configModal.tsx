@@ -481,14 +481,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               id: 'src.component.Task.component.PartitionPolicyFormTable.7632AF45',
             }) /*"分区策略"*/
           }
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.CD65E4CD',
-              }), //'请选择'
-            },
-          ]}
         >
           <Checkbox.Group options={StrategyOptions} />
         </Form.Item>

@@ -284,8 +284,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       try {
         const values = await form.validateFields();
         const { description, databaseId, timeoutMillis, errorStrategy } = values;
-        let partitionTableConfigs: IPartitionTableConfig[] = tableConfigs
-          ?.filter((config) => config?.strategies?.length)
+        const validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
+        const validHistoryOriginTableConfigs = historyOriginTableConfigs?.filter((item) => {
+          return validTableConfigs?.some((config) => config?.tableName === item?.tableName);
+        });
+        let partitionTableConfigs: IPartitionTableConfig[] = validTableConfigs
           ?.map((config) => {
             const createdOriginTableConfig = createdOriginTableConfigs?.find(
               (item) => item.tableName === config.tableName,
@@ -407,8 +410,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             return tableConfig;
           })
           ?.filter(Boolean);
-        if (historyOriginTableConfigs?.length) {
-          partitionTableConfigs = partitionTableConfigs.concat(historyOriginTableConfigs);
+        if (validHistoryOriginTableConfigs?.length) {
+          partitionTableConfigs = partitionTableConfigs.concat(validHistoryOriginTableConfigs);
         }
         const params = {
           taskType: TaskType.PARTITION_PLAN,
