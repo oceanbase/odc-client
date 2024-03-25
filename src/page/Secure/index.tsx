@@ -31,7 +31,7 @@ import { history, useParams } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import Approval from './Approval';
-import { ManageContext } from './context';
+import { SecureContext } from './context';
 import Env from './Env';
 import MaskingAlgorithm from './MaskingAlgorithm';
 import Record from './Record';
@@ -119,14 +119,14 @@ const Index: React.FC<IProps> = function ({ userStore }) {
       tabActiveKey={page}
       onTabChange={handleChange}
     >
-      <ManageContext.Provider
+      <SecureContext.Provider
         value={{
           users,
           getUserList: _getUserList,
         }}
       >
         <Component id={id} key={id} />
-      </ManageContext.Provider>
+      </SecureContext.Provider>
     </PageContainer>
   );
 };
