@@ -92,10 +92,7 @@ export interface ITableConfig {
   reloadIndexes?: boolean;
   namingPrefix?: string;
   namingSuffixExpression?: string;
-  fromCurrentTime?: START_DATE;
-  baseTimestampMillis?: number;
-  interval?: string;
-  intervalPrecision?: number;
+  refPartitionKey?: string;
   intervalGenerateExpr?: string;
   strategies?: TaskPartitionStrategy[];
   partitionMode?: string;
@@ -140,9 +137,6 @@ const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableC
     const tableConfig = {
       ...dropPartitionKeyInvokerParameters,
       ...partitionNameGeneratorConfig,
-      fromCurrentTime: partitionNameGeneratorConfig?.fromCurrentTime
-        ? START_DATE.CURRENT_DATE
-        : undefined,
       tableName: config?.tableName,
       generateCount: keyConfigs?.[0]?.generateCount,
       option: {
@@ -296,8 +290,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             const createdOriginTableConfig = createdOriginTableConfigs?.find(
               (item) => item.tableName === config.tableName,
             );
-            if (!config?.__isCreate && createdOriginTableConfig) {
-              return createdOriginTableConfig;
+            if (!config?.__isCreate) {
+              return createdOriginTableConfig ? createdOriginTableConfig : null;
             }
             const {
               generateCount,
@@ -307,10 +301,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               reloadIndexes,
               namingPrefix,
               namingSuffixExpression,
-              fromCurrentTime,
-              baseTimestampMillis,
-              interval,
-              intervalPrecision,
+              refPartitionKey,
               intervalGenerateExpr,
               tableName,
               strategies,
@@ -391,22 +382,13 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               partitionNameInvokerParameters: {},
             };
             if (nameRuleType === 'PRE_SUFFIX') {
-              const currentTimeParameter = {
-                fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
-                baseTimestampMillis: baseTimestampMillis?.valueOf(),
-              };
-              if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
-                delete currentTimeParameter.baseTimestampMillis;
-              }
               tableConfig.partitionNameInvoker =
                 PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
               tableConfig.partitionNameInvokerParameters = {
                 partitionNameGeneratorConfig: {
-                  ...currentTimeParameter,
                   namingPrefix,
                   namingSuffixExpression,
-                  interval,
-                  intervalPrecision,
+                  refPartitionKey,
                 },
               };
             } else {
@@ -423,7 +405,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               delete tableConfig.partitionNameInvokerParameters;
             }
             return tableConfig;
-          });
+          })
+          ?.filter(Boolean);
         if (historyOriginTableConfigs?.length) {
           partitionTableConfigs = partitionTableConfigs.concat(historyOriginTableConfigs);
         }
