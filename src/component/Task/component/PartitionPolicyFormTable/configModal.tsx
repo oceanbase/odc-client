@@ -461,7 +461,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 id: 'src.component.Task.component.PartitionPolicyFormTable.AE09B3CB',
               }) /*"分区表"*/
             }
-          >{`${tableLabels}${moreText}`}</Descriptions.Item>
+          >
+            {`${tableLabels}${moreText}`}
+          </Descriptions.Item>
           <Descriptions.Item
             label={
               formatMessage({
@@ -660,7 +662,15 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     </Form.Item>
                     <Input.Group compact>
                       <Tag className={styles.suffix}>
-                        <HelpDoc leftText isTip title="后缀根据指定的分区键上界时间生成">
+                        <HelpDoc
+                          leftText
+                          isTip
+                          title={
+                            formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.2CF17EE5',
+                            }) /*"后缀根据指定的分区键上界时间生成"*/
+                          }
+                        >
                           {
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
@@ -694,6 +704,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           />
                         </Form.Item>
                       )}
+
                       <Form.Item
                         name="namingSuffixExpression"
                         className={styles.noMarginBottom}
@@ -731,7 +742,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               </Action.Link>
               {!!ruleExample && (
                 <Text type="secondary">
-                  分区名示例:
+                  {formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.B0571B5B' /*分区名示例:*/,
+                  })}
+
                   {ruleExample}
                 </Text>
               )}
@@ -747,7 +761,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入表达式',
+                    message: formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.F7B54DFB',
+                    }), //'请输入表达式'
                   },
                 ]}
               >

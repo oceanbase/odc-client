@@ -98,7 +98,9 @@ const CompareTable: React.FC<{
   const tableRef = useRef<ITableInstance>(null);
   const columns = [
     {
-      title: '比对表',
+      title: formatMessage({
+        id: 'src.component.Task.StructureComparisonTask.DetailContent.6825620C',
+      }), //'比对表'
       key: 'dbObjectName',
       dataIndex: 'dbObjectName',
       filters: [],
@@ -121,7 +123,9 @@ const CompareTable: React.FC<{
       ),
     },
     {
-      title: '比对结果',
+      title: formatMessage({
+        id: 'src.component.Task.StructureComparisonTask.DetailContent.A725ADD7',
+      }), //'比对结果'
       key: 'operationType',
       dataIndex: 'operationType',
       filters: [
@@ -379,7 +383,9 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     }, []);
     const tabItems = [
       {
-        label: '比对的表',
+        label: formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.DetailContent.59BDC22F',
+        }), //'比对的表'
         key: '1',
         children: (
           <CompareTable

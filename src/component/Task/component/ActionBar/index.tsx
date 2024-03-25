@@ -566,8 +566,8 @@ const ActionBar: React.FC<IProps> = inject(
         }),
         disabled: isExpired,
         isExpired,
-        tip: '文件下载链接已超时，请重新发起工单。',
-        //下载查询结果
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.E9211B1A' }), //'文件下载链接已超时，请重新发起工单。'
+
         action: downloadViewResult,
         type: 'button',
       };

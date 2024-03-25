@@ -147,13 +147,25 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   help={EmptyHelp}
                 >
                   <Input
-                    placeholder="请输入 SQL 表达式生成分区上界，可引用变量如 ${INTERVAL}"
+                    placeholder={
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.13EB1436',
+                      }) /*"请输入 SQL 表达式生成分区上界，可引用变量如 ${INTERVAL}"*/
+                    }
                     {...getFieldProps(generateExprError)}
                   />
                 </Form.Item>
                 <Input.Group compact>
                   <Tag className={styles.suffix}>
-                    <HelpDoc leftText isTip title="INTERVAL 初始值及增长步长">
+                    <HelpDoc
+                      leftText
+                      isTip
+                      title={
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.B0EB9B0D',
+                        }) /*"INTERVAL 初始值及增长步长"*/
+                      }
+                    >
                       {
                         formatMessage({
                           id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,

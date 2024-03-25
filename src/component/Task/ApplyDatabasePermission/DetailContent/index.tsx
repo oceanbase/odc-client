@@ -95,7 +95,11 @@ const TaskContent: React.FC<IProps> = (props) => {
         </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem
-        label="数据库"
+        label={
+          formatMessage({
+            id: 'src.component.Task.ApplyDatabasePermission.DetailContent.281F6779',
+          }) /*"数据库"*/
+        }
         content={
           <DisplayTable
             rowKey="id"

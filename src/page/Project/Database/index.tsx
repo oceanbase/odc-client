@@ -113,7 +113,9 @@ const Database: React.FC<IProps> = ({ id }) => {
   const renderDisabledDBWithTip = (name: React.ReactNode) => {
     return (
       <span className={styles.disable}>
-        <Tooltip title={'当前账号的项目成员角色没有该库的操作权限，请先申请库权限'}>{name}</Tooltip>
+        <Tooltip title={formatMessage({ id: 'src.page.Project.Database.B4A5A6AC' })}>
+          {name}
+        </Tooltip>
       </span>
     );
   };
@@ -217,6 +219,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       marginRight: 4,
                     }}
                   />
+
                   <span title={value}>{value}</span>
                 </>
               );
@@ -305,7 +308,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
                       disabled={!hasExportAuth}
-                      tooltip={!hasExportAuth ? '暂无导出权限，请先申请数据库权限' : ''}
+                      tooltip={
+                        !hasExportAuth
+                          ? formatMessage({ id: 'src.page.Project.Database.A74B21AE' })
+                          : ''
+                      }
                     >
                       {
                         formatMessage({
@@ -314,6 +321,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   )}
+
                   {config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && (
                     <Action.Link
                       key={'import'}
@@ -322,7 +330,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
                       disabled={!hasChangeAuth}
-                      tooltip={!hasChangeAuth ? '暂无变更权限，请先申请数据库权限' : ''}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({ id: 'src.page.Project.Database.EA72923D' })
+                          : ''
+                      }
                     >
                       {
                         formatMessage({
@@ -331,6 +343,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   )}
+
                   <Action.Link
                     key={'ddl'}
                     onClick={() => {
@@ -338,7 +351,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                     disabled={!hasChangeAuth}
-                    tooltip={!hasChangeAuth ? '暂无变更权限，请先申请数据库权限' : ''}
+                    tooltip={
+                      !hasChangeAuth
+                        ? formatMessage({ id: 'src.page.Project.Database.8AFF2CDE' })
+                        : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -353,7 +370,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
                     disabled={!hasLoginAuth}
-                    tooltip={!hasLoginAuth ? '暂无权限' : ''}
+                    tooltip={
+                      !hasLoginAuth
+                        ? formatMessage({ id: 'src.page.Project.Database.6EC9F229' })
+                        : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -369,7 +390,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setDatabase(record);
                     }}
                     disabled={!hasChangeAuth || disableTransfer}
-                    tooltip={!hasChangeAuth || disableTransfer ? '暂无权限' : ''}
+                    tooltip={
+                      !hasChangeAuth || disableTransfer
+                        ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                        : ''
+                    }
                   >
                     <Tooltip
                       title={
@@ -384,8 +409,8 @@ const Database: React.FC<IProps> = ({ id }) => {
                         formatMessage({
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
                         }) /* 
-                      修改所属项目
-                     */
+                    修改所属项目
+                    */
                       }
                     </Tooltip>
                   </Action.Link>

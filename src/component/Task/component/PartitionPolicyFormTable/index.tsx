@@ -125,7 +125,9 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
       },
     },
     {
-      title: '已有分区数量',
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyFormTable.6020D1A1',
+      }), //'已有分区数量'
       key: 'definitionCount',
       dataIndex: 'definitionCount',
       width: 120,
@@ -144,7 +146,13 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           <div className={styles.rangConfig}>
             {label?.length && record?.__isCreate ? (
               <Space>
-                <span>已设置:</span>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.619CFFCB' /*已设置:*/,
+                    }) /* 已设置: */
+                  }
+                </span>
                 <span>{label}</span>
               </Space>
             ) : (

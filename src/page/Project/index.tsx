@@ -55,7 +55,7 @@ const ExtraContent = ({ projectId }) => {
 
   return (
     <Space size={12}>
-      <TooltipAction title={disabled ? '暂无权限' : ''}>
+      <TooltipAction title={disabled ? formatMessage({ id: 'src.page.Project.653AB743' }) : ''}>
         <Button
           onClick={() => {
             tracert.click('a3112.b64002.c330858.d367386');
@@ -124,7 +124,7 @@ const tabs = [
     key: IPageType.Project_Sensitive,
   },
   {
-    tab: '消息',
+    tab: formatMessage({ id: 'src.page.Project.B4D9BC23' }), //'消息'
     key: IPageType.Project_Notification,
   },
   {

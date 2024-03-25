@@ -71,7 +71,13 @@ const columns = [
                   })}
             </Descriptions.Item>
           ) : (
-            <Descriptions.Item label="表达式">
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.2C76F5F5',
+                }) /*"表达式"*/
+              }
+            >
               <Tooltip
                 title={record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr}
               >
@@ -79,6 +85,7 @@ const columns = [
               </Tooltip>
             </Descriptions.Item>
           )}
+
           {!!intervalGenerateExpr && (
             <Descriptions.Item
               label={

@@ -112,7 +112,7 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '获取 RowId',
+    label: formatMessage({ id: 'src.component.ODCSetting.config.9881D833' }), //'获取 RowId'
     key: 'odc.sqlexecute.default.addInternalRowId',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,

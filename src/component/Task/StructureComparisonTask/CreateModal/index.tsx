@@ -41,7 +41,11 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
     if (result) {
-      message.success('工单创建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.CreateModal.1E436045' /*'工单创建成功'*/,
+        }),
+      );
       modalStore.changeStructureComparisonModal(false);
       openTasksPage(TaskPageType.STRUCTURE_COMPARISON);
       return;
@@ -186,7 +190,13 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             })}
           />
 
-          <Form.Item label={'比对范围'} name={['parameters', 'comparisonScope']} required>
+          <Form.Item
+            label={formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.2ABC81DE',
+            })}
+            name={['parameters', 'comparisonScope']}
+            required
+          >
             <Radio.Group>
               <Radio value={EComparisonScope.PART}>
                 {comparisonScopeMap[EComparisonScope.PART]}

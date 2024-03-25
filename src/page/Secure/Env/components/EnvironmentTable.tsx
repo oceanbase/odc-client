@@ -190,19 +190,27 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
           enabled: !rule.enabled,
         })) || false;
       if (successful) {
-        message.success(rule.enabled ? '禁用成功' : '启用成功');
+        message.success(
+          rule.enabled
+            ? formatMessage({ id: 'src.page.Secure.Env.components.B398D211' })
+            : formatMessage({ id: 'src.page.Secure.Env.components.666A8F25' }),
+        );
         tableRef.current?.reload(argsRef.current || {});
       } else {
-        message.error(rule.enabled ? '禁用失败' : '启用失败');
+        message.error(
+          rule.enabled
+            ? formatMessage({ id: 'src.page.Secure.Env.components.8DBF10C0' })
+            : formatMessage({ id: 'src.page.Secure.Env.components.C55A45B1' }),
+        );
       }
     };
     if (isCloseDisabledPLDebug) {
       return modal.confirm({
-        title: '确认禁用？',
+        title: formatMessage({ id: 'src.page.Secure.Env.components.C11B3607' }), //'确认禁用？'
         centered: true,
         content: rule?.metadata?.description,
-        cancelText: '取消',
-        okText: '确认',
+        cancelText: formatMessage({ id: 'src.page.Secure.Env.components.3CCC8328' }), //'取消'
+        okText: formatMessage({ id: 'src.page.Secure.Env.components.8D575F5C' }), //'确认'
         onCancel: () => {},
         onOk: switchRuleStatus,
       });

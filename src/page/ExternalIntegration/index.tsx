@@ -46,7 +46,7 @@ const tabs = [
     key: IPageType.ExternalIntegration_Sql,
   },
   {
-    tab: '登录集成',
+    tab: formatMessage({ id: 'src.page.ExternalIntegration.B29CC4F4' }), //'登录集成'
     key: IPageType.ExternalIntegration_SSO,
   },
 ];

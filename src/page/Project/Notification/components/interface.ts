@@ -20,27 +20,37 @@ export const EChannelTypeMap = {
     id: 'src.page.Project.Notification.components.F80DF1C7',
   }), //'飞书'
   [EChannelType.WE_COM]: formatMessage({ id: 'src.page.Project.Notification.components.A41C487F' }), //'企业微信'
-  [EChannelType.WEBHOOK]: '自定义',
+  [EChannelType.WEBHOOK]: formatMessage({
+    id: 'src.page.Project.Notification.components.CDD8F083',
+  }), //'自定义'
 };
 
 export const WebhookPlaceholderMap = {
-  [EChannelType.DING_TALK]: '请输入钉钉群机器人 Webhook 地址',
-  [EChannelType.FEI_SHU]: '请输入飞书群机器人 Webhook 地址',
-  [EChannelType.WE_COM]: '请输入企业微信群机器人 Webhook 地址',
-  [EChannelType.WEBHOOK]: '请输入 Webhook 地址',
+  [EChannelType.DING_TALK]: formatMessage({
+    id: 'src.page.Project.Notification.components.D6700838',
+  }), //'请输入钉钉群机器人 Webhook 地址'
+  [EChannelType.FEI_SHU]: formatMessage({
+    id: 'src.page.Project.Notification.components.0EB64694',
+  }), //'请输入飞书群机器人 Webhook 地址'
+  [EChannelType.WE_COM]: formatMessage({ id: 'src.page.Project.Notification.components.83F1E770' }), //'请输入企业微信群机器人 Webhook 地址'
+  [EChannelType.WEBHOOK]: formatMessage({
+    id: 'src.page.Project.Notification.components.F33A3513',
+  }), //'请输入 Webhook 地址'
 };
 export const ELanguageMap = {
-  [ELanguage.ZH_CN]: '简体中文',
+  [ELanguage.ZH_CN]: formatMessage({ id: 'src.page.Project.Notification.components.B1D41451' }), //'简体中文'
   [ELanguage.ZH_TW]: formatMessage({ id: 'src.page.Project.Notification.components.739AD573' }), //'繁体中文'
   [ELanguage.EN_US]: formatMessage({ id: 'src.page.Project.Notification.components.21BD64D9' }), //'英文'
 };
 // @oic-line-ignore
-const EContentTemplateMap_ZH_CN =
-  '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}';
-// @oic-line-ignore
-const EContentTemplateMap_ZH_TW =
-  '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}';
-// @oic-line-ignore
+const EContentTemplateMap_ZH_CN = formatMessage({
+  id: 'src.page.Project.Notification.components.F562FBAA',
+}); //'### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}'
+
+const EContentTemplateMap_ZH_TW = formatMessage({
+  id: 'src.page.Project.Notification.components.ED742927',
+}); //'### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}'
+
 const EContentTemplateMap_EN_US =
   '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}';
 export const EContentTemplateMap = {

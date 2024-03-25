@@ -884,12 +884,16 @@ const CreateModal: React.FC<IProps> = (props) => {
           /*任务设置*/ keepExpand
         >
           <Form.Item
-            label="SQL 重试次数"
+            label={
+              formatMessage({
+                id: 'src.component.Task.AsyncTask.CreateModal.4C35F704',
+              }) /*"SQL 重试次数"*/
+            }
             name="retryTimes"
             rules={[
               {
                 required: true,
-                message: '请输入',
+                message: formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.DF31D4E7' }), //'请输入'
               },
             ]}
           >

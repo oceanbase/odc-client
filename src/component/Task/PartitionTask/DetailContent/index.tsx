@@ -81,7 +81,13 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
         >
           <DatabaseLabel database={task?.database} />
         </Descriptions.Item>
-        <Descriptions.Item label="所属数据源">
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.3C90D5CA',
+            }) /*"所属数据源"*/
+          }
+        >
           {task?.database?.dataSource?.name || '-'}
         </Descriptions.Item>
         {hasFlow && (

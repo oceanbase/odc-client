@@ -296,7 +296,13 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             </Radio.Group>
           </Form.Item>
         )}
-        <Form.Item name="enabled" label="是否启用" required valuePropName="checked">
+
+        <Form.Item
+          name="enabled"
+          label={formatMessage({ id: 'src.page.Secure.Env.components.074ED6D7' }) /*"是否启用"*/}
+          required
+          valuePropName="checked"
+        >
           <Switch />
         </Form.Item>
       </Form>

@@ -236,7 +236,10 @@ const LDAPLoginContent: React.FC<{
         }}
       >
         {ssoLoginName
-          ? `${ssoLoginName} 登录`
+          ? formatMessage(
+              { id: 'src.page.Login.components.LDAPModal.7201A252' },
+              { ssoLoginName: ssoLoginName },
+            )
           : formatMessage({ id: 'src.page.Login.components.LDAPModal.95DA8BD0' /*LDAP 登录*/ })}
       </div>
       <div>

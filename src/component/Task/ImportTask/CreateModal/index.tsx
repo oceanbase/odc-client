@@ -231,7 +231,11 @@ class CreateModal extends React.Component<IProps, IState> {
             }),
           );
           if (result) {
-            message.success('工单创建成功');
+            message.success(
+              formatMessage({
+                id: 'src.component.Task.ImportTask.CreateModal.F0622C80' /*'工单创建成功'*/,
+              }),
+            );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
             }

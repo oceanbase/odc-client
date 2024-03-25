@@ -66,8 +66,8 @@ const getColumns = (applyTask: (projectId: number, databaseId: number) => void) 
         let tooltip = null;
         if (disabled) {
           tooltip = _.project?.id
-            ? '无法申请数据库权限：没有加入数据库所属项目'
-            : '无法申请数据库权限：数据库没有归属项目';
+            ? formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.C9A2993D' })
+            : formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.E87F786C' });
         }
         return (
           <Action.Link
