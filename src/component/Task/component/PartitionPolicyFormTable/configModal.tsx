@@ -15,7 +15,7 @@
  */
 
 import FormItemPanel from '@/component/FormItemPanel';
-import { previewPartitionPlans, getPartitionPlanKeyDataTypes } from '@/common/network/task';
+import { previewPartitionPlans } from '@/common/network/task';
 import HelpDoc from '@/component/helpDoc';
 import Action from '@/component/Action';
 import { TaskPartitionStrategy, PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER } from '@/d.ts';
@@ -40,38 +40,11 @@ import {
   Tag,
   Radio,
   Typography,
-  DatePicker,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const { Text } = Typography;
-
-const startDateOptionValues = [
-  {
-    label: '当前时间',
-    value: START_DATE.CURRENT_DATE,
-    description: '从实际执行时间开始命名',
-  },
-  {
-    label: '指定时间',
-    value: START_DATE.CUSTOM_DATE,
-    description: '从指定时间开始命名',
-  },
-];
-
-export const startDateOptions = startDateOptionValues.map(({ label, value, description }) => {
-  return {
-    label: (
-      <div>
-        <div>{label}</div>
-        <Text type="secondary">{description}</Text>
-      </div>
-    ),
-
-    value,
-  };
-});
 
 export enum NameRuleType {
   PRE_SUFFIX = 'PRE_SUFFIX',
@@ -105,17 +78,13 @@ export const intervalPrecisionOptions = [
   },
 ];
 
-const INTERVAL_PRECISION_DAY_VALUE = 7;
-
-export const getIntervalPrecisionLabel = (value) => {
-  return intervalPrecisionOptions?.find((item) => item.value === value)?.label;
-};
-
 const defaultInitialValues = {
   strategies: [TaskPartitionStrategy.CREATE, TaskPartitionStrategy.DROP],
   nameRuleType: NameRuleType.PRE_SUFFIX,
   interval: 1,
   reloadIndexes: true,
+  namingPrefix: 'p',
+  namingSuffixExpression: 'yyyyMMdd',
 };
 
 const StrategyOptions = Object.keys(TaskPartitionStrategyMap)?.map((key) => ({
@@ -206,7 +175,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const strategies = Form.useWatch('strategies', form);
   const nameRuleType = Form.useWatch('nameRuleType', form);
-  const fromCurrentTime = Form.useWatch('fromCurrentTime', form);
+  const partitionKeyOptions =
+    configs?.[0]?.option?.partitionKeyConfigs
+      ?.filter((item) => item?.type?.localizedMessage)
+      ?.map((item) => ({
+        label: item?.name,
+        value: item?.name,
+      })) ?? [];
   const alertMessage = getAlertMessage(strategies);
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
@@ -244,7 +219,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     onClose();
   };
 
-  const handlePreview = (isPreview: boolean = true) => {
+  const handlePreview = (isPreview: boolean = true, onlyForPartitionName: boolean = false) => {
     form
       .validateFields()
       .then(async (data) => {
@@ -254,13 +229,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           nameRuleType,
           namingPrefix,
           namingSuffixExpression,
-          fromCurrentTime,
-          baseTimestampMillis,
           generateExpr,
           option,
           keepLatestCount,
-          interval,
-          intervalPrecision,
+          refPartitionKey,
           intervalGenerateExpr,
           reloadIndexes,
         } = data;
@@ -328,6 +300,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
 
         const formData = {
           tableNames,
+          onlyForPartitionName,
           template: {
             partitionKeyConfigs: partitionKeyConfigs?.filter((item) =>
               strategies?.includes(item.strategy),
@@ -338,22 +311,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         };
 
         if (nameRuleType === 'PRE_SUFFIX') {
-          const currentTimeParameter = {
-            fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
-            baseTimestampMillis: baseTimestampMillis?.valueOf(),
-          };
-          if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
-            delete currentTimeParameter.baseTimestampMillis;
-          }
           formData.template.partitionNameInvoker =
             PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
           formData.template.partitionNameInvokerParameters = {
             partitionNameGeneratorConfig: {
               namingPrefix,
               namingSuffixExpression,
-              interval,
-              intervalPrecision,
-              ...currentTimeParameter,
+              refPartitionKey,
             },
           };
         } else {
@@ -375,6 +339,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           if (isPreview) {
             setPreviewSQLVisible(true);
             setPreviewData(res?.contents);
+          } else if (onlyForPartitionName) {
+            const rule = res?.contents?.map((item) => item?.partitionName)?.join(', ');
+            setRuleExample(rule);
           } else {
             handlePlansConfigChange(data);
             handleClose();
@@ -387,78 +354,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   };
 
   const handleTest = async () => {
-    form
-      .validateFields([
-        'nameRuleType',
-        'namingPrefix',
-        'namingSuffixExpression',
-        'generateExpr',
-        'interval',
-        'intervalPrecision',
-        'intervalGenerateExpr',
-        'fromCurrentTime',
-        'baseTimestampMillis',
-        'namingSuffixExpression',
-      ])
-      .then(async (data) => {
-        const {
-          nameRuleType,
-          namingPrefix,
-          namingSuffixExpression,
-          fromCurrentTime,
-          baseTimestampMillis,
-          generateExpr,
-          interval,
-          intervalPrecision,
-          intervalGenerateExpr,
-        } = data;
-        const formData = {
-          tableNames,
-          onlyForPartitionName: true,
-          template: {
-            partitionNameInvoker: null,
-            partitionNameInvokerParameters: null,
-          },
-        };
-
-        if (nameRuleType === 'PRE_SUFFIX') {
-          const currentTimeParameter = {
-            fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
-            baseTimestampMillis: baseTimestampMillis?.valueOf(),
-          };
-          if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
-            delete currentTimeParameter.baseTimestampMillis;
-          }
-          formData.template.partitionNameInvoker =
-            PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
-          formData.template.partitionNameInvokerParameters = {
-            partitionNameGeneratorConfig: {
-              namingPrefix,
-              namingSuffixExpression,
-              interval,
-              intervalPrecision,
-              ...currentTimeParameter,
-            },
-          };
-        } else {
-          formData.template.partitionNameInvoker =
-            PARTITION_NAME_INVOKER.CUSTOM_PARTITION_NAME_GENERATOR;
-          formData.template.partitionNameInvokerParameters = {
-            partitionNameGeneratorConfig: {
-              generateExpr,
-              intervalGenerateExpr,
-            },
-          };
-        }
-        const res = await previewPartitionPlans(sessionId, formData);
-        if (res?.contents?.length) {
-          const rule = res?.contents?.map((item) => item?.partitionName)?.join(', ');
-          setRuleExample(rule);
-        }
-      })
-      .catch((error) => {
-        console.error(JSON.stringify(error));
-      });
+    handlePreview(false, true);
   };
 
   const handleOk = () => {
@@ -552,7 +448,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         form={form}
         layout="vertical"
         requiredMark="optional"
-        initialValues={defaultInitialValues}
+        initialValues={{
+          ...defaultInitialValues,
+          refPartitionKey: partitionKeyOptions?.[0]?.value,
+        }}
         onChange={handleChange}
       >
         <Descriptions column={1}>
@@ -761,60 +660,40 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     </Form.Item>
                     <Input.Group compact>
                       <Tag className={styles.suffix}>
-                        {
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
-                          }) /* 后缀 */
-                        }
-                      </Tag>
-                      <Form.Item
-                        name="fromCurrentTime"
-                        className={styles.noMarginBottom}
-                        rules={[
+                        <HelpDoc leftText isTip title="后缀根据指定的分区键上界时间生成">
                           {
-                            required: true,
-                            message: formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
-                            }), //'请选择'
-                          },
-                        ]}
-                      >
-                        <Select
-                          placeholder={
                             formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
-                            }) /*"请选择"*/
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
+                            }) /* 后缀 */
                           }
-                          optionLabelProp="label"
-                          options={startDateOptions}
-                          dropdownMatchSelectWidth={154}
-                          style={{ width: 135 }}
-                        />
-                      </Form.Item>
-                      {fromCurrentTime === START_DATE.CUSTOM_DATE && (
+                        </HelpDoc>
+                      </Tag>
+                      {!!partitionKeyOptions?.length && (
                         <Form.Item
-                          name="baseTimestampMillis"
+                          name="refPartitionKey"
                           className={styles.noMarginBottom}
                           rules={[
                             {
                               required: true,
                               message: formatMessage({
-                                id: 'src.component.Task.component.PartitionPolicyFormTable.E89659CE',
+                                id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
                               }), //'请选择'
                             },
                           ]}
                         >
-                          <DatePicker
-                            showTime
+                          <Select
                             placeholder={
                               formatMessage({
-                                id: 'src.component.Task.component.PartitionPolicyFormTable.05D91017',
+                                id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
                               }) /*"请选择"*/
                             }
+                            optionLabelProp="label"
+                            options={partitionKeyOptions}
+                            dropdownMatchSelectWidth={154}
+                            style={{ width: 135 }}
                           />
                         </Form.Item>
                       )}
-
                       <Form.Item
                         name="namingSuffixExpression"
                         className={styles.noMarginBottom}
@@ -857,7 +736,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 </Text>
               )}
             </Space>
-            {isCustomRuleType ? (
+            {isCustomRuleType && (
               <Form.Item
                 name="intervalGenerateExpr"
                 label={
@@ -879,49 +758,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       id: 'src.component.Task.component.PartitionPolicyFormTable.07788524',
                     }) /*"请输入"*/
                   }
-                />
-              </Form.Item>
-            ) : (
-              <Form.Item
-                name="interval"
-                label={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.85FFB10E',
-                  }) /*"命名间隔"*/
-                }
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.BC96D1C3',
-                    }), //'请输入'
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={0}
-                  addonAfter={
-                    <Form.Item
-                      name="intervalPrecision"
-                      rules={[
-                        {
-                          required: true,
-                          message: formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.A464079B',
-                          }), //'请选择'
-                        },
-                      ]}
-                      noStyle
-                    >
-                      <Select
-                        options={intervalPrecisionOptions?.filter(
-                          (item) => item.value <= INTERVAL_PRECISION_DAY_VALUE,
-                        )}
-                        style={{ width: 60 }}
-                      />
-                    </Form.Item>
-                  }
-                  style={{ width: 180 }}
                 />
               </Form.Item>
             )}

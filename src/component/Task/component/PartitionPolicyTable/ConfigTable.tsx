@@ -17,9 +17,8 @@ import { formatMessage } from '@/util/intl';
 
 import DisplayTable from '@/component/DisplayTable';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { Descriptions, Space, Tooltip } from 'antd';
+import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
-import { getIntervalPrecisionLabel } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 import styles from './index.less';
 
 const columns = [
@@ -37,6 +36,8 @@ const columns = [
     title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.B25F63D5' }), //'创建细则'
     ellipsis: true,
     render: (_, record) => {
+      const intervalGenerateExpr =
+        record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr;
       return (
         <Descriptions className={styles.rules} column={1} size="small">
           <Descriptions.Item
@@ -78,24 +79,17 @@ const columns = [
               </Tooltip>
             </Descriptions.Item>
           )}
-          <Descriptions.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
-              }) /*"间隔"*/
-            }
-          >
-            {record?.partitionKeyInvokerParameters?.generateParameter?.interval ? (
-              <Space size={5}>
-                {record?.partitionKeyInvokerParameters?.generateParameter?.interval}
-                {getIntervalPrecisionLabel(
-                  record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision,
-                )}
-              </Space>
-            ) : (
-              record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr
-            )}
-          </Descriptions.Item>
+          {!!intervalGenerateExpr && (
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
+                }) /*"间隔"*/
+              }
+            >
+              {intervalGenerateExpr}
+            </Descriptions.Item>
+          )}
         </Descriptions>
       );
     },
