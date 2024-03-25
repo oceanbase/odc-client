@@ -38,6 +38,7 @@ import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageRoot]: [
@@ -48,6 +49,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
+      },
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PACKAGE,

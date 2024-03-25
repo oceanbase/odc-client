@@ -93,6 +93,7 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
     sql: {
       language: 'mysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
 };

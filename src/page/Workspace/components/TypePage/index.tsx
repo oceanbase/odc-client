@@ -22,7 +22,7 @@ import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { enableTypeEdit } from '@/constant';
 import { PLType } from '@/constant/plType';
 import type { IType } from '@/d.ts';
-import { ConnectionMode, TypePropsTab } from '@/d.ts';
+import { TypePropsTab } from '@/d.ts';
 import { openTypeEditPageByName } from '@/store/helper/page';
 import { TypePage as TypePageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
@@ -58,6 +58,7 @@ const TypeCodeMap = {
   OBJECT: formatMessage({ id: 'odc.components.TypePage.Object' }), // 对象
   VARRAY: formatMessage({ id: 'odc.components.TypePage.Array' }), // 数组
   TABLE: formatMessage({ id: 'odc.components.TypePage.Table' }), // 表
+  COLLECTION: '集合',
 };
 interface IProps {
   sqlStore: SQLStore;
