@@ -144,7 +144,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         const label = getStrategyLabel(record?.strategies);
         return (
           <div className={styles.rangConfig}>
-            {label?.length && record?.__isCreate ? (
+            {label?.length ? (
               <Space>
                 <span>
                   {
