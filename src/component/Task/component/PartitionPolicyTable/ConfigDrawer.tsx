@@ -22,7 +22,6 @@ import ConfigTable from './ConfigTable';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import type { IPartitionTableConfig } from '@/d.ts';
 import { TaskPartitionStrategy, PARTITION_NAME_INVOKER, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
 import styles from './index.less';
 
 const periodUnits = [
@@ -60,16 +59,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   );
 
   const getNamingSuffix = () => {
-    const isFromCurrentTime =
-      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.fromCurrentTime;
-    const baseTimestampMillis =
-      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.baseTimestampMillis;
     const suffixExpression =
       partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingSuffixExpression;
-    const suffix = [isFromCurrentTime ? '当前时间' : '指定时间'];
-    if (!isFromCurrentTime && !!baseTimestampMillis) {
-      suffix.push(getFormatDateTime(baseTimestampMillis));
-    }
+    const refPartitionKey =
+      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.refPartitionKey;
+    const suffix = [`${refPartitionKey ?? '-'}`];
     if (suffixExpression) {
       suffix.push(`时间格式: ${suffixExpression}`);
     }
@@ -174,8 +168,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             }) /*"命名规则"*/
           }
         >
-          {config?.partitionNameInvoker ===
-          PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR ? (
+          {config?.partitionNameInvokerParameters.partitionNameGeneratorConfig?.namingPrefix ? (
             <Space>
               {formatMessage(
                 { id: 'src.component.Task.component.PartitionPolicyTable.1D7346EE' },

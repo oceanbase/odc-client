@@ -29,9 +29,12 @@ import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import { Checkbox, Tooltip, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import ConfigDrawer from './configModal';
+import { START_DATE } from './const';
 import { getStrategyLabel } from '../PartitionPolicyTable';
 import { ITableConfig } from '../../PartitionTask/CreateModal';
 import styles from './index.less';
+
+const defaultIntervalPrecision = 3;
 
 interface IProps {
   sessionId: string;
@@ -200,10 +203,17 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         option: {
           partitionKeyConfigs: res?.contents?.map((type, index) => {
             const isDateType = !!type?.localizedMessage;
+            const defaultKeyConfig = isDateType
+              ? {
+                  fromCurrentTime: START_DATE.CURRENT_DATE,
+                  intervalPrecision: defaultIntervalPrecision,
+                }
+              : {};
             return {
               partitionKeyInvoker: isDateType
                 ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
                 : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
+              ...defaultKeyConfig,
               ...partitionConfig?.option?.partitionKeyConfigs?.[index],
               type,
             };
