@@ -23,7 +23,7 @@ import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { Descriptions, Space } from 'antd';
 import React from 'react';
 import styles from './index.less';
-import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from './interface';
+import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 
 export const Status: React.FC<{
   result: AuditEventResult;
