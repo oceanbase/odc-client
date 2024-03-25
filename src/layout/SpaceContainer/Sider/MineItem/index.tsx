@@ -16,7 +16,7 @@
 
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import ChangeLockPwd from '@/component/LoginMenus/ChangeLockPwdModal';
-import RecordPopover, { RecordRef } from '@/component/RecordPopover/index2';
+import RecordPopover, { RecordRef } from '@/component/RecordPopover';
 import { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { haveOCP, isClient } from '@/util/env';

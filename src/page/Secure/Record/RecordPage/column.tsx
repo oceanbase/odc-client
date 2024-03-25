@@ -24,7 +24,7 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { FilterFilled, SearchOutlined } from '@ant-design/icons';
 import { DataNode } from 'antd/lib/tree';
 import { Status } from './component';
-import { IUserMap } from './interface';
+import { IUserMap } from '@/constant/record';
 
 export const getPageColumns = (params: {
   openDetailModal: (args: { id: number; [key: string]: any }) => void;

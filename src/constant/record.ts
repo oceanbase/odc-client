@@ -376,7 +376,7 @@ export const AuditEventActionMap = {
   [AuditEventActionType.ROLLBACK_TASK]: formatMessage({
     id: 'odc.components.RecordPage.RollBack',
   }),
-  //回滚 // 操作记录
+  //拒绝 //回滚 // 操作记录
   [AuditEventActionType.EXPORT_AUDIT_EVENT]: formatMessage({
     id: 'odc.components.RecordPage.ExportOperationRecords',
   }),
