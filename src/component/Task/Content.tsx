@@ -30,7 +30,7 @@ import type { TaskStore } from '@/store/task';
 import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
@@ -61,6 +61,7 @@ interface IState {
 const TaskManaerContent: React.FC<IProps> = (props) => {
   const { pageKey, taskStore, modalStore, isMultiPage = false } = props;
   const taskTabType = pageKey || taskStore?.taskPageType;
+  const taskOpenRef = useRef<boolean>(null);
   const [state, setState] = useSetState<IState>({
     detailId: props.taskStore?.defaultOpenTaskId,
     detailType: props.taskStore?.defauleOpenTaskType,
@@ -219,6 +220,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         TaskType.ASYNC,
       detailVisible: visible,
     });
+    taskOpenRef.current = visible;
   };
   const handleMenuClick = (type: TaskPageType) => {
     tracert.click('a3112.b64006.c330917.d367464', {
@@ -243,6 +245,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         detailType: defaultTaskType || TaskType.ASYNC,
         detailVisible: true,
       });
+      taskOpenRef.current = true;
     }
   };
   useEffect(() => {
@@ -263,6 +266,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         />
       </div>
       <DetailModal
+        taskOpenRef={taskOpenRef}
         type={detailType}
         detailId={detailId}
         visible={detailVisible}
