@@ -747,14 +747,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
                   }) /*"命名间隔"*/
                 }
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.F7B54DFB',
-                    }), //'请输入表达式'
-                  },
-                ]}
               >
                 <Input
                   style={{ width: 180 }}
