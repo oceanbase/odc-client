@@ -253,7 +253,8 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     return data
       ?.filter((item) => (isOnlyNoSetTable ? !item?.strategies?.length : true))
       ?.filter((item) => {
-        return tableName?.[0] ? item.tableName.indexOf(tableName[0]) > -1 : true;
+        const searchText = tableName?.[0]?.toLocaleLowerCase?.() ?? '';
+        return searchText ? item.tableName?.toLocaleLowerCase().indexOf(searchText) > -1 : true;
       });
   }
 
