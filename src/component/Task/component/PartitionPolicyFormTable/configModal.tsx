@@ -670,33 +670,30 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           }
                         </HelpDoc>
                       </Tag>
-                      {!!partitionKeyOptions?.length && (
-                        <Form.Item
-                          name="refPartitionKey"
-                          className={styles.noMarginBottom}
-                          rules={[
-                            {
-                              required: true,
-                              message: formatMessage({
-                                id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
-                              }), //'请选择'
-                            },
-                          ]}
-                        >
-                          <Select
-                            placeholder={
-                              formatMessage({
-                                id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
-                              }) /*"请选择"*/
-                            }
-                            optionLabelProp="label"
-                            options={partitionKeyOptions}
-                            dropdownMatchSelectWidth={154}
-                            style={{ width: 135 }}
-                          />
-                        </Form.Item>
-                      )}
-
+                      <Form.Item
+                        name="refPartitionKey"
+                        className={styles.noMarginBottom}
+                        rules={[
+                          {
+                            required: true,
+                            message: formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
+                            }), //'请选择'
+                          },
+                        ]}
+                      >
+                        <Select
+                          placeholder={
+                            formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
+                            }) /*"请选择"*/
+                          }
+                          optionLabelProp="label"
+                          options={partitionKeyOptions}
+                          dropdownMatchSelectWidth={154}
+                          style={{ width: 135 }}
+                        />
+                      </Form.Item>
                       <Form.Item
                         name="namingSuffixExpression"
                         className={styles.noMarginBottom}
