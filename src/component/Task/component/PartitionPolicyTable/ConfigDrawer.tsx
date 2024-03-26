@@ -166,46 +166,47 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           />
         </>
       )}
-
-      <Descriptions style={{ marginTop: '8px' }} column={1}>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.component.PartitionPolicyTable.371328F9',
-            }) /*"命名规则"*/
-          }
-        >
-          {config?.partitionNameInvokerParameters.partitionNameGeneratorConfig?.namingPrefix ? (
-            <Space>
-              {formatMessage(
-                { id: 'src.component.Task.component.PartitionPolicyTable.1D7346EE' },
-                {
-                  partitionNameInvokerParametersPartitionNameGeneratorConfigNamingPrefix:
-                    partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix,
-                },
-              )}
-              <Space size={2}>
-                <span>
+      {!!createKeyConfigs?.length && (
+        <Descriptions style={{ marginTop: '8px' }} column={1}>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.371328F9',
+              }) /*"命名规则"*/
+            }
+          >
+            {config?.partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix ? (
+              <Space>
+                {formatMessage(
+                  { id: 'src.component.Task.component.PartitionPolicyTable.1D7346EE' },
                   {
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyTable.68E34A9C' /*后缀:*/,
-                    }) /* 后缀: */
-                  }
-                </span>
-                {getNamingSuffix()}
+                    partitionNameInvokerParametersPartitionNameGeneratorConfigNamingPrefix:
+                      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix,
+                  },
+                )}
+                <Space size={2}>
+                  <span>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyTable.68E34A9C' /*后缀:*/,
+                      }) /* 后缀: */
+                    }
+                  </span>
+                  {getNamingSuffix()}
+                </Space>
               </Space>
-            </Space>
-          ) : (
-            formatMessage(
-              { id: 'src.component.Task.component.PartitionPolicyTable.59CEB82C' },
-              {
-                partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
-                  partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
-              },
-            )
-          )}
-        </Descriptions.Item>
-      </Descriptions>
+            ) : (
+              formatMessage(
+                { id: 'src.component.Task.component.PartitionPolicyTable.59CEB82C' },
+                {
+                  partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
+                    partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
+                },
+              )
+            )}
+          </Descriptions.Item>
+        </Descriptions>
+      )}
       {dropKeyConfig && (
         <SimpleTextItem
           label={
