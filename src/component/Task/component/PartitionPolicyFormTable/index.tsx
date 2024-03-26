@@ -28,7 +28,7 @@ import {
 import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import { Checkbox, Tooltip, Space } from 'antd';
 import React, { useRef, useState } from 'react';
-import ConfigDrawer from './configModal';
+import ConfigDrawer, { NameRuleType } from './configModal';
 import { START_DATE } from './const';
 import { getStrategyLabel } from '../PartitionPolicyTable';
 import { ITableConfig } from '../../PartitionTask/CreateModal';
@@ -204,8 +204,11 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
       }
     }
 
+    const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
+    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
     const values = activeConfigs.map((item) => {
       return {
+        nameRuleType,
         ...partitionConfig,
         ...item,
         option: {
