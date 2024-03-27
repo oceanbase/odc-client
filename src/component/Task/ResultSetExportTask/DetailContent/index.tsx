@@ -29,6 +29,7 @@ export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
   hasFlow: boolean,
+  theme: string,
 ) => {
   if (!_task) {
     return [];
@@ -123,6 +124,7 @@ export const getItems = (
                   }}
                 >
                   <SQLContent
+                    theme={theme}
                     sqlContent={parameters?.sql}
                     sqlObjectIds={null}
                     sqlObjectNames={null}

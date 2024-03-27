@@ -62,6 +62,7 @@ interface IStructureComparisonTaskContentProps {
   task: TaskDetail<IStructureComparisonTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
+  theme?: string;
 }
 
 const TableEmpty = () => (
@@ -298,7 +299,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
   'modalStore',
 )(
   observer((props) => {
-    const { task, result, modalStore } = props;
+    const { task, result, modalStore, theme } = props;
     const timerRef = useRef(null);
     const taskEndRef = useRef(null);
     const [currentResult, setCurrentResult] = useState<ITaskResult>(result);
@@ -469,6 +470,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
                 content={
                   <div>
                     <SQLContent
+                      theme={theme}
                       sqlContent={structrueComparison?.changeScript || ''}
                       sqlObjectIds={null}
                       sqlObjectNames={null}

@@ -30,6 +30,7 @@ import type { TaskStore } from '@/store/task';
 import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
+import { useLocation } from '@umijs/max';
 import React, { useEffect, useRef } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
@@ -70,9 +71,11 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     cycleTasks: null,
     status: null,
   });
+  const location = useLocation();
+  const isSqlworkspace = location?.pathname?.includes('/sqlworkspace');
   const { detailId, detailType, detailVisible, cycleTasks, tasks } = state;
   const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
-
+  const theme = isSqlworkspace ? null : 'vs';
   const tableRef = React.createRef<ITableInstance>();
 
   const TaskEventMap = {
@@ -266,6 +269,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         />
       </div>
       <DetailModal
+        theme={theme}
         taskOpenRef={taskOpenRef}
         type={detailType}
         detailId={detailId}
