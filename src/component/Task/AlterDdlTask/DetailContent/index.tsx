@@ -73,7 +73,8 @@ const SwapTableTypeMap = {
 };
 const SQLContentSection: React.FC<{
   task: TaskDetail<IDDLAlterParamters>;
-}> = ({ task }) => {
+  theme?: string;
+}> = ({ task, theme }) => {
   return (
     <SimpleTextItem
       label={formatMessage({
@@ -86,6 +87,7 @@ const SQLContentSection: React.FC<{
           }}
         >
           <SQLContent
+            theme={theme}
             sqlContent={task?.parameters?.sqlContent}
             sqlObjectIds={null}
             sqlObjectNames={null}
@@ -105,6 +107,7 @@ export function getItems(
   task: TaskDetail<IDDLAlterParamters>,
   result: ITaskResult,
   hasFlow: boolean,
+  theme?: string,
 ): {
   sectionName?: string;
   textItems: [React.ReactNode, React.ReactNode, number?][];
@@ -191,7 +194,7 @@ export function getItems(
           taskExecStrategyMap[task?.executionStrategy],
           hasFlow ? 2 : 1,
         ],
-        [null, <SQLContentSection task={task} key={task.id} />, 2],
+        [null, <SQLContentSection task={task} key={task.id} theme={theme} />, 2],
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.LockTableTimeout',

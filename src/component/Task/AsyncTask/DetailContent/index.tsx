@@ -43,9 +43,10 @@ interface IProps {
   task: TaskDetail<IAsyncTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
+  theme?: string;
 }
 const AsyncTaskContent: React.FC<IProps> = (props) => {
-  const { task, hasFlow, result } = props;
+  const { task, hasFlow, result, theme } = props;
   const parameters = task?.parameters;
   const executionTimeout = milliSecondsToHour(parameters.timeoutMillis);
   const riskLevel = task?.riskLevel;
@@ -122,6 +123,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
+              theme={theme}
               sqlContent={task?.parameters?.sqlContent}
               sqlObjectIds={task?.parameters?.sqlObjectIds}
               sqlObjectNames={task?.parameters?.sqlObjectNames}
@@ -156,6 +158,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
+              theme={theme}
               sqlContent={task?.parameters?.rollbackSqlContent}
               sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
               sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}

@@ -48,6 +48,7 @@ import {
   Alert,
   Divider,
 } from 'antd';
+import moment from 'moment';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
@@ -130,6 +131,9 @@ const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableC
         generateCount,
         ...generateParameter,
         fromCurrentTime: generateParameter?.fromCurrentTime ? START_DATE.CURRENT_DATE : undefined,
+        baseTimestampMillis: generateParameter?.baseTimestampMillis
+          ? moment(generateParameter?.baseTimestampMillis)
+          : undefined,
       };
     });
     const dropPartitionKeyInvokerParameters = dropKeyConfig?.partitionKeyInvokerParameters ?? {};

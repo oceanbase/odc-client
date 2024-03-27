@@ -103,9 +103,10 @@ const getColumns = (params: {
 };
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;
+  theme?: string;
 }
 const TaskProgress: React.FC<IProps> = (props) => {
-  const { task } = props;
+  const { task, theme } = props;
   const [subTasks, setSubTasks] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [open, setOpen] = useState(false);
@@ -221,6 +222,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
                 }}
               >
                 <SQLContent
+                  theme={theme}
                   sqlContent={resultJson?.newTableDdl}
                   sqlObjectIds={null}
                   sqlObjectNames={null}
@@ -245,6 +247,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
                 }}
               >
                 <SQLContent
+                  theme={theme}
                   sqlContent={resultJson?.originTableDdl}
                   sqlObjectIds={null}
                   sqlObjectNames={null}

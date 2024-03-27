@@ -25,7 +25,7 @@ import {
   SearchOutlined,
   ExclamationCircleFilled,
 } from '@ant-design/icons';
-import { PARTITION_KEY_INVOKER } from '@/d.ts';
+import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
 import { Checkbox, Tooltip, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import ConfigDrawer, { NameRuleType } from './configModal';
@@ -186,21 +186,28 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
     if (!!createdTableConfig && isInit) {
-      const isLengthEqual =
-        createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
-      const isValidOriginPartitionKeyConfigs = isLengthEqual
-        ? res?.contents?.every((item, index) => {
-            const partitionKeyInvokers = [PARTITION_KEY_INVOKER.CUSTOM_GENERATOR];
-            if (item?.localizedMessage) {
-              partitionKeyInvokers.push(PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR);
-            }
-            return partitionKeyInvokers.includes(
-              createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
-            );
-          })
-        : false;
-      if (isValidOriginPartitionKeyConfigs) {
+      const isOnlyDropStrategie =
+        partitionConfig?.strategies?.length === 1 &&
+        partitionConfig?.strategies?.includes(TaskPartitionStrategy.DROP);
+      if (isOnlyDropStrategie) {
         partitionConfig = createdTableConfig;
+      } else {
+        const isLengthEqual =
+          createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
+        const isValidOriginPartitionKeyConfigs = isLengthEqual
+          ? res?.contents?.every((item, index) => {
+              const partitionKeyInvokers = [PARTITION_KEY_INVOKER.CUSTOM_GENERATOR];
+              if (item?.localizedMessage) {
+                partitionKeyInvokers.push(PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR);
+              }
+              return partitionKeyInvokers.includes(
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
+              );
+            })
+          : false;
+        if (isValidOriginPartitionKeyConfigs) {
+          partitionConfig = createdTableConfig;
+        }
       }
     }
 

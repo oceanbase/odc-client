@@ -71,6 +71,7 @@ interface IProps {
   detailId: number;
   visible: boolean;
   enabledAction?: boolean;
+  theme?: string;
   onReloadList?: () => void;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
 }
@@ -94,7 +95,7 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, enabledAction = true, taskOpenRef } = props;
+  const { type, visible, detailId, enabledAction = true, theme, taskOpenRef } = props;
   const [task, setTask] = useState<
     | TaskDetail<TaskRecordParameters>
     | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
@@ -378,6 +379,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
           task={task as TaskDetail<IAsyncTaskParams>}
           result={result}
           hasFlow={hasFlow}
+          theme={theme}
         />
       );
       break;
@@ -403,7 +405,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       break;
     }
     case TaskType.SQL_PLAN: {
-      taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
+      taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} theme={theme} />;
       break;
     }
     case TaskType.APPLY_PROJECT_PERMISSION: {
@@ -416,7 +418,12 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     case TaskType.STRUCTURE_COMPARISON: {
       taskContent = (
-        <StructureComparisonTaskContent task={task as any} result={result} hasFlow={hasFlow} />
+        <StructureComparisonTaskContent
+          task={task as any}
+          result={result}
+          hasFlow={hasFlow}
+          theme={theme}
+        />
       );
       break;
     }
@@ -456,6 +463,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     <>
       <CommonDetailModal
         {...modalProps}
+        theme={theme}
         // @ts-ignore
         task={task}
         hasFlow={hasFlow}
