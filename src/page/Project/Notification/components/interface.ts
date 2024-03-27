@@ -44,15 +44,12 @@ export const ELanguageMap = {
 };
 
 // @oic-line-ignore
-const EContentTemplateMap_ZH_CN =
-  '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}';
+const EContentTemplateMap_ZH_CN = '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}';
 
 // @oic-line-ignore
-const EContentTemplateMap_ZH_TW =
-  '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}';
+const EContentTemplateMap_ZH_TW = '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}';
 
-const EContentTemplateMap_EN_US =
-  '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}';
+const EContentTemplateMap_EN_US = '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}';
 
 export const EContentTemplateMap = {
   [ELanguage.ZH_CN]: EContentTemplateMap_ZH_CN,
