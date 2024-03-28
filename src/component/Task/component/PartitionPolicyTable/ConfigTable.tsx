@@ -14,12 +14,28 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { getFormatDateTime } from '@/util/utils';
 import DisplayTable from '@/component/DisplayTable';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
+
+const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
+  const labels = [
+    fromCurrentTime
+      ? formatMessage({
+          id: 'src.component.Task.component.PartitionPolicyTable.02D5A436',
+        })
+      : formatMessage({
+          id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5',
+        }),
+  ];
+  if (baseTimestampMillis) {
+    labels.push(getFormatDateTime(baseTimestampMillis));
+  }
+  return labels?.join(', ');
+};
 
 const columns = [
   {
@@ -62,13 +78,10 @@ const columns = [
                 }) /*"起始"*/
               }
             >
-              {record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime
-                ? formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyTable.02D5A436',
-                  })
-                : formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5',
-                  })}
+              {getFromCurrentTimeLabel(
+                record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime,
+                record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis,
+              )}
             </Descriptions.Item>
           ) : (
             <Descriptions.Item

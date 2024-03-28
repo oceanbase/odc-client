@@ -74,6 +74,10 @@ export const getTaskTypeOptions = () => {
       label: TaskTypeMap[TaskType.APPLY_DATABASE_PERMISSION],
       value: TaskType.APPLY_DATABASE_PERMISSION,
     },
+    {
+      label: TaskTypeMap[TaskType.STRUCTURE_COMPARISON],
+      value: TaskType.STRUCTURE_COMPARISON,
+    },
   ];
   return newTaskTypeOptions;
 };

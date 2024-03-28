@@ -42,6 +42,7 @@ interface IProps {
   enabledFilter?: boolean;
   tableConfigs?: ITableConfig[];
   createdTableConfigs?: ITableConfig[];
+  theme?: string;
   onLoad?: () => Promise<any>;
   onPlansConfigChange?: (values: ITableConfig[]) => void;
 }
@@ -68,6 +69,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     enabledFilter = true,
     tableConfigs,
     createdTableConfigs,
+    theme,
     onLoad,
     onPlansConfigChange,
   } = props;
@@ -354,6 +356,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           scroll: {
             x: 650,
+            y: 240,
           },
         }}
       />
@@ -363,6 +366,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         isBatch={isBatch}
         sessionId={sessionId}
         configs={activeConfigs}
+        theme={theme}
         onChange={onPlansConfigChange}
         onClose={() => {
           setVisible(false);

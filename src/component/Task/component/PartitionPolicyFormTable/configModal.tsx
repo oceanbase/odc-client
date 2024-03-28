@@ -108,6 +108,7 @@ interface IProps {
   isBatch: boolean;
   sessionId: string;
   configs: ITableConfig[];
+  theme?: string;
   onClose: () => void;
   onChange?: (values: ITableConfig[]) => void;
 }
@@ -163,7 +164,7 @@ export const getUnitLabel = (value: number) => {
 };
 
 const ConfigDrawer: React.FC<IProps> = (props) => {
-  const { visible, configs, isBatch, sessionId, onClose } = props;
+  const { visible, configs, isBatch, sessionId, theme, onClose } = props;
   const [previewSQLVisible, setPreviewSQLVisible] = useState(false);
   const [ruleExample, setRuleExample] = useState('');
   const [previewData, setPreviewData] = useState<
@@ -841,6 +842,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         )}
       </Form>
       <PreviewSQLModal
+        theme={theme}
         visible={previewSQLVisible}
         previewData={previewData}
         onClose={handleClosePreviewSQL}
