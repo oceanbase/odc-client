@@ -44,8 +44,8 @@ devDependencies:
     specifier: ^0.2.2
     version: 0.2.2(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
-    specifier: ^2.0.4
-    version: 2.0.4(prettier@2.8.8)(typescript@4.9.5)
+    specifier: ^2.0.5
+    version: 2.0.5(prettier@2.8.8)(typescript@4.9.5)
   '@oceanbase-odc/ob-parser-js':
     specifier: ^3.0.1
     version: 3.0.1
@@ -3637,8 +3637,8 @@ packages:
       monaco-editor: 0.36.1
     dev: true
 
-  /@oceanbase-odc/ob-intl-cli@2.0.4(prettier@2.8.8)(typescript@4.9.5):
-    resolution: {integrity: sha512-nxp4vkoO84hxxMCLp1l2dSByxXUPKDxs+fukG1V38KzfLEXXFKpsHrvP2YFzTZ+paBXb442ci7fx0StpusscMA==}
+  /@oceanbase-odc/ob-intl-cli@2.0.5(prettier@2.8.8)(typescript@4.9.5):
+    resolution: {integrity: sha512-wSCfHCxHEjdyvbN5UOlcK+5LebYg0CSd5VcDycFCxdWcl19KoXQgg3evaoeQivqkLNiRFHtLkqLZ5BrlLa9DaQ==}
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -4604,7 +4604,7 @@ packages:
     resolution: {integrity: sha512-eFajSUASYbPHg2BDM1G8Btx+YqGgvROPIg6sBhl3O4kbDdYXdFdfrgQFf/pcBuQVObjfT9AL/dd15jilR5DIEA==}
     dependencies:
       '@types/history': 5.0.0
-      '@types/react': 16.14.59
+      '@types/react': 16.14.60
       '@types/react-router': 5.1.20
     dev: true
 
@@ -4639,8 +4639,8 @@ packages:
       csstype: 3.1.3
     dev: true
 
-  /@types/react@16.14.59:
-    resolution: {integrity: sha512-tOV7Za9TpBGi0jyi/fjsUmuFM1svfInVsBCkpQcwNDkVL8MEN1aV3FxjI4wYaASMlVE6NZXXx06zaN4rtRPwyQ==}
+  /@types/react@16.14.60:
+    resolution: {integrity: sha512-wIFmnczGsTcgwCBeIYOuy2mdXEiKZ5znU/jNOnMZPQyCcIxauMGWlX0TNG4lZ7NxRKj7YUIZRneJQSSdB2jKgg==}
     dependencies:
       '@types/prop-types': 15.7.12
       '@types/scheduler': 0.16.8

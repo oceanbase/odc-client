@@ -30,6 +30,7 @@ import { ModalStore } from '@/store/modal';
 import styles from './index.less';
 import tracert from '@/util/tracert';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
+import Locale from './Locale';
 
 interface IProps {
   userStore?: UserStore;
@@ -197,6 +198,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
           }}
         />
       ) : null}
+      <Locale />
       {settingStore.enablePersonalRecord && <RecordPopover ref={recordRef} />}
     </>
   );

@@ -59,6 +59,7 @@ const perferenceSettings: IODCSetting[] = [
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',
     span: 24,
+    hidden: true,
     render: (value, onChange) => {
       return (
         <RadioItem

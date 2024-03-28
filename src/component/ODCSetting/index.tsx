@@ -241,6 +241,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                           {!!group.label && <Typography.Text strong>{group.label}</Typography.Text>}
                           <Row style={{ paddingLeft: 12 }} gutter={20}>
                             {group.settings.map((set, index) => {
+                              if (set.hidden) {
+                                return null;
+                              }
                               return (
                                 <Col key={index} span={set.span || 10}>
                                   <Form.Item
