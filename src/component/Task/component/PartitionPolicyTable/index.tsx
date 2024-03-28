@@ -149,7 +149,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       dataIndex: 'type',
       title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.5C3A7795' }), //'类型'
       ellipsis: true,
-      width: 114,
+      width: 80,
       render: () => <span>Range</span>,
     },
     {
@@ -181,6 +181,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
     {
       title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.768A8D6A' }), //'操作'
       key: 'action',
+      width: 80,
       render: (enabled, record) => {
         return (
           <Space>
@@ -244,6 +245,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
           },
           scroll: {
             x: 650,
+            y: 240,
           },
         }}
       />

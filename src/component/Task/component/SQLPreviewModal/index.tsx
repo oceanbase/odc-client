@@ -28,7 +28,6 @@ function SQLPreviewModal(props: {
 
   return (
     <Modal
-      destroyOnClose
       title={
         <span style={{ fontWeight: 400 }}>
           {formatMessage({

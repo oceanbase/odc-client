@@ -24,6 +24,17 @@
   height: 72px;
   grid-gap: 1px;
   background-color: var(--neutral-grey4-color);
+  position: relative;
+  &:not(:last-child)::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: var(--neutral-grey4-color);
+  }
   .td {
     display: flex;
     height: 100%;
@@ -33,7 +44,7 @@
       width: 100%;
       display: inline-flex;
       padding: 0 8px;
-      line-height: 62px;
+      line-height: 72px;
     }
   }
   .ruleFormItem {
@@ -44,7 +55,7 @@
     display: flex;
     vertical-align: middle;
     padding: 0 8px;
-    line-height: 72px;
+    line-height: 71px;
     :global {
       .ant-form-item {
         margin-bottom: 0px;

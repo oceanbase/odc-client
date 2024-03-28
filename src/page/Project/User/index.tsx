@@ -20,6 +20,7 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import TooltipAction from '@/component/TooltipAction';
 import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
@@ -115,13 +116,17 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
-          {
-            formatMessage({
-              id: 'odc.Project.User.AddMembers',
-            }) /*添加成员*/
-          }
-        </Button>
+        <TooltipAction
+          title={!isOwner ? formatMessage({ id: 'src.page.Project.User.0C0586E8' }) : ''}
+        >
+          <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+            {
+              formatMessage({
+                id: 'odc.Project.User.AddMembers',
+              }) /*添加成员*/
+            }
+          </Button>
+        </TooltipAction>
       }
       extra={
         <FilterIcon onClick={context.reloadProject}>
@@ -184,9 +189,29 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
               return (
                 <Action.Group size={3}>
                   <Action.Link
+                    disabled={disabled && !isMe}
+                    tooltip={
+                      disabled && !isMe
+                        ? formatMessage({ id: 'src.page.Project.User.907FD906' })
+                        : ''
+                    }
+                    onClick={() => {
+                      showManageModal(record.id);
+                    }}
+                  >
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
+                      }) /* 管理库权限 */
+                    }
+                  </Action.Link>
+                  <Action.Link
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
+                    tooltip={
+                      disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -201,7 +226,13 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
-                    <Action.Link key={'import'} disabled={disabled}>
+                    <Action.Link
+                      key={'import'}
+                      disabled={disabled}
+                      tooltip={
+                        disabled ? formatMessage({ id: 'src.page.Project.User.FE2F4924' }) : ''
+                      }
+                    >
                       {
                         formatMessage({
                           id: 'odc.Project.User.Remove',
@@ -209,18 +240,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       }
                     </Action.Link>
                   </Popconfirm>
-                  <Action.Link
-                    disabled={disabled && !isMe}
-                    onClick={() => {
-                      showManageModal(record.id);
-                    }}
-                  >
-                    {
-                      formatMessage({
-                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
-                      }) /* 管理库权限 */
-                    }
-                  </Action.Link>
                 </Action.Group>
               );
             },

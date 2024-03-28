@@ -35,12 +35,15 @@ import login from '@/store/login';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
 import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 export default function SessionSelect({
   readonly,
+  feature,
 }: {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
+  feature?: keyof IDataSourceModeConfig['features'];
 }) {
   const context = useContext(SessionContext);
   const resourceTreeContext = useContext(ResourceTreeContext);
@@ -202,7 +205,7 @@ export default function SessionSelect({
     return (
       <div className={styles.content}>
         {renderEnv()}
-        <SessionDropdown>
+        <SessionDropdown filters={{ feature }}>
           <div>{databaseItem}</div>
         </SessionDropdown>
         <div>{aimItem}</div>

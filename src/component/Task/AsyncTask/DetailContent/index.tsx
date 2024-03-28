@@ -24,6 +24,7 @@ import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { InfoCircleOutlined } from '@ant-design/icons';
 export const ErrorStrategy = {
@@ -42,9 +43,10 @@ interface IProps {
   task: TaskDetail<IAsyncTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
+  theme?: string;
 }
 const AsyncTaskContent: React.FC<IProps> = (props) => {
-  const { task, hasFlow, result } = props;
+  const { task, hasFlow, result, theme } = props;
   const parameters = task?.parameters;
   const executionTimeout = milliSecondsToHour(parameters.timeoutMillis);
   const riskLevel = task?.riskLevel;
@@ -70,7 +72,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据库 */
           }
         >
-          {task?.database?.name || '-'}
+          <DatabaseLabel database={task?.database} />
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -121,6 +123,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
+              theme={theme}
               sqlContent={task?.parameters?.sqlContent}
               sqlObjectIds={task?.parameters?.sqlObjectIds}
               sqlObjectNames={task?.parameters?.sqlObjectNames}
@@ -155,6 +158,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
+              theme={theme}
               sqlContent={task?.parameters?.rollbackSqlContent}
               sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
               sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
@@ -204,6 +208,16 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           }
         >
           {ErrorStrategy[parameters?.errorStrategy]}
+        </Descriptions.Item>
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
+              id: 'src.component.Task.AsyncTask.DetailContent.1F4ECA8A',
+            }) /*"SQL 重试次数"*/
+          }
+        >
+          {parameters?.retryTimes ?? 0}
         </Descriptions.Item>
         <Descriptions.Item
           span={2}

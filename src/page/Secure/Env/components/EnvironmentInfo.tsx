@@ -21,6 +21,8 @@ import styles from './index.less';
 import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
 import { IEnvironment } from '@/d.ts/environment';
 import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { Acess, canAcess, createPermission } from '@/component/Acess';
+import { IManagerResourceType, actionTypes } from '@/d.ts';
 
 const EnvironmentInfo: React.FC<{
   loading: boolean;
@@ -37,12 +39,12 @@ const EnvironmentInfo: React.FC<{
 }) => {
   const { name, style, builtIn = true, enabled, description } = currentEnvironment ?? {};
   const handleMenuOnClick: MenuClickEventHandler = (info: MenuInfo) => {
-    switch (info.key) {
-      case 'edit': {
+    switch (info?.key) {
+      case actionTypes.update: {
         handleUpdateEnvironment();
         return;
       }
-      case 'delete': {
+      case actionTypes.delete: {
         handleDeleteEnvironment();
         return;
       }
@@ -51,6 +53,22 @@ const EnvironmentInfo: React.FC<{
       }
     }
   };
+
+  const items = [
+    {
+      label: formatMessage({ id: 'src.page.Secure.Env.components.FF5B44FE' }), //'编辑环境'
+      key: actionTypes.update,
+    },
+    {
+      label: formatMessage({ id: 'src.page.Secure.Env.components.75B57B74' }), //'删除环境'
+      key: actionTypes.delete,
+    },
+  ]
+    ?.filter(
+      (item) => canAcess(createPermission(IManagerResourceType.environment, item?.key))?.accessible,
+    )
+    ?.filter(Boolean);
+  const hasPremissions = items?.length !== 0;
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -73,29 +91,25 @@ const EnvironmentInfo: React.FC<{
           </Space>
         </Space>
         <Space>
-          <Button
-            onClick={handleSwitchEnvEnabled}
-            type={enabled ? 'default' : 'primary'}
-            loading={loading}
-            disabled={loading}
+          <Acess
+            fallback={null}
+            {...createPermission(IManagerResourceType.environment, actionTypes.update)}
           >
-            {enabled
-              ? formatMessage({ id: 'src.page.Secure.Env.components.A4A3A31E' })
-              : formatMessage({ id: 'src.page.Secure.Env.components.63058F33' })}
-          </Button>
-          {builtIn ? null : (
+            <Button
+              onClick={handleSwitchEnvEnabled}
+              type={enabled ? 'default' : 'primary'}
+              loading={loading}
+              disabled={loading}
+            >
+              {enabled
+                ? formatMessage({ id: 'src.page.Secure.Env.components.A4A3A31E' })
+                : formatMessage({ id: 'src.page.Secure.Env.components.63058F33' })}
+            </Button>
+          </Acess>
+          {builtIn || !hasPremissions ? null : (
             <Dropdown
               menu={{
-                items: [
-                  {
-                    label: formatMessage({ id: 'src.page.Secure.Env.components.FF5B44FE' }), //'编辑环境'
-                    key: 'edit',
-                  },
-                  {
-                    label: formatMessage({ id: 'src.page.Secure.Env.components.75B57B74' }), //'删除环境'
-                    key: 'delete',
-                  },
-                ],
+                items,
                 onClick: handleMenuOnClick,
               }}
             >

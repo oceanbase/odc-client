@@ -25,11 +25,7 @@ import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
 import login from '@/store/login';
 import { DataNode } from 'antd/lib/tree';
-import {
-  getDataSourceModeConfig,
-  getDataSourceModeConfigByConnectionMode,
-  getDataSourceStyleByConnectType,
-} from '@/common/datasource';
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import { IDatabase } from '@/d.ts/database';
 import { toInteger } from 'lodash';
@@ -43,6 +39,8 @@ import { inject, observer } from 'mobx-react';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 interface IDatabasesTitleProps {
   db: IDatabase;
@@ -52,17 +50,11 @@ interface IDatabasesTitleProps {
 
 const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
   const { taskType, db, disabled } = props;
+  const task = TaskTypeMap?.[taskType] || '';
   return (
     <>
       {disabled ? (
-        <Tooltip
-          placement={'right'}
-          title={
-            formatMessage({
-              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.7885F651',
-            }) /*`暂无${TaskTypeMap?.[taskType] || ''}权限，请先申请库权限`*/
-          }
-        >
+        <Tooltip placement={'right'} title={`暂无${task}权限，请先申请库权限`}>
           <div className={styles.textoverflow}>{db.name}</div>
         </Tooltip>
       ) : (
@@ -83,6 +75,7 @@ export interface ISessionDropdownFiltersProps {
   projectId?: number;
   dialectTypes?: ConnectionMode[];
   dataSourceId?: number;
+  feature?: keyof IDataSourceModeConfig['features'];
 }
 interface IProps {
   dialectTypes?: ConnectionMode[];
@@ -115,6 +108,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   const hasDialectTypesFilter =
     filters?.dialectTypes && Array.isArray(filters?.dialectTypes) && filters?.dialectTypes?.length;
   const hasProjectIdFilter = !!filters?.projectId;
+  const hasFeature = !!filters?.feature;
   const {
     data,
     run,
@@ -240,6 +234,9 @@ const SessionDropdown: React.FC<IProps> = function ({
             return null;
           }
           if (searchValue && !item.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
+            return null;
+          }
+          if (hasFeature && !getDataSourceModeConfig(item.type)?.features[filters?.feature]) {
             return null;
           }
           return {
@@ -483,8 +480,9 @@ const SessionDropdown: React.FC<IProps> = function ({
             </Space.Compact>
             <div
               style={{
-                height: '215px',
+                height: DEFALT_HEIGHT,
                 marginTop: 10,
+                width: width || DEFALT_WIDTH,
                 overflow: 'hidden',
               }}
             >

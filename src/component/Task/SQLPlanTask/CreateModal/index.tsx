@@ -95,7 +95,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     resetFields: () => void;
   }>();
 
-  const { createSQLPlanVisible, SQLPlanEditId } = modalStore;
+  const { createSQLPlanVisible, sqlPlanData } = modalStore;
+  const SQLPlanEditId = sqlPlanData?.id;
   const isEdit = !!SQLPlanEditId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {
@@ -444,6 +445,15 @@ const CreateModal: React.FC<IProps> = (props) => {
       handleReset();
     }
   }, [createSQLPlanVisible]);
+
+  useEffect(() => {
+    const databaseId = sqlPlanData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [sqlPlanData?.databaseId]);
 
   return (
     <Drawer

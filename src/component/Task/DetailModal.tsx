@@ -25,6 +25,7 @@ import {
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
+import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   CycleTaskDetail,
   IAsyncTaskParams,
@@ -36,6 +37,7 @@ import type {
   TaskDetail,
   TaskRecord,
   IIPartitionPlanTaskDetail,
+  IResponseData,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -64,10 +66,12 @@ import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 
 interface IProps {
+  taskOpenRef?: React.RefObject<boolean>;
   type: TaskType;
   detailId: number;
   visible: boolean;
   enabledAction?: boolean;
+  theme?: string;
   onReloadList?: () => void;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
 }
@@ -91,12 +95,12 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, enabledAction = true } = props;
+  const { type, visible, detailId, enabledAction = true, theme, taskOpenRef } = props;
   const [task, setTask] = useState<
     | TaskDetail<TaskRecordParameters>
     | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
   >(null);
-  const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
+  const [subTasks, setSubTasks] = useState<IResponseData<ICycleSubTaskRecord>>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
@@ -128,6 +132,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   let getItems = null;
 
   const loop = (timeout: number = 0) => {
+    if (!taskOpenRef?.current) {
+      return;
+    }
     timerRef.current = setTimeout(async () => {
       const currentTask = await getTaskDetail(detailId);
       if (
@@ -190,21 +197,27 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   };
 
-  const loadSubTask = async function () {
+  const loadSubTask = async function (args) {
+    const { filters, pagination, pageSize } = args ?? {};
+    const { status } = filters ?? {};
+    const { current = 1 } = pagination ?? {};
     const data = await getTaskList({
       createdByCurrentUser: false,
       approveByCurrentUser: false,
       parentInstanceId: task?.id,
       taskType: TaskType.ASYNC,
+      status,
+      page: current,
+      size: pageSize,
     });
     setLoading(false);
-    setSubTasks(data?.contents as any[]);
+    setSubTasks(data as any);
   };
 
   const loadDataArchiveSubTask = async function () {
     const data = await getDataArchiveSubTask(task?.id);
     setLoading(false);
-    setSubTasks(data?.contents as any[]);
+    setSubTasks(data);
   };
 
   const getResult = async function () {
@@ -213,13 +226,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     setResult(data as ITaskResult);
   };
 
-  const getExecuteRecord = async function () {
+  const getExecuteRecord = async function (args?: ITableLoadOptions) {
     if (
       [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.ALTER_SCHEDULE].includes(task?.type)
     ) {
       loadDataArchiveSubTask();
     } else {
-      loadSubTask();
+      loadSubTask(args);
     }
   };
 
@@ -255,7 +268,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   };
 
-  const loadCycleTaskData = async () => {
+  const loadCycleTaskData = async (args?: ITableLoadOptions) => {
     clearTimeout(clockRef.current);
     if (!task || isLoop) {
       getCycleTask();
@@ -266,7 +279,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         break;
       }
       case TaskDetailType.EXECUTE_RECORD: {
-        getExecuteRecord();
+        getExecuteRecord(args);
         break;
       }
       case TaskDetailType.OPERATION_RECORD: {
@@ -279,14 +292,14 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     if (isLoop) {
       clockRef.current = setTimeout(() => {
-        loadCycleTaskData();
+        loadCycleTaskData(args);
       }, 5000);
     }
   };
 
-  const loadData = () => {
+  const loadData = (args?: ITableLoadOptions) => {
     if (isCycleTask(type) || type === TaskType.ALTER_SCHEDULE) {
-      loadCycleTaskData();
+      loadCycleTaskData(args);
     } else {
       loadTaskData();
     }
@@ -366,6 +379,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
           task={task as TaskDetail<IAsyncTaskParams>}
           result={result}
           hasFlow={hasFlow}
+          theme={theme}
         />
       );
       break;
@@ -391,7 +405,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       break;
     }
     case TaskType.SQL_PLAN: {
-      taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
+      taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} theme={theme} />;
       break;
     }
     case TaskType.APPLY_PROJECT_PERMISSION: {
@@ -404,7 +418,12 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     case TaskType.STRUCTURE_COMPARISON: {
       taskContent = (
-        <StructureComparisonTaskContent task={task as any} result={result} hasFlow={hasFlow} />
+        <StructureComparisonTaskContent
+          task={task as any}
+          result={result}
+          hasFlow={hasFlow}
+          theme={theme}
+        />
       );
       break;
     }
@@ -444,6 +463,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     <>
       <CommonDetailModal
         {...modalProps}
+        theme={theme}
         // @ts-ignore
         task={task}
         hasFlow={hasFlow}

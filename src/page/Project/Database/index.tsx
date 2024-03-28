@@ -110,7 +110,15 @@ const Database: React.FC<IProps> = ({ id }) => {
       default:
     }
   };
-  const statusMap = datasourceStatus.statusMap;
+  const renderDisabledDBWithTip = (name: React.ReactNode) => {
+    return (
+      <span className={styles.disable}>
+        <Tooltip title={formatMessage({ id: 'src.page.Project.Database.B4A5A6AC' })}>
+          {name}
+        </Tooltip>
+      </span>
+    );
+  };
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
@@ -119,6 +127,7 @@ const Database: React.FC<IProps> = ({ id }) => {
           <Input.Search
             onSearch={(v) => {
               setSearchValue(v);
+              params.current.current = 1;
               reload(v);
             }}
             placeholder={formatMessage({
@@ -150,10 +159,18 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
-              const disabled = !record.authorizedPermissionTypes?.length;
+              const disabled = !record?.authorizedPermissionTypes?.length;
               if (!record.existed) {
                 return disabled ? (
-                  <div className={styles.disable}>{name}</div>
+                  <HelpDoc
+                    leftText
+                    isTip={false}
+                    title={formatMessage({
+                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                    })} /*当前数据库不存在*/
+                  >
+                    {renderDisabledDBWithTip(name)}
+                  </HelpDoc>
                 ) : (
                   <HelpDoc
                     leftText
@@ -167,7 +184,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                 );
               }
               return disabled ? (
-                <div className={styles.disable}>{name}</div>
+                renderDisabledDBWithTip(name)
               ) : (
                 <StatusName
                   item={record}
@@ -202,6 +219,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       marginRight: 4,
                     }}
                   />
+
                   <span title={value}>{value}</span>
                 </>
               );
@@ -290,6 +308,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
                       disabled={!hasExportAuth}
+                      tooltip={
+                        !hasExportAuth
+                          ? formatMessage({ id: 'src.page.Project.Database.A74B21AE' })
+                          : ''
+                      }
                     >
                       {
                         formatMessage({
@@ -298,6 +321,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   )}
+
                   {config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && (
                     <Action.Link
                       key={'import'}
@@ -306,6 +330,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
                       disabled={!hasChangeAuth}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({ id: 'src.page.Project.Database.EA72923D' })
+                          : ''
+                      }
                     >
                       {
                         formatMessage({
@@ -314,6 +343,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   )}
+
                   <Action.Link
                     key={'ddl'}
                     onClick={() => {
@@ -321,6 +351,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                     disabled={!hasChangeAuth}
+                    tooltip={
+                      !hasChangeAuth
+                        ? formatMessage({ id: 'src.page.Project.Database.8AFF2CDE' })
+                        : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -335,6 +370,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
                     disabled={!hasLoginAuth}
+                    tooltip={
+                      !hasLoginAuth
+                        ? formatMessage({ id: 'src.page.Project.Database.6EC9F229' })
+                        : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -350,6 +390,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setDatabase(record);
                     }}
                     disabled={!hasChangeAuth || disableTransfer}
+                    tooltip={
+                      !hasChangeAuth || disableTransfer
+                        ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                        : ''
+                    }
                   >
                     <Tooltip
                       title={
@@ -364,8 +409,8 @@ const Database: React.FC<IProps> = ({ id }) => {
                         formatMessage({
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
                         }) /* 
-                      修改所属项目
-                     */
+                    修改所属项目
+                    */
                       }
                     </Tooltip>
                   </Action.Link>
@@ -377,6 +422,7 @@ const Database: React.FC<IProps> = ({ id }) => {
         dataSource={data}
         pagination={{
           total,
+          current: params.current.current,
         }}
         loadData={(page, filters) => {
           const pageSize = page.pageSize;

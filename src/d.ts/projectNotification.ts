@@ -1,3 +1,20 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { formatMessage } from '@/util/intl';
 // 事件状态
 export enum EEventType {
   CREATED = 'CREATED',
@@ -43,6 +60,14 @@ export enum EOverLimitStrategy {
   // 重发
   RESEND = 'RESEND',
 }
+export const EOverLimitStrategyMap = {
+  [EOverLimitStrategy.THROWN]: formatMessage({ id: 'src.d.ts.C34AA00A' }), //'忽略'
+  [EOverLimitStrategy.RESEND]: formatMessage({ id: 'src.d.ts.01B0FD39' }), //'重发'
+};
+export const EOverLimitStrategyTipMap = {
+  [EOverLimitStrategy.THROWN]: formatMessage({ id: 'src.d.ts.88D96CF0' }), //'忽略已超出限流的消息，不再重发'
+  [EOverLimitStrategy.RESEND]: formatMessage({ id: 'src.d.ts.38B0347B' }), //'限流时间过后，将自动重发超出限流的消息'
+};
 export interface IRateLimitConfig {
   timeUnit: ETimeUnit;
   limit: number;

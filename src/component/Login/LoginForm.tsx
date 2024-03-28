@@ -43,6 +43,7 @@ export interface ILoginFormProps extends FormProps {
   showAuthCode?: boolean;
   showOtherLoginButton?: boolean;
   ssoLoginType?: ESSOLgoinType;
+  ssoLoginName?: string;
   authCodeImg?: string;
   otherLoginProps?: any;
   switchSSOLoginType?: () => void;
@@ -56,6 +57,7 @@ const Login: React.FC<ILoginFormProps> = ({
   showAuthCode,
   showOtherLoginButton,
   ssoLoginType,
+  ssoLoginName,
   authCodeImg,
   otherLoginProps,
   onAuthCodeImgChange,
@@ -186,7 +188,6 @@ const Login: React.FC<ILoginFormProps> = ({
           <Button
             htmlType="button"
             loading={otherLoginProps.loading}
-            type="primary"
             style={{ marginTop: 0 }}
             block={true}
             onClick={
@@ -196,12 +197,10 @@ const Login: React.FC<ILoginFormProps> = ({
                   }
                 : otherLoginProps.onFinish
             }
-            className={classNames(`${prefix}-submit-btn`, {
-              [`${prefix}-submit-ldap-btn`]: ssoLoginType === ESSOLgoinType.LDAP,
-            })}
+            className={classNames(`${prefix}-submit-btn`, `${prefix}-submit-ldap-btn`)}
           >
             {
-              setting.serverSystemInfo?.ssoLoginType ||
+              ssoLoginName ||
                 formatMessage({
                   id: 'odc.component.Login.LoginForm.ThirdPartyLogin',
                 }) /*第三方登录*/

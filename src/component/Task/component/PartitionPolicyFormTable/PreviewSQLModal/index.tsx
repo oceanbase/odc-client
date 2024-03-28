@@ -15,13 +15,14 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Drawer, Tabs } from 'antd';
+import { Button, Modal, Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import styles from './index.less';
 
 interface IProps {
   visible: boolean;
+  theme?: string;
   previewData: {
     tableName: string;
     sqls: string[];
@@ -29,10 +30,11 @@ interface IProps {
   onClose: () => void;
 }
 const PreviewSQLModal: React.FC<IProps> = (props) => {
-  const { visible, previewData, onClose } = props;
+  const { visible, previewData, theme, onClose } = props;
   const [activeKey, setActiveKey] = useState(previewData?.[0]?.tableName);
   const activePreview = previewData?.find((item) => item.tableName === activeKey);
   const sql = activePreview?.sqls?.join('\n') ?? '';
+  const vsTheme = theme === 'dark' ? 'vs-dark' : 'vs';
 
   const handleChange = (key) => {
     setActiveKey(key);
@@ -45,7 +47,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
   }, [previewData]);
 
   return (
-    <Drawer
+    <Modal
       title={
         formatMessage({
           id: 'src.component.Task.component.PartitionPolicyFormTable.PreviewSQLModal.C02356A3',
@@ -53,9 +55,10 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
       }
       open={visible}
       width={840}
-      onClose={onClose}
+      className={styles.modal}
+      onCancel={onClose}
       footer={
-        <Button style={{ float: 'right' }} onClick={onClose}>
+        <Button onClick={onClose}>
           {
             formatMessage({
               id: 'src.component.Task.component.PartitionPolicyFormTable.PreviewSQLModal.7E1FC0D5' /*关闭*/,
@@ -78,9 +81,9 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
       />
 
       <div className={styles.wrapper}>
-        <SQLCodePreviewer readOnly language="sql" value={sql} />
+        <SQLCodePreviewer readOnly language="sql" value={sql} theme={vsTheme} />
       </div>
-    </Drawer>
+    </Modal>
   );
 };
 

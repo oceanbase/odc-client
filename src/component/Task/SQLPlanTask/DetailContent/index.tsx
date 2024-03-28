@@ -53,10 +53,11 @@ interface IProps {
   task: CycleTaskDetail<ISqlPlayJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
+  theme?: string;
 }
 
 const SqlPlanTaskContent: React.FC<IProps> = (props) => {
-  const { task, hasFlow, operationType } = props;
+  const { task, hasFlow, operationType, theme } = props;
   const { jobParameters, triggerConfig, allowConcurrent } = task ?? {};
   const executionTimeout = milliSecondsToHour(jobParameters?.timeoutMillis);
 
@@ -109,6 +110,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
         content={
           <div style={{ margin: '8px 0' }}>
             <SQLContent
+              theme={theme}
               type={task?.type}
               sqlContent={jobParameters?.sqlContent}
               sqlObjectIds={jobParameters?.sqlObjectIds}

@@ -62,6 +62,7 @@ interface IStructureComparisonTaskContentProps {
   task: TaskDetail<IStructureComparisonTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
+  theme?: string;
 }
 
 const TableEmpty = () => (
@@ -98,7 +99,9 @@ const CompareTable: React.FC<{
   const tableRef = useRef<ITableInstance>(null);
   const columns = [
     {
-      title: '比对表',
+      title: formatMessage({
+        id: 'src.component.Task.StructureComparisonTask.DetailContent.6825620C',
+      }), //'比对表'
       key: 'dbObjectName',
       dataIndex: 'dbObjectName',
       filters: [],
@@ -121,7 +124,9 @@ const CompareTable: React.FC<{
       ),
     },
     {
-      title: '比对结果',
+      title: formatMessage({
+        id: 'src.component.Task.StructureComparisonTask.DetailContent.A725ADD7',
+      }), //'比对结果'
       key: 'operationType',
       dataIndex: 'operationType',
       filters: [
@@ -294,7 +299,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
   'modalStore',
 )(
   observer((props) => {
-    const { task, result, modalStore } = props;
+    const { task, result, modalStore, theme } = props;
     const timerRef = useRef(null);
     const taskEndRef = useRef(null);
     const [currentResult, setCurrentResult] = useState<ITaskResult>(result);
@@ -331,7 +336,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     };
     const loop = (timeout: number = 0) => {
       timerRef.current = setTimeout(async () => {
-        if (taskEndRef.current) {
+        if (!detailModalOpen || taskEndRef.current) {
           return;
         }
         const currentResult = await getTaskResult(task?.id);
@@ -379,7 +384,9 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     }, []);
     const tabItems = [
       {
-        label: '比对的表',
+        label: formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.DetailContent.59BDC22F',
+        }), //'比对的表'
         key: '1',
         children: (
           <CompareTable
@@ -463,6 +470,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
                 content={
                   <div>
                     <SQLContent
+                      theme={theme}
                       sqlContent={structrueComparison?.changeScript || ''}
                       sqlObjectIds={null}
                       sqlObjectNames={null}

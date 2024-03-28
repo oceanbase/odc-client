@@ -21,7 +21,8 @@ import PartitionPolicyTable from '../../component/PartitionPolicyTable';
 import { ErrorStrategyMap } from '../../const';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import CycleDescriptionItem from './CycleDescriptionItem';
-import { Divider, Descriptions, Space, Typography } from 'antd';
+import { Divider, Descriptions, Typography } from 'antd';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import React from 'react';
 
 const { Text } = Typography;
@@ -78,10 +79,16 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
             }) /*"数据库"*/
           }
         >
-          <Space size={2}>
-            <span>{task?.database?.name || '-'}</span>
-            <Text type="secondary">{task?.database?.dataSource?.name}</Text>
-          </Space>
+          <DatabaseLabel database={task?.database} />
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.PartitionTask.DetailContent.3C90D5CA',
+            }) /*"所属数据源"*/
+          }
+        >
+          {task?.database?.dataSource?.name || '-'}
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item

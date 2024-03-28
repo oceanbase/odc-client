@@ -1,6 +1,22 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import React from 'react';
-import { Form, Select } from 'antd';
+import { Form, Select, Typography } from 'antd';
 import type { FormInstance } from 'antd';
 import VirtualList from 'rc-virtual-list';
 import RuleFormItem from '../RuleFormItem';
@@ -62,6 +78,7 @@ const Row: React.FC<ITableRowProps> = (props) => {
   const _TypeOptions = TypeOptions?.filter((item) =>
     isDate ? true : item.value === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
   );
+  const dataTypeName = column?.type?.localizedMessage || column?.type?.dataTypeName;
 
   const handleChange = (name: number) => {
     form.setFieldValue(['option', 'partitionKeyConfigs', name, 'fromCurrentTime'], null);
@@ -71,11 +88,17 @@ const Row: React.FC<ITableRowProps> = (props) => {
   return (
     <div className={styles.row}>
       <div className={styles.td}>
-        <div className={styles.content}>{column?.name}</div>
+        <div className={styles.content}>
+          <Typography.Text ellipsis title={column?.name}>
+            {column?.name}
+          </Typography.Text>
+        </div>
       </div>
       <div className={styles.td}>
         <div className={styles.content}>
-          {column?.type?.localizedMessage || column?.type?.dataTypeName}
+          <Typography.Text ellipsis title={dataTypeName}>
+            {dataTypeName}
+          </Typography.Text>
         </div>
       </div>
       <div className={styles.td}>
@@ -97,7 +120,7 @@ const Row: React.FC<ITableRowProps> = (props) => {
       </div>
       <div className={styles.td}>
         <div className={styles.ruleFormItem}>
-          <RuleFormItem field={field} />
+          <RuleFormItem field={field} precision={column?.type?.precision} />
         </div>
       </div>
     </div>

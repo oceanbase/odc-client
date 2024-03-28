@@ -38,6 +38,7 @@ import { clone, isNil } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
+import setting from '../setting';
 export enum ExcecuteSQLMode {
   PL = 'PL',
   TABLE = 'TABLE',
@@ -185,6 +186,9 @@ export class SQLStore {
           showTableColumnInfo,
           continueExecutionOnError,
           fullLinkTraceEnabled,
+          addROWID:
+            setting.configurations?.['odc.sqlexecute.default.addInternalRowId'] === 'true' &&
+            session.supportFeature?.enableRowId,
         },
         sessionId,
         dbName,

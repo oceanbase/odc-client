@@ -21,6 +21,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import DisplayTable from '@/component/DisplayTable';
 import { Descriptions, Divider } from 'antd';
 import { permissionOptionsMap, getExpireTimeLabel } from '../';
+import styles from './index.less';
 
 const getConnectionColumns = () => {
   return [
@@ -96,12 +97,13 @@ const TaskContent: React.FC<IProps> = (props) => {
       <SimpleTextItem
         label={
           formatMessage({
-            id: 'src.component.Task.ApplyDatabasePermission.DetailContent.D9B4FF74',
-          }) /*"申请数据库"*/
+            id: 'src.component.Task.ApplyDatabasePermission.DetailContent.281F6779',
+          }) /*"数据库"*/
         }
         content={
           <DisplayTable
             rowKey="id"
+            className={styles.table}
             columns={getConnectionColumns()}
             dataSource={parameters?.databases}
             scroll={null}

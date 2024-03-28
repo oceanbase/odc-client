@@ -168,7 +168,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
                   setConfirmLoading(false);
                   if (isSuccess) {
-                    message.success('工单创建成功');
+                    message.success(
+                      formatMessage({
+                        id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
+                      }),
+                    );
                     onClose();
                     openTasksPage(TaskPageType.DATAMOCK, TaskPageScope.CREATED_BY_CURRENT_USER);
                   }

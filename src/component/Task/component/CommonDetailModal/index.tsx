@@ -46,6 +46,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
     logType,
     detailType,
     getItems,
+    theme,
     taskContent,
     hasFlow,
     onLogTypeChange,
@@ -57,7 +58,11 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = taskContent ? (
         taskContent
       ) : (
-        <TaskInfo task={task} taskItems={getItems?.(task, result, hasFlow)} isSplit={isSplit} />
+        <TaskInfo
+          task={task}
+          taskItems={getItems?.(task, result, hasFlow, theme)}
+          isSplit={isSplit}
+        />
       );
       break;
     case TaskDetailType.LOG:
@@ -66,6 +71,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           log={log}
           logType={logType}
           isLoading={isLoading}
+          downloadUrl={result?.fullLogDownloadUrl}
           onLogTypeChange={onLogTypeChange}
         />
       );
@@ -86,7 +92,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskOperationRecord opRecord={opRecord} onReload={onReload} />;
       break;
     case TaskDetailType.PROGRESS:
-      content = <TaskProgress task={task} />;
+      content = <TaskProgress task={task} theme={theme} />;
       break;
     default:
       break;
@@ -100,15 +106,27 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
 interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   width?: number;
   isSplit?: boolean;
+  theme?: string;
   getItems?: (
     task: TaskDetail<TaskRecordParameters>,
     result: ITaskResult,
     hasFlow: boolean,
+    theme: string,
   ) => ITaskInfoProps['taskItems'];
   taskContent?: React.ReactNode;
 }
 const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
-  const { width = 750, visible, task, taskTools, detailType, detailId, hasFlow, onClose } = props;
+  const {
+    width = 750,
+    visible,
+    task,
+    taskTools,
+    detailType,
+    detailId,
+    hasFlow,
+    theme,
+    onClose,
+  } = props;
   const hasInfo = [
     TaskType.ASYNC,
     TaskType.IMPORT,

@@ -443,6 +443,15 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   }, [dataArchiveEditId]);
 
+  useEffect(() => {
+    const databaseId = dataArchiveTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [dataArchiveTaskData?.databaseId]);
+
   return (
     <Drawer
       destroyOnClose

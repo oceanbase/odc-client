@@ -80,6 +80,13 @@ export default function NewDataBaseButton({
       case ConnectionMode.ORACLE: {
         return;
       }
+      case ConnectionMode.DORIS: {
+        form.setFieldsValue({
+          collationName: 'utf8_general_ci',
+          charsetName: 'utf8',
+        });
+        return;
+      }
     }
   }, [mode, open]);
   async function submit() {

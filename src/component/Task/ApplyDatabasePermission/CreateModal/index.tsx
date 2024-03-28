@@ -212,7 +212,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success('工单创建成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.8B9755E4' /*'工单创建成功'*/,
+            }),
+          );
           openTasksPage(
             TaskPageType.APPLY_DATABASE_PERMISSION,
             TaskPageScope.CREATED_BY_CURRENT_USER,
@@ -367,62 +371,60 @@ const CreateModal: React.FC<IProps> = (props) => {
         >
           <CheckboxGroup options={permissionOptions} />
         </Form.Item>
-        <Space style={{ width: '100%' }} size={60}>
-          <Form.Item
-            label={
+        <Form.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.C7E89A36',
+            }) /*"权限有效期"*/
+          }
+          name="expireTime"
+          rules={[
+            {
+              required: true,
+              message: formatMessage({
+                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.3A596C86',
+              }), //'请选择'
+            },
+          ]}
+        >
+          <Select
+            style={{ width: '327px' }}
+            showSearch
+            placeholder={
               formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.C7E89A36',
-              }) /*"权限有效期"*/
+                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.2F6F91EE',
+              }) /*"请选择"*/
             }
-            name="expireTime"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'src.component.Task.ApplyDatabasePermission.CreateModal.3A596C86',
-                }), //'请选择'
-              },
-            ]}
-          >
-            <Select
-              style={{ width: '327px' }}
-              showSearch
-              placeholder={
-                formatMessage({
-                  id: 'src.component.Task.ApplyDatabasePermission.CreateModal.2F6F91EE',
-                }) /*"请选择"*/
-              }
-              options={expireTimeOptions}
-            />
-          </Form.Item>
-          <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const isCustomExpireTime = getFieldValue('expireTime')?.startsWith('custom');
-              return (
-                isCustomExpireTime && (
-                  <Form.Item
-                    label={
-                      formatMessage({
-                        id: 'src.component.Task.ApplyDatabasePermission.CreateModal.FD3628E6',
-                      }) /*"结束日期"*/
-                    }
-                    name="customExpireTime"
-                    rules={[
-                      {
-                        required: true,
-                        message: formatMessage({
-                          id: 'src.component.Task.ApplyDatabasePermission.CreateModal.5FDEC16A',
-                        }), //'请选择'
-                      },
-                    ]}
-                  >
-                    <DatePicker disabledDate={disabledDate} style={{ width: '327px' }} />
-                  </Form.Item>
-                )
-              );
-            }}
-          </Form.Item>
-        </Space>
+            options={expireTimeOptions}
+          />
+        </Form.Item>
+        <Form.Item noStyle shouldUpdate>
+          {({ getFieldValue }) => {
+            const isCustomExpireTime = getFieldValue('expireTime')?.startsWith('custom');
+            return (
+              isCustomExpireTime && (
+                <Form.Item
+                  label={
+                    formatMessage({
+                      id: 'src.component.Task.ApplyDatabasePermission.CreateModal.FD3628E6',
+                    }) /*"结束日期"*/
+                  }
+                  name="customExpireTime"
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'src.component.Task.ApplyDatabasePermission.CreateModal.5FDEC16A',
+                      }), //'请选择'
+                    },
+                  ]}
+                >
+                  <DatePicker disabledDate={disabledDate} style={{ width: '327px' }} />
+                </Form.Item>
+              )
+            );
+          }}
+        </Form.Item>
         <Form.Item
           label={
             formatMessage({

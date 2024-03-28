@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, Modal, Radio, Space, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
@@ -27,7 +43,7 @@ interface IProps {
 }
 
 const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) => {
-  const { structureComparisonVisible } = modalStore;
+  const { structureComparisonVisible, structureComparisonTaskData } = modalStore;
   const [form] = useForm<CreateStructureComparisonTaskRecord>();
   const taskExecStrategyMap = getTaskExecStrategyMap(TaskType.STRUCTURE_COMPARISON);
   const sourceDatabaseId = Form.useWatch(['parameters', 'sourceDatabaseId'], form);
@@ -41,7 +57,11 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
     if (result) {
-      message.success('工单创建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.CreateModal.1E436045' /*'工单创建成功'*/,
+        }),
+      );
       modalStore.changeStructureComparisonModal(false);
       openTasksPage(TaskPageType.STRUCTURE_COMPARISON);
       return;
@@ -93,6 +113,14 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
       targetDatabaseId && resetTargetDatabase();
     }
   }, [sourceDatabaseId]);
+
+  useEffect(() => {
+    const databaseId = structureComparisonTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldValue(['parameters', 'sourceDatabaseId'], databaseId);
+    }
+  }, [structureComparisonTaskData?.databaseId]);
+
   return (
     <Drawer
       open={structureComparisonVisible}
@@ -179,11 +207,9 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           />
 
           <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.CreateModal.25F05D36',
-              }) /*"对比范围"*/
-            }
+            label={formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.2ABC81DE',
+            })}
             name={['parameters', 'comparisonScope']}
             required
           >
@@ -240,6 +266,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
                 id: 'src.component.Task.StructureComparisonTask.CreateModal.EE50E3DC',
               }) /*"执行方式"*/
             }
+            required
             name="executionStrategy"
           >
             <Radio.Group>

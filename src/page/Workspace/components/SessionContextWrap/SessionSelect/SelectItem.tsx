@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import React, { useEffect } from 'react';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
@@ -10,6 +26,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
+import { DEFALT_WIDTH } from './const';
 
 interface IProps {
   value?: number;
@@ -28,7 +45,9 @@ const SelectItem: React.FC<IProps> = ({
   projectId,
   filters = null,
   width,
-  placeholder = null,
+  placeholder = formatMessage({
+    id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.66A17FFD',
+  }),
   disabled = false,
   onChange,
 }) => {
@@ -56,7 +75,7 @@ const SelectItem: React.FC<IProps> = ({
         <SessionDropdown
           projectId={projectId}
           filters={filters}
-          width={width || 320}
+          width={width || DEFALT_WIDTH}
           taskType={taskType}
         >
           <Select
@@ -83,7 +102,7 @@ const SelectItem: React.FC<IProps> = ({
                 placeholder
               )
             }
-            style={{ width: width || 320 }}
+            style={{ width: width || DEFALT_WIDTH }}
             open={false}
           />
         </SessionDropdown>
@@ -101,6 +120,7 @@ const SelectItem: React.FC<IProps> = ({
                 {database?.data?.project?.name}
               </span>
             )}
+
             <span>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,

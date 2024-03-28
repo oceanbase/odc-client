@@ -14,13 +14,28 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { getFormatDateTime } from '@/util/utils';
 import DisplayTable from '@/component/DisplayTable';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { Descriptions, Space, Tooltip } from 'antd';
+import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
-import { getIntervalPrecisionLabel } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 import styles from './index.less';
+
+const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
+  const labels = [
+    fromCurrentTime
+      ? formatMessage({
+          id: 'src.component.Task.component.PartitionPolicyTable.02D5A436',
+        })
+      : formatMessage({
+          id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5',
+        }),
+  ];
+  if (baseTimestampMillis) {
+    labels.push(getFormatDateTime(baseTimestampMillis));
+  }
+  return labels?.join(', ');
+};
 
 const columns = [
   {
@@ -28,12 +43,17 @@ const columns = [
     title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.8086D142' }), //'分区键'
     ellipsis: true,
     width: 100,
+    render: (partitionKey) => {
+      return partitionKey || '-';
+    },
   },
   {
     dataIndex: 'partitionOption',
     title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.B25F63D5' }), //'创建细则'
     ellipsis: true,
     render: (_, record) => {
+      const intervalGenerateExpr =
+        record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr;
       return (
         <Descriptions className={styles.rules} column={1} size="small">
           <Descriptions.Item
@@ -47,7 +67,10 @@ const columns = [
               ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C9467B5B' })
               : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.F057FAAF' })}
           </Descriptions.Item>
-          {record?.partitionKeyInvoker === PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR ? (
+          {[
+            PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
+            PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
+          ].includes(record?.partitionKeyInvoker) ? (
             <Descriptions.Item
               label={
                 formatMessage({
@@ -55,16 +78,19 @@ const columns = [
                 }) /*"起始"*/
               }
             >
-              {record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime
-                ? formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyTable.02D5A436',
-                  })
-                : formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5',
-                  })}
+              {getFromCurrentTimeLabel(
+                record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime,
+                record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis,
+              )}
             </Descriptions.Item>
           ) : (
-            <Descriptions.Item label="表达式">
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.2C76F5F5',
+                }) /*"表达式"*/
+              }
+            >
               <Tooltip
                 title={record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr}
               >
@@ -72,24 +98,18 @@ const columns = [
               </Tooltip>
             </Descriptions.Item>
           )}
-          <Descriptions.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
-              }) /*"间隔"*/
-            }
-          >
-            {record?.partitionKeyInvokerParameters?.generateParameter?.interval ? (
-              <Space size={5}>
-                {record?.partitionKeyInvokerParameters?.generateParameter?.interval}
-                {getIntervalPrecisionLabel(
-                  record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision,
-                )}
-              </Space>
-            ) : (
-              record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr
-            )}
-          </Descriptions.Item>
+
+          {!!intervalGenerateExpr && (
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
+                }) /*"间隔"*/
+              }
+            >
+              {intervalGenerateExpr}
+            </Descriptions.Item>
+          )}
         </Descriptions>
       );
     },
@@ -105,6 +125,7 @@ const ConfigTable: React.FC<IProps> = (props) => {
 
   return (
     <DisplayTable
+      bordered
       rowKey="partitionKey"
       columns={columns}
       dataSource={configs}

@@ -16,7 +16,7 @@
 
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import ChangeLockPwd from '@/component/LoginMenus/ChangeLockPwdModal';
-import RecordPopover, { RecordRef } from '@/component/RecordPopover/index2';
+import RecordPopover, { RecordRef } from '@/component/RecordPopover';
 import { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { haveOCP, isClient } from '@/util/env';
@@ -30,6 +30,7 @@ import { ModalStore } from '@/store/modal';
 import styles from './index.less';
 import tracert from '@/util/tracert';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
+import Locale from './Locale';
 
 interface IProps {
   userStore?: UserStore;
@@ -131,7 +132,10 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         },
       });
     }
-
+    menu.push({
+      label: <Locale />,
+      key: 'locale',
+    });
     if (settingStore.enablePersonalRecord) {
       menu.push({
         key: 'record',
@@ -144,6 +148,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         },
       });
     }
+
     menu.push({
       type: 'divider',
     });

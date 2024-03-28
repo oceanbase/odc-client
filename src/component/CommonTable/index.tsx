@@ -487,7 +487,7 @@ const CommonTable: <RecordType extends object = any>(
             }}
             scroll={{
               x: scroll?.x ?? DEFAULT_MIN_TABLE_WIDTH,
-              y: wrapperValidHeight,
+              y: scroll?.y ?? wrapperValidHeight,
             }}
           />
         </Spin>

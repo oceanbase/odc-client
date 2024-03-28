@@ -61,19 +61,30 @@ const getColumns = (applyTask: (projectId: number, databaseId: number) => void) 
       title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.F84FA469' }), //'操作'
       width: '164px',
       ellipsis: true,
-      render: (action, _) => (
-        <Action.Link
-          onClick={async () => {
-            applyTask?.(_?.project?.id, _?.id);
-          }}
-        >
-          {
-            formatMessage({
-              id: 'src.page.Workspace.components.SQLResultSet.0B7D4FBE' /*申请*/,
-            }) /* 申请 */
-          }
-        </Action.Link>
-      ),
+      render: (action, _) => {
+        const disabled = !_.applicable;
+        let tooltip = null;
+        if (disabled) {
+          tooltip = _.project?.id
+            ? formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.C9A2993D' })
+            : formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.E87F786C' });
+        }
+        return (
+          <Action.Link
+            disabled={disabled}
+            tooltip={tooltip}
+            onClick={async () => {
+              applyTask?.(_?.project?.id, _?.id);
+            }}
+          >
+            {
+              formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.0B7D4FBE' /*申请*/,
+              }) /* 申请 */
+            }
+          </Action.Link>
+        );
+      },
     },
   ];
 };

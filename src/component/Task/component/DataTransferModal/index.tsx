@@ -178,6 +178,7 @@ class TaskContent extends React.Component<any, any> {
         }
       />
     );
+
     const fileEncoding = (
       <SimpleTextItem
         label={formatMessage({
@@ -186,6 +187,7 @@ class TaskContent extends React.Component<any, any> {
         content={taskConfig?.encoding}
       />
     );
+
     const sysView = taskConfig?.sysUser ? (
       <SimpleTextItem
         label={
@@ -339,7 +341,15 @@ class TaskContent extends React.Component<any, any> {
                 <Space direction="vertical">
                   {taskConfig?.importFileName?.map((fileName, index) => {
                     return (
-                      <Tooltip title={isExpired ? '文件下载链接已超时，请重新发起工单。' : null}>
+                      <Tooltip
+                        title={
+                          isExpired
+                            ? formatMessage({
+                                id: 'src.component.Task.component.DataTransferModal.029883D6',
+                              })
+                            : null
+                        }
+                      >
                         <a
                           key={index}
                           style={{ cursor: isExpired ? 'not-allowed' : undefined }}
@@ -557,6 +567,7 @@ class TaskContent extends React.Component<any, any> {
             marginTop: 4,
           }}
         />
+
         {this.renderExt(isImport)}
         <>
           <Divider
@@ -564,6 +575,7 @@ class TaskContent extends React.Component<any, any> {
               marginTop: 4,
             }}
           />
+
           <div>
             <div className="o-tableHeader">
               {isImport

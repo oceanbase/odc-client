@@ -28,6 +28,7 @@ import {
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import Form from 'antd/lib/form/Form';
 export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult, hasFlow: boolean) {
   if (!task) {
@@ -183,7 +184,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
             id: 'odc.component.DetailModal.dataMocker.Database',
           }),
           //所属数据库
-          task?.database?.name || '-',
+          <DatabaseLabel database={task?.database} />,
         ],
         [
           formatMessage({

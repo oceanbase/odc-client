@@ -193,17 +193,11 @@ const ActionBar: React.FC<IProps> = inject(
           return;
         }
         default: {
-          const {
-            database: { id: databaseId } = {},
-            executionStrategy,
-            executionTime,
-            parameters,
-            description,
-          } = task;
+          const { database, executionStrategy, executionTime, parameters, description } = task;
           const data = {
             taskType: type,
             parameters,
-            databaseId,
+            databaseId: database?.id,
             executionStrategy,
             executionTime,
             description,
@@ -230,7 +224,9 @@ const ActionBar: React.FC<IProps> = inject(
           type: 'EDIT',
         });
       } else {
-        props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
+        props.modalStore.changeCreateSQLPlanTaskModal(true, {
+          id: task?.id,
+        });
       }
     };
 
@@ -570,8 +566,8 @@ const ActionBar: React.FC<IProps> = inject(
         }),
         disabled: isExpired,
         isExpired,
-        tip: '文件下载链接已超时，请重新发起工单。',
-        //下载查询结果
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.E9211B1A' }), //'文件下载链接已超时，请重新发起工单。'
+
         action: downloadViewResult,
         type: 'button',
       };

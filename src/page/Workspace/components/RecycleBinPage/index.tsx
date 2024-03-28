@@ -440,7 +440,7 @@ class RecycleBin extends Component<
           </div>
           {this.props.showDatasource ? (
             <div className={styles.datasourceSelect}>
-              <SessionSelect />
+              <SessionSelect feature="recycleBin" />
             </div>
           ) : null}
           <div className={styles.table}>

@@ -28,8 +28,9 @@ export const SimpleTextItem: React.FC<{
   content: React.ReactNode;
   direction?: 'row' | 'column';
   className?: string;
+  showSplit?: boolean;
 }> = (props) => {
-  const { label, content, direction = 'row', className='' } = props;
+  const { label, content, direction = 'row', className = '', showSplit = true } = props;
   return (
     <div
       className={className}
@@ -48,13 +49,15 @@ export const SimpleTextItem: React.FC<{
           marginBottom: direction === 'column' ? '8px' : 0,
         }}
       >
-        {formatMessage(
-          {
-            id: 'odc.component.TaskDetailDrawer.TaskInfo.Label',
-          },
+        {showSplit
+          ? formatMessage(
+              {
+                id: 'odc.component.TaskDetailDrawer.TaskInfo.Label',
+              },
 
-          { label },
-        )}
+              { label },
+            )
+          : label}
       </div>
       <div
         style={{
