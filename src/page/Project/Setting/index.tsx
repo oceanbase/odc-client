@@ -51,12 +51,13 @@ const Setting: React.FC<IProps> = (props) => {
             setmenuKey(e.key as MenuKey);
           }}
           mode="vertical"
-        >
-          <Menu.Item key={MenuKey.INFO}>
-            {formatMessage({ id: 'odc.Project.Setting.ProjectInformation' }) /*项目信息*/}
-          </Menu.Item>
-          {/* <Menu.Item key={MenuKey.NOTIFICATION}>通知设置</Menu.Item> */}
-        </Menu>
+          items={[
+            {
+              key: MenuKey.INFO,
+              label: formatMessage({ id: 'odc.Project.Setting.ProjectInformation' }),
+            },
+          ]}
+        />
       </div>
       <div className={styles.content}>
         <Component />

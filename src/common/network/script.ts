@@ -69,7 +69,7 @@ export async function downloadScript(scriptIds: ScriptId | ScriptId[]): Promise<
   const MAX_DOWNLOAD_COUNT = 10;
   scriptIds = isArray(scriptIds) ? scriptIds : [scriptIds];
   if (scriptIds.length > MAX_DOWNLOAD_COUNT) {
-    message.warn(
+    message.warning(
       formatMessage(
         {
           id: 'odc.common.network.script.YouCannotDownloadMoreThan',

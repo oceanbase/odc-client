@@ -33,6 +33,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -190,10 +191,13 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
-
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
+      },
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
+
       async run(session, node) {
         const proc: IProcedure = node.data;
         const { plPage, isNew } = await openProcedureEditPageByProName(
@@ -215,6 +219,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
       ellipsis: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -256,6 +263,9 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       ellipsis: true,
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const proc: IProcedure = node.data;
         Modal.confirm({

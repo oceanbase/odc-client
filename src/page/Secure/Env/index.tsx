@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -14,22 +15,24 @@
  * limitations under the License.
  */
 
-import { listEnvironments } from '@/common/network/env';
+import { deleteEnvironment, listEnvironments } from '@/common/network/env';
 import { getIntegrationList } from '@/common/network/manager';
-import { IManagerIntegration, IntegrationType } from '@/d.ts';
+import { IManagerIntegration, IManagerResourceType, IntegrationType, actionTypes } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
 import { RuleType } from '@/d.ts/rule';
 import { useLayoutEffect, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
 import InnerEnvironment from './components/InnerEnvironment';
-import { EnvironmentContext } from './EnvironmentContext';
 import tracert from '@/util/tracert';
+import styles from './index.less';
+import Icon, { PlusOutlined } from '@ant-design/icons';
+import { Modal, SelectProps, message } from 'antd';
+import { FormEnvironmentModal } from './components/FormEnvironmentModal';
+import { Acess, createPermission } from '@/component/Acess';
 
 // 从Environment数组中生成Sider中的Item数据
-function genEnv(
-  env: IEnvironment,
-): {
+function genEnv(env: IEnvironment): {
   value: number;
   origin: IEnvironment;
   label: string;
@@ -46,10 +49,13 @@ const Environment = () => {
   const [siderItemList, setSiderItemList] = useState<SiderItem[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [ruleType, setRuleType] = useState<RuleType>(RuleType.SQL_CHECK);
   const [currentEnvironment, setCurrentEnviroment] = useState<IEnvironment>();
   const [integrations, setIntegrations] = useState<IManagerIntegration[]>([]);
-  const [integrationsIdMap, setIntegrationsIdMap] = useState<{ [key in string]: string }>();
+  const [integrationsIdMap, setIntegrationsIdMap] = useState<Record<string, string>>();
+  const [formEnvironmentModalOpen, setFormEnvironmentModalOpen] = useState<boolean>(false);
+  const [options, setOptions] = useState<SelectProps['options']>(null);
 
   const handleItemClick = (item: { value: number; origin: IEnvironment; label: string }) => {
     setSelectedItem(item?.value);
@@ -57,15 +63,66 @@ const Environment = () => {
     setRuleType(RuleType.SQL_CHECK);
   };
 
-  const initEnvironment = async () => {
+  const initEnvironment = async (currentEnvironmentId?: number) => {
     setLoading(true);
-    const envs = await listEnvironments();
+    const envs = (await listEnvironments()) || [];
+    setOptions(
+      envs?.map((env) => {
+        return {
+          label: env?.name,
+          value: env?.id,
+        };
+      }),
+    );
     const resData = envs.map(genEnv).sort((a, b) => a?.value - b?.value);
     resData?.length > 0 && setSiderItemList(resData);
-    resData?.length > 0 && handleItemClick(resData?.[0]);
+    if (currentEnvironmentId) {
+      resData?.length > 0 &&
+        handleItemClick(resData?.find((item) => item.value === currentEnvironmentId));
+    } else {
+      resData?.length > 0 && handleItemClick(resData?.[0]);
+    }
     setLoading(false);
   };
+  const handleCancelFormModal = () => {
+    setFormEnvironmentModalOpen(false);
+    setIsEdit(false);
+  };
 
+  const handleCreateEnvironment = () => {
+    setIsEdit(false);
+    setFormEnvironmentModalOpen(true);
+  };
+  const handleUpdateEnvironment = () => {
+    setIsEdit(true);
+    setFormEnvironmentModalOpen(true);
+  };
+  const handleDeleteEnvironment = async () => {
+    return Modal.confirm({
+      title: formatMessage({ id: 'src.page.Secure.Env.65EAAB75' }), //'确认删除该环境么？'
+      content: formatMessage({ id: 'src.page.Secure.Env.CFE6811F' }), //'删除后不可撤回'
+      centered: true,
+      onCancel: () => {},
+      onOk: async () => {
+        if (currentEnvironment?.builtIn) {
+          return;
+        }
+        const successful = await deleteEnvironment(currentEnvironment?.id);
+        if (successful) {
+          await initEnvironment();
+          message.success(formatMessage({ id: 'src.page.Secure.Env.9D97D589' /*'删除成功'*/ }));
+          setIsEdit(null);
+          return;
+        }
+        message.error(formatMessage({ id: 'src.page.Secure.Env.F0BFC158' /*'删除失败'*/ }));
+      },
+    });
+  };
+  const callback = async (environmentId: number = null) => {
+    setFormEnvironmentModalOpen(false);
+    await initEnvironment(environmentId || currentEnvironment?.id);
+    setIsEdit(null);
+  };
   const loadIntegrations = async () => {
     const integrations = await getIntegrationList({
       type: IntegrationType.SQL_INTERCEPTOR,
@@ -85,23 +142,56 @@ const Environment = () => {
   }, []);
 
   return (
-    <SecureLayout>
-      <SecureSider
-        loading={loading}
-        siderItemList={siderItemList}
-        selectedItem={selectedItem}
-        handleItemClick={handleItemClick}
-      />
-      <EnvironmentContext.Provider
-        value={{
-          currentEnvironment,
-          integrations,
-          integrationsIdMap,
-        }}
-      >
-        <InnerEnvironment ruleType={ruleType} setRuleType={setRuleType} />
-      </EnvironmentContext.Provider>
-    </SecureLayout>
+    <SecureLayout
+      sider={
+        <SecureSider
+          extra={
+            <div className={styles.extra}>
+              <div className={styles.groupTitle}>
+                {formatMessage({ id: 'src.page.Secure.Env.48529F6E' /*全部环境*/ }) /* 全部环境 */}
+              </div>
+              <Acess
+                fallback={null}
+                {...createPermission(IManagerResourceType.environment, actionTypes.create)}
+              >
+                <Icon
+                  component={PlusOutlined}
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleCreateEnvironment}
+                />
+              </Acess>
+            </div>
+          }
+          loading={loading}
+          siderItemList={siderItemList}
+          selectedItem={selectedItem}
+          handleItemClick={handleItemClick}
+        />
+      }
+      content={
+        <>
+          <FormEnvironmentModal
+            options={options}
+            isEdit={isEdit}
+            currentEnvironment={currentEnvironment}
+            formEnvironmentModalOpen={formEnvironmentModalOpen}
+            callback={callback}
+            handleCancelFormModal={handleCancelFormModal}
+          />
+
+          <InnerEnvironment
+            integrations={integrations}
+            integrationsIdMap={integrationsIdMap}
+            currentEnvironment={currentEnvironment}
+            ruleType={ruleType}
+            setRuleType={setRuleType}
+            initEnvironment={initEnvironment}
+            handleUpdateEnvironment={handleUpdateEnvironment}
+            handleDeleteEnvironment={handleDeleteEnvironment}
+          />
+        </>
+      }
+    />
   );
 };
 export default Environment;

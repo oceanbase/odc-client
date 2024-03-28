@@ -79,7 +79,7 @@ export function TextEditor<T>({ row, onRowChange, column, left, top, width }: Ed
       </div>
       {isShowTextModal ? (
         <Modal
-          visible={true}
+          open={true}
           title={name}
           zIndex={1031}
           okText={formatMessage({

@@ -37,6 +37,14 @@ export async function changeLockPwd(originPwd: string, pwd: string) {
   return await ipcInvoke('changeLockPwd', originPwd, pwd);
 }
 
+export async function saveODCSetting(text: string) {
+  return await ipcInvoke('saveODCSetting', text);
+}
+
+export async function getODCSetting(): Promise<string> {
+  return await ipcInvoke('getODCSetting');
+}
+
 /**
  * 选择一个文件夹
  */

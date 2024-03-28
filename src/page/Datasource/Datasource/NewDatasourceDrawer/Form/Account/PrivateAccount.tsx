@@ -18,7 +18,7 @@ import Action from '@/component/Action';
 import { IConnectionTestErrorType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { validTrimEmptyWithWarn } from '@/util/valid';
-import { Col, Form, Input, Row, Space, Typography } from 'antd';
+import { Col, Form, Input, Row, Select, Space, Typography } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import DatasourceFormContext from '../context';
 import FormItemGroup from '../FormItemGroup';
@@ -82,6 +82,37 @@ const PrivateAccount: React.FC<IProps> = function (props) {
 
         /*数据库账号*/
       >
+        {formContext?.dataSourceConfig?.role ? (
+          <Form.Item
+            rules={[{ required: true }]}
+            label={
+              formatMessage({
+                id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.Account.C21B3C92',
+              }) /*"角色"*/
+            }
+            name={'userRole'}
+          >
+            <Select
+              style={{ width: '100%' }}
+              options={[
+                {
+                  label: formatMessage({
+                    id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.Account.445C8BBC',
+                  }), //'默认'
+                  value: 'NORMAL',
+                },
+                {
+                  label: 'SYSDBA',
+                  value: 'SYSDBA',
+                },
+                {
+                  label: 'SYSOPER',
+                  value: 'SYSOPER',
+                },
+              ]}
+            />
+          </Form.Item>
+        ) : null}
         <Row gutter={12}>
           <Col span={12}>
             <Form.Item noStyle shouldUpdate>
@@ -176,6 +207,7 @@ const PrivateAccount: React.FC<IProps> = function (props) {
             passwordValidStatus === 'error' ? formContext?.testResult?.errorMessage : null
           }
         />
+
         <Row>
           <Space size={12}>
             <Action.Link

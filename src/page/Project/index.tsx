@@ -15,6 +15,7 @@
  */
 
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import TooltipAction from '@/component/TooltipAction';
 import { formatMessage } from '@/util/intl';
 import { Button, Menu, Space } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -23,7 +24,9 @@ import Database from './Database';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
+import Notification from './Notification';
 import { getProject, listProjects } from '@/common/network/project';
+import { listDatabases } from '@/common/network/database';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { gotoSQLWorkspace } from '@/util/route';
@@ -33,49 +36,41 @@ import { isNumber } from 'lodash';
 import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
 import tracert from '@/util/tracert';
-const menu = (
-  <Menu>
-    <Menu.Item>
-      {
-        formatMessage({
-          id: 'odc.page.Project.MenuItem',
-        }) /*菜单项一*/
-      }
-    </Menu.Item>
-    <Menu.Item>
-      {
-        formatMessage({
-          id: 'odc.page.Project.MenuItem.1',
-        }) /*菜单项二*/
-      }
-    </Menu.Item>
-  </Menu>
-);
-const ExtraContent = ({ projectId, currentRoles }) => {
-  const disabled =
-    currentRoles?.filter((roles) =>
-      [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
-    )?.length === 0;
+const ExtraContent = ({ projectId }) => {
+  const [disabled, setDisabled] = useState(false);
+
+  const getLoginDatabaseAuth = async () => {
+    const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
+    const hasLoginDatabaseAuth = res.contents?.some(
+      (item) => !!item.authorizedPermissionTypes.length,
+    );
+    setDisabled(!hasLoginDatabaseAuth);
+  };
+
+  useEffect(() => {
+    if (projectId) {
+      getLoginDatabaseAuth();
+    }
+  }, [projectId]);
+
   return (
     <Space size={12}>
-      <Button
-        onClick={() => {
-          tracert.click('a3112.b64002.c330858.d367386');
-          gotoSQLWorkspace(projectId);
-        }}
-        type="primary"
-        disabled={disabled}
-      >
-        {
-          formatMessage({
-            id: 'odc.page.Project.LogOnToTheDatabase',
-          }) /*登录数据库*/
-        }
-      </Button>
-      {/* <Dropdown.Button
-         overlay={menu}
-         buttonsRender={() => [null, <Button icon={<EllipsisOutlined />} />]}
-        /> */}
+      <TooltipAction title={disabled ? formatMessage({ id: 'src.page.Project.653AB743' }) : ''}>
+        <Button
+          onClick={() => {
+            tracert.click('a3112.b64002.c330858.d367386');
+            gotoSQLWorkspace(projectId);
+          }}
+          type="primary"
+          disabled={disabled}
+        >
+          {
+            formatMessage({
+              id: 'odc.page.Project.LogOnToTheDatabase',
+            }) /*登录数据库*/
+          }
+        </Button>
+      </TooltipAction>
     </Space>
   );
 };
@@ -93,8 +88,11 @@ const Pages = {
   [IPageType.Project_User]: {
     component: User,
   },
-  [IPageType.Sensitive]: {
+  [IPageType.Project_Sensitive]: {
     component: Sensitive,
+  },
+  [IPageType.Project_Notification]: {
+    component: Notification,
   },
 };
 const tabs = [
@@ -123,7 +121,11 @@ const tabs = [
     tab: formatMessage({
       id: 'odc.src.page.Project.Sensitive',
     }), //'敏感列'
-    key: IPageType.Sensitive,
+    key: IPageType.Project_Sensitive,
+  },
+  {
+    tab: formatMessage({ id: 'src.page.Project.B4D9BC23' }), //'消息'
+    key: IPageType.Project_Notification,
   },
   {
     tab: formatMessage({
@@ -133,6 +135,7 @@ const tabs = [
     key: IPageType.Project_Setting,
   },
 ];
+
 const Index: React.FC<IProps> = function () {
   const params = useParams<{
     id: string;
@@ -165,7 +168,7 @@ const Index: React.FC<IProps> = function () {
     }
   }, [projectId]);
   useEffect(() => {
-    if (page === IPageType.Sensitive) {
+    if (page === IPageType.Project_Sensitive) {
       // 当前项目中只有Developer身份的用户通过url访问Sensitive页面时，跳转到Project，避免用户通过url直接进入Sensitvie页面导致发起错误请求。
       if (
         !project?.currentUserResourceRoles?.some((role) =>
@@ -202,27 +205,32 @@ const Index: React.FC<IProps> = function () {
       [ProjectRole.DBA]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
-        IPageType.Sensitive,
+        IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
+
       [ProjectRole.DEVELOPER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
         IPageType.Project_User,
       ],
+
       [ProjectRole.OWNER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
-        IPageType.Sensitive,
+        IPageType.Project_Sensitive,
         IPageType.Project_Setting,
         IPageType.Project_User,
+        IPageType.Project_Notification,
       ],
+
       [ProjectRole.SECURITY_ADMINISTRATOR]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
-        IPageType.Sensitive,
+        IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
+
       [ProjectRole.PARTICIPANT]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
@@ -249,8 +257,13 @@ const Index: React.FC<IProps> = function () {
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
       tabList={displayTabs}
       tabActiveKey={page}
-      tabBarExtraContent={
-        <ExtraContent projectId={projectId} currentRoles={project?.currentUserResourceRoles} />
+      tabBarExtraContent={<ExtraContent projectId={projectId} />}
+      containerWrapStyle={
+        [IPageType.Project_Notification].includes(page)
+          ? {
+              padding: '0px 12px',
+            }
+          : {}
       }
       onTabChange={handleChange}
       bigSelectBottom={

@@ -57,7 +57,7 @@ const AddPartitionModal = forwardRef<IRef, IProps>(function ({}, ref) {
   }
   return (
     <Modal
-      visible={visible}
+      open={visible}
       width={720}
       destroyOnClose
       title={formatMessage({

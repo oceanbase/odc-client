@@ -34,7 +34,7 @@ import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import { PLType } from '@/constant/plType';
 import { openFunctionEditPageByFuncName } from '@/store/helper/page';
 import { FunctionPage as FunctionPageModel } from '@/store/helper/page/pages';
@@ -54,7 +54,6 @@ import { formatMessage } from '@/util/intl';
 const ToolbarButton = Toolbar.Button;
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 
 // 顶层 Tab key 枚举
 export enum TopTab {
@@ -252,108 +251,124 @@ class FunctionPage extends Component<
     return (
       func && (
         <>
-          <Content style={{ height: "100%" }}>
+          <Content style={{ height: '100%' }}>
             <Tabs
               activeKey={propsTab}
               tabPosition="left"
               className={styles.propsTab}
               onChange={this.handlePropsTabChanged as any}
-            >
-              <TabPane
-                tab={formatMessage({
-                  id: 'workspace.window.table.propstab.info',
-                })}
-                key={PropsTab.INFO}
-              >
-                <ShowFunctionBaseInfoForm model={func} />
-              </TabPane>
-              <TabPane
-                tab={formatMessage({
-                  id: 'workspace.window.function.propstab.params',
-                })}
-                key={PropsTab.PARAMS}
-              >
-                <Toolbar>
-                  <ToolbarButton
-                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
-                    icon={<SyncOutlined />}
-                    onClick={this.reloadFunction.bind(this, func.funName)}
-                  />
-                </Toolbar>
-                <EditableTable
-                  gridRef={this.gridRef}
-                  minHeight={'calc(100% - 38px)'}
-                  rowKey="paramName"
-                  initialColumns={tableColumns}
-                  initialRows={func.params || []}
-                  bordered={false}
-                  readonly={true}
-                />
-              </TabPane>
-              <TabPane tab={'DDL'} key={PropsTab.DDL}>
-                <Toolbar>
-                  {getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit && (
-                    <ToolbarButton
-                      text={formatMessage({ id: 'workspace.window.session.button.edit' })}
-                      icon={<EditOutlined />}
-                      onClick={this.editFunction.bind(this, func.funName)}
-                    />
-                  )}
+              items={[
+                {
+                  key: PropsTab.INFO,
+                  label: formatMessage({
+                    id: 'workspace.window.table.propstab.info',
+                  }),
+                  children: <ShowFunctionBaseInfoForm model={func} />,
+                },
+                {
+                  key: PropsTab.PARAMS,
+                  label: formatMessage({
+                    id: 'workspace.window.function.propstab.params',
+                  }),
+                  children: (
+                    <>
+                      <Toolbar>
+                        <ToolbarButton
+                          text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                          icon={<SyncOutlined />}
+                          onClick={this.reloadFunction.bind(this, func.funName)}
+                        />
+                      </Toolbar>
+                      <EditableTable
+                        gridRef={this.gridRef}
+                        minHeight={'calc(100% - 38px)'}
+                        rowKey="paramName"
+                        initialColumns={tableColumns}
+                        initialRows={func.params || []}
+                        bordered={false}
+                        readonly={true}
+                      />
+                    </>
+                  ),
+                },
+                {
+                  key: PropsTab.DDL,
+                  label: 'DDL',
+                  children: (
+                    <>
+                      <Toolbar>
+                        {getDataSourceModeConfig(session?.connection?.type)?.features?.plEdit && (
+                          <ToolbarButton
+                            text={formatMessage({ id: 'workspace.window.session.button.edit' })}
+                            icon={<EditOutlined />}
+                            onClick={this.editFunction.bind(this, func.funName)}
+                          />
+                        )}
 
-                  <ToolbarButton
-                    text={
-                      formatMessage({
-                        id: 'odc.components.FunctionPage.Download',
-                      }) //下载
-                    }
-                    icon={<CloudDownloadOutlined />}
-                    onClick={() => {
-                      downloadPLDDL(funName, PLType.FUNCTION, func?.ddl, session?.database?.dbName);
-                    }}
-                  />
+                        <ToolbarButton
+                          text={
+                            formatMessage({
+                              id: 'odc.components.FunctionPage.Download',
+                            }) //下载
+                          }
+                          icon={<CloudDownloadOutlined />}
+                          onClick={() => {
+                            downloadPLDDL(
+                              funName,
+                              PLType.FUNCTION,
+                              func?.ddl,
+                              session?.database?.dbName,
+                            );
+                          }}
+                        />
 
-                  <ToolbarButton
-                    text={formatMessage({ id: 'workspace.window.sql.button.search' })}
-                    icon={<FileSearchOutlined />}
-                    onClick={this.showSearchWidget.bind(this)}
-                  />
+                        <ToolbarButton
+                          text={formatMessage({ id: 'workspace.window.sql.button.search' })}
+                          icon={<FileSearchOutlined />}
+                          onClick={this.showSearchWidget.bind(this)}
+                        />
 
-                  <ToolbarButton
-                    text={
-                      formated
-                        ? formatMessage({
-                            id: 'odc.components.FunctionPage.Unformat',
-                          })
-                        : // 取消格式化
-                          formatMessage({
-                            id: 'odc.components.FunctionPage.Formatting',
-                          })
+                        <ToolbarButton
+                          text={
+                            formated
+                              ? formatMessage({
+                                  id: 'odc.components.FunctionPage.Unformat',
+                                })
+                              : // 取消格式化
+                                formatMessage({
+                                  id: 'odc.components.FunctionPage.Formatting',
+                                })
 
-                      // 格式化
-                    }
-                    icon={<AlignLeftOutlined />}
-                    onClick={this.handleFormat}
-                    status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
-                  />
+                            // 格式化
+                          }
+                          icon={<AlignLeftOutlined />}
+                          onClick={this.handleFormat}
+                          status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
+                        />
 
-                  <ToolbarButton
-                    text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
-                    icon={<SyncOutlined />}
-                    onClick={this.reloadFunction.bind(this, func.funName)}
-                  />
-                </Toolbar>
-                <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                  <SQLCodeEditorDDL
-                    readOnly
-                    defaultValue={(func && func.ddl) || ''}
-                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
-                    onEditorCreated={(editor: IEditor) => {
-                      this.editor = editor;
-                    }}
-                  />
-                </div>
-              </TabPane>
-            </Tabs>
+                        <ToolbarButton
+                          text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                          icon={<SyncOutlined />}
+                          onClick={this.reloadFunction.bind(this, func.funName)}
+                        />
+                      </Toolbar>
+                      <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
+                        <SQLCodePreviewer
+                          readOnly
+                          defaultValue={(func && func.ddl) || ''}
+                          language={
+                            getDataSourceModeConfig(session?.connection?.type)?.sql?.language
+                          }
+                          onEditorCreated={(editor: IEditor) => {
+                            this.editor = editor;
+                          }}
+                        />
+                      </div>
+                    </>
+                  ),
+                },
+              ]}
+            />
           </Content>
         </>
       )

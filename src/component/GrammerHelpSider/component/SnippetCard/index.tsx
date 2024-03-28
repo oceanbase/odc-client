@@ -78,22 +78,22 @@ export default ({ snippet, handleSnippetMenuClick }, {}) => {
 
     return (
       <Dropdown
-        overlay={
-          <Menu
-            style={{
-              width: '100px',
-            }}
-            onClick={(item) => {
-              handleSnippetMenuClick(item.key, snippet);
-            }}
-          >
-            {SNIPPET_ACTIONS.filter((action) => action.key !== EnumSnippetAction.CREATE).map(
-              (action) => {
-                return <Menu.Item key={action.key}>{action.name}</Menu.Item>;
-              },
-            )}
-          </Menu>
-        }
+        menu={{
+          style: {
+            width: '100px',
+          },
+          onClick: (item) => {
+            handleSnippetMenuClick(item.key, snippet);
+          },
+          items: SNIPPET_ACTIONS.filter((action) => action.key !== EnumSnippetAction.CREATE).map(
+            (action) => {
+              return {
+                key: action.key,
+                label: action.name,
+              };
+            },
+          ),
+        }}
         placement="bottomRight"
       >
         <EllipsisOutlined />

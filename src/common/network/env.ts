@@ -19,6 +19,7 @@ import request from '@/util/request';
 
 export async function listEnvironments(
   params?: Partial<{
+    enabled: boolean;
     sort: string;
     page: number;
     size: number;
@@ -26,4 +27,70 @@ export async function listEnvironments(
 ): Promise<IEnvironment[]> {
   const ret = await request.get(`/api/v2/collaboration/environments`, { params });
   return ret?.data?.contents || [];
+}
+/**
+ * 新建自定义环境
+ * @param data
+ * @returns
+ */
+export async function createEnvironment(data: Partial<IEnvironment>): Promise<IEnvironment> {
+  const res = await request.post(`/api/v2/collaboration/environments`, {
+    data,
+  });
+  return res;
+}
+/**
+ * 删除自定义环境
+ * @param environmentId
+ * @returns
+ */
+export async function deleteEnvironment(environmentId: number): Promise<boolean> {
+  const res = await request.delete(`/api/v2/collaboration/environments/${environmentId}`);
+  return res?.successful;
+}
+/**
+ * 更新自定义环境
+ * @param environmentId
+ * @param data
+ * @returns
+ */
+export async function updateEnvironment(
+  environmentId: number,
+  data: Pick<IEnvironment, 'description' | 'style'>,
+): Promise<IEnvironment> {
+  const res = await request.put(`/api/v2/collaboration/environments/${environmentId}`, {
+    data,
+  });
+  return res;
+}
+/**
+ * 修改环境的启用状态
+ * @param environmentId
+ * @param enabled
+ * @returns
+ */
+export async function setEnabled(environmentId: number, enabled: boolean) {
+  const res = await request.post(`/api/v2/collaboration/environments/${environmentId}/setEnabled`, {
+    data: {
+      enabled,
+    },
+  });
+  return res?.successful;
+}
+
+/**
+ * 环境名场重复校验接口
+ * @param environmentName 环境名称
+ * @returns
+ */
+export async function getEnvironmentExists(environmentName: string): Promise<{
+  errorMessage: string;
+  exists: boolean;
+}> {
+  const res = await request.post(`/api/v2/collaboration/environments/exists`, {
+    params: {
+      name: environmentName,
+    },
+  });
+  return res?.data;
 }

@@ -33,6 +33,9 @@ import { action, observable, runInAction } from 'mobx';
 import settingStore from '../setting';
 import DatabaseStore from './database';
 import { ISupportFeature } from './type';
+import setting from '../setting';
+import { getBuiltinSnippets } from '@/common/network/snippet';
+import { ISnippet } from '../snippet';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -46,6 +49,8 @@ class SessionStore {
   public collations: string[] = [];
   @observable
   public dataTypes: IDataType[] = [];
+
+  public snippets: ISnippet[] = [];
 
   @observable
   public odcDatabase: IDatabase;
@@ -83,6 +88,8 @@ class SessionStore {
     delimiterLoading: boolean;
     obVersion: string;
     tableColumnInfoVisible: boolean;
+    fullLinkTraceEnabled: boolean;
+    continueExecutionOnError: boolean;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
@@ -90,6 +97,8 @@ class SessionStore {
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
     tableColumnInfoVisible: true,
+    fullLinkTraceEnabled: true,
+    continueExecutionOnError: true,
   };
 
   /**
@@ -118,10 +127,10 @@ class SessionStore {
     this.createTime = Date.now();
   }
 
-   public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
+  public updateConnectionAndDatabase(connection: IDatasource, database: IDatabase) {
     this.connection = connection || this.connection;
     this.odcDatabase = database || this.odcDatabase;
-   }
+  }
 
   static async createInstance(datasource: IDatasource, database: IDatabase) {
     const session = new SessionStore(datasource, database);
@@ -203,7 +212,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.initSessionStatus();
+      await this.initSessionStatus(true);
       if (!this.transState) {
         return false;
       }
@@ -312,7 +321,7 @@ class SessionStore {
     const sid = generateDatabaseSid(this.database?.dbName, this.sessionId);
     const now = Date.now();
 
-    if (now - this.lastTableAndViewLoadTime < 10000 && !force) {
+    if (now - this.lastTableAndViewLoadTime < 15000 && !force) {
       return this.allTableAndView;
     }
     this.lastTableAndViewLoadTime = now;
@@ -346,7 +355,7 @@ class SessionStore {
   }
 
   @action
-  public async initSessionStatus() {
+  public async initSessionStatus(init: boolean = false) {
     try {
       const data = await getSessionStatus(this.sessionId);
 
@@ -354,6 +363,14 @@ class SessionStore {
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
+      if (init) {
+        this.params.tableColumnInfoVisible =
+          setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
+        this.params.fullLinkTraceEnabled =
+          setting.configurations['odc.sqlexecute.default.fullLinkTraceEnabled'] === 'true';
+        this.params.continueExecutionOnError =
+          setting.configurations['odc.sqlexecute.default.continueExecutionOnError'] === 'true';
+      }
       if (data?.session) {
         this.transState = data?.session;
       }
@@ -418,7 +435,7 @@ class SessionStore {
   @action
   public async queryIdentities() {
     const now = Date.now();
-    if (now - this.lastIdentitiesLoadTime < 10000) {
+    if (now - this.lastIdentitiesLoadTime < 15000) {
       return;
     }
     this.lastIdentitiesLoadTime = now;
@@ -478,8 +495,22 @@ class SessionStore {
   };
 
   @action
+  public addBuiltinSnippets = async () => {
+    const data = await getBuiltinSnippets(this.sessionId);
+    this.snippets = data;
+  };
+
+  @action
   public changeColumnInfoVisible = async (v: boolean) => {
     this.params.tableColumnInfoVisible = v;
+  };
+  @action
+  public changeFullTraceDiagnosisEnabled = async (v: boolean) => {
+    this.params.fullLinkTraceEnabled = v;
+  };
+  @action
+  public changeContinueExecutionOnError = async (v: boolean) => {
+    this.params.continueExecutionOnError = v;
   };
 }
 

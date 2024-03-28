@@ -15,7 +15,6 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import PageLoading from '@/component/PageLoading';
 import { UserStore } from '@/store/login';
 import { Outlet, useLocation, useNavigate } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
@@ -24,7 +23,6 @@ import { PageLoadingContext } from './PageLoadingWrapper';
 interface IProps {
   userStore?: UserStore;
 }
-const key = '$odc_event_organizationKey';
 const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore }) {
   const organizationId = userStore?.organizationId;
   const isSwitching = userStore?.isSwitchingOrganization;

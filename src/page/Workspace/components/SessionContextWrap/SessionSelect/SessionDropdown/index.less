@@ -5,6 +5,11 @@
   overflow-x: hidden;
 }
 .tree {
+  .textoverflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   :global {
     .ant-tree-treenode {
       width: 100%;
@@ -14,10 +19,20 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      display: flex;
+      .ant-tree-title {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 8px;
+      }
     }
+
     .ant-badge {
       position: absolute;
       right: 4px;
+      top: 0px;
       .ant-badge-status-dot {
         border-radius: 0px;
       }

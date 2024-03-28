@@ -19,6 +19,7 @@ import type { ProjectUser } from './project';
 export interface IEnvironment {
   id: number;
   name: string;
+  originalName?: string;
   description: string;
   rulesetId: number;
   rulesetName: string;
@@ -29,6 +30,8 @@ export interface IEnvironment {
   creator: ProjectUser;
   lastModifier: ProjectUser;
   style: string;
+  enabled: boolean;
+  copiedRulesetId?: number;
 }
 export interface DataType {
   key: string;

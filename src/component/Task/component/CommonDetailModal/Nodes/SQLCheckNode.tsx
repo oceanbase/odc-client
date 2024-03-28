@@ -16,6 +16,7 @@
 
 import { getFlowSQLLintResult } from '@/common/network/task';
 import LintDrawer from '@/component/SQLLintResult/Drawer';
+import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
 import { Descriptions, Tag } from 'antd';
@@ -29,12 +30,13 @@ interface IProps {
   flowId: number;
 }
 const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
-  const { status, nodeType, issueCount, unauthorizedDatabaseNames, id, preCheckOverLimit } = node;
+  const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [permissionResultVisible, setPermissionResultVisible] = useState(false);
   const [data, setData] = useState<ISQLLintReuslt[]>([]);
   const showCount = typeof issueCount === 'number';
-  const showUnauthorized = unauthorizedDatabaseNames?.length > 0;
+  const showUnauthorized = unauthorizedDatabases?.length > 0;
   const showReslut = showCount || showUnauthorized || preCheckOverLimit;
   async function viewLintResult() {
     if (isLoading) {
@@ -50,6 +52,10 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function viewPermissionResult() {
+    setPermissionResultVisible(true);
   }
   return (
     <>
@@ -69,23 +75,17 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                   className={preCheckOverLimit ? styles.checkReslut : null}
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.SQLExaminationResults',
+                      id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.SQLExaminationResults',
                     }) /* SQL 检查结果 */
                   }
                 >
                   {showCount && (
                     <>
                       {
-                        formatMessage({
-                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Existence',
-                        }) /*存在*/
-                      }
-                      {issueCount}
-                      {
-                        formatMessage({
-                          id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.Question',
-                        }) /*个问题*/
+                        formatMessage(
+                          { id: 'src.component.Task.component.CommonDetailModal.Nodes.67EAA454' },
+                          { issueCount: issueCount },
+                        ) /*`存在${issueCount}个问题`*/
                       }
                       {issueCount > 0 && (
                         <a
@@ -103,16 +103,17 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       )}
                     </>
                   )}
+
                   {preCheckOverLimit && (
                     <span>
                       {
                         formatMessage({
-                          id:
-                            'odc.src.component.Task.component.CommonDetailModal.Nodes.TheNumberOf',
+                          id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.TheNumberOf',
                         }) /* 
-                      ，预检查处理 SQL 条数超过最大限制，当前任务流程将按
-                       */
+                ，预检查处理 SQL 条数超过最大限制，当前任务流程将按
+                */
                       }
+
                       <Tag
                         style={{
                           marginLeft: '8px',
@@ -123,17 +124,16 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                           formatMessage({
                             id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.HighRisk',
                           }) /* 
-                        高风险
-                       */
+                  高风险
+                  */
                         }
                       </Tag>
                       {
                         formatMessage({
-                          id:
-                            'odc.src.component.Task.component.CommonDetailModal.Nodes.GradeContinuesToAdvance',
+                          id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.GradeContinuesToAdvance',
                         }) /* 
-                      等级继续推进
-                     */
+                等级继续推进
+                */
                       }
                     </span>
                   )}
@@ -143,25 +143,34 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                 <Descriptions.Item
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.PermissionsInspectionResults',
+                      id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.PermissionsInspectionResults',
                     }) /* 权限检查结果 */
                   }
                 >
                   {
-                    formatMessage({
-                      id:
-                        'odc.src.component.Task.component.CommonDetailModal.Nodes.UnpredictableAccessToTheDatabase',
-                    }) /* 
-               无权限访问数据库：
-               */
+                    formatMessage(
+                      { id: 'src.component.Task.component.CommonDetailModal.Nodes.90FF76EB' },
+                      { unauthorizedDatabasesLength: unauthorizedDatabases?.length },
+                    ) /*`存在${unauthorizedDatabases?.length}个问题`*/
                   }
-                  {unauthorizedDatabaseNames?.join(', ')}
+                  <a
+                    style={{
+                      marginLeft: 5,
+                    }}
+                    onClick={viewPermissionResult}
+                  >
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.CommonDetailModal.Nodes.3D1ABD2F' /*查看*/,
+                      }) /* 查看 */
+                    }
+                  </a>
                 </Descriptions.Item>
               ) : null}
             </Descriptions>
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingTime',
@@ -171,6 +180,13 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         </Descriptions.Item>
       </Descriptions>
       <LintDrawer visible={visible} closePage={() => setVisible(false)} data={data} />
+      <DBPermissionTableDrawer
+        visible={permissionResultVisible}
+        dataSource={unauthorizedDatabases}
+        onClose={() => {
+          setPermissionResultVisible(false);
+        }}
+      />
     </>
   );
 };

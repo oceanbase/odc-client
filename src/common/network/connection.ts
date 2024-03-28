@@ -43,6 +43,9 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     creatorId: userId,
     type: formData.type,
     defaultSchema: formData?.defaultSchema,
+    sid: formData?.sid,
+    serviceName: formData?.serviceName,
+    userRole: formData?.userRole,
     name: formData.name,
     username: formData.username,
     password: encrypt(formData.password),
@@ -204,7 +207,9 @@ export async function testExsitConnection(
   return ret;
 }
 
-export async function batchTest(cids: number[]): Promise<
+export async function batchTest(
+  cids: number[],
+): Promise<
   Record<
     number,
     {
@@ -313,7 +318,9 @@ export async function newSessionByDataSource(
   return data;
 }
 
-export async function getSessionStatus(sessionId?: string): Promise<{
+export async function getSessionStatus(
+  sessionId?: string,
+): Promise<{
   settings: {
     autocommit: boolean;
     delimiter: string;
@@ -359,7 +366,9 @@ export async function getConnectionExists(params: { name: string }): Promise<boo
 /**
  * 获取集群 & 租户列表
  */
-export async function getClusterAndTenantList(visibleScope: IConnectionType): Promise<{
+export async function getClusterAndTenantList(
+  visibleScope: IConnectionType,
+): Promise<{
   tenantName: Record<string, string[]>;
   clusterName: Record<string, string[]>;
 }> {

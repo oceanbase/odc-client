@@ -16,30 +16,21 @@
 
 import { getTaskDetail } from '@/common/network/task';
 import { TaskOperationType } from '@/d.ts';
-import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Space, Spin } from 'antd';
-import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import ApprovalModal from '../ApprovalModal';
 import styles from './index.less';
 import TaskFlow from './TaskFlow';
 import { operationTypeMap } from './TaskOperationRecord';
 interface IProps {
-  userStore?: UserStore;
   id: number;
   operationType: TaskOperationType;
   visible: boolean;
   onClose: () => void;
 }
 const FlowModal: React.FC<IProps> = function (props) {
-  const {
-    userStore: { user },
-    visible,
-    id,
-    operationType,
-    onClose,
-  } = props;
+  const { visible, id, operationType, onClose } = props;
   const [loading, setLoading] = useState(false);
   const [task, setTask] = useState(null);
   const [approvalVisible, setApprovalVisible] = useState(false);
@@ -115,10 +106,8 @@ const FlowModal: React.FC<IProps> = function (props) {
       </Space>
       <Spin spinning={loading}>{task && <TaskFlow task={task} />}</Spin>
       <ApprovalModal
-        type={task?.type}
         id={task?.id}
         visible={approvalVisible}
-        status={task?.status}
         approvalStatus={approvalStatus}
         onReload={() => {
           getTask(id);
@@ -130,4 +119,4 @@ const FlowModal: React.FC<IProps> = function (props) {
     </Drawer>
   );
 };
-export default inject('userStore')(observer(FlowModal));
+export default FlowModal;

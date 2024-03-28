@@ -175,7 +175,9 @@ export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageS
 
 export async function openSessionManagePage(datasourceId?: number) {
   if (!datasourceId) {
-    [datasourceId] = await SelectDatabase();
+    [datasourceId] = await SelectDatabase(
+      (type) => getDataSourceModeConfig(type)?.features?.sessionManage,
+    );
   }
   if (!datasourceId) {
     return;
@@ -428,7 +430,7 @@ export async function openOBClientPage(cid: number, dbId: number) {
     return p.type === PageType.OB_CLIENT;
   })?.length;
   if (clientPageCounts >= MAX_CLIENT_PAGE) {
-    message.warn(
+    message.warning(
       formatMessage(
         {
           id: 'odc.helper.page.openPage.YouCannotOpenMoreThan',

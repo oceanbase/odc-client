@@ -18,20 +18,24 @@ import {
   createTask,
   downloadTaskFlow,
   executeTask,
+  getStructureComparisonTaskFile,
   getTaskResult,
   stopTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import {
   IAsyncTaskParams,
+  IMockDataParams,
   ITaskResult,
   RollbackType,
   TaskDetail,
   TaskExecStrategy,
   TaskRecord,
   TaskRecordParameters,
+  IApplyDatabasePermissionTaskParams,
   TaskStatus,
   TaskType,
+  SubTaskStatus,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -46,6 +50,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isCycleTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
+import { cloneDeep } from 'lodash';
 
 interface IProps {
   userStore?: UserStore;
@@ -56,7 +61,7 @@ interface IProps {
   task: Partial<TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>>;
   disabledSubmit?: boolean;
   result?: ITaskResult;
-  onReloadList: () => void;
+  onReloadList?: () => void;
   onReload?: () => void;
   onApprovalVisible?: (status: boolean, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -72,6 +77,7 @@ const ActionBar: React.FC<IProps> = inject(
   observer((props) => {
     const {
       taskStore,
+      modalStore,
       userStore: { user },
       settingStore,
       isDetailModal,
@@ -80,7 +86,8 @@ const ActionBar: React.FC<IProps> = inject(
       result,
     } = props;
     const isOwner = user?.id === task?.creator?.id;
-    const isApprovable = task?.approvable;
+    const isApprover = task?.approvable;
+    const isOwnerAndApprover = isOwner && isApprover;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
     const disabledApproval =
@@ -108,7 +115,7 @@ const ActionBar: React.FC<IProps> = inject(
           }),
         );
 
-        props.onReloadList();
+        props?.onReloadList?.();
         props?.onReload?.();
       }
     };
@@ -128,8 +135,8 @@ const ActionBar: React.FC<IProps> = inject(
       props.modalStore.changeCreateAsyncTaskModal(true, {
         type,
         task: task as TaskDetail<IAsyncTaskParams>,
-        databaseId: task?.databaseId,
-        objectId: result?.rollbackPlanResult?.objectId,
+        databaseId: task?.database?.id,
+        objectId: result?.rollbackPlanResult?.resultFileDownloadUrl,
       });
     };
 
@@ -165,38 +172,84 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleReTry = async () => {
-      const { type, databaseId, executionStrategy, executionTime, parameters, description } = task;
-      const res = await createTask({
-        taskType: type,
-        databaseId,
-        executionStrategy,
-        executionTime,
-        parameters,
-        description,
-      });
+      const { type } = task;
+      switch (type) {
+        case TaskType.ASYNC: {
+          props.modalStore.changeCreateAsyncTaskModal(true, {
+            task: task as TaskDetail<IAsyncTaskParams>,
+          });
+          return;
+        }
+        case TaskType.DATAMOCK: {
+          props.modalStore.changeDataMockerModal(true, {
+            task: task as TaskDetail<IMockDataParams>,
+          });
+          return;
+        }
+        case TaskType.APPLY_DATABASE_PERMISSION: {
+          modalStore.changeApplyDatabasePermissionModal(true, {
+            task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        default: {
+          const { database, executionStrategy, executionTime, parameters, description } = task;
+          const data = {
+            taskType: type,
+            parameters,
+            databaseId: database?.id,
+            executionStrategy,
+            executionTime,
+            description,
+          };
+          const res = await createTask(data);
+          if (res) {
+            message.success(
+              formatMessage({
+                id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
+              }),
 
-      if (res) {
-        message.success(
-          formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
-          }),
-
-          //再次发起成功
-        );
+              //再次发起成功
+            );
+          }
+        }
       }
     };
 
     const editCycleTask = async () => {
       props?.onClose?.();
       if (task?.type === TaskType.DATA_ARCHIVE) {
-        props.modalStore.changeDataArchiveModal(true, task?.id);
+        props.modalStore.changeDataArchiveModal(true, {
+          id: task?.id,
+          type: 'EDIT',
+        });
       } else {
-        props.modalStore.changeCreateSQLPlanTaskModal(true, task?.id);
+        props.modalStore.changeCreateSQLPlanTaskModal(true, {
+          id: task?.id,
+        });
+      }
+    };
+
+    const handleReTryCycleTask = async () => {
+      props?.onClose?.();
+      if (task?.type === TaskType.DATA_ARCHIVE) {
+        props.modalStore.changeDataArchiveModal(true, {
+          id: task?.id,
+          type: 'RETRY',
+        });
+      } else if (task?.type === TaskType.DATA_DELETE) {
+        props.modalStore.changeDataClearModal(true, {
+          id: task?.id,
+          type: 'RETRY',
+        });
       }
     };
 
     const disableCycleTask = async () => {
-      const { databaseId, id } = task;
+      const {
+        database: { id: databaseId },
+        id,
+      } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.1',
@@ -242,7 +295,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const enableCycleTask = async () => {
-      const { databaseId, id } = task;
+      const {
+        database: { id: databaseId },
+        id,
+      } = task;
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
@@ -288,7 +344,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const stopCycleTask = async () => {
-      const { databaseId, id } = task;
+      const {
+        database: { id: databaseId },
+        id,
+      } = task;
       await createTask({
         databaseId,
         taskType: TaskType.ALTER_SCHEDULE,
@@ -306,8 +365,22 @@ const ActionBar: React.FC<IProps> = inject(
       if (!_task) {
         return [];
       }
-      const { status } = _task;
-
+      const { status, completeTime = 0 } = _task;
+      const structureComparisonData =
+        modalStore?.structureComparisonDataMap?.get(_task?.id) || null;
+      // 文件过期判断。
+      const isExpired = Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000 || false;
+      // 结构比对工单详情 任务未得到执行结果前禁用按钮。
+      const disableBtn =
+        task?.type === TaskType.STRUCTURE_COMPARISON &&
+        structureComparisonData &&
+        ![SubTaskStatus.DONE, SubTaskStatus.FAILED].includes(structureComparisonData?.status);
+      // 结构比对结果均为一致时，无须发起数据库变更任务。
+      const noAction =
+        SubTaskStatus.DONE === structureComparisonData?.status &&
+        ((structureComparisonData?.overSizeLimit && structureComparisonData?.storageObjectId) ||
+          (!structureComparisonData?.overSizeLimit &&
+            !(structureComparisonData?.totalChangeScript?.length > 0)));
       const viewBtn = {
         key: 'view',
         text: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.See' }), // 查看
@@ -426,12 +499,50 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Download',
         }),
+        disabled: isExpired,
+        isExpired,
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.F20AAC3F' }), //'文件下载链接已超时，请重新发起工单。'
 
-        //下载
         action: download,
         type: 'button',
       };
-
+      const downloadSQLBtn = {
+        key: 'downloadSQL',
+        text: formatMessage({ id: 'src.component.Task.component.ActionBar.DBA6CB6E' }), //'下载 SQL'
+        disabled: disableBtn || !structureComparisonData?.storageObjectId,
+        isExpired: disableBtn || !structureComparisonData?.storageObjectId,
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.A79907A3' }), //'暂不可用'
+        type: 'button',
+        action: async () => {
+          if (structureComparisonData?.storageObjectId) {
+            const fileUrl = await getStructureComparisonTaskFile(_task?.id, [
+              `${structureComparisonData?.storageObjectId}`,
+            ]);
+            fileUrl?.forEach((url) => {
+              url && downloadFile(url);
+            });
+          }
+        },
+      };
+      const structrueComparisonBySQL = {
+        key: 'structrueComparisonBySQL',
+        text: formatMessage({ id: 'src.component.Task.component.ActionBar.46F2F0ED' }), //'发起结构同步'
+        isExpired: disableBtn || noAction,
+        disabled: disableBtn || noAction,
+        tip: noAction
+          ? formatMessage({ id: 'src.component.Task.component.ActionBar.D98B5B62' })
+          : formatMessage({ id: 'src.component.Task.component.ActionBar.4BF7D8BF' }),
+        type: 'button',
+        isPrimary: true,
+        action: async () => {
+          structureComparisonData &&
+            modalStore?.changeCreateAsyncTaskModal(true, {
+              sql: structureComparisonData?.totalChangeScript,
+              databaseId: structureComparisonData?.database?.id,
+              rules: null,
+            });
+        },
+      };
       const openLocalFolder = {
         key: 'openLocalFolder',
         text: formatMessage({
@@ -453,8 +564,10 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.DownloadQueryResults',
         }),
+        disabled: isExpired,
+        isExpired,
+        tip: formatMessage({ id: 'src.component.Task.component.ActionBar.E9211B1A' }), //'文件下载链接已超时，请重新发起工单。'
 
-        //下载查询结果
         action: downloadViewResult,
         type: 'button',
       };
@@ -472,25 +585,28 @@ const ActionBar: React.FC<IProps> = inject(
           case TaskStatus.CANCELLED:
           case TaskStatus.PRE_CHECK_FAILED:
           case TaskStatus.COMPLETED: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn];
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.EXECUTING: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn, stopBtn];
+              if (task.type === TaskType.STRUCTURE_COMPARISON) {
+                tools.push(downloadSQLBtn, structrueComparisonBySQL);
+              }
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.EXECUTION_SUCCEEDED: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn];
               if (task.type === TaskType.EXPORT && settingStore.enableDataExport) {
                 if (isClient()) {
@@ -504,29 +620,32 @@ const ActionBar: React.FC<IProps> = inject(
                 tools.push(downloadBtn);
               } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
                 tools.push(rollbackBtn);
+              } else if (task.type === TaskType.STRUCTURE_COMPARISON) {
+                tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
             }
-            if (isApprovable) {
+
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.WAIT_FOR_CONFIRM:
           case TaskStatus.APPROVING: {
-            if (isOwner && isApprovable) {
+            if (isOwnerAndApprover) {
               tools = [reTryBtn, stopBtn, rejectBtn, approvalBtn];
             } else {
               if (isOwner) {
                 tools = [reTryBtn, stopBtn];
               }
-              if (isApprovable) {
+              if (isApprover) {
                 tools = [rejectBtn, approvalBtn];
               }
             }
             break;
           }
           case TaskStatus.WAIT_FOR_EXECUTION: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               const _executeBtn = { ...executeBtn };
               if (task?.executionStrategy === TaskExecStrategy.TIMER) {
                 _executeBtn.disabled = true;
@@ -534,8 +653,7 @@ const ActionBar: React.FC<IProps> = inject(
 
                 _executeBtn.tooltip = formatMessage(
                   {
-                    id:
-                      'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+                    id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
                   },
 
                   { executionTime: executionTime },
@@ -548,7 +666,7 @@ const ActionBar: React.FC<IProps> = inject(
                   ? [reTryBtn, stopBtn]
                   : [reTryBtn, stopBtn, _executeBtn];
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
@@ -607,6 +725,13 @@ const ActionBar: React.FC<IProps> = inject(
         type: 'button',
       };
 
+      const reTryBtn = {
+        key: 'reTry',
+        text: formatMessage({ id: 'src.component.Task.component.ActionBar.C324AD20' }), //'再次发起'
+        type: 'button',
+        action: handleReTryCycleTask,
+      };
+
       const disableBtn = {
         key: 'disable',
         text: formatMessage({
@@ -650,12 +775,12 @@ const ActionBar: React.FC<IProps> = inject(
 
       switch (status) {
         case TaskStatus.APPROVING: {
-          if (isOwner && isApprovable) {
+          if (isOwnerAndApprover) {
             tools = [viewBtn, stopBtn, approvalBtn, rejectBtn];
           } else {
             if (isOwner) {
               tools = [viewBtn, stopBtn];
-            } else if (isApprovable) {
+            } else if (isApprover) {
               tools = [viewBtn, approvalBtn, rejectBtn];
             } else {
               tools = [viewBtn];
@@ -668,7 +793,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.ENABLED: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn, editBtn, disableBtn];
           } else {
             tools = [viewBtn];
@@ -677,7 +802,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.APPROVAL_EXPIRED:
         case TaskStatus.TERMINATION: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn];
           } else {
             tools = [viewBtn];
@@ -685,8 +810,19 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.PAUSE: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn, editBtn, enableBtn];
+          } else {
+            tools = [viewBtn];
+          }
+          break;
+        }
+        case TaskStatus.COMPLETED: {
+          if (isOwner) {
+            tools = [viewBtn];
+            if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
+              tools.push(reTryBtn);
+            }
           } else {
             tools = [viewBtn];
           }
@@ -715,20 +851,22 @@ const ActionBar: React.FC<IProps> = inject(
       ? getTools(task).filter((item) => item?.type === 'button')
       : getTools(task);
 
-    const renderTool = (tool) => {
+    const renderTool = (tool, index) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
       const disabled = activeBtnKey === tool?.key || tool?.disabled;
       if (tool.confirmText) {
         return (
-          <Popconfirm title={tool.confirmText} onConfirm={tool.action}>
-            <ActionButton disabled={disabled}>{tool.text}</ActionButton>
+          <Popconfirm key={tool?.key || index} title={tool.confirmText} onConfirm={tool.action}>
+            <ActionButton key={tool?.key || index} disabled={disabled}>
+              {tool.text}
+            </ActionButton>
           </Popconfirm>
         );
       }
 
       if (tool.download) {
         return (
-          <ActionButton disabled={disabled} onClick={tool.download}>
+          <ActionButton key={tool?.key || index} disabled={disabled} onClick={tool.download}>
             {tool.text}
           </ActionButton>
         );
@@ -736,12 +874,14 @@ const ActionBar: React.FC<IProps> = inject(
 
       return (
         <ActionButton
+          key={tool?.key || index}
           type={tool.isPrimary ? 'primary' : 'default'}
-          disabled={disabled}
+          disabled={disabled || tool?.isExpired}
           onClick={tool.action}
-          tooltip={isDetailModal ? tool?.tooltip : null}
+          placement={tool?.isExpired ? 'topRight' : null}
+          tooltip={isDetailModal ? (tool?.isExpired && tool?.tip) || tool?.tooltip : null}
         >
-          <Tooltip placement="topRight" title={tool?.tooltip}>
+          <Tooltip placement="topRight" title={tool?.isExpired ? tool?.tip : tool?.tooltip}>
             {tool.text}
           </Tooltip>
         </ActionButton>
@@ -751,8 +891,8 @@ const ActionBar: React.FC<IProps> = inject(
     return (
       <>
         <Action.Group size={!isDetailModal ? 4 : 6}>
-          {btnTools?.map((tool) => {
-            return renderTool(tool);
+          {btnTools?.map((tool, index) => {
+            return renderTool(tool, index);
           })}
         </Action.Group>
         {isDetailModal && (
@@ -760,7 +900,7 @@ const ActionBar: React.FC<IProps> = inject(
             open={openRollback}
             generateRollbackPlan={
               (task as TaskDetail<IAsyncTaskParams>)?.parameters?.generateRollbackPlan &&
-              !!result?.rollbackPlanResult?.objectId
+              !!result?.rollbackPlanResult?.resultFileDownloadUrl
             }
             onOk={confirmRollback}
             onCancel={handleCloseRollback}

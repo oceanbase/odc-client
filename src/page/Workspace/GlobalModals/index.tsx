@@ -24,6 +24,7 @@ import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import CreateSequenceModal from '../components/CreateSequenceModal';
+import ODCSetting from '@/component/ODCSetting';
 
 interface IProps {
   modalStore?: ModalStore;

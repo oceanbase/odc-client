@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { INlsObject, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
 import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
@@ -150,7 +150,10 @@ export async function generateUpdateTableDDL(
   return res?.data || { sql: '', tip: '' };
 }
 
-export async function getTableListByDatabaseName(sessionId: string, databaseName?: string) {
+export async function getTableListByDatabaseName(
+  sessionId: string,
+  databaseName?: string,
+): Promise<ITable[]> {
   const sid = generateDatabaseSid(databaseName, sessionId);
   const ret = await request.get(`/api/v1/table/list/${sid}`);
   return ret?.data || [];

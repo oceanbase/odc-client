@@ -17,7 +17,7 @@
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IResultSet, IView } from '@/d.ts';
@@ -45,7 +45,6 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { formatMessage } from '@/util/intl';
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 const ToolbarButton = Toolbar.Button;
 
 const GLOBAL_HEADER_HEIGHT = 40;
@@ -377,7 +376,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     return (
       view && (
         <>
-          <Content style={{ height: "100%" }}>
+          <Content style={{ height: '100%' }}>
             <Radio.Group
               onChange={this.handleTopTabChanged}
               value={topTab}
@@ -396,126 +395,147 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
               activeKey={topTab}
               className={styles.topbarTab}
               animated={false}
-            >
-              <TabPane key={TopTab.PROPS} tab="">
-                <Tabs
-                  activeKey={propsTab}
-                  tabPosition="left"
-                  className={styles.propsTab}
-                  onChange={this.handlePropsTabChanged as (key: string) => void}
-                >
-                  <TabPane
-                    tab={formatMessage({
-                      id: 'workspace.window.table.propstab.info',
-                    })}
-                    key={PropsTab.INFO}
-                  >
-                    <ShowViewBaseInfoForm model={view} />
-                  </TabPane>
-                  <TabPane
-                    tab={formatMessage({
-                      id: 'workspace.window.table.propstab.column',
-                    })}
-                    key={PropsTab.COLUMN}
-                  >
-                    <ColumnTab
-                      hideRawtableInfo={true}
-                      hideOrder={true}
-                      editable={false}
-                      modified={false}
-                      table={view}
-                      tableName={viewName}
-                      pageKey={pageKey}
-                      onReload={() => this.reloadViewColumns(viewName)}
-                    />
-                  </TabPane>
-                  <TabPane tab={'DDL'} key={PropsTab.DDL}>
-                    <Toolbar>
-                      <ToolbarButton
-                        text={
-                          formatMessage({
-                            id: 'odc.components.ViewPage.Download',
-                          }) //下载
-                        }
-                        icon={<CloudDownloadOutlined />}
-                        onClick={() => {
-                          downloadPLDDL(
-                            view?.viewName,
-                            'VIEW',
-                            view?.ddl,
-                            this.props.session?.odcDatabase?.name,
-                          );
-                        }}
-                      />
+              items={[
+                {
+                  key: TopTab.PROPS,
+                  label: '',
+                  children: (
+                    <Tabs
+                      activeKey={propsTab}
+                      tabPosition="left"
+                      className={styles.propsTab}
+                      onChange={this.handlePropsTabChanged as (key: string) => void}
+                      items={[
+                        {
+                          key: PropsTab.INFO,
+                          label: formatMessage({
+                            id: 'workspace.window.table.propstab.info',
+                          }),
+                          children: <ShowViewBaseInfoForm model={view} />,
+                        },
+                        {
+                          label: formatMessage({
+                            id: 'workspace.window.table.propstab.column',
+                          }),
+                          key: PropsTab.COLUMN,
+                          children: (
+                            <ColumnTab
+                              hideRawtableInfo={true}
+                              hideOrder={true}
+                              editable={false}
+                              modified={false}
+                              table={view}
+                              tableName={viewName}
+                              pageKey={pageKey}
+                              onReload={() => this.reloadViewColumns(viewName)}
+                            />
+                          ),
+                        },
+                        {
+                          key: PropsTab.DDL,
+                          label: 'DDL',
+                          children: (
+                            <>
+                              <Toolbar>
+                                <ToolbarButton
+                                  text={
+                                    formatMessage({
+                                      id: 'odc.components.ViewPage.Download',
+                                    }) //下载
+                                  }
+                                  icon={<CloudDownloadOutlined />}
+                                  onClick={() => {
+                                    downloadPLDDL(
+                                      view?.viewName,
+                                      'VIEW',
+                                      view?.ddl,
+                                      this.props.session?.odcDatabase?.name,
+                                    );
+                                  }}
+                                />
 
-                      <ToolbarButton
-                        text={
-                          formated
-                            ? formatMessage({
-                                id: 'odc.components.ViewPage.Unformat',
-                              })
-                            : // 取消格式化
-                              formatMessage({
-                                id: 'odc.components.ViewPage.Formatting',
-                              })
-                          // 格式化
-                        }
-                        icon={<AlignLeftOutlined />}
-                        onClick={this.handleFormat}
-                        status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
-                      />
-                    </Toolbar>
-                    <div
-                      style={{
-                        height: `calc(100% - 38px)`,
-                        position: 'relative',
-                      }}
-                    >
-                      <SQLCodeEditorDDL
-                        readOnly
-                        key={view.ddl}
-                        defaultValue={`${view.ddl};`}
-                        language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
-                        onEditorCreated={(editor: IEditor) => {
-                          this.editor = editor;
-                        }}
-                      />
-                    </div>
-                  </TabPane>
-                </Tabs>
-              </TabPane>
-              <TabPane key={TopTab.DATA} tab="">
-                <Spin wrapperClassName={styles.spin} spinning={dataLoading || !resultSet}>
-                  {resultSet && (
-                    <DDLResultSet
-                      showExplain={false}
-                      session={session}
-                      autoCommit={session?.params?.autoCommit}
-                      showPagination={true}
-                      isTableData={false}
-                      isViewData={true}
-                      disableEdit={true}
-                      columns={resultSet.columns}
-                      useUniqueColumnName={false}
-                      rows={resultSet.rows}
-                      sqlId={resultSet.sqlId}
-                      table={{
-                        tableName: view?.viewName,
-                        ...view,
-                      }}
-                      resultHeight={`100%`}
-                      onRefresh={(limit) => this.reloadViewData(viewName, false, limit)}
-                      onExport={(limitToExport) => {
-                        this.setState({
-                          limitToExport,
-                        });
-                        this.showExportResuleSetModal();
-                      }}
+                                <ToolbarButton
+                                  text={
+                                    formated
+                                      ? formatMessage({
+                                          id: 'odc.components.ViewPage.Unformat',
+                                        })
+                                      : // 取消格式化
+                                        formatMessage({
+                                          id: 'odc.components.ViewPage.Formatting',
+                                        })
+                                    // 格式化
+                                  }
+                                  icon={<AlignLeftOutlined />}
+                                  onClick={this.handleFormat}
+                                  status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
+                                />
+                              </Toolbar>
+                              <div
+                                style={{
+                                  height: `calc(100% - 38px)`,
+                                  position: 'relative',
+                                }}
+                              >
+                                <SQLCodePreviewer
+                                  readOnly
+                                  key={view.ddl}
+                                  defaultValue={`${view.ddl};`}
+                                  language={
+                                    getDataSourceModeConfig(session?.connection?.type)?.sql
+                                      ?.language
+                                  }
+                                  onEditorCreated={(editor: IEditor) => {
+                                    this.editor = editor;
+                                  }}
+                                />
+                              </div>
+                            </>
+                          ),
+                        },
+                      ]}
                     />
-                  )}
-                </Spin>
-              </TabPane>
-            </Tabs>
+                  ),
+                },
+                {
+                  key: TopTab.DATA,
+                  label: '',
+                  children: (
+                    <Spin spinning={dataLoading || !resultSet}>
+                      {resultSet && (
+                        <DDLResultSet
+                          showExplain={false}
+                          session={session}
+                          autoCommit={session?.params?.autoCommit}
+                          showPagination={true}
+                          isTableData={false}
+                          isViewData={true}
+                          disableEdit={true}
+                          columns={resultSet.columns}
+                          useUniqueColumnName={false}
+                          rows={resultSet.rows}
+                          sqlId={resultSet.sqlId}
+                          table={{
+                            tableName: view?.viewName,
+                            ...view,
+                          }}
+                          resultHeight={`calc(100vh - ${
+                            GLOBAL_HEADER_HEIGHT + TABBAR_HEIGHT + 46 + 1
+                          }px)`}
+                          onRefresh={(limit) => this.reloadViewData(viewName, false, limit)}
+                          onExport={(limitToExport) => {
+                            this.setState({
+                              limitToExport,
+                            });
+                            this.showExportResuleSetModal();
+                          }}
+                        />
+                      )}
+                    </Spin>
+                  ),
+                },
+              ]}
+            />
           </Content>
         </>
       )

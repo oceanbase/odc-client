@@ -18,6 +18,7 @@ import { formatMessage } from '@/util/intl';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import type { IResultSetExportTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { ConnectionMode, IExportResultSetFileType, TaskExecStrategy } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
@@ -28,6 +29,7 @@ export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
   hasFlow: boolean,
+  theme: string,
 ) => {
   if (!_task) {
     return [];
@@ -55,8 +57,7 @@ export const getItems = (
         if (parameters?.csvFormat?.isTransferEmptyString) {
           csvFormat.push(
             formatMessage({
-              id:
-                'odc.src.component.Task.ResultSetExportTask.DetailContent.EmptyStringTurnsToEmpty',
+              id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.EmptyStringTurnsToEmpty',
             }), //'空字符串转为空值'
           );
         }
@@ -77,7 +78,7 @@ export const getItems = (
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Database',
                 }) /* 所属数据库 */
               }
-              content={task?.databaseName || '-'}
+              content={<DatabaseLabel database={task?.database} />}
             />
             <SimpleTextItem
               label={
@@ -85,7 +86,7 @@ export const getItems = (
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.DataSource',
                 }) /* 所属数据源 */
               }
-              content={task?.connection?.name || '-'}
+              content={task?.database?.dataSource?.name || '-'}
             />
             <SimpleTextItem
               label={
@@ -123,13 +124,15 @@ export const getItems = (
                   }}
                 >
                   <SQLContent
+                    theme={theme}
                     sqlContent={parameters?.sql}
                     sqlObjectIds={null}
                     sqlObjectNames={null}
                     taskId={task?.id}
                     language={
-                      getDataSourceModeConfigByConnectionMode(_task?.connection?.dbMode)?.sql
-                        ?.language
+                      getDataSourceModeConfigByConnectionMode(
+                        _task?.database?.dataSource?.dialectType,
+                      )?.sql?.language
                     }
                   />
                 </div>
@@ -166,8 +169,7 @@ export const getItems = (
                 <SimpleTextItem
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.ResultSetExportTask.DetailContent.CSVFileSettings',
+                      id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.CSVFileSettings',
                     }) /* CSV 文件设置 */
                   }
                   content={csvFormat?.join('、')}
@@ -183,8 +185,7 @@ export const getItems = (
                 <SimpleTextItem
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.ResultSetExportTask.DetailContent.TextRecognitionSymbol',
+                      id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.TextRecognitionSymbol',
                     }) /* 文本识别符 */
                   }
                   content={parameters?.csvFormat?.columnDelimiter}
@@ -192,8 +193,7 @@ export const getItems = (
                 <SimpleTextItem
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.ResultSetExportTask.DetailContent.ReplacementSymbol',
+                      id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ReplacementSymbol',
                     }) /* 换行符号 */
                   }
                   content={parameters?.csvFormat?.lineSeparator}
@@ -204,8 +204,7 @@ export const getItems = (
               <SimpleTextItem
                 label={
                   formatMessage({
-                    id:
-                      'odc.src.component.Task.ResultSetExportTask.DetailContent.SpecifiedTableName',
+                    id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.SpecifiedTableName',
                   }) /* 指定表名 */
                 }
                 content={parameters?.tableName ?? '-'}
@@ -232,8 +231,7 @@ export const getItems = (
                 <SimpleTextItem
                   label={
                     formatMessage({
-                      id:
-                        'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportSQLToAnotherSheet',
+                      id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportSQLToAnotherSheet',
                     }) /* 导出 SQL 到另一个 Sheet */
                   }
                   content={
@@ -259,8 +257,7 @@ export const getItems = (
             <SimpleTextItem
               label={
                 formatMessage({
-                  id:
-                    'odc.src.component.Task.ResultSetExportTask.DetailContent.ImplementationModalities',
+                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ImplementationModalities',
                 }) /* 执行方式 */
               }
               content={taskExecStrategyMap[task?.executionStrategy]}

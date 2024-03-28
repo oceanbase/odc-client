@@ -23,6 +23,7 @@ import { useRequest } from 'ahooks';
 import { Drawer, Row, Space, Spin } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { IShadowSyncAnalysisResult } from '../../interface';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export interface IViewRef {
   open: (record: IShadowSyncAnalysisResult['tables'][number]) => void;
@@ -63,7 +64,7 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
     },
     [taskId],
   );
-
+  const config = getDataSourceModeConfigByConnectionMode(connectionMode);
   return (
     <Drawer
       width={520}
@@ -94,7 +95,11 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
                 position: 'relative',
               }}
             >
-              <MonacoEditor value={record?.originTableDDL} readOnly language={connectionMode} />
+              <MonacoEditor
+                value={record?.originTableDDL}
+                readOnly
+                language={config?.sql?.language}
+              />
             </div>
           </div>
           <div>
@@ -113,7 +118,11 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
                 position: 'relative',
               }}
             >
-              <MonacoEditor value={record?.destTableDDL} readOnly language={connectionMode} />
+              <MonacoEditor
+                value={record?.destTableDDL}
+                readOnly
+                language={config?.sql?.language}
+              />
             </div>
           </div>
           <div>
@@ -131,7 +140,11 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
                 position: 'relative',
               }}
             >
-              <MonacoEditor value={record?.comparingDDL} readOnly language={connectionMode} />
+              <MonacoEditor
+                value={record?.comparingDDL}
+                readOnly
+                language={config?.sql?.language}
+              />
             </div>
           </div>
         </Space>

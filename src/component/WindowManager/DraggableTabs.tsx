@@ -88,7 +88,7 @@ export default class DraggableTabs extends React.PureComponent<IDraggableTabsPro
   };
 
   renderTabBar = (props, DefaultTabBar) => {
-    const { moveTabNode, ...restProps } = props;
+    const { moveTabNode, items, ...restProps } = props;
     return (
       <DefaultTabBar {...restProps}>
         {(node) => (
@@ -104,10 +104,6 @@ export default class DraggableTabs extends React.PureComponent<IDraggableTabsPro
     const { order } = this.state;
     const { children, moveTabNode, ...rest } = this.props;
 
-    return (
-      <Tabs renderTabBar={this.renderTabBar} {...rest}>
-        {children}
-      </Tabs>
-    );
+    return <Tabs renderTabBar={this.renderTabBar} {...rest} />;
   }
 }

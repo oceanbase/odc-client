@@ -29,6 +29,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -108,6 +109,9 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const pkgInfo: IPackage = node.data;
         const packageName = pkgInfo?.packageName;
@@ -241,6 +245,9 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
         }),
       ],
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
+      },
       actionType: actionTypes.update,
       async run(session, node) {
         const pkgInfo = node.pkg;

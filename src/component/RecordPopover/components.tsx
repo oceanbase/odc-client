@@ -22,7 +22,7 @@ import CommonDetailModal from '@/component/Manage/DetailModal';
 import { TimeOptions } from '@/component/TimeSelect';
 import { IAudit, IAuditEvent, IResponseData } from '@/d.ts';
 import { RecordContent } from '@/page/Secure/components/RecordPage/component';
-import { getEventFilterAndOptions } from '@/page/Secure/components/RecordPage/interface';
+import { getEventFilterAndOptions } from '@/constant/record';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Button, DatePicker } from 'antd';

@@ -125,7 +125,10 @@ const tabs = [
     //会话
     key: IPageType.Datasource_session,
     isHide(datasource: IDatasource) {
-      return !datasource?.permittedActions?.includes(actionTypes.update);
+      return (
+        !datasource?.permittedActions?.includes(actionTypes.update) ||
+        !getDataSourceModeConfig(datasource?.type)?.features?.sessionManage
+      );
     },
   },
   {

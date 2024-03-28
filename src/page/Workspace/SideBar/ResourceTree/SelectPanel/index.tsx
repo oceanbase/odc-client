@@ -142,25 +142,15 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
         }}
         tabs={isPersonal ? [datasource] : [datasource, project]}
         leftAction={
-          <Tooltip
-            title={
-              isSelected
-                ? null
-                : formatMessage({
-                    id:
-                      'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.PleaseSelectTheDataSource',
-                  }) //'请选择数据源或项目'
-            }
-          >
+          !isSelected ? null : (
             <Icon
-              disabled={!isSelected}
               component={CloseOutlined}
               className={classNames(styles.closeBtn, {
                 [styles.closeBtnDisable]: !isSelected,
               })}
               onClick={!isSelected ? null : () => onClose()}
             />
-          </Tooltip>
+          )
         }
       />
     </>

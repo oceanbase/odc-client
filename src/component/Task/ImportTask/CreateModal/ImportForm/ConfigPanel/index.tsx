@@ -54,7 +54,9 @@ const FileSelecterPanel: React.FC<IProps> = function ({
   const connection = database?.dataSource;
   const databaseName = database?.name;
   const dataTypes = session?.dataTypes ?? [];
-  const isOracle = connection?.dialectType === ConnectionMode.OB_ORACLE;
+  const isOracle =
+    connection?.dialectType === ConnectionMode.OB_ORACLE ||
+    connection?.dialectType === ConnectionMode.ORACLE;
   const config = getDataSourceModeConfig(connection?.type);
   async function fetchTable(dbName: string) {
     const tables = await getTableListByDatabaseName(session?.sessionId, dbName);

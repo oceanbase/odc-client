@@ -23,8 +23,9 @@ export const getEnvironmentOptions = async () => {
   const rawData = (await listEnvironments()) || [];
   const newEnvOptions = rawData?.map((rd) => {
     return {
-      label: rd.name,
-      value: '' + rd.id,
+      id: rd?.id,
+      label: rd?.name,
+      value: rd?.originalName || rd?.id,
     };
   });
   return newEnvOptions;
@@ -69,6 +70,14 @@ export const getTaskTypeOptions = () => {
       label: TaskTypeMap[TaskType.APPLY_PROJECT_PERMISSION],
       value: TaskType.APPLY_PROJECT_PERMISSION,
     },
+    {
+      label: TaskTypeMap[TaskType.APPLY_DATABASE_PERMISSION],
+      value: TaskType.APPLY_DATABASE_PERMISSION,
+    },
+    {
+      label: TaskTypeMap[TaskType.STRUCTURE_COMPARISON],
+      value: TaskType.STRUCTURE_COMPARISON,
+    },
   ];
   return newTaskTypeOptions;
 };
@@ -90,7 +99,7 @@ export const getSqlCheckResultOptions = () => {
   return sqlCheckResultOptions;
 };
 export const initOptions = async ({
-  setEnvironmentIdMap,
+  setEnvironmentMap,
   setEnvironmentOptions,
   setTaskTypeIdMap,
   setTaskTypeOptions,
@@ -98,9 +107,12 @@ export const initOptions = async ({
   setSqlCheckResultOptions,
 }) => {
   const envOptions = await getEnvironmentOptions();
-  const envIdMap = {};
-  envOptions?.forEach(({ value, label }) => (envIdMap[value] = label));
-  setEnvironmentIdMap(envIdMap);
+  const envMap = {};
+  envOptions?.forEach(({ value, label, id }) => {
+    envMap[value] = label;
+    envMap[` id:${id}`] = value;
+  });
+  setEnvironmentMap(envMap);
   setEnvironmentOptions(envOptions);
   const taskTypeOptions = await getTaskTypeOptions();
   const taskTypeIdMap = {};
@@ -112,4 +124,5 @@ export const initOptions = async ({
   sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap['' + value] = label));
   setSqlCheckResultIdMap(sqlChekcResultMap);
   setSqlCheckResultOptions(sqlCheckResultOptions);
+  return envMap;
 };

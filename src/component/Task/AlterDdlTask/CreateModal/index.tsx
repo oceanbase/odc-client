@@ -66,6 +66,7 @@ export enum ClearStrategy {
 }
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
+  const { ddlAlterData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -185,6 +186,16 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
       checkLockDatabaseUserRequired(databaseId);
     }
   }, [databaseId]);
+
+  useEffect(() => {
+    const databaseId = ddlAlterData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [ddlAlterData?.databaseId]);
+
   return (
     <Drawer
       destroyOnClose

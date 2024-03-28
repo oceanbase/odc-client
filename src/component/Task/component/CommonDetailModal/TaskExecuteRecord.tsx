@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import DisplayTable from '@/component/DisplayTable';
-import StatusLabel, { subTaskStatus } from '@/component/Task/component/Status';
+import { useRef } from 'react';
+import CommonTable from '@/component/CommonTable';
+import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
+import StatusLabel, { subTaskStatus, status } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
-import { IAsyncTaskParams, SubTaskType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
+import {
+  IAsyncTaskParams,
+  SubTaskType,
+  TaskRecord,
+  TaskRecordParameters,
+  TaskType,
+  IResponseData,
+} from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import LogModal from './LogModal';
@@ -50,12 +58,15 @@ const TaskLabelMap = {
   },
 };
 
-const statusFilters = Object.keys(subTaskStatus).map((key) => {
-  return {
-    text: subTaskStatus?.[key].text,
-    value: key,
-  };
-});
+const getStatusFilters = (isSubTask) => {
+  const statusMap = isSubTask ? subTaskStatus : status;
+  return Object.keys(statusMap).map((key) => {
+    return {
+      text: statusMap?.[key].text,
+      value: key,
+    };
+  });
+};
 
 const getJobFilter = (taskType: TaskType) => {
   return Object.keys(TaskLabelMap[taskType])?.map((key) => ({
@@ -75,6 +86,7 @@ const getConnectionColumns = (params: {
   const { taskType, taskId, showLog, onReloadList, onDetailVisible, onLogVisible } = params;
   const jobFilter = getJobFilter(taskType);
   const isSqlPlan = taskType === TaskType.SQL_PLAN;
+  const statusFilters = getStatusFilters(!isSqlPlan);
   return [
     {
       dataIndex: 'id',
@@ -153,8 +165,8 @@ const getConnectionColumns = (params: {
 
 interface IProps {
   task: any;
-  subTasks: TaskRecord<IAsyncTaskParams>[];
-  onReload: () => void;
+  subTasks: IResponseData<TaskRecord<IAsyncTaskParams>>;
+  onReload: (args?: ITableLoadOptions) => void;
 }
 
 const TaskExecuteRecord: React.FC<IProps> = (props) => {
@@ -162,6 +174,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [logVisible, setLogVisible] = useState(false);
+  const tableRef = useRef();
   const taskId = task?.id;
   const showLog = [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(task?.type);
 
@@ -182,22 +195,39 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
     handleLogVisible(null);
   };
 
+  const handleLoad = async (args?: ITableLoadOptions) => {
+    onReload(args);
+  };
+
   return (
     <>
-      <DisplayTable
-        className={styles.subTaskTable}
-        rowKey="id"
-        columns={getConnectionColumns({
-          taskType: task?.type,
-          taskId,
-          showLog,
-          onReloadList: onReload,
-          onDetailVisible: handleDetailVisible,
-          onLogVisible: handleLogVisible,
-        })}
-        dataSource={subTasks}
-        disablePagination
-        scroll={null}
+      <CommonTable
+        mode={CommonTableMode.SMALL}
+        ref={tableRef}
+        showToolbar={false}
+        titleContent={null}
+        tableProps={{
+          className: styles.subTaskTable,
+          columns: getConnectionColumns({
+            taskType: task?.type,
+            taskId,
+            showLog,
+            onReloadList: onReload,
+            onDetailVisible: handleDetailVisible,
+            onLogVisible: handleLogVisible,
+          }),
+          dataSource: subTasks?.contents,
+          rowKey: 'id',
+          pagination: {
+            current: subTasks?.page?.number,
+            total: subTasks?.page?.totalElements,
+          },
+          scroll: {
+            x: 650,
+          },
+        }}
+        onLoad={handleLoad}
+        onChange={onReload}
       />
 
       <DetailModal

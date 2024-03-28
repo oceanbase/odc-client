@@ -18,12 +18,15 @@ import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/Creat
 import {
   CommonTaskLogType,
   CreateTaskRecord,
+  IPartitionTablePreviewConfig,
   CycleTaskDetail,
   IAsyncTaskResultSet,
   ICycleSubTaskRecord,
   ICycleTaskRecord,
   IFunction,
   IPartitionPlan,
+  IPartitionPlanTable,
+  IPartitionPlanKeyType,
   IResponseData,
   ISubTaskRecords,
   ITaskResult,
@@ -34,12 +37,14 @@ import {
   TaskStatus,
   TaskType,
   IDatasourceUser,
+  CreateStructureComparisonTaskRecord,
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
 import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
+import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 
 /**
  * 根据函数获取ddl sql
@@ -64,6 +69,60 @@ export async function createTask(data: Partial<CreateTaskRecord>): Promise<numbe
 }
 
 /**
+ * 预览分区计划 SQL
+ */
+export async function previewPartitionPlans(
+  sessionId: string,
+  data: IPartitionTablePreviewConfig,
+): Promise<
+  IResponseData<{
+    partitionName: string;
+    sqls: string[];
+    tableName: string;
+  }>
+> {
+  const res = await request.post(
+    `/api/v2/datasource/sessions/${sessionId}/partitionPlans/latest/preview`,
+    {
+      data,
+    },
+  );
+  return res?.data || [];
+}
+
+/**
+ * SQL 预览
+ */
+export async function previewSqlStatements(data: {
+  variables: {
+    name: string;
+    pattern: string;
+  }[];
+  tables: {
+    tableName: string;
+    conditionExpression: string;
+  }[];
+}): Promise<string[]> {
+  const res = await request.post('api/v2/dlm/previewSqlStatements', {
+    data,
+  });
+  return res?.data?.contents || [];
+}
+
+/**
+ * 新建结构比对工单
+ * @param data
+ * @returns boolean
+ */
+export async function createStructureComparisonTask(
+  data: Partial<CreateStructureComparisonTaskRecord>,
+) {
+  const res = await request.post(`/api/v2/flow/flowInstances/`, {
+    data,
+  });
+  return res?.data?.contents?.length > 0;
+}
+/**
  * 查询任务列表
  */
 export async function getTaskList<T>(params: {
@@ -83,7 +142,7 @@ export async function getTaskList<T>(params: {
   sort?: string;
   page?: number;
   size?: number;
-}): Promise<IResponseData<TaskRecord<TaskRecordParameters>>> {
+}): Promise<IResponseData<TaskRecord<T>>> {
   const res = await request.get('/api/v2/flow/flowInstances/', {
     params,
   });
@@ -137,7 +196,10 @@ export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail
 /**
  * 查询任务列表
  */
-export async function getTaskDetail(id: number, ignoreError: boolean = false): Promise<TaskDetail<TaskRecordParameters>> {
+export async function getTaskDetail(
+  id: number,
+  ignoreError: boolean = false,
+): Promise<TaskDetail<TaskRecordParameters>> {
   const res = await request.get(`/api/v2/flow/flowInstances/${id}`, {
     params: {
       ignoreError,
@@ -328,39 +390,79 @@ export async function getCycleTaskFile(taskId: number, objectId: string[]): Prom
 }
 
 /**
- * 查询分区详情
+ * 下载文件（结构比对任务）
+ * @param taskId
+ * @param objectId
+ * @returns
  */
-export async function getPartitionPlan(params: {
-  databaseId?: number;
-  isFilterManagedTable?: boolean;
-}): Promise<IPartitionPlan> {
-  const res = await request.get('/api/v2/partitionPlan/partitionPlans', {
-    params,
-  });
-  return res?.data;
-}
-
-/**
- * 更新分区计划
- */
-export async function updatePartitionPlan(id, data: Partial<CreateTaskRecord>): Promise<boolean> {
-  const res = await request.put(`/api/v2/partitionPlan/partitionPlans/${id}`, {
-    data,
-  });
-  return !!res?.data;
-}
-
-/**
- * 检查当前连接下是否已存在分区计划
- */
-export async function checkConnectionPartitionPlan(id: number): Promise<boolean> {
-  const res = await request.get('/api/v2/partitionPlan/partitionPlans/exists', {
-    params: {
-      databaseId: id,
+export async function getStructureComparisonTaskFile(
+  taskId: number,
+  objectId: string[],
+): Promise<string[]> {
+  const downloadInfo = await request.post(
+    `/api/v2/flow/flowInstances/${taskId}/tasks/structure-comparison/batchGetDownloadUrl`,
+    {
+      data: objectId,
     },
-  });
+  );
+  return downloadInfo?.data?.contents ?? [];
+}
+
+/**
+ * 查询分区候选表集合
+ */
+export async function getPartitionPlanTables(
+  sessionId: string,
+  databaseId: number,
+): Promise<IResponseData<IPartitionPlanTable>> {
+  const res = await request.get(
+    `/api/v2/connect/sessions/${sessionId}/databases/${databaseId}/candidatePartitionPlanTables`,
+    {
+      params: {
+        sessionId,
+        databaseId,
+      },
+    },
+  );
   return res?.data;
 }
+
+/**
+ * 查询分区候选表分区键类型集合
+ */
+export async function getPartitionPlanKeyDataTypes(
+  sessionId: string,
+  databaseId: number,
+  tableName: string,
+): Promise<IResponseData<IPartitionPlanKeyType>> {
+  const res = await request.get(
+    `/api/v2/connect/sessions/${sessionId}/databases/${databaseId}/candidatePartitionPlanTables/${tableName}/getPartitionKeyDataTypes`,
+    {
+      params: {
+        sessionId,
+        databaseId,
+        tableName,
+      },
+    },
+  );
+  return res?.data;
+}
+
+/**
+ * 查询分区策略详情
+ */
+export async function getPartitionPlan(taskId: number): Promise<IPartitionPlan> {
+  const res = await request.get(
+    `/api/v2/flow/flowInstances/${taskId}/tasks/partitionPlans/getDetail`,
+    {
+      params: {
+        id: taskId,
+      },
+    },
+  );
+  return res?.data;
+}
+
 /*
  * 发起结构分析任务
  */
@@ -496,9 +598,7 @@ export async function getProjectList(archived: boolean): Promise<IResponseData<I
 /**
  * 查询当前数据库是否需要锁表
  */
-export async function getLockDatabaseUserRequired(
-  databaseId: number,
-): Promise<{
+export async function getLockDatabaseUserRequired(databaseId: number): Promise<{
   lockDatabaseUserRequired: boolean;
   databaseId: number;
 }> {
@@ -519,4 +619,38 @@ export async function updateLimiterConfig(
     data,
   });
   return !!res?.data;
+}
+/**
+ * 获取结构比对中涉及的表信息
+ * @param taskId 结构比对工单id
+ * @param params.operationType 要筛选的任务结果类型
+ */
+export async function getStructrueComparison(
+  taskId: number,
+  params?: {
+    dbObjectName?: string;
+    operationType?: EOperationType;
+    page?: number;
+    size?: number;
+  },
+): Promise<IComparisonResultData> {
+  const res = await request.get(`/api/v2/schema-sync/structureComparison/${taskId}`, {
+    params,
+  });
+  return res?.data;
+}
+/**
+ * 获取结构比对中表的详情
+ * @param taskId
+ * @param structureComparisonId
+ * @returns
+ */
+export async function getStructrueComparisonDetail(
+  taskId: number,
+  structureComparisonId: number,
+): Promise<IStructrueComparisonDetail> {
+  const res = await request.get(
+    `/api/v2/schema-sync/structureComparison/${taskId}/${structureComparisonId}`,
+  );
+  return res?.data;
 }

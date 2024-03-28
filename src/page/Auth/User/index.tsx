@@ -201,6 +201,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
           return (
             <Action.Group>
               <Action.Link
+                key="view"
                 onClick={async () => {
                   this.openDetailModal(record);
                 }}
@@ -213,9 +214,11 @@ class UserPage extends React.PureComponent<IProps, IState> {
               </Action.Link>
               <Acess
                 {...createPermission(IManagerResourceType.user, actionTypes.update, record.id)}
+                key="editAccess"
               >
                 <Action.Group>
                   <Action.Link
+                    key="edit"
                     disabled={disabledOp}
                     onClick={async () => {
                       this.openFormModal(record.id);

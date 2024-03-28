@@ -17,23 +17,25 @@
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
+import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { IRule } from '@/d.ts/rule';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
-import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { message } from 'antd';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 
 export interface IExecuteSQLParams {
   sql: string;
   queryLimit?: number;
   showTableColumnInfo?: boolean;
+  continueExecutionOnError?: boolean;
+  fullLinkTraceEnabled?: boolean;
   tag?: string;
   /**
    * 是否拆分执行，传空的话像等于true
    */
   split?: boolean;
+  addROWID?: boolean;
 }
 export interface ISQLExecuteTaskSQL {
   sqlTuple: {
@@ -47,7 +49,7 @@ export interface ISQLExecuteTask {
   requestId: string;
   sqls: ISQLExecuteTaskSQL[];
   violatedRules: IRule[];
-  unauthorizedDatabaseNames: string[];
+  unauthorizedDatabases: IUnauthorizedDatabase[];
 }
 
 /**
@@ -61,6 +63,8 @@ export interface IExecuteTaskResult {
   executeResult: ISqlExecuteResult[];
   lintResultSet?: ISQLLintReuslt[];
   status?: EStatus;
+  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedSql?: string;
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -185,28 +189,17 @@ export default async function executeSQL(
     }
     return pre;
   }, []);
-  const unauthorizedDatabaseNames = taskInfo?.unauthorizedDatabaseNames;
+  const unauthorizedDatabases = taskInfo?.unauthorizedDatabases;
   const violatedRules = rootViolatedRules.concat(taskInfo?.sqls);
-  if (unauthorizedDatabaseNames?.length) {
-    /**
-     * 无权限库
-     */
-    const dbNames = unauthorizedDatabaseNames.join(', ');
-    message.error(
-      formatMessage(
-        {
-          id: 'odc.src.common.network.sql.UnprofessionalAccessDbnames',
-        },
-        {
-          dbNames: dbNames,
-        },
-      ), //`无权限访问 ${dbNames} 数据库`
-    );
+  if (unauthorizedDatabases?.length) {
+    // 无权限库
     return {
       invalid: true,
       executeSuccess: false,
       executeResult: [],
       violatedRules: [],
+      unauthorizedDatabases,
+      unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
     };
   }
   const lintResultSet = violatedRules?.reduce((pre, cur) => {

@@ -15,7 +15,14 @@
  */
 
 import { createTask } from '@/common/network/task';
-import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import {
+  ConnectionMode,
+  TaskExecStrategy,
+  TaskPageScope,
+  TaskPageType,
+  TaskType,
+  IServerMockTable,
+} from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
@@ -23,7 +30,7 @@ import { Button, Drawer, message, Modal, Space } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { FormInstance } from 'antd/es/form/Form';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
 
@@ -35,9 +42,37 @@ interface IProps extends Pick<DrawerProps, 'visible'> {
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
     const { modalStore, projectId } = props;
+    const { dataMockerData } = modalStore;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
+
+    const loadEditData = async () => {
+      const { task } = dataMockerData;
+      const {
+        parameters: { taskDetail },
+        database: { id: databaseId },
+        description,
+        executionStrategy,
+      } = task;
+      const taskDetailObj: {
+        tables: IServerMockTable;
+      } = JSON.parse(taskDetail);
+      const { tableName, whetherTruncate, totalCount, strategy, batchSize } =
+        taskDetailObj?.tables?.[0] ?? {};
+      const formData = {
+        databaseId,
+        tableName,
+        whetherTruncate,
+        totalCount,
+        strategy,
+        batchSize,
+        executionStrategy,
+        description,
+      };
+      formRef.current?.setFieldsValue(formData);
+    };
+
     const onClose = useCallback(() => {
       modalStore.changeDataMockerModal(false, null);
     }, [modalStore]);
@@ -59,6 +94,12 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       setDbMode(mode);
     };
 
+    useEffect(() => {
+      if (dataMockerData?.task) {
+        loadEditData();
+      }
+    }, [dataMockerData]);
+
     return (
       <Drawer
         open={modalStore.dataMockerVisible}
@@ -66,9 +107,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         destroyOnClose
         width={960}
         className="o-adaptive-drawer"
-        title={formatMessage({
-          id: 'odc.component.DataMockerDrawer.CreateSimulationData',
-        })} /*新建模拟数据*/
+        title={formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5' })}
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>
@@ -89,11 +128,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     return c.typeConfig?._isEditing;
                   });
                   if (editingColumn) {
-                    message.warn(
+                    message.warning(
                       formatMessage(
                         {
-                          id:
-                            'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
+                          id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
                         },
 
                         { editingColumnColumnName: editingColumn.columnName },
@@ -132,9 +170,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   if (isSuccess) {
                     message.success(
                       formatMessage({
-                        id: 'odc.component.DataMockerDrawer.CreatedSuccessfully',
+                        id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
                       }),
-                      // 创建成功！
                     );
                     onClose();
                     openTasksPage(TaskPageType.DATAMOCK, TaskPageScope.CREATED_BY_CURRENT_USER);

@@ -1,0 +1,4 @@
+{
+    "client.jvm.params": "-Xms512m\n-Xmx2048m",
+    "client.start.params": ""
+}

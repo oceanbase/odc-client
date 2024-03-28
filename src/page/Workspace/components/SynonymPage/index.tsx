@@ -16,7 +16,7 @@
 
 import { getSynonym } from '@/common/network/synonym';
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
@@ -40,7 +40,6 @@ import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 const ToolbarButton = Toolbar.Button;
 interface IProps {
   pageStore: PageStore;
@@ -152,129 +151,141 @@ class SynonymPage extends Component<
       synonym && (
         <>
           <Content className={styles.synonymPage}>
-            <ToolPageTabs activeKey={propsTab} onChange={this.handleSwitchTab as any}>
-              <TabPane
-                tab={formatMessage({
-                  id: 'odc.components.SynonymPage.BasicInformation',
-                })}
-                /* 基本信息 */
-                key={SynonymPropsTab.BASE_INFO}
-              >
-                <ToolPageTextFromWrapper>
-                  <div className={`${preTextForm}-line`}>
-                    <span className={`${preTextForm}-label`}>
-                      {
-                        formatMessage({
-                          id: 'odc.components.SynonymPage.Name',
-                        })
+            <ToolPageTabs
+              activeKey={propsTab}
+              onChange={this.handleSwitchTab as any}
+              items={[
+                {
+                  key: SynonymPropsTab.BASE_INFO,
+                  label: formatMessage({
+                    id: 'odc.components.SynonymPage.BasicInformation',
+                  }),
+                  children: (
+                    <ToolPageTextFromWrapper>
+                      <div className={`${preTextForm}-line`}>
+                        <span className={`${preTextForm}-label`}>
+                          {
+                            formatMessage({
+                              id: 'odc.components.SynonymPage.Name',
+                            })
 
-                        /* 名称: */
-                      }
-                    </span>
-                    <span className={`${preTextForm}-content`}>{synonym.synonymName}</span>
-                  </div>
-                  <div className={`${preTextForm}-line`}>
-                    <span className={`${preTextForm}-label`}>
-                      {
-                        formatMessage({
-                          id: 'odc.components.SynonymPage.ObjectOwner',
-                        })
+                            /* 名称: */
+                          }
+                        </span>
+                        <span className={`${preTextForm}-content`}>{synonym.synonymName}</span>
+                      </div>
+                      <div className={`${preTextForm}-line`}>
+                        <span className={`${preTextForm}-label`}>
+                          {
+                            formatMessage({
+                              id: 'odc.components.SynonymPage.ObjectOwner',
+                            })
 
-                        /* 对象所有者: */
-                      }
-                    </span>
-                    <span className={`${preTextForm}-content`}>{synonym.tableOwner}</span>
-                  </div>
-                  <div className={`${preTextForm}-line`}>
-                    <span className={`${preTextForm}-label`}>
-                      {
-                        formatMessage({
-                          id: 'odc.components.SynonymPage.ObjectName',
-                        })
+                            /* 对象所有者: */
+                          }
+                        </span>
+                        <span className={`${preTextForm}-content`}>{synonym.tableOwner}</span>
+                      </div>
+                      <div className={`${preTextForm}-line`}>
+                        <span className={`${preTextForm}-label`}>
+                          {
+                            formatMessage({
+                              id: 'odc.components.SynonymPage.ObjectName',
+                            })
 
-                        /* 对象名称: */
-                      }
-                    </span>
-                    <span className={`${preTextForm}-content`}>{synonym.tableName}</span>
-                  </div>
-                  <div className={`${preTextForm}-line`}>
-                    <span className={`${preTextForm}-label`}>
-                      {
-                        formatMessage({
-                          id: 'odc.components.SynonymPage.Created',
-                        })
+                            /* 对象名称: */
+                          }
+                        </span>
+                        <span className={`${preTextForm}-content`}>{synonym.tableName}</span>
+                      </div>
+                      <div className={`${preTextForm}-line`}>
+                        <span className={`${preTextForm}-label`}>
+                          {
+                            formatMessage({
+                              id: 'odc.components.SynonymPage.Created',
+                            })
 
-                        /* 创建时间: */
-                      }
-                    </span>
-                    <span className={`${preTextForm}-content`}>
-                      {moment(synonym.created).format('YYYY-MM-DD HH:mm:ss')}
-                    </span>
-                  </div>
-                  <div className={`${preTextForm}-line`}>
-                    <span className={`${preTextForm}-label`}>
-                      {
-                        formatMessage({
-                          id: 'odc.components.SynonymPage.ModificationTime',
-                        })
+                            /* 创建时间: */
+                          }
+                        </span>
+                        <span className={`${preTextForm}-content`}>
+                          {moment(synonym.created).format('YYYY-MM-DD HH:mm:ss')}
+                        </span>
+                      </div>
+                      <div className={`${preTextForm}-line`}>
+                        <span className={`${preTextForm}-label`}>
+                          {
+                            formatMessage({
+                              id: 'odc.components.SynonymPage.ModificationTime',
+                            })
 
-                        /* 修改时间: */
-                      }
-                    </span>
-                    <span className={`${preTextForm}-content`}>
-                      {moment(synonym.lastDdlTime).format('YYYY-MM-DD HH:mm:ss')}
-                    </span>
-                  </div>
-                </ToolPageTextFromWrapper>
-              </TabPane>
-              <TabPane tab={'DDL'} key={SynonymPropsTab.DDL}>
-                <Toolbar>
-                  <ToolbarButton
-                    text={
-                      formatMessage({
-                        id: 'odc.components.SynonymPage.Download',
-                      }) //下载
-                    }
-                    icon={<CloudDownloadOutlined />}
-                    onClick={() => {
-                      downloadPLDDL(
-                        synonym?.synonymName,
-                        PLType.SYNONYM,
-                        synonym?.ddl,
-                        session?.odcDatabase?.name,
-                      );
-                    }}
-                  />
+                            /* 修改时间: */
+                          }
+                        </span>
+                        <span className={`${preTextForm}-content`}>
+                          {moment(synonym.lastDdlTime).format('YYYY-MM-DD HH:mm:ss')}
+                        </span>
+                      </div>
+                    </ToolPageTextFromWrapper>
+                  ),
+                },
+                {
+                  key: SynonymPropsTab.DDL,
+                  label: 'DDL',
+                  children: (
+                    <>
+                      <Toolbar>
+                        <ToolbarButton
+                          text={
+                            formatMessage({
+                              id: 'odc.components.SynonymPage.Download',
+                            }) //下载
+                          }
+                          icon={<CloudDownloadOutlined />}
+                          onClick={() => {
+                            downloadPLDDL(
+                              synonym?.synonymName,
+                              PLType.SYNONYM,
+                              synonym?.ddl,
+                              session?.odcDatabase?.name,
+                            );
+                          }}
+                        />
 
-                  <ToolbarButton
-                    text={
-                      formated
-                        ? formatMessage({
-                            id: 'odc.components.SynonymPage.Unformat',
-                          })
-                        : // 取消格式化
-                          formatMessage({
-                            id: 'odc.components.SynonymPage.Formatting',
-                          })
-                      // 格式化
-                    }
-                    icon={<AlignLeftOutlined />}
-                    onClick={this.handleFormat}
-                    status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
-                  />
-                </Toolbar>
-                <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                  <SQLCodeEditorDDL
-                    readOnly
-                    defaultValue={(synonym && synonym.ddl) || ''}
-                    language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
-                    onEditorCreated={(editor: IEditor) => {
-                      this.editor = editor;
-                    }}
-                  />
-                </div>
-              </TabPane>
-            </ToolPageTabs>
+                        <ToolbarButton
+                          text={
+                            formated
+                              ? formatMessage({
+                                  id: 'odc.components.SynonymPage.Unformat',
+                                })
+                              : // 取消格式化
+                                formatMessage({
+                                  id: 'odc.components.SynonymPage.Formatting',
+                                })
+                            // 格式化
+                          }
+                          icon={<AlignLeftOutlined />}
+                          onClick={this.handleFormat}
+                          status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
+                        />
+                      </Toolbar>
+                      <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
+                        <SQLCodePreviewer
+                          readOnly
+                          defaultValue={(synonym && synonym.ddl) || ''}
+                          language={
+                            getDataSourceModeConfig(session?.connection?.type)?.sql?.language
+                          }
+                          onEditorCreated={(editor: IEditor) => {
+                            this.editor = editor;
+                          }}
+                        />
+                      </div>
+                    </>
+                  ),
+                },
+              ]}
+            />
           </Content>
         </>
       )

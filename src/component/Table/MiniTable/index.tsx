@@ -58,12 +58,11 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
   }, [pageSize]);
 
   const cloneProps = { ...restProps };
-  cloneProps.pagination = {
+  cloneProps.pagination = cloneProps.pagination && {
     ...cloneProps.pagination,
     pageSize: pageSize,
     showSizeChanger: false,
   };
-
   cloneProps.onChange = function (page, filters, s, e) {
     loadData(page, filters);
   };

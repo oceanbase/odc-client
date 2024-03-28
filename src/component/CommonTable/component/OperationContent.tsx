@@ -25,7 +25,7 @@ interface IOperationItemProps {
   onClick: (fn: (args?: ITableLoadOptions) => void) => void;
 }
 const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
-  const { type, content, icon = null, isPrimary, overlay, disabled = false } = option;
+  const { type, content, icon = null, isPrimary, menu, disabled = false } = option;
   let operation = null;
   switch (type) {
     case IOperationOptionType.icon:
@@ -42,7 +42,7 @@ const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
       break;
     case IOperationOptionType.dropdown:
       operation = (
-        <Dropdown trigger={['click']} disabled={disabled} overlay={overlay} placement="bottomRight">
+        <Dropdown trigger={['click']} disabled={disabled} menu={menu} placement="bottomRight">
           {content}
         </Dropdown>
       );

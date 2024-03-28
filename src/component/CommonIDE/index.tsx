@@ -35,12 +35,12 @@ export enum ITabType {
   /**
    * 运行结果
    */
-  LOG,
+  LOG = 'log',
 
   /**
    * 结果（预留）
    */
-  RESULT,
+  RESULT = 'result',
 }
 interface ICommonIDEProps {
   /**
@@ -186,58 +186,57 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 />
               </div>
               <div className={styles.resultTabs}>
-                <Tabs className={styles.tabs} animated={false}>
-                  {log ? (
-                    <Tabs.TabPane
-                      style={{
-                        padding: 16,
-                      }}
-                      tab={formatMessage({
+                <Tabs
+                  className={styles.tabs}
+                  animated={false}
+                  items={[
+                    {
+                      key: ITabType.LOG as string,
+                      label: formatMessage({
                         id: 'odc.component.CommonIDE.Result',
-                      })}
-                      /*运行结果*/
-                      key={ITabType.LOG}
-                    >
-                      {log}
-                    </Tabs.TabPane>
-                  ) : null}
-                  {resultSets?.map((set, i) => {
-                    return (
-                      <Tabs.TabPane
-                        tab={this.getResultSetTitle(
-                          set.executeSql,
-                          `${formatMessage({
-                            id: 'workspace.window.sql.result',
-                          })}${i + 1}`,
-                        )}
-                        key={`resultset-${set.uniqKey}`}
-                      >
-                        {!!set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS ? (
-                          <DDLResultSet
-                            session={session}
-                            key={set.uniqKey || i}
-                            showExplain={false}
-                            showPagination={true}
-                            autoCommit={true}
-                            columns={set.columns}
-                            sqlId={set.sqlId}
-                            rows={set.rows}
-                            enableRowId={true}
-                            originSql={set.originSql}
-                            resultHeight={resultHeight - TAB_HEADER_HEIGHT - 1}
-                            generalSqlType={set.generalSqlType}
-                            traceId={set.traceId}
-                            isEditing={false}
-                            disableEdit={true}
-                            onExport={null}
-                          />
-                        ) : (
-                          <SQLResultLog resultHeight={resultHeight} resultSet={set} />
-                        )}
-                      </Tabs.TabPane>
-                    );
-                  })}
-                </Tabs>
+                      }),
+                      children: log,
+                    },
+                  ]
+                    .concat(
+                      resultSets?.map((set, i) => {
+                        return {
+                          key: `resultset-${set.uniqKey}`,
+                          label: this.getResultSetTitle(
+                            set.executeSql,
+                            `${formatMessage({
+                              id: 'workspace.window.sql.result',
+                            })}${i + 1}`,
+                          ),
+                          children:
+                            !!set.columns?.length &&
+                            set.status === ISqlExecuteResultStatus.SUCCESS ? (
+                              <DDLResultSet
+                                session={session}
+                                key={set.uniqKey || i}
+                                showExplain={false}
+                                showPagination={true}
+                                autoCommit={true}
+                                columns={set.columns}
+                                sqlId={set.sqlId}
+                                rows={set.rows}
+                                enableRowId={true}
+                                originSql={set.originSql}
+                                resultHeight={resultHeight - TAB_HEADER_HEIGHT - 1}
+                                generalSqlType={set.generalSqlType}
+                                traceId={set.traceId}
+                                isEditing={false}
+                                disableEdit={true}
+                                onExport={null}
+                              />
+                            ) : (
+                              <SQLResultLog resultHeight={resultHeight} resultSet={set} />
+                            ),
+                        };
+                      }),
+                    )
+                    .filter(Boolean)}
+                />
               </div>
             </SplitPane>
           ) : (

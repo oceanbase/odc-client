@@ -34,9 +34,11 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageRoot]: [
@@ -47,6 +49,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
+      },
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PACKAGE,
@@ -139,6 +144,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       ellipsis: true,
       hasDivider: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -170,6 +178,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
       ellipsis: true,
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const pkg: IPackage = node.data;
         Modal.confirm({
@@ -294,6 +305,9 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
       ellipsis: true,
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node, databaseFrom) {
         packageMenusConfig[ResourceNodeType.Package]
           .find((item) => item.key === 'DELETE')

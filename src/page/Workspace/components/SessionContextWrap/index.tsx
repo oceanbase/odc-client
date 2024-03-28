@@ -60,7 +60,7 @@ export default function SessionContextWrap({
       setDatabaseId(null);
       setDatasourceId(null);
       if (warnIfNotFound) {
-        message.warn('DataSource Or Database Not Found');
+        message.warning('DataSource Or Database Not Found');
       }
       return;
     }

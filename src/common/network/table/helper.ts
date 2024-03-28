@@ -372,7 +372,7 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
         partitions: partition?.partitionDefinitions?.map((item) => {
           return {
             name: item.name,
-            value: item.maxValues?.[0],
+            value: item.maxValues?.join?.(', '),
             ordinalPosition: item.ordinalPosition,
           };
         }),

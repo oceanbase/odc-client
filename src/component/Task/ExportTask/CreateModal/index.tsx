@@ -74,6 +74,7 @@ class CreateModal extends React.Component<IProps, IState> {
           dbObjectType: modalStore.exportModalData.type,
         },
       ];
+
       if (
         modalStore.exportModalData?.type === DbObjectType.package &&
         modalStore.exportModalData?.exportPkgBody
@@ -104,6 +105,7 @@ class CreateModal extends React.Component<IProps, IState> {
       key: FormType.Config,
     },
   ];
+
   private handleClose = () => {
     this.props.modalStore.changeExportModal(false);
     this.resetFormData();
@@ -195,8 +197,8 @@ class CreateModal extends React.Component<IProps, IState> {
           if (data) {
             message.success(
               formatMessage({
-                id: 'odc.src.component.Task.ExportTask.CreateModal.ExportSuccess',
-              }), //'导出成功！'
+                id: 'src.component.Task.ExportTask.CreateModal.133432E8' /*'工单创建成功'*/,
+              }),
             );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
@@ -336,9 +338,22 @@ class CreateModal extends React.Component<IProps, IState> {
               type="info"
               showIcon
               message={
-                formatMessage({
-                  id: 'odc.components.ExportDrawer.TheMaximumDataSizeCannot',
-                })
+                <>
+                  {formatMessage({
+                    id: 'odc.components.ExportDrawer.TheMaximumDataSizeCannot',
+                  })}
+                  <a
+                    style={{ marginLeft: 4 }}
+                    target="__blank"
+                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381191"
+                  >
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.ExportTask.CreateModal.5DF92911' /*详情*/,
+                      }) /* 详情 */
+                    }
+                  </a>
+                </>
 
                 //数据最大不能超过2GB，如需导出大量数据，请使用导数工具obdumper
               }

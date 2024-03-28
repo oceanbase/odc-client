@@ -106,7 +106,7 @@ const ConnectionPopover: React.FC<{
       }}
       style={{
         lineHeight: '20px',
-        padding: 12,
+        // padding: 12,
       }}
     >
       <Space direction="vertical">

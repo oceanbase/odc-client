@@ -39,6 +39,7 @@ import {
   IResourceRole,
   IResponseData,
   ISSOConfig,
+  ISSOType,
 } from '@/d.ts';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
@@ -763,7 +764,12 @@ export async function testClientRegistration(
 ): Promise<{
   testLoginUrl: string;
   testId: string;
+  testRegistrationId?: string;
 }> {
+  const secret =
+    config?.type === ISSOType.LDAP
+      ? config?.ssoParameter?.managerPassword
+      : config?.ssoParameter?.secret;
   const res = await request.post('/api/v2/sso/test/start', {
     data: {
       name: config?.name,
@@ -772,7 +778,7 @@ export async function testClientRegistration(
       encryption: {
         enabled: true,
         algorithm: EncryptionAlgorithm.RAW,
-        secret: config.ssoParameter?.secret,
+        secret,
       },
       enabled: true,
     },

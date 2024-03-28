@@ -25,9 +25,7 @@ import InnerRiskLevel from './components/InnerRiskLevel';
 import { Spin } from 'antd';
 import tracert from '@/util/tracert';
 
-function genRiskLevel(
-  riskLevel: IRiskLevel,
-): {
+function genRiskLevel(riskLevel: IRiskLevel): {
   label: string;
   value: number;
   origin: IRiskLevel;
@@ -75,20 +73,24 @@ const RiskLevel = ({ userStore }) => {
     tracert.expo('a3112.b64008.c330924');
   }, []);
   return (
-    <SecureLayout>
-      <SecureSider
-        siderItemList={siderItemList}
-        selectedItem={selectedItem}
-        handleItemClick={handleItemClick}
-      />
-      <Spin spinning={loading}>
-        <InnerRiskLevel
-          key={currentRiskLevel?.id}
-          currentRiskLevel={currentRiskLevel}
-          memoryReload={memoryReload}
+    <SecureLayout
+      sider={
+        <SecureSider
+          siderItemList={siderItemList}
+          selectedItem={selectedItem}
+          handleItemClick={handleItemClick}
         />
-      </Spin>
-    </SecureLayout>
+      }
+      content={
+        <Spin spinning={loading}>
+          <InnerRiskLevel
+            key={currentRiskLevel?.id}
+            currentRiskLevel={currentRiskLevel}
+            memoryReload={memoryReload}
+          />
+        </Spin>
+      }
+    />
   );
 };
 

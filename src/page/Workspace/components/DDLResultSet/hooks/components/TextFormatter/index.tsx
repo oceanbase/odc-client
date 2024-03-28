@@ -50,7 +50,7 @@ export default React.memo(
         {detailModalVisible && (
           <Modal
             title={column.name}
-            visible={true}
+            open={true}
             centered
             onCancel={() => {
               setDetailModalVisible(false);

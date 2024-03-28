@@ -29,15 +29,15 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import FormRecordExportModal from '../../components/FormRecordExportModal';
-import { ManageContext } from '../../context';
+import { SecureContext } from '../../context';
 import { getPageColumns } from './column';
 import { RecordContent } from './component';
-import { AuditEventMetaMap, getEventFilterAndOptions } from './interface';
+import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 
 const { RangePicker } = DatePicker;
 
 const RecordPage: React.FC<any> = () => {
-  const { users, getUserList } = useContext(ManageContext);
+  const { users, getUserList } = useContext(SecureContext);
   const tableRef = useRef<ITableInstance>();
   const [event, setEvent] = useState(null);
   const [eventMeta, setEventMeta] = useState([]);

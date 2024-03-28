@@ -28,6 +28,7 @@ import settingStore from '@/store/setting';
 import snippetStore from '@/store/snippet';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
+import datasourceStatus from '@/store/datasourceStatus';
 
 export default function (props) {
   return (
@@ -44,6 +45,7 @@ export default function (props) {
       debugStore={debugStore}
       clusterStore={clusterStore}
       sessionManagerStore={sessionManagerStore}
+      dataSourceStatusStore={datasourceStatus}
     >
       {props.children}
     </Provider>

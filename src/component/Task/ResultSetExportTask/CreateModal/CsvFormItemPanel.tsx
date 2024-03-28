@@ -93,11 +93,9 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id: formatMessage({
-                                id:
-                                  'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
-                              }), //'请填写字段分隔符'
-                            }),
+                              id:
+                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
+                            }), //'请填写字段分隔符'
                           },
                           {
                             max: 1,

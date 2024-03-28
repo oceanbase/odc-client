@@ -46,6 +46,7 @@ import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SpaceSelect from './SpaceSelect';
 import tracert from '@/util/tracert';
+import SettingItem from './SettingItem';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -126,15 +127,23 @@ const Sider: React.FC<IProps> = function (props) {
               }
             />
           </Link>
-          <Link to={`/${IPageType.Datasource}`}>
-            <MenuItem
-              key={IPageType.Datasource}
-              selected={selected === IPageType.Datasource}
-              icon={LinkOutlined}
-              collapsed={collapsed}
-              label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
-            />
-          </Link>
+          <AccessResourceTypePermission
+            permissions={[
+              createPermission(IManagerResourceType.resource, actionTypes.read),
+              createPermission(IManagerResourceType.resource, actionTypes.update),
+              createPermission(IManagerResourceType.resource, actionTypes.create),
+            ]}
+          >
+            <Link to={`/${IPageType.Datasource}`}>
+              <MenuItem
+                key={IPageType.Datasource}
+                selected={selected === IPageType.Datasource}
+                icon={LinkOutlined}
+                collapsed={collapsed}
+                label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
+              />
+            </Link>
+          </AccessResourceTypePermission>
           <AccessResourceTypePermission
             permissions={[
               createPermission(IManagerResourceType.user, actionTypes.read),
@@ -187,6 +196,7 @@ const Sider: React.FC<IProps> = function (props) {
         </Space>
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>
+        <SettingItem collapsed={collapsed} />
         <HelpItem>
           <MenuItem
             disableTip={true}

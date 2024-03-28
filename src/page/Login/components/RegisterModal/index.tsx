@@ -76,7 +76,7 @@ class RegisterModal extends Component<IProps> {
         width={560}
         destroyOnClose={true}
         title={formatMessage({ id: 'login.button.register' })}
-        visible={visible}
+        open={visible}
         onOk={this.handleSubmit}
         onCancel={onCancel}
         confirmLoading={confirmLoading}

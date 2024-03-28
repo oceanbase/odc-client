@@ -24,7 +24,7 @@ import { useState } from 'react';
 const RootNodeContent = ({
   empty,
   rootNode,
-  environmentIdMap,
+  environmentMap,
   taskTypeIdMap,
   sqlCheckResultIdMap,
 }) => {
@@ -32,8 +32,8 @@ const RootNodeContent = ({
   const getValueMapByExpression = (expression: Expression): { [key in string]: string } => {
     let valueMap;
     switch (expression) {
-      case Expression.ENVIRONMENT_ID: {
-        valueMap = environmentIdMap;
+      case Expression.ENVIRONMENT_NAME: {
+        valueMap = environmentMap;
         break;
       }
       case Expression.TASK_TYPE: {

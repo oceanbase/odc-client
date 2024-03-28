@@ -37,7 +37,13 @@ export function getModelService(
       if (!hasConnect(sessionFunc())) {
         return;
       }
-      await sessionFunc()?.queryIdentities();
+      const db =
+        sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
+      if (db?.tables?.length || db?.views?.length) {
+        sessionFunc()?.queryIdentities();
+      } else {
+        await sessionFunc()?.queryIdentities();
+      }
       const dbObj =
         sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
       if (!dbObj) {
@@ -48,7 +54,9 @@ export function getModelService(
     async getTableColumns(tableName: string, dbName?: string) {
       const realTableName = getRealNameInDatabase(
         tableName,
-        sessionFunc()?.connection?.dialectType === ConnectionMode.OB_ORACLE,
+        [ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(
+          sessionFunc()?.connection?.dialectType,
+        ),
       );
       if (!hasConnect(sessionFunc())) {
         return;
@@ -63,7 +71,11 @@ export function getModelService(
         /**
          * schemaStore.queryIdentities(); 不能是阻塞的，编辑器对于函数的超时时间有严格的要求，不能超过 300ms，调用这个接口肯定会超过这个时间。
          */
-        await sessionFunc()?.queryIdentities();
+        if (db?.tables?.length || db?.views?.length) {
+          sessionFunc()?.queryIdentities();
+        } else {
+          await sessionFunc()?.queryIdentities();
+        }
         const isTable = db?.tables?.includes(realTableName);
         /**
          * 虚表，需要单独识别处理
@@ -102,7 +114,10 @@ export function getModelService(
       return [];
     },
     async getSchemaList() {
-      return [sessionFunc()?.database?.dbName].filter(Boolean);
+      if (!Object.keys(sessionFunc()?.allIdentities).length) {
+        sessionFunc()?.queryIdentities();
+      }
+      return Object.keys(sessionFunc()?.allIdentities);
     },
     async getFunctions() {
       if (!sessionFunc()?.database.functions) {
@@ -112,6 +127,18 @@ export function getModelService(
         name: func.funName,
         desc: func.status,
       }));
+    },
+    async getSnippets() {
+      const session = sessionFunc();
+      if (session) {
+        return session.snippets.map((item) => {
+          return {
+            label: item.prefix || '',
+            documentation: item.description || '',
+            insertText: item.body || '',
+          };
+        });
+      }
     },
   };
 }

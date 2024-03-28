@@ -374,7 +374,7 @@ const FormModal: React.FC<IProps> = (props) => {
           </Space>
         }
         destroyOnClose
-        visible={visible}
+        open={visible}
         onClose={handleCancel}
       >
         <Form

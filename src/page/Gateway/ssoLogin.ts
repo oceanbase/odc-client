@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import channel, { ChannelMap } from '@/util/broadcastChannel';
 export interface ISSOLogin {
   action: 'testLogin';
 }
 
 export function apply() {
-  const opener: Window = window.opener;
-  if (opener) {
-    opener.dispatchEvent(new CustomEvent('odcssotest'));
-  }
+  channel.add(ChannelMap.ODC_SSO_TEST).send(ChannelMap.ODC_SSO_TEST, {
+    isSuccess: true,
+  });
 }

@@ -50,8 +50,7 @@ const ProjectItem: React.FC<IProps> = function () {
           type="error"
           message={
             formatMessage({
-              id:
-                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterModifyingTheProject',
+              id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterModifyingTheProject',
             }) /* 修改项目后，此数据源下的所有数据库将绑定新的项目 */
           }
         />
@@ -67,8 +66,7 @@ const ProjectItem: React.FC<IProps> = function () {
         type="error"
         message={
           formatMessage({
-            id:
-              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterTheProjectIsNot',
+            id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterTheProjectIsNot',
           }) /* 不绑定项目后，此数据源下的所有数据库将从原项目中移出 */
         }
       />
@@ -94,8 +92,7 @@ const ProjectItem: React.FC<IProps> = function () {
             !item.currentUserResourceRoles?.includes(ProjectRole.OWNER)
           ) {
             disabledInfo = formatMessage({
-              id:
-                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonProjectAdministratorsOr',
+              id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonProjectAdministratorsOr',
             }); //'非项目管理员或 DBA，无法将数据源加入此项目'
           }
           return {
@@ -105,6 +102,7 @@ const ProjectItem: React.FC<IProps> = function () {
               </Tooltip>
             ),
             value: item.id,
+            name: item.name,
             disabled: !!disabledInfo,
           };
         }),
@@ -123,8 +121,7 @@ const ProjectItem: React.FC<IProps> = function () {
         requiredMark={false}
         extra={
           formatMessage({
-            id:
-              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterBindingTheProject',
+            id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterBindingTheProject',
           }) //'绑定项目后，数据源内的所有数据库将移入此项目'
         }
       >
@@ -132,7 +129,7 @@ const ProjectItem: React.FC<IProps> = function () {
           loading={loading}
           options={options}
           showSearch
-          optionFilterProp="children"
+          optionFilterProp="name"
           style={{
             width: 208,
           }}

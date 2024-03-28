@@ -40,6 +40,11 @@ module.exports = [
               spmBPos: 'b41895',
             },
             {
+              path: '/testLDAP',
+              name: 'testLDAP',
+              component: '@/page/Login/components/LDAPModal',
+            },
+            {
               path: '/',
               component: '../layout/DefaultContainer',
               routes: [

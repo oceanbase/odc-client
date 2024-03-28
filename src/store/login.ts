@@ -21,7 +21,7 @@ import type { IOrganization, ISQLScript, IUser } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
 import logger from '@/util/logger';
 import request from '@/util/request';
-import tracert from '@/util/tracert';
+import tracert, { initTracert } from '@/util/tracert';
 import { encrypt, safeParseJson } from '@/util/utils';
 import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
@@ -29,6 +29,8 @@ import { history } from '@umijs/max';
 import authStore from './auth';
 import setting from './setting';
 import sessionManager from './sessionManager';
+import datasourceStatus from './datasourceStatus';
+import odc from '@/plugins/odc';
 
 class ScriptStore {
   @observable
@@ -124,6 +126,31 @@ export class UserStore {
   }
 
   @action
+  public async ldapLogin(params: {
+    username?: string;
+    password?: string;
+    testId?: string;
+    registrationId?: string;
+  }) {
+    const { username, password, testId, registrationId } = params;
+    const form = new URLSearchParams();
+    form.append('username', username);
+    form.append('password', encrypt(password));
+    testId && form.append('testId', testId);
+    registrationId && form.append('registrationId', registrationId);
+    let result = await request.post(`/api/v2/iam/ldap/login`, {
+      data: form,
+      params: {
+        ignoreError: true,
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    return result;
+  }
+
+  @action
   public async logout() {
     logger.debug('logout');
     await sessionManager.destoryStore(true);
@@ -201,7 +228,12 @@ export class UserStore {
     if (user) {
       this.user = user;
       tracert.setUser(this.user.id);
-      await setting.getUserConfig();
+      if (
+        setting.configurations['odc.account.userBehaviorAnalysisEnabled'] === 'true' &&
+        odc.appConfig.spm.enable
+      ) {
+        initTracert();
+      }
       await setting.getSystemConfig();
       this.addLogoutListener();
     }
@@ -223,6 +255,7 @@ export class UserStore {
 
   @action
   public async switchCurrentOrganization(id?: number) {
+    await setting.getUserConfig();
     id = id || this.getDefaultOrganization()?.id;
     if (!id) {
       return false;
@@ -244,11 +277,11 @@ export class UserStore {
     if (sessionOrganization) {
       return sessionOrganization;
     }
-    let personalOrganization: IOrganization = this.organizations?.find(
-      (item) => item.type === SpaceType.PRIVATE,
+
+    const firstOrganization = this.organizations?.find(
+      (item) => item.type === setting.configurations['odc.account.defaultOrganizationType'],
     );
-    const firstOrganization = this.organizations?.find((item) => item.type === SpaceType.SYNERGY);
-    let defaultOrganization = firstOrganization || personalOrganization;
+    let defaultOrganization = firstOrganization || this.organizations?.[0];
     return defaultOrganization;
   }
 
@@ -295,14 +328,14 @@ export class UserStore {
     } else {
       const searchParamsObj = new URLSearchParams();
       const query = history.location.search || '';
-      if (query.includes("redirectTo") || history.location.pathname === '/login') {
+      if (query.includes('redirectTo') || history.location.pathname === '/login') {
         history.push({
           pathname: '/login',
           search: query,
         });
         return;
       }
-      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname)+query);
+      searchParamsObj.append('redirectTo', encodeURIComponent(history.location.pathname) + query);
       history.push({
         pathname: '/login',
         search: searchParamsObj.toString(),
@@ -326,6 +359,7 @@ export class UserStore {
   public async gotoLogoutPage() {
     this.user = null;
     tracert.setUser(null);
+    datasourceStatus.reset();
     if (
       !setting.serverSystemInfo?.passwordLoginEnabled &&
       setting.serverSystemInfo?.ssoLoginEnabled

@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, LockOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, MenuProps, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -25,6 +25,7 @@ import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
+import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
@@ -35,8 +36,7 @@ import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
-
-const { TabPane } = Tabs;
+import DBPermissionTable from './DBPermissionTable';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -55,6 +55,8 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
+  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedSql?: string;
   sqlChanged?: boolean;
   baseOffset: number;
 
@@ -88,6 +90,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
+    unauthorizedDatabases,
+    unauthorizedSql,
     sqlChanged,
     baseOffset,
     onSubmitRows,
@@ -153,25 +157,26 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     locked: boolean,
     resultSetKey: string,
   ): ReactNode {
-    const menu = (
-      <Menu
-        style={{
-          width: '160px',
-        }}
-        onClick={(e) => {
-          e.domEvent.preventDefault();
-          e.domEvent.stopPropagation();
-          handleMenuClick(e, resultSetKey);
-        }}
-      >
-        <Menu.Item key={MenuKey.LOCK}>
-          {formatMessage({ id: 'workspace.window.sql.record.column.lock' })}
-        </Menu.Item>
-        <Menu.Item key={MenuKey.UNLOCK}>
-          {formatMessage({ id: 'workspace.window.sql.record.column.unlock' })}
-        </Menu.Item>
-      </Menu>
-    );
+    const menu: MenuProps = {
+      style: {
+        width: '160px',
+      },
+      onClick: (e) => {
+        e.domEvent.preventDefault();
+        e.domEvent.stopPropagation();
+        handleMenuClick(e, resultSetKey);
+      },
+      items: [
+        {
+          key: MenuKey.LOCK,
+          label: formatMessage({ id: 'workspace.window.sql.record.column.lock' }),
+        },
+        {
+          key: MenuKey.UNLOCK,
+          label: formatMessage({ id: 'workspace.window.sql.record.column.unlock' }),
+        },
+      ],
+    };
 
     return (
       <>
@@ -181,7 +186,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
           </div>
         )}
 
-        <Dropdown overlay={menu} trigger={['contextMenu']}>
+        <Dropdown menu={menu} trigger={['contextMenu']}>
           <span
             className={styles.resultSetTitle}
             style={{
@@ -223,6 +228,12 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
+  if(unauthorizedDatabases?.length){
+    return (
+      <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />
+    )
+  }
+
   return (
     <>
       <Tabs
@@ -231,67 +242,73 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         tabBarGutter={0}
         onChange={onChangeResultSetTab}
         animated={false}
-      >
-        <TabPane
-          tab={formatMessage({ id: 'workspace.window.sql.record.title' })}
-          key={recordsTabKey}
-        >
-          <ExecuteHistory resultHeight={resultHeight} onShowExecuteDetail={onShowExecuteDetail} />
-        </TabPane>
-        {lintResultSet?.length ? (
-          <TabPane
-            tab={
-              <span className={styles.resultSetTitle}>
-                {
-                  formatMessage({
-                    id: 'odc.components.SQLResultSet.Problem',
-                  }) /*问题*/
-                }
+        items={[
+          {
+            label: formatMessage({ id: 'workspace.window.sql.record.title' }),
+            key: recordsTabKey,
+            children: (
+              <ExecuteHistory
+                resultHeight={resultHeight}
+                onShowExecuteDetail={onShowExecuteDetail}
+              />
+            ),
+          },
+          lintResultSet?.length
+            ? {
+                label: (
+                  <span className={styles.resultSetTitle}>
+                    {
+                      formatMessage({
+                        id: 'odc.components.SQLResultSet.Problem',
+                      }) /*问题*/
+                    }
 
-                <span className={styles.extraBox}>
-                  <CloseOutlined
-                    className={styles.closeBtn}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      hanldeCloseLintPage();
-                    }}
-                    style={{ fontSize: '8px' }}
+                    <span className={styles.extraBox}>
+                      <CloseOutlined
+                        className={styles.closeBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          hanldeCloseLintPage();
+                        }}
+                        style={{ fontSize: '8px' }}
+                      />
+                    </span>
+                  </span>
+                ),
+                key: sqlLintTabKey,
+                children: (
+                  <LintResultTable
+                    session={session}
+                    resultHeight={resultHeight}
+                    modalStore={modalStore}
+                    ctx={ctx?.editor}
+                    lintResultSet={lintResultSet}
+                    sqlChanged={sqlChanged}
+                    baseOffset={baseOffset}
                   />
-                </span>
-              </span>
-            }
-            key={sqlLintTabKey}
-          >
-            <LintResultTable
-              session={session}
-              resultHeight={resultHeight}
-              modalStore={modalStore}
-              ctx={ctx?.editor}
-              lintResultSet={lintResultSet}
-              sqlChanged={sqlChanged}
-              baseOffset={baseOffset}
-            />
-          </TabPane>
-        ) : null}
-        {resultSets
-          ?.map((set: IResultSet, i: number) => {
-            const isResultTab =
-              set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS;
-            const isLogTab = set.type === 'LOG';
-            const tableName = set.resultSetMetaData?.table?.tableName;
-            if (isResultTab && resultTabCount < 30) {
-              const executeStage = set.timer?.stages?.find(
-                (stage) => stage.stageName === 'Execute',
-              );
+                ),
+              }
+            : null,
+        ]
+          .concat(
+            resultSets?.map((set: IResultSet, i: number) => {
+              const isResultTab =
+                set.columns?.length && set.status === ISqlExecuteResultStatus.SUCCESS;
+              const isLogTab = set.type === 'LOG';
+              const tableName = set.resultSetMetaData?.table?.tableName;
+              if (isResultTab && resultTabCount < 30) {
+                const executeStage = set.timer?.stages?.find(
+                  (stage) => stage.stageName === 'Execute',
+                );
 
-              const executeSQLStage = executeStage?.subStages?.find(
-                (stage) => stage.stageName === 'OBServer Execute SQL',
-              );
+                const executeSQLStage = executeStage?.subStages?.find(
+                  (stage) => stage.stageName === 'OBServer Execute SQL',
+                );
 
-              resultTabCount += 1;
-              return (
-                <TabPane
-                  tab={getResultSetTitle(
+                resultTabCount += 1;
+                return {
+                  key: set.uniqKey,
+                  label: getResultSetTitle(
                     i,
                     set.executeSql,
                     `${formatMessage({
@@ -299,91 +316,89 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     })}${resultTabCount}`,
                     set.locked,
                     set.uniqKey,
-                  )}
-                  key={set.uniqKey}
-                >
-                  <DDLResultSet
-                    key={set.uniqKey || i}
-                    dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                    showExplain={session?.supportFeature?.enableSQLExplain}
-                    showPagination={true}
-                    showTrace={true}
-                    columns={set.columns}
-                    session={session}
-                    sqlId={set.sqlId}
-                    autoCommit={session?.params?.autoCommit}
-                    table={{
-                      tableName,
-                      columns: set.resultSetMetaData?.columnList,
-                    }}
-                    disableEdit={
-                      !set.resultSetMetaData?.editable ||
-                      !!set.resultSetMetaData?.columnList?.filter((c) => !c)?.length
-                    }
-                    rows={set.rows}
-                    enableRowId={true}
-                    originSql={set.originSql}
-                    resultHeight={resultHeight - TAB_HEADER_HEIGHT}
-                    generalSqlType={set.generalSqlType}
-                    traceId={set.traceId}
-                    onExport={
-                      set.allowExport ? (limit) => onExportResultSet(i, limit, tableName) : null
-                    }
-                    onShowExecuteDetail={() => onShowExecuteDetail(set.initialSql, set.traceId)}
-                    onShowTrace={() => onShowTrace(set.initialSql, set.traceId)}
-                    onSubmitRows={(newRows, limit, autoCommit, columns) =>
-                      onSubmitRows(
-                        i,
-                        newRows,
-                        limit,
-                        autoCommit,
-                        columns,
-                        set?.resultSetMetaData?.table?.databaseName,
-                      )
-                    }
-                    onUpdateEditing={(editing) => onUpdateEditing(i, editing)}
-                    isEditing={editingMap[set.uniqKey]}
-                    withFullLinkTrace={set?.withFullLinkTrace}
-                    traceEmptyReason={set?.traceEmptyReason}
-                  />
-                </TabPane>
-              );
-            }
-            if (isLogTab) {
-              let count = {
-                [ISqlExecuteResultStatus.SUCCESS]: {
-                  lable: formatMessage({
-                    id: 'odc.components.SQLResultSet.SuccessfulExecution',
-                  }),
-                  //执行成功
-                  count: 0,
-                },
+                  ),
+                  children: (
+                    <DDLResultSet
+                      key={set.uniqKey || i}
+                      dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
+                      showExplain={session?.supportFeature?.enableSQLExplain}
+                      showPagination={true}
+                      showTrace={true}
+                      columns={set.columns}
+                      session={session}
+                      sqlId={set.sqlId}
+                      autoCommit={session?.params?.autoCommit}
+                      table={{
+                        tableName,
+                        columns: set.resultSetMetaData?.columnList,
+                      }}
+                      disableEdit={
+                        !set.resultSetMetaData?.editable ||
+                        !!set.resultSetMetaData?.columnList?.filter((c) => !c)?.length
+                      }
+                      rows={set.rows}
+                      enableRowId={true}
+                      originSql={set.originSql}
+                      resultHeight={resultHeight - TAB_HEADER_HEIGHT}
+                      generalSqlType={set.generalSqlType}
+                      traceId={set.traceId}
+                      onExport={
+                        set.allowExport ? (limit) => onExportResultSet(i, limit, tableName) : null
+                      }
+                      onShowExecuteDetail={() => onShowExecuteDetail(set.initialSql, set.traceId)}
+                      onShowTrace={() => onShowTrace(set.initialSql, set.traceId)}
+                      onSubmitRows={(newRows, limit, autoCommit, columns) =>
+                        onSubmitRows(
+                          i,
+                          newRows,
+                          limit,
+                          autoCommit,
+                          columns,
+                          set?.resultSetMetaData?.table?.databaseName,
+                        )
+                      }
+                      onUpdateEditing={(editing) => onUpdateEditing(i, editing)}
+                      isEditing={editingMap[set.uniqKey]}
+                      withFullLinkTrace={set?.withFullLinkTrace}
+                      traceEmptyReason={set?.traceEmptyReason}
+                    />
+                  ),
+                };
+              }
+              if (isLogTab) {
+                let count = {
+                  [ISqlExecuteResultStatus.SUCCESS]: {
+                    lable: formatMessage({
+                      id: 'odc.components.SQLResultSet.SuccessfulExecution',
+                    }),
+                    //执行成功
+                    count: 0,
+                  },
 
-                [ISqlExecuteResultStatus.FAILED]: {
-                  lable: formatMessage({
-                    id: 'odc.components.SQLResultSet.ExecutionFailed',
-                  }),
-                  //执行失败
-                  count: 0,
-                },
+                  [ISqlExecuteResultStatus.FAILED]: {
+                    lable: formatMessage({
+                      id: 'odc.components.SQLResultSet.ExecutionFailed',
+                    }),
+                    //执行失败
+                    count: 0,
+                  },
 
-                [ISqlExecuteResultStatus.CANCELED]: {
-                  lable: formatMessage({
-                    id: 'odc.components.SQLResultSet.CancelExecution',
-                  }),
-                  //执行取消
-                  count: 0,
-                },
-              };
+                  [ISqlExecuteResultStatus.CANCELED]: {
+                    lable: formatMessage({
+                      id: 'odc.components.SQLResultSet.CancelExecution',
+                    }),
+                    //执行取消
+                    count: 0,
+                  },
+                };
 
-              set?.logTypeData?.forEach((item) => {
-                count[item.status].count += 1;
-              });
-              const hasError =
-                count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;
-              return (
-                <TabPane
-                  tab={
+                set?.logTypeData?.forEach((item) => {
+                  count[item.status].count += 1;
+                });
+                const hasError =
+                  count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;
+                return {
+                  label: (
                     <Tooltip
                       title={
                         <pre style={{ marginBottom: 0 }}>
@@ -427,16 +442,20 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                         </span>
                       </span>
                     </Tooltip>
-                  }
-                  key={set.uniqKey}
-                >
-                  <SQLResultLog resultHeight={resultHeight} resultSet={set} />
-                </TabPane>
-              );
-            }
-          })
+                  ),
+                  key: set.uniqKey,
+                  children: (
+                    <SQLResultLog 
+                      resultHeight={resultHeight}
+                      resultSet={set}
+                    />
+                  ),
+                };
+              }
+            }),
+          )
           .filter(Boolean)}
-      </Tabs>
+      />
     </>
   );
 };

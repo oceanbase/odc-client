@@ -81,14 +81,16 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
         {type === TitleType.TAB && (
           <Tabs
             className={styles['page-container-title-tab']}
-            activeKey={tabActiveKey}
+            activeKey={tabActiveKey?.toString()}
             tabBarExtraContent={tabBarExtraContent}
             onChange={onTabChange}
-          >
-            {options?.map(({ label, value }) => {
-              return <Tabs.TabPane tab={label} key={value} />;
+            items={options?.map(({ label, value }) => {
+              return {
+                key: value?.toString(),
+                label: label,
+              };
             })}
-          </Tabs>
+          />
         )}
         {type === TitleType.TEXT && <div className={styles.title}>{title}</div>}
         {type === TitleType.SELECT && (
@@ -108,11 +110,13 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
           activeKey={tabActiveKey}
           tabBarExtraContent={tabBarExtraContent}
           onChange={onTabChange}
-        >
-          {tabList?.map(({ tab, key }) => {
-            return <Tabs.TabPane tab={tab} key={key} />;
+          items={tabList?.map(({ tab, key }) => {
+            return {
+              key,
+              label: tab,
+            };
           })}
-        </Tabs>
+        />
       )}
       <div className={styles['page-container-main']} style={containerWrapStyle}>
         {props?.children}

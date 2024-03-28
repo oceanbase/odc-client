@@ -91,7 +91,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       if (messageRef.current) {
         return Upload.LIST_IGNORE;
       }
-      message.warn({
+      message.warning({
         content: formatMessage({
           id: 'odc.ImportDrawer.ImportForm.TooManyFilesAreUploaded',
         }),

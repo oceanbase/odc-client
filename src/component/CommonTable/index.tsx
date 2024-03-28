@@ -60,9 +60,9 @@ interface IProps<RecordType> {
   alertInfoContent?: {
     message: React.ReactNode;
   };
-  // 是否展示表头 操作栏
+  /** @description 是否展示表头 操作栏 */
   showToolbar?: boolean;
-  // 表头操作栏 标题区配置
+  /** @description 表头操作栏 标题区配置 */
   titleContent: ITitleContent;
   // 表头操作栏 筛选区配置
   filterContent?: IFilterContent;
@@ -106,7 +106,9 @@ const CommonTable: <RecordType extends object = any>(
     rowSelecter,
     rowSelectedCallback = (selectedRowKeys: any[]) => {},
     rowHeight = mode === CommonTableMode.BIG ? DEFAULT_BIG_ROW_HEIGHT : DEFAULT_SMALL_ROW_HEIGHT,
-    tableProps,
+    tableProps = {
+      rowKey: 'id',
+    },
     enableResize = false,
     onLoad,
     onChange,
@@ -285,16 +287,16 @@ const CommonTable: <RecordType extends object = any>(
   }
 
   function handleRowKeySelect(record, selected) {
-    handleRowKeyChange(selected, [record.id]);
+    handleRowKeyChange(selected, [record?.[tableProps?.rowKey as string]]);
   }
 
   function handleSelectAll(selected, selectedRows, changeRows) {
-    const changeKeys = changeRows?.map((item) => item.id);
+    const changeKeys = changeRows?.map((item) => item[tableProps?.rowKey as string]);
     handleRowKeyChange(selected, changeKeys);
   }
 
   function handleSelectAllRows() {
-    const changeKeys = dataSource?.map((item) => item[tableProps.rowKey as string]);
+    const changeKeys = dataSource?.map((item) => item[tableProps?.rowKey as string]);
     setSelectedRowKeys(changeKeys);
   }
 
@@ -415,7 +417,7 @@ const CommonTable: <RecordType extends object = any>(
         />
       )}
       {
-        <Spin spinning={loading}>
+        <Spin key="wrapTableSpin" spinning={loading}>
           <Table
             {...rest}
             className={classNames(
@@ -485,7 +487,7 @@ const CommonTable: <RecordType extends object = any>(
             }}
             scroll={{
               x: scroll?.x ?? DEFAULT_MIN_TABLE_WIDTH,
-              y: wrapperValidHeight,
+              y: scroll?.y ?? wrapperValidHeight,
             }}
           />
         </Spin>

@@ -152,7 +152,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                 id: 'odc.components.CreateSequenceModal.CreateASequence',
               }) // 新建序列
         }
-        visible={modalStore.createSequenceModalVisible}
+        open={modalStore.createSequenceModalVisible}
         okText={formatMessage({
           id: 'odc.components.CreateSequenceModal.NextConfirmTheSqlStatement',
         })} /* 下一步：确认 SQL */

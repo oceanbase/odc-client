@@ -33,6 +33,7 @@ export default {
       }
     </p>
   ),
+
   connectType: () => (
     <p>
       {formatMessage({
@@ -40,6 +41,7 @@ export default {
       })}
     </p>
   ),
+
   dbMode: () => (
     <p>
       {formatMessage({
@@ -47,6 +49,7 @@ export default {
       })}
     </p>
   ),
+
   configUrl: () => (
     <p>
       {formatMessage({
@@ -54,6 +57,7 @@ export default {
       })}
     </p>
   ),
+
   sessionTimeTip: (
     <p>
       {formatMessage({
@@ -61,6 +65,7 @@ export default {
       })}
     </p>
   ),
+
   connectSysTip: (
     <p>
       {formatMessage({
@@ -68,6 +73,7 @@ export default {
       })}
     </p>
   ),
+
   exportType: (
     <p>
       <div>
@@ -82,6 +88,7 @@ export default {
       </div>
     </p>
   ),
+
   batchCommit: (
     <p>
       {formatMessage({
@@ -89,6 +96,7 @@ export default {
       })}
     </p>
   ),
+
   globalSnapshot: (
     <p>
       {formatMessage({
@@ -96,6 +104,7 @@ export default {
       })}
     </p>
   ),
+
   batchCommitNum: (
     <p>
       {formatMessage({
@@ -103,6 +112,7 @@ export default {
       })}
     </p>
   ),
+
   existAction: (
     <p>
       {formatMessage({
@@ -110,6 +120,7 @@ export default {
       })}
     </p>
   ),
+
   truncateTableBeforeImport: (
     <p>
       {formatMessage({
@@ -117,6 +128,7 @@ export default {
       })}
     </p>
   ),
+
   elapsedTime: (
     <p>
       <div>
@@ -157,6 +169,7 @@ export default {
       </div>
     </p>
   ),
+
   normalDB: (
     <p>
       {
@@ -168,6 +181,7 @@ export default {
       }
     </p>
   ),
+
   shardingDB: (
     <p>
       {
@@ -179,6 +193,7 @@ export default {
       }
     </p>
   ),
+
   riskDegree: (
     <p>
       {
@@ -190,6 +205,7 @@ export default {
       }
     </p>
   ),
+
   approvalExpiration: (
     <p>
       {
@@ -201,6 +217,7 @@ export default {
       }
     </p>
   ),
+
   waitExecutionExpiration: (
     <p>
       {
@@ -212,6 +229,7 @@ export default {
       }
     </p>
   ),
+
   executionExpiration: (
     <p>
       {
@@ -223,6 +241,7 @@ export default {
       }
     </p>
   ),
+
   approvalRoles: (
     <p>
       {
@@ -234,6 +253,7 @@ export default {
       }
     </p>
   ),
+
   exportTableName: (
     <p>
       {
@@ -245,6 +265,7 @@ export default {
       }
     </p>
   ),
+
   customSegement: (
     <p>
       {
@@ -256,6 +277,7 @@ export default {
       }
     </p>
   ),
+
   exportDataConfig: (
     <p>
       {
@@ -267,6 +289,7 @@ export default {
       }
     </p>
   ),
+
   exportStructConfig: (
     <p>
       {
@@ -278,6 +301,7 @@ export default {
       }
     </p>
   ),
+
   exportDropTable: (
     <p>
       {
@@ -289,6 +313,7 @@ export default {
       }
     </p>
   ),
+
   taskFlowIsMatch: (
     <p>
       {
@@ -300,6 +325,7 @@ export default {
       }
     </p>
   ),
+
   maskRuleInclude: (
     <p>
       <p>
@@ -322,6 +348,7 @@ export default {
       </p>
     </p>
   ),
+
   preCreatePartitionCount: (
     <p>
       {
@@ -332,6 +359,7 @@ export default {
       }
     </p>
   ),
+
   partitionInterval: (
     <p>
       {
@@ -342,6 +370,17 @@ export default {
       }
     </p>
   ),
+
+  partitionKeepLatestCount: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.69D23502' /*超出数量后，仅保留最近若干个分区，其他分区均删除*/,
+        }) /* 超出数量后，仅保留最近若干个分区，其他分区均删除 */
+      }
+    </p>
+  ),
+
   expirePeriod: (
     <p>
       {
@@ -352,6 +391,7 @@ export default {
       }
     </p>
   ),
+
   shadowSyncTableName: (
     <p>
       {
@@ -362,6 +402,7 @@ export default {
       }
     </p>
   ),
+
   saveImportAndExportConfig: (
     <p>
       {
@@ -371,6 +412,7 @@ export default {
       }
     </p>
   ),
+
   resourceManagementPermissionsAction: (
     <p>
       <p>
@@ -396,6 +438,7 @@ export default {
       </p>
     </p>
   ),
+
   systemOperationPermissionsAction: (
     <p>
       <p>
@@ -414,16 +457,18 @@ export default {
       </p>
     </p>
   ),
+
   tableRowcountToolTip: (
     <p>
       {
         formatMessage({
           id: 'odc.component.helpDoc.doc.BecauseTheDataIsObtained',
         }) /*由于该数据是通过静态基线数据得到的，因此会有延迟，可能出现不准确的情况。如想得到准确的数据请使用
-       “select count(*) from table_name;” 进行查询。*/
+    “select count(*) from table_name;” 进行查询。*/
       }
     </p>
   ),
+
   tableSizeToolTip: (
     <p>
       {
@@ -433,6 +478,7 @@ export default {
       }
     </p>
   ),
+
   exportFileMaxSize: (
     <p>
       {
@@ -442,6 +488,7 @@ export default {
       }
     </p>
   ),
+
   importTaskSkipHeader: (
     <p>
       {
@@ -451,51 +498,57 @@ export default {
       }
     </p>
   ),
+
   projectOwner: (
     <p>
       {
         formatMessage({
-          id: 'odc.component.helpDoc.doc.ManageAllDatabasesAndMembers',
-        }) /*可管理项目所有数据库和成员*/
+          id: 'src.component.helpDoc.927F1ADC' /*拥有项目内的所有权限*/,
+        }) /* 拥有项目内的所有权限 */
       }
     </p>
   ),
+
   projectDBA: (
     <p>
       {
         formatMessage({
-          id: 'odc.component.helpDoc.doc.ManageAllDatabasesOfA',
-        }) /*可管理项目所有数据库*/
+          id: 'src.component.helpDoc.D8B031DB' /*拥有项目内除添加/移除成员和归档项目以外的所有权限*/,
+        }) /* 拥有项目内除添加/移除成员和归档项目以外的所有权限 */
       }
     </p>
   ),
+
   projectDev: (
     <p>
       {
         formatMessage({
-          id: 'odc.component.helpDoc.doc.AccessAllDatabasesOfThe',
-        }) /*可访问项目所有数据库*/
+          id: 'src.component.helpDoc.B4D80BEE' /*允许登录所有数据库、执行 SQL、提交工单，通常是开发人员*/,
+        }) /* 允许登录所有数据库、执行 SQL、提交工单，通常是开发人员 */
       }
     </p>
   ),
+
   projectSA: (
     <p>
       {
         formatMessage({
-          id: 'odc.src.component.helpDoc.OnlyAllowTheSensitiveColumns',
-        }) /* 只允许管理项目的敏感列和参与审批 */
+          id: 'src.component.helpDoc.EFADD11A' /*在参与者的基础上还可以管理敏感列*/,
+        }) /* 在参与者的基础上还可以管理敏感列 */
       }
     </p>
   ),
+
   participant: (
     <p>
       {
         formatMessage({
-          id: 'odc.src.component.helpDoc.OnlyAllowParticipationInApproval',
-        }) /* 只允许参与审批 */
+          id: 'src.component.helpDoc.843310FE' /*允许查看项目基本信息，并自助申请库权限和提交工单*/,
+        }) /* 允许查看项目基本信息，并自助申请库权限和提交工单 */
       }
     </p>
   ),
+
   dataArchiveTimeDoc: (
     <p>
       {
@@ -505,6 +558,7 @@ export default {
       }
     </p>
   ),
+
   dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
@@ -516,6 +570,7 @@ export default {
       }
     </p>
   ),
+
   schemaChangeSwapTableTimeout: (
     <p>
       {
@@ -525,6 +580,7 @@ export default {
       }
     </p>
   ),
+
   schemaChangeSwapTableRetryTimes: (
     <p>
       {
@@ -534,6 +590,7 @@ export default {
       }
     </p>
   ),
+
   TaskLmitRow: (
     <p>
       {
@@ -543,6 +600,7 @@ export default {
       }
     </p>
   ),
+
   TaskLmitData: (
     <p>
       {
@@ -552,10 +610,84 @@ export default {
       }
     </p>
   ),
+
   AlterDdlTaskLockUsersTip: (
     <p>
-      关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
-      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障
+      {formatMessage({
+        id: 'src.component.helpDoc.AEEC5916' /*关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
+      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障*/,
+      })}
     </p>
+  ),
+
+  ApplyDatabasePermissionQueryTip: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.53DA11B2' /*执行查询语句的权限*/,
+        }) /* 执行查询语句的权限 */
+      }
+    </p>
+  ),
+
+  ApplyDatabasePermissionExportTip: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.E54E3114' /*新建导出和导出结果集工单的权限*/,
+        }) /* 新建导出和导出结果集工单的权限 */
+      }
+    </p>
+  ),
+
+  ApplyDatabasePermissionChangeTip: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.5373CF9E' /*新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL
+      计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）*/,
+        }) /* 新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL
+    计划、分区计划、数据归档和数据清理）的权限和执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束） */
+      }
+    </p>
+  ),
+
+  ApplyDatabasePermissionExpiringTip: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.D2B08982' /*该权限将在7天内过期*/,
+        }) /* 该权限将在7天内过期 */
+      }
+    </p>
+  ),
+
+  copiedRulesetId: (
+    <p>
+      {
+        formatMessage({
+          id: 'src.component.helpDoc.4961AEB2' /*可引用和修改已有环境的SQL检查和SQL窗口规范*/,
+        }) /* 可引用和修改已有环境的SQL检查和SQL窗口规范 */
+      }
+    </p>
+  ),
+
+  userManageTip: (
+    <>
+      <p>
+        {
+          formatMessage({
+            id: 'src.component.helpDoc.38CAE676' /*工单授权：用户通过工单申请的权限*/,
+          }) /* 工单授权：用户通过工单申请的权限 */
+        }
+      </p>
+      <p>
+        {
+          formatMessage({
+            id: 'src.component.helpDoc.188E681E' /*用户权限：项目管理员/DBA授予的权限*/,
+          }) /* 用户权限：项目管理员/DBA授予的权限 */
+        }
+      </p>
+    </>
   ),
 };

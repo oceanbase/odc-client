@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SettingStore } from '@/store/setting';
+import setting, { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { SettingOutlined } from '@ant-design/icons';
 import { Popover, Row, Switch, Tooltip } from 'antd';
@@ -38,18 +38,15 @@ const SQLConfig: React.FC<IProps> = function (props) {
   const { session, pageKey } = useContext(SQLConfigContext);
   const [queryLimitValue, setQueryLimitValue] = useState(1);
   const [showSessionParam, setShowSessionParam] = useState(false);
-  const [tableColumnInfoVisibleValue, setTableColumnInfoVisibleValue] = useState(true);
   const [visible, setVisible] = useState(false);
   const queryLimit = session?.params?.queryLimit;
   const tableColumnInfoVisible = session?.params.tableColumnInfoVisible;
+  const fullLinkTraceEnabled = session?.params.fullLinkTraceEnabled;
+  const continueExecutionOnError = session?.params.continueExecutionOnError;
 
   useEffect(() => {
     setQueryLimitValue(session?.params.queryLimit);
   }, [queryLimit]);
-
-  useEffect(() => {
-    setTableColumnInfoVisibleValue(tableColumnInfoVisible);
-  }, [tableColumnInfoVisible]);
 
   const handleSetQueryLimit = async () => {
     const success = await session.setQueryLimit(queryLimitValue);
@@ -153,11 +150,51 @@ const SQLConfig: React.FC<IProps> = function (props) {
             })} /*关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时*/
           >
             <Switch
-              checked={tableColumnInfoVisibleValue}
+              size="small"
+              checked={tableColumnInfoVisible}
               onChange={handleColumnInfoVisibleChange}
             />
           </Tooltip>
         </Row>
+        <Row
+          style={{
+            lineHeight: '28px',
+            marginTop: 12,
+          }}
+        >
+          {
+            formatMessage({
+              id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
+            }) /* 报错继续执行 */
+          }
+        </Row>
+        <Row style={{ width: '100%' }}>
+          <Switch
+            size="small"
+            checked={continueExecutionOnError}
+            onChange={session?.changeContinueExecutionOnError}
+          />
+        </Row>
+        <Row
+          style={{
+            lineHeight: '28px',
+            marginTop: 12,
+          }}
+        >
+          {
+            formatMessage({
+              id: 'src.component.SQLConfig.C03B2372' /*开启全链路诊断*/,
+            }) /* 开启全链路诊断 */
+          }
+        </Row>
+        <Row style={{ width: '100%' }}>
+          <Switch
+            size="small"
+            checked={fullLinkTraceEnabled}
+            onChange={session?.changeFullTraceDiagnosisEnabled}
+          />
+        </Row>
+
         <Row
           style={{
             marginTop: 18,
@@ -190,6 +227,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
         title=""
         content={session ? renderContent() : null}
         open={visible}
+        showArrow={false}
         onOpenChange={(v) => {
           setVisible(v);
         }}

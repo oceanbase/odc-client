@@ -1,0 +1,55 @@
+.layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  .sider {
+    flex: 0 0 144px;
+    height: 100%;
+    padding: 0 12px 12px 0;
+    overflow: auto;
+    overflow-x: hidden;
+    border-right: 1px solid var(--divider-color);
+  }
+  .content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: calc(100% - 148px);
+    height: 100%;
+    padding: 12px 0px 12px 16px;
+  }
+}
+
+.menu {
+  border-right: none;
+
+  :global {
+    .ant-menu-item-selected {
+      background-color: var(--focus-color) !important;
+      color: var(--text-color-link) !important;
+    }
+
+    .ant-menu-item {
+      height: 28px;
+      line-height: 28px;
+      border-radius: 2px;
+      padding: 0 12px;
+
+      &:hover {
+        background-color: var(--hover-color);
+        color: inherit;
+      }
+    }
+
+    .ant-menu-item:first-child {
+      margin-top: 0 !important;
+    }
+
+    .ant-menu-item:not(:last-child) {
+      margin-bottom: 4px !important;
+    }
+
+    .ant-menu-item:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+}

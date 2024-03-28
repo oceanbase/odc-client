@@ -33,21 +33,19 @@ const LocalMenus: React.FC<IProos> = (props) => {
   const localeObj =
     localeList.find((item) => item.value.toLowerCase() === locale?.toLowerCase()) ||
     localeList.find((item) => item.value?.toLowerCase() === defaultLocale?.toLowerCase());
-  const localeMenu = (
-    <Menu
-      onClick={({ key }) => {
-        window._forceRefresh = true;
-        setLocale(key as string);
-        window._forceRefresh = false;
-      }}
-    >
-      {localeList.map((item) => (
-        <Menu.Item key={item.value}>{item.label}</Menu.Item>
-      ))}
-    </Menu>
-  );
+  const localeMenu = {
+    onClick: ({ key }) => {
+      window._forceRefresh = true;
+      setLocale(key as string);
+      window._forceRefresh = false;
+    },
+    items: localeList.map((item) => ({
+      key: item.value,
+      label: item.label,
+    })),
+  };
   return (
-    <DropdownMenu overlay={localeMenu} className={className}>
+    <DropdownMenu menu={localeMenu} className={className}>
       <Space>
         {showIcon ? <GlobalOutlined /> : null}
         <span>{localeObj?.label}</span>

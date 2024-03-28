@@ -17,7 +17,7 @@
 import { IView } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, Select } from 'antd';
-import { Component } from 'react';
+import { Component, useEffect } from 'react';
 import styles from './index.less';
 
 enum CheckOption {
@@ -30,56 +30,70 @@ interface IProps {
 
 const { Option } = Select;
 
-class ShowViewBaseInfoForm extends Component<IProps> {
-  public render() {
-    const { viewName, checkOption, definer } = this.props.model ?? {};
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14 },
-    };
+function ShowViewBaseInfoForm({ model }: IProps) {
+  const { viewName } = model ?? {};
+  const [form] = Form.useForm();
+  const formItemLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 14 },
+  };
 
-    const initialValues = {
+  useEffect(() => {
+    if (!model) {
+      return;
+    }
+    const { viewName, checkOption, definer, comment } = model;
+    form.setFieldsValue({
       viewName: viewName,
       checkOption: checkOption || CheckOption.NONE,
       definer: definer,
-    };
+      comment,
+    });
+  }, [model]);
 
-    if (!viewName) {
-      return null;
-    }
-
-    return (
-      <Form {...formItemLayout} className={styles.form} initialValues={initialValues}>
-        <Form.Item
-          name="viewName"
-          label={formatMessage({ id: 'workspace.window.createView.viewName' })}
-        >
-          <Input
-            disabled={true}
-            placeholder={formatMessage({
-              id: 'workspace.window.createView.viewName.placeholder',
-            })}
-          />
-        </Form.Item>
-        <Form.Item
-          name="checkOption"
-          label={formatMessage({
-            id: 'workspace.window.createView.checkOption',
-          })}
-        >
-          <Select disabled={true}>
-            <Option value={CheckOption.NONE}>{CheckOption.NONE}</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          name="definer"
-          label={formatMessage({ id: 'workspace.window.createView.definer' })}
-        >
-          <Input disabled={true} />
-        </Form.Item>
-      </Form>
-    );
+  if (!viewName) {
+    return null;
   }
+
+  return (
+    <Form form={form} {...formItemLayout} className={styles.form}>
+      <Form.Item
+        name="viewName"
+        label={formatMessage({ id: 'workspace.window.createView.viewName' })}
+      >
+        <Input
+          disabled={true}
+          placeholder={formatMessage({
+            id: 'workspace.window.createView.viewName.placeholder',
+          })}
+        />
+      </Form.Item>
+      <Form.Item
+        name="checkOption"
+        label={formatMessage({
+          id: 'workspace.window.createView.checkOption',
+        })}
+      >
+        <Select disabled={true}>
+          <Option value={CheckOption.NONE}>{CheckOption.NONE}</Option>
+        </Select>
+      </Form.Item>
+      <Form.Item
+        name="definer"
+        label={formatMessage({ id: 'workspace.window.createView.definer' })}
+      >
+        <Input disabled={true} />
+      </Form.Item>
+      <Form.Item
+        name="comment"
+        label={formatMessage({
+          id: 'src.page.Workspace.components.ShowViewBaseInfoForm.BAFEE497',
+        })}
+      >
+        <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} disabled={true} />
+      </Form.Item>
+    </Form>
+  );
 }
 
 export default ShowViewBaseInfoForm;

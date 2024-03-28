@@ -123,7 +123,7 @@ const ScriptEditorModal: React.FC<IProps> = function ({
     <Drawer
       width={520}
       destroyOnClose
-      visible={visible}
+      open={visible}
       title={
         formatMessage(
           {

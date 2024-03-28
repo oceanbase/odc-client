@@ -107,7 +107,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
               onClick={async () => {
                 const values = await form.validateFields();
                 if (values.password !== values.confirmPassword) {
-                  message.warn(
+                  message.warning(
                     formatMessage({
                       id:
                         'odc.component.LoginMenus.ChangeLockPwdModal.TheTwoPasswordsAreInconsistent',
