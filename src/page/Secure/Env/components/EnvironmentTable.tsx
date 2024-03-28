@@ -33,6 +33,7 @@ import tracert from '@/util/tracert';
 import { IEnvironment } from '@/d.ts/environment';
 import { IManagerIntegration } from '@/d.ts';
 import modal from 'antd/lib/modal';
+import { DEFAULT_ENV_ORIGINAL_NAME } from '../constant';
 
 interface IEnvironmentProps {
   currentEnvironment: IEnvironment;
@@ -218,6 +219,7 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
     switchRuleStatus();
   };
   const rawColumns = getColumns({
+    disabled: currentEnvironment?.originalName === DEFAULT_ENV_ORIGINAL_NAME,
     subTypeFilters,
     supportedDialectTypeFilters,
     integrationsIdMap: integrationsIdMap,
