@@ -155,10 +155,11 @@ const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableC
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
   projectId?: number;
+  theme?: string;
 }
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { modalStore, projectId } = props;
+    const { modalStore, projectId, theme } = props;
     const { partitionVisible, partitionData } = modalStore;
     const [tableConfigs, setTableConfigs] = useState<ITableConfig[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -564,6 +565,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             className={styles.tableWrapper}
           >
             <PartitionPolicyFormTable
+              theme={theme}
               databaseId={databaseId}
               sessionId={sessionId}
               tableConfigs={tableConfigs}
