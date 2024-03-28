@@ -180,7 +180,7 @@ export default function NewDatasourceDrawer({
       }
     }
   }
-
+  const connectType = originDatasource?.type || type;
   return (
     <Drawer
       width={520}
@@ -193,7 +193,7 @@ export default function NewDatasourceDrawer({
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          {isEdit && !haveOCP() ? (
+          {isEdit && !haveOCP() && connectType !== ConnectType.ORACLE ? (
             <Button onClick={copyUri}>
               {
                 formatMessage({
