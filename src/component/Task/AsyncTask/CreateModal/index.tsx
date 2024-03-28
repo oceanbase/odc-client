@@ -110,10 +110,14 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
-  const [defaultFileList, setDefaultFileList] = useState({
-    rollbackSqlFiles: [],
-    sqlFiles: [],
-  });
+  const sqlFileRef = useRef<{
+    setValue: (value: UploadFile[]) => void;
+    resetFields: () => void;
+  }>();
+  const rollbackSqlFileRef = useRef<{
+    setValue: (value: UploadFile[]) => void;
+    resetFields: () => void;
+  }>();
   const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const isRollback = !!asyncTaskData?.type;
@@ -198,10 +202,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     setSqlContentType(formData.sqlContentType);
     setRollbackContentType(formData.rollbackContentType);
     form.setFieldsValue(formData);
-    setDefaultFileList({
-      rollbackSqlFiles: formData.rollbackSqlFiles,
-      sqlFiles: formData.sqlFiles,
-    });
+    sqlFileRef.current?.setValue(formData.sqlFiles);
+    rollbackSqlFileRef.current?.setValue(formData.rollbackSqlFiles);
   };
 
   const getFileIdAndNames = (files: UploadFile[]) => {
@@ -297,10 +299,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
     setRollbackContentType(SQLContentType.TEXT);
-    setDefaultFileList({
-      rollbackSqlFiles: [],
-      sqlFiles: [],
-    });
+    sqlFileRef.current?.resetFields();
+    rollbackSqlFileRef.current?.resetFields();
     setHasEdit(false);
     setLintResultSet([]);
     setHasPreCheck(false);
@@ -614,6 +614,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={sqlContentType !== SQLContentType.FILE && styles.hide}
         >
           <ODCDragger
+            ref={sqlFileRef}
             accept=".sql"
             uploadFileOpenAPIName="UploadFile"
             onBeforeUpload={(file) => {
@@ -630,7 +631,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               'Accept-Language': getLocale(),
               currentOrganizationId: login.organizationId?.toString(),
             }}
-            defaultFileList={defaultFileList.sqlFiles}
             onFileChange={(files) => {
               handleFileChange(files, 'sqlFiles');
             }}
@@ -792,6 +792,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={rollbackContentType !== SQLContentType.FILE && styles.hide}
         >
           <ODCDragger
+            ref={rollbackSqlFileRef}
             accept=".sql"
             uploadFileOpenAPIName="UploadFile"
             onBeforeUpload={(file) => {
@@ -805,7 +806,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               'Accept-Language': getLocale(),
               currentOrganizationId: login.organizationId?.toString(),
             }}
-            defaultFileList={defaultFileList.rollbackSqlFiles}
             onFileChange={(files) => {
               handleFileChange(files, 'rollbackSqlFiles');
             }}
