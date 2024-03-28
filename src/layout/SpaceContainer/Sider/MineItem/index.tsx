@@ -132,7 +132,10 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         },
       });
     }
-
+    menu.push({
+      label: <Locale />,
+      key: 'locale',
+    });
     if (settingStore.enablePersonalRecord) {
       menu.push({
         key: 'record',
@@ -145,6 +148,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         },
       });
     }
+
     menu.push({
       type: 'divider',
     });
@@ -198,7 +202,6 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
           }}
         />
       ) : null}
-      <Locale />
       {settingStore.enablePersonalRecord && <RecordPopover ref={recordRef} />}
     </>
   );
