@@ -110,7 +110,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
-  const timerRef = useRef(null);
   const hasFlow = !!task?.nodeList?.find(
     (node) =>
       node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.PRE_CHECK,
@@ -130,50 +129,12 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
-
-  const loop = (timeout: number = 0) => {
-    if (!taskOpenRef?.current) {
-      return;
-    }
-    timerRef.current = setTimeout(async () => {
-      const currentTask = await getTaskDetail(detailId);
-      if (
-        currentTask &&
-        [
-          TaskStatus.EXECUTION_SUCCEEDED,
-          TaskStatus.EXECUTION_FAILED,
-          TaskStatus.EXECUTION_EXPIRED,
-          TaskStatus.APPROVAL_EXPIRED,
-          TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
-        ].includes(currentTask?.status)
-      ) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        getResult();
-      } else {
-        loop(2000);
-      }
-      setTask(currentTask);
-    }, timeout);
-  };
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
     setLoading(false);
     if (data) {
       setTask(data);
       setDisabledSubmit(false);
-      if (
-        data?.type === TaskType.STRUCTURE_COMPARISON &&
-        ![
-          TaskStatus.EXECUTION_SUCCEEDED,
-          TaskStatus.EXECUTION_FAILED,
-          TaskStatus.EXECUTION_EXPIRED,
-          TaskStatus.APPROVAL_EXPIRED,
-          TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
-        ].includes(data?.status)
-      ) {
-        loop();
-      }
     }
   };
 
@@ -420,6 +381,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       taskContent = (
         <StructureComparisonTaskContent
           task={task as any}
+          visible={visible}
           result={result}
           hasFlow={hasFlow}
           theme={theme}
