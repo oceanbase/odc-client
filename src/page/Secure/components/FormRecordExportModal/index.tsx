@@ -185,12 +185,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
               /*默认选择全部*/ treeData={eventOptions}
             />
           </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.FormRecordExportModal.PublicConnection',
-            })}
-            /*所属公共连接*/ name="connectionIds"
-          >
+          <Form.Item label={'所属公共数据源'} name="connectionIds">
             <Select
               placeholder={formatMessage({
                 id: 'odc.components.FormRecordExportModal.SelectAllByDefault',

@@ -111,13 +111,7 @@ export const RecordContent: React.FC<{
       {connectionName && (
         <Descriptions.Item>
           <Space direction="vertical" className={styles.connection}>
-            <div className={styles.authLabel}>
-              {
-                formatMessage({
-                  id: 'odc.components.RecordPage.component.Connection',
-                }) /*所属连接*/
-              }
-            </div>
+            <div className={styles.authLabel}>所属数据源</div>
             <Descriptions column={1}>
               <Descriptions.Item
                 label={formatMessage({
