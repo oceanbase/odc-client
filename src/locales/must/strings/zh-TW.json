@@ -1627,7 +1627,6 @@
   "odc.component.SaveSQLModal.SaveScript": "保存腳本",
   "odc.ScriptManageModal.ScriptEditorModal.CloseWindow": "關閉窗口",
   "odc.component.SQLConfig.SetSessionVariables": "設置會話變量 >",
-  "odc.components.FormRecordExportModal.PublicConnection": "所屬公共連接",
   "odc.ScriptManageModal.ScriptEditorModal.TheCurrentOperationIsNot": "當前的操作未保存,確定要關閉窗口嗎?",
   "odc.component.SaveSQLModal.ScriptName": "腳本名稱",
   "odc.component.SaveSQLModal.EnterAScriptName": "請輸入腳本名稱",
@@ -4495,7 +4494,6 @@
   "src.component.Task.component.PartitionPolicyFormTable.6C03EDE8": "當前錶已存在分區策略,重新設置後將覆蓋原有策略",
   "src.page.Secure.Env.components.D02D681D": "保存失敗",
   "src.page.Project.User.ManageModal.TaskApplyList.75F749A1": "回收",
-  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.7885F651": "暫無${TaskTypeMap?. [TaskType] || ''}權限,請先申請庫權限",
   "src.page.Project.Notification.components.21BD64D9": "英文",
   "src.component.Task.ApplyDatabasePermission.CreateModal.564E6CF8": "請選擇項目",
   "src.page.Project.Notification.components.84AACFA4": "批量操作失敗",
@@ -4644,5 +4642,10 @@
   "src.page.Project.Notification.components.042EAFE9": "取消修改",
   "src.component.Task.component.PartitionPolicyTable.6C49E8F4": "時間格式: {suffixExpression}",
   "src.page.Project.Notification.components.F33A3513": "請輸入 Webhook 地址",
-  "src.component.Task.AsyncTask.CreateModal.DF31D4E7": "請輸入"
+  "src.component.Task.AsyncTask.CreateModal.DF31D4E7": "請輸入",
+  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C": "暫無{task}權限,請先申請庫權限",
+  "src.page.Secure.Record.RecordPage.19BC82CE": "所屬數據源",
+  "src.component.Task.StructureComparisonTask.DetailContent.BB570BB4": "無數據",
+  "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "無數據",
+  "src.page.Secure.components.FormRecordExportModal.2906C216": "所屬公共數據源"
 }

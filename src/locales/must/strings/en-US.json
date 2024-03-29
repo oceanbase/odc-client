@@ -1627,7 +1627,6 @@
   "odc.component.SaveSQLModal.SaveScript": "Save Script",
   "odc.ScriptManageModal.ScriptEditorModal.CloseWindow": "Close the window",
   "odc.component.SQLConfig.SetSessionVariables": "Set Session Variables>",
-  "odc.components.FormRecordExportModal.PublicConnection": "Public connection",
   "odc.ScriptManageModal.ScriptEditorModal.TheCurrentOperationIsNot": "The current operation is not saved, are you sure you want to close the window?",
   "odc.component.SaveSQLModal.ScriptName": "Script Name",
   "odc.component.SaveSQLModal.EnterAScriptName": "Please enter a script name",
@@ -4162,7 +4161,6 @@
   "src.component.ODCSetting.config.56F5CB81": "Delimiter Settings",
   "src.component.ODCSetting.config.92F1D86D": "Yes",
   "src.component.ODCSetting.config.517C6CA7": "No",
-  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.7885F651": "You currently do not have the ${TaskTypeMap?.[taskType] || ''} permission. Please apply for the database permissions first.",
   "src.component.ODCSetting.AEB0A2EF": "Settings",
   "src.page.Project.User.ManageModal.TaskApplyList.D0AC4874": "Database",
   "src.component.Task.PartitionTask.CreateModal.5DEF5FCE": "When unchecked, the execution period of the deletion strategy will be consistent with that of the creation strategy.",
@@ -4643,5 +4641,10 @@
   "src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.0A419755": "Export",
   "src.page.Project.User.AC258D23": "No permissions",
   "src.page.Project.Database.B4A5A6AC": "The current account's project member role does not have operational permissions for this database. Please apply for database permissions first.",
-  "src.page.Workspace.components.TypePage.ACF1EB3E": "Collection"
+  "src.page.Workspace.components.TypePage.ACF1EB3E": "Collection",
+  "src.page.Secure.Record.RecordPage.19BC82CE": "Data Source",
+  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C": "No {task} permission. Please apply for the database permissions first.",
+  "src.component.Task.StructureComparisonTask.DetailContent.BB570BB4": "No data",
+  "src.page.Secure.components.FormRecordExportModal.2906C216": "Public Data Source",
+  "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "No data"
 }
