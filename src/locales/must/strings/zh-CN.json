@@ -4644,5 +4644,10 @@
   "src.page.Project.User.ManageModal.CreateAuth.ED0CF3A6": "新增库授权",
   "src.component.Task.PartitionTask.DetailContent.3C90D5CA": "所属数据源",
   "src.page.Workspace.components.TypePage.ACF1EB3E": "集合",
-  "src.component.Task.AsyncTask.CreateModal.DF31D4E7": "请输入"
+  "src.component.Task.AsyncTask.CreateModal.DF31D4E7": "请输入",
+  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C": "暂无{task}权限，请先申请库权限",
+  "src.page.Secure.components.FormRecordExportModal.2906C216": "所属公共数据源",
+  "src.page.Secure.Record.RecordPage.19BC82CE": "所属数据源",
+  "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "无数据",
+  "src.component.Task.StructureComparisonTask.DetailContent.BB570BB4": "无数据"
 }

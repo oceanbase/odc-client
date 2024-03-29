@@ -192,7 +192,9 @@ const CompareTable: React.FC<{
         );
       }
       default: {
-        return '无数据';
+        return formatMessage({
+          id: 'src.component.Task.StructureComparisonTask.DetailContent.F042A675',
+        });
       }
     }
   };
@@ -283,7 +285,13 @@ const SQLPreview: React.FC<{
       }
       default: {
         return (
-          <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>无数据</span>
+          <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
+            {
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.DetailContent.BB570BB4' /*无数据*/,
+              }) /* 无数据 */
+            }
+          </span>
         );
       }
     }
