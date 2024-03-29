@@ -54,7 +54,17 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
   return (
     <>
       {disabled ? (
-        <Tooltip placement={'right'} title={`暂无${task}权限，请先申请库权限`}>
+        <Tooltip
+          placement={'right'}
+          title={
+            formatMessage(
+              {
+                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C',
+              },
+              { task: task },
+            ) /*`暂无${task}权限，请先申请库权限`*/
+          }
+        >
           <div className={styles.textoverflow}>{db.name}</div>
         </Tooltip>
       ) : (

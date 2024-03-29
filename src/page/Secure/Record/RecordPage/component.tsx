@@ -111,7 +111,13 @@ export const RecordContent: React.FC<{
       {connectionName && (
         <Descriptions.Item>
           <Space direction="vertical" className={styles.connection}>
-            <div className={styles.authLabel}>所属数据源</div>
+            <div className={styles.authLabel}>
+              {
+                formatMessage({
+                  id: 'src.page.Secure.Record.RecordPage.19BC82CE' /*所属数据源*/,
+                }) /* 所属数据源 */
+              }
+            </div>
             <Descriptions column={1}>
               <Descriptions.Item
                 label={formatMessage({
@@ -131,14 +137,16 @@ export const RecordContent: React.FC<{
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.HostnamePort',
                 })} /*主机名/端口*/
-              >{`${connectionHost || '-'}/${connectionPort || '-'}`}</Descriptions.Item>
+              >
+                {`${connectionHost || '-'}/${connectionPort || '-'}`}
+              </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.ClusterTenant',
                 })} /*集群/租户*/
-              >{`${connectionClusterName || '-'}/${
-                connectionTenantName || '-'
-              }`}</Descriptions.Item>
+              >
+                {`${connectionClusterName || '-'}/${connectionTenantName || '-'}`}
+              </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.DatabaseUsername',
@@ -150,6 +158,7 @@ export const RecordContent: React.FC<{
           </Space>
         </Descriptions.Item>
       )}
+
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.IpSource',
@@ -178,6 +187,7 @@ export const RecordContent: React.FC<{
           <UserPopover name={name ?? '-'} accountName={accountName ?? '-'} roles={roleNames} />
         </Descriptions.Item>
       )}
+
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.ExecutionTime',
