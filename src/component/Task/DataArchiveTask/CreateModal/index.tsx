@@ -84,7 +84,7 @@ const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
-  migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
+  migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   rowLimit: 100,
   dataSizeLimit: 1,
 };
