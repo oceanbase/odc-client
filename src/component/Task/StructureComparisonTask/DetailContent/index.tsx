@@ -23,6 +23,7 @@ import {
   type ITaskResult,
   type TaskDetail,
   IResponseDataPage,
+  TaskStatus,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { downloadFile, getFormatDateTime } from '@/util/utils';
@@ -38,6 +39,7 @@ import {
   getStructrueComparison,
   getStructrueComparisonDetail,
   getStructureComparisonTaskFile,
+  getTaskDetail,
   getTaskResult,
 } from '@/common/network/task';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -59,29 +61,22 @@ import {
 import MonacoEditor from '@/component/MonacoEditor';
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
+  visible?: boolean;
   task: TaskDetail<IStructureComparisonTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
   theme?: string;
 }
 
-const TableEmpty = () => (
-  <Empty
-    image={Empty.PRESENTED_IMAGE_SIMPLE}
-    description={
-      <>
-        {
-          formatMessage({
-            id: 'src.component.Task.StructureComparisonTask.DetailContent.1A3F5341' /*正在比对中，暂无数据*/,
-          }) /* 正在比对中，暂无数据 */
-        }
-      </>
-    }
-  />
-);
+const TableEmpty: React.FC<{
+  description: React.ReactNode;
+}> = ({ description }) => {
+  return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={description} />;
+};
 
 const CompareTable: React.FC<{
   taskId: number;
+  task: TaskDetail<IStructureComparisonTaskParams>;
   currentTaskResult: ITaskResult;
   comparisonResults: {
     contents: IComparisonResult[];
@@ -91,6 +86,7 @@ const CompareTable: React.FC<{
   loadStructureComparisonResults: (args: ITableLoadOptions) => Promise<void>;
 }> = ({
   taskId,
+  task,
   currentTaskResult,
   comparisonResults,
   handleDetailModalOpen,
@@ -182,6 +178,24 @@ const CompareTable: React.FC<{
     },
   ];
 
+  const getDescription = () => {
+    switch (task?.status) {
+      case TaskStatus.EXECUTING: {
+        return (
+          <>
+            {
+              formatMessage({
+                id: 'src.component.Task.StructureComparisonTask.DetailContent.1A3F5341' /*正在比对中，暂无数据*/,
+              }) /* 正在比对中，暂无数据 */
+            }
+          </>
+        );
+      }
+      default: {
+        return '无数据';
+      }
+    }
+  };
   useEffect(() => {
     if (
       currentTaskResult &&
@@ -192,7 +206,7 @@ const CompareTable: React.FC<{
   }, [currentTaskResult]);
   return (
     <div style={{ height: '316px', paddingTop: '8px' }}>
-      <ConfigProvider renderEmpty={TableEmpty}>
+      <ConfigProvider renderEmpty={() => <TableEmpty description={getDescription()} />}>
         <CommonTable
           key="CompareTable"
           ref={tableRef}
@@ -232,6 +246,48 @@ const SQLPreview: React.FC<{
       });
     }
   };
+  const getDescription = () => {
+    switch (task?.status) {
+      case TaskStatus.COMPLETED: {
+        if (comparisonResult?.id && comparisonResult?.overSizeLimit) {
+          return (
+            <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Task.StructureComparisonTask.DetailContent.099109D1' /*当前 SQL 文件超过 1 兆，暂不支持预览，请*/,
+                })}
+                <a onClick={sqlDownload}>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.StructureComparisonTask.DetailContent.49F7605B' /*下载 SQL*/,
+                    }) /* 下载 SQL */
+                  }
+                </a>{' '}
+                {formatMessage({
+                  id: 'src.component.Task.StructureComparisonTask.DetailContent.734F1D69' /*进行查看*/,
+                })}
+              </div>
+            </span>
+          );
+        }
+        return null;
+      }
+      case TaskStatus.EXECUTING: {
+        return (
+          <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
+            {formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.DetailContent.8453A485',
+            })}
+          </span>
+        );
+      }
+      default: {
+        return (
+          <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>无数据</span>
+        );
+      }
+    }
+  };
   return (
     <div>
       <div className={styles.tip}>
@@ -262,33 +318,7 @@ const SQLPreview: React.FC<{
               background: 'var(--empty-background-color)',
             }}
           >
-            <Empty
-              description={
-                <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
-                  {comparisonResult?.id && comparisonResult?.overSizeLimit ? (
-                    <div>
-                      {formatMessage({
-                        id: 'src.component.Task.StructureComparisonTask.DetailContent.099109D1' /*当前 SQL 文件超过 1 兆，暂不支持预览，请*/,
-                      })}
-                      <a onClick={sqlDownload}>
-                        {
-                          formatMessage({
-                            id: 'src.component.Task.StructureComparisonTask.DetailContent.49F7605B' /*下载 SQL*/,
-                          }) /* 下载 SQL */
-                        }
-                      </a>{' '}
-                      {formatMessage({
-                        id: 'src.component.Task.StructureComparisonTask.DetailContent.734F1D69' /*进行查看*/,
-                      })}
-                    </div>
-                  ) : (
-                    formatMessage({
-                      id: 'src.component.Task.StructureComparisonTask.DetailContent.8453A485',
-                    })
-                  )}
-                </span>
-              }
-            />
+            <Empty description={getDescription()} />
           </div>
         )}
       </div>
@@ -299,8 +329,10 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
   'modalStore',
 )(
   observer((props) => {
-    const { task, result, modalStore, theme } = props;
+    const { task: _task, result, modalStore, theme, visible } = props;
+    const [task, setTask] = useState<TaskDetail<IStructureComparisonTaskParams>>(_task);
     const timerRef = useRef(null);
+    const timerTaskRef = useRef(null);
     const taskEndRef = useRef(null);
     const [currentResult, setCurrentResult] = useState<ITaskResult>(result);
     const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
@@ -361,6 +393,28 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         }
       }, timeout);
     };
+    /**
+     * 轮询更新Drawer内Task内容
+     */
+    const loopGetTask = async (timeout: number = 0) => {
+      timerTaskRef.current = setTimeout(async () => {
+        if (
+          [
+            TaskStatus?.EXECUTING,
+            TaskStatus.APPROVING,
+            TaskStatus.WAIT_FOR_EXECUTION,
+            TaskStatus.CREATED,
+          ]?.includes(task?.status)
+        ) {
+          loopGetTask(6000);
+        } else {
+          clearTimeout(timerTaskRef.current);
+          timerTaskRef.current = null;
+        }
+        const currentTask = await getTaskDetail(task?.id);
+        setTask(currentTask as TaskDetail<IStructureComparisonTaskParams>);
+      }, timeout);
+    };
     const handleDetailModalOpen = async (taskId: number, structureComparisonId: number) => {
       const structrueComparisonDetail = await getStructrueComparisonDetail(
         taskId,
@@ -375,13 +429,19 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         modalStore?.updateStructureComparisonDataMap(null);
       }
     }, [detailModalOpen]);
+
     useEffect(() => {
-      loop();
+      if (visible) {
+        loop();
+        loopGetTask();
+      }
       return () => {
         clearTimeout(timerRef.current);
         timerRef.current = null;
+        clearTimeout(timerTaskRef.current);
+        timerTaskRef.current = null;
       };
-    }, []);
+    }, [visible]);
     const tabItems = [
       {
         label: formatMessage({
@@ -390,6 +450,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         key: '1',
         children: (
           <CompareTable
+            task={task}
             taskId={(currentResult as any)?.taskId}
             currentTaskResult={currentResult}
             comparisonResults={comparisonResult?.comparisonResults?.data}
