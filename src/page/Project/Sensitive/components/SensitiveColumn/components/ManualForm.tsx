@@ -129,7 +129,7 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     value: id,
   }));
   const initDatabases = async () => {
-    const rawData = await listDatabases(projectId);
+    const rawData = await listDatabases(projectId, null, null, null, null, null, null, true);
     setDatabases(rawData?.contents);
   };
   const handleDatabaseSelect = async (value: number) => {
