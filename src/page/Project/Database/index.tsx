@@ -284,9 +284,6 @@ const Database: React.FC<IProps> = ({ id }) => {
             dataIndex: 'actions',
             width: 200,
             render(_, record) {
-              if (!record.existed) {
-                return '-';
-              }
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const disableTransfer =
                 !!record?.dataSource?.projectId &&
@@ -298,6 +295,44 @@ const Database: React.FC<IProps> = ({ id }) => {
                 DatabasePermissionType.CHANGE,
               );
               const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
+              if (!record.existed) {
+                return (
+                  <Action.Group size={3}>
+                    <Action.Link
+                      key={'transfer'}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367387');
+                        setVisible(true);
+                        setDatabase(record);
+                      }}
+                      disabled={!hasChangeAuth || disableTransfer}
+                      tooltip={
+                        !hasChangeAuth || disableTransfer
+                          ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                          : ''
+                      }
+                    >
+                      <Tooltip
+                        title={
+                          disableTransfer
+                            ? formatMessage({
+                                id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                              }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
+                            : null
+                        }
+                      >
+                        {
+                          formatMessage({
+                            id: 'odc.src.page.Project.Database.ModifyTheProject',
+                          }) /* 
+                  修改所属项目
+                  */
+                        }
+                      </Tooltip>
+                    </Action.Link>
+                  </Action.Group>
+                );
+              }
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
