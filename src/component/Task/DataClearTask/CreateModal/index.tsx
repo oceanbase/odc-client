@@ -77,7 +77,7 @@ const defaultValue = {
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
-  deleteByUniqueKey: false,
+  deleteByUniqueKey: true,
 };
 interface IProps {
   modalStore?: ModalStore;

@@ -75,12 +75,14 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   } = props;
   const [visible, setVisible] = useState(false);
   const [activeConfigKeys, setActiveConfigKeys] = useState([]);
+  const [selectedConfigKeys, setSelectedConfigKeys] = useState([]);
   const [isOnlyNoSetTable, setIsOnlyNoSetTable] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filters, setFilters] = useState<ITableFilter>(null);
   const tableRef = useRef();
   const tableResource = handleFilter(tableConfigs);
   const activeConfigs = tableConfigs?.filter((item) => activeConfigKeys.includes(item.__id));
+  const selectedConfigs = tableConfigs?.filter((item) => selectedConfigKeys.includes(item.__id));
 
   const columns = [
     {
@@ -310,7 +312,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           hideSelectAll: true,
           selectedRowKeys: activeConfigKeys,
           onChange: (selectedKeys) => {
-            setActiveConfigKeys(selectedKeys);
+            setSelectedConfigKeys(selectedKeys);
           },
           renderCell(checked, record, index, node: React.ReactElement) {
             if (node?.props?.disabled) {
@@ -330,8 +332,8 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           getCheckboxProps: (record: ITableConfig) => {
             const disabled =
-              !!activeConfigs?.length &&
-              record?.partitionMode !== activeConfigs?.[0]?.partitionMode;
+              !!selectedConfigs?.length &&
+              record?.partitionMode !== selectedConfigs?.[0]?.partitionMode;
             return { disabled };
           },
           options: [
