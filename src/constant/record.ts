@@ -79,6 +79,7 @@ export const AuditEventMetaMap = {
     id: 'odc.components.RecordPage.ShadowTableSynchronization',
   }),
   //影子表同步
+  [AuditEventType.STRUCTURE_COMPARISON]: '结构比对',
   [AuditEventType.PARTITION_PLAN]: formatMessage({
     id: 'odc.components.RecordPage.PartitionPlan',
   }),
@@ -457,7 +458,13 @@ export const AuditEventActionMap = {
   [AuditEventActionType.STOP_SHADOWTABLE_SYNC_TASK]: formatMessage({
     id: 'odc.components.RecordPage.Termination',
   }),
-  //终止
+  // //终止
+  // 结构比对
+  [AuditEventActionType.CREATE_STRUCTURE_COMPARISON_TASK]: '创建结构比对任务',
+  [AuditEventActionType.STOP_STRUCTURE_COMPARISON_TASK]: '停止结构比对任务',
+  [AuditEventActionType.EXECUTE_STRUCTURE_COMPARISON_TASK]: '执行结构比对任务',
+  [AuditEventActionType.APPROVE_STRUCTURE_COMPARISON_TASK]: '同意结构比对任务',
+  [AuditEventActionType.REJECT_STRUCTURE_COMPARISON_TASK]: '拒绝结构比对任务',
   [AuditEventActionType.CREATE_PARTITION_PLAN_TASK]: formatMessage({
     id: 'odc.components.RecordPage.Create',
   }),
@@ -658,6 +665,7 @@ export const AuditEventActionMap = {
   }), //'禁用敏感列'
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
+  console.log(eventMeta);
   const metas =
     eventMeta?.reduce((meta, { type, action }) => {
       if (meta[type]) {
