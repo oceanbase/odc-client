@@ -59,7 +59,6 @@ import {
 import { formatMessage } from '@/util/intl';
 
 import { getTriggerByName } from '@/common/network/trigger';
-import SelectDatabase from '@/component/SelectDatabase';
 import { PLType } from '@/constant/plType';
 import taskStore from '@/store/task';
 import { message } from 'antd';
@@ -89,6 +88,7 @@ import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './p
 import { findPageByScriptIdAndType } from './util';
 import sessionManager from '@/store/sessionManager';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import modalStore from '@/store/modal';
 
 export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
   page.openPage(new PackageHeadPage(databaseId, packageName, sql));
@@ -175,8 +175,8 @@ export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageS
 
 export async function openSessionManagePage(datasourceId?: number) {
   if (!datasourceId) {
-    [datasourceId] = await SelectDatabase(
-      (type) => getDataSourceModeConfig(type)?.features?.sessionManage,
+    modalStore.changeSelectDatabaseVisible(true, 'sessionManage', (datasourceId) =>
+      page.openPage(new SessionManagePage(datasourceId)),
     );
   }
   if (!datasourceId) {
@@ -189,7 +189,9 @@ export async function openSessionManagePage(datasourceId?: number) {
 
 export async function openSessionParamsPage(datasourceId?: number) {
   if (!datasourceId) {
-    [datasourceId] = await SelectDatabase();
+    modalStore.changeSelectDatabaseVisible(true, null, (datasourceId) =>
+      page.openPage(new SessionParamsPage(datasourceId)),
+    );
   }
   if (!datasourceId) {
     return;
@@ -198,14 +200,16 @@ export async function openSessionParamsPage(datasourceId?: number) {
 }
 /** 回收站 */
 
-export async function openRecycleBin(cid?: number) {
-  if (!cid) {
-    [cid] = await SelectDatabase((type) => getDataSourceModeConfig(type)?.features?.recycleBin);
+export async function openRecycleBin(datasourceId?: number) {
+  if (!datasourceId) {
+    modalStore.changeSelectDatabaseVisible(true, 'recycleBin', (datasourceId) =>
+      page.openPage(new RecycleBinPage(datasourceId)),
+    );
   }
-  if (!cid) {
+  if (!datasourceId) {
     return;
   }
-  page.openPage(new RecycleBinPage(cid));
+  page.openPage(new RecycleBinPage(datasourceId));
 }
 /** 创建表页面 */
 
