@@ -119,18 +119,8 @@ export const RecordContent: React.FC<{
               }
             </div>
             <Descriptions column={1}>
-              <Descriptions.Item
-                label={formatMessage({
-                  id: 'odc.components.RecordPage.component.ConnectionName',
-                })} /*连接名称*/
-              >
-                {connectionName || '-'}
-              </Descriptions.Item>
-              <Descriptions.Item
-                label={formatMessage({
-                  id: 'odc.components.RecordPage.component.ConnectionMode',
-                })} /*连接模式*/
-              >
+              <Descriptions.Item label={'数据源名称'}>{connectionName || '-'}</Descriptions.Item>
+              <Descriptions.Item label={'数据源类型'}>
                 {connectionDialectType || '-'}
               </Descriptions.Item>
               <Descriptions.Item
