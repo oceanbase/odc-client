@@ -249,22 +249,24 @@ const SessionDropdown: React.FC<IProps> = function ({
           if (hasFeature && !getDataSourceModeConfig(item.type)?.features[filters?.feature]) {
             return null;
           }
-          return {
-            title: (
-              <Popover
-                showArrow={false}
-                placement={'right'}
-                content={<ConnectionPopover connection={item} />}
-              >
-                <div className={styles.textoverflow}>{item.name}</div>
-              </Popover>
-            ),
+          return !hasFeature || getDataSourceModeConfig(item.type)?.features[filters?.feature]
+            ? {
+                title: (
+                  <Popover
+                    showArrow={false}
+                    placement={'right'}
+                    content={<ConnectionPopover connection={item} />}
+                  >
+                    <div className={styles.textoverflow}>{item.name}</div>
+                  </Popover>
+                ),
 
-            icon: <StatusIcon item={item} />,
-            key: item.id,
-            selectable: true,
-            isLeaf: true,
-          };
+                icon: <StatusIcon item={item} />,
+                key: item.id,
+                selectable: true,
+                isLeaf: true,
+              }
+            : null;
         })
         .filter(Boolean);
     }

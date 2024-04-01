@@ -29,6 +29,7 @@ import {
 import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 interface ConnectionData {
   data: any;
@@ -131,6 +132,16 @@ interface IWorkSpaceExecuteSQLModalProps {
 }
 
 export class ModalStore {
+  @observable
+  public selectDatabaseVisible: boolean = false;
+
+  @observable
+  public selectDatabaseModallData: {
+    features?: keyof IDataSourceModeConfig['features'];
+    datasourceId: number;
+    onOk?: (datasourceId: number) => Promise<void>;
+  };
+
   @observable
   public odcSettingVisible: boolean = false;
 
@@ -530,6 +541,18 @@ export class ModalStore {
     this.odcSettingVisible = isShow;
   }
 
+  @action
+  public changeSelectDatabaseVisible(
+    isShow: boolean = true,
+    features?: keyof IDataSourceModeConfig['features'],
+    onOk?: (datasourceId: number) => Promise<void>,
+  ) {
+    this.selectDatabaseVisible = isShow;
+    this.selectDatabaseModallData = isShow
+      ? { ...this.selectDatabaseModallData, features, onOk }
+      : null;
+  }
+
   @action clear() {
     this.exportModalVisible = false;
     this.exportModalData = null;
@@ -552,6 +575,7 @@ export class ModalStore {
     this.sensitiveColumnVisible = false;
     this.createDDLAlterVisible = false;
     this.odcSettingVisible = false;
+    this.selectDatabaseVisible = false;
   }
 }
 
