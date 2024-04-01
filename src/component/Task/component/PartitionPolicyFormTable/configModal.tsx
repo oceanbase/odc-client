@@ -19,7 +19,7 @@ import { previewPartitionPlans } from '@/common/network/task';
 import HelpDoc from '@/component/helpDoc';
 import Action from '@/component/Action';
 import { TaskPartitionStrategy, PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import { TaskPartitionStrategyMap } from '../../const';
 import { START_DATE } from './const';
 import EditTable from './EditTable';
@@ -43,6 +43,7 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 
 const { Text } = Typography;
 
@@ -543,7 +544,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       }) /* 创建规则 */
                     }
                   </span>
-                  <Action.Link>
+                  <Action.Link
+                    onClick={() => {
+                      window.open(
+                        odc.appConfig?.docs.url || getLocalDocs('320.set-partition-strategy.html'),
+                      );
+                    }}
+                  >
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.DF75EB9E' /*如何配置*/,

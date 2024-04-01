@@ -747,7 +747,7 @@ export const FromChannelDrawer: React.FC<{
                   {formatMessage({ id: 'src.page.Project.Notification.components.D0CF8521' })}
                 </span>
                 <a // TODO: 等待文档链接
-                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
+                  href={odc.appConfig?.docs?.url || getLocalDocs('1000.message-notification.html')}
                   target={'_blank'}
                   onClick={(e) => {
                     e.stopPropagation();
