@@ -119,8 +119,14 @@ export const RecordContent: React.FC<{
               }
             </div>
             <Descriptions column={1}>
-              <Descriptions.Item label={'数据源名称'}>{connectionName || '-'}</Descriptions.Item>
-              <Descriptions.Item label={'数据源类型'}>
+              <Descriptions.Item
+                label={formatMessage({ id: 'src.page.Secure.Record.RecordPage.14735BCB' })}
+              >
+                {connectionName || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({ id: 'src.page.Secure.Record.RecordPage.A75C9FD5' })}
+              >
                 {connectionDialectType || '-'}
               </Descriptions.Item>
               <Descriptions.Item
