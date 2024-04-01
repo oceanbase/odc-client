@@ -79,7 +79,7 @@ export const AuditEventMetaMap = {
     id: 'odc.components.RecordPage.ShadowTableSynchronization',
   }),
   //影子表同步
-  [AuditEventType.STRUCTURE_COMPARISON]: '结构比对',
+  [AuditEventType.STRUCTURE_COMPARISON]: formatMessage({ id: 'src.constant.C180952A' }), //'结构比对'
   [AuditEventType.PARTITION_PLAN]: formatMessage({
     id: 'odc.components.RecordPage.PartitionPlan',
   }),
@@ -460,11 +460,21 @@ export const AuditEventActionMap = {
   }),
   // //终止
   // 结构比对
-  [AuditEventActionType.CREATE_STRUCTURE_COMPARISON_TASK]: '创建结构比对任务',
-  [AuditEventActionType.STOP_STRUCTURE_COMPARISON_TASK]: '停止结构比对任务',
-  [AuditEventActionType.EXECUTE_STRUCTURE_COMPARISON_TASK]: '执行结构比对任务',
-  [AuditEventActionType.APPROVE_STRUCTURE_COMPARISON_TASK]: '同意结构比对任务',
-  [AuditEventActionType.REJECT_STRUCTURE_COMPARISON_TASK]: '拒绝结构比对任务',
+  [AuditEventActionType.CREATE_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.052399AE',
+  }), //'创建结构比对任务'
+  [AuditEventActionType.STOP_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.5073B3F1',
+  }), //'停止结构比对任务'
+  [AuditEventActionType.EXECUTE_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.8282AA35',
+  }), //'执行结构比对任务'
+  [AuditEventActionType.APPROVE_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.2AC9D3B7',
+  }), //'同意结构比对任务'
+  [AuditEventActionType.REJECT_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.8171D57C',
+  }), //'拒绝结构比对任务'
   [AuditEventActionType.CREATE_PARTITION_PLAN_TASK]: formatMessage({
     id: 'odc.components.RecordPage.Create',
   }),

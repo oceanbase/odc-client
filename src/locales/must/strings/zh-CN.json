@@ -4647,5 +4647,13 @@
   "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "无数据",
   "src.component.Task.StructureComparisonTask.DetailContent.BB570BB4": "无数据",
   "src.page.Secure.components.FormRecordExportModal.2906C216": "所属公共数据源",
-  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C": "暂无{task}权限，请先申请库权限"
+  "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C": "暂无{task}权限，请先申请库权限",
+  "src.page.Secure.Record.RecordPage.14735BCB": "数据源名称",
+  "src.page.Secure.Record.RecordPage.A75C9FD5": "数据源类型",
+  "src.constant.C180952A": "结构比对",
+  "src.constant.052399AE": "创建结构比对任务",
+  "src.constant.5073B3F1": "停止结构比对任务",
+  "src.constant.8282AA35": "执行结构比对任务",
+  "src.constant.2AC9D3B7": "同意结构比对任务",
+  "src.constant.8171D57C": "拒绝结构比对任务"
 }
