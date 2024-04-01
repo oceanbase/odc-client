@@ -24,7 +24,6 @@ import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
-import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import classNames from 'classnames';
 import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
@@ -62,64 +61,6 @@ export default function SessionSelect({
     e.preventDefault();
   }
 
-  function renderProject() {
-    const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.dbIcon;
-    return (
-      <Popover
-        overlayClassName={styles.pop}
-        placement="bottomLeft"
-        content={<ConnectionPopover connection={context?.session?.connection} />}
-      >
-        <Space className={styles.link} size={4}>
-          <Icon component={PjSvg} style={{ fontSize: 14, verticalAlign: 'text-top' }} />
-          <span style={{ verticalAlign: 'top' }}>
-            {context?.session?.odcDatabase?.project?.name}
-          </span>
-          {!context.datasourceMode && (
-            <>
-              <span>/</span>
-              <Icon
-                component={DBIcon?.component}
-                style={{ fontSize: 14, marginLeft: 2, verticalAlign: 'middle' }}
-              />
-
-              {context?.session?.odcDatabase?.name}
-            </>
-          )}
-
-          <DownOutlined />
-        </Space>
-      </Popover>
-    );
-  }
-
-  function renderDatasource() {
-    const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.icon;
-    return (
-      <Popover
-        overlayClassName={styles.pop}
-        placement="bottomLeft"
-        content={<ConnectionPopover connection={context?.session?.connection} />}
-      >
-        <Space className={styles.link} size={4}>
-          <Icon
-            component={DBIcon?.component}
-            style={{ fontSize: 16, verticalAlign: 'text-top', color: DBIcon?.color }}
-          />
-
-          <span style={{ verticalAlign: 'top' }}>{context?.session?.connection?.name}</span>
-          {!context.datasourceMode && (
-            <>
-              <span>/</span>
-              {context?.session?.odcDatabase?.name}
-            </>
-          )}
-
-          <DownOutlined />
-        </Space>
-      </Popover>
-    );
-  }
   function renderEnv() {
     if (!context?.session?.odcDatabase?.environment?.name) {
       return null;
