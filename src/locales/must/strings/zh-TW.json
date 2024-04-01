@@ -2504,7 +2504,6 @@
   "odc.component.Task.helper.DataChanges": "資料變更",
   "odc.component.AuthNode.AutomaticApproval": "自動審批",
   "odc.components.SensitiveRule.FailedToDelete": "刪除失敗",
-  "odc.component.SelectDatabase.component.PleaseSelect": "請選擇",
   "odc.PermissionApplication.CreateModal.SelectSensitiveColumns": "選擇敏感列",
   "odc.component.Task.helper.DataCleansing": "資料清理",
   "odc.RiskLevel.components.ViewRiskLevelDrawer.ApprovalRole": "審批角色",
@@ -4647,5 +4646,13 @@
   "src.page.Secure.Record.RecordPage.19BC82CE": "所屬數據源",
   "src.component.Task.StructureComparisonTask.DetailContent.BB570BB4": "無數據",
   "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "無數據",
-  "src.page.Secure.components.FormRecordExportModal.2906C216": "所屬公共數據源"
+  "src.page.Secure.components.FormRecordExportModal.2906C216": "所屬公共數據源",
+  "src.constant.5073B3F1": "停止結構比對任務",
+  "src.constant.2AC9D3B7": "同意結構比對任務",
+  "src.constant.C180952A": "結構比對",
+  "src.constant.8171D57C": "拒絕結構比對任務",
+  "src.page.Secure.Record.RecordPage.A75C9FD5": "數據源類型",
+  "src.constant.052399AE": "創建結構比對任務",
+  "src.page.Secure.Record.RecordPage.14735BCB": "數據源名稱",
+  "src.constant.8282AA35": "執行結構比對任務"
 }
