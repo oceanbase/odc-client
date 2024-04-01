@@ -231,12 +231,24 @@ export function getSettingPath() {
   return basePath;
 }
 
+export function getUserSettingPath() {
+  return path.join(app.getPath('userData'), 'userSetting.json');
+}
+
 export function getSetting(): Record<string, string> {
-  let basePath = getSettingPath();
-  if (!fs.existsSync(basePath)) {
-    return null;
+  const userSettingPath = getUserSettingPath();
+  let file = '';
+  if (fs.existsSync(userSettingPath)) {
+    // 先从用户数据目录里拿
+    file = fs.readFileSync(userSettingPath, 'utf-8').toString();
+  } else {
+    // 拿不到就拿默认值
+    let basePath = getSettingPath();
+    if (!fs.existsSync(basePath)) {
+      return null;
+    }
+    file = fs.readFileSync(basePath, 'utf-8').toString();
   }
-  const file = fs.readFileSync(basePath, 'utf-8').toString();
   try {
     return JSON.parse(file);
   } catch (e) {
