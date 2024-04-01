@@ -2799,7 +2799,6 @@
   "odc.component.AuthNode.AutomaticApproval": "Automatic Approval",
   "odc.SideBar.Task.Ticket": "Ticket",
   "odc.components.SensitiveRule.FailedToDelete": "Deletion failed.",
-  "odc.component.SelectDatabase.component.PleaseSelect": "Select an item",
   "odc.PermissionApplication.CreateModal.SelectSensitiveColumns": "Select a sensitive column",
   "odc.component.Task.helper.DataCleansing": "Data Cleanup",
   "odc.RiskLevel.components.ViewRiskLevelDrawer.ApprovalRole": "Approval Role",
@@ -4646,5 +4645,13 @@
   "src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C": "No {task} permission. Please apply for the database permissions first.",
   "src.component.Task.StructureComparisonTask.DetailContent.BB570BB4": "No data",
   "src.page.Secure.components.FormRecordExportModal.2906C216": "Public Data Source",
-  "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "No data"
+  "src.component.Task.StructureComparisonTask.DetailContent.F042A675": "No data",
+  "src.constant.5073B3F1": "Stop Schema Comparison Task",
+  "src.constant.C180952A": "Schema Comparison",
+  "src.constant.8282AA35": "Execute Schema Comparison Task",
+  "src.page.Secure.Record.RecordPage.A75C9FD5": "Data Source Type",
+  "src.constant.2AC9D3B7": "Approve Schema Comparison Task",
+  "src.constant.052399AE": "Create Schema Comparison Task",
+  "src.page.Secure.Record.RecordPage.14735BCB": "Data Source Name",
+  "src.constant.8171D57C": "Reject Schema Comparison Task"
 }
