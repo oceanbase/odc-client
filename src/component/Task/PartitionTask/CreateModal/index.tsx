@@ -130,7 +130,9 @@ const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableC
         partitionKeyInvoker,
         generateCount,
         ...generateParameter,
-        fromCurrentTime: generateParameter?.fromCurrentTime ? START_DATE.CURRENT_DATE : undefined,
+        fromCurrentTime: generateParameter?.fromCurrentTime
+          ? START_DATE.CURRENT_DATE
+          : START_DATE.CUSTOM_DATE,
         baseTimestampMillis: generateParameter?.baseTimestampMillis
           ? moment(generateParameter?.baseTimestampMillis)
           : undefined,
