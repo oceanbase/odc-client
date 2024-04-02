@@ -78,7 +78,6 @@ export const RuleSwitch = ({ disabled = false, checked, onChange }) => {
 };
 
 export const getColumns = ({
-  disabled,
   subTypeFilters,
   supportedDialectTypeFilters,
   integrationsIdMap,
@@ -184,7 +183,6 @@ export const getColumns = ({
           >
             <RuleSwitch
               key={index}
-              disabled={disabled}
               checked={record?.enabled}
               onChange={() => handleSwtichRuleStatus(record?.rulesetId, record)}
             />
@@ -206,7 +204,6 @@ export const getColumns = ({
               <Button
                 type="link"
                 className={styles.linkBtnDisabled}
-                disabled={disabled}
                 onClick={() => handleOpenEditModal(record)}
               >
                 {formatMessage({ id: 'odc.Env.components.InnerEnvironment.Edit' }) /*编辑*/}
