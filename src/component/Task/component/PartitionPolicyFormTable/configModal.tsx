@@ -376,6 +376,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       const value = configs?.[0] ?? defaultInitialValues;
       form.setFieldsValue({
         ...value,
+        refPartitionKey: partitionKeyOptions?.[0]?.value,
       });
     }
   }, [configs, visible]);
