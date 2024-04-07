@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { DatabasePermissionType } from '@/d.ts/database';
+
 export interface IServerTable {
   name: string;
   tableOptions: Partial<IServerTableOptions>;
@@ -195,4 +197,23 @@ export enum TableForeignConstraintOnUpdateType {
    * oracle 没这个，效果同 no action
    */
   RESTRICT = 'RESTRICT',
+}
+
+/**
+ * 表操作的相关权限: 目前与库权限保持一致
+ */
+export enum TablePermissionType {
+  QUERY = 'QUERY',
+  CHANGE = 'CHANGE',
+  EXPORT = 'EXPORT',
+}
+
+export interface IUnauthorizedResource {
+  unauthorizedPermissionTypes: (DatabasePermissionType & TablePermissionType)[];
+  dataSourceId: number;
+  projectId: number;
+  projectName: string;
+  databaseId: number;
+  databaseName: string;
+  tableName: string;
 }

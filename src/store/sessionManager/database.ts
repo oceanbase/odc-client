@@ -17,6 +17,7 @@
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
 import {
   generateDatabaseSid,
+  generateDatabaseSidByDataBaseId,
   generatePackageSid,
   generateViewSid,
 } from '@/common/network/pathUtil';
@@ -106,8 +107,10 @@ class DatabaseStore {
 
   @action
   public async getTableList() {
-    const sid = generateDatabaseSid(this.dbName, this.sessionId);
-    const data = await request.get(`/api/v1/table/list/${sid}`);
+    // const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    // const data = await request.get(`/api/v1/table/list/${sid}`);
+    const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
+    const data = await request.get(`/api/v2/table/list/${sid}`);
     runInAction(() => {
       this.tables =
         data?.data?.map((table: ITable) => ({
@@ -120,6 +123,7 @@ class DatabaseStore {
             updateTime: table.gmtModified,
             createTime: table.gmtCreated,
             tableSize: table.tableSize,
+            authorizedPermissionTypes: table.authorizedPermissionTypes || [],
           },
         })) || [];
       this.tableVersion = Date.now();

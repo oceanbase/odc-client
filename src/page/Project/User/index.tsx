@@ -24,13 +24,14 @@ import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
-import { Button, message, Popconfirm, Space, Tag } from 'antd';
+import { Button, message, Popconfirm, Space, Tag, Tooltip } from 'antd';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
 import ManageModal from './ManageModal';
 import tracert from '@/util/tracert';
+import TooltipNoPermission from '@/component/TooltipNoPermission';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
@@ -52,6 +53,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
   const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
+  const isOwnerOrDba = project?.currentUserResourceRoles?.some((item) =>
+    [ProjectRole.OWNER, ProjectRole.DBA].includes(item),
+  );
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
@@ -115,13 +119,21 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
-          {
-            formatMessage({
-              id: 'odc.Project.User.AddMembers',
-            }) /*添加成员*/
-          }
-        </Button>
+        <Tooltip title="暂无权限">
+          <TooltipNoPermission open={!isOwnerOrDba}>
+            <Button
+              type="primary"
+              onClick={() => setAddUserModalVisiable(true)}
+              disabled={!isOwnerOrDba}
+            >
+              {
+                formatMessage({
+                  id: 'odc.Project.User.AddMembers',
+                }) /*添加成员*/
+              }
+            </Button>
+          </TooltipNoPermission>
+        </Tooltip>
       }
       extra={
         <FilterIcon onClick={context.reloadProject}>
@@ -184,15 +196,22 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
               return (
                 <Action.Group size={3}>
                   <Action.Link
+                    key={'managePermission'}
+                    disabled={disabled && !isMe}
+                    tooltip={disabled && !isMe && '暂无权限'}
+                    onClick={() => {
+                      showManageModal(record.id);
+                    }}
+                  >
+                    管理权限
+                  </Action.Link>
+                  <Action.Link
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
+                    tooltip={disabled && '暂无权限'}
                   >
-                    {
-                      formatMessage({
-                        id: 'odc.Project.User.Edit',
-                      }) /*编辑*/
-                    }
+                    编辑角色
                   </Action.Link>
                   <Popconfirm
                     key="import"
@@ -201,7 +220,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
-                    <Action.Link key={'import'} disabled={disabled}>
+                    <Action.Link
+                      key={'import'}
+                      disabled={disabled}
+                      tooltip={disabled && '暂无权限'}
+                    >
                       {
                         formatMessage({
                           id: 'odc.Project.User.Remove',
@@ -209,18 +232,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       }
                     </Action.Link>
                   </Popconfirm>
-                  <Action.Link
-                    disabled={disabled && !isMe}
-                    onClick={() => {
-                      showManageModal(record.id);
-                    }}
-                  >
-                    {
-                      formatMessage({
-                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
-                      }) /* 管理库权限 */
-                    }
-                  </Action.Link>
                 </Action.Group>
               );
             },

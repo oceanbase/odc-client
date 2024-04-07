@@ -112,6 +112,7 @@ const ResourceTree: React.FC<IProps> = function ({
         const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
         return DataBaseTreeData(dbSession, database, database?.id, true, searchValue);
       });
+    console.log('root', root);
     return root || [];
   })();
 

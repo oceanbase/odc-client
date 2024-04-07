@@ -16,6 +16,7 @@
 
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
+import { IUnauthorizedResource, TablePermissionType } from '@/d.ts/table';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
@@ -587,6 +588,16 @@ export enum AuditEventActionType {
   DATABASE_PERMISSION_MANAGEMENT = 'DATABASE_PERMISSION_MANAGEMENT',
   GRANT_DATABASE_PERMISSION = 'GRANT_DATABASE_PERMISSION',
   REVOKE_DATABASE_PERMISSION = 'REVOKE_DATABASE_PERMISSION',
+  // 表权限申请
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  CREATE_APPLY_TABLE_PERMISSION_TASK = 'CREATE_APPLY_TABLE_PERMISSION_TASK',
+  APPROVE_APPLY_TABLE_PERMISSION_TASK = 'APPROVE_APPLY_TABLE_PERMISSION_TASK',
+  REJECT_APPLY_TABLE_PERMISSION_TASK = 'REJECT_APPLY_TABLE_PERMISSION_TASK',
+  STOP_APPLY_TABLE_PERMISSION_TASK = 'STOP_APPLY_TABLE_PERMISSION_TASK',
+  // 表权限管理
+  TABLE_PERMISSION_MANAGEMENT = 'TABLE_PERMISSION_MANAGEMENT',
+  GRANT_TABLE_PERMISSION = 'GRANT_TABLE_PERMISSION',
+  REVOKE_TABLE_PERMISSION = 'REVOKE_TABLE_PERMISSION',
 }
 
 export enum AuditEventDialectType {
@@ -1092,6 +1103,7 @@ export interface ITable {
   partitions: Partial<ITablePartition>[];
   constraints: Partial<ITableConstraint>[];
   _version?: any;
+  authorizedPermissionTypes?: TablePermissionType[];
 }
 
 interface IEditable {
@@ -1827,6 +1839,7 @@ export enum TaskPageType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
 }
 
@@ -1848,6 +1861,7 @@ export enum TaskType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
 }
 
@@ -2484,6 +2498,24 @@ export interface IApplyDatabasePermissionTaskParams {
   applyReason: string;
 }
 
+export interface IApplyTablePermissionTaskParams {
+  project: {
+    id: number;
+    name?: string;
+  };
+  tables: {
+    dataSourceId: number;
+    dataSourceName: string;
+    databaseId: number;
+    databaseName: string;
+    tableId: number;
+    tableName: string;
+  }[];
+  types: TablePermissionType[];
+  expireTime: number;
+  applyReason: string;
+}
+
 export interface IResultSetExportTaskParams {
   sql: string;
   fileFormat: IExportResultSetFileType;
@@ -2641,7 +2673,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedDatabases: IUnauthorizedResource[];
   id?: number;
   candidates: {
     id: number;

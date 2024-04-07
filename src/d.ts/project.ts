@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TablePermissionType } from '@/d.ts/table';
 import { DatabasePermissionType } from './database';
 
 export enum ProjectRole {
@@ -64,6 +65,12 @@ export enum DatabasePermissionStatus {
   NOT_EXPIRED = 'NOT_EXPIRED',
 }
 
+export enum TablePermissionStatus {
+  EXPIRED = 'EXPIRED',
+  EXPIRING = 'EXPIRING',
+  NOT_EXPIRED = 'NOT_EXPIRED',
+}
+
 export interface IDatabasePermission {
   id: number;
   userId: number;
@@ -81,4 +88,25 @@ export interface IDatabasePermission {
   datasourceName: string;
   environmentId: number;
   environmentName: string;
+  status: DatabasePermissionStatus;
+}
+
+export interface ITablePermission {
+  id: number;
+  userId: number;
+  permissionType: TablePermissionType;
+  sourceType: PermissionSourceType;
+  ticketId: number;
+  createTime: number;
+  expireTime: number;
+  creatorId: number;
+  organizationId: number;
+  projectId: number;
+  databaseId: number;
+  databaseName: string;
+  datasourceId: number;
+  datasourceName: string;
+  environmentId: number;
+  environmentName: string;
+  status: TablePermissionStatus;
 }

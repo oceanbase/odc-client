@@ -30,11 +30,11 @@ export const hasPermission = (taskType: TaskType, permissions: DatabasePermissio
   let _permissions = null;
   switch (taskType) {
     case TaskType.EXPORT:
-      _permissions = [DatabasePermissionType.EXPORT];
-      break;
+      return permissions?.length > 0; // 考虑有表没有库权限的情况
     case TaskType.EXPORT_RESULT_SET:
-      _permissions = [DatabasePermissionType.EXPORT, DatabasePermissionType.QUERY];
-      break;
+      return permissions?.length > 0; // 考虑有表没有库权限的情况
+    case TaskType.ASYNC:
+      return permissions?.length > 0; // 考虑有表没有库权限的情况
     default:
       _permissions = [DatabasePermissionType.CHANGE];
   }
@@ -236,6 +236,11 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.APPLY_DATABASE_PERMISSION,
           label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
           enabled: !isClient() && !isPersonal,
+        },
+        {
+          value: TaskPageType.APPLY_TABLE_PERMISSION,
+          label: '申请表权限',
+          enabled: !isClient() && !isPersonal, // TODO
         },
       ],
     },

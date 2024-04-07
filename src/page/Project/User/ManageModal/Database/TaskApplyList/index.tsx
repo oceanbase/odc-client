@@ -20,6 +20,7 @@ import {
   CommonTableMode,
   ITableLoadOptions,
   ITableInstance,
+  FixedType,
 } from '@/component/CommonTable/interface';
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
@@ -168,6 +169,7 @@ const getColumns = (params: {
       title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.DCC37870' }), //'操作'
       ellipsis: true,
       width: 65,
+      fixed: 'right' as FixedType,
       render: (_, record) => {
         return (
           <Action.Link

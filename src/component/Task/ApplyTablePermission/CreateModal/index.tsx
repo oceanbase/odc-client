@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,30 +14,33 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
-import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
-import { DatabasePermissionType } from '@/d.ts/database';
+import TableSelecter, {
+  TableSelecterRef,
+  groupTableByDataBase,
+} from '@/component/Task/component/TableSelecter';
+import HelpDoc from '@/component/helpDoc';
+import { IApplyTablePermissionTaskParams, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TablePermissionType } from '@/d.ts/table';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
+import { useRequest } from 'ahooks';
 import {
   Button,
+  Checkbox,
+  DatePicker,
   Drawer,
   Form,
+  Input,
   Modal,
   Select,
   Space,
-  Input,
   message,
-  DatePicker,
-  Checkbox,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useRequest } from 'ahooks';
-import { listProjects } from '@/common/network/project';
-import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
-import HelpDoc from '@/component/helpDoc';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
 
 const CheckboxGroup = Checkbox.Group;
@@ -57,9 +59,7 @@ export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) 
 
 export const getExpireTimeLabel = (expireTime) => {
   const label = moment(expireTime).format('YYYY-MM-DD');
-  return label === MAX_DATE_LABEL
-    ? formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B5C7760D' })
-    : label;
+  return label === MAX_DATE_LABEL ? '永不过期' : label;
 };
 
 const Label: React.FC<{
@@ -72,20 +72,20 @@ const Label: React.FC<{
 );
 
 export const permissionOptionsMap = {
-  [DatabasePermissionType.QUERY]: {
-    text: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.8890FE39' }), //'查询'
-    docKey: 'ApplyDatabasePermissionQueryTip',
-    value: DatabasePermissionType.QUERY,
+  [TablePermissionType.QUERY]: {
+    text: '查询',
+    docKey: 'ApplyTablePermissionQueryTip',
+    value: TablePermissionType.QUERY,
   },
-  [DatabasePermissionType.EXPORT]: {
-    text: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.3B7A9E11' }), //'导出'
-    docKey: 'ApplyDatabasePermissionExportTip',
-    value: DatabasePermissionType.EXPORT,
+  [TablePermissionType.EXPORT]: {
+    text: '导出',
+    docKey: 'ApplyTablePermissionExportTip',
+    value: TablePermissionType.EXPORT,
   },
-  [DatabasePermissionType.CHANGE]: {
-    text: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.985A0E7F' }), //'变更'
-    docKey: 'ApplyDatabasePermissionChangeTip',
-    value: DatabasePermissionType.CHANGE,
+  [TablePermissionType.CHANGE]: {
+    text: '变更',
+    docKey: 'ApplyTablePermissionChangeTip',
+    value: TablePermissionType.CHANGE,
   },
 };
 
@@ -98,35 +98,35 @@ export const permissionOptions = Object.values(permissionOptionsMap)?.map(
 
 export const expireTimeOptions = [
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.A3DBC09F' }), //'7 天'
+    label: '7 天',
     value: '7,days',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B4654D83' }), //'30 天'
+    label: '30 天',
     value: '30,days',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.44988077' }), //'90 天'
+    label: '90 天',
     value: '90,days',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.A383B626' }), //'半年'
+    label: '半 年',
     value: '0.5,years',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.87E335B0' }), //'1 年'
+    label: '1 年',
     value: '1,years',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.1758E31F' }), //'3 年'
+    label: '3年',
     value: '3,years',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.35CFABDC' }), //'永不过期'
+    label: '永不过期',
     value: 'never',
   },
   {
-    label: formatMessage({ id: 'src.component.Task.ApplyDatabasePermission.CreateModal.1AAFDFFB' }), //'自定义'
+    label: '自定义',
     value: 'custom',
   },
 ];
@@ -137,10 +137,11 @@ interface IProps {
 }
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore } = props;
-  const { applyDatabasePermissionVisible, applyDatabasePermissionData } = modalStore;
+  const { applyTablePermissionVisible, applyTablePermissionData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const tableSelecterRef = useRef<TableSelecterRef>(null);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
   });
@@ -155,10 +156,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (applyDatabasePermissionVisible) {
+    if (applyTablePermissionVisible) {
       getProjects(null, null, null);
     }
-  }, [applyDatabasePermissionVisible]);
+  }, [applyTablePermissionVisible, getProjects]);
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -169,17 +170,15 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: formatMessage({
-          id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B35BDC54',
-        }), //'确认取消申请库权限吗？'
+        title: '确认取消申请表权限吗？',
         centered: true,
         onOk: () => {
-          modalStore.changeApplyDatabasePermissionModal(false);
+          modalStore.changeApplyTablePermissionModal(false);
           hadleReset();
         },
       });
     } else {
-      modalStore.changeApplyDatabasePermissionModal(false);
+      modalStore.changeApplyTablePermissionModal(false);
       hadleReset();
     }
   };
@@ -187,19 +186,19 @@ const CreateModal: React.FC<IProps> = (props) => {
     form
       .validateFields()
       .then(async (values) => {
-        const { projectId, databases, types, expireTime, customExpireTime, applyReason } = values;
+        const { projectId, tables, types, expireTime, customExpireTime, applyReason } = values;
         const isCustomExpireTime = expireTime?.startsWith('custom');
         const parameters = {
           project: {
             id: projectId,
           },
-          databases: databases?.map((id) => ({ id })),
+          tables: groupTableByDataBase(tables),
           types,
           expireTime: getExpireTime(expireTime, customExpireTime, isCustomExpireTime),
           applyReason,
         };
         const data = {
-          taskType: TaskType.APPLY_DATABASE_PERMISSION,
+          taskType: TaskType.APPLY_TABLE_PERMISSION,
           parameters,
         };
         setConfirmLoading(true);
@@ -207,15 +206,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success(
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.C33C50A5' /*'申请库权限成功！'*/,
-            }),
-          );
-          openTasksPage(
-            TaskPageType.APPLY_DATABASE_PERMISSION,
-            TaskPageScope.CREATED_BY_CURRENT_USER,
-          );
+          message.success('申请表权限成功');
+          openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
       .catch((errorInfo) => {
@@ -223,54 +215,75 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
 
-  const loadEditData = async () => {
-    const { task } = applyDatabasePermissionData;
+  const loadEditData = useCallback(async () => {
+    const { task } = applyTablePermissionData;
     const {
       parameters: {
         project: { id: projectId },
-        databases,
+        tables,
         types,
         applyReason,
       },
       executionStrategy,
     } = task;
+    // 格式化成TableSelecter所需格式
+    const formatDbTables = (tables: IApplyTablePermissionTaskParams['tables']) => {
+      if (!tables) {
+        return [];
+      }
+      const map: { [databaseId: number]: string[] } = {};
+      tables.forEach(({ databaseId, tableName }) => {
+        if (map[databaseId]) {
+          map[databaseId].push(tableName);
+        } else {
+          map[databaseId] = [tableName];
+        }
+      });
+      return Object.keys(map).map((databaseId) => ({ databaseId, tableNames: map[databaseId] }));
+    };
     const formData = {
       projectId,
       executionStrategy,
-      databases: databases?.map((item) => item.id),
+      tables: formatDbTables(tables),
       types,
       applyReason,
     };
     form.setFieldsValue(formData);
-  };
+  }, [applyTablePermissionData, form]);
 
-  const handleResetDatabase = () => {
-    form.setFieldValue('databases', []);
+  const handleResetTable = () => {
+    form.setFieldValue('tables', []);
   };
 
   useEffect(() => {
-    const { projectId, databaseId, types } = applyDatabasePermissionData ?? {};
-    if (applyDatabasePermissionData?.task) {
+    const { projectId, databaseId, tableName, types } = applyTablePermissionData ?? {};
+    if (applyTablePermissionData?.task) {
       loadEditData();
     } else {
-      form.setFieldsValue({
+      const initFormValues: any = {
         projectId: projectId || props?.projectId,
-        databases: databaseId ? [databaseId] : [],
+        databaseId,
+        // 格式化成TableSelecter value所需格式
+        tables: tableName ? [{ databaseId, tableName }] : [],
         types,
-      });
+      };
+      if (projectId && databaseId) {
+        // 默认获取要申请权限的库下面的表，并且展开
+        tableSelecterRef.current?.loadTables(databaseId).then(() => {
+          tableSelecterRef.current?.expandTable(databaseId);
+        });
+      }
+      // 默认选中要申请的表、权限类型
+      form.setFieldsValue(initFormValues);
     }
-  }, [applyDatabasePermissionData]);
+  }, [applyTablePermissionData, form, loadEditData, props?.projectId]);
 
   return (
     <Drawer
       destroyOnClose
       className={styles.createModal}
       width={816}
-      title={
-        formatMessage({
-          id: 'src.component.Task.ApplyDatabasePermission.CreateModal.4149EA9A',
-        }) /*"申请库权限"*/
-      }
+      title="申请表权限"
       footer={
         <Space>
           <Button
@@ -278,22 +291,14 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
-            {
-              formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.076877DF' /*取消*/,
-              }) /* 取消 */
-            }
+            取消
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
-            {
-              formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.1D6E4447' /*新建*/,
-              }) /* 新建 */
-            }
+            新建
           </Button>
         </Space>
       }
-      open={applyDatabasePermissionVisible}
+      open={applyTablePermissionVisible}
       onClose={() => {
         handleCancel(hasEdit);
       }}
@@ -309,18 +314,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         <Form.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.9BB6C53A',
-            }) /*"项目"*/
-          }
+          label="项目"
           name="projectId"
           rules={[
             {
               required: true,
-              message: formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.564E6CF8',
-              }), //'请选择项目'
+              message: '请选择项目',
             },
           ]}
         >
@@ -328,41 +327,33 @@ const CreateModal: React.FC<IProps> = (props) => {
             showSearch
             style={{ width: 336 }}
             options={projectOptions}
-            placeholder={
-              formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.AA89519C',
-              }) /*"请选择"*/
-            }
+            placeholder="请选择"
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
-            onChange={handleResetDatabase}
+            onChange={handleResetTable}
           />
         </Form.Item>
         <Form.Item
-          name="databases"
-          label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.164A211E',
-            }) /*"数据库"*/
-          }
+          name="tables"
+          label="表"
           required
-        >
-          <DatabaseSelecter projectId={projectId} />
-        </Form.Item>
-        <Form.Item
-          name="types"
-          label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.C065C250',
-            }) /*"权限类型"*/
-          }
           rules={[
             {
               required: true,
-              message: formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.75126DC3',
-              }), //'请选择'
+              message: '请选择',
+            },
+          ]}
+        >
+          <TableSelecter projectId={projectId} ref={tableSelecterRef} />
+        </Form.Item>
+        <Form.Item
+          name="types"
+          label="权限类型"
+          rules={[
+            {
+              required: true,
+              message: '请选择',
             },
           ]}
         >
@@ -370,29 +361,19 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Space style={{ width: '100%' }} size={60}>
           <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.C7E89A36',
-              }) /*"权限有效期"*/
-            }
+            label="权限有效期"
             name="expireTime"
             rules={[
               {
                 required: true,
-                message: formatMessage({
-                  id: 'src.component.Task.ApplyDatabasePermission.CreateModal.3A596C86',
-                }), //'请选择'
+                message: '请选择',
               },
             ]}
           >
             <Select
               style={{ width: '327px' }}
               showSearch
-              placeholder={
-                formatMessage({
-                  id: 'src.component.Task.ApplyDatabasePermission.CreateModal.2F6F91EE',
-                }) /*"请选择"*/
-              }
+              placeholder="请选择"
               options={expireTimeOptions}
             />
           </Form.Item>
@@ -402,18 +383,12 @@ const CreateModal: React.FC<IProps> = (props) => {
               return (
                 isCustomExpireTime && (
                   <Form.Item
-                    label={
-                      formatMessage({
-                        id: 'src.component.Task.ApplyDatabasePermission.CreateModal.FD3628E6',
-                      }) /*"结束日期"*/
-                    }
+                    label="结束日期"
                     name="customExpireTime"
                     rules={[
                       {
                         required: true,
-                        message: formatMessage({
-                          id: 'src.component.Task.ApplyDatabasePermission.CreateModal.5FDEC16A',
-                        }), //'请选择'
+                        message: '请选择',
                       },
                     ]}
                   >
@@ -425,35 +400,20 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Form.Item>
         </Space>
         <Form.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.28506030',
-            }) /*"申请原因"*/
-          }
+          label="申请原因"
           name="applyReason"
           rules={[
             {
               required: true,
-              message: formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B0247EF7',
-              }), //'请输入原因描述'
+              message: '请输入原因描述',
             },
             {
               max: 200,
-              message: formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.7BD59E12',
-              }), //'申请原因不超过 200 个字符'
+              message: '申请原因不超过 200 个字符',
             },
           ]}
         >
-          <Input.TextArea
-            rows={6}
-            placeholder={
-              formatMessage({
-                id: 'src.component.Task.ApplyDatabasePermission.CreateModal.5401D61D',
-              }) /*"请输入原因描述"*/
-            }
-          />
+          <Input.TextArea rows={6} placeholder="请输出原因描述" />
         </Form.Item>
       </Form>
     </Drawer>

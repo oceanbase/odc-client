@@ -17,8 +17,8 @@ import { formatMessage } from '@/util/intl';
 
 import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
-import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { DeleteOutlined } from '@ant-design/icons';
 import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { DataNode } from 'antd/lib/tree';
@@ -108,7 +108,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
         ),
 
         key: item?.id,
-        icon: <Icon component={DatabaseSvg} />,
+        icon: <DataBaseStatusIcon item={item} />,
       };
     });
     return allTreeData;

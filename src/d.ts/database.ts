@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TablePermissionType } from '@/d.ts/table';
 import { IDatasource } from './datasource';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
@@ -28,6 +29,7 @@ export enum DatabasePermissionType {
   QUERY = 'QUERY',
   CHANGE = 'CHANGE',
   EXPORT = 'EXPORT',
+  ACCESS = 'ACCESS',
 }
 
 export interface IDatabase {
@@ -49,7 +51,7 @@ export interface IDatabase {
 }
 
 export interface IUnauthorizedDatabase {
-  unauthorizedPermissionTypes: DatabasePermissionType[];
+  unauthorizedPermissionTypes: TablePermissionType[];
   // 数据库ID
   id: number;
   // 数据库名称

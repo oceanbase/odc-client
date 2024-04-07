@@ -17,7 +17,7 @@
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
+import { IUnauthorizedResource } from '@/d.ts/table';
 import { IRule } from '@/d.ts/rule';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
@@ -48,7 +48,7 @@ export interface ISQLExecuteTask {
   requestId: string;
   sqls: ISQLExecuteTaskSQL[];
   violatedRules: IRule[];
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedResource: IUnauthorizedResource[];
 }
 
 /**
@@ -62,7 +62,7 @@ export interface IExecuteTaskResult {
   executeResult: ISqlExecuteResult[];
   lintResultSet?: ISQLLintReuslt[];
   status?: EStatus;
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedResource?: IUnauthorizedResource[];
   unauthorizedSql?: string;
 }
 class Task {
@@ -188,16 +188,16 @@ export default async function executeSQL(
     }
     return pre;
   }, []);
-  const unauthorizedDatabases = taskInfo?.unauthorizedDatabases;
+  const unauthorizedResource = taskInfo?.unauthorizedResource;
   const violatedRules = rootViolatedRules.concat(taskInfo?.sqls);
-  if (unauthorizedDatabases?.length) {
+  if (unauthorizedResource?.length) {
     // 无权限库
     return {
       invalid: true,
       executeSuccess: false,
       executeResult: [],
       violatedRules: [],
-      unauthorizedDatabases,
+      unauthorizedResource,
       unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
     };
   }

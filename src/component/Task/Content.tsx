@@ -90,6 +90,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     [TaskPageType.APPLY_PROJECT_PERMISSION]: () => modalStore.changeApplyPermissionModal(true),
     [TaskPageType.APPLY_DATABASE_PERMISSION]: () =>
       modalStore.changeApplyDatabasePermissionModal(true),
+    [TaskPageType.APPLY_TABLE_PERMISSION]: () => modalStore.changeApplyTablePermissionModal(true),
   };
   const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { pageKey, taskStore } = props;

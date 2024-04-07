@@ -15,10 +15,12 @@
  */
 
 import { IPartitionType } from '@/d.ts';
+import { ITablePermission } from '@/d.ts/project';
 import {
   TableConstraintDefer,
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
+  TablePermissionType,
 } from '@/d.ts/table';
 
 export enum TableTabType {
@@ -50,6 +52,7 @@ export interface TableInfo {
   owner?: string;
   rowCount?: number;
   tableSize?: string;
+  authorizedPermissionTypes?: TablePermissionType[];
 }
 
 export interface TableColumn {

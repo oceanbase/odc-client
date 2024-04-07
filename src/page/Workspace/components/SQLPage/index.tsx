@@ -38,7 +38,6 @@ import {
   ITableColumn,
   IUserConfig,
 } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
@@ -67,6 +66,7 @@ import ExecPlan from './ExecPlan';
 import styles from './index.less';
 import setting, { SettingStore } from '@/store/setting';
 import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
+import { IUnauthorizedResource } from '@/d.ts/table';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -97,7 +97,7 @@ interface ISQLPageState {
   lintResultSet: ISQLLintReuslt[];
   // 记录当前编辑器中的sql内容
   executeOrPreCheckSql: string;
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedResource?: IUnauthorizedResource[];
   unauthorizedSql?: string;
   sqlChanged: boolean;
   baseOffset: number;
@@ -149,7 +149,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     resultSetIndex: 0,
     editingMap: {},
     lintResultSet: null,
-    unauthorizedDatabases: null,
+    unauthorizedResource: null,
     unauthorizedSql: '',
     executeOrPreCheckSql: null,
     sqlChanged: false,
@@ -699,7 +699,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   public handleCheckDatabasePermission = (result: IExecuteTaskResult) => {
     this.setState({
-      unauthorizedDatabases: result?.unauthorizedDatabases,
+      unauthorizedResource: result?.unauthorizedResource,
       unauthorizedSql: result?.unauthorizedSql,
     });
   };
@@ -1117,7 +1117,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       status,
       sqlChanged,
       baseOffset,
-      unauthorizedDatabases,
+      unauthorizedResource,
       unauthorizedSql,
     } = this.state;
     return (
@@ -1168,7 +1168,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 session={session}
                 baseOffset={baseOffset}
                 lintResultSet={lintResultSet}
-                unauthorizedDatabases={unauthorizedDatabases}
+                unauthorizedResource={unauthorizedResource}
                 unauthorizedSql={unauthorizedSql}
                 sqlChanged={sqlChanged}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}

@@ -61,6 +61,7 @@ import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
+import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 
 interface IProps {
@@ -152,6 +153,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     const data = await getTaskDetail(detailId);
     setLoading(false);
     if (data) {
+      // if (data.type === TaskType.APPLY_DATABASE_PERMISSION) { // TODO 测试写死的， 删除即可
+      //   data.type = TaskType.APPLY_TABLE_PERMISSION // TODO 测试写死的， 删除即可
+      // }// TODO 测试写死的， 删除即可
       setTask(data);
       setDisabledSubmit(false);
       if (
@@ -399,6 +403,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     case TaskType.APPLY_DATABASE_PERMISSION: {
       taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
+      break;
+    }
+    case TaskType.APPLY_TABLE_PERMISSION: {
+      taskContent = <ApplyTablePermissionTaskContent task={task as any} />;
       break;
     }
     case TaskType.STRUCTURE_COMPARISON: {

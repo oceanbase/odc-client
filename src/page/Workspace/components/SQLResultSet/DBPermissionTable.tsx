@@ -19,18 +19,24 @@ import { Tabs, Space, Typography } from 'antd';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { ModalStore } from '@/store/modal';
 import DisplayTable from '@/component/DisplayTable';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
+import { DatabasePermissionType } from '@/d.ts/database';
+import { IUnauthorizedResource, TablePermissionType } from '@/d.ts/table';
 import Action from '@/component/Action';
 import { permissionOptionsMap } from '@/component/Task/ApplyDatabasePermission';
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import styles from './index.less';
+import { ColumnType } from 'antd/es/table';
+import { join } from 'path';
 
 const { Text } = Typography;
 
 const PERMISSION_TAB_KEY = 'LOG';
 
-const getColumns = (applyTask: (projectId: number, databaseId: number) => void) => {
-  return [
+const getColumns = (
+  applyDataBaseTask: IContentProps['applyDataBaseTask'],
+  applyTableTask: IContentProps['applyTableTask'],
+) => {
+  const columns: ColumnType<IUnauthorizedResource>[] = [
     {
       dataIndex: 'index',
       title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.AE76C8AD' }), //'序号'
@@ -39,15 +45,19 @@ const getColumns = (applyTask: (projectId: number, databaseId: number) => void) 
       render: (action, _, i) => i + 1,
     },
     {
-      dataIndex: 'name',
+      dataIndex: 'databaseName',
       title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.5008F988' }), //'数据库名称'
       ellipsis: true,
     },
     {
-      dataIndex: 'dataSource',
+      dataIndex: 'tableName',
+      title: '表',
+      ellipsis: true,
+    },
+    {
+      dataIndex: 'dataSourceName',
       title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.47AAE96F' }), //'所属数据源'
       ellipsis: true,
-      render: (dataSource) => dataSource?.name,
     },
     {
       dataIndex: 'unauthorizedPermissionTypes',
@@ -62,34 +72,69 @@ const getColumns = (applyTask: (projectId: number, databaseId: number) => void) 
       width: '164px',
       ellipsis: true,
       render: (action, _) => (
-        <Action.Link
-          onClick={async () => {
-            applyTask?.(_?.project?.id, _?.id);
-          }}
-        >
+        <Action.Group size={2}>
+          <Action.Link
+            key="applyDatabase"
+            onClick={async () => {
+              console.log(action, _);
+              applyDataBaseTask?.(_?.projectId, _?.databaseId, _?.unauthorizedPermissionTypes);
+              // applyDataBaseTask(1, 215, _?.unauthorizedPermissionTypes); // TODO
+            }}
+          >
+            申请库权限
+          </Action.Link>
           {
-            formatMessage({
-              id: 'src.page.Workspace.components.SQLResultSet.0B7D4FBE' /*申请*/,
-            }) /* 申请 */
+            <Action.Link
+              key="applyTable"
+              disabled={!_?.tableName}
+              onClick={async () => {
+                applyTableTask?.(
+                  _?.projectId,
+                  _?.databaseId,
+                  _?.tableName,
+                  _?.unauthorizedPermissionTypes,
+                );
+                // applyTableTask(1, 215, 'test_table', _?.unauthorizedPermissionTypes); // TODO
+              }}
+            >
+              申请表权限
+            </Action.Link>
           }
-        </Action.Link>
+        </Action.Group>
       ),
     },
   ];
+  return columns;
 };
 
 interface IContentProps {
-  dataSource: IUnauthorizedDatabase[];
+  dataSource: IUnauthorizedResource[];
   showAction?: boolean;
-  applyTask?: (projectId: number, databaseId: number) => void;
+  applyDataBaseTask?: (
+    projectId: number,
+    databaseId: number,
+    types: DatabasePermissionType[],
+  ) => void;
+  applyTableTask?: (
+    projectId: number,
+    databaseId: number,
+    tableName: string,
+    types: TablePermissionType[],
+  ) => void;
 }
 
 export const DBPermissionTableContent: React.FC<IContentProps> = (props) => {
   const { showAction = false, dataSource } = props;
-  const columns = getColumns(props?.applyTask);
+  const columns = getColumns(props?.applyDataBaseTask, props?.applyTableTask);
+  const handleRowKey = ({
+    databaseId,
+    tableName,
+    unauthorizedPermissionTypes,
+  }: IUnauthorizedResource) =>
+    `${databaseId}-${tableName}-${unauthorizedPermissionTypes.join('-')}`;
   return (
     <DisplayTable
-      rowKey="id"
+      rowKey={handleRowKey}
       columns={columns?.filter((item) => (!showAction ? item.dataIndex !== 'action' : true))}
       dataSource={dataSource}
       scroll={null}
@@ -101,14 +146,32 @@ export const DBPermissionTableContent: React.FC<IContentProps> = (props) => {
 interface IProps {
   modalStore?: ModalStore;
   sql?: string;
-  dataSource: IUnauthorizedDatabase[];
+  dataSource: IUnauthorizedResource[];
 }
 const DBPermissionTable: React.FC<IProps> = (props) => {
   const { modalStore, sql, dataSource } = props;
-  const applyTask = (projectId: number, databaseId: number) => {
+  const applyDataBaseTask: IContentProps['applyDataBaseTask'] = (
+    projectId: number,
+    databaseId: number,
+    types: DatabasePermissionType[],
+  ) => {
     modalStore.changeApplyDatabasePermissionModal(true, {
       projectId,
       databaseId,
+      types,
+    });
+  };
+  const applyTableTask: IContentProps['applyTableTask'] = (
+    projectId: number,
+    databaseId: number,
+    tableName: string,
+    types: TablePermissionType[],
+  ) => {
+    modalStore.changeApplyTablePermissionModal(true, {
+      projectId,
+      databaseId,
+      tableName,
+      types,
     });
   };
 
@@ -139,18 +202,13 @@ const DBPermissionTable: React.FC<IProps> = (props) => {
                     }) /* 失败原因： */
                   }
                 </span>
-                <Text type="secondary">
-                  {
-                    formatMessage({
-                      id: 'src.page.Workspace.components.SQLResultSet.52CCC188' /*缺少以下数据库对应权限，请先申请库权限*/,
-                    }) /* 缺少以下数据库对应权限，请先申请库权限 */
-                  }
-                </Text>
+                <Text type="secondary">缺少以下数据库表对应权限，请先申请权限</Text>
               </Space>
               <div className={styles.track}>
                 <DBPermissionTableContent
                   showAction
-                  applyTask={applyTask}
+                  applyDataBaseTask={applyDataBaseTask}
+                  applyTableTask={applyTableTask}
                   dataSource={dataSource}
                 />
               </div>
