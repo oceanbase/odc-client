@@ -25,9 +25,10 @@ import styles from './index.less';
 const { Text } = Typography;
 interface IProps {
   tables: ITable[];
+  enabledTargetTable?: boolean;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables } = props;
+  const { tables, enabledTargetTable = false } = props;
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
@@ -61,28 +62,25 @@ const ArchiveRange: React.FC<IProps> = (props) => {
       <Form.Item shouldUpdate noStyle>
         {({ getFieldValue }) => {
           const archiveRange = getFieldValue('archiveRange') || [];
+          const tables = getFieldValue('tables') || [];
           if (archiveRange !== IArchiveRange.PORTION) {
             return null;
           }
           return (
-            <Space direction="vertical">
-              <Space className={styles.infoLabel}>
-                <div
-                  style={{
-                    width: '220px',
-                  }}
-                >
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Space
+                className={classNames(styles.tables, {
+                  [styles.delete]: tables?.length > 1,
+                })}
+              >
+                <div>
                   {
                     formatMessage({
                       id: 'odc.src.component.Task.DataArchiveTask.CreateModal.ArchiveTable',
                     }) /* 归档表 */
                   }
                 </div>
-                <div
-                  style={{
-                    width: '460px',
-                  }}
-                >
+                <div>
                   <Space>
                     <span>
                       {
@@ -107,6 +105,21 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     />
                   </Space>
                 </div>
+                {enabledTargetTable && (
+                  <div>
+                    {formatMessage({
+                      id: 'src.component.Task.DataArchiveTask.CreateModal.50BCBA55' /*目标表*/,
+                    })}
+
+                    <Text type="secondary">
+                      {
+                        formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                        }) /*(可选)*/
+                      }
+                    </Text>
+                  </div>
+                )}
               </Space>
               <Form.List name="tables">
                 {(fields, { add, remove }) => (
@@ -125,8 +138,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             {
                               required: true,
                               message: formatMessage({
-                                id:
-                                  'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectTheTable',
+                                id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectTheTable',
                               }), //'请选择表'
                             },
                           ]}
@@ -145,11 +157,22 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         <Form.Item {...restField} name={[name, 'conditionExpression']}>
                           <Input
                             placeholder={formatMessage({
-                              id:
-                                'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
                             })} /*请输入过滤条件*/
                           />
                         </Form.Item>
+                        {enabledTargetTable && (
+                          <Form.Item {...restField} name={[name, 'targetTableName']}>
+                            <Input
+                              placeholder={
+                                formatMessage({
+                                  id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                }) /*"请输入"*/
+                              }
+                            />
+                          </Form.Item>
+                        )}
+
                         {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
                       </div>
                     ))}

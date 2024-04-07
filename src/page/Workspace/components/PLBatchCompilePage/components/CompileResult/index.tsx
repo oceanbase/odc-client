@@ -25,8 +25,6 @@ import { CompileStatus } from '../../index';
 import { Status } from '../Status';
 import styles from './index.less';
 
-const TabPane = Tabs.TabPane;
-
 const getPageColumns = (openEditPage: (title: string, type?: string) => void) => {
   return [
     {
@@ -142,43 +140,46 @@ const CompileResult: React.FC<IProps> = (props) => {
     }) ?? [];
 
   return (
-    <Tabs className={styles.tabs}>
-      <TabPane
-        tab={formatMessage({
-          id: 'odc.components.CompileResult.CompilationResults',
-        })}
-        /*编译结果*/ key="result"
-      >
-        {status === CompileStatus.RUNNING ? (
-          <Space className={styles.loading}>
-            <LoadingOutlined />
-            <span>
-              {
-                formatMessage(
+    <Tabs
+      className={styles.tabs}
+      items={[
+        {
+          key: 'result',
+          label: formatMessage({
+            id: 'odc.components.CompileResult.CompilationResults',
+          }),
+          children:
+            status === CompileStatus.RUNNING ? (
+              <Space className={styles.loading}>
+                <LoadingOutlined />
+                <span>
                   {
-                    id: 'odc.components.CompileResult.CompilingCompletedcountTotalcount',
-                  },
+                    formatMessage(
+                      {
+                        id: 'odc.components.CompileResult.CompilingCompletedcountTotalcount',
+                      },
 
-                  { completedCount: completedCount, totalCount: totalCount },
-                )
-                //`编译中 (${completedCount}/${totalCount})...`
-              }
-            </span>
-          </Space>
-        ) : (
-          <DisplayTable
-            rowKey="id"
-            bordered={true}
-            columns={getPageColumns(openEditPage)}
-            dataSource={dataSource}
-            disablePagination={true}
-            scroll={{
-              y: tableHeight,
-            }}
-          />
-        )}
-      </TabPane>
-    </Tabs>
+                      { completedCount: completedCount, totalCount: totalCount },
+                    )
+                    //`编译中 (${completedCount}/${totalCount})...`
+                  }
+                </span>
+              </Space>
+            ) : (
+              <DisplayTable
+                rowKey="id"
+                bordered={true}
+                columns={getPageColumns(openEditPage)}
+                dataSource={dataSource}
+                disablePagination={true}
+                scroll={{
+                  y: tableHeight,
+                }}
+              />
+            ),
+        },
+      ]}
+    />
   );
 };
 

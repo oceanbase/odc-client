@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import Icon, { CaretDownOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, message, Popconfirm, Popover, Tooltip } from 'antd';
+import { Button, Divider, Dropdown, MenuProps, message, Popconfirm, Popover, Tooltip } from 'antd';
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
 import { ComponentType } from 'react';
@@ -160,13 +160,13 @@ function TDivider() {
 
 function ButtonMenu(props: {
   icon: string | ComponentType;
-  menu: any;
+  menu: MenuProps;
   text: string;
   status: IConStatus;
 }) {
   const { icon, menu, text, status = IConStatus.INIT } = props;
   return (
-    <Dropdown overlay={menu} trigger={['click']} disabled={status === IConStatus.DISABLE}>
+    <Dropdown menu={menu} trigger={['click']} disabled={status === IConStatus.DISABLE}>
       <TButton text={text} icon={icon} isMenuIcon={true} />
     </Dropdown>
   );

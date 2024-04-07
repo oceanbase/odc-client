@@ -101,11 +101,11 @@ const VersionModal: React.FC<IProps> = (props) => {
               setActiveKey(parseInt(key as string));
             }}
             className={styles.menuContent}
-          >
-            {menuList.map((menu, index) => {
-              return <Menu.Item key={index.toString()}>{menu.title}</Menu.Item>;
-            })}
-          </Menu>
+            items={menuList.map((menu, index) => ({
+              key: index.toString(),
+              label: menu.title,
+            }))}
+          />
           <Button
             className={styles.menuBtn}
             onClick={() => {

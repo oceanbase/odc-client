@@ -90,7 +90,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
       title={formatMessage({ id: 'odc.User.AddUserModal.AddMembers' })}
       /*添加成员*/ onCancel={() => close()}
       onOk={submit}
-      visible={visible}
+      open={visible}
       width={760}
     >
       <Form requiredMark={false} layout="vertical" form={form}>

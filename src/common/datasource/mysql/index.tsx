@@ -76,9 +76,12 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
+        TaskType.STRUCTURE_COMPARISON,
       ],
       obclient: true,
       recycleBin: false,
+      plRun: true,
+      sessionManage: true,
       sqlExplain: true,
       export: {
         fileLimit: false,
@@ -94,6 +97,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
     sql: {
       language: 'mysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
 };

@@ -18,7 +18,6 @@ import { formatMessage } from '@/util/intl';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   IAlterScheduleTaskParams,
-  IConnectionPartitionPlan,
   IDataArchiveJobParameters,
   IResponseData,
   ISqlPlayJobParameters,
@@ -26,25 +25,23 @@ import type {
   TaskStatus,
 } from '@/d.ts';
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
-import type { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
 import type { TaskStore } from '@/store/task';
 import { getPreTime } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
-import React from 'react';
+import { useLocation } from '@umijs/max';
+import React, { useEffect, useRef } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
 import styles from './index.less';
 import tracert from '@/util/tracert';
-import { getProject } from '@/common/network/project';
-import { ProjectRole } from '@/d.ts/project';
 import { getTaskDetail } from '@/common/network/task';
 import { message } from 'antd';
+import { useSetState } from 'ahooks';
 interface IProps {
   taskStore?: TaskStore;
-  userStore?: UserStore;
   modalStore?: ModalStore;
   pageKey?: TaskPageType;
   tabHeight?: number;
@@ -58,44 +55,61 @@ interface IState {
   detailId: number;
   detailType: TaskType;
   detailVisible: boolean;
-  partitionPlan: IConnectionPartitionPlan;
   status: TaskStatus;
-  disabledOpt: boolean;
   tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
-@inject('userStore', 'taskStore', 'modalStore')
-@observer
-class TaskManaerContent extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = {
-      detailId: props.taskStore?.defaultOpenTaskId,
-      detailType: props.taskStore?.defauleOpenTaskType,
-      detailVisible: !!props.taskStore?.defaultOpenTaskId,
-      disabledOpt: null,
-      partitionPlan: null,
-      tasks: null,
-      cycleTasks: null,
-      status: null,
-    };
-  }
-  private tableRef = React.createRef<ITableInstance>();
-  public loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
-    const { pageKey, taskStore } = this.props;
+const TaskManaerContent: React.FC<IProps> = (props) => {
+  const { pageKey, taskStore, modalStore, isMultiPage = false } = props;
+  const taskTabType = pageKey || taskStore?.taskPageType;
+  const taskOpenRef = useRef<boolean>(null);
+  const [state, setState] = useSetState<IState>({
+    detailId: props.taskStore?.defaultOpenTaskId,
+    detailType: props.taskStore?.defauleOpenTaskType,
+    detailVisible: !!props.taskStore?.defaultOpenTaskId,
+    tasks: null,
+    cycleTasks: null,
+    status: null,
+  });
+  const location = useLocation();
+  const isSqlworkspace = location?.pathname?.includes('/sqlworkspace');
+  const { detailId, detailType, detailVisible, cycleTasks, tasks } = state;
+  const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
+  const theme = isSqlworkspace ? null : 'vs';
+  const tableRef = React.createRef<ITableInstance>();
+
+  const TaskEventMap = {
+    [TaskPageType.IMPORT]: () => modalStore.changeImportModal(true),
+    [TaskPageType.EXPORT]: () => modalStore.changeExportModal(),
+    [TaskPageType.DATAMOCK]: () => modalStore.changeDataMockerModal(true),
+    [TaskPageType.ASYNC]: () => modalStore.changeCreateAsyncTaskModal(true),
+    [TaskPageType.PARTITION_PLAN]: () => modalStore.changePartitionModal(true),
+    [TaskPageType.SQL_PLAN]: () => modalStore.changeCreateSQLPlanTaskModal(true),
+    [TaskPageType.SHADOW]: () => modalStore.changeShadowSyncVisible(true),
+    [TaskPageType.DATA_ARCHIVE]: () => modalStore.changeDataArchiveModal(true),
+    [TaskPageType.STRUCTURE_COMPARISON]: () => modalStore.changeStructureComparisonModal(true),
+    [TaskPageType.DATA_DELETE]: () => modalStore.changeDataClearModal(true),
+    [TaskPageType.ONLINE_SCHEMA_CHANGE]: () => modalStore.changeCreateDDLAlterTaskModal(true),
+    [TaskPageType.EXPORT_RESULT_SET]: () => modalStore.changeCreateResultSetExportTaskModal(true),
+    [TaskPageType.APPLY_PROJECT_PERMISSION]: () => modalStore.changeApplyPermissionModal(true),
+    [TaskPageType.APPLY_DATABASE_PERMISSION]: () =>
+      modalStore.changeApplyDatabasePermissionModal(true),
+  };
+  const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
+    const { pageKey, taskStore } = props;
     const taskTabType = pageKey || taskStore?.taskPageType;
     if (isCycleTaskPage(taskTabType)) {
-      await this.loadCycleTaskList(taskTabType, args, executeDate);
+      await loadCycleTaskList(taskTabType, args, executeDate);
     } else {
-      await this.loadTaskList(taskTabType, args, executeDate);
+      await loadTaskList(taskTabType, args, executeDate);
     }
   };
-  public loadTaskList = async (
+  const loadTaskList = async (
     taskTabType,
     args: ITableLoadOptions,
     executeDate: [Moment, Moment],
   ) => {
-    const { projectId } = this.props;
+    const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { status, executeTime, candidateApprovers, creator, connection, id } = filters ?? {};
     const { column, order } = sorter ?? {};
@@ -138,17 +152,17 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
-    const tasks = await this.props.taskStore.getTaskList(params);
-    this.setState({
+    const tasks = await props.taskStore.getTaskList(params);
+    setState({
       tasks,
     });
   };
-  public loadCycleTaskList = async (
+  const loadCycleTaskList = async (
     taskTabType,
     args: ITableLoadOptions,
     executeDate: [Moment, Moment],
   ) => {
-    const { projectId } = this.props;
+    const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { status, executeTime, candidateApprovers, creator, id } = filters ?? {};
     const { column, order } = sorter ?? {};
@@ -183,20 +197,16 @@ class TaskManaerContent extends React.Component<IProps, IState> {
     }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
-    const cycleTasks = await this.props.taskStore.getCycleTaskList(params);
-    this.setState({
+    const cycleTasks = await props.taskStore.getCycleTaskList(params);
+    setState({
       cycleTasks,
     });
   };
-  private handlePartitionPlanChange = (value: IConnectionPartitionPlan) => {
-    this.setState({
-      partitionPlan: value,
-    });
+
+  const reloadList = () => {
+    tableRef.current.reload();
   };
-  private reloadList = () => {
-    this.tableRef.current.reload();
-  };
-  private handleDetailVisible = (
+  const handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>,
     visible: boolean = false,
   ) => {
@@ -205,7 +215,7 @@ class TaskManaerContent extends React.Component<IProps, IState> {
       type === TaskType.ALTER_SCHEDULE
         ? (task as TaskRecord<IAlterScheduleTaskParams>)?.parameters?.taskId
         : id;
-    this.setState({
+    setState({
       detailId,
       detailType:
         (task as TaskRecord<TaskRecordParameters>)?.type ||
@@ -213,72 +223,16 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         TaskType.ASYNC,
       detailVisible: visible,
     });
+    taskOpenRef.current = visible;
   };
-  private handleMenuClick = (type: TaskPageType) => {
-    const { modalStore } = this.props;
+  const handleMenuClick = (type: TaskPageType) => {
     tracert.click('a3112.b64006.c330917.d367464', {
       type,
     });
-    switch (type) {
-      case TaskPageType.IMPORT:
-        modalStore.changeImportModal(true);
-        break;
-      case TaskPageType.EXPORT:
-        modalStore.changeExportModal();
-        break;
-      case TaskPageType.DATAMOCK:
-        modalStore.changeDataMockerModal(true);
-        break;
-      case TaskPageType.ASYNC:
-        modalStore.changeCreateAsyncTaskModal(true);
-        break;
-      case TaskPageType.PARTITION_PLAN:
-        modalStore.changePartitionModal(true);
-        break;
-      case TaskPageType.SQL_PLAN:
-        modalStore.changeCreateSQLPlanTaskModal(true);
-        break;
-      case TaskPageType.SHADOW:
-        modalStore.changeShadowSyncVisible(true);
-        break;
-      case TaskPageType.DATA_ARCHIVE:
-        modalStore.changeDataArchiveModal(true);
-        break;
-      case TaskPageType.DATA_DELETE:
-        modalStore.changeDataClearModal(true);
-        break;
-      case TaskPageType.ONLINE_SCHEMA_CHANGE:
-        modalStore.changeCreateDDLAlterTaskModal(true);
-        break;
-      case TaskPageType.EXPORT_RESULT_SET:
-        modalStore.changeCreateResultSetExportTaskModal(true);
-        break;
-      case TaskPageType.APPLY_PROJECT_PERMISSION:
-        modalStore.changeApplyPermissionModal(true);
-        break;
-      default:
-    }
+    TaskEventMap?.[type]?.();
   };
-  async fetchProject(projectId: number) {
-    const data = await getProject(projectId);
-    const currentUserResourceRoles = data?.currentUserResourceRoles || [];
-    const disabled =
-      currentUserResourceRoles?.filter((roles) =>
-        [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
-      )?.length === 0;
-    this.setState({
-      disabledOpt: disabled,
-    });
-  }
-  componentDidMount(): void {
-    const { inProject, projectId } = this.props;
-    if (inProject && projectId) {
-      this.fetchProject(projectId);
-    }
-    this.openDefaultTask();
-  }
-  private openDefaultTask = async () => {
-    const { defaultTaskId, defaultTaskType } = this.props;
+  const openDefaultTask = async () => {
+    const { defaultTaskId, defaultTaskType } = props;
     if (defaultTaskId) {
       const data = await getTaskDetail(defaultTaskId, true);
       if (!data) {
@@ -289,56 +243,41 @@ class TaskManaerContent extends React.Component<IProps, IState> {
         );
         return;
       }
-      this.setState({
+      setState({
         detailId: defaultTaskId,
         detailType: defaultTaskType || TaskType.ASYNC,
         detailVisible: true,
       });
+      taskOpenRef.current = true;
     }
   };
-  private hasCreate = (key: string) => {
-    const taskTypes = Object.values(TaskType);
-    // return taskTypes.includes(key as TaskType);
-  };
-  render() {
-    const { pageKey, taskStore, isMultiPage = false } = this.props;
-    const {
-      detailId,
-      detailType,
-      detailVisible,
-      partitionPlan,
-      cycleTasks,
-      tasks,
-      disabledOpt,
-    } = this.state;
-    const taskTabType = pageKey || taskStore?.taskPageType;
-    const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
-    return (
-      <>
-        <div className={styles.content}>
-          <TaskTable
-            disabledOpt={disabledOpt}
-            tableRef={this.tableRef}
-            taskTabType={taskTabType}
-            taskList={taskList}
-            isMultiPage={isMultiPage}
-            getTaskList={this.loadList}
-            onDetailVisible={this.handleDetailVisible}
-            onReloadList={this.reloadList}
-            onMenuClick={this.handleMenuClick}
-          />
-        </div>
-        <DetailModal
-          type={detailType}
-          detailId={detailId}
-          visible={detailVisible}
-          partitionPlan={partitionPlan}
-          onPartitionPlanChange={this.handlePartitionPlanChange}
-          onDetailVisible={this.handleDetailVisible}
-          onReloadList={this.reloadList}
+  useEffect(() => {
+    openDefaultTask();
+  }, []);
+  return (
+    <>
+      <div className={styles.content}>
+        <TaskTable
+          tableRef={tableRef}
+          taskTabType={taskTabType}
+          taskList={taskList}
+          isMultiPage={isMultiPage}
+          getTaskList={loadList}
+          onDetailVisible={handleDetailVisible}
+          onReloadList={reloadList}
+          onMenuClick={handleMenuClick}
         />
-      </>
-    );
-  }
-}
-export default TaskManaerContent;
+      </div>
+      <DetailModal
+        theme={theme}
+        taskOpenRef={taskOpenRef}
+        type={detailType}
+        detailId={detailId}
+        visible={detailVisible}
+        onDetailVisible={handleDetailVisible}
+        onReloadList={reloadList}
+      />
+    </>
+  );
+};
+export default inject('userStore', 'taskStore', 'modalStore')(observer(TaskManaerContent));

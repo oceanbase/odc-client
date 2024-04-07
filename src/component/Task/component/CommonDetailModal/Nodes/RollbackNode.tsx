@@ -97,24 +97,22 @@ const RollbackNode: React.FC<IProps> = function (props) {
                   id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingResult',
                 })} /*处理结果*/
               >
-                {resultData?.objectId ? (
+                {resultData?.resultFileDownloadUrl ? (
                   <Space>
                     <span>
                       {
                         formatMessage({
-                          id:
-                            'odc.CommonDetailModal.Nodes.RollbackNode.ARollbackSchemeIsSuccessfully',
+                          id: 'odc.CommonDetailModal.Nodes.RollbackNode.ARollbackSchemeIsSuccessfully',
                         }) /*成功生成回滚方案*/
                       }
                     </span>
-                    <DownloadFileAction taskId={taskId} objectId={resultData?.objectId} />
+                    <DownloadFileAction url={resultData?.resultFileDownloadUrl} />
                   </Space>
                 ) : (
                   <span>
                     {
                       formatMessage({
-                        id:
-                          'odc.CommonDetailModal.Nodes.RollbackNode.UnableToGenerateRollbackScheme',
+                        id: 'odc.CommonDetailModal.Nodes.RollbackNode.UnableToGenerateRollbackScheme',
                       }) /*无法生成回滚方案*/
                     }
                   </span>

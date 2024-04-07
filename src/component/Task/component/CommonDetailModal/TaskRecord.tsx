@@ -155,7 +155,12 @@ const SubTaskRecord: React.FC<IProps> = (props) => {
       parentInstanceId: task.id,
     });
 
-    setSubTasks(res?.contents);
+    setSubTasks(
+      res?.contents?.map((item) => ({
+        ...item,
+        databaseName: item?.database?.name,
+      })) ?? [],
+    );
   };
 
   const handleDetailVisible = (

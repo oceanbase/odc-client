@@ -1,0 +1,66 @@
+.editTable {
+  border: 1px solid var(--neutral-grey4-color);
+}
+
+.thead {
+  display: grid;
+  grid-template-columns: 80px 80px 108px 1fr;
+  line-height: 24px;
+  grid-gap: 1px;
+  background-color: var(--neutral-grey4-color);
+  border-bottom: 1px solid var(--neutral-grey4-color);
+
+  .theadCell {
+    background-color: var(--background-primary-color);
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+.row {
+  display: grid;
+  grid-template-columns: 80px 80px 108px 1fr;
+  align-items: center;
+  height: 72px;
+  grid-gap: 1px;
+  background-color: var(--neutral-grey4-color);
+  position: relative;
+  &:not(:last-child)::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: var(--neutral-grey4-color);
+  }
+  .td {
+    display: flex;
+    height: 100%;
+    background-color: var(--background-primary-color);
+    vertical-align: middle;
+    .content {
+      width: 100%;
+      display: inline-flex;
+      padding: 0 8px;
+      line-height: 72px;
+    }
+  }
+  .ruleFormItem {
+    width: 100%;
+    padding: 4px 8px;
+  }
+  .typeSelect {
+    display: flex;
+    vertical-align: middle;
+    padding: 0 8px;
+    line-height: 71px;
+    :global {
+      .ant-form-item {
+        margin-bottom: 0px;
+        line-height: unset;
+      }
+    }
+  }
+}

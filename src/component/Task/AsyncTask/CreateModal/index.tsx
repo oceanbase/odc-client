@@ -95,6 +95,7 @@ const getFilesByIds = (ids: string[], names: string[]) => {
 };
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
+  const { asyncTaskData } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
@@ -109,29 +110,54 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
-  const { asyncTaskData } = modalStore;
-  const initSqlContent = asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql;
-  const initRollbackContent = '';
-  const [defaultFileList, setDefaultFileList] = useState({
-    rollbackSqlFiles: [],
-    sqlFiles: [],
-  });
+  const sqlFileRef = useRef<{
+    setValue: (value: UploadFile[]) => void;
+    resetFields: () => void;
+  }>();
+  const rollbackSqlFileRef = useRef<{
+    setValue: (value: UploadFile[]) => void;
+    resetFields: () => void;
+  }>();
   const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
-  const loadRollbackData = async () => {
+  const isRollback = !!asyncTaskData?.type;
+  const initSqlContent = isRollback
+    ? asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql
+    : asyncTaskData?.task?.parameters?.sqlContent || asyncTaskData?.sql;
+  const initRollbackContent = isRollback ? '' : asyncTaskData?.task?.parameters?.rollbackSqlContent;
+
+  const loadEditData = async () => {
     const { task, type, objectId } = asyncTaskData;
-    const { parameters, projectId, databaseId, description, executionStrategy } = task;
+    const {
+      parameters,
+      projectId,
+      database: { id: databaseId },
+      description,
+      executionStrategy,
+    } = task;
     const {
       delimiter,
       queryLimit,
       errorStrategy,
       timeoutMillis,
+      sqlObjectIds,
+      sqlObjectNames,
+      sqlContent,
       rollbackSqlObjectIds,
       rollbackSqlObjectNames,
       rollbackSqlContent,
+      generateRollbackPlan,
+      retryTimes = 0,
     } = parameters ?? {};
-    const sqlContentType = rollbackSqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
-    const rollbackContentType = SQLContentType.TEXT;
+    let sqlContentType = null;
+    let rollbackContentType = null;
+    if (isRollback) {
+      sqlContentType = rollbackSqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
+      rollbackContentType = SQLContentType.TEXT;
+    } else {
+      sqlContentType = sqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
+      rollbackContentType = rollbackSqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
+    }
     const formData = {
       projectId,
       databaseId,
@@ -139,34 +165,47 @@ const CreateModal: React.FC<IProps> = (props) => {
       executionStrategy,
       sqlContentType,
       rollbackContentType,
-      generateRollbackPlan: false,
-      sqlContent: rollbackSqlContent,
-      rollbackSqlContent: '',
+      generateRollbackPlan,
+      sqlContent,
+      rollbackSqlContent,
       delimiter,
       queryLimit,
       timeoutMillis: timeoutMillis / 1000 / 60 / 60,
       errorStrategy,
       sqlFiles: undefined,
       rollbackSqlFiles: undefined,
+      retryTimes,
     };
-    if (type === RollbackType.REF) {
-      const files = getFilesByIds([objectId], ['rollback-plan-result.sql']);
-      formData.sqlContentType = SQLContentType.FILE;
-      formData.sqlFiles = files;
+    if (isRollback) {
+      formData.sqlContent = rollbackSqlContent;
+      formData.rollbackSqlContent = '';
+      if (type === RollbackType.REF) {
+        const files = getFilesByIds([objectId], ['rollback-plan-result.sql']);
+        formData.sqlContentType = SQLContentType.FILE;
+        formData.sqlFiles = files;
+      } else {
+        if (sqlContentType === SQLContentType.FILE) {
+          const files = getFilesByIds(rollbackSqlObjectIds, rollbackSqlObjectNames);
+          formData.sqlFiles = files;
+        }
+      }
     } else {
       if (sqlContentType === SQLContentType.FILE) {
-        const files = getFilesByIds(rollbackSqlObjectIds, rollbackSqlObjectNames);
+        const files = getFilesByIds(sqlObjectIds, sqlObjectNames);
         formData.sqlFiles = files;
+      }
+      if (rollbackContentType === SQLContentType.FILE) {
+        const files = getFilesByIds(rollbackSqlObjectIds, rollbackSqlObjectNames);
+        formData.rollbackSqlFiles = files;
       }
     }
     setSqlContentType(formData.sqlContentType);
     setRollbackContentType(formData.rollbackContentType);
     form.setFieldsValue(formData);
-    setDefaultFileList({
-      rollbackSqlFiles: [],
-      sqlFiles: formData.sqlFiles,
-    });
+    sqlFileRef.current?.setValue(formData.sqlFiles);
+    rollbackSqlFileRef.current?.setValue(formData.rollbackSqlFiles);
   };
+
   const getFileIdAndNames = (files: UploadFile[]) => {
     const ids = [];
     const names = [];
@@ -190,7 +229,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       /**
        * 校验文件总大小
        */
-      message.warn(
+      message.warning(
         formatMessage({
           id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
         }),
@@ -260,10 +299,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
     setRollbackContentType(SQLContentType.TEXT);
-    setDefaultFileList({
-      rollbackSqlFiles: [],
-      sqlFiles: [],
-    });
+    sqlFileRef.current?.resetFields();
+    rollbackSqlFileRef.current?.resetFields();
     setHasEdit(false);
     setLintResultSet([]);
     setHasPreCheck(false);
@@ -313,6 +350,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           queryLimit,
           delimiter,
+          retryTimes,
         } = values;
         const sqlFileIdAndNames = getFileIdAndNames(sqlFiles);
         const rollbackSqlFileIdAndNames = getFileIdAndNames(rollbackSqlFiles);
@@ -331,6 +369,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           rollbackSqlObjectNames: rollbackSqlFileIdAndNames?.names,
           queryLimit,
           delimiter,
+          retryTimes,
         };
         if (!checkFileSizeAmount(sqlFiles) || !checkFileSizeAmount(rollbackSqlFiles)) {
           return;
@@ -421,7 +460,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   useEffect(() => {
     if (asyncTaskData?.task) {
-      loadRollbackData();
+      loadEditData();
     }
     if (asyncTaskData?.rules) {
       if (asyncTaskData?.rules?.length > 0) {
@@ -449,10 +488,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.asyncTask}
       width={905}
-      title={formatMessage({
-        id: 'odc.components.CreateAsyncTaskModal.CreateDatabaseChanges',
-      })}
-      /*新建数据库变更*/ footer={
+      title={formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6' })}
+      footer={
         <Space>
           <Button
             onClick={() => {
@@ -488,6 +525,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
           databaseId: asyncTaskData?.databaseId,
+          retryTimes: 0,
         }}
         layout="vertical"
         requiredMark="optional"
@@ -576,6 +614,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={sqlContentType !== SQLContentType.FILE && styles.hide}
         >
           <ODCDragger
+            ref={sqlFileRef}
             accept=".sql"
             uploadFileOpenAPIName="UploadFile"
             onBeforeUpload={(file) => {
@@ -592,7 +631,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               'Accept-Language': getLocale(),
               currentOrganizationId: login.organizationId?.toString(),
             }}
-            defaultFileList={defaultFileList.sqlFiles}
             onFileChange={(files) => {
               handleFileChange(files, 'sqlFiles');
             }}
@@ -668,6 +706,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             }}
           />
         )}
+
         {lintResultSet?.length > 0 && (
           <LintResultTable
             ctx={editorRef?.current?.editor}
@@ -678,6 +717,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             baseOffset={0}
           />
         )}
+
         <Divider />
         <Form.Item
           label={formatMessage({
@@ -752,6 +792,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={rollbackContentType !== SQLContentType.FILE && styles.hide}
         >
           <ODCDragger
+            ref={rollbackSqlFileRef}
             accept=".sql"
             uploadFileOpenAPIName="UploadFile"
             onBeforeUpload={(file) => {
@@ -765,7 +806,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               'Accept-Language': getLocale(),
               currentOrganizationId: login.organizationId?.toString(),
             }}
-            defaultFileList={defaultFileList.rollbackSqlFiles}
             onFileChange={(files) => {
               handleFileChange(files, 'rollbackSqlFiles');
             }}
@@ -843,6 +883,22 @@ const CreateModal: React.FC<IProps> = (props) => {
           })}
           /*任务设置*/ keepExpand
         >
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.AsyncTask.CreateModal.4C35F704',
+              }) /*"SQL 重试次数"*/
+            }
+            name="retryTimes"
+            rules={[
+              {
+                required: true,
+                message: formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.DF31D4E7' }), //'请输入'
+              },
+            ]}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',

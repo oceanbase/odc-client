@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.content {
+  flex: 1;
+  padding-top: 4px;
+}
+.detailDrawer {
+  :global {
+    .ant-drawer-header {
+      padding: 12px 16px;
+    }
+    .ant-drawer-body {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      .ant-divider-horizontal {
+        margin: 12px 0;
+      }
+      .ant-btn-link {
+        height: unset;
+        padding: 0;
+      }
+    }
+    .ant-drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .ant-descriptions-view {
+      .ant-descriptions-row:last-child {
+        .ant-descriptions-item {
+          padding-bottom: 0;
+        }
+      }
+    }
+  }
+}

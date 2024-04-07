@@ -95,7 +95,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     resetFields: () => void;
   }>();
 
-  const { createSQLPlanVisible, SQLPlanEditId } = modalStore;
+  const { createSQLPlanVisible, sqlPlanData } = modalStore;
+  const SQLPlanEditId = sqlPlanData?.id;
   const isEdit = !!SQLPlanEditId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {
@@ -103,12 +104,14 @@ const CreateModal: React.FC<IProps> = (props) => {
     const {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
+      database: { id: databaseId },
       ...rest
     } = data;
     const sqlContentType = jobParameters?.sqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
     const formData = {
       ...rest,
       ...jobParameters,
+      databaseId,
       sqlContentType,
       sqlFiles: undefined,
       timeoutMillis: jobParameters.timeoutMillis / 1000 / 60 / 60,
@@ -202,7 +205,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       /**
        * 校验文件总大小
        */
-      message.warn(
+      message.warning(
         formatMessage({
           id: 'odc.components.CreateSQLPlanTaskModal.UpToMbOfFiles',
         }),
@@ -442,6 +445,15 @@ const CreateModal: React.FC<IProps> = (props) => {
       handleReset();
     }
   }, [createSQLPlanVisible]);
+
+  useEffect(() => {
+    const databaseId = sqlPlanData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [sqlPlanData?.databaseId]);
 
   return (
     <Drawer

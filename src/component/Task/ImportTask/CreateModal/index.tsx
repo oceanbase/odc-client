@@ -98,6 +98,7 @@ class CreateModal extends React.Component<IProps, IState> {
       key: 'config',
     },
   ];
+
   private closeSelf = () => {
     if (!this.state.isFormChanged) {
       this.props.modalStore.changeImportModal(false);
@@ -232,8 +233,8 @@ class CreateModal extends React.Component<IProps, IState> {
           if (result) {
             message.success(
               formatMessage({
-                id: 'odc.src.component.Task.ImportTask.CreateModal.SuccessfullyIntroduced',
-              }), //'导入成功！'
+                id: 'src.component.Task.ImportTask.CreateModal.F0622C80' /*'工单创建成功'*/,
+              }),
             );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
@@ -273,7 +274,7 @@ class CreateModal extends React.Component<IProps, IState> {
       fileName: importFileName?.[0].response.data?.fileName,
     });
     if (!fileInfo) {
-      message.warn(
+      message.warning(
         formatMessage({
           id: 'odc.components.ImportDrawer.AnErrorOccurredWhileParsing',
         }),
@@ -467,14 +468,27 @@ class CreateModal extends React.Component<IProps, IState> {
               type="info"
               showIcon
               message={
-                formatMessage(
-                  {
-                    id: 'odc.components.ImportDrawer.TheMaximumSizeOfData',
-                  },
-                  {
-                    size,
-                  },
-                )
+                <>
+                  {formatMessage(
+                    {
+                      id: 'odc.components.ImportDrawer.TheMaximumSizeOfData',
+                    },
+                    {
+                      size,
+                    },
+                  )}
+                  <a
+                    style={{ marginLeft: 4 }}
+                    target="__blank"
+                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381200"
+                  >
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.ImportTask.CreateModal.70AD4872' /*详情*/,
+                      }) /* 详情 */
+                    }
+                  </a>
+                </>
 
                 // `数据最大不能超过 ${size}，如需导入大量数据，请使用导数工具 OBLOADER`
               }

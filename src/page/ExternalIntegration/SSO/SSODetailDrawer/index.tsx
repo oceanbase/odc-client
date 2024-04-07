@@ -105,16 +105,49 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
           </Descriptions>
         );
       }
+      case ISSOType.LDAP: {
+        return (
+          <Descriptions column={1} title="LDAP">
+            <Descriptions.Item label="URL">
+              {configJson?.ssoParameter?.server || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.F86DB093',
+                }) /*"用户 DN"*/
+              }
+            >
+              {configJson?.ssoParameter?.managerDn || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="userSearchFilter">
+              {configJson?.ssoParameter?.userSearchFilter || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="userSearchBase">
+              {configJson?.ssoParameter?.userSearchBase || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="groupSearchFilter">
+              {configJson?.ssoParameter?.groupSearchFilter || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="groupSearchBase">
+              {configJson?.ssoParameter?.groupSearchBase || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="groupSearchSubtree">
+              {configJson?.ssoParameter?.groupSearchSubtree ? 'true' : 'false'}
+            </Descriptions.Item>
+          </Descriptions>
+        );
+      }
       default: {
         return null;
       }
     }
   }
-
+  const isLdap = configJson?.type === ISSOType.LDAP;
   return (
     <Drawer
       width={520}
-      title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.SsoConfiguration' })} /*SSO 配置*/
+      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.EBD42949' })}
       open={visible}
       onClose={() => close()}
       footer={
@@ -158,11 +191,16 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
               id: 'odc.SSO.SSODetailDrawer.UserFieldMapping',
             })} /*用户字段映射*/
           >
-            <Descriptions.Item
-              label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.UsernameField' })} /*用户名字段*/
-            >
-              {configJson?.mappingRule?.userAccountNameField}
-            </Descriptions.Item>
+            {!isLdap && (
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'odc.SSO.SSODetailDrawer.UsernameField',
+                })} /*用户名字段*/
+              >
+                {configJson?.mappingRule?.userAccountNameField}
+              </Descriptions.Item>
+            )}
+
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.SSO.SSODetailDrawer.UserNicknameField',

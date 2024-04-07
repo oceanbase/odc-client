@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { batchTest, getConnectionList } from '@/common/network/connection';
+import { getConnectionList } from '@/common/network/connection';
 import { IConnection, IConnectionStatus } from '@/d.ts';
 import { Result, Space, Spin, Tag } from 'antd';
 import React, {
@@ -40,11 +40,11 @@ import { CommonStore } from '@/store/common';
 import { PageStore } from '@/store/page';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { clone } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { history } from '@umijs/max';
 import TitleButton from '../TitleButton';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
 
 interface IProps {
   width: number;
@@ -52,16 +52,14 @@ interface IProps {
   commonStore?: CommonStore;
   pageStore?: PageStore;
   clusterStore?: ClusterStore;
+  dataSourceStatusStore?: DataSourceStatusStore;
 }
 
 const List: React.FC<IProps> = forwardRef(function (
-  { width, height, commonStore, pageStore, clusterStore },
+  { width, height, dataSourceStatusStore, clusterStore },
   ref,
 ) {
   const [_connectionList, setConnectionList] = useState<IConnection[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<Map<number, IConnection['status']>>(
-    new Map(),
-  );
 
   /**
    * 用来控制列表的刷新，不通过依赖筛选项来控制，因为筛选项之间也有依赖关系，会导致同一个改动导致列表请求两次。
@@ -77,15 +75,14 @@ const List: React.FC<IProps> = forwardRef(function (
   const versionRef = useRef<number>(0);
   const context = useContext(ParamContext);
   const { searchValue, connectType, sortType } = context;
-
   const connectionList = useMemo(() => {
     return _connectionList.map((c) => {
       return {
         ...c,
-        status: connectionStatus[c.id] || c.status,
+        status: dataSourceStatusStore.statusMap.get(c.id) || c.status,
       };
     });
-  }, [_connectionList, connectionStatus]);
+  }, [_connectionList, dataSourceStatusStore.statusMap]);
 
   useEffect(() => {
     clusterStore.loadClusterList();
@@ -100,32 +97,8 @@ const List: React.FC<IProps> = forwardRef(function (
   }
 
   async function refreshConnectionStatus(connectionList: IConnection[]) {
-    const ids = connectionList
-      ?.filter((a) => a.status?.status === IConnectionStatus.TESTING)
-      ?.map((a) => a.id);
-    if (ids?.length) {
-      const result = await batchTest(ids);
-      if (result) {
-        let newStatus = clone(connectionStatus);
-        ids?.forEach((id) => {
-          const status = result[id];
-          if (status) {
-            newStatus[id] = status;
-          }
-        });
-        setConnectionStatus(newStatus);
-      }
-    }
+    dataSourceStatusStore.asyncUpdateStatus(connectionList.map((a) => a.id));
   }
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      refreshConnectionStatus(connectionList);
-    }, 5000);
-    return () => {
-      clearInterval(timer);
-    };
-  }, [connectionList, connectionStatus]);
 
   async function _fetchNextConnectList(isRefresh?: boolean) {
     const currentVersion = versionRef.current;
@@ -181,6 +154,7 @@ const List: React.FC<IProps> = forwardRef(function (
       }
       if (result) {
         setTotal(result.page?.totalElements);
+        refreshConnectionStatus(result?.contents);
         if (!isRefresh) {
           let newConnections = [...connectionList];
           let existMap = {};
@@ -197,11 +171,9 @@ const List: React.FC<IProps> = forwardRef(function (
           });
           setOffset(newConnections?.length);
           setConnectionList(newConnections);
-          refreshConnectionStatus(newConnections);
         } else {
           setConnectionList(result?.contents);
           setOffset(result?.contents?.length);
-          refreshConnectionStatus(result?.contents);
         }
       }
     } catch (e) {
@@ -374,18 +346,23 @@ const List: React.FC<IProps> = forwardRef(function (
   );
 });
 
-function AutoSizerWrap(props, ref) {
-  return (
-    <AutoSizer>
-      {({ width, height }) => {
-        return <List ref={ref} width={width} height={height} {...props} />;
-      }}
-    </AutoSizer>
-  );
-}
-
-export default inject(
+const ListWrap = inject(
   'commonStore',
   'pageStore',
   'clusterStore',
-)(observer(forwardRef(AutoSizerWrap)));
+  'dataSourceStatusStore',
+)(observer(List));
+
+function AutoSizerWrap(props, ref) {
+  return (
+    <>
+      <AutoSizer>
+        {({ width, height }) => {
+          return <ListWrap ref={ref} width={width} height={height} {...props} />;
+        }}
+      </AutoSizer>
+    </>
+  );
+}
+
+export default forwardRef(AutoSizerWrap);

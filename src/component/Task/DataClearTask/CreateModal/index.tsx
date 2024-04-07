@@ -15,9 +15,9 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask } from '@/common/network/task';
+import { createTask, getCycleTaskDetail, previewSqlStatements } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
-import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   CreateTaskRecord,
@@ -29,23 +29,27 @@ import {
   TaskPageScope,
   TaskPageType,
   TaskType,
+  IDataClearJobParameters,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb } from '@/util/utils';
+import { mbToKb, kbToMb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
+import moment from 'moment';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import FormItemPanel from '@/component/FormItemPanel';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
+import SQLPreviewModal from '../../component/SQLPreviewModal';
+import { getVariableValue } from '../../DataArchiveTask/CreateModal';
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
@@ -55,12 +59,25 @@ export const variable = {
   format: '',
   pattern: [null],
 };
+
+const deleteByUniqueKeyOptions = [
+  {
+    label: formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.ED9CFF17' }), //'是'
+    value: true,
+  },
+  {
+    label: formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.CC3EF591' }), //'否'
+    value: false,
+  },
+];
+
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
+  deleteByUniqueKey: true,
 };
 interface IProps {
   modalStore?: ModalStore;
@@ -94,7 +111,9 @@ const getVariables = (
 };
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
-  const [formData, setFormData] = useState(null);
+  const { dataClearVisible, dataClearTaskData } = modalStore;
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [previewSql, setPreviewSQL] = useState('');
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
@@ -102,24 +121,56 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
-  const databaseName = database?.name;
-  const loadTables = async () => {
-    const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
-    setTables(tables);
-  };
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-  const { dataClearVisible, SQLPlanEditId } = modalStore;
-  const isEdit = !!SQLPlanEditId;
-  const setFormStatus = (fieldName: string, errorMessage: string) => {
-    form.setFields([
-      {
-        name: [fieldName],
-        errors: errorMessage ? [errorMessage] : [],
-      },
-    ]);
+  const databaseName = database?.name;
+  const editTaskId = dataClearTaskData?.id;
+  const isEdit = !!editTaskId && dataClearTaskData?.type === 'EDIT';
+
+  const loadTables = async () => {
+    const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
+    setTables(tables);
+  };
+
+  const loadEditData = async (editId: number) => {
+    const data = await getCycleTaskDetail<IDataClearJobParameters>(editId);
+    const {
+      jobParameters,
+      description,
+      triggerConfig: { triggerStrategy, cronExpression, hours, days, startAt },
+    } = data;
+    const { databaseId, rateLimit, tables, variables, deleteByUniqueKey } = jobParameters;
+    const formData = {
+      databaseId,
+      rowLimit: rateLimit?.rowLimit,
+      dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
+      tables,
+      deleteByUniqueKey,
+      variables: getVariableValue(variables),
+      archiveRange: IArchiveRange.PORTION,
+      triggerStrategy,
+      startAt: undefined,
+      description,
+    };
+
+    if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
+      formData.triggerStrategy = TaskExecStrategy.TIMER;
+      const crontab = {
+        mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        dateType: triggerStrategy as any,
+        cronString: cronExpression,
+        hour: hours,
+        dayOfMonth: days,
+        dayOfWeek: days,
+      };
+      setCrontab(crontab);
+    }
+    if (triggerStrategy === TaskExecStrategy.START_AT) {
+      formData.startAt = moment(startAt);
+    }
+    form.setFieldsValue(formData);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -172,6 +223,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.DataClearTask.CreateModal.Cancel',
       }),
@@ -189,6 +241,11 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     });
   };
+  const handleCloseSQLPreviewModal = () => {
+    setPreviewModalVisible(false);
+    setPreviewSQL('');
+  };
+
   const handleSubmit = () => {
     form
       .validateFields()
@@ -203,13 +260,15 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
+          deleteByUniqueKey,
         } = values;
         const parameters = {
           type: TaskJobType.DATA_DELETE,
           operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
-          taskId: SQLPlanEditId,
+          taskId: editTaskId,
           scheduleTaskParameters: {
             databaseId,
+            deleteByUniqueKey,
             variables: getVariables(variables),
             tables:
               archiveRange === IArchiveRange.ALL
@@ -263,15 +322,53 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
+
+  const handleSQLPreview = () => {
+    form
+      .validateFields()
+      .then(async (values) => {
+        const { variables, tables: _tables, archiveRange } = values;
+        const parameters = {
+          variables: getVariables(variables),
+          tables:
+            archiveRange === IArchiveRange.ALL
+              ? tables?.map((item) => {
+                  return {
+                    tableName: item?.tableName,
+                    conditionExpression: '',
+                  };
+                })
+              : _tables,
+        };
+        const sqls = await previewSqlStatements(parameters);
+        if (sqls) {
+          setPreviewModalVisible(true);
+          setPreviewSQL(sqls?.join('\n'));
+        }
+      })
+      .catch((errorInfo) => {
+        console.error(JSON.stringify(errorInfo));
+      });
+  };
+
+  const handleConfirmTask = () => {
+    handleCloseSQLPreviewModal();
+    handleSubmit();
+  };
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
   const handleReset = () => {
-    setFormData(null);
     form?.resetFields();
     setCrontab(null);
     setHasEdit(false);
   };
+
+  const handleDBChange = () => {
+    form.setFieldValue('tables', [null]);
+  };
+
   useEffect(() => {
     if (!dataClearVisible) {
       handleReset();
@@ -280,9 +377,24 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (database?.id) {
       loadTables();
-      form.setFieldValue('tables', [null]);
     }
   }, [database?.id]);
+
+  useEffect(() => {
+    if (editTaskId) {
+      loadEditData(editTaskId);
+    }
+  }, [editTaskId]);
+
+  useEffect(() => {
+    const databaseId = dataClearTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [dataClearTaskData?.databaseId]);
+
   return (
     <Drawer
       destroyOnClose
@@ -290,12 +402,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       width={760}
       title={
         isEdit
-          ? formatMessage({
-              id: 'odc.DataClearTask.CreateModal.EditDataCleanup',
-            }) //编辑数据清理
-          : formatMessage({
-              id: 'odc.DataClearTask.CreateModal.CreateDataCleanup',
-            }) //新建数据清理
+          ? formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.A5BAF884' })
+          : formatMessage({ id: 'src.component.Task.DataClearTask.CreateModal.268C0069' }) //'新建数据清理'
       }
       footer={
         <Space>
@@ -310,7 +418,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+          <Button type="primary" loading={confirmLoading} onClick={handleSQLPreview}>
             {
               isEdit
                 ? formatMessage({
@@ -343,6 +451,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               id: 'odc.DataClearTask.CreateModal.SourceDatabase',
             })}
             /*源端数据库*/ projectId={projectId}
+            onChange={handleDBChange}
           />
         </Space>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
@@ -415,9 +524,33 @@ const CreateModal: React.FC<IProps> = (props) => {
           keepExpand
         >
           <ThrottleFormItem />
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
+              }) /*"使用主键清理"*/
+            }
+            name="deleteByUniqueKey"
+            rules={[
+              {
+                required: true,
+                message: formatMessage({
+                  id: 'src.component.Task.DataClearTask.CreateModal.23542D89',
+                }), //'请选择'
+              },
+            ]}
+          >
+            <Radio.Group options={deleteByUniqueKeyOptions} />
+          </Form.Item>
         </FormItemPanel>
         <DescriptionInput />
       </Form>
+      <SQLPreviewModal
+        sql={previewSql}
+        visible={previewModalVisible}
+        onClose={handleCloseSQLPreviewModal}
+        onOk={handleConfirmTask}
+      />
     </Drawer>
   );
 };

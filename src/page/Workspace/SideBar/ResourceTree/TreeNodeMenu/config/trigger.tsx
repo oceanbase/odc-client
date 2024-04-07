@@ -23,6 +23,7 @@ import {
   openTriggerViewPage,
 } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 
@@ -36,6 +37,7 @@ import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { isSupportExport, isSupportPLEdit } from './helper';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TriggerRoot]: [
@@ -46,6 +48,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       ],
       icon: BatchCompileSvg,
       actionType: actionTypes.create,
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
+      },
       run(session, node) {
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_TRIGGER,
@@ -122,6 +127,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
       ],
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
+      },
       disabled(session) {
         return !session?.supportFeature.enableTriggerCompile;
       },
@@ -135,6 +143,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Enable' }), //启用
       ],
+      isHide(session, node) {
+        return getDataSourceModeConfig(session?.connection?.type)?.features?.disableTriggerSwitch;
+      },
       disabled(session, node) {
         const trigger: ITrigger = node.data;
         return (
@@ -168,7 +179,10 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         );
       },
       isHide(session, node) {
-        return !session.supportFeature.enableTriggerAlterStatus;
+        return (
+          !session.supportFeature.enableTriggerAlterStatus ||
+          getDataSourceModeConfig(session?.connection?.type)?.features?.disableTriggerSwitch
+        );
       },
       actionType: actionTypes.update,
       hasDivider: true,
@@ -192,6 +206,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -232,6 +249,9 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
       ],
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const trigger: ITrigger = node.data || {};
         Modal.confirm({

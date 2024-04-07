@@ -440,7 +440,7 @@ class RecycleBin extends Component<
           </div>
           {this.props.showDatasource ? (
             <div className={styles.datasourceSelect}>
-              <SessionSelect />
+              <SessionSelect feature="recycleBin" />
             </div>
           ) : null}
           <div className={styles.table}>
@@ -489,7 +489,7 @@ class RecycleBin extends Component<
           placement="right"
           closable
           onClose={() => this.setState({ showDeleteDrawer: false })}
-          visible={showDeleteDrawer}
+          open={showDeleteDrawer}
           width={500}
         >
           <EditableTable
@@ -521,7 +521,7 @@ class RecycleBin extends Component<
           placement="right"
           closable
           onClose={this.handleCancelRestore}
-          visible={showRestoreDrawer}
+          open={showRestoreDrawer}
           width={886}
         >
           <EditableTable

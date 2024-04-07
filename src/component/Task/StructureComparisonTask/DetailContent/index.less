@@ -1,0 +1,78 @@
+.subTaskTable {
+  :global {
+    .ant-table-tbody > tr.ant-table-row-selected > td {
+      background: var(--background-primary-color);
+    }
+
+    .ant-table-row,
+    .ant-table-thead {
+      background: var(--background-primary-color);
+
+      .ant-table-cell:first-child {
+        border-left: 1px solid var(--odc-border-color);
+      }
+
+      .ant-table-cell {
+        border-right: 1px solid var(--odc-border-color);
+        border-bottom: 1px solid var(--odc-border-color);
+      }
+    }
+
+    .ant-table-thead {
+      .ant-table-cell {
+        border-top: 1px solid var(--odc-border-color);
+      }
+    }
+  }
+}
+
+.tabs {
+  :global {
+    .ant-tabs-nav {
+      margin: 0 0 8px 0;
+    }
+  }
+}
+
+.detailModal {
+  :global {
+    .ant-modal-body {
+      padding: 16px !important;
+    }
+  }
+}
+
+.tip {
+  color: var(--text-color-placeholder);
+  margin-top: 8px;
+}
+
+.descriptionItem {
+  padding-bottom: 4px !important;
+}
+
+.diffEditor {
+  :global {
+    .monaco-editor {
+      .margin,
+      .monaco-editor-background {
+        background: var(--background-tertraiy-color);
+      }
+    }
+  }
+}
+.sqlContent {
+  position: relative;
+  box-sizing: border-box;
+  height: 316px;
+  padding-top: 8px;
+  background: var(--background-tertraiy-color);
+  :global {
+    .monaco-editor {
+      .margin,
+      .monaco-editor-background {
+        background: var(--background-tertraiy-color);
+      }
+    }
+  }
+}

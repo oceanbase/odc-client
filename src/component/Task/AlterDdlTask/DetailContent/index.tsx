@@ -33,6 +33,7 @@ interface IDDLAlterParamters {
   schemaName: string;
   comparingTaskId: string;
   description: string;
+  sqlContent?: string;
   lockUsers: {
     name: string;
   }[];
@@ -70,7 +71,10 @@ const SwapTableTypeMap = {
     id: 'odc.src.component.Task.AlterDdlTask.DetailContent.ManualSwitch',
   }), //'手工切换'
 };
-const SQLContentSection = ({ task }) => {
+const SQLContentSection: React.FC<{
+  task: TaskDetail<IDDLAlterParamters>;
+  theme?: string;
+}> = ({ task, theme }) => {
   return (
     <SimpleTextItem
       label={formatMessage({
@@ -83,12 +87,14 @@ const SQLContentSection = ({ task }) => {
           }}
         >
           <SQLContent
+            theme={theme}
             sqlContent={task?.parameters?.sqlContent}
             sqlObjectIds={null}
             sqlObjectNames={null}
             taskId={task?.id}
             language={
-              getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+              getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)?.sql
+                ?.language
             }
           />
         </div>
@@ -101,6 +107,7 @@ export function getItems(
   task: TaskDetail<IDDLAlterParamters>,
   result: ITaskResult,
   hasFlow: boolean,
+  theme?: string,
 ): {
   sectionName?: string;
   textItems: [React.ReactNode, React.ReactNode, number?][];
@@ -153,14 +160,14 @@ export function getItems(
             id: 'odc.AlterDdlTask.DetailContent.Library',
           }),
           //所属库
-          task?.databaseName || '-',
+          task?.database?.name || '-',
         ],
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
           }),
           //'所属数据源'
-          task?.connection?.name || '-',
+          task?.database.dataSource?.name || '-',
         ],
         hasFlow ? riskItem : null,
         lockUsers
@@ -187,7 +194,7 @@ export function getItems(
           taskExecStrategyMap[task?.executionStrategy],
           hasFlow ? 2 : 1,
         ],
-        [null, <SQLContentSection task={task} key={task.id} />, 2],
+        [null, <SQLContentSection task={task} key={task.id} theme={theme} />, 2],
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.LockTableTimeout',

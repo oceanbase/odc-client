@@ -24,6 +24,7 @@ import { useMemo, useRef, useState } from 'react';
 import { IShadowSyncAnalysisResult, ShadowTableSyncTaskResult } from '../../interface';
 import RecordSQLView, { IViewRef } from '../RecordSQLView';
 import { useColumns } from './column';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 enum TabKeys {
   SYNC = 'sync',
@@ -90,6 +91,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
     });
     return [_syncTable, _unSyncTable];
   }, [data?.tables]);
+  const config = getDataSourceModeConfigByConnectionMode(connectionMode);
   return (
     <>
       <Tabs
@@ -99,90 +101,98 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
         onChange={(v: TabKeys) => {
           setActiveKey(v);
         }}
-      >
-        <Tabs.TabPane
-          style={{ paddingBottom: 50 }}
-          tab={formatMessage({
-            id: 'odc.StructConfigPanel.StructAnalysisResult.SynchronizedTables',
-          })}
-          /*同步的表*/ key={TabKeys.SYNC}
-        >
-          <CommonTable
-            mode={CommonTableMode.SMALL}
-            showToolbar={false}
-            titleContent={null}
-            rowSelecter={
-              isViewMode
-                ? null
-                : {
-                    options: [
-                      {
-                        okText: formatMessage({
-                          id: 'odc.StructConfigPanel.StructAnalysisResult.BatchSkip',
-                        }), //批量跳过
-                        onOk: async (keys: number[]) => {
-                          return await skip(keys);
-                        },
-                      },
-                    ],
-                  }
-            }
-            tableProps={{
-              rowKey: 'id',
-              pagination: {
-                pageSize: 15,
-              },
-              scroll: {
-                x: 650,
-              },
-              dataSource: syncTable,
-              columns: syncColumns,
-            }}
-            onLoad={async () => {}}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane
-          style={{ paddingBottom: 50 }}
-          tab={formatMessage({
-            id: 'odc.StructConfigPanel.StructAnalysisResult.UnsynchronizedTables',
-          })}
-          /*不同步的表*/ key={TabKeys.UNSYNC}
-        >
-          <CommonTable
-            mode={CommonTableMode.SMALL}
-            showToolbar={false}
-            titleContent={null}
-            tableProps={{
-              pagination: {
-                pageSize: 15,
-              },
-              scroll: {
-                x: 650,
-              },
-              dataSource: unSyncTable,
-              columns: unSyncColumns,
-            }}
-            onLoad={async () => {}}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane
-          tab={formatMessage({
-            id: 'odc.StructConfigPanel.StructAnalysisResult.SqlPreview',
-          })}
-          /*SQL 预览*/ key={TabKeys.SQL}
-        >
-          <div
-            style={{
-              width: '100%',
-              height: 400,
-              border: '1px solid var(--odc-border-color)',
-              position: 'relative',
-            }}
-          >
-            <MonacoEditor defaultValue={data?.allDDL} readOnly language={connectionMode} />
-          </div>
-        </Tabs.TabPane>
-      </Tabs>
+        items={[
+          {
+            key: TabKeys.SYNC,
+            label: formatMessage({
+              id: 'odc.StructConfigPanel.StructAnalysisResult.SynchronizedTables',
+            }),
+            style: { paddingBottom: 50 },
+            children: (
+              <CommonTable
+                mode={CommonTableMode.SMALL}
+                showToolbar={false}
+                titleContent={null}
+                rowSelecter={
+                  isViewMode
+                    ? null
+                    : {
+                        options: [
+                          {
+                            okText: formatMessage({
+                              id: 'odc.StructConfigPanel.StructAnalysisResult.BatchSkip',
+                            }), //批量跳过
+                            onOk: async (keys: number[]) => {
+                              return await skip(keys);
+                            },
+                          },
+                        ],
+                      }
+                }
+                tableProps={{
+                  rowKey: 'id',
+                  pagination: {
+                    pageSize: 15,
+                  },
+                  scroll: {
+                    x: 650,
+                  },
+                  dataSource: syncTable,
+                  columns: syncColumns,
+                }}
+                onLoad={async () => {}}
+              />
+            ),
+          },
+          {
+            key: TabKeys.UNSYNC,
+            label: formatMessage({
+              id: 'odc.StructConfigPanel.StructAnalysisResult.UnsynchronizedTables',
+            }),
+            style: { paddingBottom: 50 },
+            children: (
+              <CommonTable
+                mode={CommonTableMode.SMALL}
+                showToolbar={false}
+                titleContent={null}
+                tableProps={{
+                  pagination: {
+                    pageSize: 15,
+                  },
+                  scroll: {
+                    x: 650,
+                  },
+                  dataSource: unSyncTable,
+                  columns: unSyncColumns,
+                }}
+                onLoad={async () => {}}
+              />
+            ),
+          },
+          {
+            key: TabKeys.SQL,
+            label: formatMessage({
+              id: 'odc.StructConfigPanel.StructAnalysisResult.SqlPreview',
+            }),
+            children: (
+              <div
+                style={{
+                  width: '100%',
+                  height: 400,
+                  border: '1px solid var(--odc-border-color)',
+                  position: 'relative',
+                }}
+              >
+                <MonacoEditor
+                  defaultValue={data?.allDDL}
+                  readOnly
+                  language={config?.sql?.language}
+                />
+              </div>
+            ),
+          },
+        ]}
+      />
       <RecordSQLView ref={SQLViewRef} taskId={data?.id} connectionMode={connectionMode} />
     </>
   );

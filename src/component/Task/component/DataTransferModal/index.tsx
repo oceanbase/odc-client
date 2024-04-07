@@ -21,12 +21,11 @@ import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { Alert, Col, Divider, Row, Space } from 'antd';
+import { Alert, Col, Divider, Row, Space, Tooltip } from 'antd';
 import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
-import { getDataSourceModeConfig } from '@/common/datasource';
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;
@@ -179,6 +178,7 @@ class TaskContent extends React.Component<any, any> {
         }
       />
     );
+
     const fileEncoding = (
       <SimpleTextItem
         label={formatMessage({
@@ -187,6 +187,7 @@ class TaskContent extends React.Component<any, any> {
         content={taskConfig?.encoding}
       />
     );
+
     const sysView = taskConfig?.sysUser ? (
       <SimpleTextItem
         label={
@@ -207,11 +208,6 @@ class TaskContent extends React.Component<any, any> {
     ) : null;
     if (!isImport) {
       const exportData = [];
-      const maskingPolicyName = taskConfig?.maskingPolicy?.name;
-      const maskingPolicyRules =
-        taskConfig?.maskingPolicy?.ruleApplyings?.map(({ rule }) => ({
-          ...rule,
-        })) ?? [];
       taskConfig?.globalSnapshot &&
         exportData.push(
           formatMessage({
@@ -310,6 +306,8 @@ class TaskContent extends React.Component<any, any> {
           id: 'odc.component.TaskDetailDrawer.TaskInfo.ClearDataBeforeImport',
         }),
       );
+    const isExpired =
+      Math.abs(Date.now() - task?.completeTime) >= 14 * 24 * 60 * 60 * 1000 || false;
     return (
       <>
         <Row>
@@ -343,14 +341,30 @@ class TaskContent extends React.Component<any, any> {
                 <Space direction="vertical">
                   {taskConfig?.importFileName?.map((fileName, index) => {
                     return (
-                      <a
-                        key={index}
-                        onClick={() => {
-                          downloadTaskFlow(task?.id, fileName);
-                        }}
+                      <Tooltip
+                        title={
+                          isExpired
+                            ? formatMessage({
+                                id: 'src.component.Task.component.DataTransferModal.029883D6',
+                              })
+                            : null
+                        }
                       >
-                        {fileName}
-                      </a>
+                        <a
+                          key={index}
+                          style={{ cursor: isExpired ? 'not-allowed' : undefined }}
+                          type="link"
+                          onClick={() => {
+                            if (isExpired) {
+                              return;
+                            }
+                            downloadTaskFlow(task?.id, fileName);
+                          }}
+                          download
+                        >
+                          {fileName}
+                        </a>
+                      </Tooltip>
                     );
                   })}
                 </Space>
@@ -484,7 +498,7 @@ class TaskContent extends React.Component<any, any> {
               label={formatMessage({
                 id: 'odc.component.DataTransferModal.Database',
               })}
-              /*所属数据库*/ content={task?.databaseName || '-'}
+              /*所属数据库*/ content={task?.database?.name || '-'}
             />
           </Col>
           <Col span={12}>
@@ -494,7 +508,7 @@ class TaskContent extends React.Component<any, any> {
                   id: 'odc.src.component.Task.component.DataTransferModal.DataSource',
                 }) /* 所属数据源 */
               }
-              content={task?.connection?.name || '-'}
+              content={task?.database?.dataSource?.name || '-'}
             />
           </Col>
           <Col span={12}>
@@ -553,6 +567,7 @@ class TaskContent extends React.Component<any, any> {
             marginTop: 4,
           }}
         />
+
         {this.renderExt(isImport)}
         <>
           <Divider
@@ -560,6 +575,7 @@ class TaskContent extends React.Component<any, any> {
               marginTop: 4,
             }}
           />
+
           <div>
             <div className="o-tableHeader">
               {isImport

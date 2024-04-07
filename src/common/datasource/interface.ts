@@ -111,13 +111,15 @@ export interface IDataSourceModeConfig {
   priority?: number;
   connection: {
     address: {
-      items: ('ip' | 'port' | 'cluster' | 'tenant')[];
+      items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid')[];
     };
     account: boolean;
+    role?: boolean;
     sys: boolean;
     ssl: boolean;
     defaultSchema?: boolean;
     jdbcDoc?: string;
+    disableURLParse?: boolean;
   };
   features: {
     task: TaskType[];
@@ -125,10 +127,13 @@ export interface IDataSourceModeConfig {
     obclient?: boolean;
     recycleBin?: boolean;
     sqlExplain?: boolean;
+    sessionManage: boolean;
     compile?: boolean;
     plEdit?: boolean;
     anonymousBlock?: boolean;
     supportOBProxy?: boolean;
+    disableTriggerSwitch?: boolean;
+    plRun?: boolean;
     export: {
       fileLimit: boolean;
       snapshot: boolean;
@@ -144,6 +149,7 @@ export interface IDataSourceModeConfig {
     language: string;
     escapeChar: string;
     plParamMode?: 'text' | 'list';
+    caseSensitivity?: boolean;
   };
   disable?: boolean;
 }

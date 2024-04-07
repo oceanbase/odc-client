@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { getPrefixCls } from '@/util/utils';
+import { getPrefixCls, downloadFile } from '@/util/utils';
 import {
   CopyOutlined,
   DownloadOutlined,
@@ -55,6 +55,7 @@ const Log: React.FC<LogProps> = ({
   enableCopy = true,
   enableHighLight = false,
   language,
+  downloadUrl,
 }) => {
   /** 关键字 */
   const [keyword, setkeyword] = useState('');
@@ -94,7 +95,11 @@ const Log: React.FC<LogProps> = ({
       icon: <DownloadOutlined />,
       text: formatMessage({ id: 'odc.component.Log.Download' }), //下载
       visible: enableDownload,
-      onClick: () => (logData.data.length ? download(logData.data) : noop),
+      onClick: () => {
+        if (logData.data.length) {
+          downloadUrl ? downloadFile(downloadUrl) : download(logData.data);
+        }
+      },
     },
 
     {

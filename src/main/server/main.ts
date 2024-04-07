@@ -26,8 +26,10 @@ import {
   getJavaLogPath,
   getJavaPath,
   getRendererPath,
+  getSetting,
 } from '../utils';
 import log from '../utils/log';
+import { writeFileSync } from 'fs';
 
 class MainServer {
   static _mainServer: MainServer = null;
@@ -146,7 +148,14 @@ class MainServer {
             data += chunk;
           });
           resp.on('end', () => {
-            resolve(JSON.parse(data));
+            let result;
+            try {
+              result = JSON.parse(data);
+              resolve(result);
+            } catch (e) {
+              log.error('parse data error', result);
+              reject(e);
+            }
           });
         }).on('error', (err) => {
           log.info('check server with resp err');
@@ -220,10 +229,12 @@ class MainServer {
     let javaLogDir = getJavaLogPath();
     let JAVA_HOME;
     let javaBin = 'java';
+    let jspawnhelper;
     const java = getJavaPath();
     if (java) {
       JAVA_HOME = java.JAVA_HOME;
       javaBin = java.javaBin;
+      jspawnhelper = java.jspawnhelper;
       log.info('platform:', process.platform);
       if (process.platform === 'darwin') {
         /**
@@ -231,7 +242,9 @@ class MainServer {
          */
         log.info('添加 java 执行权限');
         const result = spawnSync('chmod', ['a+x', javaBin]);
-        log.info(result.error, result.stderr?.toString());
+        const result2 = spawnSync('chmod', ['a+x', jspawnhelper]);
+        log.info('javaBin:', result.error, result.stderr?.toString());
+        log.info('jspawnhelper: ', result2.error, result2.stderr?.toString());
       }
     }
     let env = {
@@ -255,14 +268,28 @@ class MainServer {
     }
     // https://stackoverflow.com/questions/10232192/exec-display-stdout-live
     try {
+      const setting = getSetting();
+      let jvmOptions = [],
+        odcOptions = [];
+      if (setting) {
+        jvmOptions = setting['client.jvm.params'].split('\n');
+        const odcProperties = setting['client.start.params'];
+        if (odcProperties) {
+          odcOptions = odcProperties.split('\n').map((item) => '--' + item);
+          log.info('odc system propeties ', odcOptions, setting['client.start.params']);
+        }
+      }
+      log.info('jvmOptions:', jvmOptions.join(' '));
       javaChildProcess = spawn(
         javaBin,
         [
           `-Dodc.log.directory=${javaLogDir}`,
           `-Dfile.encoding=UTF-8`,
           `-Duser.language=en-US`,
+          ...jvmOptions,
           '-jar',
           this.jarPath,
+          ...odcOptions,
         ],
         {
           // 一定要设置，默认值为 '/'，会影响到后端日志文件的存放路径

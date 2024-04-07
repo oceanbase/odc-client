@@ -16,8 +16,7 @@
 
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import ChangeLockPwd from '@/component/LoginMenus/ChangeLockPwdModal';
-import UserConfig from '@/component/LoginMenus/UserConfig';
-import RecordPopover, { RecordRef } from '@/component/RecordPopover/index2';
+import RecordPopover, { RecordRef } from '@/component/RecordPopover';
 import { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { haveOCP, isClient } from '@/util/env';
@@ -29,24 +28,17 @@ import DropMenu from '../DropMenu';
 
 import { ModalStore } from '@/store/modal';
 import styles from './index.less';
-import Locale from './Locale';
-import Theme from './Theme';
 import tracert from '@/util/tracert';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
+import Locale from './Locale';
 
 interface IProps {
   userStore?: UserStore;
   settingStore?: SettingStore;
   modalStore?: ModalStore;
-  enableTheme?: boolean;
 }
 
-const MineItem: React.FC<IProps> = function ({
-  children,
-  userStore,
-  settingStore,
-  modalStore,
-  enableTheme,
-}) {
+const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore, modalStore }) {
   const { user } = userStore;
   const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const [changeLockPwdModalVisible, setChangeLockPwdModalVisible] = useState(false);
@@ -62,11 +54,6 @@ const MineItem: React.FC<IProps> = function ({
         ?.join(' | ')
     : '-';
   const userName = `${user?.name}(${user?.accountName})`;
-
-  function onConfigClick() {
-    tracert.click('a3112.b46782.c330850.d367365');
-    modalStore.changeUserConfigModal(true);
-  }
 
   const onChangePassword = async (data: { currentPassword: string; newPassword: string }) => {
     setChangePasswordLoading(true);
@@ -91,6 +78,91 @@ const MineItem: React.FC<IProps> = function ({
       userStore.gotoLogoutPage();
     } catch (e) {}
   };
+  function getMenu() {
+    let menu: ItemType[] = [];
+    if (showUserInfo) {
+      menu = menu.concat([
+        {
+          label: (
+            <Tooltip placement="right" title={userName}>
+              <span className={styles.userName}>{userName}</span>
+            </Tooltip>
+          ),
+
+          key: 'username',
+        },
+        {
+          key: 'user-role',
+          label: (
+            <Tooltip placement="right" title={RoleNames}>
+              <span className={styles.userRoles}>
+                {formatMessage({
+                  id: 'src.layout.SpaceContainer.Sider.MineItem.642BE38F' /*角色：*/,
+                })}
+                {RoleNames}
+              </span>
+            </Tooltip>
+          ),
+        },
+        {
+          type: 'divider',
+        },
+      ]);
+    }
+    if (allowEditUser && havePasswordLogin) {
+      menu.push({
+        key: 'change-password',
+        label: formatMessage({
+          id: 'odc.component.GlobalHeader.ChangePassword',
+        }),
+        onClick: () => {
+          setChangePasswordModalVisible(true);
+        },
+      });
+    }
+
+    if (isClient()) {
+      menu.push({
+        key: 'change-lock-password',
+        label: formatMessage({
+          id: 'odc.component.LoginMenus.ApplicationPassword',
+        }),
+        onClick: () => {
+          setChangeLockPwdModalVisible(true);
+        },
+      });
+    }
+    menu.push({
+      label: <Locale />,
+      key: 'locale',
+    });
+    if (settingStore.enablePersonalRecord) {
+      menu.push({
+        key: 'record',
+        label: formatMessage({
+          id: 'odc.Sider.MineItem.OperationRecord',
+        }),
+        onClick: () => {
+          tracert.click('a3112.b46782.c330850.d367366');
+          recordRef.current?.handleOpenDrawer();
+        },
+      });
+    }
+
+    menu.push({
+      type: 'divider',
+    });
+    if (allowEditUser) {
+      menu.push({
+        key: 'exit',
+        label: formatMessage({
+          id: 'odc.Sider.MineItem.Exit',
+        }),
+        onClick: handleLogout,
+      });
+    }
+    return menu;
+  }
 
   return (
     <>
@@ -101,93 +173,16 @@ const MineItem: React.FC<IProps> = function ({
           }
         }}
         menu={
-          <Menu selectedKeys={null} key="user" className={!isClient() ? styles.userMenu : ''}>
-            {showUserInfo && (
-              <>
-                <Menu.Item key={'username'}>
-                  <Tooltip placement="right" title={userName}>
-                    <span className={styles.userName}>{userName}</span>
-                  </Tooltip>
-                </Menu.Item>
-                <Menu.Item key={'user-role'}>
-                  <Tooltip placement="right" title={RoleNames}>
-                    <span className={styles.userRoles}>{RoleNames}</span>
-                  </Tooltip>
-                </Menu.Item>
-                <Menu.Divider />
-              </>
-            )}
-
-            {allowEditUser && havePasswordLogin ? (
-              <Menu.Item
-                onClick={() => {
-                  setChangePasswordModalVisible(true);
-                }}
-              >
-                {
-                  formatMessage({
-                    id: 'odc.component.GlobalHeader.ChangePassword',
-                  })
-                  /* 修改密码 */
-                }
-              </Menu.Item>
-            ) : null}
-            {isClient() ? (
-              <Menu.Item
-                onClick={() => {
-                  setChangeLockPwdModalVisible(true);
-                }}
-              >
-                {
-                  formatMessage({
-                    id: 'odc.component.LoginMenus.ApplicationPassword',
-                  })
-                  /* 应用密码 */
-                }
-              </Menu.Item>
-            ) : null}
-            <Locale />
-            {enableTheme ? <Theme /> : null}
-            <Menu.Item key={'config'} onClick={onConfigClick}>
-              {
-                formatMessage({
-                  id: 'odc.Sider.MineItem.Preferences',
-                }) /*偏好设置*/
-              }
-            </Menu.Item>
-            {settingStore.enablePersonalRecord && (
-              <Menu.Item
-                onClick={() => {
-                  tracert.click('a3112.b46782.c330850.d367366');
-                  recordRef.current?.handleOpenDrawer();
-                }}
-                key={'record'}
-              >
-                {
-                  formatMessage({
-                    id: 'odc.Sider.MineItem.OperationRecord',
-                  }) /*操作记录*/
-                }
-              </Menu.Item>
-            )}
-
-            <Menu.Divider />
-            {allowEditUser && (
-              <Menu.Item onClick={handleLogout} key={'exit'}>
-                {formatMessage({ id: 'odc.Sider.MineItem.Exit' }) /*退出*/}
-              </Menu.Item>
-            )}
-          </Menu>
+          <Menu
+            selectedKeys={null}
+            key="user"
+            className={!isClient() ? styles.userMenu : ''}
+            items={getMenu()}
+          />
         }
       >
         {children}
       </DropMenu>
-      <UserConfig
-        visible={modalStore?.userConfigModalVisible}
-        onCloseModal={() => {
-          modalStore.changeUserConfigModal(false);
-        }}
-      />
 
       {!isClient() && havePasswordLogin ? (
         <ChangePasswordModal

@@ -15,7 +15,7 @@
  */
 
 import { IEditor } from '@/component/MonacoEditor';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { ConnectionMode } from '@/d.ts';
@@ -91,7 +91,7 @@ const TableDDL: React.FC<IProps> = function ({}) {
           position: 'relative',
         }}
       >
-        <SQLCodeEditorDDL
+        <SQLCodePreviewer
           readOnly
           defaultValue={table?.info?.DDL}
           language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}

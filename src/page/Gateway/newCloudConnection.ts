@@ -201,12 +201,10 @@ export const action = async (config: INewCloudConnection) => {
         scope.setExtras({
           fetchList: JSON.stringify(connectionList),
           data,
-          params
+          params,
         });
-        getSentry()?.captureException(
-          new Error('Create Cloud Connection Failed'),
-        );
-      })
+        getSentry()?.captureException(new Error('Create Cloud Connection Failed'));
+      });
       message.error('Create Connection Failed');
       return;
     }

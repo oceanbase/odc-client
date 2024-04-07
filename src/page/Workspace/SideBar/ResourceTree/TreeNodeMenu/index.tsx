@@ -16,6 +16,8 @@
 
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
+import { DatabasePermissionType } from '@/d.ts/database';
+import SessionStore from '@/store/sessionManager/session';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { Badge, Dropdown, Tooltip } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
@@ -26,6 +28,13 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
+
+export const hasExportPermission = (dbSession: SessionStore) => {
+  return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
+};
+export const hasChangePermission = (dbSession: SessionStore) => {
+  return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+};
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip } = props;
@@ -50,7 +59,7 @@ const TreeNodeMenu = (props: IProps) => {
         }
         node.doubleClick?.(dbSession, node, databaseFrom);
       }}
-      className={classNames("ant-tree-title", styles.fullWidthTitle)}
+      className={classNames('ant-tree-title', styles.fullWidthTitle)}
     >
       {node.title}
       {node.warning ? (
@@ -76,6 +85,7 @@ const TreeNodeMenu = (props: IProps) => {
           prefix: node.title?.toString(),
           body: node.title?.toString(),
           objType: node.dbObjectType,
+          databaseId: dbSession?.database?.databaseId,
         };
       }}
     >
@@ -115,14 +125,20 @@ const TreeNodeMenu = (props: IProps) => {
           key: item.key || index,
           className: styles.ellipsis,
           disabled: disabledItem,
-          children: item.children.map((child) => {
-            clickMap[child.key] = child;
-            return {
-              key: child.key,
-              className: styles.ellipsis,
-              label: child.text,
-            };
-          }),
+          children: item.children
+            .map((child) => {
+              const isHideChild = child.isHide ? child.isHide(dbSession, node) : false;
+              if (isHideChild) {
+                return null;
+              }
+              clickMap[child.key] = child;
+              return {
+                key: child.key,
+                className: styles.ellipsis,
+                label: child.text,
+              };
+            })
+            ?.filter(Boolean),
         };
       } else {
         menuItem = {

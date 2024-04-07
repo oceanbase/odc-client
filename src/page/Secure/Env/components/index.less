@@ -39,3 +39,34 @@
     }
   }
 }
+
+.tagSelector {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  :global {
+    .ant-tag {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+.popover {
+  :global {
+    .ant-popover-inner-content {
+      padding: 0px;
+      min-width: 80px;
+    }
+  }
+}
+
+.envNameTip {
+  color: var(--text-color-placeholder);
+  margin-top: 4px;
+}
+
+.linkBtnDisabled {
+  padding: 0px;
+  height: 12px;
+  line-height: 12px;
+}

@@ -140,7 +140,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       title={formatMessage({
         id: 'workspace.window.sql.button.columnMode',
       })}
-      visible={visible}
+      open={visible}
       onCancel={() => onClose()}
       footer={[
         <Button key="close" type="primary" onClick={() => onClose()}>

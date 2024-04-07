@@ -44,7 +44,7 @@ import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Divider, Menu } from 'antd';
+import { Button, DatePicker, Divider, Menu, MenuProps } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
@@ -53,6 +53,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
+import { flatten } from 'lodash';
+import { MenuDividerType } from 'antd/lib/menu/hooks/useItems';
 const { RangePicker } = DatePicker;
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
@@ -119,6 +121,12 @@ export const TaskTypeMap = {
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
   }), //'申请项目权限'
+  [TaskType.APPLY_DATABASE_PERMISSION]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.E1E161BA',
+  }), //'申请库权限'
+  [TaskType.STRUCTURE_COMPARISON]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.80E1D16A',
+  }), //'结构比对'
 };
 export const getStatusFilters = (status: {
   [key: string]: {
@@ -145,8 +153,8 @@ interface IProps {
     | TaskRecord<TaskRecordParameters>
     | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
   >;
+
   isMultiPage?: boolean;
-  disabledOpt?: boolean;
   getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -158,15 +166,7 @@ const TaskTable: React.FC<IProps> = inject(
   'pageStore',
 )(
   observer((props) => {
-    const {
-      taskStore,
-      pageStore,
-      taskTabType,
-      tableRef,
-      taskList,
-      isMultiPage,
-      disabledOpt,
-    } = props;
+    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
     const currentTask = taskList;
@@ -260,6 +260,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
@@ -314,6 +315,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.candidateApprovers || null,
           filters: [],
           render: (candidateApprovers) =>
@@ -350,6 +352,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.creator || null,
           filters: [],
           render: (creator) => {
@@ -405,6 +408,7 @@ const TaskTable: React.FC<IProps> = inject(
           ),
         },
       ];
+
       return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
     }
     const handleChange = (params: ITableLoadOptions) => {
@@ -441,48 +445,45 @@ const TaskTable: React.FC<IProps> = inject(
                       <DownOutlined />
                     </Button>
                   ),
-                  disabled: disabledOpt,
-                  overlay: (
-                    <Menu
-                      onClick={({ key }) => {
-                        props.onMenuClick(key as TaskPageType);
-                      }}
-                    >
-                      {menus?.map(({ group }, index) => {
+
+                  menu: {
+                    onClick: ({ key }) => {
+                      props.onMenuClick(key as TaskPageType);
+                    },
+                    items: flatten(
+                      menus?.map(({ group, groupName }, index) => {
                         const tasks = group?.filter((task) => task.enabled);
-                        return (
-                          <>
-                            {tasks?.map((item) => (
-                              <Menu.Item key={item.value}>{item.label}</Menu.Item>
-                            ))}
-                            {index !== menus?.length - 1 && (
-                              <Divider
-                                style={{
-                                  margin: 0,
-                                }}
-                              />
-                            )}
-                          </>
-                        );
-                      })}
-                    </Menu>
-                  ),
+                        return {
+                          key: index,
+                          label: groupName,
+                          children: tasks?.map((item) => {
+                            return {
+                              key: item.value,
+                              label: item.label,
+                            };
+                          }),
+                          type: 'group',
+                        };
+                      }),
+                    ),
+                  },
                 }
               : {
                   type: IOperationOptionType.button,
-                  content:
-                    taskTabType === TaskPageType.APPLY_PROJECT_PERMISSION
-                      ? activeTaskLabel
-                      : formatMessage(
-                          {
-                            id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                          },
-                          {
-                            activeTaskLabel: activeTaskLabel,
-                          },
-                        ),
+                  content: [
+                    TaskPageType.APPLY_PROJECT_PERMISSION,
+                    TaskPageType.APPLY_DATABASE_PERMISSION,
+                  ].includes(taskTabType)
+                    ? activeTaskLabel
+                    : formatMessage(
+                        {
+                          id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                        },
+                        {
+                          activeTaskLabel: activeTaskLabel,
+                        },
+                      ),
                   //`新建${activeTaskLabel}`
-                  disabled: disabledOpt,
                   isPrimary: true,
                   onClick: () => {
                     props.onMenuClick(taskTabType);
@@ -514,6 +515,9 @@ const TaskTable: React.FC<IProps> = inject(
                     showTime={{
                       format: 'HH:mm:ss',
                     }}
+                    disabledDate={(current) => {
+                      return current > moment();
+                    }}
                     format="YYYY-MM-DD HH:mm:ss"
                     onChange={(value) => {
                       setExecuteDate(value);
@@ -521,6 +525,7 @@ const TaskTable: React.FC<IProps> = inject(
                     }}
                   />
                 );
+
                 return content;
               },
             },

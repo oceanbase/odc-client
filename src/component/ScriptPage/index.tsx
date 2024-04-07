@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -27,7 +28,7 @@ import { SettingStore } from '@/store/setting';
 import { default as snippet, default as snippetStore } from '@/store/snippet';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
-import { Layout } from 'antd';
+import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { PureComponent } from 'react';
 import SplitPane from 'react-split-pane';
@@ -117,6 +118,7 @@ export default class ScriptPage extends PureComponent<IProps> {
           {showSessionSelect && (
             <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
           )}
+
           {isShowDebugStackBar ? (
             <div className={styles.stackList}>
               {stackbar.list.map((stack) => {
@@ -170,12 +172,20 @@ export default class ScriptPage extends PureComponent<IProps> {
                 if (!position) {
                   return;
                 }
+                if (snippetStore.snippetDragging.databaseId !== session.database.databaseId) {
+                  message.warn(
+                    formatMessage({
+                      id: 'src.component.ScriptPage.D0B6C37B' /*'该对象不属于当前数据库'*/,
+                    }),
+                  );
+                  return;
+                }
                 const CLOSE_INSERT_PROMPT = localStorage.getItem(CLOSE_INSERT_PROMPT_KEY);
                 if (CLOSE_INSERT_PROMPT === 'true') {
                   const name = snippetBody;
                   const type = snippetStore.snippetDragging?.objType;
                   const value =
-                    settingStore.configurations['sqlexecute.defaultObjectDraggingOption'];
+                    settingStore.configurations['odc.sqlexecute.default.objectDraggingOption'];
                   const insertText = await getCopyText(name, type, value, true, session.sessionId);
                   const editor = ctx.editor as IEditor;
                   editor.focus();
@@ -240,6 +250,7 @@ export default class ScriptPage extends PureComponent<IProps> {
         ) : (
           this.renderPanels()
         )}
+
         <StatusBar statusBar={statusBar} />
         <TemplateInsertModal
           session={session}
@@ -272,6 +283,7 @@ export default class ScriptPage extends PureComponent<IProps> {
             );
           }}
         />
+
         <CustomDragLayer />
       </Layout>
     );

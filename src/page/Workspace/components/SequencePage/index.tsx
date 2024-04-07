@@ -17,7 +17,7 @@
 import { getSequence } from '@/common/network/sequence';
 import { IEditor } from '@/component/MonacoEditor';
 import ObjectInfoView from '@/component/ObjectInfoView';
-import { SQLCodeEditorDDL } from '@/component/SQLCodeEditorDDL';
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { ConnectionMode, ISequence } from '@/d.ts';
@@ -44,7 +44,6 @@ import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 const ToolbarButton = Toolbar.Button;
 
 // 属性 Tab key 枚举
@@ -159,165 +158,175 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
 
     return sequence ? (
       <>
-        <Content style={{ height: "100%" }}>
+        <Content style={{ height: '100%' }}>
           <Tabs
             activeKey={propsTab}
             tabPosition="left"
             className={styles.propsTab}
             onChange={this.handlePropsTabChanged as any}
-          >
-            <TabPane
-              tab={formatMessage({
-                id: 'workspace.window.sequence.propstab.info',
-              })}
-              key={PropsTab.INFO}
-            >
-              <Toolbar>
-                <Toolbar.Button
-                  text={formatMessage({ id: 'workspace.window.session.button.edit' })}
-                  icon={<EditOutlined />}
-                  onClick={this.showSequenceEditModal}
-                />
+            items={[
+              {
+                key: PropsTab.INFO,
+                label: formatMessage({
+                  id: 'workspace.window.sequence.propstab.info',
+                }),
+                children: (
+                  <>
+                    <Toolbar>
+                      <Toolbar.Button
+                        text={formatMessage({ id: 'workspace.window.session.button.edit' })}
+                        icon={<EditOutlined />}
+                        onClick={this.showSequenceEditModal}
+                      />
 
-                <ToolbarButton
-                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
-                  icon={<SyncOutlined />}
-                  onClick={this.reloadSequence.bind(this, params.sequenceName)}
-                />
-              </Toolbar>
-              <ObjectInfoView
-                data={[
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.SequenceName',
-                    }),
-                    // 序列名称
-                    content: sequence.name,
-                  },
+                      <ToolbarButton
+                        text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                        icon={<SyncOutlined />}
+                        onClick={this.reloadSequence.bind(this, params.sequenceName)}
+                      />
+                    </Toolbar>
+                    <ObjectInfoView
+                      data={[
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.SequenceName',
+                          }),
+                          // 序列名称
+                          content: sequence.name,
+                        },
 
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.NextBufferValue',
-                    }),
-                    // 下一个缓冲值
-                    content: sequence.nextCacheValue,
-                  },
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.NextBufferValue',
+                          }),
+                          // 下一个缓冲值
+                          content: sequence.nextCacheValue,
+                        },
 
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.Incremental',
-                    }),
-                    // 增量
-                    content: sequence.increament,
-                  },
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.Incremental',
+                          }),
+                          // 增量
+                          content: sequence.increament,
+                        },
 
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.ValidValues',
-                    }),
-                    // 取值范围
-                    content: `${sequence.minValue} ~ ${sequence.maxValue}`,
-                  },
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.ValidValues',
+                          }),
+                          // 取值范围
+                          content: `${sequence.minValue} ~ ${sequence.maxValue}`,
+                        },
 
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.CacheSettings',
-                    }),
-                    // 缓存设置
-                    content: sequence.cached
-                      ? formatMessage({
-                          id: 'odc.components.SequencePage.Cache',
-                        }) +
-                        // `缓存 `
-                        sequence.cacheSize
-                      : formatMessage({
-                          id: 'odc.components.SequencePage.NoCache',
-                        }),
-                    // 不缓存
-                  },
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.Sort',
-                    }),
-                    // 是否排序
-                    content: sequence.orderd
-                      ? formatMessage({ id: 'odc.components.SequencePage.Is' }) // 是
-                      : formatMessage({ id: 'odc.components.SequencePage.No' }), // 否
-                  },
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.LoopOrNot',
-                    }),
-                    // 是否循环
-                    content: sequence.cycled
-                      ? formatMessage({ id: 'odc.components.SequencePage.Is' }) // 是
-                      : formatMessage({ id: 'odc.components.SequencePage.No' }), // 否
-                  },
-                  {
-                    label: formatMessage({
-                      id: 'odc.components.SequencePage.Owner',
-                    }),
-                    // 所有者
-                    content: sequence.user,
-                  },
-                ]}
-              />
-            </TabPane>
-            <TabPane tab={'DDL'} key={PropsTab.DDL}>
-              <Toolbar>
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.SequencePage.Download',
-                    }) //下载
-                  }
-                  icon={<CloudDownloadOutlined />}
-                  onClick={() => {
-                    downloadPLDDL(
-                      sequence?.name,
-                      'SEQUENCE',
-                      sequence?.ddl,
-                      this.props.session?.odcDatabase?.name,
-                    );
-                  }}
-                />
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.CacheSettings',
+                          }),
+                          // 缓存设置
+                          content: sequence.cached
+                            ? formatMessage({
+                                id: 'odc.components.SequencePage.Cache',
+                              }) +
+                              // `缓存 `
+                              sequence.cacheSize
+                            : formatMessage({
+                                id: 'odc.components.SequencePage.NoCache',
+                              }),
+                          // 不缓存
+                        },
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.Sort',
+                          }),
+                          // 是否排序
+                          content: sequence.orderd
+                            ? formatMessage({ id: 'odc.components.SequencePage.Is' }) // 是
+                            : formatMessage({ id: 'odc.components.SequencePage.No' }), // 否
+                        },
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.LoopOrNot',
+                          }),
+                          // 是否循环
+                          content: sequence.cycled
+                            ? formatMessage({ id: 'odc.components.SequencePage.Is' }) // 是
+                            : formatMessage({ id: 'odc.components.SequencePage.No' }), // 否
+                        },
+                        {
+                          label: formatMessage({
+                            id: 'odc.components.SequencePage.Owner',
+                          }),
+                          // 所有者
+                          content: sequence.user,
+                        },
+                      ]}
+                    />
+                  </>
+                ),
+              },
+              {
+                key: PropsTab.DDL,
+                label: 'DDL',
+                children: (
+                  <>
+                    <Toolbar>
+                      <ToolbarButton
+                        text={
+                          formatMessage({
+                            id: 'odc.components.SequencePage.Download',
+                          }) //下载
+                        }
+                        icon={<CloudDownloadOutlined />}
+                        onClick={() => {
+                          downloadPLDDL(
+                            sequence?.name,
+                            'SEQUENCE',
+                            sequence?.ddl,
+                            this.props.session?.odcDatabase?.name,
+                          );
+                        }}
+                      />
 
-                <ToolbarButton
-                  text={
-                    formated
-                      ? formatMessage({
-                          id: 'odc.components.SequencePage.Unformat',
-                        })
-                      : // 取消格式化
-                        formatMessage({
-                          id: 'odc.components.SequencePage.Formatting',
-                        })
+                      <ToolbarButton
+                        text={
+                          formated
+                            ? formatMessage({
+                                id: 'odc.components.SequencePage.Unformat',
+                              })
+                            : // 取消格式化
+                              formatMessage({
+                                id: 'odc.components.SequencePage.Formatting',
+                              })
 
-                    // 格式化
-                  }
-                  icon={<AlignLeftOutlined />}
-                  onClick={this.handleFormat}
-                  status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
-                />
+                          // 格式化
+                        }
+                        icon={<AlignLeftOutlined />}
+                        onClick={this.handleFormat}
+                        status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
+                      />
 
-                <ToolbarButton
-                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
-                  icon={<SyncOutlined />}
-                  onClick={this.reloadSequence.bind(this, params.sequenceName)}
-                />
-              </Toolbar>
-              <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-                <SQLCodeEditorDDL
-                  readOnly
-                  defaultValue={(sequence && sequence.ddl) || ''}
-                  language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
-                  onEditorCreated={(editor: IEditor) => {
-                    this.editor = editor;
-                  }}
-                />
-              </div>
-            </TabPane>
-          </Tabs>
+                      <ToolbarButton
+                        text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                        icon={<SyncOutlined />}
+                        onClick={this.reloadSequence.bind(this, params.sequenceName)}
+                      />
+                    </Toolbar>
+                    <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
+                      <SQLCodePreviewer
+                        readOnly
+                        defaultValue={(sequence && sequence.ddl) || ''}
+                        language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
+                        onEditorCreated={(editor: IEditor) => {
+                          this.editor = editor;
+                        }}
+                      />
+                    </div>
+                  </>
+                ),
+              },
+            ]}
+          />
         </Content>
       </>
     ) : (

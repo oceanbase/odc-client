@@ -18,13 +18,15 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
-import { ConnectionMode, TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
-import { Descriptions, Divider, Space } from 'antd';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { InfoCircleOutlined } from '@ant-design/icons';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
@@ -41,11 +43,12 @@ interface IProps {
   task: TaskDetail<IAsyncTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
+  theme?: string;
 }
 const AsyncTaskContent: React.FC<IProps> = (props) => {
-  const { task, hasFlow, result } = props;
+  const { task, hasFlow, result, theme } = props;
   const parameters = task?.parameters;
-  const executionTimeout = parameters.timeoutMillis / 1000 / 60 / 60;
+  const executionTimeout = milliSecondsToHour(parameters.timeoutMillis);
   const riskLevel = task?.riskLevel;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
   return (
@@ -69,7 +72,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据库 */
           }
         >
-          {task?.databaseName || '-'}
+          <DatabaseLabel database={task?.database} />
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -79,7 +82,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据源 */
           }
         >
-          {task?.connection?.name || '-'}
+          {task?.database?.dataSource?.name || '-'}
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -93,8 +96,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
             }) /* 
-           数据库变更
-           */
+          数据库变更
+          */
           }
         </Descriptions.Item>
         {hasFlow && (
@@ -120,18 +123,21 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
+              theme={theme}
               sqlContent={task?.parameters?.sqlContent}
               sqlObjectIds={task?.parameters?.sqlObjectIds}
               sqlObjectNames={task?.parameters?.sqlObjectNames}
               taskId={task?.id}
               language={
-                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                  ?.sql?.language
               }
             />
           </div>
         }
         direction="column"
       />
+
       <SimpleTextItem
         label={
           <Space>
@@ -142,7 +148,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
                 }) /*回滚内容*/
               }
             </span>
-            <DownloadFileAction taskId={task?.id} objectId={result?.rollbackPlanResult?.objectId} />
+            <DownloadFileAction url={result?.rollbackPlanResult?.resultFileDownloadUrl} />
           </Space>
         }
         content={
@@ -152,18 +158,21 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
+              theme={theme}
               sqlContent={task?.parameters?.rollbackSqlContent}
               sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
               sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
               taskId={task?.id}
               language={
-                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                  ?.sql?.language
               }
             />
           </div>
         }
         direction="column"
       />
+
       <Descriptions
         column={2}
         style={{
@@ -204,18 +213,52 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={
             formatMessage({
+              id: 'src.component.Task.AsyncTask.DetailContent.1F4ECA8A',
+            }) /*"SQL 重试次数"*/
+          }
+        >
+          {parameters?.retryTimes ?? 0}
+        </Descriptions.Item>
+        <Descriptions.Item
+          span={2}
+          label={
+            formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecuteTimeoutTime',
             }) /* 执行超时时间 */
           }
         >
-          {formatMessage(
-            {
-              id: 'odc.TaskManagePage.AsyncTask.ExecutiontimeoutHours',
-            },
-            {
-              executionTimeout,
-            },
-          )}
+          <Space align="center" size={6}>
+            <div>
+              {formatMessage(
+                {
+                  id: 'odc.TaskManagePage.AsyncTask.ExecutiontimeoutHours',
+                },
+                {
+                  executionTimeout,
+                },
+              )}
+            </div>
+            {result?.autoModifyTimeout && (
+              <Tooltip
+                title={
+                  formatMessage(
+                    { id: 'src.component.Task.AsyncTask.DetailContent.07EB87E6' },
+                    { executionTimeout: executionTimeout },
+                  ) /*`变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 ${executionTimeout} 小时`*/
+                }
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <InfoCircleOutlined style={{ cursor: 'pointer' }} />
+                </div>
+              </Tooltip>
+            )}
+          </Space>
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -239,6 +282,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             {getFormatDateTime(task?.executionTime)}
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           span={2}
           label={
@@ -255,6 +299,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           span={2}

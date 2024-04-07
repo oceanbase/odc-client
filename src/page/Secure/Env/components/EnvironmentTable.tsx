@@ -25,14 +25,27 @@ import {
 } from '@/component/CommonTable/interface';
 import { IRule, RuleType } from '@/d.ts/rule';
 import { message, Spin } from 'antd';
-import { useContext, useRef, useState } from 'react';
-import { EnvironmentContext } from '../EnvironmentContext';
+import React, { useRef, useState } from 'react';
 import { getColumns } from './column';
 import EditRuleDrawer from './EditRuleDrawer';
 import styles from './index.less';
 import tracert from '@/util/tracert';
-const EnvironmentTable = ({ ruleType }) => {
-  const environmentContext = useContext(EnvironmentContext);
+import { IEnvironment } from '@/d.ts/environment';
+import { IManagerIntegration } from '@/d.ts';
+import modal from 'antd/lib/modal';
+
+interface IEnvironmentProps {
+  currentEnvironment: IEnvironment;
+  integrations: IManagerIntegration[];
+  integrationsIdMap: Record<string, string>;
+  ruleType: RuleType;
+}
+const EnvironmentTable: React.FC<IEnvironmentProps> = ({
+  currentEnvironment,
+  integrations,
+  integrationsIdMap,
+  ruleType,
+}) => {
   const tableRef = useRef<ITableInstance>();
   const argsRef = useRef<ITableFilter>();
   const originRules = useRef<IRule[]>(null);
@@ -48,8 +61,11 @@ const EnvironmentTable = ({ ruleType }) => {
   const [pagination, setPagination] = useState<ITablePagination>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [editRuleDrawerVisible, setEditRuleDrawerVisible] = useState<boolean>(false);
+  /**
+   * 获取不同规范规则类型以及支持的数据源类型，用于筛选。
+   */
   const handleStatsRule = async () => {
-    const rawData = await statsRules(environmentContext?.currentEnvironment?.id, ruleType);
+    const rawData = await statsRules(currentEnvironment?.rulesetId, ruleType);
     setSubTypeFilters(
       rawData?.subTypes?.distinct?.map((d) => ({
         text: d,
@@ -63,12 +79,15 @@ const EnvironmentTable = ({ ruleType }) => {
       })),
     );
   };
-  const getRules = async (args: ITableLoadOptions) => {
+  const getRules = async (args?: ITableLoadOptions) => {
+    if (!currentEnvironment?.id) {
+      return;
+    }
     setLoading(true);
-    const { pageSize = 0, pagination = null, filters = null } = args;
+    const { pagination = null, filters = null } = args ?? {};
     const { subTypes, supportedDialectTypes, level, name } = filters ?? {};
     handleStatsRule();
-    const rulesets = await listRules(environmentContext?.currentEnvironment?.id, {
+    const rulesets = await listRules(currentEnvironment?.rulesetId, {
       types: ruleType,
     });
     let filteredRules: IRule[] = rulesets?.contents;
@@ -141,11 +160,7 @@ const EnvironmentTable = ({ ruleType }) => {
     setEditRuleDrawerVisible(false);
   };
   const handleUpdateEnvironment = async (rule: IRule, fn?: () => void) => {
-    const flag = await updateRule(
-      environmentContext?.currentEnvironment?.rulesetId,
-      selectedRule?.id,
-      rule,
-    );
+    const flag = await updateRule(currentEnvironment?.rulesetId, selectedRule?.id, rule);
     if (flag) {
       message.success(
         formatMessage({
@@ -166,30 +181,46 @@ const EnvironmentTable = ({ ruleType }) => {
     tracert.click(!rule.enabled ? 'a3112.b64008.c330923.d367476' : 'a3112.b64008.c330923.d367477', {
       ruleId: rule.id,
     });
-    const updateResult =
-      (await updateRule(rulesetId, rule.id, {
-        ...rule,
-        enabled: !rule.enabled,
-      })) || false;
-    if (updateResult) {
-      message.success(
-        formatMessage({
-          id: 'odc.src.page.Secure.Env.components.UpdateCompleted',
-        }), //'更新成功'
-      );
-      tableRef.current?.reload(argsRef.current || {});
-    } else {
-      message.error(
-        formatMessage({
-          id: 'odc.src.page.Secure.Env.components.UpdateFailure',
-        }), //'更新失败'
-      );
+    const isCloseDisabledPLDebug =
+      rule?.metadata?.type === RuleType.SQL_CONSOLE && rule?.metadata?.id === 6 && rule?.enabled;
+    const switchRuleStatus = async () => {
+      const successful =
+        (await updateRule(rulesetId, rule.id, {
+          ...rule,
+          enabled: !rule.enabled,
+        })) || false;
+      if (successful) {
+        message.success(
+          rule.enabled
+            ? formatMessage({ id: 'src.page.Secure.Env.components.B398D211' })
+            : formatMessage({ id: 'src.page.Secure.Env.components.666A8F25' }),
+        );
+        tableRef.current?.reload(argsRef.current || {});
+      } else {
+        message.error(
+          rule.enabled
+            ? formatMessage({ id: 'src.page.Secure.Env.components.8DBF10C0' })
+            : formatMessage({ id: 'src.page.Secure.Env.components.C55A45B1' }),
+        );
+      }
+    };
+    if (isCloseDisabledPLDebug) {
+      return modal.confirm({
+        title: formatMessage({ id: 'src.page.Secure.Env.components.C11B3607' }), //'确认禁用？'
+        centered: true,
+        content: rule?.metadata?.description,
+        cancelText: formatMessage({ id: 'src.page.Secure.Env.components.3CCC8328' }), //'取消'
+        okText: formatMessage({ id: 'src.page.Secure.Env.components.8D575F5C' }), //'确认'
+        onCancel: () => {},
+        onOk: switchRuleStatus,
+      });
     }
+    switchRuleStatus();
   };
   const rawColumns = getColumns({
     subTypeFilters,
     supportedDialectTypeFilters,
-    integrationsIdMap: environmentContext?.integrationsIdMap,
+    integrationsIdMap: integrationsIdMap,
     handleSwtichRuleStatus,
     handleOpenEditModal,
   });
@@ -221,7 +252,7 @@ const EnvironmentTable = ({ ruleType }) => {
         rule={selectedRule}
         ruleType={ruleType}
         editRuleDrawerVisible={editRuleDrawerVisible}
-        integrations={environmentContext?.integrations}
+        integrations={integrations}
         handleCloseModal={handleCloseModal}
         handleUpdateEnvironment={handleUpdateEnvironment}
       />

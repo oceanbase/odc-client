@@ -216,7 +216,44 @@ export function getJavaPath() {
     JAVA_HOME: basePath,
     javaBin:
       isMac || isLinux ? path.join(basePath, '/bin/java') : path.join(basePath, '/bin/java.exe'),
+    jspawnhelper:
+      isMac || isLinux
+        ? path.join(basePath, '/lib/jspawnhelper')
+        : path.join(basePath, '/lib/jspawnhelper.exe'),
   };
+}
+
+export function getSettingPath() {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  let basePath = isDevelopment
+    ? path.join(process.cwd(), 'build/setting.json')
+    : path.join(process.resourcesPath || '', 'setting.json');
+  return basePath;
+}
+
+export function getUserSettingPath() {
+  return path.join(app.getPath('userData'), 'userSetting.json');
+}
+
+export function getSetting(): Record<string, string> {
+  const userSettingPath = getUserSettingPath();
+  let file = '';
+  if (fs.existsSync(userSettingPath)) {
+    // 先从用户数据目录里拿
+    file = fs.readFileSync(userSettingPath, 'utf-8').toString();
+  } else {
+    // 拿不到就拿默认值
+    let basePath = getSettingPath();
+    if (!fs.existsSync(basePath)) {
+      return null;
+    }
+    file = fs.readFileSync(basePath, 'utf-8').toString();
+  }
+  try {
+    return JSON.parse(file);
+  } catch (e) {
+    return null;
+  }
 }
 
 export function getRendererPath() {

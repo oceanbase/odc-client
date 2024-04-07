@@ -16,12 +16,12 @@
 
 import LocalMenus from '@/component/LocalMenus';
 import { ReactComponent as LogoImg } from '@/svgr/ob_logo.svg';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalImg } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
-import { Divider, message, Typography } from 'antd';
+import { Button, Divider, Form, Input, message, Space, Typography } from 'antd';
 import type { AlertProps } from 'antd/lib/alert';
 import type { FormProps } from 'antd/lib/form';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import type { IActivateFormProps } from './ActivateForm';
 import ActivateForm from './ActivateForm';
 import './index.less';
@@ -29,7 +29,8 @@ import type { ILoginFormProps } from './LoginForm';
 import LoginForm from './LoginForm';
 import type { IRegisterFormProps } from './RegisterForm';
 import RegisterForm from './RegisterForm';
-
+import { ESSOLgoinType } from '@/d.ts';
+import { LDAPLogin } from '@/page/Login/components/LDAPModal';
 export interface Values {
   username: string;
   password: string;
@@ -77,6 +78,8 @@ export interface LoginProps extends FormProps {
   showActivate?: boolean;
   showAuthCode?: boolean;
   showOtherLoginButton?: boolean;
+  ssoLoginType?: ESSOLgoinType;
+  ssoLoginName?: string;
   authCodeImg?: string;
   onShowRegisterChange?: (isShow: boolean) => void;
   onShowActivateChange?: (isShow: boolean) => void;
@@ -100,6 +103,8 @@ const Login: React.FC<LoginProps> = (props) => {
     enableRegister,
     showAuthCode,
     showOtherLoginButton,
+    ssoLoginType,
+    ssoLoginName,
     authCodeImg,
     onAuthCodeImgChange,
     style = {},
@@ -117,9 +122,13 @@ const Login: React.FC<LoginProps> = (props) => {
   const prefix = getPrefix('login');
   const isLoading = loginProps?.loading || registerProps?.loading || otherLoginProps?.loading;
 
+  const [isLDAPLogin, setIsLDAPLogin] = useState<boolean>(false);
+  const switchSSOLoginType = () => {
+    setIsLDAPLogin(!isLDAPLogin);
+  };
   const switchForm = useCallback(() => {
     if (isLoading) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.component.Login.Running' }), //正在执行中
       );
     }
@@ -128,7 +137,7 @@ const Login: React.FC<LoginProps> = (props) => {
 
   const goBack = useCallback(() => {
     if (isLoading) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.component.Login.Running' }), //正在执行中
       );
     }
@@ -198,6 +207,8 @@ const Login: React.FC<LoginProps> = (props) => {
                     errorMessage={alertProps?.message}
                   />
                 </>
+              ) : isLDAPLogin ? (
+                <LDAPLogin ssoLoginName={ssoLoginName} switchSSOLoginType={switchSSOLoginType} />
               ) : (
                 <>
                   <img src={logo} alt="" className={`${prefix}-logo`} />
@@ -205,6 +216,9 @@ const Login: React.FC<LoginProps> = (props) => {
                     {...loginProps}
                     otherLoginProps={otherLoginProps}
                     locale={locale}
+                    ssoLoginType={ssoLoginType}
+                    ssoLoginName={ssoLoginName}
+                    switchSSOLoginType={switchSSOLoginType}
                     errorMessage={alertProps?.message}
                     showAuthCode={showAuthCode}
                     showOtherLoginButton={showOtherLoginButton}

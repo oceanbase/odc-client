@@ -36,7 +36,7 @@ export async function listDatabases(
    */
   containsUnassigned?: boolean,
   existed?: boolean,
-  taskType?: string,
+  includesPermittedAction?: boolean
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -48,7 +48,7 @@ export async function listDatabases(
       environmentId,
       containsUnassigned,
       existed,
-      taskType,
+      includesPermittedAction
     },
   });
 

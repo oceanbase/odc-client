@@ -21,7 +21,7 @@ import VariableConfigTable from '@/component/Task/component/VariableConfigTable'
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import { updateLimiterConfig } from '@/common/network/task';
 import setting from '@/store/setting';
-import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
+import type { CycleTaskDetail, IDataClearJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
@@ -33,7 +33,7 @@ import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 const { Panel } = Collapse;
 const { Text } = Typography;
 interface IProps {
-  task: CycleTaskDetail<IDataArchiveJobParameters>;
+  task: CycleTaskDetail<IDataClearJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
   onReload?: () => void;
@@ -100,8 +100,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           })} /*数据库*/
         >
           <Space size={2}>
-            <span>{task?.databaseName || '-'}</span>
-            <Text type="secondary">{task?.datasource?.name}</Text>
+            <span>{task?.database?.name || '-'}</span>
+            <Text type="secondary">{task?.database?.dataSource?.name}</Text>
           </Space>
         </Descriptions.Item>
         {hasFlow && (
@@ -185,6 +185,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           label={
             formatMessage({
@@ -216,6 +217,17 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           />
         </Descriptions.Item>
         <Descriptions.Item
+          label={
+            formatMessage({
+              id: 'src.component.Task.DataClearTask.DetailContent.2D1A14AB',
+            }) /*"使用主键清理"*/
+          }
+        >
+          {jobParameters?.deleteByUniqueKey
+            ? formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.D2882643' })
+            : formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.834E7D89' })}
+        </Descriptions.Item>
+        <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataClearTask.DetailContent.Description',
           })}
@@ -229,6 +241,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({

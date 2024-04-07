@@ -53,9 +53,7 @@ const maxTextSize = 1024 * 200;
 const maxReadyonlyTextSize = 1024 * 1024 * 2;
 const len = 500;
 
-type Request = (
-  offset: number,
-) => Promise<{
+type Request = (offset: number) => Promise<{
   content: string;
   size: number;
 }>;
@@ -265,9 +263,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
                 />
               ) : disabled ? (
                 <div className={styles['contenttext-disabled']}>
-                  <Typography.Text disabled>
-                    {mode == DISPLAY_MODE.TEXT ? text : hexText}
-                  </Typography.Text>
+                  <Typography.Text>{mode == DISPLAY_MODE.TEXT ? text : hexText}</Typography.Text>
                 </div>
               ) : (
                 <Input.TextArea
@@ -413,7 +409,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
       maskClosable={!resultContext.isEditing}
       width={720}
       title={columnName}
-      visible={true}
+      open={true}
       centered
       onCancel={onCancel}
       footer={renderFooter()}
