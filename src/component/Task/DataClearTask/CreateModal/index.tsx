@@ -345,7 +345,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             /*源端数据库*/ projectId={projectId}
           />
         </Space>
-        <Space direction="vertical" size={24}>
+        <Space direction="vertical" size={24} style={{ width: '100%' }}>
           <ArchiveRange tables={tables} />
           <VariableConfig form={form} />
         </Space>

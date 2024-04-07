@@ -29,6 +29,7 @@ declare module '*.svg' {
 declare const ENV_target: 'web' | 'client';
 declare const ENV_environment: 'private' | 'cloud';
 declare const RELEASE_DATE: string | number;
+declare const ODC_VERSION: string;
 declare const MONACO_VERSION: string;
 declare const HAVEOCP: string;
 
