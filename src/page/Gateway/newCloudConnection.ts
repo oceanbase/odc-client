@@ -16,6 +16,7 @@
 
 import {
   createConnection,
+  getConnectionDetail,
   getConnectionList,
   testExsitConnection,
   updateConnectionFromConnection,
@@ -31,6 +32,7 @@ import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { message } from 'antd';
 import { listDatabases } from '@/common/network/database';
+import { getSentry } from '@/util/sentry';
 export interface INewCloudConnection {
   action: 'newCloudConnection';
   data: IRemoteNewCloudConnectionData | string;
@@ -192,6 +194,19 @@ export const action = async (config: INewCloudConnection) => {
         pass = true;
         return;
       }
+      /**
+       * 非预期错误，上报一下
+       */
+      getSentry()?.withScope((scope) => {
+        scope.setExtras({
+          fetchList: JSON.stringify(connectionList),
+          data,
+          params
+        });
+        getSentry()?.captureException(
+          new Error('Create Cloud Connection Failed'),
+        );
+      })
       message.error('Create Connection Failed');
       return;
     }
@@ -222,12 +237,20 @@ export const action = async (config: INewCloudConnection) => {
   if (!pass) {
     return 'Connect Failed';
   }
-  if (isExist) {
-    await updateConnectionFromConnection({
-      ...targetConnection,
-      passwordSaved: true,
-      password: password,
-    });
+  if (isExist && isPasswordError) {
+    /**
+     * replace password
+     */
+    const connectionDetail = await getConnectionDetail(targetConnection?.id);
+    if (connectionDetail) {
+      await updateConnectionFromConnection({
+        ...connectionDetail,
+        passwordSaved: true,
+        password: password,
+      });
+    } else {
+      return 'Update Connection Failed';
+    }
   }
   gotoSQLWorkspace(
     null,
