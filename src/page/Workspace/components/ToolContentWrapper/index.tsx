@@ -20,11 +20,7 @@
 import React from 'react';
 
 const ToolContentWrapper: React.FC<{}> = (props) => {
-  return (
-    <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>
-      {props.children}
-    </div>
-  );
+  return <div style={{ height: `calc(100% - 38px)`, position: 'relative' }}>{props.children}</div>;
 };
 
 export default ToolContentWrapper;

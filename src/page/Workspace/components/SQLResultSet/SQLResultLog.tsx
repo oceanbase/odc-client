@@ -25,7 +25,6 @@ import {
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React from 'react';
-
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import styles from './index.less';

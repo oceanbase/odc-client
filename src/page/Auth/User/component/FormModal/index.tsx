@@ -407,7 +407,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
             </Space>
           }
           destroyOnClose
-          visible={visible}
+          open={visible}
           onClose={() => {
             this.handleCancel(isEdit);
           }}
@@ -791,7 +791,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
           </Form>
         </Drawer>
         <Modal
-          visible={infoVisible}
+          open={infoVisible}
           wrapClassName={styles.userInfoModal}
           title={formatMessage({
             id: 'odc.components.FormUserModal.UserCreated',

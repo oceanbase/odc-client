@@ -18,7 +18,7 @@ import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration } from '@/d.ts';
 import { ComponentType, IRule, RuleType } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
-import { Button, Checkbox, Col, Descriptions, Drawer, Form, Radio, Row } from 'antd';
+import { Button, Checkbox, Col, Descriptions, Drawer, Form, Radio, Row, Switch } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
@@ -64,9 +64,8 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.componentType ===
         ComponentType.INPUT_STRING
       ) {
-        activeProperties[
-          `${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`
-        ] = rawData[activeKey] ? rawData[activeKey] : null;
+        activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
+          rawData[activeKey] ? rawData[activeKey] : null;
       } else {
         activeProperties[`${rule.metadata.propertyMetadatas?.[activeKey.slice(9)]?.name}`] =
           rawData[activeKey] !== -1 ? rawData[activeKey] : null;
@@ -80,6 +79,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         ...rule.properties,
         ...activeProperties,
       },
+      enabled: rawData?.enabled,
     };
     handleUpdateEnvironment(editedRule as IRule, formRef.resetFields);
   };
@@ -90,10 +90,12 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         level = 0,
         metadata: { propertyMetadatas },
         properties,
+        enabled,
       } = rule;
       const newInitData = {
         appliedDialectTypes,
         level,
+        enabled,
       };
       propertyMetadatas.forEach((pm, index) => {
         newInitData[`activeKey${index}`] = properties[pm.name];
@@ -294,6 +296,15 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             </Radio.Group>
           </Form.Item>
         )}
+
+        <Form.Item
+          name="enabled"
+          label={formatMessage({ id: 'src.page.Secure.Env.components.074ED6D7' }) /*"是否启用"*/}
+          required
+          valuePropName="checked"
+        >
+          <Switch />
+        </Form.Item>
       </Form>
     </Drawer>
   );

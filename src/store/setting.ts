@@ -33,7 +33,7 @@ import login from './login';
 export const themeKey = 'odc-theme';
 
 interface IThemeConfig {
-  editorTheme: string;
+  editorTheme: Record<string, string>;
   className: string;
   sheetTheme: string;
   cmdTheme: 'dark' | 'white';
@@ -43,13 +43,19 @@ interface IThemeConfig {
 }
 
 export enum EThemeConfigKey {
-  ODC_WHITE = 'odc-white',
-  ODC_DARK = 'odc-dark',
+  ODC_WHITE = 'White',
+  ODC_DARK = 'Dark',
 }
 const themeConfig: { [key: string]: IThemeConfig } = {
   [EThemeConfigKey.ODC_WHITE]: {
-    key: 'odc-white',
-    editorTheme: 'obwhite',
+    key: EThemeConfigKey.ODC_WHITE,
+    editorTheme: {
+      VSCode: 'vs',
+      OceanBase: 'obwhite',
+      'VSCode-HC': 'hc-light',
+      GitHub: 'github',
+      Monokai: 'vs',
+    },
     className: 'odc-white',
     sheetTheme: 'white',
     cmdTheme: 'white',
@@ -57,8 +63,14 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     chartsTheme: 'white',
   },
   [EThemeConfigKey.ODC_DARK]: {
-    key: 'odc-dark',
-    editorTheme: 'obdark',
+    key: EThemeConfigKey.ODC_DARK,
+    editorTheme: {
+      VSCode: 'vs-dark',
+      OceanBase: 'obdark',
+      'VSCode-HC': 'hc-black',
+      GitHub: 'githubDark',
+      Monokai: 'monokai',
+    },
     className: 'odc-dark',
     sheetTheme: 'dark',
     cmdTheme: 'dark',
@@ -66,7 +78,7 @@ const themeConfig: { [key: string]: IThemeConfig } = {
     chartsTheme: 'dark',
   },
 };
-const defaultTheme = 'odc-white';
+const defaultTheme = EThemeConfigKey.ODC_WHITE;
 
 export class SettingStore {
   @observable
@@ -76,8 +88,7 @@ export class SettingStore {
   public siderWidth: number = 260; // sidebar width
 
   @observable
-  public theme: IThemeConfig =
-    themeConfig[localStorage.getItem(themeKey)] || themeConfig[defaultTheme];
+  public theme: IThemeConfig = themeConfig[defaultTheme];
 
   /**
    * 是否支持数据的导出，包括下载与结果集导出
@@ -173,7 +184,7 @@ export class SettingStore {
   public settingLoadStatus: 'init' | 'loading' | 'done' | 'failed' = 'init';
 
   @observable
-  public configurations: IUserConfig = null;
+  public configurations: Partial<IUserConfig> = null;
 
   @observable
   public headerStyle: any = {
@@ -221,12 +232,15 @@ export class SettingStore {
 
   @action
   public async getUserConfig() {
-    const res = await request.get('/api/v1/users/me/configurations');
+    const res = await request.get('/api/v2/config/users/me/configurations');
     if (res?.data) {
-      this.configurations = res?.data?.reduce((data, item) => {
+      this.configurations = res?.data?.contents?.reduce((data, item) => {
         data[item.key] = item.value;
         return data;
       }, {});
+      this.theme = themeConfig[this.configurations['odc.appearance.scheme']];
+    } else {
+      this.configurations = {};
     }
   }
 
@@ -271,14 +285,30 @@ export class SettingStore {
         value: newData[key],
       };
     });
-    const res = await request.patch('/api/v1/users/me/configurations', {
+    const res = await request.patch('/api/v2/config/users/me/configurations', {
       data: serverData,
     });
-    const data = res?.data;
+    const data = res?.data?.contents;
     if (data) {
       await this.getUserConfig();
     }
-    return data;
+    return !!data;
+  }
+
+  @action
+  public async resetUserConfig() {
+    const res = await request.get('/api/v2/config/users/default/configurations');
+    const data = res?.data?.contents;
+    if (data) {
+      const res = await request.patch('/api/v2/config/users/me/configurations', {
+        data,
+      });
+      const userConfig = res?.data?.contents;
+      if (userConfig) {
+        await this.getUserConfig();
+      }
+    }
+    return !!data;
   }
 
   @action
@@ -295,9 +325,7 @@ export class SettingStore {
       this.settingLoadStatus = 'loading';
       await this.fetchSystemInfo();
       await this.getPublicKeyData();
-      if (this.serverSystemInfo?.spmEnabled && odc.appConfig.spm.enable) {
-        initTracert();
-      }
+
       this.settingLoadStatus = 'done';
     } catch (e) {
       console.error(e);
@@ -323,6 +351,7 @@ export class SettingStore {
     try {
       console.log('server buildTime:', new Date(info.buildTime));
       console.log('server version:', info.version);
+      console.log('odc version:', ODC_VERSION);
     } catch (e) {}
     this.serverSystemInfo = info;
   }

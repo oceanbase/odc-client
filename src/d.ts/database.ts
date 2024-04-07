@@ -24,6 +24,12 @@ export enum DatabaseSyncStatus {
   PENDING = 'PENDING',
 }
 
+export enum DatabasePermissionType {
+  QUERY = 'QUERY',
+  CHANGE = 'CHANGE',
+  EXPORT = 'EXPORT',
+}
+
 export interface IDatabase {
   id: number;
   databaseId?: string;
@@ -39,4 +45,17 @@ export interface IDatabase {
   tableCount: number;
   environment: IEnvironment;
   existed: boolean;
+  authorizedPermissionTypes?: DatabasePermissionType[];
+}
+
+export interface IUnauthorizedDatabase {
+  unauthorizedPermissionTypes: DatabasePermissionType[];
+  // 数据库ID
+  id: number;
+  // 数据库名称
+  name: string;
+  project: IProject;
+  dataSource: IDatasource;
+  environment: IEnvironment;
+  applicable: boolean;
 }

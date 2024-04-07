@@ -49,7 +49,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     projectId: number = context.projectId,
     id: number = dataSourceId,
   ) => {
-    const rawData = await listDatabases(projectId, id);
+    const rawData = await listDatabases(projectId, id, null, null, null, null, null, true);
     const resData =
       rawData?.contents?.map((content) => ({
         label: content.name,

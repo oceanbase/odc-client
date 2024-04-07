@@ -24,6 +24,8 @@ import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import CreateSequenceModal from '../components/CreateSequenceModal';
+import ODCSetting from '@/component/ODCSetting';
+import SelectDatabase from '@/component/SelectDatabase/index';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -39,6 +41,7 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateProcedureModal />
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
       <CreateModals />
+      <SelectDatabase />
     </>
   );
 };

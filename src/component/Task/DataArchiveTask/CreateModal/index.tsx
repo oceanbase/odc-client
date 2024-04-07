@@ -15,7 +15,7 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { createTask, getCycleTaskDetail } from '@/common/network/task';
+import { createTask, getCycleTaskDetail, previewSqlStatements } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -44,6 +44,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import DatabaseSelect from '../../component/DatabaseSelect';
+import SQLPreviewModal from '../../component/SQLPreviewModal';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
@@ -67,6 +68,7 @@ export const InsertActionOptions = [
     value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   },
 ];
+
 export const variable = {
   name: '',
   format: '',
@@ -82,7 +84,7 @@ const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
-  migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
+  migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   rowLimit: 100,
   dataSizeLimit: 1,
 };
@@ -117,7 +119,7 @@ const getVariables = (
   });
 };
 
-const getVariableValue = (
+export const getVariableValue = (
   value: {
     name: string;
     pattern: string;
@@ -151,24 +153,27 @@ const getVariableValue = (
 };
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId } = props;
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [previewSql, setPreviewSQL] = useState('');
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
-  const { session, database } = useDBSession(databaseId);
-  const databaseName = database?.name;
+  const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
+
   const loadTables = async () => {
-    const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
+    const tables = await getTableListByDatabaseName(sourceDBSession?.sessionId, sourceDB?.name);
     setTables(tables);
   };
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
   }>();
-  const { dataArchiveVisible, dataArchiveEditId } = modalStore;
-  const isEdit = !!dataArchiveEditId;
+  const { dataArchiveVisible, dataArchiveTaskData } = modalStore;
+  const dataArchiveEditId = dataArchiveTaskData?.id;
+  const isEdit = !!dataArchiveEditId && dataArchiveTaskData?.type === 'EDIT';
   const loadEditData = async (editId: number) => {
     const data = await getCycleTaskDetail<IDataArchiveJobParameters>(editId);
     const {
@@ -189,7 +194,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
     const formData = {
       databaseId: sourceDatabaseId,
-      targetDatabase: targetDataBaseId,
+      targetDataBaseId: targetDataBaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       deleteAfterMigration,
@@ -270,6 +275,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.DataArchiveTask.CreateModal.Cancel',
       }),
@@ -287,6 +293,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     });
   };
+  const handleCloseSQLPreviewModal = () => {
+    setPreviewModalVisible(false);
+    setPreviewSQL('');
+  };
   const handleSubmit = () => {
     form
       .validateFields()
@@ -294,7 +304,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const {
           startAt,
           databaseId,
-          targetDatabase,
+          targetDataBaseId,
           variables,
           tables: _tables,
           deleteAfterMigration,
@@ -311,7 +321,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           taskId: dataArchiveEditId,
           scheduleTaskParameters: {
             sourceDatabaseId: databaseId,
-            targetDataBaseId: targetDatabase,
+            targetDataBaseId,
             variables: getVariables(variables),
             tables:
               archiveRange === IArchiveRange.ALL
@@ -319,6 +329,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     return {
                       tableName: item?.tableName,
                       conditionExpression: '',
+                      targetTableName: '',
                     };
                   })
                 : _tables,
@@ -367,6 +378,40 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
+  const handleSQLPreview = () => {
+    form
+      .validateFields()
+      .then(async (values) => {
+        const { variables, tables: _tables, archiveRange } = values;
+        const parameters = {
+          variables: getVariables(variables),
+          tables:
+            archiveRange === IArchiveRange.ALL
+              ? tables?.map((item) => {
+                  return {
+                    tableName: item?.tableName,
+                    conditionExpression: '',
+                    targetTableName: '',
+                  };
+                })
+              : _tables,
+        };
+        const sqls = await previewSqlStatements(parameters);
+        if (sqls) {
+          setPreviewModalVisible(true);
+          setPreviewSQL(sqls?.join('\n'));
+        }
+      })
+      .catch((errorInfo) => {
+        console.error(JSON.stringify(errorInfo));
+      });
+  };
+
+  const handleConfirmTask = () => {
+    handleCloseSQLPreviewModal();
+    handleSubmit();
+  };
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -375,25 +420,37 @@ const CreateModal: React.FC<IProps> = (props) => {
     setCrontab(null);
     setHasEdit(false);
   };
+
+  const handleDBChange = () => {
+    form.setFieldValue('tables', [null]);
+  };
+
   useEffect(() => {
     if (!dataArchiveVisible) {
       handleReset();
     }
   }, [dataArchiveVisible]);
+
   useEffect(() => {
-    if (database?.id) {
+    if (sourceDB?.id) {
       loadTables();
-      if (!isEdit) {
-        form.setFieldValue('tables', [null]);
-      }
     }
-  }, [database?.id]);
+  }, [sourceDB?.id]);
 
   useEffect(() => {
     if (dataArchiveEditId) {
       loadEditData(dataArchiveEditId);
     }
   }, [dataArchiveEditId]);
+
+  useEffect(() => {
+    const databaseId = dataArchiveTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({
+        databaseId,
+      });
+    }
+  }, [dataArchiveTaskData?.databaseId]);
 
   return (
     <Drawer
@@ -402,12 +459,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       width={760}
       title={
         isEdit
-          ? formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.EditDataArchive',
-            }) //编辑数据归档
-          : formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.CreateADataArchive',
-            }) //新建数据归档
+          ? formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.77394106' })
+          : formatMessage({ id: 'src.component.Task.DataArchiveTask.CreateModal.81AF31F1' }) //'新建数据归档'
       }
       footer={
         <Space>
@@ -422,7 +475,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+          <Button type="primary" loading={confirmLoading} onClick={handleSQLPreview}>
             {
               isEdit
                 ? formatMessage({
@@ -456,6 +509,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
             })}
             /*源端数据库*/ projectId={projectId}
+            onChange={handleDBChange}
           />
 
           <DatabaseSelect
@@ -463,12 +517,12 @@ const CreateModal: React.FC<IProps> = (props) => {
             label={formatMessage({
               id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
             })}
-            /*目标数据库*/ name="targetDatabase"
+            /*目标数据库*/ name="targetDataBaseId"
             projectId={projectId}
           />
         </Space>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
-          <ArchiveRange tables={tables} />
+          <ArchiveRange enabledTargetTable tables={tables} />
           <VariableConfig form={form} />
         </Space>
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
@@ -572,8 +626,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 required: true,
                 message: formatMessage({
-                  id:
-                    'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
+                  id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
                 }), //'请选择插入策略'
               },
             ]}
@@ -584,6 +637,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         </FormItemPanel>
         <DescriptionInput />
       </Form>
+      <SQLPreviewModal
+        sql={previewSql}
+        visible={previewModalVisible}
+        onClose={handleCloseSQLPreviewModal}
+        onOk={handleConfirmTask}
+      />
     </Drawer>
   );
 };

@@ -78,7 +78,9 @@ export class ClusterStore {
               tenants.push({
                 tenantName: item.name,
                 tenantId: item.id,
-                tenantMode: ['MYSQL_TENANT', 'MYSQL_SERVERLESS'].includes(item.type) ? 'MySQL' : 'ORACLE',
+                tenantMode: ['MYSQL_TENANT', 'MYSQL_SERVERLESS'].includes(item.type)
+                  ? 'MySQL'
+                  : 'ORACLE',
               });
               newTenantMap[item.id] = tenants;
               break;

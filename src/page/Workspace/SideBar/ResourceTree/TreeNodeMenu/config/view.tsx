@@ -27,6 +27,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import setting from '@/store/setting';
@@ -94,6 +95,9 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.view.Export' }), //导出
       ellipsis: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -204,6 +208,9 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.Delete' })],
       ellipsis: true,
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const view = node.data as IView;
         Modal.confirm({

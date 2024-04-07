@@ -20,7 +20,7 @@ import * as monaco from 'monaco-editor';
 
 import odc from '@/plugins/odc';
 import SessionStore from '@/store/sessionManager/session';
-import { SettingStore } from '@/store/setting';
+import setting, { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
@@ -29,6 +29,8 @@ import * as groovy from './plugins/languageSupport/groovy';
 import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
 import logger from '@/util/logger';
+import { getFontSize } from './config';
+import { apply as themeApply } from './plugins/theme';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -54,6 +56,9 @@ export interface IProps {
 
   theme?: string;
 
+  /** @description 是否展示左侧行号 */
+  showLineNumbers?: boolean;
+
   readOnly?: boolean;
 
   onEditorCreated?: (editor: IEditor) => void;
@@ -62,7 +67,8 @@ export interface IProps {
 const MonacoEditor: React.FC<IProps> = function (props) {
   const {
     defaultValue,
-    language,
+    language = 'sql',
+    showLineNumbers = true,
     value,
     theme,
     readOnly,
@@ -72,7 +78,8 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     onEditorCreated,
   } = props;
   const [innerValue, _setInnerValue] = useState<string>(defaultValue);
-  const settingTheme = settingStore.theme.editorTheme;
+  const settingTheme =
+    settingStore.theme.editorTheme?.[settingStore.configurations['odc.editor.style.theme']];
   function setInnerValue(v: string) {
     if (readOnly) {
       return;
@@ -120,6 +127,15 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     }
   }, [readOnly, themeValue]);
 
+  useEffect(() => {
+    const fontSize = setting.configurations['odc.editor.style.fontSize'];
+    if (fontSize && editorRef.current) {
+      editorRef.current.updateOptions({
+        fontSize: getFontSize(fontSize),
+      });
+    }
+  }, [setting.configurations?.['odc.editor.style.fontSize']]);
+
   async function initPlugin() {
     const module = await import('./plugins/ob-language/index');
     if (!editorRef.current?.getModel?.()) {
@@ -139,15 +155,19 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       ),
     );
     markerPluginApply(editorRef.current.getModel());
-    logger.debug('init plugin done')
+    themeApply();
+    logger.debug('init plugin done');
   }
 
   async function initEditor() {
     editorRef.current = monaco.editor?.create(domRef.current, {
       value: innerValue,
-      language: language || 'sql',
+      language: language,
       theme: themeValue,
+      lineNumbers: showLineNumbers ? 'on' : 'off',
+      lineNumbersMinChars: showLineNumbers ? 5 : 0,
       minimap: { enabled: false },
+      fontSize: getFontSize(settingStore.configurations['odc.editor.style.fontSize']),
       automaticLayout: true,
       unicodeHighlight: {
         invisibleCharacters: false,
@@ -163,7 +183,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     if (!editorRef.current?.getModel?.()) {
       return;
     }
-    monaco.editor.setModelLanguage(editorRef.current.getModel(), language || 'sql');
+    monaco.editor.setModelLanguage(editorRef.current.getModel(), language);
     editorRef.current.onDidChangeModelContent((e) => {
       /**
        * editor value change
@@ -207,7 +227,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       language &&
       language !== editorRef.current?.getModel().getLanguageId()
     ) {
-      monaco.editor.setModelLanguage(editorRef.current?.getModel(), language || 'sql');
+      monaco.editor.setModelLanguage(editorRef.current?.getModel(), language);
     }
   }, [language]);
 

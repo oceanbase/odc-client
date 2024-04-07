@@ -169,6 +169,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                 onClick={async () => {
                   this.openDetailModal(record);
                 }}
+                key="view"
               >
                 {
                   formatMessage({
@@ -179,6 +180,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               </Action.Link>
               <Acess
                 {...createPermission(IManagerResourceType.role, actionTypes.update, record.id)}
+                key="access"
               >
                 <Action.Group>
                   <Action.Link
@@ -186,6 +188,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                     onClick={async () => {
                       this.openFormModal(record.id);
                     }}
+                    key="edit"
                   >
                     {
                       formatMessage({

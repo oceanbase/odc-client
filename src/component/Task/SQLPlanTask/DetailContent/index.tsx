@@ -19,9 +19,9 @@ import { SQLContent } from '@/component/SQLContent';
 import { operationTypeMap } from '@/component/Task/component/CommonDetailModal/TaskOperationRecord';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import type { CycleTaskDetail, ISqlPlayJobParameters, TaskOperationType } from '@/d.ts';
-import { ConnectionMode, TaskType } from '@/d.ts';
+import { TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
@@ -53,12 +53,13 @@ interface IProps {
   task: CycleTaskDetail<ISqlPlayJobParameters>;
   hasFlow: boolean;
   operationType?: TaskOperationType;
+  theme?: string;
 }
 
 const SqlPlanTaskContent: React.FC<IProps> = (props) => {
-  const { task, hasFlow, operationType } = props;
+  const { task, hasFlow, operationType, theme } = props;
   const { jobParameters, triggerConfig, allowConcurrent } = task ?? {};
-  const executionTimeout = jobParameters?.timeoutMillis / 1000 / 60 / 60;
+  const executionTimeout = milliSecondsToHour(jobParameters?.timeoutMillis);
 
   return (
     <>
@@ -109,13 +110,15 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
         content={
           <div style={{ margin: '8px 0' }}>
             <SQLContent
+              theme={theme}
               type={task?.type}
               sqlContent={jobParameters?.sqlContent}
               sqlObjectIds={jobParameters?.sqlObjectIds}
               sqlObjectNames={jobParameters?.sqlObjectNames}
               taskId={task?.id}
               language={
-                getDataSourceModeConfigByConnectionMode(task?.connection?.dbMode)?.sql?.language
+                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                  ?.sql?.language
               }
             />
           </div>

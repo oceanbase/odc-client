@@ -17,7 +17,7 @@
 import { clearModalConfirm } from '@/component/ErrorConfirmModal';
 import OBLogin from '@/component/Login';
 import { SPACE_REGEX } from '@/constant';
-import { ODCErrorsCode } from '@/d.ts';
+import { ESSOLgoinType, ODCErrorsCode } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import loginStore from '@/store/login';
 import type { SettingStore } from '@/store/setting';
@@ -171,14 +171,16 @@ const Login: React.FC<{
       setLoginLoading(false);
     }
   };
-
-  return !settingStore.serverSystemInfo?.passwordLoginEnabled ? /**
+  /**
    * 第三方自动登录配置开启的时候，不能出现登录页面
-   */ null : (
+   */
+  return !settingStore.serverSystemInfo?.passwordLoginEnabled ? null : (
     <OBLogin
       logo={getLocalImg('version_icon.png')}
       showAuthCode={settingStore.serverSystemInfo?.captchaEnabled}
       showOtherLoginButton={settingStore.serverSystemInfo.ssoLoginEnabled}
+      ssoLoginType={settingStore?.serverSystemInfo?.ssoLoginType}
+      ssoLoginName={settingStore?.serverSystemInfo?.ssoLoginName}
       otherLoginProps={{
         onFinish: loginStore.gotoLoginPageSSO,
       }}

@@ -12,6 +12,8 @@ console.log('git last commit: ', version);
  */
 const disableBrowserUpdate = process.env.DISABLE_BROWSER_UPDATE;
 
+let enableSourceMap = process.env.ENABLE_SOURCEMAP === "true";
+
 console.log(disableBrowserUpdate);
 
 let publicPath = '/';
@@ -36,6 +38,7 @@ const config = {
       content: version,
     },
   ],
+  devtool: enableSourceMap ? "cheap-module-source-map" : (process.env.NODE_ENV === 'development' ? 'cheap-module-source-map' : false),
 
   antd: {
     import: true,

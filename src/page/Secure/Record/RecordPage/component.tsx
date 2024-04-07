@@ -23,7 +23,7 @@ import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { Descriptions, Space } from 'antd';
 import React from 'react';
 import styles from './index.less';
-import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from './interface';
+import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 
 export const Status: React.FC<{
   result: AuditEventResult;
@@ -114,22 +114,18 @@ export const RecordContent: React.FC<{
             <div className={styles.authLabel}>
               {
                 formatMessage({
-                  id: 'odc.components.RecordPage.component.Connection',
-                }) /*所属连接*/
+                  id: 'src.page.Secure.Record.RecordPage.19BC82CE' /*所属数据源*/,
+                }) /* 所属数据源 */
               }
             </div>
             <Descriptions column={1}>
               <Descriptions.Item
-                label={formatMessage({
-                  id: 'odc.components.RecordPage.component.ConnectionName',
-                })} /*连接名称*/
+                label={formatMessage({ id: 'src.page.Secure.Record.RecordPage.14735BCB' })}
               >
                 {connectionName || '-'}
               </Descriptions.Item>
               <Descriptions.Item
-                label={formatMessage({
-                  id: 'odc.components.RecordPage.component.ConnectionMode',
-                })} /*连接模式*/
+                label={formatMessage({ id: 'src.page.Secure.Record.RecordPage.A75C9FD5' })}
               >
                 {connectionDialectType || '-'}
               </Descriptions.Item>
@@ -137,14 +133,16 @@ export const RecordContent: React.FC<{
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.HostnamePort',
                 })} /*主机名/端口*/
-              >{`${connectionHost || '-'}/${connectionPort || '-'}`}</Descriptions.Item>
+              >
+                {`${connectionHost || '-'}/${connectionPort || '-'}`}
+              </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.ClusterTenant',
                 })} /*集群/租户*/
-              >{`${connectionClusterName || '-'}/${
-                connectionTenantName || '-'
-              }`}</Descriptions.Item>
+              >
+                {`${connectionClusterName || '-'}/${connectionTenantName || '-'}`}
+              </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.DatabaseUsername',
@@ -156,6 +154,7 @@ export const RecordContent: React.FC<{
           </Space>
         </Descriptions.Item>
       )}
+
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.IpSource',
@@ -184,6 +183,7 @@ export const RecordContent: React.FC<{
           <UserPopover name={name ?? '-'} accountName={accountName ?? '-'} roles={roleNames} />
         </Descriptions.Item>
       )}
+
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.ExecutionTime',

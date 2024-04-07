@@ -101,13 +101,15 @@ class GrammerHelpSider extends Component<
           </div>
           <div className={styles['snippet-sider-filter']}>
             <Dropdown
-              overlay={
-                <Menu onClick={this.handleTypeChange}>
-                  {SNIPPET_TYPES.map((snippetType) => (
-                    <Menu.Item key={snippetType.key}>{snippetType.name}</Menu.Item>
-                  ))}
-                </Menu>
-              }
+              menu={{
+                onClick: this.handleTypeChange,
+                items: SNIPPET_TYPES.map((snippetType) => {
+                  return {
+                    key: snippetType.key,
+                    label: snippetType.name,
+                  };
+                }),
+              }}
             >
               <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
                 {targetSnippetType.name} <DownOutlined />

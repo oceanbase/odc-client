@@ -22,6 +22,7 @@ import type {
   TaskDetail,
   TaskRecord,
   TaskRecordParameters,
+  IResponseData,
 } from '@/d.ts';
 export interface ITaskDetailModalProps {
   visible: boolean;
@@ -30,7 +31,7 @@ export interface ITaskDetailModalProps {
   detailType: TaskDetailType;
   detailId: number;
   task: TaskDetail<TaskRecordParameters>;
-  subTasks: TaskRecord<IAsyncTaskParams>[];
+  subTasks: IResponseData<TaskRecord<IAsyncTaskParams>>;
   opRecord: TaskRecord<any>[];
   hasFlow: boolean;
   result: ITaskResult;

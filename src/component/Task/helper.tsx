@@ -15,14 +15,31 @@
  */
 
 import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { DatabasePermissionType } from '@/d.ts/database';
 import login from '@/store/login';
 import settingStore from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
+export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 
 // 423 屏蔽 SysFormItem 配置
 export const ENABLED_SYS_FROM_ITEM = false;
+
+export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) => {
+  let _permissions = [];
+  switch (taskType) {
+    case TaskType.EXPORT:
+      _permissions = [DatabasePermissionType.EXPORT];
+      break;
+    case TaskType.EXPORT_RESULT_SET:
+      _permissions = [DatabasePermissionType.EXPORT, DatabasePermissionType.QUERY];
+      break;
+    default:
+      _permissions = [DatabasePermissionType.CHANGE];
+  }
+  return _permissions.every((item) => permissions?.includes(item));
+};
 
 export const isCycleTask = (type: TaskType) => {
   return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
@@ -149,6 +166,12 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           enabled: true,
         },
         {
+          value: TaskPageType.STRUCTURE_COMPARISON,
+          label: formatMessage({ id: 'src.component.Task.223677D8' }), //'结构比对'
+
+          enabled: true,
+        },
+        {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
           label: formatMessage({
             id: 'odc.component.Task.helper.LockFreeStructureChange',
@@ -203,6 +226,11 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
       }), //'权限申请'
       group: [
         {
+          value: TaskPageType.APPLY_DATABASE_PERMISSION,
+          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
+          enabled: !isClient() && !isPersonal,
+        },
+        {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
           label: formatMessage({
             id: 'odc.src.component.Task.ApplicationProjectPermissions',
@@ -211,16 +239,6 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
       ],
     },
-    // {
-    //   groupName: '权限申请',
-    //   group: [
-    //     {
-    //       value: TaskPageType.SENSITIVE_COLUMN,
-    //       label: '敏感列',
-    //       enabled: true,
-    //     },
-    //   ],
-    // },
   ];
 };
 

@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
-import plType from '@/constant/plType';
+import plType, { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
@@ -130,7 +130,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       const { plName, plType } = plSchema;
       if (plName && !pageStore.activePage.isSaved) {
-        message.warn(
+        message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
           }),
@@ -197,6 +197,13 @@ const plActions: ToolBarActions = {
     },
     isVisible(ctx: PLPage) {
       const plSchema = ctx.getFormatPLSchema();
+      const isAnonymous = plSchema.plType === PLType.ANONYMOUSBLOCK;
+      if (
+        !getDataSourceModeConfig(ctx.getSession()?.connection?.type)?.features?.plRun &&
+        !isAnonymous
+      ) {
+        return false;
+      }
       return plSchema.plType != plType.PKG_HEAD && plSchema.plType != plType.PKG_BODY;
     },
     async action(ctx: PLPage) {
@@ -204,7 +211,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       const { plName } = plSchema;
       if (plName && !pageStore.activePage.isSaved) {
-        message.warn(
+        message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
           }),
@@ -223,7 +230,7 @@ const plActions: ToolBarActions = {
         );
         const { obDbObjectType } = resParse || {};
         if (obDbObjectType !== 'ANONYMOUS_BLOCK') {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.EditorToolBar.actions.pl.TheWindowContentDoesNot',
             }),
@@ -258,7 +265,7 @@ const plActions: ToolBarActions = {
       const plSchema = ctx.getFormatPLSchema();
       const { plName } = plSchema;
       if (plName && !pageStore.activePage.isSaved) {
-        message.warn(
+        message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
           }),
@@ -277,7 +284,7 @@ const plActions: ToolBarActions = {
         );
         const { obDbObjectType } = resParse || {};
         if (obDbObjectType !== 'ANONYMOUS_BLOCK') {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.EditorToolBar.actions.pl.TheWindowContentDoesNot',
             }),

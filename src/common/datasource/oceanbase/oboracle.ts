@@ -50,7 +50,7 @@ const functionConfig: IDataSourceModeConfig['schema']['func'] = {
 
 const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSourceModeConfig> = {
   [ConnectType.OB_ORACLE]: {
-    priority: 2,
+    priority: 99,
     connection: {
       address: {
         items: ['ip', 'port', 'cluster', 'tenant'],
@@ -60,20 +60,14 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
-      task: Object.values(TaskType).filter(
-        (type) =>
-          ![
-            TaskType.SHADOW,
-            TaskType.DATA_ARCHIVE,
-            TaskType.DATA_DELETE,
-            TaskType.PARTITION_PLAN,
-          ].includes(type),
-      ),
+      task: Object.values(TaskType).filter((type) => ![TaskType.SHADOW].includes(type)),
       obclient: true,
       recycleBin: true,
+      sessionManage: true,
       sqlExplain: true,
       compile: true,
       plEdit: true,
+      plRun: true,
       anonymousBlock: true,
       supportOBProxy: true,
       export: {
@@ -94,6 +88,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
   },
   [ConnectType.CLOUD_OB_ORACLE]: {
+    priority: 97,
     connection: {
       address: {
         items: ['ip', 'port'],
@@ -104,18 +99,13 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) =>
-          ![
-            TaskType.SHADOW,
-            TaskType.DATA_ARCHIVE,
-            TaskType.DATA_DELETE,
-            TaskType.PARTITION_PLAN,
-          ].includes(type),
+        (type) => ![TaskType.SHADOW, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type),
       ),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
       compile: true,
+      sessionManage: true,
       plEdit: true,
       anonymousBlock: true,
       supportOBProxy: true,

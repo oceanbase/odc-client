@@ -115,7 +115,7 @@ export default function NewDatasourceDrawer({
       onOk: async (_close) => {
         const name = (document.querySelector('#newCloudConnectionName') as HTMLInputElement)?.value;
         if (!name) {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.component.AddConnectionForm.NameItems.EnterAConnectionName',
             }),
@@ -125,13 +125,13 @@ export default function NewDatasourceDrawer({
           throw new Error('');
         }
         if (name?.length > 128) {
-          message.warn(
+          message.warning(
             formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.TheMaximumLengthOfThe' }), //名称最大长度为 128
           );
           throw new Error('');
         }
         if (!/^[^\s]*$/.test(name)) {
-          message.warn(
+          message.warning(
             formatMessage({
               id: 'odc.AddConnectionDrawer.AddConnectionForm.TheConnectionNameCannotContain',
             }),
@@ -143,7 +143,7 @@ export default function NewDatasourceDrawer({
           name,
         });
         if (isRepeat) {
-          message.warn(
+          message.warning(
             formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.TheNameAlreadyExists' }), //名称已存在
           );
           throw new Error();
@@ -180,7 +180,7 @@ export default function NewDatasourceDrawer({
       }
     }
   }
-
+  const connectType = originDatasource?.type || type;
   return (
     <Drawer
       width={520}
@@ -189,11 +189,11 @@ export default function NewDatasourceDrawer({
           ? formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.EditDataSource' }) //编辑数据源
           : formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.CreateADataSource' }) //新建数据源
       }
-      visible={visible}
+      open={visible}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          {isEdit && !haveOCP() ? (
+          {isEdit && !haveOCP() && connectType !== ConnectType.ORACLE ? (
             <Button onClick={copyUri}>
               {
                 formatMessage({

@@ -30,6 +30,7 @@ import WrapCheckboxFormatetr from '../RdgFomatter/CheckboxFormatter';
 import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { CaseTextEditor } from '../../EditableTable/Editors/CaseTextEditor';
 
 interface IColumnParams {
   session?: SessionStore;
@@ -40,6 +41,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
   const { dialectType, type } = session.connection || {};
   const pageContext = useContext(TablePageContext);
   const haveAutoIncrement = getDataSourceModeConfig(type)?.schema?.table?.enableAutoIncrement;
+  const sqlConfig = getDataSourceModeConfig(type)?.sql;
 
   const DataTypeSelect = useMemo(() => {
     return function (props) {
@@ -73,8 +75,10 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
     return function (props) {
       const { onRowChange, ...rest } = props;
       return (
-        <TextEditor
+        <CaseTextEditor
           {...rest}
+          caseSensitive={sqlConfig?.caseSensitivity}
+          escapes={sqlConfig?.escapeChar}
           onRowChange={(newRow: TableColumn, submit) => {
             if (!submit) {
               onRowChange(newRow, submit);
@@ -259,5 +263,5 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         editor: TextEditor,
       },
     ].filter(Boolean) as Column[];
-  }, [haveAutoIncrement]);
+  }, [haveAutoIncrement, originColumns]);
 }

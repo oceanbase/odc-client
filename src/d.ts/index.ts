@@ -18,6 +18,10 @@ import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
+import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
+import { EComparisonScope } from './task';
+import { EThemeConfigKey } from '@/store/setting';
+import { SpaceType } from './_index';
 
 export interface IUser {
   email: string;
@@ -72,12 +76,23 @@ export enum SQL_OBJECT_TYPE {
 
 // 个人配置
 export interface IUserConfig {
-  'sqlexecute.defaultDelimiter': string;
-  'sqlexecute.oracleAutoCommitMode': AutoCommitMode;
-  'sqlexecute.mysqlAutoCommitMode': AutoCommitMode;
-  'sqlexecute.defaultQueryLimit': string; // 大数值
-  'connect.sessionMode': SQLSessionMode;
-  'sqlexecute.defaultObjectDraggingOption': DragInsertType;
+  'odc.sqlexecute.default.delimiter': string;
+  'odc.sqlexecute.default.oracleAutoCommitMode': AutoCommitMode;
+  'odc.sqlexecute.default.mysqlAutoCommitMode': AutoCommitMode;
+  'odc.sqlexecute.default.fetchColumnInfo': 'true' | 'false';
+  'odc.sqlexecute.default.queryLimit': string;
+  'odc.sqlexecute.default.fullLinkTraceEnabled': 'true' | 'false';
+  'odc.sqlexecute.default.continueExecutionOnError': 'true' | 'false';
+  'odc.sqlexecute.default.addInternalRowId': 'true' | 'false';
+  'odc.sqlexecute.default.objectDraggingOption': DragInsertType;
+  'odc.editor.style.theme': 'OceanBase' | 'VSCode';
+  'odc.editor.style.fontSize': 'Small' | 'Normal' | 'Large';
+  'odc.editor.shortcut.executeStatement': string;
+  'odc.editor.shortcut.executeCurrentStatement': string;
+  'odc.appearance.scheme': EThemeConfigKey;
+  'odc.appearance.language': 'FollowSystem' | string;
+  'odc.account.defaultOrganizationType': SpaceType;
+  'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
 }
 
 // 系统配置
@@ -330,6 +345,7 @@ export interface ITaskFlow {
   id: number;
   name: string;
   builtIn: boolean;
+  externalApproval?: boolean;
   approvalExpirationIntervalSeconds: number;
   executionExpirationIntervalSeconds: number;
   waitExecutionExpirationIntervalSeconds: number;
@@ -394,6 +410,8 @@ export enum AuditEventType {
   MOCKDATA = 'MOCKDATA',
   // 影子表
   SHADOWTABLE_SYNC = 'SHADOWTABLE_SYNC',
+  // 结构比对
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   // 分区计划
   PARTITION_PLAN = 'PARTITION_PLAN',
   // 操作记录
@@ -420,6 +438,12 @@ export enum AuditEventType {
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   // SQL 安全规则管理
   SQL_SECURITY_RULE_MANAGEMENT = 'SQL_SECURITY_RULE_MANAGEMENT',
+  // 自动授权
+  AUTOMATION_RULE_MANAGEMENT = 'AUTOMATION_RULE_MANAGEMENT',
+  // 消息通知
+  NOTIFICATION_MANAGEMENT = 'NOTIFICATION_MANAGEMENT',
+  // 敏感列管理
+  SENSITIVE_COLUMN_MANAGEMENT = 'SENSITIVE_COLUMN_MANAGEMENT',
 }
 
 export enum AuditEventActionType {
@@ -504,6 +528,12 @@ export enum AuditEventActionType {
   APPROVE_SHADOWTABLE_SYNC_TASK = 'APPROVE_SHADOWTABLE_SYNC_TASK',
   REJECT_SHADOWTABLE_SYNC_TASK = 'REJECT_SHADOWTABLE_SYNC_TASK',
   STOP_SHADOWTABLE_SYNC_TASK = 'STOP_SHADOWTABLE_SYNC_TASK',
+  // 结构比对
+  CREATE_STRUCTURE_COMPARISON_TASK = 'CREATE_STRUCTURE_COMPARISON_TASK',
+  STOP_STRUCTURE_COMPARISON_TASK = 'STOP_STRUCTURE_COMPARISON_TASK',
+  EXECUTE_STRUCTURE_COMPARISON_TASK = 'EXECUTE_STRUCTURE_COMPARISON_TASK',
+  APPROVE_STRUCTURE_COMPARISON_TASK = 'APPROVE_STRUCTURE_COMPARISON_TASK',
+  REJECT_STRUCTURE_COMPARISON_TASK = 'REJECT_STRUCTURE_COMPARISON_TASK',
   // 分区管理
   CREATE_PARTITION_PLAN_TASK = 'CREATE_PARTITION_PLAN_TASK',
   STOP_PARTITION_PLAN_TASK = 'STOP_PARTITION_PLAN_TASK',
@@ -563,6 +593,33 @@ export enum AuditEventActionType {
   STOP_APPLY_PROJECT_PERMISSION_TASK = 'STOP_APPLY_PROJECT_PERMISSION_TASK',
   // SQL 安全规则管理
   UPDATE_SQL_SECURITY_RULE = 'UPDATE_SQL_SECURITY_RULE',
+  // 数据库权限申请
+  APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  CREATE_APPLY_DATABASE_PERMISSION_TASK = 'CREATE_APPLY_DATABASE_PERMISSION_TASK',
+  APPROVE_APPLY_DATABASE_PERMISSION_TASK = 'APPROVE_APPLY_DATABASE_PERMISSION_TASK',
+  REJECT_APPLY_DATABASE_PERMISSION_TASK = 'REJECT_APPLY_DATABASE_PERMISSION_TASK',
+  STOP_APPLY_DATABASE_PERMISSION_TASK = 'STOP_APPLY_DATABASE_PERMISSION_TASK',
+  // 数据库权限管理
+  DATABASE_PERMISSION_MANAGEMENT = 'DATABASE_PERMISSION_MANAGEMENT',
+  GRANT_DATABASE_PERMISSION = 'GRANT_DATABASE_PERMISSION',
+  REVOKE_DATABASE_PERMISSION = 'REVOKE_DATABASE_PERMISSION',
+  // 自动授权
+  CREATE_AUTOMATION_RULE = 'CREATE_AUTOMATION_RULE',
+  ENABLE_AUTOMATION_RULE = 'ENABLE_AUTOMATION_RULE',
+  DISABLE_AUTOMATION_RULE = 'DISABLE_AUTOMATION_RULE',
+  UPDATE_AUTOMATION_RULE = 'UPDATE_AUTOMATION_RULE',
+  DELETE_AUTOMATION_RULE = 'DELETE_AUTOMATION_RULE',
+  // 消息通知
+  CREATE_NOTIFICATION_CHANNEL = 'CREATE_NOTIFICATION_CHANNEL',
+  UPDATE_NOTIFICATION_CHANNEL = 'UPDATE_NOTIFICATION_CHANNEL',
+  DELETE_NOTIFICATION_CHANNEL = 'DELETE_NOTIFICATION_CHANNEL',
+  BATCH_UPDATE_NOTIFICATION_POLICIES = 'BATCH_UPDATE_NOTIFICATION_POLICIES',
+  // 敏感列管理
+  BATCH_CREATE_SENSITIVE_COLUMNS = 'BATCH_CREATE_SENSITIVE_COLUMNS',
+  BATCH_UPDATE_SENSITIVE_COLUMNS = 'BATCH_UPDATE_SENSITIVE_COLUMNS',
+  BATCH_DELETE_SENSITIVE_COLUMNS = 'BATCH_DELETE_SENSITIVE_COLUMNS',
+  ENABLE_SENSITIVE_COLUMN = 'ENABLE_SENSITIVE_COLUMN',
+  DISABLE_SENSITIVE_COLUMN = 'DISABLE_SENSITIVE_COLUMN',
 }
 
 export enum AuditEventDialectType {
@@ -570,6 +627,7 @@ export enum AuditEventDialectType {
   OB_ORACLE = 'OB_ORACLE',
   ORACLE = 'ORACLE',
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -628,6 +686,7 @@ export type ISQLScript = IScriptMeta;
 
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
   ORACLE = 'ORACLE',
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
@@ -714,6 +773,9 @@ export interface IConnection {
   sessionInitScript?: string;
   defaultSchema?: string;
   projectId?: number;
+  sid?: string;
+  serviceName?: string;
+  userRole?: string;
   readonly projectName?: string;
 }
 
@@ -1797,6 +1859,8 @@ export enum TaskPageType {
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
 }
 
 export enum TaskType {
@@ -1816,6 +1880,8 @@ export enum TaskType {
   DATA_DELETE = 'DATA_DELETE',
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
 }
 
 export enum TaskJobType {
@@ -2129,13 +2195,8 @@ export interface TaskRecord<P> {
   id: number;
   type: TaskType;
   subTypes: string[];
-  connection: {
-    id: number;
-    name: string;
-    dbMode: ConnectionMode;
-  };
-  databaseId: number;
-  databaseName: string;
+  database: IDatabase;
+  relatedDatabase?: IDatabase;
   creator: {
     id: number;
     name: string;
@@ -2202,9 +2263,11 @@ export type TaskRecordParameters =
   | ISQLPlanTaskParams
   | IAlterScheduleTaskParams
   | IResultSetExportTaskParams
-  | IApplyPermissionTaskParams;
+  | IApplyPermissionTaskParams
+  | IApplyDatabasePermissionTaskParams;
 
 export interface ITaskResult {
+  autoModifyTimeout?: boolean;
   containQuery: boolean;
   errorRecordsFilePath: string;
   failCount: number;
@@ -2212,6 +2275,7 @@ export interface ITaskResult {
   records: string[];
   successCount: number;
   zipFileDownloadUrl: string;
+  fullLogDownloadUrl: string;
   writeCount: number;
   conflictCount: number;
   ignoreCount: number;
@@ -2220,7 +2284,7 @@ export interface ITaskResult {
   rollbackPlanResult?: {
     error: string;
     generated: boolean;
-    objectId: string;
+    resultFileDownloadUrl: string;
     success: boolean;
   };
 }
@@ -2240,6 +2304,7 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
@@ -2257,10 +2322,9 @@ export interface IDataArchiveJobParameters {
 export interface IDataClearJobParameters {
   deleteAfterMigration: boolean;
   name: string;
-  sourceDatabaseId: number;
-  sourceDatabaseName?: string;
-  targetDataBaseId: number;
-  targetDatabaseName?: string;
+  databaseId: number;
+  databaseName?: string;
+  deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
     dataSizeLimit?: number;
@@ -2288,7 +2352,7 @@ export interface ISqlPlayJobParameters {
 export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
-  databaseName: string;
+
   creator: {
     id: number;
     name: string;
@@ -2305,16 +2369,7 @@ export interface ICycleTaskRecord<T> {
   jobParameters: T;
   nodeList?: ITaskFlowNode[];
   triggerConfig?: ICycleTaskTriggerConfig;
-  connection: {
-    id: number;
-    name: string;
-    dbMode: ConnectionMode;
-  };
-  datasource?: {
-    id: number;
-    name: string;
-    dbMode: ConnectionMode;
-  };
+  database: IDatabase;
   riskLevel?: IRiskLevel;
   description?: string;
 }
@@ -2410,7 +2465,16 @@ export interface CreateTaskRecord {
   executionTime?: number;
   description?: string;
 }
-
+export interface CreateStructureComparisonTaskRecord {
+  taskType: TaskType;
+  executionStrategy: TaskExecStrategy;
+  parameters: {
+    comparisonScope: EComparisonScope;
+    sourceDatabaseId: number;
+    tableNamesToBeCompared?: string[];
+    targetDatabaseId: number;
+  };
+}
 export interface IAsyncTaskParams {
   timeoutMillis: number;
   errorStrategy: string;
@@ -2424,6 +2488,7 @@ export interface IAsyncTaskParams {
   rollbackSqlObjectNames: string[];
   generateRollbackPlan: boolean;
   parentFlowInstanceId?: number;
+  retryTimes: number;
 }
 
 export interface IApplyPermissionTaskParams {
@@ -2436,6 +2501,20 @@ export interface IApplyPermissionTaskParams {
     name: string;
     id: number;
   }[];
+}
+
+export interface IApplyDatabasePermissionTaskParams {
+  project: {
+    id: number;
+    name?: string;
+  };
+  databases: {
+    id: number;
+    name?: string;
+  }[];
+  types: DatabasePermissionType[];
+  expireTime: number;
+  applyReason: string;
 }
 
 export interface IResultSetExportTaskParams {
@@ -2479,9 +2558,7 @@ export interface IMockDataParams {
   dbMode?: ConnectionMode;
 }
 
-export interface IPartitionPlanParams {
-  connectionPartitionPlan: IConnectionPartitionPlan;
-}
+export interface IPartitionPlanParams extends IPartitionPlan {}
 
 export interface ICycleTaskTriggerConfig {
   cronExpression?: string;
@@ -2549,13 +2626,11 @@ export interface IDataArchiveTaskParams {
   };
 }
 
-export interface IConnectionPartitionPlan {
-  databaseId: number;
-  flowInstanceId?: number;
-  inspectEnable: boolean;
-  inspectTriggerStrategy: string;
-  tablePartitionPlans: IPartitionPlanRecord[];
-  triggerConfig: ICycleTaskTriggerConfig;
+export interface IStructureComparisonTaskParams {
+  comparisonScope: EComparisonScope;
+  sourceDatabaseId: number;
+  tableNamesToBeCompared?: string[];
+  targetDatabaseId: number;
 }
 
 export enum TaskExecStrategy {
@@ -2599,7 +2674,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
-  unauthorizedDatabaseNames: string[];
+  unauthorizedDatabases: IUnauthorizedDatabase[];
   id?: number;
   candidates: {
     id: number;
@@ -2622,7 +2697,7 @@ export interface ITaskFlowNode {
 export type TaskDetail<P> = TaskRecord<P>;
 
 export interface IIPartitionPlanTaskDetail<T> extends TaskDetail<T> {
-  nextFireTimes: number[];
+  nextFireTimes?: number[];
 }
 
 export type CycleTaskDetail<T> = ICycleTaskRecord<T>;
@@ -2881,7 +2956,11 @@ export type IColumnSizeValue =
 export interface IColumnSizeMap {
   [key: string]: IColumnSizeValue;
 }
-
+export enum ESSOLgoinType {
+  OAUTH2 = 'OAUTH2',
+  LDAP = 'LDAP',
+  OIDC = 'OIDC',
+}
 export interface ServerSystemInfo {
   buildTime: number;
   startTime: number;
@@ -2937,6 +3016,8 @@ export interface ServerSystemInfo {
    */
   ssoLoginEnabled?: boolean;
   ssoLoginName?: string;
+  /** @description 第三集成登录类型 */
+  ssoLoginType?: ESSOLgoinType;
 }
 
 export enum ODCErrorsCode {
@@ -2957,6 +3038,8 @@ export enum ConnectType {
   CLOUD_OB_ORACLE = 'CLOUD_OB_ORACLE',
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
+  ORACLE = 'ORACLE',
 }
 
 export enum DragInsertType {
@@ -3094,32 +3177,131 @@ export interface IMaskPolicy {
   }[];
 }
 
-export interface IPartitionPlanRecordDetail {
-  isAutoPartition: boolean;
-  preCreatePartitionCount: number;
-  expirePeriod: number;
-  expirePeriodUnit: IPartitionPlanPeriodUnit;
-  partitionInterval: number;
-  partitionIntervalUnit: IPartitionPlanPeriodUnit;
-  partitionNamingPrefix: string;
-  partitionNamingSuffixExpression: string;
+export enum TaskPartitionStrategy {
+  DROP = 'DROP',
+  CREATE = 'CREATE',
 }
 
-export interface IPartitionPlanRecord {
-  flowInstanceId?: number;
+export interface IPartitionTableConfig {
+  partitionNameInvoker: PARTITION_NAME_INVOKER;
+  partitionNameInvokerParameters?: Record<string, any>;
+  partitionKeyConfigs?: IPartitionKeyConfig[];
   id?: number;
-  schemaName: string;
-  tableName: string;
-  partitionCount: number;
-  detail?: IPartitionPlanRecordDetail;
+  enabled?: boolean;
+  tableName?: string;
+  partitionType?: string;
+  containsCreateStrategy?: boolean;
+  containsDropStrategy?: boolean;
+  reloadIndexes?: boolean;
+}
+
+export interface IPartitionTablePreviewConfig {
+  tableNames: string[];
+  template: IPartitionTableConfig;
+}
+
+export enum PARTITION_NAME_INVOKER {
+  CUSTOM_PARTITION_NAME_GENERATOR = 'CUSTOM_PARTITION_NAME_GENERATOR',
+  DATE_BASED_PARTITION_NAME_GENERATOR = 'DATE_BASED_PARTITION_NAME_GENERATOR',
+}
+
+export enum PARTITION_KEY_INVOKER {
+  CUSTOM_GENERATOR = 'CUSTOM_GENERATOR',
+  TIME_INCREASING_GENERATOR = 'TIME_INCREASING_GENERATOR',
+  KEEP_MOST_LATEST_GENERATOR = 'KEEP_MOST_LATEST_GENERATOR',
+  HISTORICAL_PARTITION_PLAN_DROP_GENERATOR = 'HISTORICAL_PARTITION_PLAN_DROP_GENERATOR',
+  HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR = 'HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR',
+}
+
+export enum TaskErrorStrategy {
+  CONTINUE = 'CONTINUE',
+  ABORT = 'ABORT',
+}
+
+export interface IPartitionKeyConfig {
+  partitionKey?: string;
+  partitionKeyInvoker: PARTITION_KEY_INVOKER;
+  strategy: TaskPartitionStrategy;
+  partitionKeyInvokerParameters: Record<string, any>;
 }
 
 export interface IPartitionPlan {
-  connectionId: number;
-  flowInstanceId: number;
-  inspectEnable: boolean;
-  inspectTriggerStrategy: string;
-  tablePartitionPlans: IPartitionPlanRecord[];
+  creationTrigger: ICycleTaskTriggerConfig;
+  createTriggerNextFireTimes: number[];
+  droppingTrigger: ICycleTaskTriggerConfig;
+  dropTriggerNextFireTimes: number[];
+  databaseId: number;
+  enabled: boolean;
+  id: number;
+  maxErrors: number;
+  timeoutMillis: number;
+  partitionTableConfig: IPartitionTableConfig;
+  partitionTableConfigs: IPartitionTableConfig[];
+  errorStrategy: TaskErrorStrategy;
+}
+
+export interface IPartitionPlanTable {
+  DDL: string;
+  columns: {
+    name: string;
+    typeName: string;
+  }[];
+  constraints: unknown;
+  containsCreateStrategy: boolean;
+  containsDropStrategy: boolean;
+  reloadIndexes: boolean;
+  ddl: string;
+  inTablegroup: boolean;
+  indexes: unknown;
+  name: string;
+  owner: unknown;
+  partition: {
+    partitionDefinitions: {
+      comment: string;
+      dataDirectory: string;
+      indexDirectory: string;
+      maxRows: number;
+      maxValues: string[];
+      minRows: number;
+      name: string;
+      ordinalPosition: unknown;
+      type: string;
+      valuesList: unknown;
+    }[];
+    partitionKeyTypes: {
+      name: string;
+      precision: number;
+      scale?: number;
+    }[];
+    partitionOption: {
+      automatic: unknown;
+      columnNames: string[];
+      expression: string;
+      partitionsNum: number;
+      type: string;
+      verticalColumnNames: unknown;
+    };
+    schemaName: string;
+    subpartition: unknown;
+    subpartitionTemplated: boolean;
+    tableName: string;
+    warning: unknown;
+  };
+  partitionPlanTableConfig: IPartitionTableConfig;
+  partitionMode: string;
+  rangePartitioned: number;
+  schemaName: string;
+  stats: unknown;
+  strategies: TaskPartitionStrategy[];
+  tableOptions: unknown;
+  warning: unknown;
+}
+
+export interface IPartitionPlanKeyType {
+  name: string;
+  precision: number;
+  scale: number;
+  localizedMessage?: string;
 }
 
 export enum IPartitionPlanPeriodUnit {
@@ -3265,6 +3447,7 @@ export interface IScript {
 export enum ISSOType {
   OIDC = 'OIDC',
   OAUTH2 = 'OAUTH2',
+  LDAP = 'LDAP',
 }
 
 export enum IClientAuthenticationMethod {
@@ -3313,6 +3496,19 @@ export interface ISSO_OIDC_CONFIG {
   redirectUrl: string;
 }
 
+export interface ISSO_LDAP_CONFIG {
+  server: string;
+  managerDn: string;
+  managerPassword: string;
+  userSearchBase?: string;
+  userSearchFilter: string;
+  groupSearchBase?: string;
+  groupSearchFilter?: string;
+  groupSearchSubtree?: boolean;
+  registrationId?: string;
+  redirectUrl: string;
+}
+
 export interface ISSO_MAPPINGRULE {
   userNickNameField: string;
   userProfileViewType: 'FLAT' | 'NESTED';
@@ -3334,6 +3530,12 @@ export type ISSOConfig =
       type: ISSOType.OIDC;
       ssoParameter: ISSO_OIDC_CONFIG;
       mappingRule: ISSO_MAPPINGRULE;
+    }
+  | {
+      name: string;
+      type: ISSOType.LDAP;
+      ssoParameter: ISSO_LDAP_CONFIG;
+      mappingRule: Omit<ISSO_MAPPINGRULE, 'userAccountNameField'>;
     };
 
 export interface IFormatPLSchema {

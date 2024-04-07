@@ -16,18 +16,110 @@
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
-import { Descriptions, Space } from 'antd';
+import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
 import styles from './index.less';
+import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
+import { IEnvironment } from '@/d.ts/environment';
+import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { Acess, canAcess, createPermission } from '@/component/Acess';
+import { IManagerResourceType, actionTypes } from '@/d.ts';
 
-const EnvironmentInfo = ({ label, style, description }) => {
+const EnvironmentInfo: React.FC<{
+  loading: boolean;
+  currentEnvironment: IEnvironment;
+  handleSwitchEnvEnabled: () => void;
+  handleDeleteEnvironment: () => void;
+  handleUpdateEnvironment: () => void;
+}> = ({
+  loading,
+  currentEnvironment,
+  handleSwitchEnvEnabled = () => {},
+  handleDeleteEnvironment = () => {},
+  handleUpdateEnvironment = () => {},
+}) => {
+  const { name, style, builtIn = true, enabled, description } = currentEnvironment ?? {};
+  const handleMenuOnClick: MenuClickEventHandler = (info: MenuInfo) => {
+    switch (info?.key) {
+      case actionTypes.update: {
+        handleUpdateEnvironment();
+        return;
+      }
+      case actionTypes.delete: {
+        handleDeleteEnvironment();
+        return;
+      }
+      default: {
+        return;
+      }
+    }
+  };
+
+  const items = [
+    {
+      label: formatMessage({ id: 'src.page.Secure.Env.components.FF5B44FE' }), //'编辑环境'
+      key: actionTypes.update,
+    },
+    {
+      label: formatMessage({ id: 'src.page.Secure.Env.components.75B57B74' }), //'删除环境'
+      key: actionTypes.delete,
+    },
+  ]
+    ?.filter(
+      (item) => canAcess(createPermission(IManagerResourceType.environment, item?.key))?.accessible,
+    )
+    ?.filter(Boolean);
+  const hasPremissions = items?.length !== 0;
   return (
     <>
-      <Space className={styles.tag}>
-        <div className={styles.tagLabel}>
-          {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
-        </div>
-        <RiskLevelLabel content={label} color={style} />
-      </Space>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Space className={styles.tag}>
+          <div className={styles.tagLabel}>
+            {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
+          </div>
+          <Space size={0}>
+            <RiskLevelLabel content={name} color={style} />
+            {!enabled && (
+              <Tooltip title={formatMessage({ id: 'src.page.Secure.Env.components.60756A4B' })}>
+                <ExclamationCircleFilled
+                  style={{
+                    color: 'var(--function-gold6-color)',
+                    cursor: 'pointer',
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Space>
+        </Space>
+        <Space>
+          <Acess
+            fallback={null}
+            {...createPermission(IManagerResourceType.environment, actionTypes.update)}
+          >
+            <Button
+              onClick={handleSwitchEnvEnabled}
+              type={enabled ? 'default' : 'primary'}
+              loading={loading}
+              disabled={loading}
+            >
+              {enabled
+                ? formatMessage({ id: 'src.page.Secure.Env.components.A4A3A31E' })
+                : formatMessage({ id: 'src.page.Secure.Env.components.63058F33' })}
+            </Button>
+          </Acess>
+          {builtIn || !hasPremissions ? null : (
+            <Dropdown
+              menu={{
+                items,
+                onClick: handleMenuOnClick,
+              }}
+            >
+              <Button style={{ padding: '3.6px 8px' }}>
+                <Icon component={EllipsisOutlined} />
+              </Button>
+            </Dropdown>
+          )}
+        </Space>
+      </div>
       <Descriptions column={1}>
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
@@ -35,7 +127,7 @@ const EnvironmentInfo = ({ label, style, description }) => {
             formatMessage({ id: 'odc.Env.components.InnerEnvironment.Description' }) //描述
           }
         >
-          {description}
+          {description || '-'}
         </Descriptions.Item>
       </Descriptions>
     </>

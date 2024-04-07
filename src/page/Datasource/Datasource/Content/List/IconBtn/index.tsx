@@ -38,7 +38,7 @@ const IconBtn = forwardRef<HTMLSpanElement, IProps>(function (
   const [loading, setLoading] = useState(false);
   async function _onClick() {
     if (loading) {
-      message.warn(
+      message.warning(
         formatMessage({ id: 'odc.List.IconBtn.InProgressDoNotClick' }), //执行中，请勿重复点击
       );
       return;

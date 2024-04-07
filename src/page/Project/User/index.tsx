@@ -20,21 +20,23 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import TooltipAction from '@/component/TooltipAction';
+import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
-import { Button, message, Popconfirm } from 'antd';
+import { inject, observer } from 'mobx-react';
+import { Button, message, Popconfirm, Space, Tag } from 'antd';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
+import ManageModal from './ManageModal';
 import tracert from '@/util/tracert';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
   }),
-  [ProjectRole.DEVELOPER]: formatMessage({
-    id: 'odc.User.AddUserModal.CommonMember',
-  }),
+  [ProjectRole.DEVELOPER]: formatMessage({ id: 'src.page.Project.User.A0288936' }), //'开发者'
   [ProjectRole.DBA]: 'DBA',
   [ProjectRole.SECURITY_ADMINISTRATOR]: formatMessage({
     id: 'odc.src.page.Project.User.SecurityAdministrator',
@@ -45,15 +47,16 @@ export const projectRoleTextMap = {
 };
 interface IProps {
   id: string;
+  userStore?: UserStore;
 }
-const User: React.FC<IProps> = ({ id }) => {
+const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
-  const disabled =
-    project?.currentUserResourceRoles?.filter((roles) => [ProjectRole.OWNER]?.includes(roles))
-      ?.length === 0;
+  const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
+  const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
+  const [detailId, setDetailId] = useState<number>(null);
   const dataSource: (IProject['members'][0] & {
     roles: ProjectRole[];
   })[] = useMemo(() => {
@@ -63,17 +66,19 @@ const User: React.FC<IProps> = ({ id }) => {
         roles: ProjectRole[];
       }
     >();
-    context?.project?.members?.forEach((mem) => {
-      const { id, role } = mem;
-      if (userMap.has(id)) {
-        userMap.get(id).roles.push(role);
-      } else {
-        userMap.set(id, {
-          ...mem,
-          roles: [role],
-        });
-      }
-    });
+    context?.project?.members
+      ?.sort((item) => (userStore?.user?.id == item.id ? -1 : 1))
+      ?.forEach((mem) => {
+        const { id, role } = mem;
+        if (userMap.has(id)) {
+          userMap.get(id).roles.push(role);
+        } else {
+          userMap.set(id, {
+            ...mem,
+            roles: [role],
+          });
+        }
+      });
     return [...userMap.values()];
   }, [context?.project?.members]);
   useEffect(() => {
@@ -97,16 +102,31 @@ const User: React.FC<IProps> = ({ id }) => {
   async function updateUser(id: number) {
     setEditUserId(id);
   }
+
+  function showManageModal(id: number) {
+    setDetailId(id);
+    setManageModalVisiable(true);
+  }
+
+  function closeManageModal() {
+    setDetailId(null);
+    setManageModalVisiable(false);
+  }
+
   return (
     <TableCard
       title={
-        <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={disabled}>
-          {
-            formatMessage({
-              id: 'odc.Project.User.AddMembers',
-            }) /*添加成员*/
-          }
-        </Button>
+        <TooltipAction
+          title={!isOwner ? formatMessage({ id: 'src.page.Project.User.0C0586E8' }) : ''}
+        >
+          <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+            {
+              formatMessage({
+                id: 'odc.Project.User.AddMembers',
+              }) /*添加成员*/
+            }
+          </Button>
+        </TooltipAction>
       }
       extra={
         <FilterIcon onClick={context.reloadProject}>
@@ -115,7 +135,7 @@ const User: React.FC<IProps> = ({ id }) => {
       }
     >
       <MiniTable<IProject['members'][0]>
-        rowKey={'id'}
+        rowKey={'accountName'}
         columns={[
           {
             title: formatMessage({
@@ -123,6 +143,19 @@ const User: React.FC<IProps> = ({ id }) => {
             }),
             //用户名称
             dataIndex: 'name',
+            render(name, _) {
+              const isMe = userStore?.user?.id === _.id;
+              return isMe ? (
+                <Space size={5}>
+                  {name}
+                  <Tag style={{ border: 'none' }} color="blue">
+                    {formatMessage({ id: 'src.page.Project.User.15775BB9' /*我*/ }) /* 我 */}
+                  </Tag>
+                </Space>
+              ) : (
+                name
+              );
+            },
           },
           {
             title: formatMessage({
@@ -151,16 +184,34 @@ const User: React.FC<IProps> = ({ id }) => {
             dataIndex: 'name',
             width: 135,
             render(_, record) {
-              const disabled =
-                project?.currentUserResourceRoles?.filter((roles) =>
-                  [ProjectRole.OWNER]?.includes(roles),
-                )?.length === 0;
+              const disabled = !isOwner;
+              const isMe = userStore?.user?.id === record.id;
               return (
                 <Action.Group size={3}>
+                  <Action.Link
+                    disabled={disabled && !isMe}
+                    tooltip={
+                      disabled && !isMe
+                        ? formatMessage({ id: 'src.page.Project.User.907FD906' })
+                        : ''
+                    }
+                    onClick={() => {
+                      showManageModal(record.id);
+                    }}
+                  >
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
+                      }) /* 管理库权限 */
+                    }
+                  </Action.Link>
                   <Action.Link
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
+                    tooltip={
+                      disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -169,12 +220,19 @@ const User: React.FC<IProps> = ({ id }) => {
                     }
                   </Action.Link>
                   <Popconfirm
+                    key="import"
                     title={formatMessage({
                       id: 'odc.Project.User.AreYouSureYouWant',
                     })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
-                    <Action.Link key={'import'} disabled={disabled}>
+                    <Action.Link
+                      key={'import'}
+                      disabled={disabled}
+                      tooltip={
+                        disabled ? formatMessage({ id: 'src.page.Project.User.FE2F4924' }) : ''
+                      }
+                    >
                       {
                         formatMessage({
                           id: 'odc.Project.User.Remove',
@@ -189,7 +247,7 @@ const User: React.FC<IProps> = ({ id }) => {
         ]}
         dataSource={dataSource}
         pagination={{
-          total: dataSource?.length,
+          total: dataSource?.length || 0,
         }}
         loadData={(page) => {}}
       />
@@ -217,7 +275,15 @@ const User: React.FC<IProps> = ({ id }) => {
           context.project?.members?.filter((m) => m.id === editUserId)?.map((m) => m.role) || []
         }
       />
+
+      <ManageModal
+        visible={manageModalVisiable}
+        projectId={context.project?.id}
+        userId={detailId}
+        isOwner={isOwner}
+        onClose={closeManageModal}
+      />
     </TableCard>
   );
 };
-export default User;
+export default inject('userStore')(observer(User));

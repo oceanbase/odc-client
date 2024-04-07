@@ -18,10 +18,12 @@ import { formatMessage } from '@/util/intl';
 import { Col, Form, Input, Row, Select } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
 import React, { useContext, useEffect, useImperativeHandle } from 'react';
-import { useTableConfig } from '../config';
+import { useDataSourceConfig, useTableConfig } from '../config';
 import { getDefaultCollation } from '../helper';
 import TableContext from '../TableContext';
 import styles from './index.less';
+import { CaseInput } from '@/component/Input/Case';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 interface IProps {
   isEdit?: boolean;
@@ -39,6 +41,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
   const session = tableContext.session;
   const { collations, charsets } = session;
   const config = useTableConfig(session.connection?.dialectType);
+  const datasourceConfig = useDataSourceConfig(session.connection.type);
 
   useEffect(() => {
     form.setFieldsValue(model);
@@ -82,7 +85,9 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
               },
             ]}
           >
-            <Input
+            <CaseInput
+              caseSensitive={datasourceConfig?.sql?.caseSensitivity}
+              escapes={datasourceConfig?.sql?.escapeChar}
               autoFocus
               placeholder={formatMessage({
                 id: 'workspace.window.createTable.baseInfo.tableName.placeholder',

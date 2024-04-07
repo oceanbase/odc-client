@@ -18,7 +18,7 @@ import { getFunctionByFuncName } from '@/common/network';
 import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, DbObjectType, IFunction, PageType } from '@/d.ts';
+import { DbObjectType, IFunction, PageType } from '@/d.ts';
 import { PropsTab, TopTab } from '@/page/Workspace/components/FunctionPage';
 import {
   openBatchCompilePLPage,
@@ -33,6 +33,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -194,6 +195,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       actionType: actionTypes.update,
       hasDivider: true,
+      isHide(session, node) {
+        return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
+      },
       async run(session, node) {
         const func: IFunction = node.data;
         const { plPage, isNew } = await openFunctionEditPageByFuncName(
@@ -213,6 +217,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
       ],
       ellipsis: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -254,6 +261,9 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       ellipsis: true,
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const func: IFunction = node.data;
         Modal.confirm({

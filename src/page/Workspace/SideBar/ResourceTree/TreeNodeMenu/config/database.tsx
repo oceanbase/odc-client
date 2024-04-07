@@ -19,7 +19,9 @@ import { IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import login from '@/store/login';
 import setting from '@/store/setting';
+import modal from '@/store/modal';
 import { formatMessage } from '@/util/intl';
+import { isClient } from '@/util/env';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import tracert from '@/util/tracert';
@@ -67,6 +69,249 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         const database: IDatabase = node.data;
         openOBClientPage(database?.dataSource?.id, database?.id);
       },
+    },
+    {
+      key: 'TASK_EXPORT_MENU',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.503FF376',
+        }) /*'数据导出'*/,
+      ],
+      ellipsis: true,
+      children: [
+        {
+          key: 'TASK_EXPORT',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.0A419755',
+            }) /*'导出'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableDBExport;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeExportModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_EXPORT_RESULT_SET',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.42C44540',
+            }) /*'导出结果集'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableDBExport;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateResultSetExportTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+      ],
+    },
+    {
+      key: 'TASK_DATA_DEVELOP',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.9552E3A1',
+        }) /*'数据研发'*/,
+      ],
+      ellipsis: true,
+      children: [
+        {
+          key: 'TASK_IMPORT',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.2CFE4C42',
+            }) /*'导入'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableDBImport;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeImportModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_MOCKDATA',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.59BFC33A',
+            }) /*'模拟数据'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableMockdata;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeDataMockerModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_ASYNC',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.E6CFD4DD',
+            }) /*'数据库变更'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableAsyncTask;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateAsyncTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_ONLINE_SCHEMA_CHANGE',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.6844939F',
+            }) /*'无锁结构变更'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return !setting.enableOSC;
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateDDLAlterTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_SHADOW',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.1ACCD0B1',
+            }) /*'影子表同步'*/,
+          ],
+          ellipsis: true,
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeShadowSyncVisible(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_STRUCTURE_COMPARISON',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.3DDBBFA6',
+            }) /*'结构比对'*/,
+          ],
+          ellipsis: true,
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeStructureComparisonModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+      ],
+    },
+    {
+      key: 'TASK_CYCLE_MENU',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E',
+        }) /*'定时任务'*/,
+      ],
+      ellipsis: true,
+      children: [
+        {
+          key: 'TASK_SQL_PLAN',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.82D835BA',
+            }) /*'SQL 计划'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeCreateSQLPlanTaskModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_PARTITION_PLAN',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.481C5DF5',
+            }) /*'分区计划'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changePartitionModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_DATA_ARCHIVE',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.983B20EC',
+            }) /*'数据归档'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeDataArchiveModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'TASK_DATA_DELETE',
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.51FA0E16',
+            }) /*'数据清理'*/,
+          ],
+          ellipsis: true,
+          isHide(_, node) {
+            return isClient();
+          },
+          run(session, node, databaseFrom) {
+            const database: IDatabase = node.data;
+            modal.changeDataClearModal(true, {
+              databaseId: database?.id,
+            });
+          },
+        },
+      ],
     },
   ],
 };

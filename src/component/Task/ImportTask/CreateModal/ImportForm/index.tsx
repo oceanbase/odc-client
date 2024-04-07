@@ -69,7 +69,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
             return file?.status === 'uploading';
           })
         ) {
-          message.warn(
+          message.warning(
             formatMessage({ id: 'odc.ImportDrawer.ImportForm.FileUploading' }), //文件上传中
           );
           return;

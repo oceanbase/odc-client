@@ -15,106 +15,52 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
-import Icon, { DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Dropdown, Popover, Space, Spin, Tag } from 'antd';
+import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
 import { ConnectionMode } from '@/d.ts';
-import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import classNames from 'classnames';
-import SelectModal from './modal';
 import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
 import SessionDropdown from './SessionDropdown';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
+import login from '@/store/login';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 export default function SessionSelect({
   readonly,
-  dialectTypes,
+  feature,
 }: {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
+  feature?: keyof IDataSourceModeConfig['features'];
 }) {
   const context = useContext(SessionContext);
-  const [visible, setVisible] = useState(false);
+  const resourceTreeContext = useContext(ResourceTreeContext);
+  const activityContext = useContext(ActivityBarContext);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330994');
   }, []);
 
-  const { data, loading, run: fetchDatabase } = useRequest(listDatabases, {
-    manual: true,
-  });
-
-  const databaseOptions = useMemo(() => {
-    return data?.contents?.map((item) => {
-      return {
-        label: item.name,
-        key: item.id,
-      };
-    });
-  }, [data]);
-
-  function renderProject() {
-    const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.dbIcon;
-    return (
-      <Popover
-        overlayClassName={styles.pop}
-        placement="bottomLeft"
-        content={<ConnectionPopover connection={context?.session?.connection} />}
-      >
-        <Space className={styles.link} size={4}>
-          <Icon component={PjSvg} style={{ fontSize: 14, verticalAlign: 'text-top' }} />
-          <span style={{ verticalAlign: 'top' }}>
-            {context?.session?.odcDatabase?.project?.name}
-          </span>
-          {!context.datasourceMode && (
-            <>
-              <span>/</span>
-              <Icon
-                component={DBIcon?.component}
-                style={{ fontSize: 14, marginLeft: 2, verticalAlign: 'middle' }}
-              />
-              {context?.session?.odcDatabase?.name}
-            </>
-          )}
-          <DownOutlined />
-        </Space>
-      </Popover>
-    );
+  function focusDataBase(e: React.MouseEvent) {
+    const datasourceId = context?.session?.odcDatabase?.dataSource?.id;
+    const databaseId = context?.session?.odcDatabase?.id;
+    activityContext.setActiveKey(ActivityBarItemType.Database);
+    resourceTreeContext.setSelectDatasourceId(datasourceId);
+    resourceTreeContext.setCurrentDatabaseId(databaseId);
+    e.stopPropagation();
+    e.preventDefault();
   }
 
-  function renderDatasource() {
-    const DBIcon = getDataSourceStyleByConnectType(context?.session?.connection?.type)?.icon;
-    return (
-      <Popover
-        overlayClassName={styles.pop}
-        placement="bottomLeft"
-        content={<ConnectionPopover connection={context?.session?.connection} />}
-      >
-        <Space className={styles.link} size={4}>
-          <Icon
-            component={DBIcon?.component}
-            style={{ fontSize: 16, verticalAlign: 'text-top', color: DBIcon?.color }}
-          />
-          <span style={{ verticalAlign: 'top' }}>{context?.session?.connection?.name}</span>
-          {!context.datasourceMode && (
-            <>
-              <span>/</span>
-              {context?.session?.odcDatabase?.name}
-            </>
-          )}
-          <DownOutlined />
-        </Space>
-      </Popover>
-    );
-  }
   function renderEnv() {
     if (!context?.session?.odcDatabase?.environment?.name) {
       return null;
@@ -129,24 +75,83 @@ export default function SessionSelect({
     );
   }
   function renderSessionInfo() {
-    const fromDataSource = context?.from === 'datasource' || context.datasourceMode;
+    const fromDataSource = context.datasourceMode;
+
+    const dsStyle = getDataSourceStyleByConnectType(context?.session?.connection?.type);
+    const databaseItem = (
+      <Popover
+        overlayClassName={styles.pop}
+        placement="bottomLeft"
+        content={<ConnectionPopover connection={context?.session?.connection} />}
+      >
+        {fromDataSource ? (
+          <Space style={{ lineHeight: '22px' }} className={styles.link} size={4}>
+            <Icon
+              component={dsStyle?.icon?.component}
+              style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
+            />
+
+            <span style={{ lineHeight: 1 }}>{context?.session?.connection?.name}</span>
+            <DownOutlined />
+          </Space>
+        ) : (
+          <Space style={{ lineHeight: '22px' }} className={styles.link} size={4}>
+            <Icon
+              component={dsStyle?.dbIcon?.component}
+              style={{ fontSize: 16, verticalAlign: 'middle' }}
+            />
+
+            <span style={{ lineHeight: 1 }}>{context?.session?.odcDatabase?.name}</span>
+            <DownOutlined />
+          </Space>
+        )}
+      </Popover>
+    );
+    const aimItem = <AimOutlined className={styles.aim} onClick={focusDataBase} />;
+    const datasourceAndProjectItem = !fromDataSource ? (
+      <Space
+        size={1}
+        split={<Divider type="vertical" />}
+        style={{ color: 'var(--text-color-hint)' }}
+      >
+        {login.isPrivateSpace() ? null : (
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+            })}
+            {context?.session?.odcDatabase?.project?.name}
+          </span>
+        )}
+
+        <span>
+          {formatMessage({
+            id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+          })}
+          {context?.session?.odcDatabase?.dataSource?.name}
+        </span>
+      </Space>
+    ) : null;
+
     if (readonly) {
       return (
         <>
           {renderEnv()}
           <div className={classNames(styles.readonly)}>
-            {fromDataSource ? renderDatasource() : renderProject()}
+            {databaseItem}
+            {datasourceAndProjectItem}
           </div>
         </>
       );
     }
     return (
-      <SessionDropdown>
-        <div className={styles.content}>
-          {renderEnv()}
-          <div>{fromDataSource ? renderDatasource() : renderProject()}</div>
-        </div>
-      </SessionDropdown>
+      <div className={styles.content}>
+        {renderEnv()}
+        <SessionDropdown filters={{ feature }}>
+          <div>{databaseItem}</div>
+        </SessionDropdown>
+        <div>{aimItem}</div>
+        <div>{datasourceAndProjectItem}</div>
+      </div>
     );
   }
 
@@ -188,14 +193,6 @@ export default function SessionSelect({
             />
           )}
         </div>
-      )}
-
-      {!readonly && (
-        <SelectModal
-          dialectTypes={dialectTypes || []}
-          visible={visible}
-          close={() => setVisible(false)}
-        />
       )}
     </>
   );

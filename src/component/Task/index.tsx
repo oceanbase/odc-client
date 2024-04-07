@@ -21,7 +21,6 @@ import styles from './index.less';
 import Sider from './Sider';
 import CreateModals from './CreateModals';
 import { useSearchParams } from '@umijs/max';
-import { useEffect } from 'react';
 import login from '@/store/login';
 import { toInteger } from 'lodash';
 export const getTaskExecStrategyMap = (type: TaskType) => {
@@ -52,7 +51,12 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
           id: 'odc.src.component.Task.TimedExecution',
         }), //'定时执行'
       };
-      break;
+    case TaskType.STRUCTURE_COMPARISON: {
+      return {
+        [TaskExecStrategy.AUTO]: formatMessage({ id: 'src.component.Task.9B79BD20' }), //'自动执行'
+        [TaskExecStrategy.MANUAL]: formatMessage({ id: 'src.component.Task.0B2B1D60' }), //'手动执行'
+      };
+    }
     default:
       return {
         [TaskExecStrategy.AUTO]: formatMessage({
@@ -72,8 +76,9 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
 
 interface IProps {
   projectId?: number;
+  inProject?: boolean;
 }
-const TaskManaerPage = (props) => {
+const TaskManaerPage: React.FC<IProps> = (props) => {
   const { projectId, inProject } = props;
   const [search] = useSearchParams();
   const defaultTaskId = search.get('taskId');
@@ -93,6 +98,7 @@ const TaskManaerPage = (props) => {
           defaultTaskType={defaultTaskType}
           defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
         />
+
         <CreateModals projectId={projectId} theme="white" />
       </div>
     </>

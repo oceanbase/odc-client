@@ -69,7 +69,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     },
     [form],
   );
-  const { data: environments, loading } = useRequest(listEnvironments);
+  const { data: environments, loading } = useRequest(() => listEnvironments({ enabled: true }));
   async function test() {
     setTestResult(null);
     let values;
@@ -86,6 +86,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'sessionInitScript',
         'jdbcUrlParameters',
         'defaultSchema',
+        'sid',
+        'serviceName',
+        'userRole',
       ]);
     } catch (e) {}
     if (!values) {
@@ -166,6 +169,8 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           type,
           password: '',
           sysTenantPassword: '',
+          userRole: 'NORMAL',
+          sid: '',
         }}
         layout="vertical"
         form={form}
@@ -198,8 +203,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                 <span>
                   {
                     formatMessage({
-                      id:
-                        'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
+                      id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
                     }) /* 数据源类型: */
                   }
                 </span>
@@ -232,8 +236,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             disabled={isEdit}
             placeholder={
               formatMessage({
-                id:
-                  'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType.1',
+                id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType.1',
               }) /* 请选择类型 */
             }
             style={{
@@ -258,14 +261,13 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             }
             return (
               <>
-                {!haveOCP() && <ParseURLItem autoType={!isEdit} />}
+                {!haveOCP() && !dsc?.disableURLParse && <ParseURLItem autoType={!isEdit} />}
                 <AddressItems />
                 {dsc?.defaultSchema ? (
                   <Form.Item
                     label={
                       formatMessage({
-                        id:
-                          'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DefaultDatabase',
+                        id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DefaultDatabase',
                       }) /* 默认数据库 */
                     }
                     rules={[
@@ -300,13 +302,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                       width: 208,
                     }}
                   >
-                    {environments?.map((env) => {
-                      return (
-                        <Option key={env.id} value={env.id}>
-                          <RiskLevelLabel color={env.style} content={env.name} />
-                        </Option>
-                      );
-                    })}
+                    {environments
+                      // ?.filter((env) => env?.enabled)
+                      ?.map((env) => {
+                        return (
+                          <Option key={env.id} value={env.id}>
+                            <RiskLevelLabel color={env.style} content={env.name} />
+                          </Option>
+                        );
+                      })}
                   </Select>
                 </Form.Item>
                 {!login.isPrivateSpace() && <ProjectItem />}

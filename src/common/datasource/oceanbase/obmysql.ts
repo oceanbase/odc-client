@@ -61,6 +61,7 @@ const items: Record<
   IDataSourceModeConfig
 > = {
   [ConnectType.OB_MYSQL]: {
+    priority: 98,
     connection: {
       address: {
         items: ['ip', 'port', 'cluster', 'tenant'],
@@ -74,7 +75,9 @@ const items: Record<
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
+      sessionManage: true,
       supportOBProxy: true,
+      plRun: true,
       export: {
         fileLimit: true,
         snapshot: true,
@@ -89,9 +92,11 @@ const items: Record<
     sql: {
       language: 'obmysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
   [ConnectType.CLOUD_OB_MYSQL]: {
+    priority: 96,
     connection: {
       address: {
         items: ['ip', 'port'],
@@ -104,6 +109,7 @@ const items: Record<
       task: Object.values(TaskType),
       obclient: true,
       recycleBin: true,
+      sessionManage: true,
       sqlExplain: true,
       supportOBProxy: true,
       export: {
@@ -120,9 +126,11 @@ const items: Record<
     sql: {
       language: 'obmysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
   [ConnectType.ODP_SHARDING_OB_MYSQL]: {
+    priority: 95,
     connection: {
       address: {
         items: ['ip', 'port'],
@@ -136,6 +144,7 @@ const items: Record<
       task: [TaskType.ASYNC, TaskType.SQL_PLAN],
       obclient: false,
       recycleBin: false,
+      sessionManage: true,
       sqlExplain: false,
       supportOBProxy: true,
       export: {
@@ -152,6 +161,7 @@ const items: Record<
     sql: {
       language: 'obmysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
 };

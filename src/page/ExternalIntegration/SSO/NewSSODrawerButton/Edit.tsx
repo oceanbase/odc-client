@@ -15,7 +15,7 @@
  */
 
 import { getIntegrationDetail, updateIntegration } from '@/common/network/manager';
-import { EncryptionAlgorithm, ISSOConfig } from '@/d.ts';
+import { EncryptionAlgorithm, ISSOConfig, ISSOType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
 import { useRequest, useUpdate } from 'ahooks';
@@ -46,8 +46,15 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
   async function getSSOConfigById(id: number) {
     const data = await run(id);
     const configJson: ISSOConfig = safeParseJson(data?.configuration);
-    if (configJson) {
+    if (!configJson) {
+      return;
+    }
+    if (configJson.type !== ISSOType.LDAP) {
       configJson.ssoParameter.secret = data?.encryption?.secret;
+      formRef?.current?.form.setFieldsValue(configJson);
+    } else {
+      // LDAP 登录
+      configJson.ssoParameter.managerPassword = data?.encryption?.secret;
       formRef?.current?.form.setFieldsValue(configJson);
     }
   }
@@ -65,12 +72,16 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
       })
       .filter(Boolean);
     tracert.click('a3112.b64009.c330927.d367485');
+    const secret =
+      clone?.type === ISSOType.LDAP
+        ? clone?.ssoParameter?.managerPassword
+        : clone?.ssoParameter?.secret;
     const isSuccess = await updateIntegration({
       ...data,
       encryption: {
         enabled: true,
         algorithm: EncryptionAlgorithm.RAW,
-        secret: clone?.ssoParameter?.secret,
+        secret,
       },
       configuration: JSON.stringify(clone),
     });
@@ -92,10 +103,8 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
   return (
     <Drawer
       width={520}
-      visible={visible}
-      title={formatMessage({
-        id: 'odc.SSO.NewSSODrawerButton.Edit.EditSsoIntegrationConfiguration',
-      })} /*编辑 SSO 集成配置*/
+      open={visible}
+      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.3FA0382E' })}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>

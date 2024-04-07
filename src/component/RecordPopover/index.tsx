@@ -16,18 +16,21 @@
 
 import { getAuditList } from '@/common/network/manager';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
-import { AuditEventMetaMap } from '@/page/Secure/components/RecordPage/interface';
+import { AuditEventMetaMap } from '@/constant/record';
 import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
 import { SyncOutlined } from '@ant-design/icons';
 import { Drawer, Space } from 'antd';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
-import HeaderBtn from '../HeaderBtn';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { RecordTable } from './components';
 
-const RecordPopover: React.FC<{}> = () => {
+export interface RecordRef {
+  handleOpenDrawer: () => void;
+}
+
+const RecordPopover = forwardRef<any, any>((props, ref) => {
   const tableRef = useRef<ITableInstance>();
   const [visible, setVisible] = useState(false);
   const [records, setRecords] = useState(null);
@@ -39,10 +42,6 @@ const RecordPopover: React.FC<{}> = () => {
     return [start ? moment(start) : undefined, end ? moment(end) : moment()];
   });
 
-  const handleOpenDrawer = () => {
-    setVisible(true);
-  };
-
   const handleCloseDrawer = () => {
     setVisible(false);
   };
@@ -50,6 +49,18 @@ const RecordPopover: React.FC<{}> = () => {
   const handleReload = () => {
     tableRef.current?.reload?.();
   };
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        handleOpenDrawer() {
+          setVisible(true);
+        },
+      };
+    },
+    [],
+  );
 
   const loadData = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
@@ -116,44 +127,34 @@ const RecordPopover: React.FC<{}> = () => {
   }, [executeTime]);
 
   return (
-    <>
-      <HeaderBtn onClick={handleOpenDrawer}>
-        {
-          formatMessage({
-            id: 'odc.component.RecordPopover.OperationRecords',
-          })
-          /*操作记录*/
-        }
-      </HeaderBtn>
-      <Drawer
-        width={960}
-        title={
-          <Space>
-            <span>
-              {
-                formatMessage({
-                  id: 'odc.component.RecordPopover.OperationRecords',
-                }) /*操作记录*/
-              }
-            </span>
-            <SyncOutlined onClick={handleReload} />
-          </Space>
-        }
-        open={visible}
-        onClose={handleCloseDrawer}
-      >
-        <RecordTable
-          tableRef={tableRef}
-          executeTime={executeTime}
-          executeDate={executeDate}
-          records={records}
-          loadData={loadData}
-          handleTableChange={handleTableChange}
-          handleExecuteDateChange={handleExecuteDateChange}
-        />
-      </Drawer>
-    </>
+    <Drawer
+      width={960}
+      title={
+        <Space>
+          <span>
+            {
+              formatMessage({
+                id: 'odc.component.RecordPopover.OperationRecords',
+              }) /*操作记录*/
+            }
+          </span>
+          <SyncOutlined onClick={handleReload} />
+        </Space>
+      }
+      open={visible}
+      onClose={handleCloseDrawer}
+    >
+      <RecordTable
+        tableRef={tableRef}
+        executeTime={executeTime}
+        executeDate={executeDate}
+        records={records}
+        loadData={loadData}
+        handleTableChange={handleTableChange}
+        handleExecuteDateChange={handleExecuteDateChange}
+      />
+    </Drawer>
   );
-};
+});
 
 export default RecordPopover;

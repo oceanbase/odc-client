@@ -17,7 +17,7 @@
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
-import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import { executeTaskManager, IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { batchGetDataModifySQL } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { IEditor } from '@/component/MonacoEditor';
@@ -36,7 +36,9 @@ import {
   ISqlExecuteResultStatus,
   ISQLScript,
   ITableColumn,
+  IUserConfig,
 } from '@/d.ts';
+import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
@@ -54,7 +56,7 @@ import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { IDisposable, KeyMod, KeyCode } from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
@@ -63,6 +65,8 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
+import setting, { SettingStore } from '@/store/setting';
+import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -93,6 +97,8 @@ interface ISQLPageState {
   lintResultSet: ISQLLintReuslt[];
   // 记录当前编辑器中的sql内容
   executeOrPreCheckSql: string;
+  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedSql?: string;
   sqlChanged: boolean;
   baseOffset: number;
   status: EStatus;
@@ -102,6 +108,7 @@ interface ISQLPageState {
 interface IProps {
   params?: ISQLPageParams;
   sqlStore?: SQLStore;
+  settingStore?: SettingStore;
   userStore?: UserStore;
   pageStore?: PageStore;
   sessionManagerStore?: SessionManagerStore;
@@ -118,7 +125,7 @@ interface IProps {
   onSetUnsavedModalContent?: (title: string) => void;
 }
 
-@inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore', 'modalStore')
+@inject('sqlStore', 'userStore', 'pageStore', 'sessionManagerStore', 'modalStore', 'settingStore')
 @observer
 export class SQLPage extends Component<IProps, ISQLPageState> {
   public readonly state: ISQLPageState = {
@@ -142,6 +149,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     resultSetIndex: 0,
     editingMap: {},
     lintResultSet: null,
+    unauthorizedDatabases: null,
+    unauthorizedSql: '',
     executeOrPreCheckSql: null,
     sqlChanged: false,
     baseOffset: 0,
@@ -157,6 +166,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   private timer: number | undefined;
 
   private _session: SessionStore;
+
+  private actions: IDisposable[];
+  private config: Partial<IUserConfig>;
 
   constructor(props) {
     super(props);
@@ -235,6 +247,12 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         {},
         { cid: this.getSession()?.odcDatabase?.id, dbName: this.getSession()?.odcDatabase?.name },
       );
+      /**
+       * 异步加载内置片段
+       */
+      this.getSession()?.addBuiltinSnippets();
+    } else if (this.props.settingStore.configurations !== this.config) {
+      this.bindEditorKeymap();
     }
   }
 
@@ -268,33 +286,49 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
    * ======== SQL相关 ===========
    */
 
+  public bindEditorKeymap = () => {
+    if (!this.editor) {
+      return;
+    }
+    const {
+      'odc.editor.shortcut.executeCurrentStatement': executeCurrentStatement,
+      'odc.editor.shortcut.executeStatement': executeStatement,
+    } = setting.configurations;
+    this.actions?.forEach((action) => {
+      action.dispose();
+    });
+    this.actions = [
+      this.editor.addAction({
+        id: 'sql_download',
+        label: 'download',
+        keybindings: [KeyMod.WinCtrl | KeyCode.KeyD],
+        run: () => this.handleDownload(),
+      }),
+      this.editor.addAction({
+        id: 'sql_save',
+        label: 'save',
+        keybindings: [KeyMod.CtrlCmd | KeyCode.KeyS],
+        run: () => this.saveScript(),
+      }),
+      this.editor.addAction({
+        id: 'sql_executeSql',
+        label: 'execute',
+        keybindings: executeStatement ? [getKeyCodeValue(executeStatement)] : [],
+        run: () => this.handleExecuteSQL(),
+      }),
+      this.editor.addAction({
+        id: 'sql_executeSelectedSql',
+        label: 'executeSelected',
+        keybindings: executeCurrentStatement ? [getKeyCodeValue(executeCurrentStatement)] : [],
+        run: () => this.handleExecuteSelectedSQL(),
+      }),
+    ];
+    this.config = setting.configurations;
+  };
+
   public handleEditorCreated = (editor: IEditor) => {
     this.editor = editor; // 快捷键绑定
-
-    this.editor.addAction({
-      id: 'sql_download',
-      label: 'download',
-      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD],
-      run: () => this.handleDownload(),
-    });
-    this.editor.addAction({
-      id: 'sql_save',
-      label: 'save',
-      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
-      run: () => this.saveScript(),
-    });
-    this.editor.addAction({
-      id: 'sql_executeSql',
-      label: 'execute',
-      keybindings: [monaco.KeyCode.F8, monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
-      run: () => this.handleExecuteSQL(),
-    });
-    this.editor.addAction({
-      id: 'sql_executeSelectedSql',
-      label: 'executeSelected',
-      keybindings: [monaco.KeyCode.F9],
-      run: () => this.handleExecuteSelectedSQL(),
-    });
+    this.bindEditorKeymap();
     this.debounceHighlightSelectionLine();
     //  编辑光标位置变化事件
     this.editor.onDidChangeCursorPosition(() => {
@@ -491,14 +525,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }; // 保存 SQL
 
   public handleCreateSQL = async (script: ISQLScript) => {
-    const {
-      userStore,
-      pageStore,
-      pageKey,
-      onSetUnsavedModalContent,
-      onChangeSaved,
-      params,
-    } = this.props;
+    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
+      this.props;
     let existedScriptId;
     const newFiles = await newScript(
       [new File([params.scriptText], script.objectName)],
@@ -669,6 +697,13 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlStore.lockResultSet(pageKey, key);
   };
 
+  public handleCheckDatabasePermission = (result: IExecuteTaskResult) => {
+    this.setState({
+      unauthorizedDatabases: result?.unauthorizedDatabases,
+      unauthorizedSql: result?.unauthorizedSql,
+    });
+  };
+
   public onUpdateEditing = (resultSetIndex: number, editing: boolean) => {
     const resultSets = this.props.sqlStore.resultSets.get(this.props.pageKey);
     this.setState({
@@ -720,7 +755,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
             }
           });
           if (isEmpty) {
-            message.warn(
+            message.warning(
               formatMessage({
                 id: 'odc.TablePage.TableData.DoNotSubmitBlankLines',
               }),
@@ -752,7 +787,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         })
         .filter(Boolean);
       if (!editRows?.length) {
-        message.warn(
+        message.warning(
           formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
         );
         return;
@@ -778,7 +813,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       }
 
       if (!sql) {
-        message.warn(
+        message.warning(
           formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
         );
         return;
@@ -811,6 +846,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       if (!result) {
         return;
       }
+      this.handleCheckDatabasePermission(result);
       /**
        * 这里只需要第一个错误的节点，因为一个报错，后面的都会取消执行，没必要把取消执行的错误也抛出去
        */
@@ -977,7 +1013,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     } else if (value?.length > MAX_LIMIT) {
       !this.outOfLimitTipHaveShow &&
-        message.warn(
+        message.warning(
           formatMessage({ id: 'odc.components.SQLPage.BecauseTheSqlIsToo' }), //由于 SQL 过长，编辑器将只支持预览
         );
       this.outOfLimitTipHaveShow = true;
@@ -1081,6 +1117,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       status,
       sqlChanged,
       baseOffset,
+      unauthorizedDatabases,
+      unauthorizedSql,
     } = this.state;
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
@@ -1130,6 +1168,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 session={session}
                 baseOffset={baseOffset}
                 lintResultSet={lintResultSet}
+                unauthorizedDatabases={unauthorizedDatabases}
+                unauthorizedSql={unauthorizedSql}
                 sqlChanged={sqlChanged}
                 hanldeCloseLintPage={this.hanldeCloseLintPage}
               />
@@ -1237,6 +1277,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.getSession()?.database?.dbName,
       false,
     );
+    this.handleCheckDatabasePermission(results);
     if ((!results || results?.invalid) && !results?.hasLintResults) {
       return;
     }

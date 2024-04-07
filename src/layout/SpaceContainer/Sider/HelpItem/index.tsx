@@ -75,13 +75,14 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
 
   const getHelpMenus = () => {
     return (
-      <Menu selectedKeys={null}>
-        {HELP_MENUS.map((item) => (
-          <Menu.Item key={item.key} onClick={item.action}>
-            {item.title}
-          </Menu.Item>
-        ))}
-      </Menu>
+      <Menu
+        selectedKeys={null}
+        items={HELP_MENUS.map((item) => ({
+          key: item.key,
+          onClick: item.action,
+          label: item.title,
+        }))}
+      />
     );
   };
 

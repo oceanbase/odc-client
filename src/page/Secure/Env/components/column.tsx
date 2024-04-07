@@ -21,11 +21,12 @@ import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { Space, Switch, Tooltip } from 'antd';
+import { Button, Space, Switch, Tooltip } from 'antd';
 import { useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import { SqlInterceptorKey } from './EditRuleDrawer';
 import { RenderLevel } from './InnerEnvironment';
+import styles from './index.less';
 
 function getConfig(
   rule: IRule,
@@ -200,9 +201,13 @@ export const getColumns = ({
               fallback={<span>-</span>}
               {...createPermission(IManagerResourceType.ruleset, actionTypes.update)}
             >
-              <a onClick={() => handleOpenEditModal(record)}>
+              <Button
+                type="link"
+                className={styles.linkBtnDisabled}
+                onClick={() => handleOpenEditModal(record)}
+              >
                 {formatMessage({ id: 'odc.Env.components.InnerEnvironment.Edit' }) /*编辑*/}
-              </a>
+              </Button>
             </Acess>
           </Space>
         </>

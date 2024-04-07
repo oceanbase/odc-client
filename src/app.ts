@@ -31,9 +31,8 @@ if (isClient()) {
     });
   });
 } else {
-  initSentry()
+  initSentry();
 }
-
 
 // TODO: 非云上场景不应该 export qiankun
 export const qiankun = {
@@ -60,7 +59,6 @@ export const qiankun = {
 };
 
 export async function render(oldRender: () => void) {
-
   await initIntl();
   registerPlugins();
   await initMetaStore();

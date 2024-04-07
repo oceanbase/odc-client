@@ -25,20 +25,19 @@ import {
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
+import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   CycleTaskDetail,
   IAsyncTaskParams,
-  IConnectionPartitionPlan,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
   IDataClearJobParameters,
   IPartitionPlanParams,
-  IApplyPermissionTaskParams,
-  IPartitionPlanRecord,
   ITaskResult,
   TaskDetail,
   TaskRecord,
   IIPartitionPlanTaskDetail,
+  IResponseData,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -63,15 +62,18 @@ import { getItems as getResultSetExportTaskContentItems } from './ResultSetExpor
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
+import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
+import { StructureComparisonTaskContent } from './StructureComparisonTask';
 
 interface IProps {
+  taskOpenRef?: React.RefObject<boolean>;
   type: TaskType;
   detailId: number;
   visible: boolean;
-  partitionPlan?: IConnectionPartitionPlan;
-  onReloadList: () => void;
+  enabledAction?: boolean;
+  theme?: string;
+  onReloadList?: () => void;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
-  onPartitionPlanChange?: (value: IConnectionPartitionPlan) => void;
 }
 
 const taskContentMap = {
@@ -93,11 +95,12 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, partitionPlan } = props;
+  const { type, visible, detailId, enabledAction = true, theme, taskOpenRef } = props;
   const [task, setTask] = useState<
-    TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>
+    | TaskDetail<TaskRecordParameters>
+    | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
   >(null);
-  const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
+  const [subTasks, setSubTasks] = useState<IResponseData<ICycleSubTaskRecord>>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
@@ -126,32 +129,12 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
-
-  const handlePartitionPlansChange = (values: IPartitionPlanRecord[]) => {
-    props.onPartitionPlanChange({
-      ...partitionPlan,
-      tablePartitionPlans: values,
-    });
-  };
-
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
     setLoading(false);
     if (data) {
       setTask(data);
-      if (data.type === TaskType.PARTITION_PLAN) {
-        const connectionPartitionPlan = (data?.parameters as IPartitionPlanParams)
-          ?.connectionPartitionPlan;
-        props.onPartitionPlanChange({
-          ...connectionPartitionPlan,
-          tablePartitionPlans: connectionPartitionPlan.tablePartitionPlans?.map((item, index) => ({
-            ...item,
-            id: index,
-          })),
-        });
-      } else {
-        setDisabledSubmit(false);
-      }
+      setDisabledSubmit(false);
     }
   };
 
@@ -175,21 +158,27 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   };
 
-  const loadSubTask = async function () {
+  const loadSubTask = async function (args) {
+    const { filters, pagination, pageSize } = args ?? {};
+    const { status } = filters ?? {};
+    const { current = 1 } = pagination ?? {};
     const data = await getTaskList({
       createdByCurrentUser: false,
       approveByCurrentUser: false,
       parentInstanceId: task?.id,
       taskType: TaskType.ASYNC,
+      status,
+      page: current,
+      size: pageSize,
     });
     setLoading(false);
-    setSubTasks(data?.contents as any[]);
+    setSubTasks(data as any);
   };
 
   const loadDataArchiveSubTask = async function () {
     const data = await getDataArchiveSubTask(task?.id);
     setLoading(false);
-    setSubTasks(data?.contents as any[]);
+    setSubTasks(data);
   };
 
   const getResult = async function () {
@@ -198,13 +187,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     setResult(data as ITaskResult);
   };
 
-  const getExecuteRecord = async function () {
+  const getExecuteRecord = async function (args?: ITableLoadOptions) {
     if (
       [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.ALTER_SCHEDULE].includes(task?.type)
     ) {
       loadDataArchiveSubTask();
     } else {
-      loadSubTask();
+      loadSubTask(args);
     }
   };
 
@@ -240,34 +229,38 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   };
 
-  const loadCycleTaskData = async () => {
+  const loadCycleTaskData = async (args?: ITableLoadOptions) => {
     clearTimeout(clockRef.current);
     if (!task || isLoop) {
       getCycleTask();
     }
-
-    if (detailType === TaskDetailType.LOG) {
-      getLog();
+    switch (detailType) {
+      case TaskDetailType.LOG: {
+        getLog();
+        break;
+      }
+      case TaskDetailType.EXECUTE_RECORD: {
+        getExecuteRecord(args);
+        break;
+      }
+      case TaskDetailType.OPERATION_RECORD: {
+        getOperationRecord();
+        break;
+      }
+      default: {
+        break;
+      }
     }
-
-    if (detailType === TaskDetailType.EXECUTE_RECORD) {
-      getExecuteRecord();
-    }
-
-    if (detailType === TaskDetailType.OPERATION_RECORD) {
-      getOperationRecord();
-    }
-
     if (isLoop) {
       clockRef.current = setTimeout(() => {
-        loadCycleTaskData();
+        loadCycleTaskData(args);
       }, 5000);
     }
   };
 
-  const loadData = () => {
+  const loadData = (args?: ITableLoadOptions) => {
     if (isCycleTask(type) || type === TaskType.ALTER_SCHEDULE) {
-      loadCycleTaskData();
+      loadCycleTaskData(args);
     } else {
       loadTaskData();
     }
@@ -298,13 +291,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   }, [task, visible, detailId]);
 
-  useEffect(() => {
-    if (partitionPlan) {
-      const disabledSubmit = partitionPlan?.tablePartitionPlans?.some((item) => !item.detail);
-      setDisabledSubmit(disabledSubmit);
-    }
-  }, [partitionPlan]);
-
   const handleDetailTypeChange = (type: TaskDetailType) => {
     setDetailType(type);
   };
@@ -332,49 +318,81 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     setApprovalVisible(visible);
     setApprovalStatus(approvalStatus);
   };
-
-  if ([TaskType.IMPORT, TaskType.EXPORT].includes(task?.type)) {
-    taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.PARTITION_PLAN) {
-    taskContent = (
-      <PartitionTaskContent
-        task={task as IIPartitionPlanTaskDetail<IPartitionPlanParams>}
-        result={result}
-        hasFlow={hasFlow}
-        partitionPlans={partitionPlan?.tablePartitionPlans}
-        onPartitionPlansChange={handlePartitionPlansChange}
-      />
-    );
-  } else if (task?.type === TaskType.ASYNC) {
-    taskContent = (
-      <AsyncTaskContent
-        task={task as TaskDetail<IAsyncTaskParams>}
-        result={result}
-        hasFlow={hasFlow}
-      />
-    );
-  } else if (task?.type === TaskType.DATA_ARCHIVE) {
-    taskContent = (
-      <DataArchiveTaskContent
-        task={task as CycleTaskDetail<IDataArchiveJobParameters>}
-        hasFlow={hasFlow}
-        onReload={handleReloadData}
-      />
-    );
-  } else if (task?.type === TaskType.DATA_DELETE) {
-    taskContent = (
-      <DataClearTaskContent
-        task={task as CycleTaskDetail<IDataClearJobParameters>}
-        hasFlow={hasFlow}
-        onReload={handleReloadData}
-      />
-    );
-  } else if (task?.type === TaskType.SQL_PLAN) {
-    taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} />;
-  } else if (task?.type === TaskType.APPLY_PROJECT_PERMISSION) {
-    taskContent = <ApplyPermissionTaskContent task={task as any} />;
-  } else {
-    getItems = taskContentMap[task?.type]?.getItems;
+  switch (task?.type) {
+    case TaskType.IMPORT:
+    case TaskType.EXPORT: {
+      taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
+      break;
+    }
+    case TaskType.PARTITION_PLAN: {
+      taskContent = (
+        <PartitionTaskContent
+          task={task as IIPartitionPlanTaskDetail<IPartitionPlanParams>}
+          result={result}
+          hasFlow={hasFlow}
+        />
+      );
+      break;
+    }
+    case TaskType.ASYNC: {
+      taskContent = (
+        <AsyncTaskContent
+          task={task as TaskDetail<IAsyncTaskParams>}
+          result={result}
+          hasFlow={hasFlow}
+          theme={theme}
+        />
+      );
+      break;
+    }
+    case TaskType.DATA_ARCHIVE: {
+      taskContent = (
+        <DataArchiveTaskContent
+          task={task as CycleTaskDetail<IDataArchiveJobParameters>}
+          hasFlow={hasFlow}
+          onReload={handleReloadData}
+        />
+      );
+      break;
+    }
+    case TaskType.DATA_DELETE: {
+      taskContent = (
+        <DataClearTaskContent
+          task={task as CycleTaskDetail<IDataClearJobParameters>}
+          hasFlow={hasFlow}
+          onReload={handleReloadData}
+        />
+      );
+      break;
+    }
+    case TaskType.SQL_PLAN: {
+      taskContent = <SqlPlanTaskContent task={task as any} hasFlow={hasFlow} theme={theme} />;
+      break;
+    }
+    case TaskType.APPLY_PROJECT_PERMISSION: {
+      taskContent = <ApplyPermissionTaskContent task={task as any} />;
+      break;
+    }
+    case TaskType.APPLY_DATABASE_PERMISSION: {
+      taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
+      break;
+    }
+    case TaskType.STRUCTURE_COMPARISON: {
+      taskContent = (
+        <StructureComparisonTaskContent
+          task={task as any}
+          visible={visible}
+          result={result}
+          hasFlow={hasFlow}
+          theme={theme}
+        />
+      );
+      break;
+    }
+    default: {
+      getItems = taskContentMap[task?.type]?.getItems;
+      break;
+    }
   }
 
   const modalProps = {
@@ -388,7 +406,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     logType,
     isLoading: loading,
     isSplit: ![TaskType.ASYNC, TaskType.EXPORT_RESULT_SET].includes(task?.type),
-    taskTools: (
+    taskTools: enabledAction ? (
       <TaskTools
         isDetailModal
         disabledSubmit={disabledSubmit}
@@ -400,13 +418,14 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
       />
-    ),
+    ) : null,
   };
 
   return (
     <>
       <CommonDetailModal
         {...modalProps}
+        theme={theme}
         // @ts-ignore
         task={task}
         hasFlow={hasFlow}
@@ -418,14 +437,11 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         getItems={getItems}
       />
       <ApprovalModal
-        type={type}
         id={
           isCycleTask(type) || type === TaskType.ALTER_SCHEDULE ? task?.approveInstanceId : detailId
         }
         visible={approvalVisible}
-        status={task?.status}
         approvalStatus={approvalStatus}
-        partitionPlan={partitionPlan}
         onReload={handleReloadData}
         onCancel={() => {
           handleApprovalVisible(false);

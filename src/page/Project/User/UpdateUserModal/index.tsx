@@ -21,6 +21,8 @@ import { formatMessage } from '@/util/intl';
 import { Checkbox, Form, message, Modal } from 'antd';
 import { useEffect } from 'react';
 import { projectRoleTextMap } from '..';
+import styles from './index.less';
+
 interface IProps {
   close: () => void;
   onSuccess: () => void;
@@ -77,11 +79,12 @@ export default function UpdateUserModal({
     <Modal
       title={formatMessage({ id: 'odc.User.UpdateUserModal.EditMember' })}
       /*编辑成员*/ onCancel={() => close()}
+      className={styles.modal}
       onOk={submit}
       open={visible}
       width={520}
     >
-      <Form layout="vertical" form={form}>
+      <Form layout="vertical" form={form} requiredMark={false}>
         <Form.Item
           rules={[{ required: true }]}
           name={'roles'}
@@ -110,7 +113,11 @@ export default function UpdateUserModal({
               {
                 label: (
                   <HelpDoc leftText doc="projectDev">
-                    {formatMessage({ id: 'odc.User.UpdateUserModal.CommonMember' }) /*普通成员*/}
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.UpdateUserModal.09F81F9F' /*开发者*/,
+                      }) /* 开发者 */
+                    }
                   </HelpDoc>
                 ),
 

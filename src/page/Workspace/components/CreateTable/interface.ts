@@ -22,11 +22,11 @@ import {
 } from '@/d.ts/table';
 
 export enum TableTabType {
-  INFO,
-  COLUMN,
-  INDEX,
-  CONSTRAINT,
-  PARTITION,
+  INFO = 'info',
+  COLUMN = 'column',
+  INDEX = 'index',
+  CONSTRAINT = 'constranint',
+  PARTITION = 'partition',
 }
 
 export interface ITableModel {

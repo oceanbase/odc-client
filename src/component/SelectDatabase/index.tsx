@@ -14,33 +14,71 @@
  * limitations under the License.
  */
 
-import ReactDom from 'react-dom';
-import SelectModal from './component';
-import { ConnectType } from '@/d.ts';
+import { getConnectionList } from '@/common/network/connection';
+import { formatMessage } from '@/util/intl';
+import { useRequest } from 'ahooks';
+import { Form, Modal, Select } from 'antd';
+import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
+import { inject, observer } from 'mobx-react';
+import { ModalStore } from '@/store/modal';
 
-export default async function SelectDatabase(
-  isSupport?: (v: ConnectType) => boolean,
-): Promise<[number]> {
-  return new Promise((resolve) => {
-    const mountDom = document.createElement('div');
-    document.body.appendChild(mountDom);
-    function unmount() {
-      ReactDom.unmountComponentAtNode(mountDom);
-    }
-    ReactDom.render(
-      <SelectModal
-        isSupport={isSupport}
-        open={true}
-        onClose={() => {
-          resolve([null]);
-          unmount();
-        }}
-        onOk={(v) => {
-          resolve([v]);
-          unmount();
-        }}
-      />,
-      mountDom,
-    );
-  });
+interface IProps {
+  modalStore?: ModalStore;
 }
+
+function SelectModal({ modalStore }: IProps) {
+  const onClose = () => {
+    form.resetFields();
+    modalStore.changeSelectDatabaseVisible(false);
+  };
+  const { data, loading } = useRequest(getConnectionList, {
+    defaultParams: [
+      {
+        page: 1,
+        size: 9999,
+        minPrivilege: 'update',
+      },
+    ],
+  });
+  const [form] = Form.useForm<{ dataSourceId: number }>();
+
+  return (
+    <Modal
+      title={formatMessage({
+        id: 'odc.component.SelectDatabase.component.SelectADataSource',
+      })} /*选择数据源*/
+      open={modalStore.selectDatabaseVisible}
+      onCancel={onClose}
+      onOk={async () => {
+        const data = await form.validateFields();
+        if (!data?.dataSourceId) {
+          return;
+        }
+        await modalStore.selectDatabaseModallData?.onOk(data?.dataSourceId);
+        modalStore.changeSelectDatabaseVisible(false);
+        form.resetFields();
+      }}
+    >
+      <Form form={form} layout="vertical">
+        <Form.Item
+          name={'dataSourceId'}
+          rules={[{ required: true }]}
+          label={formatMessage({
+            id: 'odc.component.SelectDatabase.component.DataSource',
+          })} /*数据源*/
+        >
+          <SessionSelect
+            datasourceMode={true}
+            filters={
+              modalStore?.selectDatabaseModallData?.features
+                ? { feature: modalStore?.selectDatabaseModallData?.features }
+                : null
+            }
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+}
+
+export default inject('modalStore')(observer(SelectModal));

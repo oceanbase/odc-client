@@ -141,38 +141,35 @@ export default ({
       {ellipsisActions.length > 0 && (
         <Dropdown
           placement={dropDownPlacement}
-          overlay={
-            <Menu>
-              {ellipsisActions.map((action, index) => {
-                const actionKey = action.key;
-                let disabled = false;
-                if (isBoolean(action.props.disabled)) disabled = action.props.disabled;
-                else if (shouldDisabled) disabled = shouldDisabled(action.key as string);
-                // 当用户传入loading 或者 传入 disabled 的情况都要禁用按钮
-                const actionDisabled =
-                  action.props.loading ||
-                  (isBoolean(action.props.disabled)
-                    ? action.props.disabled
-                    : getDefaultDisabled(action.key as string));
-                return (
-                  <Menu.Item
-                    key={(actionKey as string) ?? index.toString()}
-                    style={{ minWidth: 120 }}
-                    {...omit(action.props, 'disabled')}
-                    disabled={actionDisabled}
-                    onClick={(info) => {
-                      info.domEvent.stopPropagation();
-                      action.props.onClick?.();
-                    }}
-                  >
-                    <Tooltip title={action.props.tooltip}>
-                      {action.props.loading && <LoadingOutlined />} {action.props.children}
-                    </Tooltip>
-                  </Menu.Item>
-                );
-              })}
-            </Menu>
-          }
+          menu={{
+            items: ellipsisActions.map((action, index) => {
+              const actionKey = action.key;
+              let disabled = false;
+              if (isBoolean(action.props.disabled)) disabled = action.props.disabled;
+              else if (shouldDisabled) disabled = shouldDisabled(action.key as string);
+              // 当用户传入loading 或者 传入 disabled 的情况都要禁用按钮
+              const actionDisabled =
+                action.props.loading ||
+                (isBoolean(action.props.disabled)
+                  ? action.props.disabled
+                  : getDefaultDisabled(action.key as string));
+              return {
+                key: (actionKey as string) ?? index.toString(),
+                style: { minWidth: 120 },
+                ...omit(action.props, 'disabled', 'children', 'onClick'),
+                disabled: actionDisabled,
+                onClick: (info) => {
+                  info.domEvent.stopPropagation();
+                  action.props.onClick?.();
+                },
+                label: (
+                  <Tooltip title={action.props.tooltip}>
+                    {action.props.loading && <LoadingOutlined />} {action.props.children}
+                  </Tooltip>
+                ),
+              };
+            }),
+          }}
         >
           {moreDom}
         </Dropdown>

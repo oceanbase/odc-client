@@ -46,6 +46,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
     logType,
     detailType,
     getItems,
+    theme,
     taskContent,
     hasFlow,
     onLogTypeChange,
@@ -57,7 +58,11 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = taskContent ? (
         taskContent
       ) : (
-        <TaskInfo task={task} taskItems={getItems?.(task, result, hasFlow)} isSplit={isSplit} />
+        <TaskInfo
+          task={task}
+          taskItems={getItems?.(task, result, hasFlow, theme)}
+          isSplit={isSplit}
+        />
       );
       break;
     case TaskDetailType.LOG:
@@ -66,6 +71,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           log={log}
           logType={logType}
           isLoading={isLoading}
+          downloadUrl={result?.fullLogDownloadUrl}
           onLogTypeChange={onLogTypeChange}
         />
       );
@@ -86,7 +92,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskOperationRecord opRecord={opRecord} onReload={onReload} />;
       break;
     case TaskDetailType.PROGRESS:
-      content = <TaskProgress task={task} />;
+      content = <TaskProgress task={task} theme={theme} />;
       break;
     default:
       break;
@@ -100,15 +106,27 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
 interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   width?: number;
   isSplit?: boolean;
+  theme?: string;
   getItems?: (
     task: TaskDetail<TaskRecordParameters>,
     result: ITaskResult,
     hasFlow: boolean,
+    theme: string,
   ) => ITaskInfoProps['taskItems'];
   taskContent?: React.ReactNode;
 }
 const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
-  const { width = 750, visible, task, taskTools, detailType, detailId, hasFlow, onClose } = props;
+  const {
+    width = 750,
+    visible,
+    task,
+    taskTools,
+    detailType,
+    detailId,
+    hasFlow,
+    theme,
+    onClose,
+  } = props;
   const hasInfo = [
     TaskType.ASYNC,
     TaskType.IMPORT,
@@ -119,10 +137,12 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.SQL_PLAN,
     TaskType.ALTER_SCHEDULE,
     TaskType.DATA_ARCHIVE,
+    TaskType.STRUCTURE_COMPARISON,
     TaskType.ONLINE_SCHEMA_CHANGE,
     TaskType.DATA_DELETE,
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
+    TaskType.APPLY_DATABASE_PERMISSION,
   ].includes(task?.type);
   const hasLog = [
     TaskType.ASYNC,
@@ -131,10 +151,12 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.DATAMOCK,
     TaskType.PARTITION_PLAN,
     TaskType.SHADOW,
+    TaskType.STRUCTURE_COMPARISON,
     TaskType.ALTER_SCHEDULE,
     TaskType.ONLINE_SCHEMA_CHANGE,
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
+    TaskType.APPLY_DATABASE_PERMISSION,
   ].includes(task?.type);
   function onShare() {
     const url =
@@ -184,7 +206,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           }}
         >
           {hasInfo && (
-            <Radio.Button value={TaskDetailType.INFO}>
+            <Radio.Button value={TaskDetailType.INFO} key={TaskDetailType.INFO}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.TaskInformation',
@@ -196,7 +218,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           )}
 
           {hasFlow && (
-            <Radio.Button value={TaskDetailType.FLOW}>
+            <Radio.Button value={TaskDetailType.FLOW} key={TaskDetailType.FLOW}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.TaskFlow',
@@ -208,7 +230,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           )}
 
           {task?.type === TaskType.PARTITION_PLAN && (
-            <Radio.Button value={TaskDetailType.RECORD}>
+            <Radio.Button value={TaskDetailType.RECORD} key={TaskDetailType.RECORD}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.AssociatedRecords',
@@ -220,14 +242,20 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
 
           {isCycleTask(task?.type) && (
             <>
-              <Radio.Button value={TaskDetailType.EXECUTE_RECORD}>
+              <Radio.Button
+                value={TaskDetailType.EXECUTE_RECORD}
+                key={TaskDetailType.EXECUTE_RECORD}
+              >
                 {
                   formatMessage({
                     id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
                   }) /*执行记录*/
                 }
               </Radio.Button>
-              <Radio.Button value={TaskDetailType.OPERATION_RECORD}>
+              <Radio.Button
+                value={TaskDetailType.OPERATION_RECORD}
+                key={TaskDetailType.OPERATION_RECORD}
+              >
                 {
                   formatMessage({
                     id: 'odc.component.CommonTaskDetailModal.OperationRecord',
@@ -238,7 +266,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           )}
 
           {task?.type === TaskType.ONLINE_SCHEMA_CHANGE && (
-            <Radio.Button value={TaskDetailType.PROGRESS}>
+            <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
@@ -248,7 +276,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           )}
 
           {task?.type === TaskType.ASYNC && (
-            <Radio.Button value={TaskDetailType.RESULT}>
+            <Radio.Button value={TaskDetailType.RESULT} key={TaskDetailType.RESULT}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.ExecutionResult',
@@ -260,7 +288,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           )}
 
           {task?.type === TaskType.ASYNC && (
-            <Radio.Button value={TaskDetailType.RECORD}>
+            <Radio.Button value={TaskDetailType.RECORD} key={TaskDetailType.RECORD}>
               {
                 formatMessage({
                   id: 'odc.component.CommonDetailModal.RollbackTicket',
@@ -270,7 +298,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
           )}
 
           {hasLog && (
-            <Radio.Button value={TaskDetailType.LOG}>
+            <Radio.Button value={TaskDetailType.LOG} key={TaskDetailType.LOG}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.TaskLog',

@@ -16,6 +16,7 @@
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Tooltip, Typography } from 'antd';
+import { TooltipPlacement } from 'antd/lib/tooltip';
 import React from 'react';
 
 export interface BaseProps {
@@ -28,6 +29,7 @@ export interface BaseProps {
   className?: string;
   enableLoading?: boolean;
   tooltip?: string;
+  placement?: TooltipPlacement;
   loading?: boolean;
   /** loading的时候覆盖children，用于icon的场景 */
   replaceLoading?: boolean;
@@ -50,11 +52,12 @@ export class ActionButton extends React.PureComponent<BaseProps> {
       enableLoading = true,
       className,
       tooltip,
+      placement = null,
       loading,
       danger,
     } = this.props;
     return (
-      <Tooltip placement="top" title={tooltip}>
+      <Tooltip placement={placement || 'top'} title={tooltip}>
         <Button
           className={className}
           loading={enableLoading && (loading || this.state.loading)}
