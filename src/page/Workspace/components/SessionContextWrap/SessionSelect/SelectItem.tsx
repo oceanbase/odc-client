@@ -18,6 +18,7 @@ interface IProps {
   projectId?: number;
   filters?: ISessionDropdownFiltersProps;
   placeholder?: string;
+  disabled?: boolean;
   onChange?: (value: number) => void;
 }
 
@@ -28,6 +29,7 @@ const SelectItem: React.FC<IProps> = ({
   filters = null,
   width,
   placeholder = null,
+  disabled = false,
   onChange,
 }) => {
   const { data: database, run } = useRequest(getDatabase, {
@@ -58,8 +60,9 @@ const SelectItem: React.FC<IProps> = ({
           taskType={taskType}
         >
           <Select
+            disabled={disabled}
             placeholder={
-              database?.data ? (
+              value && database?.data ? (
                 <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
                   {database?.data ? (
                     <>
@@ -84,7 +87,7 @@ const SelectItem: React.FC<IProps> = ({
             open={false}
           />
         </SessionDropdown>
-        {database?.data ? (
+        {value && database?.data ? (
           <Space
             size={2}
             split={<Divider type="vertical" />}

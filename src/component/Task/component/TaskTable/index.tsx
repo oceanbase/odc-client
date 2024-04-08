@@ -451,19 +451,19 @@ const TaskTable: React.FC<IProps> = inject(
                       props.onMenuClick(key as TaskPageType);
                     },
                     items: flatten(
-                      menus?.map(({ group }, index) => {
+                      menus?.map(({ group, groupName }, index) => {
                         const tasks = group?.filter((task) => task.enabled);
-                        let items: MenuProps['items'];
-                        let divider: MenuDividerType = {
-                          type: 'divider',
+                        return {
+                          key: index,
+                          label: groupName,
+                          children: tasks?.map((item) => {
+                            return {
+                              key: item.value,
+                              label: item.label,
+                            };
+                          }),
+                          type: 'group',
                         };
-                        items = tasks?.map((item) => {
-                          return {
-                            key: item.value,
-                            label: item.label,
-                          };
-                        });
-                        return index !== menus?.length - 1 ? [...items, divider] : items;
                       }),
                     ),
                   },

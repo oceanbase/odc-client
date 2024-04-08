@@ -98,6 +98,15 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     onChange(checkedKeys.filter((key) => key !== nodeKey));
   };
 
+  const handleCheck = (key: string) => {
+    const checked = checkedKeys?.includes(key);
+    if (checked) {
+      onChange(checkedKeys?.filter((item) => item !== key));
+    } else {
+      onChange([...checkedKeys, key]);
+    }
+  };
+
   function getTreeData(validDatabaseList: any[]) {
     const allTreeData = validDatabaseList?.map((item) => {
       const disabled = maxCount
@@ -105,7 +114,11 @@ const DatabaseSelecter: React.FC<IProps> = function ({
         : false;
       return {
         title: (
-          <Space>
+          <Space
+            onClick={() => {
+              handleCheck(item?.id);
+            }}
+          >
             <Text>{item?.name}</Text>
             <Text type="secondary" ellipsis>
               {item?.dataSource?.name}

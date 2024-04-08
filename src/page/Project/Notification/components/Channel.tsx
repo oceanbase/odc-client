@@ -42,7 +42,13 @@ import styles from './index.less';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import HelpDoc from '@/component/helpDoc';
 import { getChannelColumns } from './columns';
-import { EChannelTypeMap, EContentTemplateMap, ELanguageMap, TimeUnitMap } from './interface';
+import {
+  EChannelTypeMap,
+  EContentTemplateMap,
+  ELanguageMap,
+  TimeUnitMap,
+  WebhookPlaceholderMap,
+} from './interface';
 import odc from '@/plugins/odc';
 
 const Channel: React.FC<{
@@ -467,13 +473,7 @@ export const FromChannelDrawer: React.FC<{
                       },
                     ]}
                   >
-                    <Input
-                      placeholder={
-                        formatMessage({
-                          id: 'src.page.Project.Notification.components.514F5656',
-                        }) /*"请输入钉钉群机器人 Webhook 地址"*/
-                      }
-                    />
+                    <Input placeholder={WebhookPlaceholderMap?.[type]} />
                   </Form.Item>
                   {hasSign ? (
                     <Form.Item

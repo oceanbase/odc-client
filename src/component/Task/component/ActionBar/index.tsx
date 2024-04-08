@@ -86,7 +86,8 @@ const ActionBar: React.FC<IProps> = inject(
       result,
     } = props;
     const isOwner = user?.id === task?.creator?.id;
-    const isApprovable = task?.approvable;
+    const isApprover = task?.approvable;
+    const isOwnerAndApprover = isOwner && isApprover;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
     const disabledApproval =
@@ -371,10 +372,14 @@ const ActionBar: React.FC<IProps> = inject(
       const { status, completeTime = 0 } = _task;
       const structureComparisonData =
         modalStore?.structureComparisonDataMap?.get(_task?.id) || null;
+      // 文件过期判断。
+      const isExpired = Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000 || false;
+      // 结构比对工单详情 任务未得到执行结果前禁用按钮。
       const disableBtn =
         task?.type === TaskType.STRUCTURE_COMPARISON &&
         structureComparisonData &&
         ![SubTaskStatus.DONE, SubTaskStatus.FAILED].includes(structureComparisonData?.status);
+      // 结构比对结果均为一致时，无须发起数据库变更任务。
       const noAction =
         SubTaskStatus.DONE === structureComparisonData?.status &&
         ((structureComparisonData?.overSizeLimit && structureComparisonData?.storageObjectId) ||
@@ -498,8 +503,8 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Download',
         }),
-        disabled: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
-        isExpired: Math.abs(Date.now() - completeTime) >= 14 * 24 * 60 * 60 * 1000,
+        disabled: isExpired,
+        isExpired,
         tip: formatMessage({ id: 'src.component.Task.component.ActionBar.F20AAC3F' }), //'文件下载链接已超时，请重新发起工单。'
 
         action: download,
@@ -563,7 +568,9 @@ const ActionBar: React.FC<IProps> = inject(
         text: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.DownloadQueryResults',
         }),
-
+        disabled: isExpired,
+        isExpired,
+        tip: '文件下载链接已超时，请重新发起工单。',
         //下载查询结果
         action: downloadViewResult,
         type: 'button',
@@ -582,28 +589,28 @@ const ActionBar: React.FC<IProps> = inject(
           case TaskStatus.CANCELLED:
           case TaskStatus.PRE_CHECK_FAILED:
           case TaskStatus.COMPLETED: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn];
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.EXECUTING: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn, stopBtn];
               if (task.type === TaskType.STRUCTURE_COMPARISON) {
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.EXECUTION_SUCCEEDED: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               tools = [reTryBtn];
               if (task.type === TaskType.EXPORT && settingStore.enableDataExport) {
                 if (isClient()) {
@@ -621,27 +628,28 @@ const ActionBar: React.FC<IProps> = inject(
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
             }
-            if (isApprovable) {
+
+            if (isApprover) {
               tools = [];
             }
             break;
           }
           case TaskStatus.WAIT_FOR_CONFIRM:
           case TaskStatus.APPROVING: {
-            if (isOwner && isApprovable) {
+            if (isOwnerAndApprover) {
               tools = [reTryBtn, stopBtn, rejectBtn, approvalBtn];
             } else {
               if (isOwner) {
                 tools = [reTryBtn, stopBtn];
               }
-              if (isApprovable) {
+              if (isApprover) {
                 tools = [rejectBtn, approvalBtn];
               }
             }
             break;
           }
           case TaskStatus.WAIT_FOR_EXECUTION: {
-            if (isOwner || (isOwner && isApprovable)) {
+            if (isOwner) {
               const _executeBtn = { ...executeBtn };
               if (task?.executionStrategy === TaskExecStrategy.TIMER) {
                 _executeBtn.disabled = true;
@@ -662,7 +670,7 @@ const ActionBar: React.FC<IProps> = inject(
                   ? [reTryBtn, stopBtn]
                   : [reTryBtn, stopBtn, _executeBtn];
             }
-            if (isApprovable) {
+            if (isApprover) {
               tools = [];
             }
             break;
@@ -771,12 +779,12 @@ const ActionBar: React.FC<IProps> = inject(
 
       switch (status) {
         case TaskStatus.APPROVING: {
-          if (isOwner && isApprovable) {
+          if (isOwnerAndApprover) {
             tools = [viewBtn, stopBtn, approvalBtn, rejectBtn];
           } else {
             if (isOwner) {
               tools = [viewBtn, stopBtn];
-            } else if (isApprovable) {
+            } else if (isApprover) {
               tools = [viewBtn, approvalBtn, rejectBtn];
             } else {
               tools = [viewBtn];
@@ -789,7 +797,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.ENABLED: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn, editBtn, disableBtn];
           } else {
             tools = [viewBtn];
@@ -798,7 +806,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.APPROVAL_EXPIRED:
         case TaskStatus.TERMINATION: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn];
           } else {
             tools = [viewBtn];
@@ -806,7 +814,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.PAUSE: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn, editBtn, enableBtn];
           } else {
             tools = [viewBtn];
@@ -814,7 +822,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.COMPLETED: {
-          if (isOwner || (isOwner && isApprovable)) {
+          if (isOwner) {
             tools = [viewBtn];
             if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
               tools.push(reTryBtn);

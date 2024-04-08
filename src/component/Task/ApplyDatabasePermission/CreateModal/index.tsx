@@ -46,6 +46,11 @@ const CheckboxGroup = Checkbox.Group;
 const MAX_DATE = '9999-12-31 23:59:59';
 const MAX_DATE_LABEL = '9999-12-31';
 
+const defaultValue = {
+  databases: [],
+  expireTime: '7,days',
+};
+
 export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) => {
   if (isCustomExpireTime) {
     return customExpireTime?.valueOf();
@@ -151,7 +156,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const projectId = Form.useWatch('projectId', form);
 
   const disabledDate = (current) => {
-    return current && current < moment().endOf('day');
+    return current && current < moment().subtract(1, 'days').endOf('day');
   };
 
   useEffect(() => {
@@ -207,11 +212,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success(
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.C33C50A5' /*'申请库权限成功！'*/,
-            }),
-          );
+          message.success('工单创建成功');
           openTasksPage(
             TaskPageType.APPLY_DATABASE_PERMISSION,
             TaskPageScope.CREATED_BY_CURRENT_USER,
@@ -235,6 +236,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       executionStrategy,
     } = task;
     const formData = {
+      ...defaultValue,
       projectId,
       executionStrategy,
       databases: databases?.map((item) => item.id),
@@ -249,12 +251,13 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    const { projectId } = applyDatabasePermissionData ?? {};
+    const { projectId, databaseId } = applyDatabasePermissionData ?? {};
     if (applyDatabasePermissionData?.task) {
       loadEditData();
     } else {
       form.setFieldsValue({
         projectId: projectId || props?.projectId,
+        databases: databaseId ? [databaseId] : [],
       });
     }
   }, [applyDatabasePermissionData]);
@@ -298,9 +301,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     >
       <Form
         name="basic"
-        initialValues={{
-          databases: [],
-        }}
+        initialValues={defaultValue}
         layout="vertical"
         requiredMark="optional"
         form={form}

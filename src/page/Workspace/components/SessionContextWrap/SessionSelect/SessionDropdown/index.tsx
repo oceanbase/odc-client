@@ -435,10 +435,11 @@ const SessionDropdown: React.FC<IProps> = function ({
       open={isOpen}
       showArrow={false}
       onOpenChange={onOpen}
-      overlayStyle={{ paddingTop: 2 }}
+      overlayClassName={styles.pop}
+      overlayStyle={{ paddingTop: 2, width }}
       content={
         <Spin spinning={loading || fetchLoading}>
-          <div className={styles.main} style={{ width }}>
+          <div className={styles.main} style={{ width: '100%' }}>
             <Space.Compact block>
               {context?.datasourceMode || login.isPrivateSpace() ? null : (
                 <Select

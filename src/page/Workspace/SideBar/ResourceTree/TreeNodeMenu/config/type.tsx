@@ -19,14 +19,14 @@ import { getType } from '@/common/network/type';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
 import { DbObjectType, IType, PageType, TypePropsTab } from '@/d.ts';
-import { openBatchCompilePLPage, openTypeViewPage } from '@/store/helper/page';
+import { openTypeViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
-import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
@@ -89,6 +89,9 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
         id: 'odc.src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.Export',
       }), //'导出'
       ellipsis: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },
@@ -135,6 +138,9 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       ],
 
       actionType: actionTypes.delete,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const type: IType = node.data;
         Modal.confirm({

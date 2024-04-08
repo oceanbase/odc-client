@@ -171,6 +171,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                 DatabasePermissionType.QUERY,
               );
               const disabled = !hasChangeAuth && !hasQueryAuth;
+
               if (!record.existed) {
                 return disabled ? (
                   <div className={styles.disable}>{name}</div>
@@ -317,6 +318,7 @@ const Database: React.FC<IProps> = ({ id }) => {
               const hasChangeAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.CHANGE,
               );
+
               const hasQueryAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.QUERY,
               );
@@ -324,6 +326,9 @@ const Database: React.FC<IProps> = ({ id }) => {
               const hasChangeOwnerAuth = curRoles.some((role) =>
                 [ProjectRole.OWNER, ProjectRole.DBA].includes(role),
               );
+
+              const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
+
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -378,7 +383,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
-                    disabled={!hasQueryAuth}
+                    disabled={!hasLoginAuth}
                   >
                     {
                       formatMessage({

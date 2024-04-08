@@ -103,12 +103,14 @@ const CreateModal: React.FC<IProps> = (props) => {
     const {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
+      database: { id: databaseId },
       ...rest
     } = data;
     const sqlContentType = jobParameters?.sqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
     const formData = {
       ...rest,
       ...jobParameters,
+      databaseId,
       sqlContentType,
       sqlFiles: undefined,
       timeoutMillis: jobParameters.timeoutMillis / 1000 / 60 / 60,

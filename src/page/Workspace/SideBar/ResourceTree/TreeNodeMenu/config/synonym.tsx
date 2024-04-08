@@ -26,6 +26,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
@@ -59,6 +60,9 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
 
       actionType: actionTypes.delete,
       hasDivider: true,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       async run(session, node) {
         const synonym: Partial<ISynonym> = node.data;
         Modal.confirm({
@@ -116,6 +120,9 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Export' }), //导出
       ellipsis: true,
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },

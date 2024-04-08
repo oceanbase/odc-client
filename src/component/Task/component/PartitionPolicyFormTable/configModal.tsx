@@ -24,7 +24,6 @@ import { TaskPartitionStrategyMap } from '../../const';
 import { START_DATE } from './const';
 import EditTable from './EditTable';
 import PreviewSQLModal from './PreviewSQLModal';
-import { startDateOptions } from './RuleFormItem';
 import { ITableConfig } from '../../PartitionTask/CreateModal';
 import {
   Alert,
@@ -47,6 +46,32 @@ import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const { Text } = Typography;
+
+const startDateOptionValues = [
+  {
+    label: '当前时间',
+    value: START_DATE.CURRENT_DATE,
+    description: '从实际执行时间开始命名',
+  },
+  {
+    label: '指定时间',
+    value: START_DATE.CUSTOM_DATE,
+    description: '从指定时间开始命名',
+  },
+];
+
+export const startDateOptions = startDateOptionValues.map(({ label, value, description }) => {
+  return {
+    label: (
+      <div>
+        <div>{label}</div>
+        <Text type="secondary">{description}</Text>
+      </div>
+    ),
+
+    value,
+  };
+});
 
 export enum NameRuleType {
   PRE_SUFFIX = 'PRE_SUFFIX',
@@ -478,6 +503,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       open={visible}
       destroyOnClose
       width={720}
+      className={styles.configDrawer}
       onClose={handleClose}
       footer={
         <Space style={{ float: 'right' }}>
@@ -767,6 +793,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           }
                           optionLabelProp="label"
                           options={startDateOptions}
+                          dropdownMatchSelectWidth={154}
                           style={{ width: 135 }}
                         />
                       </Form.Item>
@@ -939,7 +966,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 required
                 name="keepLatestCount"
                 label={
-                  <HelpDoc doc="partitionInterval" leftText>
+                  <HelpDoc doc="partitionKeepLatestCount" leftText>
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.7D6F23AE' /*分区保留数量*/,

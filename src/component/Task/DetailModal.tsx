@@ -93,7 +93,8 @@ const taskContentMap = {
 const DetailModal: React.FC<IProps> = React.memo((props) => {
   const { type, visible, detailId, enabledAction = true } = props;
   const [task, setTask] = useState<
-    TaskDetail<TaskRecordParameters> | CycleTaskDetail<IDataArchiveJobParameters>
+    | TaskDetail<TaskRecordParameters>
+    | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
   >(null);
   const [subTasks, setSubTasks] = useState<ICycleSubTaskRecord[]>(null);
   const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
