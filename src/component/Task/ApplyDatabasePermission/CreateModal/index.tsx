@@ -346,7 +346,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           required
         >
-          <DatabaseSelecter projectId={projectId} />
+          <DatabaseSelecter projectId={projectId} maxCount={10} />
         </Form.Item>
         <Form.Item
           name="types"

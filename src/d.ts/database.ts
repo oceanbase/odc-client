@@ -47,13 +47,13 @@ export interface IDatabase {
   existed: boolean;
   authorizedPermissionTypes?: DatabasePermissionType[];
   /**
-   * 数据库负责人
+   * 数据库管理员
    */
   owners: IDatabaseOwner[];
 }
 
 /**
- * 数据库负责人
+ * 数据库管理员
  */
 export interface IDatabaseOwner {
   accountName: string;

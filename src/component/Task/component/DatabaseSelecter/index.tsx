@@ -30,12 +30,15 @@ const { Text } = Typography;
 interface IProps {
   projectId: number;
   value?: any[];
+  // 最多可以选中的数据的数量
+  maxCount?: number;
   onChange?: (newValue: any[]) => void;
 }
 
 const DatabaseSelecter: React.FC<IProps> = function ({
   projectId,
   value: checkedKeys = [],
+  maxCount,
   onChange,
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -97,6 +100,9 @@ const DatabaseSelecter: React.FC<IProps> = function ({
 
   function getTreeData(validDatabaseList: any[]) {
     const allTreeData = validDatabaseList?.map((item) => {
+      const disabled = maxCount
+        ? !(checkedKeys.length < maxCount || checkedKeys.includes(item.id))
+        : false;
       return {
         title: (
           <Space>
@@ -106,7 +112,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             </Text>
           </Space>
         ),
-
+        disabled,
         key: item?.id,
         icon: <Icon component={DatabaseSvg} />,
       };

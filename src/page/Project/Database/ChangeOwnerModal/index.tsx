@@ -78,24 +78,22 @@ export default function ChangeOwnerModal({
       value.ownerIds,
     );
     if (isSuccess) {
-      message.success(
-        formatMessage({
-          id: 'odc.Database.ChangeOwnerModal.OperationSucceeded',
-        }), // 修改负责人成功
-      );
+      message.success('修改数据库管理员成功');
       form.resetFields();
       close();
       onSuccess();
     }
-  }, [database?.id, database?.project?.id, close, onSuccess]);
+  }, [form, startUpdateDataBase, database?.id, database?.project?.id, close, onSuccess]);
 
   useEffect(() => {
     if (visible) {
+      const owner_ids = database?.owners?.map(({ id }) => id) || [];
       form.setFieldsValue({
-        ownerIds: database?.owners?.map(({ id }) => id) || [],
+        ownerIds: owner_ids,
       });
+      setOwnerIds(owner_ids);
     }
-  }, [visible]);
+  }, [database?.owners, form, visible]);
 
   return (
     <Modal
@@ -113,7 +111,16 @@ export default function ChangeOwnerModal({
       }}
       onOk={handleSubmitForm}
     >
-      <Form requiredMark="optional" form={form} layout="vertical">
+      <Form
+        requiredMark="optional"
+        form={form}
+        onValuesChange={(changedValues) => {
+          if (changedValues.hasOwnProperty('ownerIds')) {
+            setOwnerIds(changedValues.ownerIds);
+          }
+        }}
+        layout="vertical"
+      >
         <Form.Item>
           {
             formatMessage({
@@ -122,19 +129,11 @@ export default function ChangeOwnerModal({
           }
           {database?.name}
         </Form.Item>
-        <Form.Item
-          name="ownerIds"
-          label={formatMessage({
-            id: 'odc.Database.ChangeOwnerModal.DatabaseOwner',
-          })} /*数据库负责人*/
-        >
+        <Form.Item name="ownerIds" label="数据库管理员（未设置时默认是项目管理员）">
           <Select
             allowClear
             mode="multiple"
-            placeholder={formatMessage({
-              id: 'odc.Database.ChangeOwnerModal.SelectDatabaseOwner',
-            })}
-            /* 请选择数据库负责人*/
+            placeholder="请选择数据库管理员"
             style={{
               width: '100%',
             }}
