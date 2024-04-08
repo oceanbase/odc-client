@@ -166,6 +166,7 @@ export default function NewDataBaseButton({
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
                   })} /*请输入*/
+                  disabled={mode === ConnectionMode.DORIS}
                 />
               </Form.Item>
               <Form.Item
@@ -181,6 +182,7 @@ export default function NewDataBaseButton({
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
                   })} /*请输入*/
+                  disabled={mode === ConnectionMode.DORIS}
                 />
               </Form.Item>
             </Space>
