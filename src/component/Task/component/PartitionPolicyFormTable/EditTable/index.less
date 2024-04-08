@@ -1,55 +1,23 @@
-.editTable {
-  border: 1px solid var(--neutral-grey4-color);
-}
-
-.thead {
-  display: grid;
-  grid-template-columns: 80px 80px 108px 1fr;
-  line-height: 24px;
-  grid-gap: 1px;
-  background-color: var(--neutral-grey4-color);
-  border-bottom: 1px solid var(--neutral-grey4-color);
-
-  .theadCell {
-    background-color: var(--background-primary-color);
-    padding: 0 8px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-}
-.row {
-  display: grid;
-  grid-template-columns: 80px 80px 108px 1fr;
-  align-items: center;
-  height: 72px;
-  grid-gap: 1px;
-  background-color: var(--neutral-grey4-color);
-  .td {
+.table {
+  width: 100%;
+  border-spacing: 0;
+  background-color: #fff;
+  thead {
+    line-height: 24px;
     display: flex;
-    height: 100%;
-    background-color: var(--background-primary-color);
-    vertical-align: middle;
-    .content {
-      width: 100%;
-      display: inline-flex;
-      padding: 0 8px;
-      line-height: 62px;
+    text-align: left;
+    background-color: #fafafa;
+    border-bottom: none;
+    th {
+      border: 1px solid #e9e9e9;
+      padding: 0 5px;
     }
   }
-  .ruleFormItem {
-    width: 100%;
-    padding: 4px 8px;
+  td .content {
+    padding: 5px 8px;
   }
-  .typeSelect {
-    display: flex;
+  td {
+    border: 1px solid #e9e9e9;
     vertical-align: middle;
-    padding: 0 8px;
-    line-height: 72px;
-    :global {
-      .ant-form-item {
-        margin-bottom: 0px;
-        line-height: unset;
-      }
-    }
   }
 }
