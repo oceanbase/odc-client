@@ -263,5 +263,5 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         editor: TextEditor,
       },
     ].filter(Boolean) as Column[];
-  }, [haveAutoIncrement]);
+  }, [haveAutoIncrement, originColumns]);
 }

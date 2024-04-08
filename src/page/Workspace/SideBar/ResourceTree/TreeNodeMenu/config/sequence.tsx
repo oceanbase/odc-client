@@ -25,6 +25,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
+import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
@@ -104,6 +105,9 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Delete' })],
       actionType: actionTypes.delete,
       hasDivider: true,
+      disabled: (session) => {
+        return !hasChangePermission(session);
+      },
       run(session, node) {
         const sequenceInfo: ISequence = node.data;
         Modal.confirm({
@@ -147,6 +151,9 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       ellipsis: true,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Export' }), //导出
+      disabled: (session) => {
+        return !hasExportPermission(session);
+      },
       isHide: (session) => {
         return !isSupportExport(session);
       },

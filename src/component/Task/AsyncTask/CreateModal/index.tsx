@@ -110,14 +110,17 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const connection = database?.dataSource;
   const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
-  const [defaultFileList, setDefaultFileList] = useState({
-    rollbackSqlFiles: [],
-    sqlFiles: [],
-  });
+  const sqlFileRef = useRef<{
+    setValue: (value: UploadFile[]) => void;
+    resetFields: () => void;
+  }>();
+  const rollbackSqlFileRef = useRef<{
+    setValue: (value: UploadFile[]) => void;
+    resetFields: () => void;
+  }>();
   const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
   const isRollback = !!asyncTaskData?.type;
-  const isReTry = asyncTaskData?.task && !isRollback;
   const initSqlContent = isRollback
     ? asyncTaskData?.task?.parameters?.rollbackSqlContent || asyncTaskData?.sql
     : asyncTaskData?.task?.parameters?.sqlContent || asyncTaskData?.sql;
@@ -144,6 +147,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       rollbackSqlObjectNames,
       rollbackSqlContent,
       generateRollbackPlan,
+      retryTimes = 0,
     } = parameters ?? {};
     let sqlContentType = null;
     let rollbackContentType = null;
@@ -170,6 +174,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       errorStrategy,
       sqlFiles: undefined,
       rollbackSqlFiles: undefined,
+      retryTimes,
     };
     if (isRollback) {
       formData.sqlContent = rollbackSqlContent;
@@ -197,10 +202,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     setSqlContentType(formData.sqlContentType);
     setRollbackContentType(formData.rollbackContentType);
     form.setFieldsValue(formData);
-    setDefaultFileList({
-      rollbackSqlFiles: formData.rollbackSqlFiles,
-      sqlFiles: formData.sqlFiles,
-    });
+    sqlFileRef.current?.setValue(formData.sqlFiles);
+    rollbackSqlFileRef.current?.setValue(formData.rollbackSqlFiles);
   };
 
   const getFileIdAndNames = (files: UploadFile[]) => {
@@ -296,10 +299,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
     setRollbackContentType(SQLContentType.TEXT);
-    setDefaultFileList({
-      rollbackSqlFiles: [],
-      sqlFiles: [],
-    });
+    sqlFileRef.current?.resetFields();
+    rollbackSqlFileRef.current?.resetFields();
     setHasEdit(false);
     setLintResultSet([]);
     setHasPreCheck(false);
@@ -349,6 +350,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           queryLimit,
           delimiter,
+          retryTimes,
         } = values;
         const sqlFileIdAndNames = getFileIdAndNames(sqlFiles);
         const rollbackSqlFileIdAndNames = getFileIdAndNames(rollbackSqlFiles);
@@ -367,6 +369,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           rollbackSqlObjectNames: rollbackSqlFileIdAndNames?.names,
           queryLimit,
           delimiter,
+          retryTimes,
         };
         if (!checkFileSizeAmount(sqlFiles) || !checkFileSizeAmount(rollbackSqlFiles)) {
           return;
@@ -485,11 +488,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.asyncTask}
       width={905}
-      title={
-        isReTry
-          ? formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.E400CC8B' })
-          : formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6' })
-      }
+      title={formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6' })}
       footer={
         <Space>
           <Button
@@ -526,6 +525,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={{
           executionStrategy: TaskExecStrategy.AUTO,
           databaseId: asyncTaskData?.databaseId,
+          retryTimes: 0,
         }}
         layout="vertical"
         requiredMark="optional"
@@ -614,6 +614,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={sqlContentType !== SQLContentType.FILE && styles.hide}
         >
           <ODCDragger
+            ref={sqlFileRef}
             accept=".sql"
             uploadFileOpenAPIName="UploadFile"
             onBeforeUpload={(file) => {
@@ -630,7 +631,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               'Accept-Language': getLocale(),
               currentOrganizationId: login.organizationId?.toString(),
             }}
-            defaultFileList={defaultFileList.sqlFiles}
             onFileChange={(files) => {
               handleFileChange(files, 'sqlFiles');
             }}
@@ -792,6 +792,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           className={rollbackContentType !== SQLContentType.FILE && styles.hide}
         >
           <ODCDragger
+            ref={rollbackSqlFileRef}
             accept=".sql"
             uploadFileOpenAPIName="UploadFile"
             onBeforeUpload={(file) => {
@@ -805,7 +806,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               'Accept-Language': getLocale(),
               currentOrganizationId: login.organizationId?.toString(),
             }}
-            defaultFileList={defaultFileList.rollbackSqlFiles}
             onFileChange={(files) => {
               handleFileChange(files, 'rollbackSqlFiles');
             }}
@@ -883,6 +883,22 @@ const CreateModal: React.FC<IProps> = (props) => {
           })}
           /*任务设置*/ keepExpand
         >
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.AsyncTask.CreateModal.4C35F704',
+              }) /*"SQL 重试次数"*/
+            }
+            name="retryTimes"
+            rules={[
+              {
+                required: true,
+                message: formatMessage({ id: 'src.component.Task.AsyncTask.CreateModal.DF31D4E7' }), //'请输入'
+              },
+            ]}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',

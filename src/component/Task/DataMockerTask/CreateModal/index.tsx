@@ -46,7 +46,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
-    const isReTry = dataMockerData?.task;
 
     const loadEditData = async () => {
       const { task } = dataMockerData;
@@ -108,11 +107,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         destroyOnClose
         width={960}
         className="o-adaptive-drawer"
-        title={
-          isReTry
-            ? formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.5DA6FB52' })
-            : formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5' })
-        }
+        title={formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5' })}
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>
@@ -175,9 +170,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   if (isSuccess) {
                     message.success(
                       formatMessage({
-                        id: 'odc.component.DataMockerDrawer.CreatedSuccessfully',
+                        id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
                       }),
-                      // 创建成功！
                     );
                     onClose();
                     openTasksPage(TaskPageType.DATAMOCK, TaskPageScope.CREATED_BY_CURRENT_USER);

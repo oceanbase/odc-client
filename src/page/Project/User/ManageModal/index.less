@@ -6,7 +6,7 @@
     .ant-drawer-body {
       display: flex;
       flex-direction: column;
-      padding: 12px 16px 24px;
+      padding: 16px;
       .ant-divider-horizontal {
         margin: 12px 0;
       }
@@ -14,10 +14,17 @@
         height: unset;
         padding: 0;
       }
+      > div {
+        height: 100%;
+      }
       .layout {
-        .sider {
+        > .sider {
           flex: 0 0 80px;
           width: 80px;
+        }
+        > .content {
+          display: flex;
+          flex-direction: column;
         }
       }
     }

@@ -27,7 +27,7 @@ interface IProps {
 }
 
 const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) => {
-  const { structureComparisonVisible } = modalStore;
+  const { structureComparisonVisible, structureComparisonTaskData } = modalStore;
   const [form] = useForm<CreateStructureComparisonTaskRecord>();
   const taskExecStrategyMap = getTaskExecStrategyMap(TaskType.STRUCTURE_COMPARISON);
   const sourceDatabaseId = Form.useWatch(['parameters', 'sourceDatabaseId'], form);
@@ -43,7 +43,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
     if (result) {
       message.success(
         formatMessage({
-          id: 'src.component.Task.StructureComparisonTask.CreateModal.EFCABB82' /*'新建成功'*/,
+          id: 'src.component.Task.StructureComparisonTask.CreateModal.1E436045' /*'工单创建成功'*/,
         }),
       );
       modalStore.changeStructureComparisonModal(false);
@@ -83,6 +83,9 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
       modalStore.changeStructureComparisonModal(false);
     }
   };
+  const resetTargetDatabase = async () => {
+    await form.setFieldValue(['parameters', 'targetDatabaseId'], null);
+  };
   useEffect(() => {
     if (!structureComparisonVisible) {
       handleReset();
@@ -91,8 +94,17 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   useEffect(() => {
     if (sourceDatabaseId) {
       run(sourceDatabaseId);
+      targetDatabaseId && resetTargetDatabase();
     }
   }, [sourceDatabaseId]);
+
+  useEffect(() => {
+    const databaseId = structureComparisonTaskData?.databaseId;
+    if (databaseId) {
+      form.setFieldValue(['parameters', 'sourceDatabaseId'], databaseId);
+    }
+  }, [structureComparisonTaskData?.databaseId]);
+
   return (
     <Drawer
       open={structureComparisonVisible}
@@ -161,6 +173,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           <DatabaseSelect
             name={['parameters', 'targetDatabaseId']}
             width={'336px'}
+            disabled={!sourceDatabaseId}
             type={TaskType.STRUCTURE_COMPARISON}
             label={
               formatMessage({
@@ -178,11 +191,9 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           />
 
           <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.CreateModal.25F05D36',
-              }) /*"对比范围"*/
-            }
+            label={formatMessage({
+              id: 'src.component.Task.StructureComparisonTask.CreateModal.2ABC81DE',
+            })}
             name={['parameters', 'comparisonScope']}
             required
           >
@@ -239,6 +250,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
                 id: 'src.component.Task.StructureComparisonTask.CreateModal.EE50E3DC',
               }) /*"执行方式"*/
             }
+            required
             name="executionStrategy"
           >
             <Radio.Group>

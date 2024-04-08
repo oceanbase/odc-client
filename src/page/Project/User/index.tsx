@@ -20,6 +20,7 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
+import TooltipAction from '@/component/TooltipAction';
 import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
@@ -31,7 +32,6 @@ import AddUserModal from './AddUserModal';
 import UpdateUserModal from './UpdateUserModal';
 import ManageModal from './ManageModal';
 import tracert from '@/util/tracert';
-import TooltipNoPermission from '@/component/TooltipNoPermission';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
@@ -53,9 +53,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
   const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
-  const isOwnerOrDba = project?.currentUserResourceRoles?.some((item) =>
-    [ProjectRole.OWNER, ProjectRole.DBA].includes(item),
-  );
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
@@ -119,21 +116,17 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   return (
     <TableCard
       title={
-        <Tooltip title="暂无权限">
-          <TooltipNoPermission open={!isOwnerOrDba}>
-            <Button
-              type="primary"
-              onClick={() => setAddUserModalVisiable(true)}
-              disabled={!isOwnerOrDba}
-            >
-              {
-                formatMessage({
-                  id: 'odc.Project.User.AddMembers',
-                }) /*添加成员*/
-              }
-            </Button>
-          </TooltipNoPermission>
-        </Tooltip>
+        <TooltipAction
+          title={!isOwner ? formatMessage({ id: 'src.page.Project.User.0C0586E8' }) : ''}
+        >
+          <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+            {
+              formatMessage({
+                id: 'odc.Project.User.AddMembers',
+              }) /*添加成员*/
+            }
+          </Button>
+        </TooltipAction>
       }
       extra={
         <FilterIcon onClick={context.reloadProject}>
@@ -196,9 +189,13 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
               return (
                 <Action.Group size={3}>
                   <Action.Link
-                    key={'managePermission'}
+                    key="managePermission"
                     disabled={disabled && !isMe}
-                    tooltip={disabled && !isMe && '暂无权限'}
+                    tooltip={
+                      disabled && !isMe
+                        ? formatMessage({ id: 'src.page.Project.User.907FD906' })
+                        : ''
+                    }
                     onClick={() => {
                       showManageModal(record.id);
                     }}
@@ -209,7 +206,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     onClick={() => updateUser(record.id)}
                     key={'export'}
                     disabled={disabled}
-                    tooltip={disabled && '暂无权限'}
+                    tooltip={
+                      disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
+                    }
                   >
                     编辑角色
                   </Action.Link>
@@ -223,7 +222,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     <Action.Link
                       key={'import'}
                       disabled={disabled}
-                      tooltip={disabled && '暂无权限'}
+                      tooltip={
+                        disabled ? formatMessage({ id: 'src.page.Project.User.FE2F4924' }) : ''
+                      }
                     >
                       {
                         formatMessage({

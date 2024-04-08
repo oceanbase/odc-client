@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SCLayout, { MenuItem } from '@/page/Project/components/SCLayout';
 import { Drawer } from 'antd';
 import React, { useState } from 'react';
@@ -36,6 +35,17 @@ const contentMap = {
   },
 };
 
+const items: MenuItem[] = [
+  {
+    label: '库权限',
+    key: EManagePermissionType.DATABASE,
+  },
+  {
+    label: '表权限',
+    key: EManagePermissionType.TABLE,
+  },
+];
+
 interface IProps {
   visible: boolean;
   projectId: number;
@@ -46,18 +56,6 @@ interface IProps {
 
 const ManageModal: React.FC<IProps> = (props) => {
   const { visible, onClose, projectId, userId, isOwner } = props;
-
-  const items: MenuItem[] = [
-    {
-      label: '库权限',
-      key: EManagePermissionType.DATABASE,
-    },
-    {
-      label: '表权限',
-      key: EManagePermissionType.TABLE,
-    },
-  ];
-
   const [key, setKey] = useState<string>(items?.[0]?.key as string);
   const Component = contentMap?.[key]?.component;
 
@@ -68,7 +66,7 @@ const ManageModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       open={visible}
-      width={960}
+      width={925}
       title="管理权限"
       destroyOnClose
       className={styles.detailDrawer}

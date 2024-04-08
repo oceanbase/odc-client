@@ -148,7 +148,6 @@ const getColumns = (params: {
 interface IProps {
   projectId: number;
   dataSource: IResponseData<ITablePermission>;
-  description: string;
   params: ITableLoadOptions;
   isOwner: boolean;
   tableRef: React.RefObject<ITableInstance>;
@@ -158,7 +157,7 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { isOwner, dataSource, params, description, tableRef, onReclaim, onLoad, onChange } = props;
+  const { isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
@@ -169,13 +168,12 @@ const UserAuthList: React.FC<IProps> = (props) => {
       <CommonTable
         mode={CommonTableMode.SMALL}
         ref={tableRef}
-        enabledReload={true}
+        enabledReload={false}
+        showToolbar={false}
         filterContent={{
           enabledSearch: false,
         }}
-        titleContent={{
-          description,
-        }}
+        titleContent={null}
         rowSelecter={
           isOwner
             ? {
@@ -196,6 +194,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
           rowKey: 'id',
           scroll: {
             x: 950,
+            y: 800,
           },
           pagination: {
             current: dataSource?.page?.number,

@@ -89,6 +89,37 @@ const Policy: React.FC<{
     setPolicyForm(formType);
     setFormModalOpen(true);
   };
+  /**
+   *
+   * @param isSingle 是否为单独点击操作
+   * @param enabled 是否启用
+   * @param isSuccessful 操作结果是否成功
+   * @returns string
+   */
+  const getMessageFormEnableAndResult = (
+    isSingle: boolean,
+    enabled: boolean,
+    isSuccessful: boolean,
+  ) => {
+    if (isSuccessful) {
+      if (enabled) {
+        return isSingle
+          ? formatMessage({ id: 'src.page.Project.Notification.components.1FEA773B' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.35494597' });
+      }
+      return isSingle
+        ? formatMessage({ id: 'src.page.Project.Notification.components.EF079B62' })
+        : formatMessage({ id: 'src.page.Project.Notification.components.4E04D835' });
+    }
+    if (enabled) {
+      return isSingle
+        ? formatMessage({ id: 'src.page.Project.Notification.components.868F9EE8' })
+        : formatMessage({ id: 'src.page.Project.Notification.components.A075A0DF' });
+    }
+    return isSingle
+      ? formatMessage({ id: 'src.page.Project.Notification.components.A4655370' })
+      : formatMessage({ id: 'src.page.Project.Notification.components.EB30B7E4' });
+  };
   const handleSwitchPoliciesStatus = async (formData: TPolicyForm, enabled?: boolean) => {
     const isSingle = formData.mode === EPolicyFormMode.SINGLE;
 
@@ -105,29 +136,14 @@ const Policy: React.FC<{
       });
     }
     const result = await batchUpdatePolicy(projectId, policies);
-    const batchOrNot = isSingle
-      ? ''
-      : formatMessage({ id: 'src.page.Project.Notification.components.204A73A2' });
-    const currentEnabled = policies?.[0]?.enabled
-      ? formatMessage({ id: 'src.page.Project.Notification.components.2F564E6C' })
-      : formatMessage({ id: 'src.page.Project.Notification.components.253CEF9B' });
     if (result) {
-      message.success(
-        formatMessage(
-          { id: 'src.page.Project.Notification.components.384BEEC7' },
-          { batchOrNot: batchOrNot, currentEnabled: currentEnabled },
-        ),
-      ); //`${batchOrNot}${currentEnabled}成功`
+      message.success(getMessageFormEnableAndResult(isSingle, policies?.[0]?.enabled, true));
       setFormModalOpen(false);
+      tableRef.current?.resetSelectedRows();
       tableRef.current?.reload();
       return;
     }
-    message.error(
-      formatMessage(
-        { id: 'src.page.Project.Notification.components.FA694A40' },
-        { batchOrNot: batchOrNot, currentEnabled: currentEnabled },
-      ),
-    ); //`${batchOrNot}${currentEnabled}失败`
+    message.error(getMessageFormEnableAndResult(isSingle, policies?.[0]?.enabled, false));
   };
 
   const hanleOpenChannelDetailDrawer = (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => {
@@ -192,6 +208,7 @@ const Policy: React.FC<{
         setFormModalOpen={setFormModalOpen}
         policyForm={policyForm}
         callback={() => {
+          tableRef.current?.resetSelectedRows();
           tableRef.current?.reload(argsRef.current);
         }}
       />
@@ -338,7 +355,13 @@ const FormPolicyModal: React.FC<{
                   {menu}
                   <Divider style={{ margin: '0px' }} />
                   <div onClick={() => setChannelFormDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-                    <Button type="link">新建推送通道</Button>
+                    <Button type="link">
+                      {
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.E4C2708A' /*新建推送通道*/,
+                        }) /* 新建推送通道 */
+                      }
+                    </Button>
                   </div>
                 </>
               )}

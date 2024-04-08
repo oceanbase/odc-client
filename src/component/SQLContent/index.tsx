@@ -35,12 +35,13 @@ export class SQLContent extends React.PureComponent<{
   sqlContent: string;
   taskId: number;
   language: string;
+  theme?: string;
   settingStore?: SettingStore;
 }> {
   public editor: IEditor;
 
   handleDownloadFile = async (index: number) => {
-    const { taskId, sqlObjectIds, type = '' } = this.props;
+    const { taskId, sqlObjectIds, type = '', theme } = this.props;
     const getFile = type === TaskType.SQL_PLAN ? getCycleTaskFile : getTaskFile;
     const fileUrl = await getFile(taskId, [sqlObjectIds?.[index]]);
     fileUrl?.forEach((url) => {
@@ -55,6 +56,7 @@ export class SQLContent extends React.PureComponent<{
       language,
       settingStore,
       showLineNumbers = true,
+      theme,
     } = this.props;
     return (
       <div className={styles.sqlContent}>
@@ -85,6 +87,7 @@ export class SQLContent extends React.PureComponent<{
           <div className={styles.content}>
             <MonacoEditor
               readOnly
+              theme={theme}
               defaultValue={sqlContent}
               language={language}
               showLineNumbers={showLineNumbers}

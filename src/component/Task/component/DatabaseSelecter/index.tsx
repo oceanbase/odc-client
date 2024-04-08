@@ -95,11 +95,24 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     onChange(checkedKeys.filter((key) => key !== nodeKey));
   };
 
+  const handleCheck = (key: string) => {
+    const checked = checkedKeys?.includes(key);
+    if (checked) {
+      onChange(checkedKeys?.filter((item) => item !== key));
+    } else {
+      onChange([...checkedKeys, key]);
+    }
+  };
+
   function getTreeData(validDatabaseList: any[]) {
     const allTreeData = validDatabaseList?.map((item) => {
       return {
         title: (
-          <Space>
+          <Space
+            onClick={() => {
+              handleCheck(item?.id);
+            }}
+          >
             <Text>{item?.name}</Text>
             <Text type="secondary" ellipsis>
               {item?.dataSource?.name}
@@ -163,8 +176,8 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 <span>
                   {
                     formatMessage({
-                      id: 'src.component.Task.component.DatabaseSelecter.99F8392B' /*全部*/,
-                    }) /* 全部 */
+                      id: 'src.component.Task.component.DatabaseSelecter.D17AE43F' /*选择数据库*/,
+                    }) /* 选择数据库 */
                   }
                 </span>
                 <Text type="secondary">({allTreeDataCount})</Text>

@@ -34,6 +34,7 @@ import { openTableViewPage } from '@/store/helper/page';
 import { ReactComponent as IndexSvg } from '@/svgr/index.svg';
 import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 import { ReactComponent as PartitionSvg } from '@/svgr/Partition.svg';
+import logger from '@/util/logger';
 
 export function TableTreeData(dbSession: SessionStore, database: IDatabase): TreeDataNode {
   const dbName = database.name;
@@ -48,10 +49,20 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   };
   if (tables) {
     const dataTypes = dbSession?.dataTypes;
+    /**
+     * 检测重复table
+     */
+    let visited = new Set();
+
     treeData.children = tables
       // 无权限的表过滤掉， 就像无权限的库一样
-      .filter((table) => table?.info?.authorizedPermissionTypes?.length < 1)
+      .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)
       .map((table) => {
+        if (visited.has(table.info?.tableName)) {
+          logger.error('table name is duplicated', table.info?.tableName);
+          return;
+        }
+        visited.add(table.info?.tableName);
         const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
         let columnRoot: TreeDataNode;
         if (table.columns) {
@@ -359,7 +370,8 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
             ? [columnRoot, indexRoot, partitionRoot, constraintRoot].filter(Boolean)
             : null,
         };
-      });
+      })
+      .filter(Boolean);
   }
 
   return treeData;

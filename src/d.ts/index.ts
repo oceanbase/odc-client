@@ -84,6 +84,7 @@ export interface IUserConfig {
   'odc.sqlexecute.default.queryLimit': string;
   'odc.sqlexecute.default.fullLinkTraceEnabled': 'true' | 'false';
   'odc.sqlexecute.default.continueExecutionOnError': 'true' | 'false';
+  'odc.sqlexecute.default.addInternalRowId': 'true' | 'false';
   'odc.sqlexecute.default.objectDraggingOption': DragInsertType;
   'odc.editor.style.theme': 'OceanBase' | 'VSCode';
   'odc.editor.style.fontSize': 'Small' | 'Normal' | 'Large';
@@ -345,6 +346,7 @@ export interface ITaskFlow {
   id: number;
   name: string;
   builtIn: boolean;
+  externalApproval?: boolean;
   approvalExpirationIntervalSeconds: number;
   executionExpirationIntervalSeconds: number;
   waitExecutionExpirationIntervalSeconds: number;
@@ -409,6 +411,8 @@ export enum AuditEventType {
   MOCKDATA = 'MOCKDATA',
   // 影子表
   SHADOWTABLE_SYNC = 'SHADOWTABLE_SYNC',
+  // 结构比对
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   // 分区计划
   PARTITION_PLAN = 'PARTITION_PLAN',
   // 操作记录
@@ -435,6 +439,12 @@ export enum AuditEventType {
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   // SQL 安全规则管理
   SQL_SECURITY_RULE_MANAGEMENT = 'SQL_SECURITY_RULE_MANAGEMENT',
+  // 自动授权
+  AUTOMATION_RULE_MANAGEMENT = 'AUTOMATION_RULE_MANAGEMENT',
+  // 消息通知
+  NOTIFICATION_MANAGEMENT = 'NOTIFICATION_MANAGEMENT',
+  // 敏感列管理
+  SENSITIVE_COLUMN_MANAGEMENT = 'SENSITIVE_COLUMN_MANAGEMENT',
 }
 
 export enum AuditEventActionType {
@@ -519,6 +529,12 @@ export enum AuditEventActionType {
   APPROVE_SHADOWTABLE_SYNC_TASK = 'APPROVE_SHADOWTABLE_SYNC_TASK',
   REJECT_SHADOWTABLE_SYNC_TASK = 'REJECT_SHADOWTABLE_SYNC_TASK',
   STOP_SHADOWTABLE_SYNC_TASK = 'STOP_SHADOWTABLE_SYNC_TASK',
+  // 结构比对
+  CREATE_STRUCTURE_COMPARISON_TASK = 'CREATE_STRUCTURE_COMPARISON_TASK',
+  STOP_STRUCTURE_COMPARISON_TASK = 'STOP_STRUCTURE_COMPARISON_TASK',
+  EXECUTE_STRUCTURE_COMPARISON_TASK = 'EXECUTE_STRUCTURE_COMPARISON_TASK',
+  APPROVE_STRUCTURE_COMPARISON_TASK = 'APPROVE_STRUCTURE_COMPARISON_TASK',
+  REJECT_STRUCTURE_COMPARISON_TASK = 'REJECT_STRUCTURE_COMPARISON_TASK',
   // 分区管理
   CREATE_PARTITION_PLAN_TASK = 'CREATE_PARTITION_PLAN_TASK',
   STOP_PARTITION_PLAN_TASK = 'STOP_PARTITION_PLAN_TASK',
@@ -598,6 +614,23 @@ export enum AuditEventActionType {
   TABLE_PERMISSION_MANAGEMENT = 'TABLE_PERMISSION_MANAGEMENT',
   GRANT_TABLE_PERMISSION = 'GRANT_TABLE_PERMISSION',
   REVOKE_TABLE_PERMISSION = 'REVOKE_TABLE_PERMISSION',
+  // 自动授权
+  CREATE_AUTOMATION_RULE = 'CREATE_AUTOMATION_RULE',
+  ENABLE_AUTOMATION_RULE = 'ENABLE_AUTOMATION_RULE',
+  DISABLE_AUTOMATION_RULE = 'DISABLE_AUTOMATION_RULE',
+  UPDATE_AUTOMATION_RULE = 'UPDATE_AUTOMATION_RULE',
+  DELETE_AUTOMATION_RULE = 'DELETE_AUTOMATION_RULE',
+  // 消息通知
+  CREATE_NOTIFICATION_CHANNEL = 'CREATE_NOTIFICATION_CHANNEL',
+  UPDATE_NOTIFICATION_CHANNEL = 'UPDATE_NOTIFICATION_CHANNEL',
+  DELETE_NOTIFICATION_CHANNEL = 'DELETE_NOTIFICATION_CHANNEL',
+  BATCH_UPDATE_NOTIFICATION_POLICIES = 'BATCH_UPDATE_NOTIFICATION_POLICIES',
+  // 敏感列管理
+  BATCH_CREATE_SENSITIVE_COLUMNS = 'BATCH_CREATE_SENSITIVE_COLUMNS',
+  BATCH_UPDATE_SENSITIVE_COLUMNS = 'BATCH_UPDATE_SENSITIVE_COLUMNS',
+  BATCH_DELETE_SENSITIVE_COLUMNS = 'BATCH_DELETE_SENSITIVE_COLUMNS',
+  ENABLE_SENSITIVE_COLUMN = 'ENABLE_SENSITIVE_COLUMN',
+  DISABLE_SENSITIVE_COLUMN = 'DISABLE_SENSITIVE_COLUMN',
 }
 
 export enum AuditEventDialectType {
@@ -2256,6 +2289,7 @@ export interface ITaskResult {
   records: string[];
   successCount: number;
   zipFileDownloadUrl: string;
+  fullLogDownloadUrl: string;
   writeCount: number;
   conflictCount: number;
   ignoreCount: number;
@@ -2302,10 +2336,8 @@ export interface IDataArchiveJobParameters {
 export interface IDataClearJobParameters {
   deleteAfterMigration: boolean;
   name: string;
-  sourceDatabaseId: number;
-  sourceDatabaseName?: string;
-  targetDataBaseId: number;
-  targetDatabaseName?: string;
+  databaseId: number;
+  databaseName?: string;
   deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
@@ -2470,6 +2502,7 @@ export interface IAsyncTaskParams {
   rollbackSqlObjectNames: string[];
   generateRollbackPlan: boolean;
   parentFlowInstanceId?: number;
+  retryTimes: number;
 }
 
 export interface IApplyPermissionTaskParams {
@@ -3208,6 +3241,8 @@ export enum PARTITION_KEY_INVOKER {
   CUSTOM_GENERATOR = 'CUSTOM_GENERATOR',
   TIME_INCREASING_GENERATOR = 'TIME_INCREASING_GENERATOR',
   KEEP_MOST_LATEST_GENERATOR = 'KEEP_MOST_LATEST_GENERATOR',
+  HISTORICAL_PARTITION_PLAN_DROP_GENERATOR = 'HISTORICAL_PARTITION_PLAN_DROP_GENERATOR',
+  HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR = 'HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR',
 }
 
 export enum TaskErrorStrategy {
@@ -3216,7 +3251,7 @@ export enum TaskErrorStrategy {
 }
 
 export interface IPartitionKeyConfig {
-  partitionKey: string;
+  partitionKey?: string;
   partitionKeyInvoker: PARTITION_KEY_INVOKER;
   strategy: TaskPartitionStrategy;
   partitionKeyInvokerParameters: Record<string, any>;
@@ -3232,6 +3267,7 @@ export interface IPartitionPlan {
   id: number;
   maxErrors: number;
   timeoutMillis: number;
+  partitionTableConfig: IPartitionTableConfig;
   partitionTableConfigs: IPartitionTableConfig[];
   errorStrategy: TaskErrorStrategy;
 }
@@ -3283,6 +3319,7 @@ export interface IPartitionPlanTable {
     tableName: string;
     warning: unknown;
   };
+  partitionPlanTableConfig: IPartitionTableConfig;
   partitionMode: string;
   rangePartitioned: number;
   schemaName: string;

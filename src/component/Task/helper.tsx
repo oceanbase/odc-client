@@ -27,7 +27,7 @@ export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 export const ENABLED_SYS_FROM_ITEM = false;
 
 export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) => {
-  let _permissions = null;
+  let _permissions = [];
   switch (taskType) {
     case TaskType.EXPORT:
       return permissions?.length > 0; // 考虑有表没有库权限的情况
@@ -38,7 +38,7 @@ export const hasPermission = (taskType: TaskType, permissions: DatabasePermissio
     default:
       _permissions = [DatabasePermissionType.CHANGE];
   }
-  return permissions?.some((item) => _permissions.includes(item));
+  return _permissions.every((item) => permissions?.includes(item));
 };
 
 export const isCycleTask = (type: TaskType) => {
@@ -226,6 +226,11 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
       }), //'权限申请'
       group: [
         {
+          value: TaskPageType.APPLY_DATABASE_PERMISSION,
+          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
+          enabled: !isClient() && !isPersonal,
+        },
+        {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
           label: formatMessage({
             id: 'odc.src.component.Task.ApplicationProjectPermissions',
@@ -233,27 +238,12 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           enabled: !isClient() && !isPersonal,
         },
         {
-          value: TaskPageType.APPLY_DATABASE_PERMISSION,
-          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
-          enabled: !isClient() && !isPersonal,
-        },
-        {
           value: TaskPageType.APPLY_TABLE_PERMISSION,
           label: '申请表权限',
-          enabled: !isClient() && !isPersonal, // TODO
+          enabled: !isClient() && !isPersonal,
         },
       ],
     },
-    // {
-    //   groupName: '权限申请',
-    //   group: [
-    //     {
-    //       value: TaskPageType.SENSITIVE_COLUMN,
-    //       label: '敏感列',
-    //       enabled: true,
-    //     },
-    //   ],
-    // },
   ];
 };
 

@@ -79,6 +79,7 @@ export const AuditEventMetaMap = {
     id: 'odc.components.RecordPage.ShadowTableSynchronization',
   }),
   //影子表同步
+  [AuditEventType.STRUCTURE_COMPARISON]: formatMessage({ id: 'src.constant.C180952A' }), //'结构比对'
   [AuditEventType.PARTITION_PLAN]: formatMessage({
     id: 'odc.components.RecordPage.PartitionPlan',
   }),
@@ -141,6 +142,15 @@ export const AuditEventMetaMap = {
   }), //'库权限管理'
   [AuditEventActionType.APPLY_TABLE_PERMISSION]: '申请表权限',
   [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: '表权限管理',
+  [AuditEventType.AUTOMATION_RULE_MANAGEMENT]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.B7B36187',
+  }), //'自动授权规则管理'
+  [AuditEventType.NOTIFICATION_MANAGEMENT]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.28E26C1D',
+  }), //'消息推送管理'
+  [AuditEventType.SENSITIVE_COLUMN_MANAGEMENT]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.10FC55A9',
+  }), //'敏感列管理'
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -369,7 +379,7 @@ export const AuditEventActionMap = {
   [AuditEventActionType.ROLLBACK_TASK]: formatMessage({
     id: 'odc.components.RecordPage.RollBack',
   }),
-  //回滚 // 操作记录
+  //拒绝 //回滚 // 操作记录
   [AuditEventActionType.EXPORT_AUDIT_EVENT]: formatMessage({
     id: 'odc.components.RecordPage.ExportOperationRecords',
   }),
@@ -450,7 +460,23 @@ export const AuditEventActionMap = {
   [AuditEventActionType.STOP_SHADOWTABLE_SYNC_TASK]: formatMessage({
     id: 'odc.components.RecordPage.Termination',
   }),
-  //终止
+  // //终止
+  // 结构比对
+  [AuditEventActionType.CREATE_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.052399AE',
+  }), //'创建结构比对任务'
+  [AuditEventActionType.STOP_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.5073B3F1',
+  }), //'停止结构比对任务'
+  [AuditEventActionType.EXECUTE_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.8282AA35',
+  }), //'执行结构比对任务'
+  [AuditEventActionType.APPROVE_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.2AC9D3B7',
+  }), //'同意结构比对任务'
+  [AuditEventActionType.REJECT_STRUCTURE_COMPARISON_TASK]: formatMessage({
+    id: 'src.constant.8171D57C',
+  }), //'拒绝结构比对任务'
   [AuditEventActionType.CREATE_PARTITION_PLAN_TASK]: formatMessage({
     id: 'odc.components.RecordPage.Create',
   }),
@@ -612,8 +638,54 @@ export const AuditEventActionMap = {
   [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: '表权限管理',
   [AuditEventActionType.GRANT_TABLE_PERMISSION]: '新增表权限管理',
   [AuditEventActionType.REVOKE_TABLE_PERMISSION]: '回收表权限管理',
+  // 自动授权规则
+  [AuditEventActionType.CREATE_AUTOMATION_RULE]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.61D99657',
+  }), //'创建自动授权规则'
+  [AuditEventActionType.ENABLE_AUTOMATION_RULE]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.835AC167',
+  }), //'启用自动授权规则'
+  [AuditEventActionType.DISABLE_AUTOMATION_RULE]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.BE82DF97',
+  }), //'禁用自动授权规则'
+  [AuditEventActionType.UPDATE_AUTOMATION_RULE]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.C092DD2B',
+  }), //'修改自动授权规则'
+  [AuditEventActionType.DELETE_AUTOMATION_RULE]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.2D2EFDF4',
+  }), //'删除自动授权规则'
+
+  [AuditEventActionType.CREATE_NOTIFICATION_CHANNEL]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.8EEA2B75',
+  }), //'创建推送通道'
+  [AuditEventActionType.UPDATE_NOTIFICATION_CHANNEL]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.7C5B25A6',
+  }), //'修改推送通道'
+  [AuditEventActionType.DELETE_NOTIFICATION_CHANNEL]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.ABFE4553',
+  }), //'删除推送通道'
+  [AuditEventActionType.BATCH_UPDATE_NOTIFICATION_POLICIES]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.031FEE2D',
+  }), //'更新推送规则'
+
+  [AuditEventActionType.BATCH_CREATE_SENSITIVE_COLUMNS]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.9D3D3621',
+  }), //'批量创建敏感列'
+  [AuditEventActionType.BATCH_UPDATE_SENSITIVE_COLUMNS]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.F959721C',
+  }), //'批量更新敏感列'
+  [AuditEventActionType.BATCH_DELETE_SENSITIVE_COLUMNS]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.52BD5121',
+  }), //'批量删除敏感列'
+  [AuditEventActionType.ENABLE_SENSITIVE_COLUMN]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.1A6954C8',
+  }), //'启用敏感列'
+  [AuditEventActionType.DISABLE_SENSITIVE_COLUMN]: formatMessage({
+    id: 'src.page.Secure.Record.RecordPage.3174392D',
+  }), //'禁用敏感列'
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
+  console.log(eventMeta);
   const metas =
     eventMeta?.reduce((meta, { type, action }) => {
       if (meta[type]) {

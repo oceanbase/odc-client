@@ -71,37 +71,54 @@ const getColumns = (
       title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.F84FA469' }), //'操作'
       width: '164px',
       ellipsis: true,
-      render: (action, _) => (
-        <Action.Group size={2}>
-          <Action.Link
-            key="applyDatabase"
-            onClick={async () => {
-              console.log(action, _);
-              applyDataBaseTask?.(_?.projectId, _?.databaseId, _?.unauthorizedPermissionTypes);
-              // applyDataBaseTask(1, 215, _?.unauthorizedPermissionTypes); // TODO
-            }}
-          >
-            申请库权限
-          </Action.Link>
-          {
+      render: (action, _) => {
+        const dbDisabled = !_.applicable;
+        let dbTooltip = null,
+          tableTooltip = null;
+        if (dbDisabled) {
+          dbTooltip = _.projectId
+            ? formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.C9A2993D',
+              }) /* 无法申请数据库权限：没有加入数据库所属项目 */
+            : formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.E87F786C',
+              }); /* 无法申请数据库权限：数据库没有归属项目 */
+          tableTooltip = _.projectId
+            ? '无法申请表权限：没有加入数据库所属项目'
+            : '无法申请表权限：表所属数据库没有归属项目';
+        }
+        return (
+          <Action.Group size={2}>
             <Action.Link
-              key="applyTable"
-              disabled={!_?.tableName}
+              disabled={dbDisabled}
+              tooltip={dbTooltip}
+              key="applyDatabase"
               onClick={async () => {
-                applyTableTask?.(
-                  _?.projectId,
-                  _?.databaseId,
-                  _?.tableName,
-                  _?.unauthorizedPermissionTypes,
-                );
-                // applyTableTask(1, 215, 'test_table', _?.unauthorizedPermissionTypes); // TODO
+                applyDataBaseTask?.(_?.projectId, _?.databaseId, _?.unauthorizedPermissionTypes);
               }}
             >
-              申请表权限
+              申请库权限
             </Action.Link>
-          }
-        </Action.Group>
-      ),
+            {
+              <Action.Link
+                key="applyTable"
+                disabled={dbDisabled || !_?.tableName}
+                tooltip={tableTooltip}
+                onClick={async () => {
+                  applyTableTask?.(
+                    _?.projectId,
+                    _?.databaseId,
+                    _?.tableName,
+                    _?.unauthorizedPermissionTypes,
+                  );
+                }}
+              >
+                申请表权限
+              </Action.Link>
+            }
+          </Action.Group>
+        );
+      },
     },
   ];
   return columns;

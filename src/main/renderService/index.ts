@@ -24,6 +24,7 @@ import MainServer from '../server/main';
 import { default as clientLog } from '../utils/log';
 import feedbackImpl from './feedback';
 import { changePwd, checkProcessKey as _checkProcessKey, checkPwd, resetPwdAndDB } from './lock';
+import { getSettingPath, getUserSettingPath } from '../utils';
 
 export function initRenderService() {
   ipcMain.handle('getMainServerPort', (e, ...args) => {
@@ -90,7 +91,7 @@ export function initRenderService() {
   });
 
   ipcMain.handle('saveODCSetting', (e, settingText: string) => {
-    const savePath = path.resolve(app.getPath('exe'), 'setting.json');
+    const savePath = getUserSettingPath();
     /**
      * 保存内容settingText到文件 setting.json
      */
@@ -99,10 +100,14 @@ export function initRenderService() {
   });
 
   ipcMain.handle('getODCSetting', (e) => {
-    const savePath = path.resolve(app.getPath('exe'), 'setting.json');
+    const userSetting = getUserSettingPath();
+    const defaultSetting = getSettingPath();
+    if (fs.existsSync(userSetting)) {
+      return fs.readFileSync(userSetting).toString();
+    }
     /**
      * 保存内容settingText到文件 setting.json
      */
-    return fs.readFileSync(savePath).toString();
+    return fs.readFileSync(defaultSetting).toString();
   });
 }

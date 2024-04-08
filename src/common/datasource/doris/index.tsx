@@ -70,7 +70,6 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
       task: [
         TaskType.ASYNC,
         TaskType.SQL_PLAN,
-        TaskType.DATA_DELETE,
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
@@ -93,6 +92,7 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
     sql: {
       language: 'mysql',
       escapeChar: '`',
+      caseSensitivity: true,
     },
   },
 };

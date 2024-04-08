@@ -12,6 +12,7 @@ import {
   Typography,
 } from 'antd';
 import { CloseCircleFilled } from '@ant-design/icons';
+import HelpDoc from '@/component/helpDoc';
 import { intervalPrecisionOptions } from '../configModal';
 import { START_DATE } from '../const';
 import { PARTITION_KEY_INVOKER } from '@/d.ts';
@@ -77,10 +78,11 @@ const getFieldProps: (
 
 interface TableFormProps {
   field: any;
+  precision: number;
 }
 
 const RuleFormItem: React.FC<TableFormProps> = (props) => {
-  const { field } = props;
+  const { field, precision } = props;
 
   return (
     <Form.Item shouldUpdate={true} className={styles.noMarginBottom}>
@@ -100,25 +102,25 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
         const generateExprError = getFieldError([
           'option',
           'partitionKeyConfigs',
-          'columns',
           field.name,
           'generateExpr',
         ]);
         const intervalGenerateExprError = getFieldError([
           'option',
           'partitionKeyConfigs',
-          'columns',
           field.name,
           'intervalGenerateExpr',
         ]);
         const intervalError = getFieldError([
           'option',
           'partitionKeyConfigs',
-          'columns',
           field.name,
           'interval',
         ]);
         const isCustom = partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR;
+        const validIntervalPrecisionOptions = intervalPrecisionOptions?.filter(
+          (item) => item.value <= precision,
+        );
 
         return (
           <Space
@@ -147,25 +149,35 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   <Input
                     placeholder={
                       formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.D749A5F7',
-                      }) /*"请输入 SQL 表达式生成分区下界"*/
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.13EB1436',
+                      }) /*"请输入 SQL 表达式生成分区上界，可引用变量如 ${INTERVAL}"*/
                     }
                     {...getFieldProps(generateExprError)}
                   />
                 </Form.Item>
                 <Input.Group compact>
                   <Tag className={styles.suffix}>
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
-                      }) /* 间隔 */
-                    }
+                    <HelpDoc
+                      leftText
+                      isTip
+                      title={
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.B0EB9B0D',
+                        }) /*"INTERVAL 初始值及增长步长"*/
+                      }
+                    >
+                      {
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
+                        }) /* 间隔 */
+                      }
+                    </HelpDoc>
                   </Tag>
                   <Form.Item
                     {...field}
                     name={[field.name, 'intervalGenerateExpr']}
                     className={styles.noMarginBottom}
-                    style={{ width: '326px' }}
+                    style={{ width: '306px' }}
                     rules={[
                       {
                         required: true,
@@ -255,7 +267,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                         ]}
                         noStyle
                       >
-                        <Select options={intervalPrecisionOptions} style={{ width: 60 }} />
+                        <Select options={validIntervalPrecisionOptions} style={{ width: 60 }} />
                       </Form.Item>
                     }
                     style={{ width: 243 }}

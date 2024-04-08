@@ -191,11 +191,11 @@ const Crontab = (props, ref) => {
           />
         </Space>
       </div>
-      <Space
+      <div
         className={classnames(styles.content, {
           [styles['default-mode']]: mode !== CrontabMode.custom,
+          [styles.daily]: dateType === CrontabDateType.daily,
         })}
-        direction={mode === CrontabMode.custom ? 'vertical' : 'horizontal'}
       >
         {mode === CrontabMode.custom ? (
           <>
@@ -215,19 +215,13 @@ const Crontab = (props, ref) => {
           </>
         ) : (
           <>
-            <Select
-              value={dateType}
-              style={{ width: 120 }}
-              options={dateOptions}
-              onChange={handleDateTypeChange}
-            />
+            <Select value={dateType} options={dateOptions} onChange={handleDateTypeChange} />
 
             {dateType === CrontabDateType.weekly && (
               <Select
                 mode="multiple"
                 maxTagCount={2}
                 value={dayOfWeek}
-                style={{ width: 210 }}
                 options={weekOptions}
                 onChange={(value) => {
                   handleValueChange({
@@ -243,7 +237,6 @@ const Crontab = (props, ref) => {
                 mode="multiple"
                 maxTagCount={3}
                 value={dayOfMonth}
-                style={{ width: 210 }}
                 options={dayOptions}
                 onChange={(value) => {
                   handleValueChange({
@@ -258,7 +251,6 @@ const Crontab = (props, ref) => {
               mode="multiple"
               maxTagCount={3}
               value={hour}
-              style={{ width: 310 }}
               options={hourOptions}
               onChange={(value) => {
                 handleValueChange({
@@ -269,7 +261,7 @@ const Crontab = (props, ref) => {
             />
           </>
         )}
-      </Space>
+      </div>
       <Collapse
         bordered={false}
         expandIconPosition="end"

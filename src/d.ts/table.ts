@@ -216,4 +216,5 @@ export interface IUnauthorizedResource {
   databaseId: number;
   databaseName: string;
   tableName: string;
+  applicable: boolean;
 }

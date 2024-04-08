@@ -6,7 +6,7 @@ import channel, { ChannelMap } from '@/util/broadcastChannel';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Divider, Form, Input, message } from 'antd';
-import useForm from 'antd/lib/form/hooks/useForm';
+import useForm, { FormInstance } from 'antd/lib/form/hooks/useForm';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
@@ -32,9 +32,10 @@ export default inject('userStore')(observer(LDAP));
 export const LDAPLogin: React.FC<{
   isTest?: boolean;
   userStore?: UserStore;
+  ssoLoginName?: string;
   switchSSOLoginType?: () => void;
 }> = inject('userStore')(
-  observer(({ isTest = false, userStore, switchSSOLoginType = null }) => {
+  observer(({ isTest = false, userStore, ssoLoginName, switchSSOLoginType = null }) => {
     const prefix = getPrefix('login');
     const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
     const [form] = useForm<{
@@ -172,6 +173,7 @@ export const LDAPLogin: React.FC<{
     return (
       <>
         <LDAPLoginContent
+          ssoLoginName={ssoLoginName}
           isSubmiting={isSubmiting}
           isTest={isTest}
           prefix={prefix}
@@ -194,7 +196,20 @@ export const LDAPLogin: React.FC<{
   }),
 );
 
-const LDAPLoginContent = ({
+const LDAPLoginContent: React.FC<{
+  ssoLoginName?: string;
+  isSubmiting: boolean;
+  isTest: boolean;
+  prefix: string;
+  form: FormInstance<{
+    username: string;
+    password: string;
+  }>;
+  switchSSOLoginType: () => void;
+  handleTest: () => void;
+  handleLogin: () => void;
+}> = ({
+  ssoLoginName,
   isSubmiting,
   isTest,
   prefix,
@@ -220,7 +235,12 @@ const LDAPLoginContent = ({
           marginBottom: '50px',
         }}
       >
-        {formatMessage({ id: 'src.page.Login.components.LDAPModal.95DA8BD0' /*LDAP 登录*/ })}
+        {ssoLoginName
+          ? formatMessage(
+              { id: 'src.page.Login.components.LDAPModal.7201A252' },
+              { ssoLoginName: ssoLoginName },
+            )
+          : formatMessage({ id: 'src.page.Login.components.LDAPModal.95DA8BD0' /*LDAP 登录*/ })}
       </div>
       <div>
         <Form

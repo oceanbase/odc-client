@@ -25,6 +25,7 @@ import {
   TaskPartitionStrategy,
   TaskErrorStrategy,
   IPartitionPlanKeyType,
+  IPartitionTableConfig,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
@@ -45,7 +46,9 @@ import {
   Radio,
   InputNumber,
   Alert,
+  Divider,
 } from 'antd';
+import moment from 'moment';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
@@ -58,6 +61,17 @@ import styles from './index.less';
 
 const { Paragraph, Text } = Typography;
 
+const historyPartitionKeyInvokers = [
+  PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
+  PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_DROP_GENERATOR,
+];
+
+const validPartitionKeyInvokers = [
+  PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
+  PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
+  PARTITION_KEY_INVOKER.KEEP_MOST_LATEST_GENERATOR,
+];
+
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
   FIRST_DAY_OF_MONTH = 'FIRST_DAY_OF_MONTH',
@@ -67,6 +81,7 @@ export enum IPartitionPlanInspectTriggerStrategy {
 
 export interface ITableConfig {
   __id: number;
+  __isCreate?: boolean;
   containsCreateStrategy: boolean;
   containsDropStrategy: boolean;
   tableName: string;
@@ -78,10 +93,7 @@ export interface ITableConfig {
   reloadIndexes?: boolean;
   namingPrefix?: string;
   namingSuffixExpression?: string;
-  fromCurrentTime?: START_DATE;
-  baseTimestampMillis?: number;
-  interval?: string;
-  intervalPrecision?: number;
+  refPartitionKey?: string;
   intervalGenerateExpr?: string;
   strategies?: TaskPartitionStrategy[];
   partitionMode?: string;
@@ -100,20 +112,70 @@ export interface ITableConfig {
   };
 }
 
+const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableConfig[] = (
+  tableConfigs,
+) => {
+  const originPartitionTableConfigs = tableConfigs?.map((config) => {
+    const dropKeyConfig = config?.partitionKeyConfigs?.find(
+      (item) => item?.strategy === TaskPartitionStrategy.DROP,
+    );
+    const createKeyConfigs = config?.partitionKeyConfigs?.filter(
+      (item) => item?.strategy === TaskPartitionStrategy.CREATE,
+    );
+    const keyConfigs = createKeyConfigs?.map((keyConfig) => {
+      const { partitionKey, partitionKeyInvoker, partitionKeyInvokerParameters } = keyConfig;
+      const { generateParameter, generateCount } = partitionKeyInvokerParameters ?? {};
+      return {
+        name: partitionKey,
+        partitionKeyInvoker,
+        generateCount,
+        ...generateParameter,
+        fromCurrentTime: generateParameter?.fromCurrentTime
+          ? START_DATE.CURRENT_DATE
+          : START_DATE.CUSTOM_DATE,
+        baseTimestampMillis: generateParameter?.baseTimestampMillis
+          ? moment(generateParameter?.baseTimestampMillis)
+          : undefined,
+      };
+    });
+    const dropPartitionKeyInvokerParameters = dropKeyConfig?.partitionKeyInvokerParameters ?? {};
+    const { partitionNameGeneratorConfig } = config?.partitionNameInvokerParameters ?? {};
+    const tableConfig = {
+      ...dropPartitionKeyInvokerParameters,
+      ...partitionNameGeneratorConfig,
+      tableName: config?.tableName,
+      generateCount: keyConfigs?.[0]?.generateCount,
+      option: {
+        partitionKeyConfigs: keyConfigs,
+      },
+    };
+    return tableConfig;
+  });
+  return originPartitionTableConfigs;
+};
+
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
   projectId?: number;
+  theme?: string;
 }
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { modalStore, projectId } = props;
-    const { partitionVisible } = modalStore;
+    const { modalStore, projectId, theme } = props;
+    const { partitionVisible, partitionData } = modalStore;
     const [tableConfigs, setTableConfigs] = useState<ITableConfig[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [disabledSubmit, setDisabledSubmit] = useState(true);
     const [hasPartitionPlan, setHasPartitionPlan] = useState(false);
     const [crontab, setCrontab] = useState<ICrontab>(null);
     const [dropCrontab, setDropCrontab] = useState<ICrontab>(null);
+    const [createdTableConfigs, setCreatedTableConfigs] = useState<ITableConfig[]>([]);
+    const [createdOriginTableConfigs, setCreatedOriginTableConfigs] = useState<
+      IPartitionTableConfig[]
+    >([]);
+    const [historyOriginTableConfigs, setHistoryOriginTableConfigs] = useState<
+      IPartitionTableConfig[]
+    >([]);
     const [form] = Form.useForm();
     const isCustomStrategy = Form.useWatch('isCustomStrategy', form);
     const databaseId = Form.useWatch('databaseId', form);
@@ -134,9 +196,31 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         const hasPartitionPlan = res?.contents?.some(
           (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
         );
+        const allPartitionPlanTableConfigs = res?.contents
+          ?.map((item) => item?.partitionPlanTableConfig)
+          ?.filter(Boolean);
+        const createdOriginTableConfigs = allPartitionPlanTableConfigs?.filter(
+          ({ partitionKeyConfigs }) => {
+            return partitionKeyConfigs?.some((item) =>
+              validPartitionKeyInvokers.includes(item?.partitionKeyInvoker),
+            );
+          },
+        );
+        const createdTableConfigs = getCreatedTableConfigs(createdOriginTableConfigs);
+        const historyOriginTableConfigs = allPartitionPlanTableConfigs?.filter(
+          ({ partitionKeyConfigs }) => {
+            return partitionKeyConfigs?.some((item) =>
+              historyPartitionKeyInvokers.includes(item?.partitionKeyInvoker),
+            );
+          },
+        );
+        setCreatedTableConfigs(createdTableConfigs);
+        setCreatedOriginTableConfigs(createdOriginTableConfigs);
+        setHistoryOriginTableConfigs(historyOriginTableConfigs);
         setHasPartitionPlan(hasPartitionPlan);
         setTableConfigs(
           res?.contents?.map((config, index) => {
+            const strategies = [];
             const {
               containsCreateStrategy,
               containsDropStrategy,
@@ -144,11 +228,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               partition,
               partitionMode,
             } = config;
+            if (containsCreateStrategy) {
+              strategies.push(TaskPartitionStrategy.CREATE);
+            }
+            if (containsDropStrategy) {
+              strategies.push(TaskPartitionStrategy.DROP);
+            }
             return {
               __id: index,
               containsCreateStrategy,
               containsDropStrategy,
-              strategies: [],
+              strategies,
               tableName,
               definitionCount: partition?.partitionDefinitions?.length,
               partitionMode,
@@ -201,9 +291,18 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       try {
         const values = await form.validateFields();
         const { description, databaseId, timeoutMillis, errorStrategy } = values;
-        const partitionTableConfigs = tableConfigs
-          ?.filter((config) => config?.strategies?.length)
+        const validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
+        const validHistoryOriginTableConfigs = historyOriginTableConfigs?.filter((item) => {
+          return validTableConfigs?.some((config) => config?.tableName === item?.tableName);
+        });
+        let partitionTableConfigs: IPartitionTableConfig[] = validTableConfigs
           ?.map((config) => {
+            const createdOriginTableConfig = createdOriginTableConfigs?.find(
+              (item) => item.tableName === config.tableName,
+            );
+            if (!config?.__isCreate) {
+              return createdOriginTableConfig ? createdOriginTableConfig : null;
+            }
             const {
               generateCount,
               nameRuleType,
@@ -212,10 +311,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               reloadIndexes,
               namingPrefix,
               namingSuffixExpression,
-              fromCurrentTime,
-              baseTimestampMillis,
-              interval,
-              intervalPrecision,
+              refPartitionKey,
               intervalGenerateExpr,
               tableName,
               strategies,
@@ -292,26 +388,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               partitionKeyConfigs: partitionKeyConfigs?.filter((item) =>
                 strategies?.includes(item.strategy),
               ),
-              partitionNameInvoker: '',
+              partitionNameInvoker: null,
               partitionNameInvokerParameters: {},
             };
             if (nameRuleType === 'PRE_SUFFIX') {
-              const currentTimeParameter = {
-                fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
-                baseTimestampMillis: baseTimestampMillis?.valueOf(),
-              };
-              if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
-                delete currentTimeParameter.baseTimestampMillis;
-              }
               tableConfig.partitionNameInvoker =
                 PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
               tableConfig.partitionNameInvokerParameters = {
                 partitionNameGeneratorConfig: {
-                  ...currentTimeParameter,
                   namingPrefix,
                   namingSuffixExpression,
-                  interval,
-                  intervalPrecision,
+                  refPartitionKey,
                 },
               };
             } else {
@@ -328,7 +415,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               delete tableConfig.partitionNameInvokerParameters;
             }
             return tableConfig;
-          });
+          })
+          ?.filter(Boolean);
+        if (validHistoryOriginTableConfigs?.length) {
+          partitionTableConfigs = partitionTableConfigs.concat(validHistoryOriginTableConfigs);
+        }
         const params = {
           taskType: TaskType.PARTITION_PLAN,
           description,
@@ -387,6 +478,15 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     useEffect(() => {
       loadData();
     }, [databaseId, sessionId]);
+
+    useEffect(() => {
+      const databaseId = partitionData?.databaseId;
+      if (databaseId) {
+        form.setFieldsValue({
+          databaseId,
+        });
+      }
+    }, [partitionData?.databaseId]);
     return (
       <Drawer
         open={partitionVisible}
@@ -446,21 +546,37 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
           {hasPartitionPlan && (
             <Alert
-              message="当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"
+              message={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.518BD6F7',
+                }) /*"当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"*/
+              }
               type="warning"
               style={{ marginBottom: '8px' }}
               showIcon
             />
           )}
-          <Form.Item required className={styles.tableWrapper}>
+
+          <Form.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.PartitionTask.CreateModal.3383DFA3',
+              }) /*"分区策略"*/
+            }
+            required
+            className={styles.tableWrapper}
+          >
             <PartitionPolicyFormTable
+              theme={theme}
               databaseId={databaseId}
               sessionId={sessionId}
               tableConfigs={tableConfigs}
+              createdTableConfigs={createdTableConfigs}
               onPlansConfigChange={handlePlansConfigChange}
               onLoad={loadData}
             />
           </Form.Item>
+          <Divider />
           <Form.Item>
             <Crontab
               ref={crontabRef}
@@ -484,15 +600,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   }) /* 自定义删除策略执行周期 */
                 }
               </span>
-              <Paragraph>
-                <Text type="secondary">
-                  {
-                    formatMessage({
-                      id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
-                    }) /* 未勾选时，删除策略执行周期将与创建一致 */
-                  }
-                </Text>
-              </Paragraph>
+              {!isCustomStrategy && (
+                <Paragraph>
+                  <Text type="secondary">
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
+                      }) /* 未勾选时，删除策略执行周期将与创建一致 */
+                    }
+                  </Text>
+                </Paragraph>
+              )}
             </Checkbox>
           </Form.Item>
           {isCustomStrategy && (

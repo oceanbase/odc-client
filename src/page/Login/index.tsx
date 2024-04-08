@@ -179,7 +179,8 @@ const Login: React.FC<{
       logo={getLocalImg('version_icon.png')}
       showAuthCode={settingStore.serverSystemInfo?.captchaEnabled}
       showOtherLoginButton={settingStore.serverSystemInfo.ssoLoginEnabled}
-      ssoLoginType={settingStore.serverSystemInfo.ssoLoginType}
+      ssoLoginType={settingStore?.serverSystemInfo?.ssoLoginType}
+      ssoLoginName={settingStore?.serverSystemInfo?.ssoLoginName}
       otherLoginProps={{
         onFinish: loginStore.gotoLoginPageSSO,
       }}

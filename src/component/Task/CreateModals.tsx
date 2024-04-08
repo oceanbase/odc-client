@@ -44,7 +44,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <DataMockerTaskCreateModal projectId={projectId} />
       <ExportTaskCreateModal projectId={projectId} />
       <ImportTaskCreateModal projectId={projectId} />
-      <PartitionTaskCreateModal projectId={projectId} />
+      <PartitionTaskCreateModal projectId={projectId} theme={theme} />
       <SQLPlanTaskCreateModal projectId={projectId} theme={theme} />
       <ShadowSyncTaskCreateModal projectId={projectId} />
       <DataArchiveTaskCreateModal projectId={projectId} />

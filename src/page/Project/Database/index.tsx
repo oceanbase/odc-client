@@ -71,7 +71,16 @@ const Database: React.FC<IProps> = ({ id }) => {
     params.current.current = current;
     params.current.environmentId = environmentId;
     const res = await listDatabases(
-      parseInt(id), null, current, pageSize, name, environmentId, null, null, true);
+      parseInt(id),
+      null,
+      current,
+      pageSize,
+      name,
+      environmentId,
+      null,
+      null,
+      true,
+    );
     if (res) {
       datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
       setData(res?.contents);
@@ -101,7 +110,15 @@ const Database: React.FC<IProps> = ({ id }) => {
       default:
     }
   };
-  const statusMap = datasourceStatus.statusMap;
+  const renderDisabledDBWithTip = (name: React.ReactNode) => {
+    return (
+      <span className={styles.disable}>
+        <Tooltip title={formatMessage({ id: 'src.page.Project.Database.B4A5A6AC' })}>
+          {name}
+        </Tooltip>
+      </span>
+    );
+  };
   return (
     <TableCard
       title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
@@ -110,6 +127,7 @@ const Database: React.FC<IProps> = ({ id }) => {
           <Input.Search
             onSearch={(v) => {
               setSearchValue(v);
+              params.current.current = 1;
               reload(v);
             }}
             placeholder={formatMessage({
@@ -141,12 +159,18 @@ const Database: React.FC<IProps> = ({ id }) => {
             fixed: 'left',
             ellipsis: true,
             render: (name, record) => {
-                const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
-                const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
-                const disabled = !hasChangeAuth && !hasQueryAuth;
+              const disabled = !record?.authorizedPermissionTypes?.length;
               if (!record.existed) {
                 return disabled ? (
-                  <div className={styles.disable}>{name}</div>
+                  <HelpDoc
+                    leftText
+                    isTip={false}
+                    title={formatMessage({
+                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                    })} /*当前数据库不存在*/
+                  >
+                    {renderDisabledDBWithTip(name)}
+                  </HelpDoc>
                 ) : (
                   <HelpDoc
                     leftText
@@ -160,7 +184,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                 );
               }
               return disabled ? (
-                <div className={styles.disable}>{name}</div>
+                renderDisabledDBWithTip(name)
               ) : (
                 <StatusName
                   item={record}
@@ -195,6 +219,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       marginRight: 4,
                     }}
                   />
+
                   <span title={value}>{value}</span>
                 </>
               );
@@ -259,16 +284,55 @@ const Database: React.FC<IProps> = ({ id }) => {
             dataIndex: 'actions',
             width: 200,
             render(_, record) {
-              if (!record.existed) {
-                return '-';
-              }
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const disableTransfer =
                 !!record?.dataSource?.projectId &&
                 !config?.schema?.innerSchema?.includes(record?.name);
-              const hasExportAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
-              const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
-              const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
+              const hasExportAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.EXPORT,
+              );
+              const hasChangeAuth = record.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              );
+              const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
+              if (!record.existed) {
+                return (
+                  <Action.Group size={3}>
+                    <Action.Link
+                      key={'transfer'}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367387');
+                        setVisible(true);
+                        setDatabase(record);
+                      }}
+                      disabled={!hasChangeAuth || disableTransfer}
+                      tooltip={
+                        !hasChangeAuth || disableTransfer
+                          ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                          : ''
+                      }
+                    >
+                      <Tooltip
+                        title={
+                          disableTransfer
+                            ? formatMessage({
+                                id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                              }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
+                            : null
+                        }
+                      >
+                        {
+                          formatMessage({
+                            id: 'odc.src.page.Project.Database.ModifyTheProject',
+                          }) /* 
+                  修改所属项目
+                  */
+                        }
+                      </Tooltip>
+                    </Action.Link>
+                  </Action.Group>
+                );
+              }
               return (
                 <Action.Group size={3}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
@@ -279,6 +343,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.EXPORT, record.id);
                       }}
                       disabled={!hasExportAuth}
+                      tooltip={
+                        !hasExportAuth
+                          ? formatMessage({ id: 'src.page.Project.Database.A74B21AE' })
+                          : ''
+                      }
                     >
                       {
                         formatMessage({
@@ -287,6 +356,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   )}
+
                   {config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && (
                     <Action.Link
                       key={'import'}
@@ -295,6 +365,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                         handleMenuClick(TaskPageType.IMPORT, record.id);
                       }}
                       disabled={!hasChangeAuth}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({ id: 'src.page.Project.Database.EA72923D' })
+                          : ''
+                      }
                     >
                       {
                         formatMessage({
@@ -303,6 +378,7 @@ const Database: React.FC<IProps> = ({ id }) => {
                       }
                     </Action.Link>
                   )}
+
                   <Action.Link
                     key={'ddl'}
                     onClick={() => {
@@ -310,6 +386,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       handleMenuClick(TaskPageType.ASYNC, record.id);
                     }}
                     disabled={!hasChangeAuth}
+                    tooltip={
+                      !hasChangeAuth
+                        ? formatMessage({ id: 'src.page.Project.Database.8AFF2CDE' })
+                        : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -323,7 +404,12 @@ const Database: React.FC<IProps> = ({ id }) => {
                       tracert.click('a3112.b64002.c330858.d367381');
                       gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
                     }}
-                    disabled={!hasQueryAuth}
+                    disabled={!hasLoginAuth}
+                    tooltip={
+                      !hasLoginAuth
+                        ? formatMessage({ id: 'src.page.Project.Database.6EC9F229' })
+                        : ''
+                    }
                   >
                     {
                       formatMessage({
@@ -339,6 +425,11 @@ const Database: React.FC<IProps> = ({ id }) => {
                       setDatabase(record);
                     }}
                     disabled={!hasChangeAuth || disableTransfer}
+                    tooltip={
+                      !hasChangeAuth || disableTransfer
+                        ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                        : ''
+                    }
                   >
                     <Tooltip
                       title={
@@ -353,8 +444,8 @@ const Database: React.FC<IProps> = ({ id }) => {
                         formatMessage({
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
                         }) /* 
-                      修改所属项目
-                     */
+                    修改所属项目
+                    */
                       }
                     </Tooltip>
                   </Action.Link>
@@ -366,6 +457,7 @@ const Database: React.FC<IProps> = ({ id }) => {
         dataSource={data}
         pagination={{
           total,
+          current: params.current.current,
         }}
         loadData={(page, filters) => {
           const pageSize = page.pageSize;

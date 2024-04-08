@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Tooltip } from 'antd';
 
-import { Tooltip, TooltipProps } from 'antd';
+interface IProps {
+  title?: string;
+  children?: React.ReactElement;
+}
 
-const TooltipNoPermission: React.FC<TooltipProps> = ({ title = '暂无权限', open, children }) => {
-  console.log('open', open);
-  return (
-    <>
-      {open ? (
-        <Tooltip title={title} placement="top" arrowPointAtCenter>
-          {children}
-        </Tooltip>
-      ) : (
-        children
-      )}
-    </>
-  );
+const TooltipAction: React.FC<IProps> = (props) => {
+  const { title = '', children } = props;
+  return title?.length ? <Tooltip title={title}>{children}</Tooltip> : children;
 };
 
-export default TooltipNoPermission;
+export default TooltipAction;

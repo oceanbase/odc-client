@@ -25,7 +25,7 @@ export const getEnvironmentOptions = async () => {
     return {
       id: rd?.id,
       label: rd?.name,
-      value: rd?.originalName,
+      value: rd?.originalName || rd?.id,
     };
   });
   return newEnvOptions;
@@ -77,6 +77,10 @@ export const getTaskTypeOptions = () => {
     {
       label: TaskTypeMap[TaskType.APPLY_TABLE_PERMISSION],
       value: TaskType.APPLY_TABLE_PERMISSION,
+    },
+    {
+      label: TaskTypeMap[TaskType.STRUCTURE_COMPARISON],
+      value: TaskType.STRUCTURE_COMPARISON,
     },
   ];
   return newTaskTypeOptions;

@@ -43,7 +43,8 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     projectId,
     filters = null,
     width,
-    placeholder = null,
+    placeholder,
+    disabled = false,
     onChange,
   } = props;
 
@@ -62,6 +63,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       ]}
     >
       <SessionSelect
+        disabled={disabled}
         projectId={projectId}
         filters={filters}
         taskType={type}

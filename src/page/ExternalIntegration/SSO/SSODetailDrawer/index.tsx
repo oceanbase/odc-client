@@ -147,7 +147,7 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
   return (
     <Drawer
       width={520}
-      title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.SsoConfiguration' })} /*SSO 配置*/
+      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.EBD42949' })}
       open={visible}
       onClose={() => close()}
       footer={

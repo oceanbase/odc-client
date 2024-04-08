@@ -56,8 +56,8 @@ export class DataSourceStatusStore {
         if (value.status !== IConnectionStatus.TESTING) {
           this.queue.delete(id);
         }
-        this.statusMap = new Map(this.statusMap);
       });
+      this.statusMap = new Map(this.statusMap);
     });
     if (this.queue.size) {
       this._timer = setTimeout(() => {

@@ -180,7 +180,6 @@ const getColumns = (params: {
 interface IProps {
   projectId: number;
   dataSource: IResponseData<ITablePermission>;
-  description: string;
   params: ITableLoadOptions;
   isOwner: boolean;
   tableRef: React.RefObject<ITableInstance>;
@@ -190,17 +189,7 @@ interface IProps {
 }
 
 const TaskApplyList: React.FC<IProps> = (props) => {
-  const {
-    projectId,
-    isOwner,
-    dataSource,
-    params,
-    description,
-    tableRef,
-    onReclaim,
-    onLoad,
-    onChange,
-  } = props;
+  const { projectId, isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
 
@@ -219,15 +208,14 @@ const TaskApplyList: React.FC<IProps> = (props) => {
   return (
     <>
       <CommonTable
-        enabledReload
+        enabledReload={false}
+        showToolbar={false}
         mode={CommonTableMode.SMALL}
         ref={tableRef}
         filterContent={{
           enabledSearch: false,
         }}
-        titleContent={{
-          description,
-        }}
+        titleContent={null}
         rowSelecter={
           isOwner
             ? {

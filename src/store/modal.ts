@@ -31,6 +31,7 @@ import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 interface ConnectionData {
   data: any;
@@ -101,11 +102,33 @@ interface IImportModalData {
 }
 
 interface IDataArchiveTaskData {
-  id: number;
-  type: 'RETRY' | 'EDIT';
+  id?: number;
+  type?: 'RETRY' | 'EDIT';
+  databaseId?: number;
 }
 
 interface IDataClearTaskData extends IDataArchiveTaskData {}
+
+interface ISQLPlanTaskData {
+  id?: number;
+  databaseId?: number;
+}
+
+interface IPartitionTaskData {
+  databaseId?: number;
+}
+
+interface IDDLAlterTaskData {
+  databaseId?: number;
+}
+
+interface IShadowSyncTaskData {
+  databaseId?: number;
+}
+
+interface IStructureComparisonTaskData {
+  databaseId?: number;
+}
 
 interface IWorkSpaceExecuteSQLModalProps {
   tip: string;
@@ -120,6 +143,16 @@ interface IWorkSpaceExecuteSQLModalProps {
 }
 
 export class ModalStore {
+  @observable
+  public selectDatabaseVisible: boolean = false;
+
+  @observable
+  public selectDatabaseModallData: {
+    features?: keyof IDataSourceModeConfig['features'];
+    datasourceId: number;
+    onOk?: (datasourceId: number) => Promise<void>;
+  };
+
   @observable
   public odcSettingVisible: boolean = false;
 
@@ -229,7 +262,19 @@ export class ModalStore {
   public resultSetExportData: ResultSetExportData = null;
 
   @observable
-  public SQLPlanEditId: number = null;
+  public sqlPlanData: ISQLPlanTaskData = null;
+
+  @observable
+  public partitionData: IPartitionTaskData = null;
+
+  @observable
+  public ddlAlterData: IDDLAlterTaskData = null;
+
+  @observable
+  public shadowSyncData: IShadowSyncTaskData = null;
+
+  @observable
+  public structureComparisonTaskData: IStructureComparisonTaskData = null;
 
   @observable
   public createSequenceModalVisible: boolean = false;
@@ -440,8 +485,9 @@ export class ModalStore {
   }
 
   @action
-  public changePartitionModal(isShow: boolean = true) {
+  public changePartitionModal(isShow: boolean = true, data?: IPartitionTaskData) {
     this.partitionVisible = isShow;
+    this.partitionData = isShow ? data : null;
   }
 
   @action
@@ -451,9 +497,13 @@ export class ModalStore {
   }
 
   @action
-  public changeStructureComparisonModal(isShow: boolean = true) {
+  public changeStructureComparisonModal(
+    isShow: boolean = true,
+    data?: IStructureComparisonTaskData,
+  ) {
     this.structureComparisonVisible = isShow;
     isShow && this.structureComparisonDataMap.clear();
+    this.structureComparisonTaskData = isShow ? data : null;
   }
 
   @action
@@ -482,14 +532,15 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateSQLPlanTaskModal(isShow: boolean = true, id?: number) {
+  public changeCreateSQLPlanTaskModal(isShow: boolean = true, data?: ISQLPlanTaskData) {
     this.createSQLPlanVisible = isShow;
-    this.SQLPlanEditId = isShow ? id : null;
+    this.sqlPlanData = isShow ? data : null;
   }
 
   @action
-  public changeCreateDDLAlterTaskModal(isShow: boolean = true) {
+  public changeCreateDDLAlterTaskModal(isShow: boolean = true, data?: IDDLAlterTaskData) {
     this.createDDLAlterVisible = isShow;
+    this.ddlAlterData = isShow ? data : null;
   }
 
   @action
@@ -498,8 +549,9 @@ export class ModalStore {
   }
 
   @action
-  public changeShadowSyncVisible(isShow: boolean = true) {
+  public changeShadowSyncVisible(isShow: boolean = true, data?: IShadowSyncTaskData) {
     this.addShadowSyncVisible = isShow;
+    this.shadowSyncData = isShow ? data : null;
   }
 
   @action
@@ -510,6 +562,18 @@ export class ModalStore {
   @action
   public changeOdcSettingVisible(isShow: boolean = true) {
     this.odcSettingVisible = isShow;
+  }
+
+  @action
+  public changeSelectDatabaseVisible(
+    isShow: boolean = true,
+    features?: keyof IDataSourceModeConfig['features'],
+    onOk?: (datasourceId: number) => Promise<void>,
+  ) {
+    this.selectDatabaseVisible = isShow;
+    this.selectDatabaseModallData = isShow
+      ? { ...this.selectDatabaseModallData, features, onOk }
+      : null;
   }
 
   @action clear() {
@@ -535,6 +599,7 @@ export class ModalStore {
     this.sensitiveColumnVisible = false;
     this.createDDLAlterVisible = false;
     this.odcSettingVisible = false;
+    this.selectDatabaseVisible = false;
   }
 }
 

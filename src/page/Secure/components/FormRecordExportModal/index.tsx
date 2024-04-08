@@ -24,7 +24,7 @@ import type { FormInstance } from 'antd/lib/form';
 import type { DataNode } from 'antd/lib/tree';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { AuditEventActionMap } from '../RecordPage/interface';
+import { AuditEventActionMap } from '@/constant/record';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -187,9 +187,9 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           </Form.Item>
           <Form.Item
             label={formatMessage({
-              id: 'odc.components.FormRecordExportModal.PublicConnection',
+              id: 'src.page.Secure.components.FormRecordExportModal.2906C216',
             })}
-            /*所属公共连接*/ name="connectionIds"
+            name="connectionIds"
           >
             <Select
               placeholder={formatMessage({

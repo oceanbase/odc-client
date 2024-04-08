@@ -150,8 +150,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         if (res) {
           message.success(
             formatMessage({
-              id: 'odc.src.component.Task.ApplyPermission.CreateModal.SuccessfulApplicationForProjectPermissions',
-            }), //'申请项目权限成功！'
+              id: 'src.component.Task.ApplyPermission.CreateModal.1F08D7C5' /*'工单创建成功'*/,
+            }),
           );
           openTasksPage(
             TaskPageType.APPLY_PROJECT_PERMISSION,

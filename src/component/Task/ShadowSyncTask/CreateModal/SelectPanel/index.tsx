@@ -17,6 +17,7 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { getShadowSyncAnalysisResult, startShadowSyncAnalysis } from '@/common/network/task';
 import ExportCard from '@/component/ExportCard';
+import { ModalStore } from '@/store/modal';
 import HelpDoc from '@/component/helpDoc';
 import { DbObjsIcon } from '@/constant';
 import { TaskType } from '@/d.ts';
@@ -26,6 +27,7 @@ import { useUnmountedRef } from 'ahooks';
 import { Checkbox, Col, Form, Input, message, Radio, Row, Select, Space } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { clone, cloneDeep } from 'lodash';
+import { inject, observer } from 'mobx-react';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { List as VirtualList } from 'react-virtualized';
 import DatabaseSelect from '../../../component/DatabaseSelect';
@@ -34,12 +36,15 @@ import styles from './index.less';
 
 const Option = Select.Option;
 
-interface IProps extends IContentProps {}
+interface IProps extends IContentProps {
+  modalStore: ModalStore;
+}
 
 const SelectPanel = forwardRef<any, IProps>(function (
-  { databaseId, schemaName, connectionId, sessionId, projectId, data, setData },
+  { modalStore, databaseId, schemaName, connectionId, sessionId, projectId, data, setData },
   ref,
 ) {
+  const { shadowSyncData } = modalStore;
   const [tables, setTables] = useState([]);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
   const [targetSearchValue, setTargetSearchValue] = useState(null);
@@ -198,6 +203,14 @@ const SelectPanel = forwardRef<any, IProps>(function (
       originTableNames: clone(data.originTableNames),
     });
   }
+
+  useEffect(() => {
+    const databaseId = shadowSyncData?.databaseId;
+    if (databaseId) {
+      form.setFieldsValue({ databaseId });
+    }
+  }, [shadowSyncData?.databaseId]);
+
   return (
     <Form
       form={form}
@@ -463,4 +476,4 @@ const SelectPanel = forwardRef<any, IProps>(function (
   );
 });
 
-export default SelectPanel;
+export default inject('modalStore')(observer(SelectPanel));

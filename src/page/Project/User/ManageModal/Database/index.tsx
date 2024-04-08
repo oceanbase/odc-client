@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { getDatabasePermissions, reclaimDatabasePermission } from '@/common/network/project';
 import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type { IResponseData } from '@/d.ts';
@@ -27,17 +26,9 @@ import { databasePermissionStatusMap } from './Status';
 import TaskApplyList from './TaskApplyList';
 import UserAuthList from './UserAuthList';
 import styles from './index.less';
+import HelpDoc from '@/component/helpDoc';
 
 const { Text } = Typography;
-
-const descMap = {
-  [PermissionSourceType.TICKET_APPLICATION]: formatMessage({
-    id: 'src.page.Project.User.ManageModal.052E4C60',
-  }), //'通过工单申请的数据库权限'
-  [PermissionSourceType.USER_AUTHORIZATION]: formatMessage({
-    id: 'src.page.Project.User.ManageModal.3A14AB40',
-  }), //'通过管理员赋予的数据库权限'
-};
 
 export const databasePermissionTypeMap = {
   [DatabasePermissionType.QUERY]: {
@@ -58,9 +49,11 @@ export const databasePermissionTypeFilters = Object.values(databasePermissionTyp
 export const databasePermissionStatusFilters = Object.values(databasePermissionStatusMap);
 
 interface IProps {
+  visible: boolean;
   projectId: number;
   userId: number;
   isOwner: boolean;
+  onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
@@ -71,7 +64,6 @@ const ManageModal: React.FC<IProps> = (props) => {
   );
   const [params, setParams] = useState<ITableLoadOptions>(null);
   const tableRef = useRef<ITableInstance>();
-  const description = descMap[authorizationType];
 
   const handleChangeKey = (e) => {
     setAuthorizationType(e.target.value);
@@ -159,27 +151,29 @@ const ManageModal: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Space className={styles.header} direction="horizontal" size={5}>
-        <Radio.Group onChange={handleChangeKey} value={authorizationType}>
-          <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>工单授权</Radio.Button>
-          <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>
-            {
-              formatMessage({
-                id: 'src.page.Project.User.ManageModal.28BC85BF' /*用户授权*/,
-              }) /* 用户授权 */
-            }
-          </Radio.Button>
-        </Radio.Group>
+      <div className={styles.header}>
+        <div>
+          <Radio.Group onChange={handleChangeKey} value={authorizationType}>
+            <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>工单授权</Radio.Button>
+            <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>
+              {
+                formatMessage({
+                  id: 'src.page.Project.User.ManageModal.28BC85BF' /*用户授权*/,
+                }) /* 用户授权 */
+              }
+            </Radio.Button>
+          </Radio.Group>
+          <HelpDoc isTip leftText doc="userManageTip" />
+        </div>
         {isOwner && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}
-      </Space>
+      </div>
       <div className={styles.content}>
         {authorizationType === PermissionSourceType.TICKET_APPLICATION ? (
           <TaskApplyList
             projectId={projectId}
             dataSource={dataSource}
-            description={description}
             params={params}
             isOwner={isOwner}
             tableRef={tableRef}
@@ -191,7 +185,6 @@ const ManageModal: React.FC<IProps> = (props) => {
           <UserAuthList
             projectId={projectId}
             dataSource={dataSource}
-            description={description}
             params={params}
             isOwner={isOwner}
             tableRef={tableRef}

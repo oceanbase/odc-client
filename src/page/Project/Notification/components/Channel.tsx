@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useForm } from 'antd/lib/form/Form';
+import { useForm, useWatch } from 'antd/lib/form/Form';
 import { useEffect, useRef, useState } from 'react';
 import {
   Button,
@@ -33,6 +33,8 @@ import {
   EChannelType,
   ELanguage,
   EOverLimitStrategy,
+  EOverLimitStrategyMap,
+  EOverLimitStrategyTipMap,
   ETimeUnit,
   IChannel,
   IRateLimitConfig,
@@ -42,8 +44,15 @@ import styles from './index.less';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import HelpDoc from '@/component/helpDoc';
 import { getChannelColumns } from './columns';
-import { EChannelTypeMap, EContentTemplateMap, ELanguageMap, TimeUnitMap } from './interface';
+import {
+  EChannelTypeMap,
+  EContentTemplateMap,
+  ELanguageMap,
+  TimeUnitMap,
+  WebhookPlaceholderMap,
+} from './interface';
 import odc from '@/plugins/odc';
+import { encrypt } from '@/util/utils';
 
 const Channel: React.FC<{
   projectId: number;
@@ -111,7 +120,15 @@ const Channel: React.FC<{
   const operationOptions = [
     {
       type: IOperationOptionType.button,
-      content: <span>新建推送通道</span>,
+      content: (
+        <span>
+          {
+            formatMessage({
+              id: 'src.page.Project.Notification.components.5909ABDC' /*新建推送通道*/,
+            }) /* 新建推送通道 */
+          }
+        </span>
+      ),
       isPrimary: true,
       onClick: () => {
         setFormDrawerOpen(true);
@@ -169,7 +186,12 @@ const docUrlMap = {
   [EChannelType.WE_COM]: 'https://help.aliyun.com/zh/arms/alarm-operation-center/wecom-chatbots',
   [EChannelType.WEBHOOK]: null,
 };
-
+type GetFinalSignParams = {
+  channelId: number;
+  hasChangeSign: boolean;
+  sign: string;
+};
+type GetFinalSignFunc = (params: GetFinalSignParams) => string | null;
 export const FromChannelDrawer: React.FC<{
   projectId: number;
   channelId?: number;
@@ -178,7 +200,13 @@ export const FromChannelDrawer: React.FC<{
   closedCallback?: (needReload?: boolean) => void;
 }> = ({ projectId, channelId, formDrawerOpen, setFormDrawerOpen, closedCallback }) => {
   const [formRef] = useForm<IChannel<EChannelType>>();
+  const type = useWatch('type', formRef);
+  const sign = useWatch(['channelConfig', 'sign'], formRef);
+  const isWebhook = type === EChannelType.WEBHOOK;
+  const hasSign = [EChannelType.DING_TALK, EChannelType.FEI_SHU]?.includes(type);
+  const hasAtMobiles = [EChannelType.DING_TALK, EChannelType.WE_COM]?.includes(type);
   const [currentChannel, setCurrentChannel] = useState<IChannel<EChannelType>>();
+  const [hasChangeSign, setHasChangeSign] = useState<boolean>(false);
   const [hasEdit, setHasEdit] = useState<boolean>(false);
   const [testChannelSuccess, setTestChannelSuccess] = useState<boolean>(false);
   const [testChannelErrorMessage, setTestChannelErrorMessage] = useState<string>(null);
@@ -201,6 +229,18 @@ export const FromChannelDrawer: React.FC<{
     setTestChannelErrorMessage(null);
     const channel = await formRef.validateFields().catch();
     setTestLoading(true);
+    if (type === EChannelType.DING_TALK || type === EChannelType.FEI_SHU) {
+      // 加密后的密钥在编辑时显示为星号，只有用户主动点击修改，并且修改输入框中的内容时才会重新生成加密后的密钥。
+      (channel as IChannel<EChannelType.FEI_SHU | EChannelType.DING_TALK>).channelConfig.sign =
+        getFinalSign({
+          channelId,
+          hasChangeSign,
+          sign,
+        });
+    }
+    if (channelId) {
+      channel.id = channelId;
+    }
     const result = await testChannel(projectId, channel);
     if (result?.active) {
       setTestChannelSuccess(true);
@@ -219,6 +259,20 @@ export const FromChannelDrawer: React.FC<{
       setTestChannelErrorMessage(result?.errorMessage);
     }
     setTestLoading(false);
+  };
+  /**
+   * 根据对应参数判断最终返回密钥表单项的值
+   * @param param0
+   * @returns string ｜ null
+   */
+  const getFinalSign: GetFinalSignFunc = ({ channelId, hasChangeSign, sign }) => {
+    if (channelId) {
+      // 编辑时内容未被修改返回null，已被修改则返回加密后的结果，未输入密钥时返回encrypt('')
+      return hasChangeSign ? encrypt(sign ? sign : '') : null;
+    } else {
+      // 新建时 未输入密钥时返回encrypt('');
+      return encrypt(sign ? sign : '');
+    }
   };
   const handleFormDrawerClose = () => {
     if (hasEdit) {
@@ -239,9 +293,15 @@ export const FromChannelDrawer: React.FC<{
     const result = await formRef.validateFields().catch();
     result.id ??= channelId;
     let data;
-    if (result?.type === EChannelType.WEBHOOK) {
-      // @ts-ignore
-      result.channelConfig.atMobiles = null;
+    // 只有飞书群和钉钉群机器人才有密钥
+    if (type === EChannelType.DING_TALK || type === EChannelType.FEI_SHU) {
+      // 加密后的密钥在编辑时显示为星号，只有用户主动点击修改，并且修改输入框中的内容时才会重新生成加密后的密钥。
+      (result as IChannel<EChannelType.FEI_SHU | EChannelType.DING_TALK>).channelConfig.sign =
+        getFinalSign({
+          channelId,
+          hasChangeSign,
+          sign,
+        });
     }
     if (channelId) {
       data = await editChannel(projectId, channelId, result);
@@ -264,7 +324,7 @@ export const FromChannelDrawer: React.FC<{
         : formatMessage({ id: 'src.page.Project.Notification.components.562D512A' }),
     );
   };
-  const handleFieldsChange = (changedFields, allFields) => {
+  const handleFieldsChange = async (changedFields, allFields) => {
     if (changedFields?.[0]?.name?.join('') === 'description') {
       return;
     }
@@ -272,7 +332,10 @@ export const FromChannelDrawer: React.FC<{
     setTestChannelSuccess(false);
     if (changedFields?.[0]?.name?.join('') === ['channelConfig', 'language'].join('')) {
       const _language = formRef.getFieldValue(['channelConfig', 'language']) || ELanguage.ZH_CN;
-      formRef.setFieldValue(['channelConfig', 'contentTemplate'], EContentTemplateMap?.[_language]);
+      await formRef.setFieldValue(
+        ['channelConfig', 'contentTemplate'],
+        EContentTemplateMap?.[_language],
+      );
     }
   };
 
@@ -286,6 +349,19 @@ export const FromChannelDrawer: React.FC<{
       throw new Error();
     }
   };
+  const modifySwitch = async () => {
+    if (hasChangeSign) {
+      setHasChangeSign(false);
+      await formRef.setFieldValue(
+        ['channelConfig', 'sign'],
+        (currentChannel as IChannel<EChannelType.FEI_SHU | EChannelType.DING_TALK>)?.channelConfig
+          ?.sign,
+      );
+    } else {
+      setHasChangeSign(true);
+      await formRef.resetFields([['channelConfig', 'sign']]);
+    }
+  };
 
   useEffect(() => {
     if (formDrawerOpen && channelId) {
@@ -294,6 +370,7 @@ export const FromChannelDrawer: React.FC<{
       // 关闭后统一处理数据
       formRef?.resetFields();
       setCurrentChannel(null);
+      setHasChangeSign(false);
       setHasEdit(false);
       setTestChannelErrorMessage(null);
       setTestChannelSuccess(false);
@@ -306,7 +383,11 @@ export const FromChannelDrawer: React.FC<{
       open={formDrawerOpen}
       destroyOnClose
       closable
-      title={channelId ? '编辑推送通道' : '新建推送通道'}
+      title={
+        channelId
+          ? formatMessage({ id: 'src.page.Project.Notification.components.086256DF' })
+          : formatMessage({ id: 'src.page.Project.Notification.components.9A35D4DD' })
+      }
       width={520}
       onClose={handleFormDrawerClose}
       footer={
@@ -374,7 +455,7 @@ export const FromChannelDrawer: React.FC<{
           rules={[
             {
               required: true,
-              message: '请输入',
+              message: formatMessage({ id: 'src.page.Project.Notification.components.2E3BEDFA' }), //'请输入'
             },
             {
               message: formatMessage({ id: 'src.page.Project.Notification.components.CA33D8AB' }), //'通道名称已存在'
@@ -423,10 +504,6 @@ export const FromChannelDrawer: React.FC<{
         <Form.Item name="channelConfig">
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
-              const type = getFieldValue('type');
-              const isWebhook = type === EChannelType.WEBHOOK;
-              const hasSign = [EChannelType.DING_TALK, EChannelType.FEI_SHU]?.includes(type);
-              const hasAtMobiles = [EChannelType.DING_TALK, EChannelType.WE_COM]?.includes(type);
               return (
                 <>
                   <Form.Item
@@ -463,36 +540,47 @@ export const FromChannelDrawer: React.FC<{
                     rules={[
                       {
                         required: true,
-                        message: '请输入',
+                        message: formatMessage({
+                          id: 'src.page.Project.Notification.components.982731E2',
+                        }), //'请输入'
                       },
                     ]}
                   >
-                    <Input
-                      placeholder={
-                        formatMessage({
-                          id: 'src.page.Project.Notification.components.514F5656',
-                        }) /*"请输入钉钉群机器人 Webhook 地址"*/
-                      }
-                    />
+                    <Input placeholder={WebhookPlaceholderMap?.[type]} />
                   </Form.Item>
                   {hasSign ? (
-                    <Form.Item
-                      label={
-                        formatMessage({
-                          id: 'src.page.Project.Notification.components.BE20D900',
-                        }) /*"签名密钥"*/
-                      }
-                      name={['channelConfig', 'sign']}
-                      requiredMark="optional"
-                    >
-                      <Input
-                        placeholder={
+                    <>
+                      <Form.Item
+                        label={
                           formatMessage({
-                            id: 'src.page.Project.Notification.components.A3866291',
-                          }) /*"若开启签名校验，请输入密钥"*/
+                            id: 'src.page.Project.Notification.components.BE20D900',
+                          }) /*"签名密钥"*/
                         }
-                      />
-                    </Form.Item>
+                        name={['channelConfig', 'sign']}
+                        requiredMark="optional"
+                      >
+                        <Input
+                          placeholder={
+                            formatMessage({
+                              id: 'src.page.Project.Notification.components.A3866291',
+                            }) /*"若开启签名校验，请输入密钥"*/
+                          }
+                          type="password"
+                          disabled={channelId && !hasChangeSign}
+                        />
+                      </Form.Item>
+                      {channelId && (
+                        <a className={styles?.modifyBtn} onClick={modifySwitch}>
+                          {hasChangeSign
+                            ? formatMessage({
+                                id: 'src.page.Project.Notification.components.042EAFE9',
+                              })
+                            : formatMessage({
+                                id: 'src.page.Project.Notification.components.2EE5076E',
+                              })}
+                        </a>
+                      )}
+                    </>
                   ) : null}
                   {isWebhook ? (
                     <Form.Item noStyle shouldUpdate>
@@ -658,8 +746,8 @@ export const FromChannelDrawer: React.FC<{
                 <span style={{ color: 'var(--neutral-black45-color)' }}>
                   {formatMessage({ id: 'src.page.Project.Notification.components.D0CF8521' })}
                 </span>
-                <a // TODO: 等待文档链接
-                  href={odc.appConfig?.docs?.url || getLocalDocs('1.data-desensitization.html')}
+                <a
+                  href={odc.appConfig?.docs?.url || getLocalDocs('1000.message-notification.html')}
                   target={'_blank'}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -866,6 +954,24 @@ export const DetailChannelDrawer: React.FC<{
             ? parseRateLimitConfigToText(channel?.channelConfig?.rateLimitConfig)
             : '-'}
         </Descriptions.Item>
+        {channel?.channelConfig?.rateLimitConfig?.overLimitStrategy && (
+          <Descriptions.Item
+            label={formatMessage({ id: 'src.page.Project.Notification.components.C91AC4BD' })}
+          >
+            <HelpDoc
+              isTip
+              leftText
+              title={
+                EOverLimitStrategyTipMap?.[
+                  channel?.channelConfig?.rateLimitConfig?.overLimitStrategy
+                ]
+              }
+            >
+              {EOverLimitStrategyMap?.[channel?.channelConfig?.rateLimitConfig?.overLimitStrategy]}
+            </HelpDoc>
+          </Descriptions.Item>
+        )}
+
         <Descriptions.Item
           label={
             formatMessage({
@@ -1006,21 +1112,21 @@ const CheckboxWithTip: React.FC<{
                   >
                     <Radio.Group>
                       <Radio value={EOverLimitStrategy.THROWN}>
-                        <HelpDoc isTip leftText title={'忽略已超出限流的消息，不再重发'}>
-                          {
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.91FA1DA5' /*忽略*/,
-                            }) /* 忽略 */
-                          }
+                        <HelpDoc
+                          isTip
+                          leftText
+                          title={EOverLimitStrategyTipMap?.[EOverLimitStrategy.THROWN]}
+                        >
+                          {EOverLimitStrategyMap?.[EOverLimitStrategy.THROWN]}
                         </HelpDoc>
                       </Radio>
                       <Radio value={EOverLimitStrategy.RESEND}>
-                        <HelpDoc isTip leftText title={'限流时间过后，将自动重发超出限流的消息'}>
-                          {
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.AB93FA16' /*重发*/,
-                            }) /* 重发 */
-                          }
+                        <HelpDoc
+                          isTip
+                          leftText
+                          title={EOverLimitStrategyTipMap?.[EOverLimitStrategy.RESEND]}
+                        >
+                          {EOverLimitStrategyMap?.[EOverLimitStrategy.RESEND]}
                         </HelpDoc>
                       </Radio>
                     </Radio.Group>

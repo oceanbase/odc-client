@@ -21,6 +21,7 @@ export interface IODCSetting<T = any> {
   span?: number;
   storeType: 'server' | 'local';
   disabledInClient?: boolean;
+  hidden?: boolean;
   render: (value: T, onChange: (value: T) => Promise<void>) => React.ReactNode;
 }
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TablePermissionType } from '@/d.ts/table';
 import { IDatasource } from './datasource';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
@@ -51,7 +50,7 @@ export interface IDatabase {
 }
 
 export interface IUnauthorizedDatabase {
-  unauthorizedPermissionTypes: TablePermissionType[];
+  unauthorizedPermissionTypes: DatabasePermissionType[];
   // 数据库ID
   id: number;
   // 数据库名称
@@ -59,4 +58,5 @@ export interface IUnauthorizedDatabase {
   project: IProject;
   dataSource: IDatasource;
   environment: IEnvironment;
+  applicable: boolean;
 }

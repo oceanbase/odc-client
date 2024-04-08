@@ -15,11 +15,11 @@
  */
 
 import FormItemPanel from '@/component/FormItemPanel';
-import { previewPartitionPlans, getPartitionPlanKeyDataTypes } from '@/common/network/task';
+import { previewPartitionPlans } from '@/common/network/task';
 import HelpDoc from '@/component/helpDoc';
 import Action from '@/component/Action';
 import { TaskPartitionStrategy, PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import { TaskPartitionStrategyMap } from '../../const';
 import { START_DATE } from './const';
 import EditTable from './EditTable';
@@ -40,38 +40,12 @@ import {
   Tag,
   Radio,
   Typography,
-  DatePicker,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 
 const { Text } = Typography;
-
-const startDateOptionValues = [
-  {
-    label: '当前时间',
-    value: START_DATE.CURRENT_DATE,
-    description: '从实际执行时间开始命名',
-  },
-  {
-    label: '指定时间',
-    value: START_DATE.CUSTOM_DATE,
-    description: '从指定时间开始命名',
-  },
-];
-
-export const startDateOptions = startDateOptionValues.map(({ label, value, description }) => {
-  return {
-    label: (
-      <div>
-        <div>{label}</div>
-        <Text type="secondary">{description}</Text>
-      </div>
-    ),
-
-    value,
-  };
-});
 
 export enum NameRuleType {
   PRE_SUFFIX = 'PRE_SUFFIX',
@@ -105,16 +79,13 @@ export const intervalPrecisionOptions = [
   },
 ];
 
-export const getIntervalPrecisionLabel = (value) => {
-  return intervalPrecisionOptions?.find((item) => item.value === value)?.label;
-};
-
 const defaultInitialValues = {
   strategies: [TaskPartitionStrategy.CREATE, TaskPartitionStrategy.DROP],
   nameRuleType: NameRuleType.PRE_SUFFIX,
   interval: 1,
-  intervalPrecision: 63,
   reloadIndexes: true,
+  namingPrefix: 'p',
+  namingSuffixExpression: 'yyyyMMdd',
 };
 
 const StrategyOptions = Object.keys(TaskPartitionStrategyMap)?.map((key) => ({
@@ -137,8 +108,8 @@ interface IProps {
   visible: boolean;
   isBatch: boolean;
   sessionId: string;
-  databaseId: number;
   configs: ITableConfig[];
+  theme?: string;
   onClose: () => void;
   onChange?: (values: ITableConfig[]) => void;
 }
@@ -170,12 +141,31 @@ const suffixOptions = [
   },
 ];
 
+const DropConfigMessage = formatMessage({
+  id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
+}); /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
+
+const CreateConfigMessage = formatMessage({
+  id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
+}); /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
+
+export const getAlertMessage = (strategies: TaskPartitionStrategy[]) => {
+  const messages = [];
+  if (strategies?.includes(TaskPartitionStrategy.DROP)) {
+    messages.push(DropConfigMessage);
+  }
+  if (strategies?.includes(TaskPartitionStrategy.CREATE)) {
+    messages.push(CreateConfigMessage);
+  }
+  return messages;
+};
+
 export const getUnitLabel = (value: number) => {
   return intervalPrecisionOptions.find((item) => item.value === value)?.label;
 };
 
 const ConfigDrawer: React.FC<IProps> = (props) => {
-  const { visible, configs, isBatch, sessionId, databaseId, onClose } = props;
+  const { visible, configs, isBatch, sessionId, theme, onClose } = props;
   const [previewSQLVisible, setPreviewSQLVisible] = useState(false);
   const [ruleExample, setRuleExample] = useState('');
   const [previewData, setPreviewData] = useState<
@@ -187,12 +177,18 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const strategies = Form.useWatch('strategies', form);
   const nameRuleType = Form.useWatch('nameRuleType', form);
-  const fromCurrentTime = Form.useWatch('fromCurrentTime', form);
+  const partitionKeyOptions =
+    configs?.[0]?.option?.partitionKeyConfigs
+      ?.filter((item) => item?.type?.localizedMessage)
+      ?.map((item) => ({
+        label: item?.name,
+        value: item?.name,
+      })) ?? [];
+  const alertMessage = getAlertMessage(strategies);
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
   const isCustomRuleType = nameRuleType === NameRuleType.CUSTOM;
   const tableNames = configs?.map((item) => item.tableName);
-  const firstTableName = tableNames?.[0];
 
   const tableLen = configs?.length;
   const moreText =
@@ -209,33 +205,12 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     ?.map((item) => item?.tableName)
     ?.join('; ');
 
-  const loadKeyTypes = async () => {
-    const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, firstTableName);
-    const values = configs.map((item) => {
-      return {
-        ...item,
-        option: {
-          partitionKeyConfigs: res?.contents?.map((type, index) => {
-            const isDateType = !!type?.localizedMessage;
-            return {
-              partitionKeyInvoker: isDateType
-                ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
-                : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
-              ...item.option.partitionKeyConfigs?.[index],
-              type,
-            };
-          }),
-        },
-      };
-    });
-    props.onChange(values);
-  };
-
   const handlePlansConfigChange = (value: ITableConfig) => {
     const values = configs?.map((item) => {
       return {
         ...item,
         ...value,
+        __isCreate: true,
       };
     });
     props.onChange(values);
@@ -246,19 +221,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     onClose();
   };
 
-  const handleOk = () => {
-    form
-      .validateFields()
-      .then((data) => {
-        handlePlansConfigChange(data);
-        handleClose();
-      })
-      .catch((error) => {
-        console.error(JSON.stringify(error));
-      });
-  };
-
-  const handlePreview = () => {
+  const handlePreview = (isPreview: boolean = true, onlyForPartitionName: boolean = false) => {
     form
       .validateFields()
       .then(async (data) => {
@@ -268,13 +231,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           nameRuleType,
           namingPrefix,
           namingSuffixExpression,
-          fromCurrentTime,
-          baseTimestampMillis,
           generateExpr,
           option,
           keepLatestCount,
-          interval,
-          intervalPrecision,
+          refPartitionKey,
           intervalGenerateExpr,
           reloadIndexes,
         } = data;
@@ -342,6 +302,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
 
         const formData = {
           tableNames,
+          onlyForPartitionName,
           template: {
             partitionKeyConfigs: partitionKeyConfigs?.filter((item) =>
               strategies?.includes(item.strategy),
@@ -352,22 +313,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         };
 
         if (nameRuleType === 'PRE_SUFFIX') {
-          const currentTimeParameter = {
-            fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
-            baseTimestampMillis: baseTimestampMillis?.valueOf(),
-          };
-          if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
-            delete currentTimeParameter.baseTimestampMillis;
-          }
           formData.template.partitionNameInvoker =
             PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
           formData.template.partitionNameInvokerParameters = {
             partitionNameGeneratorConfig: {
               namingPrefix,
               namingSuffixExpression,
-              interval,
-              intervalPrecision,
-              ...currentTimeParameter,
+              refPartitionKey,
             },
           };
         } else {
@@ -386,8 +338,16 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         }
         const res = await previewPartitionPlans(sessionId, formData);
         if (res?.contents?.length) {
-          setPreviewSQLVisible(true);
-          setPreviewData(res?.contents);
+          if (isPreview) {
+            setPreviewSQLVisible(true);
+            setPreviewData(res?.contents);
+          } else if (onlyForPartitionName) {
+            const rule = res?.contents?.map((item) => item?.partitionName)?.join(', ');
+            setRuleExample(rule);
+          } else {
+            handlePlansConfigChange(data);
+            handleClose();
+          }
         }
       })
       .catch((error) => {
@@ -396,78 +356,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   };
 
   const handleTest = async () => {
-    form
-      .validateFields([
-        'nameRuleType',
-        'namingPrefix',
-        'namingSuffixExpression',
-        'generateExpr',
-        'interval',
-        'intervalPrecision',
-        'intervalGenerateExpr',
-        'fromCurrentTime',
-        'baseTimestampMillis',
-        'namingSuffixExpression',
-      ])
-      .then(async (data) => {
-        const {
-          nameRuleType,
-          namingPrefix,
-          namingSuffixExpression,
-          fromCurrentTime,
-          baseTimestampMillis,
-          generateExpr,
-          interval,
-          intervalPrecision,
-          intervalGenerateExpr,
-        } = data;
-        const formData = {
-          tableNames,
-          onlyForPartitionName: true,
-          template: {
-            partitionNameInvoker: null,
-            partitionNameInvokerParameters: null,
-          },
-        };
+    handlePreview(false, true);
+  };
 
-        if (nameRuleType === 'PRE_SUFFIX') {
-          const currentTimeParameter = {
-            fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
-            baseTimestampMillis: baseTimestampMillis?.valueOf(),
-          };
-          if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
-            delete currentTimeParameter.baseTimestampMillis;
-          }
-          formData.template.partitionNameInvoker =
-            PARTITION_NAME_INVOKER.DATE_BASED_PARTITION_NAME_GENERATOR;
-          formData.template.partitionNameInvokerParameters = {
-            partitionNameGeneratorConfig: {
-              namingPrefix,
-              namingSuffixExpression,
-              interval,
-              intervalPrecision,
-              ...currentTimeParameter,
-            },
-          };
-        } else {
-          formData.template.partitionNameInvoker =
-            PARTITION_NAME_INVOKER.CUSTOM_PARTITION_NAME_GENERATOR;
-          formData.template.partitionNameInvokerParameters = {
-            partitionNameGeneratorConfig: {
-              generateExpr,
-              intervalGenerateExpr,
-            },
-          };
-        }
-        const res = await previewPartitionPlans(sessionId, formData);
-        if (res?.contents?.length) {
-          const rule = res?.contents?.map((item) => item?.partitionName)?.join(', ');
-          setRuleExample(rule);
-        }
-      })
-      .catch((error) => {
-        console.error(JSON.stringify(error));
-      });
+  const handleOk = () => {
+    handlePreview(false);
   };
 
   const handleClosePreviewSQL = () => {
@@ -479,16 +372,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (visible && databaseId && sessionId && firstTableName) {
-      loadKeyTypes();
-    }
-  }, [databaseId, sessionId, firstTableName, visible]);
-
-  useEffect(() => {
     if (visible) {
       const value = configs?.[0] ?? defaultInitialValues;
       form.setFieldsValue({
         ...value,
+        refPartitionKey: partitionKeyOptions?.[0]?.value,
       });
     }
   }, [configs, visible]);
@@ -514,7 +402,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button onClick={handlePreview}>
+          <Button
+            onClick={() => {
+              handlePreview();
+            }}
+          >
             {
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
@@ -559,7 +451,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         form={form}
         layout="vertical"
         requiredMark="optional"
-        initialValues={defaultInitialValues}
+        initialValues={{
+          ...defaultInitialValues,
+          refPartitionKey: partitionKeyOptions?.[0]?.value,
+        }}
         onChange={handleChange}
       >
         <Descriptions column={1}>
@@ -569,7 +464,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 id: 'src.component.Task.component.PartitionPolicyFormTable.AE09B3CB',
               }) /*"分区表"*/
             }
-          >{`${tableLabels}${moreText}`}</Descriptions.Item>
+          >
+            {`${tableLabels}${moreText}`}
+          </Descriptions.Item>
           <Descriptions.Item
             label={
               formatMessage({
@@ -587,24 +484,14 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               id: 'src.component.Task.component.PartitionPolicyFormTable.7632AF45',
             }) /*"分区策略"*/
           }
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.CD65E4CD',
-              }), //'请选择'
-            },
-          ]}
         >
           <Checkbox.Group options={StrategyOptions} />
         </Form.Item>
-        {isCreateConfigVisible && (
+        {!!alertMessage.length && (
           <Alert
-            message={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
-              }) /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
-            }
+            message={alertMessage?.map((item) => (
+              <div>{item}</div>
+            ))}
             type="warning"
             style={{ marginBottom: '8px' }}
             showIcon
@@ -658,7 +545,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       }) /* 创建规则 */
                     }
                   </span>
-                  <Action.Link>
+                  <Action.Link
+                    onClick={() => {
+                      window.open(
+                        odc.appConfig?.docs.url || getLocalDocs('320.set-partition-strategy.html'),
+                      );
+                    }}
+                  >
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.DF75EB9E' /*如何配置*/,
@@ -702,6 +595,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   <Space>
                     <Form.Item
                       name="generateExpr"
+                      className={styles.noMarginBottom}
                       rules={[
                         {
                           required: true,
@@ -730,6 +624,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   <Space size={8} align="start">
                     <Form.Item
                       validateFirst
+                      className={styles.noMarginBottom}
                       name="namingPrefix"
                       rules={[
                         {
@@ -768,14 +663,25 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     </Form.Item>
                     <Input.Group compact>
                       <Tag className={styles.suffix}>
-                        {
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
-                          }) /* 后缀 */
-                        }
+                        <HelpDoc
+                          leftText
+                          isTip
+                          title={
+                            formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.2CF17EE5',
+                            }) /*"后缀根据指定的分区键上界时间生成"*/
+                          }
+                        >
+                          {
+                            formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
+                            }) /* 后缀 */
+                          }
+                        </HelpDoc>
                       </Tag>
                       <Form.Item
-                        name="fromCurrentTime"
+                        name="refPartitionKey"
+                        className={styles.noMarginBottom}
                         rules={[
                           {
                             required: true,
@@ -792,36 +698,14 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                             }) /*"请选择"*/
                           }
                           optionLabelProp="label"
-                          options={startDateOptions}
+                          options={partitionKeyOptions}
                           dropdownMatchSelectWidth={154}
                           style={{ width: 135 }}
                         />
                       </Form.Item>
-                      {fromCurrentTime === START_DATE.CUSTOM_DATE && (
-                        <Form.Item
-                          name="baseTimestampMillis"
-                          rules={[
-                            {
-                              required: true,
-                              message: formatMessage({
-                                id: 'src.component.Task.component.PartitionPolicyFormTable.E89659CE',
-                              }), //'请选择'
-                            },
-                          ]}
-                        >
-                          <DatePicker
-                            showTime
-                            placeholder={
-                              formatMessage({
-                                id: 'src.component.Task.component.PartitionPolicyFormTable.05D91017',
-                              }) /*"请选择"*/
-                            }
-                          />
-                        </Form.Item>
-                      )}
-
                       <Form.Item
                         name="namingSuffixExpression"
+                        className={styles.noMarginBottom}
                         rules={[
                           {
                             required: true,
@@ -846,7 +730,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 )}
               </Space>
             </Form.Item>
-            <Space direction="vertical" size={2}>
+            <Space direction="vertical" size={4} className={styles.testBlock}>
               <Action.Link onClick={handleTest}>
                 {
                   formatMessage({
@@ -857,13 +741,14 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               {!!ruleExample && (
                 <Text type="secondary">
                   {formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.797EC6B1' /*示例名称:*/,
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.B0571B5B' /*分区名示例:*/,
                   })}
+
                   {ruleExample}
                 </Text>
               )}
             </Space>
-            {isCustomRuleType ? (
+            {isCustomRuleType && (
               <Form.Item
                 name="intervalGenerateExpr"
                 label={
@@ -871,14 +756,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
                   }) /*"命名间隔"*/
                 }
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.FB42838A',
-                    }), //'请输入'
-                  },
-                ]}
               >
                 <Input
                   style={{ width: 180 }}
@@ -889,67 +766,8 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   }
                 />
               </Form.Item>
-            ) : (
-              <Form.Item
-                name="interval"
-                label={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.85FFB10E',
-                  }) /*"命名间隔"*/
-                }
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.BC96D1C3',
-                    }), //'请输入'
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={0}
-                  addonAfter={
-                    <Form.Item
-                      name="intervalPrecision"
-                      rules={[
-                        {
-                          required: true,
-                          message: formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.A464079B',
-                          }), //'请选择'
-                        },
-                      ]}
-                      noStyle
-                    >
-                      <Select
-                        placeholder={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.572D785C',
-                          }) /*"请选择"*/
-                        }
-                        options={intervalPrecisionOptions}
-                        style={{ width: 60 }}
-                      />
-                    </Form.Item>
-                  }
-                  style={{ width: 180 }}
-                />
-              </Form.Item>
             )}
           </FormItemPanel>
-        )}
-
-        {isDropConfigVisible && (
-          <Alert
-            message={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
-              }) /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
-            }
-            type="warning"
-            style={{ marginBottom: '8px' }}
-            showIcon
-          />
         )}
 
         {isDropConfigVisible && (
@@ -1032,6 +850,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         )}
       </Form>
       <PreviewSQLModal
+        theme={theme}
         visible={previewSQLVisible}
         previewData={previewData}
         onClose={handleClosePreviewSQL}

@@ -104,9 +104,7 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     <Drawer
       width={520}
       open={visible}
-      title={formatMessage({
-        id: 'odc.SSO.NewSSODrawerButton.Edit.EditSsoIntegrationConfiguration',
-      })} /*编辑 SSO 集成配置*/
+      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.3FA0382E' })}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>

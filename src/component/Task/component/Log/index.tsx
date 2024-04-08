@@ -33,12 +33,14 @@ const TaskLog: React.FC<{
   log: ILog;
   logType: CommonTaskLogType;
   isLoading: boolean;
+  downloadUrl?: string;
   onLogTypeChange: (t: CommonTaskLogType) => void;
 }> = function (props) {
   const {
     log,
     logType,
     isLoading,
+    downloadUrl,
     settingStore: { enableDataExport },
   } = props;
   return (
@@ -62,6 +64,7 @@ const TaskLog: React.FC<{
                 language="java"
                 value={log?.[CommonTaskLogType.ALL] ?? ''}
                 ignoreCase={true}
+                downloadUrl={downloadUrl}
                 enableDownload={enableDataExport}
                 enableCopy={enableDataExport}
                 defaultPosition="end"
@@ -83,6 +86,7 @@ const TaskLog: React.FC<{
                 language="java"
                 value={log?.[CommonTaskLogType.WARN] ?? ''}
                 ignoreCase={true}
+                downloadUrl={downloadUrl}
                 enableDownload={enableDataExport}
                 enableCopy={enableDataExport}
                 defaultPosition="end"

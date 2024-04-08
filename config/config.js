@@ -2,7 +2,7 @@ import getVersion from './version';
 import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin'
 import path from 'path';
 
 const version = getVersion();
@@ -11,6 +11,8 @@ console.log('git last commit: ', version);
  * 关闭浏览器的版本提示，避免出现第三方cdn加载（阿里专有云安全需求）
  */
 const disableBrowserUpdate = process.env.DISABLE_BROWSER_UPDATE;
+
+let enableSourceMap = process.env.ENABLE_SOURCEMAP === "true";
 
 console.log(disableBrowserUpdate);
 
@@ -36,6 +38,7 @@ const config = {
       content: version,
     },
   ],
+  devtool: enableSourceMap ? "cheap-module-source-map" : (process.env.NODE_ENV === 'development' ? 'cheap-module-source-map' : false),
 
   antd: {
     import: true,
