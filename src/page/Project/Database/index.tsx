@@ -61,7 +61,7 @@ const Database: React.FC<IProps> = ({ id }) => {
   const [data, setData] = useState<IDatabase[]>([]);
   const [visible, setVisible] = useState(false);
   /**
-   * 修改负责人弹窗显示与隐藏
+   * 修改管理员弹窗显示与隐藏
    */
   const [changeOwnerModalVisible, setChangeOwnerModalVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
@@ -201,9 +201,7 @@ const Database: React.FC<IProps> = ({ id }) => {
             },
           },
           {
-            title: formatMessage({
-              id: 'odc.Project.Database.Owner',
-            }),
+            title: '管理员',
             //项目角色
             dataIndex: 'owners',
             ellipsis: true,

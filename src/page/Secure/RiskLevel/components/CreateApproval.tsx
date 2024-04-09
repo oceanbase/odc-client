@@ -30,7 +30,7 @@ interface ICreateApprovalProps {
  * 数据库类型的Role文本映射
  */
 const databaseRoleTextMap = {
-  OWNER: formatMessage({ id: 'odc.component.AuthNode.Role.DatabaseOwner' }) /* 数据库负责人 */,
+  OWNER: '数据库管理员',
 };
 const CreateApproval: React.FC<ICreateApprovalProps> = ({
   editId,

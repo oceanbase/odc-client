@@ -23,16 +23,16 @@ import { useRequest } from 'ahooks';
 import { useContext, useMemo, useState } from 'react';
 import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
-import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
-import { IProject, ProjectRole } from '@/d.ts/project';
+import { ProjectRole } from '@/d.ts/project';
 import { DefaultOptionType } from 'antd/es/select';
 import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 interface IProps {
   projectId: number;
   onSuccess: () => void;
   /**
-   * 数据库负责人的限制个数
+   * 数据库管理员的限制个数
    */
   maxOwnerCount?: number;
 }
@@ -286,19 +286,12 @@ export default function AddDataBaseButton({
               })}
             </Select>
           </Form.Item>
-          <Form.Item
-            name="ownerIds"
-            label={formatMessage({
-              id: 'odc.Database.AddDataBaseButton.DatabaseOwner',
-            })} /*負責人*/
-          >
+          <Form.Item name="ownerIds" label="数据库管理员（未设置时默认是项目管理员）">
             <Select
               allowClear
               showSearch
               mode="multiple"
-              placeholder={formatMessage({
-                id: 'odc.Database.AddDataBaseButton.SelectDatabaseOwner',
-              })} /*请选择数据库负责人*/
+              placeholder="请选择数据库管理员"
               style={{
                 width: '100%',
               }}
