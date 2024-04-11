@@ -172,6 +172,7 @@ const Channel: React.FC<{
         channelId={selectedChannelId}
         detailDrawerOpen={detailDrawerOpen}
         setDetailDrawerOpen={setDetailDrawerOpen}
+        closedCallback={closedCallback}
       />
 
       <CommonTable
@@ -821,10 +822,12 @@ export const DetailChannelDrawer: React.FC<{
   channelId: number;
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: (oepn: boolean) => void;
-}> = ({ projectId, channelId, detailDrawerOpen, setDetailDrawerOpen }) => {
+  closedCallback?: (needReload?: boolean) => void;
+}> = ({ projectId, channelId, detailDrawerOpen, setDetailDrawerOpen, closedCallback }) => {
   const [channel, setChannel] = useState<IChannel<EChannelType>>();
   const handleOnClose = () => {
     setDetailDrawerOpen(false);
+    closedCallback?.();
   };
   const loadChannelDetail = async (channelId) => {
     const channel = await detailChannel(projectId, channelId);
@@ -837,6 +840,7 @@ export const DetailChannelDrawer: React.FC<{
       loadChannelDetail(channelId);
     } else {
       setChannel(null);
+      closedCallback?.();
     }
   }, [detailDrawerOpen]);
   function parseRateLimitConfigToText(rateLimitConfig: IRateLimitConfig) {
