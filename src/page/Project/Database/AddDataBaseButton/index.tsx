@@ -21,23 +21,30 @@ import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermiss
 import TooltipAction from '@/component/TooltipAction';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
-import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
 import { ProjectRole } from '@/d.ts/project';
+import { DefaultOptionType } from 'antd/es/select';
+import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
+import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
 interface IProps {
   projectId: number;
   onSuccess: () => void;
 }
+
 export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
+
   const [form] = Form.useForm<{
     databaseIds: number[];
+    ownerIds?: number[];
   }>();
-  const { run, loading } = useRequest(updateDataBase, {
+
+  const { run, loading: saveDatabaseLoading } = useRequest(updateDataBase, {
     manual: true,
   });
   const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
@@ -75,16 +82,16 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
     if (!formData) {
       return;
     }
-    const isSuccess = await run(formData?.databaseIds, projectId);
+    const isSuccess = await run(formData?.databaseIds, projectId, formData?.ownerIds);
     if (isSuccess) {
       message.success(
         formatMessage({
           id: 'odc.Database.AddDataBaseButton.AddedSuccessfully',
         }), //添加成功
       );
-
       setOpen(false);
       onSuccess();
+      form.resetFields();
     }
   }
   return (
@@ -121,6 +128,8 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
         })}
         /*添加数据库*/ onOk={submit}
         onCancel={close}
+        confirmLoading={saveDatabaseLoading}
+        destroyOnClose
       >
         <Form
           requiredMark={'optional'}
@@ -253,6 +262,15 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
               })}
             </Select>
           </Form.Item>
+          <DatabaseOwnerSelect
+            hasDefaultSet={false}
+            ownerIds={form.getFieldValue('ownerIds')}
+            setFormOwnerIds={(value) => {
+              form.setFieldsValue({
+                ownerIds: value,
+              });
+            }}
+          />
         </Form>
       </Modal>
     </>

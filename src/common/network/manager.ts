@@ -418,7 +418,9 @@ export async function getTaskFlowExists(name: string): Promise<boolean> {
 export async function getResourceRoles(
   params?: IRequestListParamsV2,
 ): Promise<IResponseData<IResourceRole>> {
-  const result = await request.get('/api/v2/iam/resourceRoles');
+  const result = await request.get('/api/v2/iam/resourceRoles', {
+    params,
+  });
   return result?.data;
 }
 

@@ -46,6 +46,20 @@ export interface IDatabase {
   environment: IEnvironment;
   existed: boolean;
   authorizedPermissionTypes?: DatabasePermissionType[];
+  /**
+   * 数据库管理员
+   */
+  owners: IDatabaseOwner[];
+  ownerIds: number[];
+}
+
+/**
+ * 数据库管理员
+ */
+export interface IDatabaseOwner {
+  accountName: string;
+  id: number;
+  name: string;
 }
 
 export interface IUnauthorizedDatabase {

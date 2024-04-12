@@ -160,6 +160,7 @@ export enum IManagerResourceType {
   integration = 'ODC_INTEGRATION',
   environment = 'ODC_ENVIRONMENT',
   individual_organization = 'ODC_INDIVIDUAL_ORGANIZATION',
+  database = 'ODC_DATABASE',
 }
 
 export enum actionTypes {

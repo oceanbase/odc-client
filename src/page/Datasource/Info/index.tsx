@@ -162,6 +162,23 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
+            title: '管理员',
+            dataIndex: 'owners',
+            ellipsis: true,
+            width: 160,
+            render(v) {
+              return v?.length > 0 ? (
+                v.map(({ name }) => name)?.join(' | ')
+              ) : (
+                <span style={{ color: 'var(--text-color-hint)' }}>
+                  {formatMessage({
+                    id: 'odc.Project.Database.OwnerEmptyText',
+                  })}
+                </span>
+              );
+            },
+          },
+          {
             title: formatMessage({
               id: 'odc.Datasource.Info.CharacterEncoding',
             }),
