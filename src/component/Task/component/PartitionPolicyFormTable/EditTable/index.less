@@ -1,5 +1,21 @@
-.editTable {
-  border: 1px solid var(--neutral-grey4-color);
+.table {
+  width: 100%;
+  border-spacing: 0;
+  background-color: #fff;
+  thead {
+    line-height: 24px;
+    display: flex;
+    text-align: left;
+    background-color: #fafafa;
+    border-bottom: none;
+    th {
+      border: 1px solid #e9e9e9;
+      padding: 0 5px;
+      .editTable {
+        border: 1px solid var(--neutral-grey4-color);
+      }
+    }
+  }
 }
 
 .thead {
@@ -47,12 +63,11 @@
       line-height: 72px;
     }
   }
-  .ruleFormItem {
-    width: 100%;
-    padding: 4px 8px;
+  td .content {
+    padding: 5px 8px;
   }
-  .typeSelect {
-    display: flex;
+  td {
+    border: 1px solid #e9e9e9;
     vertical-align: middle;
     padding: 0 8px;
     line-height: 71px;

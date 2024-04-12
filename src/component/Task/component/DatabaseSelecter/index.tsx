@@ -19,7 +19,7 @@ import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox } from 'antd';
+import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { DataNode } from 'antd/lib/tree';
 import classnames from 'classnames';
@@ -30,12 +30,15 @@ const { Text } = Typography;
 interface IProps {
   projectId: number;
   value?: any[];
+  // 最多可以选中的数据的数量
+  maxCount?: number;
   onChange?: (newValue: any[]) => void;
 }
 
 const DatabaseSelecter: React.FC<IProps> = function ({
   projectId,
   value: checkedKeys = [],
+  maxCount,
   onChange,
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -106,20 +109,26 @@ const DatabaseSelecter: React.FC<IProps> = function ({
 
   function getTreeData(validDatabaseList: any[]) {
     const allTreeData = validDatabaseList?.map((item) => {
+      const disabled = maxCount
+        ? !(checkedKeys.length < maxCount || checkedKeys.includes(item.id))
+        : false;
       return {
         title: (
-          <Space
-            onClick={() => {
-              handleCheck(item?.id);
-            }}
-          >
-            <Text>{item?.name}</Text>
-            <Text type="secondary" ellipsis>
-              {item?.dataSource?.name}
-            </Text>
-          </Space>
+          <Tooltip placement="topLeft" title={disabled ? `最多支持选择 ${maxCount} 个数据库` : ''}>
+            <div
+              style={{ display: 'flex', width: 320 }}
+              onClick={() => {
+                handleCheck(item?.id);
+              }}
+            >
+              <Text style={{ wordBreak: 'keep-all', paddingRight: 4 }}>{item?.name}</Text>
+              <Text type="secondary" ellipsis>
+                {item?.dataSource?.name}
+              </Text>
+            </div>
+          </Tooltip>
         ),
-
+        disabled,
         key: item?.id,
         icon: <Icon component={DatabaseSvg} />,
       };
@@ -127,11 +136,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     return allTreeData;
   }
 
-  function getAllTreeDataKeys() {
+  function getAllTreeDataKeys(max?: number) {
     const keys = [];
     const allTreeData = getAllTreeData() ?? [];
     const getKeys = (nodes: DataNode[]) => {
-      nodes?.forEach((node) => {
+      nodes?.forEach((node, index) => {
+        if (max && index > max - 1) return;
         keys?.push(node.key);
         if (node.children) {
           getKeys(node.children);
@@ -144,7 +154,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   }
 
   const handleSwitchSelectAll = () => {
-    onChange(checkAll ? [] : allTreeDataKeys);
+    onChange(checkAll ? [] : maxTreeDataKeys);
   };
 
   const handleSearch = (value) => {
@@ -152,7 +162,8 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   };
 
   const allTreeDataKeys = getAllTreeDataKeys();
-  const checkAll = allTreeDataKeys?.length && allTreeDataKeys.length === checkedKeys.length;
+  const maxTreeDataKeys = getAllTreeDataKeys(maxCount);
+  const checkAll = allTreeDataKeys?.length && maxTreeDataKeys.length === checkedKeys.length;
   const allTreeData = getAllTreeData();
   const selectedTreeData = getCheckedTreeData();
   const allTreeDataCount = allTreeDataKeys?.length;
