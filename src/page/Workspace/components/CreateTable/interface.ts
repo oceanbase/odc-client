@@ -15,7 +15,6 @@
  */
 
 import { IPartitionType } from '@/d.ts';
-import { ITablePermission } from '@/d.ts/project';
 import {
   TableConstraintDefer,
   TableForeignConstraintOnDeleteType,
@@ -40,6 +39,7 @@ export interface ITableModel {
   uniqueConstraints: TableUniqueConstraint[];
   foreignConstraints: TableForeignConstraint[];
   checkConstraints: TableCheckConstraint[];
+  authorizedPermissionTypes?: TablePermissionType[];
 }
 export interface TableInfo {
   tableName: string;

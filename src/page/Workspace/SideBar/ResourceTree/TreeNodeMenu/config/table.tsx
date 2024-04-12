@@ -391,7 +391,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
-        await session.database.loadTable(table.info.tableName);
+        await session.database.loadTable(table.info);
       },
     },
   ],
@@ -420,7 +420,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
-        await session.database.loadTable(table.info.tableName);
+        await session.database.loadTable(table.info);
       },
     },
   ],
@@ -449,7 +449,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
-        await session.database.loadTable(table.info.tableName);
+        await session.database.loadTable(table.info);
       },
     },
   ],
@@ -478,7 +478,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
-        await session.database.loadTable(table.info.tableName);
+        await session.database.loadTable(table.info);
       },
     },
   ],
@@ -507,7 +507,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
-        await session.database.loadTable(table.info.tableName);
+        await session.database.loadTable(table.info);
       },
     },
   ],

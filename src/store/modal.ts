@@ -84,7 +84,7 @@ interface ApplyDatabasePermissionData {
 interface ApplyTablePermissionData {
   projectId?: number;
   databaseId?: number;
-  tableName?: string;
+  tableNames?: string[];
   types?: TablePermissionType[];
   task?: Partial<TaskDetail<IApplyTablePermissionTaskParams>>;
 }

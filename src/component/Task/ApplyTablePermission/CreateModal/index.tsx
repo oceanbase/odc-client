@@ -18,10 +18,11 @@ import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
 import TableSelecter, {
   TableSelecterRef,
+  flatTableByGroupedParams,
   groupTableByDataBase,
 } from '@/component/Task/component/TableSelecter';
 import HelpDoc from '@/component/helpDoc';
-import { IApplyTablePermissionTaskParams, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -47,6 +48,11 @@ const CheckboxGroup = Checkbox.Group;
 
 const MAX_DATE = '9999-12-31 23:59:59';
 const MAX_DATE_LABEL = '9999-12-31';
+
+const defaultValue = {
+  tables: [],
+  expireTime: '7,days',
+};
 
 export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) => {
   if (isCustomExpireTime) {
@@ -206,7 +212,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success('申请表权限成功');
+          message.success('工单创建成功');
           openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
@@ -226,28 +232,22 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
       executionStrategy,
     } = task;
-    // 格式化成TableSelecter所需格式
-    const formatDbTables = (tables: IApplyTablePermissionTaskParams['tables']) => {
-      if (!tables) {
-        return [];
-      }
-      const map: { [databaseId: number]: string[] } = {};
-      tables.forEach(({ databaseId, tableName }) => {
-        if (map[databaseId]) {
-          map[databaseId].push(tableName);
-        } else {
-          map[databaseId] = [tableName];
-        }
-      });
-      return Object.keys(map).map((databaseId) => ({ databaseId, tableNames: map[databaseId] }));
-    };
     const formData = {
+      ...defaultValue,
       projectId,
       executionStrategy,
-      tables: formatDbTables(tables),
+      tables: flatTableByGroupedParams(tables),
       types,
       applyReason,
     };
+    // 默认获取要申请权限的库下面的表，并且展开
+    // 目前一个工单只会关联一个库
+    const databaseId = tables?.[0]?.databaseId;
+    if (projectId && databaseId) {
+      tableSelecterRef.current?.loadTables(databaseId).then(() => {
+        tableSelecterRef.current?.expandTable(databaseId);
+      });
+    }
     form.setFieldsValue(formData);
   }, [applyTablePermissionData, form]);
 
@@ -256,7 +256,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    const { projectId, databaseId, tableName, types } = applyTablePermissionData ?? {};
+    const { projectId, databaseId, tableNames, types } = applyTablePermissionData ?? {};
     if (applyTablePermissionData?.task) {
       loadEditData();
     } else {
@@ -264,7 +264,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         projectId: projectId || props?.projectId,
         databaseId,
         // 格式化成TableSelecter value所需格式
-        tables: tableName ? [{ databaseId, tableName }] : [],
+        tables: flatTableByGroupedParams([{ databaseId, tableNames }]),
         types,
       };
       if (projectId && databaseId) {
@@ -305,9 +305,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     >
       <Form
         name="basic"
-        initialValues={{
-          databases: [],
-        }}
+        initialValues={defaultValue}
         layout="vertical"
         requiredMark="optional"
         form={form}

@@ -2536,13 +2536,14 @@ export interface IApplyTablePermissionTaskParams {
     id: number;
     name?: string;
   };
+  // 提交时databaseId、tableNames为必填项
+  // 详情返回时五个字段均有
   tables: {
-    dataSourceId: number;
-    dataSourceName: string;
     databaseId: number;
-    databaseName: string;
-    tableId: number;
-    tableName: string;
+    tableNames: string[];
+    dataSourceId?: number;
+    dataSourceName?: string;
+    databaseName?: string;
   }[];
   types: TablePermissionType[];
   expireTime: number;

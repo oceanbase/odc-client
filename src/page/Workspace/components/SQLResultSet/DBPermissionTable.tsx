@@ -108,7 +108,7 @@ const getColumns = (
                   applyTableTask?.(
                     _?.projectId,
                     _?.databaseId,
-                    _?.tableName,
+                    [_?.tableName],
                     _?.unauthorizedPermissionTypes,
                   );
                 }}
@@ -135,7 +135,7 @@ interface IContentProps {
   applyTableTask?: (
     projectId: number,
     databaseId: number,
-    tableName: string,
+    tableNames: string[],
     types: TablePermissionType[],
   ) => void;
 }
@@ -181,13 +181,13 @@ const DBPermissionTable: React.FC<IProps> = (props) => {
   const applyTableTask: IContentProps['applyTableTask'] = (
     projectId: number,
     databaseId: number,
-    tableName: string,
+    tableNames: string[],
     types: TablePermissionType[],
   ) => {
     modalStore.changeApplyTablePermissionModal(true, {
       projectId,
       databaseId,
-      tableName,
+      tableNames,
       types,
     });
   };

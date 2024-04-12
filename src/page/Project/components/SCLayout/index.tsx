@@ -26,6 +26,7 @@ interface ISecureSiderProps {
   items: MenuItem[];
   selectedKey: string[];
   siderStyle?: React.CSSProperties;
+  contentStyle?: React.CSSProperties;
   handleItemOnClick: (key: string) => void;
 }
 interface SCLayoutProps {
@@ -33,7 +34,14 @@ interface SCLayoutProps {
   content: React.ReactNode;
 }
 const SCLayout: React.FC<SCLayoutProps> = ({ sider, content }) => {
-  const { loading = false, items, selectedKey, siderStyle = {}, handleItemOnClick } = sider;
+  const {
+    loading = false,
+    items,
+    selectedKey,
+    siderStyle = {},
+    contentStyle = {},
+    handleItemOnClick,
+  } = sider;
   function renderList() {
     if (items?.length === 0) {
       return null;
@@ -61,7 +69,9 @@ const SCLayout: React.FC<SCLayoutProps> = ({ sider, content }) => {
       <div className={styles.sider} style={siderStyle}>
         {renderList()}
       </div>
-      <div className={classNames(styles.content, styles.envDrawer)}>{content}</div>
+      <div className={classNames(styles.content, styles.envDrawer)} style={contentStyle}>
+        {content}
+      </div>
     </div>
   );
 };

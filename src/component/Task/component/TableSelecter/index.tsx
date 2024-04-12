@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
-import { generateDatabaseSidByDataBaseId } from '@/common/network/pathUtil';
+import { getTableListWithoutSession } from '@/common/network/table';
 import ExportCard from '@/component/ExportCard';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
 import { TablePermissionType } from '@/d.ts/table';
-import { SessionManagerStore } from '@/store/sessionManager';
-import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { ReactComponent as TableSvg } from '@/svgr/menuTable.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Checkbox, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
-import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
-import request from '@/util/request';
 
-type TableItem = { databaseId: number; tableName: string };
+export type TableItem = { databaseId: number; tableName: string };
 
 type IProps = {
-  sessionManagerStore?: SessionManagerStore;
   projectId: number;
   value?: TableItem[];
-  stateId?: string;
   onChange?: (newValue: TableItem[]) => void;
 };
 
@@ -81,8 +75,7 @@ const parseDataBaseIdAndTableNamebByKey = (key: string): TableItem => {
 
 /**
  * 按库将表分组返回：
- * 目前value格式和详情接口返回的格式保持了一致
- * tips: 单个+批量提交时的参数类型可使用本方法获取
+ * 可用来获取:工单授权和用户授权的提交参数
  * @param tables
  * @returns
  */
@@ -101,6 +94,27 @@ export const groupTableByDataBase = (
     databaseId: Number(databaseId),
     tableNames: groupMap[databaseId],
   }));
+};
+/**
+ * 和groupTableByDataBase配合使用
+ * 可将groupTableByDataBase按库分组后的值拍平为TableItem
+ * 就可以直接set到TableSeletor上了
+ * @param tables
+ * @returns
+ */
+export const flatTableByGroupedParams = (
+  tables: { databaseId: number; tableNames: string[] }[],
+): TableItem[] => {
+  if (!tables) {
+    return [];
+  }
+  const result: TableItem[] = [];
+  tables.forEach(({ databaseId, tableNames }) => {
+    tableNames?.forEach((tableName) => {
+      tableName && result.push({ databaseId, tableName });
+    });
+  });
+  return result;
 };
 /**
  * 将原始的IDataBaseWithTable数据转成TreeData格式
@@ -132,7 +146,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[]) => {
         </Space>
       ),
       key: id,
-      icon: <DataBaseStatusIcon item={database} />,
+      icon: getDataSourceStyleByConnectType(dataSource.type).dbIcon.component,
       checkable: false,
       expandable: true,
       children,
@@ -142,7 +156,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[]) => {
 };
 
 const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = (
-  { projectId, sessionManagerStore, value = [], onChange },
+  { projectId, value = [], onChange },
   ref,
 ) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -158,19 +172,17 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     return value.map(generateKeyByDataBaseIdAndTableName);
   }, [value]);
   /**
-   * 获取项目下所有的库及其表
+   * 获取项目下所有的数据库
    */
   const loadDatabases = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
       if (res?.contents) {
-        const list: IDataBaseWithTable[] = res.contents
-          // .filter(({ authorizedPermissionTypes }) => authorizedPermissionTypes?.length)
-          .map((db) => ({
-            ...db,
-            tableNames: [],
-          }));
+        const list: IDataBaseWithTable[] = res.contents.map((db) => ({
+          ...db,
+          tableNames: [],
+        }));
         setDataBaseWithTableList(list || []);
       }
     } catch (e) {
@@ -264,28 +276,18 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
   /**
    * 加载库里包含的表
    */
-  const handleLoadTables = useCallback(
-    async (databaseId: number) => {
-      // TODO 由于此处依赖session， 后期会改成一个不依赖session的获取库下表列表的接口来做
-      const dbSession = await sessionManagerStore.createSession(null, databaseId, true);
-      if (dbSession && dbSession !== 'NotFound') {
-        const { sessionId } = dbSession;
-        await dbSession.database.getTableList();
-        const tables = dbSession.database.tables || [];
-        const tableNames = tables.map(({ info: { tableName } }) => tableName);
-        setDataBaseWithTableList((prevData) => {
-          for (const item of prevData) {
-            if (item.id === databaseId) {
-              item.tableNames = tableNames;
-            }
-          }
+  const handleLoadTables = useCallback(async (databaseId: number) => {
+    const tables = await getTableListWithoutSession(databaseId);
+    const tableNames = tables.map(({ tableName }) => tableName);
+    setDataBaseWithTableList((prevData) => {
+      for (const item of prevData) {
+        if (item.id === databaseId) {
+          item.tableNames = tableNames;
           return [...prevData];
-        });
-        sessionManagerStore.destorySession(sessionId);
+        }
       }
-    },
-    [sessionManagerStore],
-  );
+    });
+  }, []);
   /**
    * 所有选中的节点的Key
    */
@@ -422,6 +424,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         >
           {selectedTreeData?.length ? (
             <Tree
+              blockNode
               showIcon
               autoExpandParent
               defaultExpandAll
@@ -460,4 +463,4 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
   );
 };
 
-export default inject('sessionManagerStore')(observer(React.forwardRef(TableSelecter)));
+export default React.forwardRef(TableSelecter);

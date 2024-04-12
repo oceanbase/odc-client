@@ -83,6 +83,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             selectedKey: [key],
             handleItemOnClick,
             siderStyle: { flex: '0 0 80px' },
+            contentStyle: { display: 'flex', flexDirection: 'column' },
           }}
           content={<Component key={key} projectId={projectId} userId={userId} isOwner={isOwner} />}
         />

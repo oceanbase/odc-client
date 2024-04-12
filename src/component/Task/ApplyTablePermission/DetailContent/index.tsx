@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import DisplayTable from '@/component/DisplayTable';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import type { IApplyTablePermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
-import { Descriptions, Divider } from 'antd';
+import { Descriptions, Divider, Space } from 'antd';
+import { useMemo } from 'react';
 import { getExpireTimeLabel, permissionOptionsMap } from '../';
 
 const getConnectionColumns = () => {
@@ -28,6 +30,17 @@ const getConnectionColumns = () => {
       title: '数据库',
       ellipsis: true,
       width: 240,
+      render(databaseName: string, { dataSourceType }) {
+        const Icon = dataSourceType
+          ? getDataSourceStyleByConnectType(dataSourceType)?.dbIcon?.component
+          : null;
+        return (
+          <Space>
+            {Icon && <Icon />}
+            <span>{databaseName}</span>
+          </Space>
+        );
+      },
     },
     {
       dataIndex: 'tableName',
@@ -48,7 +61,25 @@ interface IProps {
 }
 const TaskContent: React.FC<IProps> = (props) => {
   const { task } = props;
-  const parameters = task?.parameters;
+  const { parameters, database } = task || {};
+  /**
+   * 数据处理成每个表一行
+   */
+  const dataSource = useMemo(() => {
+    const tableList = [];
+    for (const table of parameters?.tables || []) {
+      const { tableNames, databaseName, dataSourceName } = table;
+      for (const tableName of tableNames) {
+        tableList.push({
+          tableName,
+          databaseName,
+          dataSourceName,
+          dataSourceType: database?.dataSource?.type,
+        });
+      }
+    }
+    return tableList;
+  }, [database?.dataSource?.type, parameters?.tables]);
 
   return (
     <>
@@ -68,9 +99,9 @@ const TaskContent: React.FC<IProps> = (props) => {
         label="表"
         content={
           <DisplayTable
-            rowKey="tableId"
+            rowKey="tableName"
             columns={getConnectionColumns()}
-            dataSource={parameters?.tables}
+            dataSource={dataSource}
             scroll={null}
             showQuickJumper={false}
             showSizeChanger={false}
