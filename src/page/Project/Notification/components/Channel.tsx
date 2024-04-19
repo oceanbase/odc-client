@@ -172,6 +172,7 @@ const Channel: React.FC<{
         channelId={selectedChannelId}
         detailDrawerOpen={detailDrawerOpen}
         setDetailDrawerOpen={setDetailDrawerOpen}
+        closedCallback={closedCallback}
       />
 
       <CommonTable
@@ -341,17 +342,66 @@ export const FromChannelDrawer: React.FC<{
     );
   };
   const handleFieldsChange = async (changedFields, allFields) => {
-    if (changedFields?.[0]?.name?.join('') === 'description') {
+    const fieldName = changedFields?.[0]?.name?.join('');
+    const fileValue = changedFields?.[0]?.value;
+    if (fieldName === 'description') {
       return;
     }
     setHasEdit(true);
     setTestChannelSuccess(false);
-    if (changedFields?.[0]?.name?.join('') === ['channelConfig', 'language'].join('')) {
-      const _language = formRef.getFieldValue(['channelConfig', 'language']) || ELanguage.ZH_CN;
+    if (fieldName === ['channelConfig', 'language'].join('')) {
+      const _language = fileValue || ELanguage.ZH_CN;
       await formRef.setFieldValue(
         ['channelConfig', 'contentTemplate'],
         EContentTemplateMap?.[_language],
       );
+    }
+    if (fieldName === 'type') {
+      switch (type as EChannelType) {
+        case EChannelType.DING_TALK: {
+          formRef.resetFields([
+            ['channelConfig', 'httpMethod'],
+            ['channelConfig', 'httpProxy'],
+            ['channelConfig', 'headersTemplate'],
+            ['channelConfig', 'bodyTemplate'],
+            ['channelConfig', 'responseValidation'],
+          ]);
+          break;
+        }
+        case EChannelType.FEI_SHU: {
+          formRef.resetFields([
+            ['channelConfig', 'atMobiles'],
+            ['channelConfig', 'httpMethod'],
+            ['channelConfig', 'httpProxy'],
+            ['channelConfig', 'headersTemplate'],
+            ['channelConfig', 'bodyTemplate'],
+            ['channelConfig', 'responseValidation'],
+          ]);
+          break;
+        }
+        case EChannelType.WE_COM: {
+          formRef.resetFields([
+            ['channelConfig', 'sign'],
+            ['channelConfig', 'atMobiles'],
+            ['channelConfig', 'httpMethod'],
+            ['channelConfig', 'httpProxy'],
+            ['channelConfig', 'headersTemplate'],
+            ['channelConfig', 'bodyTemplate'],
+            ['channelConfig', 'responseValidation'],
+          ]);
+          break;
+        }
+        case EChannelType.WEBHOOK: {
+          formRef.resetFields([
+            ['channelConfig', 'sign'],
+            ['channelConfig', 'atMobiles'],
+          ]);
+          break;
+        }
+        default: {
+          formRef.resetFields();
+        }
+      }
     }
   };
 
@@ -519,192 +569,186 @@ export const FromChannelDrawer: React.FC<{
         </Form.Item>
         <Form.Item name="channelConfig">
           <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              return (
-                <>
-                  <Form.Item
-                    label={
-                      <Space>
-                        <div>
-                          {
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.D55443F5' /*Webhook 地址*/,
-                            }) /* Webhook 地址 */
-                          }
-                        </div>
-                        {docUrlMap?.[type] && (
-                          <a
-                            href={docUrlMap[type]}
-                            target={'_blank'}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                            rel="noreferrer"
-                          >
-                            {
-                              formatMessage({
-                                id: 'src.page.Project.Notification.components.E5532E71' /*如何配置*/,
-                              }) /* 如何配置 */
-                            }
-                          </a>
-                        )}
-                      </Space>
+            <Form.Item
+              label={
+                <Space>
+                  <div>
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.D55443F5' /*Webhook 地址*/,
+                      }) /* Webhook 地址 */
                     }
-                    name={['channelConfig', 'webhook']}
-                    requiredMark="optional"
-                    validateTrigger="onBlur"
-                    rules={[
-                      {
-                        required: true,
-                        message: formatMessage({
-                          id: 'src.page.Project.Notification.components.982731E2',
-                        }), //'请输入'
-                      },
-                    ]}
-                  >
-                    <Input placeholder={WebhookPlaceholderMap?.[type]} />
-                  </Form.Item>
-                  {hasSign ? (
-                    <>
-                      <Form.Item
-                        label={
-                          formatMessage({
-                            id: 'src.page.Project.Notification.components.BE20D900',
-                          }) /*"签名密钥"*/
-                        }
-                        name={['channelConfig', 'sign']}
-                        requiredMark="optional"
-                      >
-                        <Input
-                          placeholder={
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.A3866291',
-                            }) /*"若开启签名校验，请输入密钥"*/
-                          }
-                          type="password"
-                          disabled={channelId && !hasChangeSign}
-                        />
-                      </Form.Item>
-                      {channelId && (
-                        <a className={styles?.modifyBtn} onClick={modifySwitch}>
-                          {hasChangeSign
-                            ? formatMessage({
-                                id: 'src.page.Project.Notification.components.042EAFE9',
-                              })
-                            : formatMessage({
-                                id: 'src.page.Project.Notification.components.2EE5076E',
-                              })}
-                        </a>
-                      )}
-                    </>
-                  ) : null}
-                  {isWebhook ? (
-                    <Form.Item noStyle shouldUpdate>
-                      <Form.Item
-                        label={
-                          formatMessage({
-                            id: 'src.page.Project.Notification.components.8062E4B6',
-                          }) /*"代理"*/
-                        }
-                        requiredMark="optional"
-                        name={['channelConfig', 'httpProxy']}
-                      >
-                        <Input
-                          placeholder={
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.753E4F73',
-                            }) /*"请输入"*/
-                          }
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        label={
-                          formatMessage({
-                            id: 'src.page.Project.Notification.components.DFE43F9E',
-                          }) /*"请求方法"*/
-                        }
-                        name={['channelConfig', 'httpMethod']}
-                      >
-                        <Radio.Group>
-                          <Radio value="POST">POST</Radio>
-                          <Radio value="GET">GET</Radio>
-                          <Radio value="PUT">PUT</Radio>
-                        </Radio.Group>
-                      </Form.Item>
-                      <Form.Item
-                        label="Header"
-                        requiredMark="optional"
-                        name={['channelConfig', 'headersTemplate']}
-                      >
-                        <Input.TextArea
-                          placeholder={
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.B318E408',
-                            }) /*"请输入header，赞不支持模版，为空表示不使用header参数，多个header的格式为key1:value1; key2: value2"*/
-                          }
-                          rows={4}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        label="Body"
-                        requiredMark="optional"
-                        name={['channelConfig', 'bodyTemplate']}
-                      >
-                        <Input.TextArea
-                          placeholder={
-                            formatMessage({
-                              id: 'src.page.Project.Notification.components.130EA25D',
-                            }) /*"请输入body模版，可通过输入$(message)引用通知消息，为空表示不使用HTTP body"*/
-                          }
-                          rows={4}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        label={
-                          formatMessage({
-                            id: 'src.page.Project.Notification.components.A1BCCE0E',
-                          }) /*"Response校验"*/
-                        }
-                        required
-                        requiredMark="optional"
-                      >
-                        <Form.Item noStyle name={['channelConfig', 'responseValidation']}>
-                          <Input.TextArea
-                            placeholder={
-                              formatMessage({
-                                id: 'src.page.Project.Notification.components.C752DB2D',
-                              }) /*"请输入"*/
-                            }
-                            rows={4}
-                          />
-                        </Form.Item>
-                        <div className={styles.tip}>{tip}</div>
-                      </Form.Item>
-                    </Form.Item>
-                  ) : null}
-                  {hasAtMobiles ? (
-                    <Form.Item
-                      label={
-                        formatMessage({
-                          id: 'src.page.Project.Notification.components.3B557A1D',
-                        }) /*"指定用户"*/
-                      }
-                      name={['channelConfig', 'atMobiles']}
-                      requiredMark="optional"
+                  </div>
+                  {docUrlMap?.[type] && (
+                    <a
+                      href={docUrlMap[type]}
+                      target={'_blank'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      rel="noreferrer"
                     >
-                      <Select
-                        mode="tags"
-                        placeholder={
-                          formatMessage({
-                            id: 'src.page.Project.Notification.components.8CA4B168',
-                          }) /*"请输入用户手机号"*/
-                        }
-                      />
-                    </Form.Item>
-                  ) : null}
-                </>
-              );
-            }}
+                      {
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.E5532E71' /*如何配置*/,
+                        }) /* 如何配置 */
+                      }
+                    </a>
+                  )}
+                </Space>
+              }
+              name={['channelConfig', 'webhook']}
+              requiredMark="optional"
+              validateTrigger="onBlur"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.page.Project.Notification.components.982731E2',
+                  }), //'请输入'
+                },
+              ]}
+            >
+              <Input placeholder={WebhookPlaceholderMap?.[type]} />
+            </Form.Item>
+            {hasSign ? (
+              <>
+                <Form.Item
+                  label={
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.BE20D900',
+                    }) /*"签名密钥"*/
+                  }
+                  name={['channelConfig', 'sign']}
+                  requiredMark="optional"
+                >
+                  <Input
+                    placeholder={
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.A3866291',
+                      }) /*"若开启签名校验，请输入密钥"*/
+                    }
+                    type="password"
+                    disabled={channelId && !hasChangeSign}
+                  />
+                </Form.Item>
+                {channelId && (
+                  <a className={styles?.modifyBtn} onClick={modifySwitch}>
+                    {hasChangeSign
+                      ? formatMessage({
+                          id: 'src.page.Project.Notification.components.042EAFE9',
+                        })
+                      : formatMessage({
+                          id: 'src.page.Project.Notification.components.2EE5076E',
+                        })}
+                  </a>
+                )}
+              </>
+            ) : null}
+            {isWebhook ? (
+              <Form.Item noStyle shouldUpdate>
+                <Form.Item
+                  label={
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.8062E4B6',
+                    }) /*"代理"*/
+                  }
+                  requiredMark="optional"
+                  name={['channelConfig', 'httpProxy']}
+                >
+                  <Input
+                    placeholder={
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.753E4F73',
+                      }) /*"请输入"*/
+                    }
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.DFE43F9E',
+                    }) /*"请求方法"*/
+                  }
+                  name={['channelConfig', 'httpMethod']}
+                >
+                  <Radio.Group>
+                    <Radio value="POST">POST</Radio>
+                    <Radio value="GET">GET</Radio>
+                    <Radio value="PUT">PUT</Radio>
+                  </Radio.Group>
+                </Form.Item>
+                <Form.Item
+                  label="Header"
+                  requiredMark="optional"
+                  name={['channelConfig', 'headersTemplate']}
+                >
+                  <Input.TextArea
+                    placeholder={
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.B318E408',
+                      }) /*"请输入header，赞不支持模版，为空表示不使用header参数，多个header的格式为key1:value1; key2: value2"*/
+                    }
+                    rows={4}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Body"
+                  requiredMark="optional"
+                  name={['channelConfig', 'bodyTemplate']}
+                >
+                  <Input.TextArea
+                    placeholder={
+                      formatMessage({
+                        id: 'src.page.Project.Notification.components.130EA25D',
+                      }) /*"请输入body模版，可通过输入$(message)引用通知消息，为空表示不使用HTTP body"*/
+                    }
+                    rows={4}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.A1BCCE0E',
+                    }) /*"Response校验"*/
+                  }
+                  required
+                  requiredMark="optional"
+                >
+                  <Form.Item noStyle name={['channelConfig', 'responseValidation']}>
+                    <Input.TextArea
+                      placeholder={
+                        formatMessage({
+                          id: 'src.page.Project.Notification.components.C752DB2D',
+                        }) /*"请输入"*/
+                      }
+                      rows={4}
+                    />
+                  </Form.Item>
+                  <div className={styles.tip}>{tip}</div>
+                </Form.Item>
+              </Form.Item>
+            ) : null}
+            {hasAtMobiles ? (
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'src.page.Project.Notification.components.3B557A1D',
+                  }) /*"指定用户"*/
+                }
+                name={['channelConfig', 'atMobiles']}
+                requiredMark="optional"
+              >
+                <Select
+                  mode="tags"
+                  placeholder={
+                    formatMessage({
+                      id: 'src.page.Project.Notification.components.8CA4B168',
+                    }) /*"请输入用户手机号"*/
+                  }
+                />
+              </Form.Item>
+            ) : null}
           </Form.Item>
           <Form.Item
             label={
@@ -821,10 +865,12 @@ export const DetailChannelDrawer: React.FC<{
   channelId: number;
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: (oepn: boolean) => void;
-}> = ({ projectId, channelId, detailDrawerOpen, setDetailDrawerOpen }) => {
+  closedCallback?: (needReload?: boolean) => void;
+}> = ({ projectId, channelId, detailDrawerOpen, setDetailDrawerOpen, closedCallback }) => {
   const [channel, setChannel] = useState<IChannel<EChannelType>>();
   const handleOnClose = () => {
     setDetailDrawerOpen(false);
+    closedCallback?.();
   };
   const loadChannelDetail = async (channelId) => {
     const channel = await detailChannel(projectId, channelId);
@@ -837,6 +883,7 @@ export const DetailChannelDrawer: React.FC<{
       loadChannelDetail(channelId);
     } else {
       setChannel(null);
+      closedCallback?.();
     }
   }, [detailDrawerOpen]);
   function parseRateLimitConfigToText(rateLimitConfig: IRateLimitConfig) {
