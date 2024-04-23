@@ -96,6 +96,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       account: true,
       sys: true,
       ssl: true,
+      unionUser: true,
     },
     features: {
       task: Object.values(TaskType).filter(

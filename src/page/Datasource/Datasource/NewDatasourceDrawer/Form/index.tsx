@@ -118,7 +118,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           form.setFields([
             {
               errors: [res?.data?.errorMessage],
-              name: ['type'],
+              name: ['host'],
             },
           ]);
           break;
@@ -261,7 +261,12 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             }
             return (
               <>
-                {!haveOCP() && !dsc?.disableURLParse && <ParseURLItem autoType={!isEdit} />}
+                {!haveOCP() && !dsc?.disableURLParse && (
+                  <ParseURLItem
+                    unionUser={getDataSourceModeConfig(type)?.connection?.unionUser}
+                    autoType={!isEdit}
+                  />
+                )}
                 <AddressItems />
                 {dsc?.defaultSchema ? (
                   <Form.Item

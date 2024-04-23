@@ -104,6 +104,7 @@ const items: Record<
       account: true,
       sys: true,
       ssl: true,
+      unionUser: true,
     },
     features: {
       task: Object.values(TaskType),
