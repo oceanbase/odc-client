@@ -22,6 +22,7 @@ import VariableConfigTable from '@/component/Task/component/VariableConfigTable'
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
+import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
@@ -31,6 +32,8 @@ import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
+import { getLocalFormatDateTime } from '@/util/utils';
+
 const { Text } = Typography;
 const { Panel } = Collapse;
 interface IProps {
@@ -189,6 +192,11 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {taskExecStrategyMap[triggerConfig.triggerStrategy]}
         </Descriptions.Item>
+        {triggerConfig.triggerStrategy === TaskExecStrategy.START_AT && (
+          <Descriptions.Item label="执行时间">
+            {getLocalFormatDateTime(triggerConfig?.startAt)}
+          </Descriptions.Item>
+        )}
         {isCycleStrategy && (
           <Descriptions.Item>
             <Collapse
