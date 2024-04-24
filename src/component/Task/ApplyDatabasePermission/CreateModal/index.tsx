@@ -31,6 +31,7 @@ import {
   message,
   DatePicker,
   Checkbox,
+  Alert,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
@@ -145,6 +146,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { applyDatabasePermissionVisible, applyDatabasePermissionData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
+  const [showSelectTip, setShowSelectTip] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
@@ -310,6 +312,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         requiredMark="optional"
         form={form}
         onFieldsChange={handleFieldsChange}
+        onValuesChange={(changedValues, allValues) => {
+          if (changedValues.hasOwnProperty('databases')) {
+            setShowSelectTip(changedValues?.databases?.length > 1);
+          }
+        }}
       >
         <Form.Item
           label={
@@ -345,13 +352,24 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Form.Item
           name="databases"
           label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.164A211E',
-            }) /*"数据库"*/
+            <div style={{ width: 768 }}>
+              {
+                formatMessage({
+                  id: 'src.component.Task.ApplyDatabasePermission.CreateModal.164A211E',
+                }) /*"数据库"*/
+              }
+              {showSelectTip && (
+                <Alert
+                  message="多个数据库的权限申请将被拆分为多个工单进行审批，最多仅支持选择 10 个数据库"
+                  type="info"
+                  showIcon
+                  style={{ margin: '4px 0px' }}
+                />
+              )}
+            </div>
           }
-          required
         >
-          <DatabaseSelecter projectId={projectId} />
+          <DatabaseSelecter projectId={projectId} maxCount={10} />
         </Form.Item>
         <Form.Item
           name="types"

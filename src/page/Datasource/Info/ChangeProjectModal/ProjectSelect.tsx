@@ -32,6 +32,7 @@ interface IProps {
     projectId: number;
     projectName: string;
   };
+  setDisabledStatus?: (v: boolean) => void;
 }
 
 export default function ProjectSelect({
@@ -42,6 +43,7 @@ export default function ProjectSelect({
   disabledTip,
   defaultProject,
   onChange,
+  setDisabledStatus,
 }: IProps) {
   const isProjectNotFound = !projects?.find((item) => item.id === currentDatabase?.project?.id);
   const haveDefaultProject = projects?.find((item) => item.id === defaultProject?.projectId);
@@ -84,7 +86,10 @@ export default function ProjectSelect({
         <Checkbox
           checked={_isNull}
           disabled={disabled}
-          onChange={(e) => (e.target.checked ? onChange(null) : onChange(undefined))}
+          onChange={(e) => {
+            e.target.checked ? onChange(null) : onChange(undefined);
+            setDisabledStatus && setDisabledStatus(e.target.checked);
+          }}
         >
           {
             formatMessage({

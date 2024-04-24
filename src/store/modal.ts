@@ -133,6 +133,15 @@ interface IWorkSpaceExecuteSQLModalProps {
 
 export class ModalStore {
   @observable
+  public databaseSearchModalVisible: boolean = false;
+
+  @observable
+  public canDatabaseSearchModalOpen: boolean = false;
+
+  @observable
+  public databseSearchsSetExpandedKeysFunction: (id: string | number) => void = null;
+
+  @observable
   public selectDatabaseVisible: boolean = false;
 
   @observable
@@ -553,6 +562,20 @@ export class ModalStore {
       : null;
   }
 
+  @action
+  public changeDatabaseSearchModalVisible(isShow: boolean = true) {
+    this.databaseSearchModalVisible = isShow;
+  }
+
+  @action
+  public changeDatabaseSearchModalData(
+    data: boolean = true,
+    setExpandedKeys?: (id: string | number) => void,
+  ) {
+    this.canDatabaseSearchModalOpen = data;
+    this.databseSearchsSetExpandedKeysFunction = setExpandedKeys;
+  }
+
   @action clear() {
     this.exportModalVisible = false;
     this.exportModalData = null;
@@ -576,6 +599,8 @@ export class ModalStore {
     this.createDDLAlterVisible = false;
     this.odcSettingVisible = false;
     this.selectDatabaseVisible = false;
+    this.databaseSearchModalVisible = false;
+    this.canDatabaseSearchModalOpen = false;
   }
 }
 

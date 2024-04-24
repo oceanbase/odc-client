@@ -57,6 +57,8 @@ export const DbObjectTypeTextMap = {
     id: 'odc.src.d.ts.PackageBody',
   }),
 
+  [DbObjectType.column]: '列',
+
   //程序包体
   [DbObjectType.trigger]: formatMessage({ id: 'odc.src.d.ts.Trigger' }), // 触发器
   [DbObjectType.synonym]: formatMessage({ id: 'odc.src.d.ts.Synonyms' }), // 同义词

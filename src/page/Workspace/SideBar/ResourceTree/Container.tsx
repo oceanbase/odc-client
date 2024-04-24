@@ -24,9 +24,19 @@ import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
 import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
 import { useParams } from '@umijs/max';
+import { ModalStore } from '@/store/modal';
 
-export default inject('userStore')(
-  observer(function ResourceTreeContainer({ userStore }: { userStore: UserStore }) {
+export default inject(
+  'userStore',
+  'modalStore',
+)(
+  observer(function ResourceTreeContainer({
+    userStore,
+    modalStore,
+  }: {
+    userStore: UserStore;
+    modalStore: ModalStore;
+  }) {
     const { tabKey, datasourceId } = useParams<{ tabKey: string; datasourceId: string }>();
     const [selectPanelOpen, setSelectPanelOpen] = useState<boolean>(!tabKey);
     const resourcetreeContext = useContext(ResourceTreeContext);
@@ -42,6 +52,12 @@ export default inject('userStore')(
       setLoading(false);
     }
 
+    const setSelectPanel = (open) => {
+      setSelectPanelOpen(open);
+      modalStore.changeDatabaseSearchModalVisible(false);
+      modalStore.changeDatabaseSearchModalData(!open);
+    };
+
     useEffect(() => {
       initData();
       tracert.expo('a3112.b41896.c330988');
@@ -49,9 +65,9 @@ export default inject('userStore')(
 
     useEffect(() => {
       if (!selectDatasourceId && !selectProjectId) {
-        setSelectPanelOpen(true);
+        setSelectPanel(true);
       } else {
-        setSelectPanelOpen(false);
+        setSelectPanel(false);
       }
     }, [selectProjectId, selectDatasourceId]);
     if (loading) {
@@ -68,9 +84,9 @@ export default inject('userStore')(
         }}
       >
         {selectPanelOpen ? (
-          <SelectPanel onClose={() => setSelectPanelOpen(false)} />
+          <SelectPanel onClose={() => setSelectPanel(false)} />
         ) : (
-          <DatabaseTree openSelectPanel={() => setSelectPanelOpen(true)} />
+          <DatabaseTree openSelectPanel={() => setSelectPanel(true)} />
         )}
       </TreeStateStore.Provider>
     );

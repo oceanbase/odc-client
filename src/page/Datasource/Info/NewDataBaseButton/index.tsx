@@ -15,7 +15,7 @@
  */
 
 import { createDataBase } from '@/common/network/database';
-import { listProjects } from '@/common/network/project';
+import { getProject, listProjects } from '@/common/network/project';
 import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
@@ -26,6 +26,9 @@ import { useEffect, useState } from 'react';
 import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
 import { CaseInput } from '@/component/Input/Case';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect.tsx';
+import { IProject } from '@/d.ts/project';
+
 interface IProps {
   dataSourceId: string;
   projectId: number;
@@ -41,9 +44,12 @@ export default function NewDataBaseButton({
   mode,
 }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
+  const [projectInfo, setProjectInfo] = useState<IProject>();
+  const [ownerSelectStatus, setOwnerSelectStatus] = useState<boolean>(false);
   const [form] = Form.useForm<
     Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & {
-      projectId: number;
+      projectId?: number;
+      ownerIds?: number[];
     }
   >();
   const { run, loading } = useRequest(createDataBase, {
@@ -89,6 +95,7 @@ export default function NewDataBaseButton({
       }
     }
   }, [mode, open]);
+
   async function submit() {
     const formData = await form.validateFields();
     if (!formData) {
@@ -104,6 +111,7 @@ export default function NewDataBaseButton({
       dataSource: {
         id: toInteger(dataSourceId),
       },
+      ownerIds: formData.ownerIds,
     });
     if (isSuccess) {
       message.success(
@@ -111,9 +119,10 @@ export default function NewDataBaseButton({
           id: 'odc.Info.NewDataBaseButton.New',
         }), //新建成功
       );
-
       setOpen(false);
       onSuccess();
+      setOwnerSelectStatus(false);
+      form.resetFields();
     }
   }
   return (
@@ -132,8 +141,24 @@ export default function NewDataBaseButton({
         })}
         /*新建数据库*/ onOk={submit}
         onCancel={close}
+        destroyOnClose
       >
-        <Form form={form} initialValues={{}} layout="vertical">
+        <Form
+          form={form}
+          initialValues={{}}
+          layout="vertical"
+          onValuesChange={async (changedValues, allValues) => {
+            if (changedValues.hasOwnProperty('projectId')) {
+              if (changedValues.projectId) {
+                const res = await getProject(changedValues.projectId);
+                res && setProjectInfo(res);
+              } else {
+                setProjectInfo(undefined);
+              }
+              form.setFieldValue('ownerIds', []);
+            }
+          }}
+        >
           <Form.Item
             name={'name'}
             label={formatMessage({
@@ -213,8 +238,19 @@ export default function NewDataBaseButton({
               }
               projects={project?.contents}
               currentDatabase={null}
+              setDisabledStatus={(status) => setOwnerSelectStatus(status)}
             />
           </Form.Item>
+          <DatabaseOwnerSelect
+            projectInfo={projectInfo}
+            hasDefaultSet={false}
+            setFormOwnerIds={(value) => {
+              form.setFieldsValue({
+                ownerIds: value,
+              });
+            }}
+            disabled={ownerSelectStatus}
+          />
         </Form>
       </Modal>
     </>

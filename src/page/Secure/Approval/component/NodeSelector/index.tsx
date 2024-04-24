@@ -70,7 +70,7 @@ export const NodeSelector: React.FC<INodeSelectorProps> = (props) => {
         options={options}
         showSearch={true}
         filterOption={(value, option) => {
-          return (option?.label as string)?.indexOf(value) >= 0;
+          return option?.label?.toLowerCase()?.indexOf(value?.toLowerCase()) >= 0;
         }}
       />
     </Form.Item>

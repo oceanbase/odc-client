@@ -16,13 +16,16 @@
 
 import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import { Tooltip } from 'antd';
 
 export default function Reload({
   size = '13px',
   onClick,
+  style,
 }: {
   size?: string;
   onClick?: () => void;
+  style?: React.CSSProperties;
 }) {
   const [loading, setLoading] = useState(false);
   async function _onClick() {
@@ -33,5 +36,9 @@ export default function Reload({
   if (loading) {
     return <LoadingOutlined style={{ fontSize: size, cursor: 'pointer' }} />;
   }
-  return <ReloadOutlined onClick={_onClick} style={{ fontSize: size, cursor: 'pointer' }} />;
+  return (
+    <Tooltip placement="bottom" title="刷新">
+      <ReloadOutlined onClick={_onClick} style={{ fontSize: size, cursor: 'pointer', ...style }} />
+    </Tooltip>
+  );
 }

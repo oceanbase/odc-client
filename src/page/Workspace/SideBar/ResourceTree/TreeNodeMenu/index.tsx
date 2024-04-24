@@ -37,7 +37,7 @@ export const hasChangePermission = (dbSession: SessionStore) => {
 };
 
 const TreeNodeMenu = (props: IProps) => {
-  const { type = '', dbSession, databaseFrom, node, showTip } = props;
+  const { type = '', dbSession, databaseFrom, node, showTip, reloadDatabase } = props;
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
   const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
@@ -103,7 +103,7 @@ const TreeNodeMenu = (props: IProps) => {
       return;
     }
     const { run } = item;
-    run?.(dbSession, node, databaseFrom);
+    run?.(dbSession, node, databaseFrom, reloadDatabase);
   }
 
   let clickMap = {};
@@ -144,7 +144,7 @@ const TreeNodeMenu = (props: IProps) => {
         menuItem = {
           key: item.key || index,
           className: styles.ellipsis,
-          label: item.text,
+          label: item.subText ? [item.text, item.subText(node)] : item.text,
           disabled: disabledItem,
         };
       }
@@ -194,7 +194,8 @@ const TreeNodeMenu = (props: IProps) => {
           <Dropdown
             menu={{
               style: {
-                width: '160px',
+                minWidth: '160px',
+                maxWidth: '240px',
               },
               items: ellipsisItemsProp,
               onClick: (info) => {
