@@ -26,6 +26,11 @@ import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import tracert from '@/util/tracert';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { syncObject } from '@/common/network/database';
+import { IManagerResourceType } from '@/d.ts';
+import { getLocalFormatDateTime } from '@/util/utils';
+
+import { message } from 'antd';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [
@@ -238,6 +243,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }) /*'定时任务'*/,
       ],
       ellipsis: true,
+      hasDivider: true,
       children: [
         {
           key: 'TASK_SQL_PLAN',
@@ -312,6 +318,29 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           },
         },
       ],
+    },
+    {
+      key: 'SYNC_METADATA',
+      text: '元数据同步',
+      subText: (node) => {
+        const database: IDatabase = node.data;
+        if (!database.lastSyncTime) return;
+        return (
+          <div style={{ fontSize: 12, color: 'var(--neutral-black45-color)' }}>
+            上次同步时间: {getLocalFormatDateTime(database?.objectLastSyncTime)}
+          </div>
+        );
+      },
+      ellipsis: true,
+      run(session, node, databaseFrom, reloadDatabase) {
+        const database: IDatabase = node.data;
+        message.loading({ content: '元数据同步中，请等待…', duration: 1 });
+        syncObject(IManagerResourceType.database, database?.id).then((res) => {
+          if (res) {
+            reloadDatabase();
+          }
+        });
+      },
     },
   ],
 };

@@ -17,6 +17,7 @@
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { Input, Space, Tree } from 'antd';
+import { DataNode } from 'antd/lib/tree';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -36,9 +37,13 @@ import useTreeState from './useTreeState';
 import DatabaseSearch from './DatabaseSearch';
 import { useParams } from '@umijs/max';
 import ResourceTreeContext from '../../context/ResourceTreeContext';
+import SyncMetadata from '@/component/Button/SyncMetadata';
+import { IManagerResourceType } from '@/d.ts';
+import { ModalStore } from '@/store/modal';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
+  modalStore?: ModalStore;
   databases: IDatabase[];
   reloadDatabase: () => void;
   title: React.ReactNode;
@@ -51,6 +56,7 @@ interface IProps {
 
 const ResourceTree: React.FC<IProps> = function ({
   sessionManagerStore,
+  modalStore,
   databases,
   title,
   databaseFrom,
@@ -60,7 +66,7 @@ const ResourceTree: React.FC<IProps> = function ({
   enableFilter,
   stateId,
 }) {
-  const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad } =
+  const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad, setExpandedKeys } =
     useTreeState(stateId);
   const treeContext = useContext(ResourceTreeContext);
   const { tabKey } = useParams<{ tabKey: string }>();
@@ -74,6 +80,8 @@ const ResourceTree: React.FC<IProps> = function ({
   const [envs, setEnvs] = useState<number[]>([]);
   const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
   const treeWrapperRef = useRef<HTMLDivElement>();
+  const treeRef = useRef(null);
+
   useEffect(() => {
     tracert.expo('a3112.b41896.c330992');
   }, []);
@@ -87,6 +95,18 @@ const ResourceTree: React.FC<IProps> = function ({
       window.removeEventListener('resize', resizeHeight);
     };
   }, []);
+
+  useEffect(() => {
+    modalStore.changeDatabaseSearchModalData(true, setDatabaseSelected);
+  }, [databases]);
+
+  const setDatabaseSelected = (key) => {
+    setExpandedKeys([key]);
+    treeContext.setCurrentDatabaseId(key);
+    // 滚动到指定高度
+    const findIndex = databases.findIndex((i) => i.id === key);
+    treeRef?.current?.scrollTo({ top: findIndex * 28 });
+  };
 
   const treeData: TreeDataNode[] = (() => {
     const root = databases
@@ -153,6 +173,7 @@ const ResourceTree: React.FC<IProps> = function ({
           dbSession={dbSession}
           type={type}
           databaseFrom={databaseFrom}
+          reloadDatabase={reloadDatabase}
         />
       );
     },
@@ -173,7 +194,7 @@ const ResourceTree: React.FC<IProps> = function ({
           </Space>
         )}
         <span className={styles.titleAction}>
-          <Space size={4}>
+          <Space size={8} style={{ lineHeight: 1.5 }}>
             {enableFilter ? (
               <DatasourceFilter
                 key="ResourceTreeDatasourceFilter"
@@ -189,14 +210,24 @@ const ResourceTree: React.FC<IProps> = function ({
                 onTypesChange={(v) => {
                   setConnectTypes(v);
                 }}
-                iconStyle={{ verticalAlign: 'text-top' }}
               />
             ) : null}
+            <SyncMetadata
+              resourceType={
+                databaseFrom === 'project'
+                  ? IManagerResourceType.project
+                  : IManagerResourceType.resource
+              }
+              resourceId={Number(stateId?.split('-')?.[1])}
+              reloadDatabase={reloadDatabase}
+              databaseList={databases}
+            />
             <Reload
               key="ResourceTreeReload"
               onClick={() => {
                 return reloadDatabase();
               }}
+              style={{ display: 'flex' }}
             />
           </Space>
         </span>
@@ -215,6 +246,7 @@ const ResourceTree: React.FC<IProps> = function ({
       </div>
       <div ref={treeWrapperRef} className={styles.tree}>
         <Tree
+          ref={treeRef}
           expandAction="click"
           showIcon
           onExpand={(_, info) => {
@@ -237,4 +269,4 @@ const ResourceTree: React.FC<IProps> = function ({
   );
 };
 
-export default inject('sessionManagerStore')(observer(ResourceTree));
+export default inject('sessionManagerStore', 'modalStore')(observer(ResourceTree));

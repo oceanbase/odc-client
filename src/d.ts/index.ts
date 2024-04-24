@@ -1529,6 +1529,7 @@ export enum DbObjectType {
   type = 'TYPE',
   table_group = 'TABLE_GROUP',
   file = 'FILE',
+  column = 'COLUMN',
 }
 
 export interface IResultTimerStage {

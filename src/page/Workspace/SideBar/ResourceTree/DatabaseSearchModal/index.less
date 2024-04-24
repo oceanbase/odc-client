@@ -1,0 +1,153 @@
+.databaseSearchModal {
+  :global {
+    .ant-modal-content {
+      box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+        0 9px 28px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      .ant-modal-header {
+        padding: 10px 12px;
+        border-radius: 8px 8px;
+        .ant-modal-title {
+          font-size: 12px;
+          line-height: 20px;
+        }
+      }
+      .ant-modal-body {
+        padding: 0;
+      }
+    }
+  }
+  .listTitle {
+    color: var(--text-color-secondary);
+    height: 18px;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 18px;
+  }
+  .title {
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .selectInfo {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      .selecteDatabase {
+        color: var(--text-color-secondary);
+        flex-shrink: 0;
+        &:hover {
+          color: var(--brand-blue6-color);
+          cursor: pointer;
+        }
+      }
+      .selectTitle {
+        padding-left: 4px;
+        max-width: 280px;
+        text-overflow: ellipsis;
+        text-wrap: nowrap;
+        overflow: hidden;
+      }
+      .selectIcon {
+        font-size: 8px;
+        padding-right: 4px;
+      }
+      .selectDivider {
+        padding: 0 4px;
+      }
+      .selectInput {
+        flex-grow: 2;
+        :global {
+          .ant-input {
+            border: none;
+            height: 20px;
+            padding: 0;
+            &:active,
+            &:focus {
+              box-shadow: none;
+            }
+          }
+        }
+      }
+    }
+    .searchIcon {
+      font-size: 12.5px;
+    }
+  }
+  .content {
+    padding: 4px 0;
+    max-height: 344px;
+    font-size: 12px;
+    overflow: auto;
+    .databaseItem,
+    .databaseItemActive {
+      display: flex;
+      align-items: center;
+      height: 28px;
+      padding: 0 12px;
+      cursor: pointer;
+      justify-content: space-between;
+      width: 100%;
+      &:hover {
+        background-color: var(--hover-color);
+      }
+      .subInfo {
+        color: var(--icon-color-disable);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-wrap: nowrap;
+      }
+    }
+    .databaseItemActive {
+      background-color: var(--odc-color1-bgcolor);
+    }
+  }
+  .modalTabs {
+    :global {
+      .ant-tabs-tab {
+        margin: 0 12px;
+      }
+    }
+    .objectlistBox {
+      max-height: 366px;
+      overflow: auto;
+      min-height: 302px;
+      .objectTypeBox {
+        .objectTypeTitle {
+          font-weight: 500;
+          padding: 6px 12px;
+        }
+        .objectTypeItem {
+          padding: 6px 12px;
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: nowrap;
+          overflow: hidden;
+          &:hover {
+            background-color: var(--hover-color);
+            cursor: pointer;
+          }
+        }
+        .objectTypeItemMore {
+          padding: 6px 12px;
+        }
+      }
+      .objectItem {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 12px;
+        &:hover {
+          background-color: var(--hover-color);
+          cursor: pointer;
+        }
+      }
+    }
+    .objectlistBoxEmpty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 302px;
+    }
+  }
+}

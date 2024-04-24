@@ -124,7 +124,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
         </div>
       }
     >
-      <FilterIcon isActive={isFiltered}>
+      <FilterIcon isActive={isFiltered} style={{ padding: 0 }}>
         <Icon style={iconStyle} component={FilterOutlined} />
       </FilterIcon>
     </Popover>

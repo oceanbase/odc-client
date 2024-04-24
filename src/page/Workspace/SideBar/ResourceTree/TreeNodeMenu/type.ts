@@ -25,6 +25,8 @@ export interface IMenuItemConfig {
   key: string;
   // 主要用于文案“国际化”
   text: React.ReactNode;
+  // 菜单中额外信息的展示
+  subText?: (node: TreeDataNode) => React.ReactNode;
   // 当前菜单项后面是否需要显示分割线
   hasDivider?: boolean;
   // 动态配置菜单子项的是否启用
@@ -35,7 +37,12 @@ export interface IMenuItemConfig {
   children?: IMenuItemConfig[];
   ellipsis?: boolean;
   icon?: IconComponentProps['component'];
-  run?: (session: SessionStore, node: TreeDataNode, databaseFrom: 'datasource' | 'project') => void;
+  run?: (
+    session: SessionStore,
+    node: TreeDataNode,
+    databaseFrom: 'datasource' | 'project',
+    reloadDatabase?: () => void,
+  ) => void;
 }
 
 export interface IProps {
@@ -45,6 +52,7 @@ export interface IProps {
   node: TreeDataNode;
   databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
+  reloadDatabase?: () => void;
 }
 
 export interface IOptions {
