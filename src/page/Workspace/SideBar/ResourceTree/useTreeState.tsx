@@ -78,5 +78,6 @@ export default function useTreeState(id: string) {
     setSessionId: (dbId: number, sessionId: string) => {
       cache[id].sessionIds[dbId] = sessionId;
     },
+    setExpandedKeys,
   };
 }

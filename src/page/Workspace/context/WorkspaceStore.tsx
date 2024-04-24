@@ -28,6 +28,8 @@ import { listProjects } from '@/common/network/project';
 import { useParams } from '@umijs/max';
 import { toInteger } from 'lodash';
 import datasourceStatus from '@/store/datasourceStatus';
+import { listDatabases } from '@/common/network/database';
+import { IDatabase } from '@/d.ts/database';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
@@ -49,6 +51,7 @@ export default function WorkspaceStore({ children }) {
   );
   const [datasourceList, setDatasourceList] = useState<IDatasource[]>([]);
   const [projectList, setProjectList] = useState<IProject[]>([]);
+  const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
 
   function setSelectProjectId(v: number) {
     _setSelectProjectId(v);
@@ -69,6 +72,10 @@ export default function WorkspaceStore({ children }) {
     manual: true,
   });
 
+  const { run: fetchDatabases, loading: dbLoading } = useRequest(listDatabases, {
+    manual: true,
+  });
+
   const reloadDatasourceList = useCallback(async () => {
     const data = await fetchDatasource();
     setDatasourceList(data?.contents || []);
@@ -79,6 +86,23 @@ export default function WorkspaceStore({ children }) {
     const data = await fetchProject(null, 1, 99999, false);
     setProjectList(data?.contents || []);
   }, []);
+
+  const reloadDatabaseList = useCallback(async () => {
+    if (selectProjectId || selectDatasourceId) {
+      const data = await fetchDatabases(
+        selectProjectId,
+        selectDatasourceId,
+        1,
+        99999,
+        null,
+        null,
+        null,
+        true,
+        true,
+      );
+      setDatabaseList(data?.contents);
+    }
+  }, [selectProjectId, selectDatasourceId]);
 
   return (
     <ResourceTreeContext.Provider
@@ -95,6 +119,8 @@ export default function WorkspaceStore({ children }) {
         reloadProjectList,
         currentDatabaseId,
         setCurrentDatabaseId,
+        databaseList,
+        reloadDatabaseList,
       }}
     >
       <ActivityBarContext.Provider

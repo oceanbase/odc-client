@@ -290,6 +290,23 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       sessionManagerStore.destoryStore(true);
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && ['J', 'j'].includes(event.key)) {
+        modalStore.changeDatabaseSearchModalVisible(!modalStore.databaseSearchModalVisible);
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       <WorkBenchLayout

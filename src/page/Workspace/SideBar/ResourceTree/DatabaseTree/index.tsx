@@ -14,55 +14,53 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ResourceTree from '..';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
 import TreeTitle from './Title';
 import datasourceStatus from '@/store/datasourceStatus';
+import { IDatabase } from '@/d.ts/database';
 
 interface IProps {
   openSelectPanel?: () => void;
 }
 
 const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
-  const { selectDatasourceId, selectProjectId, projectList, datasourceList } = useContext(
-    ResourceTreeContext,
-  );
+  const {
+    selectDatasourceId,
+    selectProjectId,
+    projectList,
+    datasourceList,
+    databaseList,
+    reloadDatabaseList,
+  } = useContext(ResourceTreeContext);
+  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const selectProject = projectList?.find((p) => p.id == selectProjectId);
   const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
 
-  const { data: db, reset, run: _runListDatabases, loading: dbLoading } = useRequest(
-    listDatabases,
-    {
-      manual: true,
-    },
-  );
-  const databases = db?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length);
-
-  async function initDatabase(projectId: number, datasourceId: number) {
-    await _runListDatabases(projectId, datasourceId, 1, 99999, null, null, null, true, true);
-  }
-
   async function reloadDatabase() {
-    await initDatabase(selectProjectId, selectDatasourceId);
+    await reloadDatabaseList();
   }
 
   useEffect(() => {
     if (selectDatasourceId || selectProjectId) {
-      initDatabase(selectProjectId, selectDatasourceId);
+      reloadDatabase();
     }
   }, [selectDatasourceId, selectProjectId]);
+
   useEffect(() => {
-    if (db?.contents) {
+    if (databaseList.length) {
+      setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
       const ids: Set<number> = new Set();
-      db.contents.forEach((d) => {
+      databaseList.forEach((d) => {
         ids.add(d.dataSource?.id);
       });
       datasourceStatus.asyncUpdateStatus(Array.from(ids));
     }
-  }, [db?.contents]);
+  }, [databaseList]);
+
   function ProjectRender() {
     return (
       <ResourceTree

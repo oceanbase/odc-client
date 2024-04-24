@@ -22,11 +22,16 @@ import { AutoComplete, Input, Space } from 'antd';
 import { BaseSelectRef } from 'rc-select';
 import React, { useRef, useState } from 'react';
 import styles from './index.less';
+import { isMac } from '@/util/env';
+import { ModalStore } from '@/store/modal';
+import { inject, observer } from 'mobx-react';
+
 interface IProps {
   onChange: (type: DbObjectType, value: string) => void;
+  modalStore?: ModalStore;
 }
 const splitKey = Symbol('dbSearch').toString();
-const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
+const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore }) {
   const [inputValue, setInputValue] = useState<string>(null);
   const [tmpValue, setTmpValue] = useState<string>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -80,6 +85,20 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
         };
       })
     : [];
+  const getShortcut = () => {
+    let str = '';
+    if (isMac()) {
+      str = '⌘ + J';
+    } else {
+      str = 'Ctrl + J';
+    }
+    return <span style={{ color: 'var(--text-color-placeholder)', paddingRight: 4 }}>{str}</span>;
+  };
+
+  const onClickInput = () => {
+    modalStore.changeDatabaseSearchModalVisible(true);
+  };
+
   return (
     <AutoComplete
       ref={ref}
@@ -117,7 +136,9 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
       <Input
         style={{
           width: '100%',
+          height: '28px',
         }}
+        onClick={onClickInput}
         suffix={
           <Space size={4}>
             {inputValue ? (
@@ -140,6 +161,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
             >
               {DbObjectTypeTextMap[dbType] || ''}
             </span>
+            {getShortcut()}
             <SearchOutlined />
           </Space>
         }
@@ -153,4 +175,4 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange }) {
     </AutoComplete>
   );
 };
-export default DatabaseSearch;
+export default inject('modalStore')(observer(DatabaseSearch));

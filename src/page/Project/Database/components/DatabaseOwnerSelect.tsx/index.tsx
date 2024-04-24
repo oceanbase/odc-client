@@ -93,7 +93,9 @@ export const DatabaseOwnerSelect = ({
               return (
                 <Option key={item.value} value={item.value} label={item.label}>
                   {item.label}
-                  <span style={{ paddingLeft: 8, fontSize: 12, color: 'rgba(0,0,0,0.45)' }}>
+                  <span
+                    style={{ paddingLeft: 8, fontSize: 12, color: 'var(--neutral-black45-color)' }}
+                  >
                     {item?.role?.map((i) => projectRoleTextMap[i]).join(',')}
                   </span>
                 </Option>

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DbObjectType, IResponseData } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
+import { DbObjectType, IResponseData, IManagerResourceType } from '@/d.ts';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import sessionManager from '@/store/sessionManager';
 import notification from '@/util/notification';
 import request from '@/util/request';
@@ -137,4 +137,38 @@ export async function dropObject(objName: string, objType: DbObjectType, session
     notification.error(error);
   }
   return result?.executeSuccess;
+}
+
+export async function getDatabaseObject(
+  projectId?: number,
+  datasourceId?: number,
+  databaseIds?: string | number,
+  types?: string,
+  searchKey?: string,
+): Promise<{ data?: IDatabaseObject; errCode: string; errMsg: string }> {
+  if (searchKey) {
+    const res = await request.get(`api/v2/database/object/objects`, {
+      params: {
+        projectId: projectId || null,
+        datasourceId: datasourceId || null,
+        databaseIds: databaseIds || null,
+        types: types || null,
+        searchKey: searchKey,
+      },
+    });
+    return res;
+  }
+}
+
+export async function syncObject(
+  resourceType?: IManagerResourceType,
+  resourceId?: number,
+): Promise<{ data?: boolean; errCode: string; errMsg: string }> {
+  const res = await request.post(`api/v2/database/object/sync`, {
+    data: {
+      resourceType,
+      resourceId,
+    },
+  });
+  return res;
 }

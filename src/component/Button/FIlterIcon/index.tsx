@@ -22,6 +22,7 @@ interface IProps {
   onClick?: () => void;
   isActive?: boolean;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const FilterIcon: React.FC<IProps> = function ({

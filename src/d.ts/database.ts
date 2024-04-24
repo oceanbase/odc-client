@@ -17,6 +17,7 @@
 import { IDatasource } from './datasource';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
+import { DbObjectType } from '@/d.ts';
 
 export enum DatabaseSyncStatus {
   FAILED = 'FAILED',
@@ -28,6 +29,40 @@ export enum DatabasePermissionType {
   QUERY = 'QUERY',
   CHANGE = 'CHANGE',
   EXPORT = 'EXPORT',
+}
+
+export interface IDatabaseObject {
+  databases: IDatabase[];
+  dbObjects: IOdcDBObject[];
+  dbColumns: IOdcDBColumn[];
+}
+
+export interface IOdcDBObject {
+  id: number;
+  name: String;
+  type: DbObjectType;
+  database: IDatabase;
+  organizationId: number;
+  createTime: Date;
+  updateTime: Date;
+}
+
+export interface IOdcDBColumn {
+  id: number;
+  name: String;
+  dbObject: IOdcDBObject;
+  organizationId: number;
+  createTime: Date;
+  updateTime: Date;
+}
+
+// @see https://yuque.antfin.com/obodc/sbp9yg/ug3dpgzkew0lxmoi#mHZBX
+export enum DBObjectSyncStatus {
+  INITIALIZED = 'INITIALIZED',
+  PENDING = 'PENDING',
+  SYNCING = 'SYNCING',
+  SYNCED = 'SYNCED',
+  FAILED = 'FAILED',
 }
 
 export interface IDatabase {
@@ -51,6 +86,8 @@ export interface IDatabase {
    */
   owners: IDatabaseOwner[];
   ownerIds: number[];
+  objectSyncStatus: DBObjectSyncStatus;
+  objectLastSyncTime: number;
 }
 
 /**
