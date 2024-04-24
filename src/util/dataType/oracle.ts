@@ -95,4 +95,10 @@ export const dataTypes: IDataTypes = {
     dayPrecision: true,
     secondPrecision: true,
   },
+  sdo_geometry: {
+    params: [],
+  },
+  st_geometry: {
+    params: [],
+  },
 };
