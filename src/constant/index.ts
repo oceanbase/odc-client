@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { FolderOpenFilled } from '@ant-design/icons';
 
 import { ColumnShowType, DbObjectType } from '@/d.ts'; // @ts-ignore
 
@@ -124,6 +125,7 @@ export const DbObjsIcon = {
   [DbObjectType.synonym]: SynonymSvg,
   [DbObjectType.public_synonym]: SynonymSvg,
   [DbObjectType.file]: FileSvg,
+  [DbObjectType.column]: FolderOpenFilled,
 };
 /**
  * lineBackground: src/page/Workspace/components/SessionContextWrap/SessionSelect/index.tsx 中使用的背景，使用场景较为特殊，单独区分出来。

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { IProject } from '@/d.ts/project';
 import React from 'react';
@@ -35,6 +36,8 @@ interface IResourceTreeContext {
   reloadProjectList?: () => void;
   currentDatabaseId?: number;
   setCurrentDatabaseId?: (v: number) => void;
+  databaseList: IDatabase[];
+  reloadDatabaseList?: () => void;
 }
 
 const ResourceTreeContext = React.createContext<IResourceTreeContext>({
@@ -43,5 +46,6 @@ const ResourceTreeContext = React.createContext<IResourceTreeContext>({
   selectDatasourceId: null,
   datasourceList: [],
   projectList: [],
+  databaseList: [],
 });
 export default ResourceTreeContext;

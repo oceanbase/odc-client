@@ -26,6 +26,7 @@ import React from 'react';
 import CreateSequenceModal from '../components/CreateSequenceModal';
 import ODCSetting from '@/component/ODCSetting';
 import SelectDatabase from '@/component/SelectDatabase/index';
+import DatabaseSearchModal from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -42,6 +43,7 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
       <CreateModals />
       <SelectDatabase />
+      {modalStore.canDatabaseSearchModalOpen && <DatabaseSearchModal />}
     </>
   );
 };
