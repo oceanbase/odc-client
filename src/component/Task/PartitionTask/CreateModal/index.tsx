@@ -201,8 +201,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           ?.filter(Boolean);
         const createdOriginTableConfigs = allPartitionPlanTableConfigs?.filter(
           ({ partitionKeyConfigs }) => {
-            return partitionKeyConfigs?.some((item) =>
-              validPartitionKeyInvokers.includes(item?.partitionKeyInvoker),
+            return partitionKeyConfigs?.some(
+              (item) =>
+                validPartitionKeyInvokers.includes(item?.partitionKeyInvoker) ||
+                historyPartitionKeyInvokers.includes(item?.partitionKeyInvoker),
             );
           },
         );
@@ -218,6 +220,12 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         setCreatedOriginTableConfigs(createdOriginTableConfigs);
         setHistoryOriginTableConfigs(historyOriginTableConfigs);
         setHasPartitionPlan(hasPartitionPlan);
+        console.log(
+          'createdTableConfigs',
+          createdTableConfigs,
+          createdOriginTableConfigs,
+          allPartitionPlanTableConfigs,
+        );
         setTableConfigs(
           res?.contents?.map((config, index) => {
             const strategies = [];
@@ -293,7 +301,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         const { description, databaseId, timeoutMillis, errorStrategy } = values;
         const validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
         const validHistoryOriginTableConfigs = historyOriginTableConfigs?.filter((item) => {
-          return validTableConfigs?.some((config) => config?.tableName === item?.tableName);
+          return !validTableConfigs?.some((config) => config?.tableName === item?.tableName);
         });
         let partitionTableConfigs: IPartitionTableConfig[] = validTableConfigs
           ?.map((config) => {
