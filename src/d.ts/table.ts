@@ -16,6 +16,7 @@
 
 export interface IServerTable {
   name: string;
+  columnGroups: ColumnStoreType[];
   tableOptions: Partial<IServerTableOptions>;
   columns: Partial<IServerTableColumn>[];
   indexes: Partial<IServerTableIndex>[];
@@ -122,6 +123,7 @@ export interface IServerTableIndex {
   algorithm: string;
   ordinalPosition: number;
   available: boolean;
+  columnGroups?: ColumnStoreType[];
 }
 
 export interface IServerTableConstraint {
@@ -195,4 +197,15 @@ export enum TableForeignConstraintOnUpdateType {
    * oracle 没这个，效果同 no action
    */
   RESTRICT = 'RESTRICT',
+}
+
+export enum ColumnStoreType {
+  COLUMN = 'each column',
+  ROW = 'all columns',
+}
+
+export enum DBDefaultStoreType {
+  ROW = 'row',
+  COLUMN = 'column',
+  COMPOUND = 'compound',
 }

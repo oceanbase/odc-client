@@ -52,6 +52,7 @@ import styles from './index.less';
 import Partition from './Partition';
 import TableConstraint from './TableConstraint';
 import TableIndex from './TableIndex';
+import { ColumnStoreType } from '@/d.ts/table';
 
 interface IProps {
   pageKey: string;
@@ -64,6 +65,7 @@ const defaultInfo: TableInfo = {
   character: 'utf8mb4',
   collation: 'utf8mb4_general_ci',
   comment: null,
+  columnGroups: [],
 };
 
 const defaultPartitions: TablePartition = null;

@@ -24,6 +24,8 @@ import TableContext from '../TableContext';
 import styles from './index.less';
 import { CaseInput } from '@/component/Input/Case';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
+import { columnGroupsText } from '@/constant/label';
 
 interface IProps {
   isEdit?: boolean;
@@ -42,10 +44,37 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
   const { collations, charsets } = session;
   const config = useTableConfig(session.connection?.dialectType);
   const datasourceConfig = useDataSourceConfig(session.connection.type);
-
+  const layout = session?.supportFeature?.enableColumnStore
+    ? [8, 5, 6, 5].reverse()
+    : [11, 6, 7].reverse();
   useEffect(() => {
     form.setFieldsValue(model);
   }, [model]);
+
+  useEffect(() => {
+    const dbStoreFormat = session?.params?.defaultTableStoreFormat;
+    if (!dbStoreFormat || !session?.supportFeature?.enableColumnStore) {
+      return;
+    }
+    let cg = [];
+    switch (dbStoreFormat) {
+      case DBDefaultStoreType.COLUMN: {
+        cg = [ColumnStoreType.COLUMN];
+        break;
+      }
+      case DBDefaultStoreType.ROW: {
+        cg = [ColumnStoreType.ROW];
+        break;
+      }
+      case DBDefaultStoreType.COMPOUND: {
+        cg = [ColumnStoreType.COLUMN, ColumnStoreType.ROW];
+        break;
+      }
+    }
+    form.setFieldsValue({
+      columnGroups: cg,
+    });
+  }, [session?.params?.defaultTableStoreFormat]);
 
   useImperativeHandle(
     formRef,
@@ -70,7 +99,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
       }}
     >
       <Row gutter={12}>
-        <Col span={11}>
+        <Col span={layout.pop()}>
           <Form.Item
             name="tableName"
             label={formatMessage({
@@ -97,7 +126,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
         </Col>
         {config.enableTableCharsetsAndCollations && (
           <>
-            <Col span={6}>
+            <Col span={layout.pop()}>
               <Form.Item
                 name="character"
                 label={formatMessage({
@@ -126,7 +155,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={7}>
+            <Col span={layout.pop()}>
               <Form.Item shouldUpdate noStyle>
                 {({ getFieldValue }) => {
                   return (
@@ -164,6 +193,32 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
             </Col>
           </>
         )}
+        {session?.supportFeature?.enableColumnStore ? (
+          <Col span={layout.pop()}>
+            <Form.Item
+              name="columnGroups"
+              label={'存储模式'}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select
+                disabled={isEdit}
+                mode="multiple"
+                showSearch
+                options={[
+                  {
+                    value: ColumnStoreType.COLUMN,
+                    label: columnGroupsText[ColumnStoreType.COLUMN],
+                  },
+                  { value: ColumnStoreType.ROW, label: columnGroupsText[ColumnStoreType.ROW] },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+        ) : null}
       </Row>
       <Row>
         <Form.Item

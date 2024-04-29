@@ -33,6 +33,9 @@ import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Tooltip } from 'antd';
+import SessionStore from '@/store/sessionManager/session';
+import { ColumnStoreType } from '@/d.ts/table';
+import { columnGroupsText } from '@/constant/label';
 function NameFormatter({ row }) {
   if (row.available === false) {
     return (
@@ -58,8 +61,9 @@ function NameFormatter({ row }) {
 }
 export function useColumns(
   columns: TableColumn[],
-  connection: IDatasource,
+  session: SessionStore,
 ): Column<TableIndex, TableIndex>[] {
+  const connection = session?.connection;
   const config = useTableConfig(connection?.dialectType);
   const methodOptions = {
     [TableIndexMehod.NONE]: formatMessage({
@@ -105,6 +109,18 @@ export function useColumns(
   }, [columns]);
   const ColumnsMultipleSelect = useMemo(() => {
     return WrapSelectEditor(validColumns);
+  }, [columns]);
+  const ColumnGroupsMultipleSelect = useMemo(() => {
+    return WrapSelectEditor([
+      {
+        text: columnGroupsText[ColumnStoreType.COLUMN],
+        value: ColumnStoreType.COLUMN,
+      },
+      {
+        text: columnGroupsText[ColumnStoreType.ROW],
+        value: ColumnStoreType.ROW,
+      },
+    ]);
   }, [columns]);
   return [
     {
@@ -180,6 +196,18 @@ export function useColumns(
       editable: false,
       formatter: visibleCheckbox,
       width: 100,
+    },
+    session?.supportFeature?.enableColumnStore && {
+      key: 'columnGroups',
+      name: '存储模式',
+      //列组
+      resizable: true,
+      editable: true,
+      filterable: false,
+      editor: ColumnGroupsMultipleSelect,
+      formatter: ({ row }) => {
+        return <span>{row.columnGroups?.map((c) => columnGroupsText[c])?.join('+')}</span>;
+      },
     },
   ].filter(Boolean);
 }

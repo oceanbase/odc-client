@@ -48,6 +48,7 @@ export function convertTableToServerTable(
     collationName: info.collation,
     comment: info.comment,
   };
+  serverTable.columnGroups = info?.columnGroups;
   // column
   serverTable.columns = columns.map((column) => {
     return {
@@ -85,6 +86,7 @@ export function convertTableToServerTable(
       columnNames: index.columns,
       algorithm: index.method,
       ordinalPosition: index.ordinalPosition,
+      columnGroups: index.columnGroups,
     };
   });
   // constraint
@@ -243,6 +245,7 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
     owner: data?.owner,
     rowCount: data?.stats?.rowCount,
     tableSize: data?.stats?.tableSize,
+    columnGroups: data.columnGroups,
   };
   // column
   table.columns = data.columns.map((column) => {
@@ -284,6 +287,7 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
       method: index.algorithm as any,
       ordinalPosition: index.ordinalPosition,
       available: index.available,
+      columnGroups: index.columnGroups,
     };
   });
   // constraint

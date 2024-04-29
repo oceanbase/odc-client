@@ -32,6 +32,8 @@ import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
 import TableContext from '../../CreateTable/TableContext';
 import TablePageContext from '../context';
+import { ColumnStoreType } from '@/d.ts/table';
+import { columnGroupsText } from '@/constant/label';
 
 interface IProps {
   pageKey?: string;
@@ -267,9 +269,12 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                     })}
                 </HelpDoc>
               ),
-              // 空
             },
-          ]}
+            !!table?.info?.columnGroups?.length && {
+              label: '存储模式',
+              content: table?.info?.columnGroups?.map((c) => columnGroupsText[c]).join('+'),
+            },
+          ].filter(Boolean)}
         />
       )}
     </div>
