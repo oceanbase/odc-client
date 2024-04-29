@@ -205,7 +205,6 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
               ]}
             >
               <Select
-                disabled={isEdit}
                 mode="multiple"
                 showSearch
                 options={[
