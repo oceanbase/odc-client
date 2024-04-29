@@ -78,4 +78,8 @@ export interface ISupportFeature {
    * 执行计划
    */
   enableSQLExplain: boolean;
+  /**
+   * 列存
+   */
+  enableColumnStore: boolean;
 }

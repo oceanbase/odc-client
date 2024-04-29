@@ -36,6 +36,7 @@ import { ISupportFeature } from './type';
 import setting from '../setting';
 import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
+import { DBDefaultStoreType } from '@/d.ts/table';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -90,6 +91,7 @@ class SessionStore {
     tableColumnInfoVisible: boolean;
     fullLinkTraceEnabled: boolean;
     continueExecutionOnError: boolean;
+    defaultTableStoreFormat: DBDefaultStoreType;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
@@ -99,6 +101,7 @@ class SessionStore {
     tableColumnInfoVisible: true,
     fullLinkTraceEnabled: true,
     continueExecutionOnError: true,
+    defaultTableStoreFormat: DBDefaultStoreType.ROW,
   };
 
   /**
@@ -269,6 +272,7 @@ class SessionStore {
       support_recycle_bin: 'enableRecycleBin',
       support_shadowtable: 'enableShadowSync',
       support_partition_plan: 'enablePartitionPlan',
+      support_column_group: 'enableColumnStore',
       support_async: (allConfig) => {
         this.supportFeature.enableAsync =
           settingStore.enableAsyncTask && allConfig['support_async'];
@@ -363,6 +367,7 @@ class SessionStore {
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
+      this.params.defaultTableStoreFormat = data?.session?.defaultTableStoreFormat;
       if (init) {
         this.params.tableColumnInfoVisible =
           setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';

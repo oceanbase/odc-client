@@ -22,6 +22,7 @@ import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './data
 import { EComparisonScope } from './task';
 import { EThemeConfigKey } from '@/store/setting';
 import { SpaceType } from './_index';
+import { DBDefaultStoreType } from './table';
 
 export interface IUser {
   email: string;
@@ -3367,6 +3368,7 @@ export interface ISessionStatus {
   transId: string;
   sqlId: string;
   activeQueries: string;
+  defaultTableStoreFormat: DBDefaultStoreType;
 }
 
 export interface IAutoAuthEvent {

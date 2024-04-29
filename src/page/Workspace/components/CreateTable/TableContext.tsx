@@ -50,7 +50,7 @@ interface ITableContextProps {
 function voidFunc(v: any) {}
 
 const TableContext = React.createContext<ITableContextProps>({
-  info: { tableName: '', collation: '', character: '', comment: '' },
+  info: { tableName: '', collation: '', character: '', comment: '', columnGroups: [] },
   setInfo: voidFunc,
   columns: [],
   setColumns: voidFunc,

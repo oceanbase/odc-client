@@ -22,6 +22,7 @@ import {
   SQLLintMode,
   SQLSessionMode,
 } from '@/d.ts';
+import { ColumnStoreType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
 
 export const DbObjectTypeTextMap = {
@@ -140,4 +141,8 @@ export const SQLSessionModeText = {
   [SQLSessionMode.SingleSession]: formatMessage({
     id: 'odc.component.UserConfigForm.SharedSession',
   }),
+};
+export const columnGroupsText = {
+  [ColumnStoreType.COLUMN]: '列存',
+  [ColumnStoreType.ROW]: '行存',
 };

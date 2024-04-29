@@ -35,6 +35,8 @@ import {
 import TableCardLayout from '../TableCardLayout';
 import TableContext from '../TableContext';
 import { useColumns } from './columns';
+import type SessionStore from '@/store/sessionManager/session';
+import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
 
 const defaultIndex: ITableIndex = {
   name: null,
@@ -44,7 +46,24 @@ const defaultIndex: ITableIndex = {
   visible: true,
   type: TableIndexType.NORMAL,
   ordinalPosition: null,
+  columnGroups: [],
 };
+
+function getDefaultColumnGroups(session: SessionStore) {
+  if (!session?.supportFeature?.enableColumnStore || !session?.params?.defaultTableStoreFormat) {
+    return [];
+  }
+  switch (session.params.defaultTableStoreFormat) {
+    case DBDefaultStoreType.COLUMN:
+      return [ColumnStoreType.COLUMN];
+    case DBDefaultStoreType.ROW:
+      return [ColumnStoreType.ROW];
+    case DBDefaultStoreType.COMPOUND:
+      return [ColumnStoreType.COLUMN, ColumnStoreType.ROW];
+    default:
+      return [];
+  }
+}
 
 interface IProps {
   modified?: boolean;
@@ -55,7 +74,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
   const pageContext = useContext(TablePageContext);
   const session = tableContext.session;
   const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
-  const gridColumns: any[] = useColumns(tableContext.columns, session?.connection);
+  const gridColumns: any[] = useColumns(tableContext.columns, session);
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
     return tableContext.indexes.map((index, idx) => {
@@ -121,6 +140,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
               onClick={() => {
                 const row = {
                   ...defaultIndex,
+                  columnGroups: getDefaultColumnGroups(session),
                   key: generateUniqKey(),
                 };
                 gridRef.current?.addRows([row]);

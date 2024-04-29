@@ -16,6 +16,7 @@
 
 import { IPartitionType } from '@/d.ts';
 import {
+  ColumnStoreType,
   TableConstraintDefer,
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
@@ -50,6 +51,7 @@ export interface TableInfo {
   owner?: string;
   rowCount?: number;
   tableSize?: string;
+  columnGroups: ColumnStoreType[];
 }
 
 export interface TableColumn {
@@ -127,6 +129,7 @@ export interface TableIndex {
    *  是否有效
    */
   available?: boolean;
+  columnGroups: ColumnStoreType[];
 }
 
 export type TableConstraint =
