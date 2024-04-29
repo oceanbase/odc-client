@@ -272,7 +272,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             },
             !!table?.info?.columnGroups?.length && {
               label: '存储模式',
-              content: table?.info?.columnGroups?.map((c) => columnGroupsText[c]).join('+'),
+              content: table?.info?.columnGroups?.map((c) => columnGroupsText[c]).join(', '),
             },
           ].filter(Boolean)}
         />
