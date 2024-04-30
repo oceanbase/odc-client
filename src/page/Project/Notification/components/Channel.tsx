@@ -794,7 +794,8 @@ export const FromChannelDrawer: React.FC<{
               >
                 <Input.TextArea
                   rows={5}
-                  maxLength={200}
+                  maxLength={500}
+                  showCount
                   placeholder={
                     formatMessage({
                       id: 'src.page.Project.Notification.components.16067FAA',
