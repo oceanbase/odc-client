@@ -146,7 +146,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[]) => {
         </Space>
       ),
       key: id,
-      icon: getDataSourceStyleByConnectType(dataSource.type).dbIcon.component,
+      icon: <Icon component={getDataSourceStyleByConnectType(dataSource.type).dbIcon.component} />,
       checkable: false,
       expandable: true,
       children,
@@ -269,7 +269,10 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         const nodeKey = key as string;
         remainKeys = checkedKeys.filter((key) => key !== nodeKey);
       }
-      onChange(remainKeys.map(parseDataBaseIdAndTableNamebByKey));
+      const newValue = remainKeys.map(parseDataBaseIdAndTableNamebByKey);
+      onChange(newValue);
+      const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
+      setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
     },
     [checkedKeys, onChange],
   );
@@ -309,18 +312,19 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
    * 选中一张表后
    */
   const handleChosenTable: TreeProps['onCheck'] = useCallback(
-    (_checkedKeys: string[]) => {
-      const newValue: TableItem[] = [];
-      const willExpandKeys: number[] = [];
-      _checkedKeys.forEach((key) => {
-        const tableItem = parseDataBaseIdAndTableNamebByKey(key);
+    (_checkedKeys: string[], { checked, node: { key: curNodeKey } }) => {
+      const preCheckKeys = checked ? checkedKeys : checkedKeys.filter((key) => key !== curNodeKey);
+      const newValue: TableItem[] = preCheckKeys.map(parseDataBaseIdAndTableNamebByKey);
+      const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
+      if (checked) {
+        const tableItem = parseDataBaseIdAndTableNamebByKey(curNodeKey as string);
         newValue.push(tableItem);
         willExpandKeys.push(tableItem.databaseId);
-      });
+      }
       onChange(newValue);
-      setSelectedExpandKeys(willExpandKeys);
+      setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
     },
-    [onChange],
+    [checkedKeys, onChange],
   );
 
   useImperativeHandle(
