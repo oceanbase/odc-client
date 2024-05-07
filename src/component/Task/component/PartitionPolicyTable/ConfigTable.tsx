@@ -20,6 +20,7 @@ import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
+import { intervalPrecisionOptions } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 
 const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
   const labels = [
@@ -54,6 +55,9 @@ const columns = [
     render: (_, record) => {
       const intervalGenerateExpr =
         record?.partitionKeyInvokerParameters?.generateParameter?.intervalGenerateExpr;
+      const interval = record?.partitionKeyInvokerParameters?.generateParameter?.interval;
+      const intervalPrecision =
+        record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision;
       return (
         <Descriptions className={styles.rules} column={1} size="small">
           <Descriptions.Item
@@ -108,6 +112,18 @@ const columns = [
               }
             >
               {intervalGenerateExpr}
+            </Descriptions.Item>
+          )}
+          {!!interval && (
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
+                }) /*"间隔"*/
+              }
+            >
+              {interval}
+              {intervalPrecisionOptions.find((i) => i.value === intervalPrecision)?.label}
             </Descriptions.Item>
           )}
         </Descriptions>

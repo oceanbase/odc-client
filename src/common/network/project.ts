@@ -15,12 +15,7 @@
  */
 
 import { IResponseData, IUserSummary } from '@/d.ts';
-import {
-  IProject,
-  ProjectRole,
-  PermissionSourceType,
-  IDatabasePermission,
-} from '@/d.ts/project';
+import { IProject, ProjectRole, PermissionSourceType, IDatabasePermission } from '@/d.ts/project';
 import { DatabasePermissionType } from '@/d.ts/database';
 import request from '@/util/request';
 
@@ -29,6 +24,7 @@ export async function listProjects(
   page: number,
   size: number,
   archived: boolean = false,
+  builtin: boolean = false,
 ): Promise<IResponseData<IProject>> {
   const res = await request.get(`/api/v2/collaboration/projects`, {
     params: {
@@ -36,6 +32,7 @@ export async function listProjects(
       page,
       size,
       archived,
+      builtin,
     },
   });
 
@@ -178,7 +175,7 @@ export async function reclaimPermission(projectId: number, ids: number[]): Promi
   const res = await request.delete(
     `api/v2/collaboration/projects/${projectId}/databasePermissions/batchRevoke`,
     {
-      data: ids
+      data: ids,
     },
   );
   return !!res?.data;
@@ -191,8 +188,11 @@ export async function addDatabasePermissions(params: {
   expireTime: number;
   userId: number;
 }): Promise<boolean> {
-  const res = await request.post(`/api/v2/collaboration/projects/${params?.projectId}/databasePermissions/batchCreate`, {
-    data: params,
-  });
+  const res = await request.post(
+    `/api/v2/collaboration/projects/${params?.projectId}/databasePermissions/batchCreate`,
+    {
+      data: params,
+    },
+  );
   return !!res?.data;
 }

@@ -22,8 +22,9 @@ import { formatMessage } from '@/util/intl';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import datasourceStatus from '@/store/datasourceStatus';
 import { IDatabase } from '@/d.ts/database';
+import { observer } from 'mobx-react';
 
-export default function DataBaseStatusIcon({ item }: { item: IDatabase }) {
+export default observer(function DataBaseStatusIcon({ item }: { item: IDatabase }) {
   const datasource = item.dataSource;
   const statusInfo = datasourceStatus.statusMap.get(datasource?.id) || datasource.status;
   let status = statusInfo?.status;
@@ -97,4 +98,4 @@ export default function DataBaseStatusIcon({ item }: { item: IDatabase }) {
       );
     }
   }
-}
+});

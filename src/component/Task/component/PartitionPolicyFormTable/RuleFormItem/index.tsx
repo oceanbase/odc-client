@@ -171,7 +171,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     {...getFieldProps(generateExprError)}
                   />
                 </Form.Item>
-                <Input.Group compact>
+                <Input.Group compact style={{ width: '374px', display: 'inline-flex', height: 29 }}>
                   <Tag className={styles.suffix}>
                     <HelpDoc
                       leftText
@@ -193,7 +193,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     {...field}
                     name={[field.name, 'intervalGenerateExpr']}
                     className={styles.noMarginBottom}
-                    style={{ width: '306px' }}
+                    style={{ flexGrow: 2 }}
                     rules={[
                       {
                         required: true,
