@@ -20,8 +20,6 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Form, Input, Spin } from 'antd';
 import React, { useCallback, useContext, useState } from 'react';
 
-import { testConnection } from '@/common/network/connection';
-import { AccountType } from '@/d.ts';
 import classNames from 'classnames';
 import { trim } from 'lodash';
 import DatasourceFormContext from './context';
@@ -29,10 +27,11 @@ import styles from './index.less';
 
 interface IProps {
   autoType: boolean;
+  unionUser: boolean;
 }
 
 const ParseURLItem: React.FC<IProps> = function (props) {
-  const { autoType } = props;
+  const { unionUser } = props;
   const [parserUrl, setParserUrl] = useState('');
   const [isparsing, setIsparsing] = useState(false);
   const formContext = useContext(DatasourceFormContext);
@@ -49,11 +48,18 @@ const ParseURLItem: React.FC<IProps> = function (props) {
         if (data) {
           let newData = { ...data };
           if (newData?.user) {
-            const user = getOBUser(newData?.user);
-            newData = {
-              ...newData,
-              ...user,
-            };
+            if (unionUser) {
+              newData = {
+                ...newData,
+                username: newData?.user,
+              };
+            } else {
+              const user = getOBUser(newData?.user);
+              newData = {
+                ...newData,
+                ...user,
+              };
+            }
             delete newData.user;
           }
           Object.keys(newData).forEach((key) => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DbObjectType } from '@/d.ts';
+import { DbObjectType, SynonymType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as SynonymSvg } from '@/svgr/menuSynonym.svg';
@@ -62,7 +62,7 @@ export function SynonymTreeData(
         doubleClick(session, node, databaseFrom) {
           openSynonymViewPage(
             synonym.synonymName,
-            synonym.synonymType,
+            isPublic ? SynonymType.PUBLIC : SynonymType.COMMON,
             session?.database?.databaseId,
           );
         },

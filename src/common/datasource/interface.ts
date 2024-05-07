@@ -120,6 +120,7 @@ export interface IDataSourceModeConfig {
     defaultSchema?: boolean;
     jdbcDoc?: string;
     disableURLParse?: boolean;
+    unionUser?: boolean;
   };
   features: {
     task: TaskType[];

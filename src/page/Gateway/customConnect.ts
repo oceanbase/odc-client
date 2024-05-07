@@ -170,7 +170,7 @@ export const action = async (config: ICustomConnectAction) => {
 
   const projectName = 'USER_PROJECT_' + login.user?.accountName;
 
-  const project = (await listProjects(projectName, 1, 20))?.contents?.[0];
+  const project = (await listProjects(projectName, 1, 20, false, true))?.contents?.[0];
 
   if (!project || project?.name !== projectName) {
     return 'User Project Not Fount';

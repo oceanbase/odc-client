@@ -214,6 +214,8 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         }
       }
     }
+    console.log('createdTableConfig', !!createdTableConfig, isInit);
+    console.log('partitionConfig', partitionConfig);
 
     const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
     const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
@@ -231,11 +233,13 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                   intervalPrecision: defaultIntervalPrecision,
                 }
               : {};
+            const name = item.option?.partitionKeyConfigs?.[index]?.name;
             return {
               partitionKeyInvoker: isDateType
                 ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
                 : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
               ...defaultKeyConfig,
+              name,
               ...partitionConfig?.option?.partitionKeyConfigs?.[index],
               type,
             };
