@@ -16,7 +16,9 @@
 
 import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Column } from '@oceanbase-odc/ob-react-data-grid';
+import { Tooltip } from 'antd';
 import { uniq } from 'lodash';
 import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';
@@ -31,8 +33,6 @@ import {
 } from '../interface';
 import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Tooltip } from 'antd';
 function NameFormatter({ row }) {
   if (row.available === false) {
     return (

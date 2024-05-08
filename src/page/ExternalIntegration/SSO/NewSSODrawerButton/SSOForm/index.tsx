@@ -15,6 +15,7 @@
  */
 
 import { getTestUserInfo, testClientRegistration } from '@/common/network/manager';
+import HelpDoc from '@/component/helpDoc';
 import {
   IAuthorizationGrantType,
   IClientAuthenticationMethod,
@@ -25,7 +26,10 @@ import {
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
+import channel, { ChannelMap } from '@/util/broadcastChannel';
 import { formatMessage } from '@/util/intl';
+import logger from '@/util/logger';
+import { encrypt } from '@/util/utils';
 import Icon, { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Alert,
@@ -39,16 +43,12 @@ import {
   Space,
   Typography,
 } from 'antd';
+import { useWatch } from 'antd/lib/form/Form';
 import md5 from 'blueimp-md5';
+import { cloneDeep } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import HelpDoc from '@/component/helpDoc';
-import { encrypt } from '@/util/utils';
-import { cloneDeep } from 'lodash';
-import channel, { ChannelMap } from '@/util/broadcastChannel';
-import logger from '@/util/logger';
-import { OAUTH2PartForm, LDAPPartForm, OIDCPartForm } from './PartForm';
-import { useWatch } from 'antd/lib/form/Form';
+import { LDAPPartForm, OAUTH2PartForm, OIDCPartForm } from './PartForm';
 
 export const requiredRule = {
   required: true,

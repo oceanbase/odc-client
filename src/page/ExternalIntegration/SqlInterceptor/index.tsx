@@ -32,6 +32,7 @@ import { IManagePagesKeys, IManagerResourceType, IntegrationType } from '@/d.ts'
 import { IPageType } from '@/d.ts/_index';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
@@ -42,7 +43,6 @@ import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import { APPROVAL_TEMPLATE, SQL_INTERCEPTOR_TEMPLATE } from './constant';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 const pageMeta = {
   [IPageType.ExternalIntegration_Sql]: {

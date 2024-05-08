@@ -17,11 +17,11 @@
 import Toolbar from '@/component/Toolbar';
 import { TableConstraintDefer } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
-import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
-import { generateUniqKey } from '@/util/utils';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../../EditableTable';
 import EditToolbar from '../../EditToolbar';
 import { removeGridParams } from '../../helper';

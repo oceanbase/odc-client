@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
@@ -28,6 +29,7 @@ import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
+import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { generateUniqKey } from '@/util/utils';
@@ -41,8 +43,6 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { formatMessage } from '@/util/intl';
 
 const { Content } = Layout;
 const ToolbarButton = Toolbar.Button;

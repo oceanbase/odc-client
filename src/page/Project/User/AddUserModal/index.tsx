@@ -37,7 +37,11 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
     users: number[];
   }>();
 
-  const { data: userList, run, loading } = useRequest(getUserSummaryList, {
+  const {
+    data: userList,
+    run,
+    loading,
+  } = useRequest(getUserSummaryList, {
     manual: true,
   });
   const addedUsers = new Set(project?.members?.map((m) => m.id) || []);

@@ -14,15 +14,15 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { inject, observer } from 'mobx-react';
-import { Tabs, Space, Typography } from 'antd';
-import { CloseCircleFilled } from '@ant-design/icons';
-import { ModalStore } from '@/store/modal';
-import DisplayTable from '@/component/DisplayTable';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
 import Action from '@/component/Action';
-import { permissionOptionsMap } from '@/component/Task/ApplyDatabasePermission';
+import DisplayTable from '@/component/DisplayTable';
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
+import { permissionOptionsMap } from '@/component/Task/ApplyDatabasePermission';
+import { IUnauthorizedDatabase } from '@/d.ts/database';
+import { ModalStore } from '@/store/modal';
+import { CloseCircleFilled } from '@ant-design/icons';
+import { Space, Tabs, Typography } from 'antd';
+import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 
 const { Text } = Typography;

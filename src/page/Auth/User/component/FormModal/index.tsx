@@ -586,8 +586,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               {
                                 max: 64,
                                 message: formatMessage({
-                                  id:
-                                    'odc.components.FormUserModal.TheNameCannotExceedCharacters.2',
+                                  id: 'odc.components.FormUserModal.TheNameCannotExceedCharacters.2',
                                 }), //姓名不超过 64 个字符
                               },
                               {

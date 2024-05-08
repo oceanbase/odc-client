@@ -19,10 +19,10 @@ import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Checkbox, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import classnames from 'classnames';
+import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const { Text } = Typography;

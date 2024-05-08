@@ -15,19 +15,19 @@
  */
 
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
-import snippet from '@/store/snippet';
+import { EnvColorMap } from '@/constant';
 import { DatabasePermissionType } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
+import snippet from '@/store/snippet';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { Badge, Dropdown, Tooltip } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
+import classNames from 'classnames';
 import treeStyles from '../index.less';
 import { ResourceNodeType } from '../type';
 import MenuConfig from './config';
 import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
-import { EnvColorMap } from '@/constant';
-import classNames from 'classnames';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);

@@ -5,19 +5,19 @@
 
   .info {
     &Label {
+      color: var(--text-color-primary);
       font-weight: 400;
       font-size: 12px;
       line-height: 20px;
       letter-spacing: 0;
-      color: var(--text-color-primary);
     }
 
     &Value {
+      color: var(--text-color-secondary);
       font-weight: 400;
       font-size: 12px;
       line-height: 20px;
       letter-spacing: 0;
-      color: var(--text-color-secondary);
     }
   }
 }
@@ -30,14 +30,14 @@
 
   .rightSide {
     display: flex;
-    justify-content: space-between;
     gap: 12px;
+    justify-content: space-between;
   }
 }
 
 .expandIcon {
-  z-index: 2;
   position: relative;
+  z-index: 2;
 
   &:hover {
     cursor: pointer;
@@ -49,17 +49,17 @@
     display: flex;
 
     .headerSpanID {
-      height: 24px;
-      width: 288px;
       flex: 0 0 288px;
-      border: 1px solid var(--odc-border-color);
+      width: 288px;
+      height: 24px;
       background-color: var(--neutral-grey2-color);
+      border: 1px solid var(--odc-border-color);
 
       .headerSpanIDSpan {
+        margin-left: 8px;
+        color: var(--text-color-primary);
         font-weight: 500;
         font-size: 12px;
-        color: var(--text-color-primary);
-        margin-left: 8px;
         line-height: 24px;
       }
     }
@@ -67,21 +67,21 @@
     .stepContainer {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      height: 24px;
       width: 576px;
+      height: 24px;
       line-height: 24px;
+      background-color: var(--neutral-grey2-color);
       border: 1px solid var(--odc-border-color);
       border-left: none;
-      background-color: var(--neutral-grey2-color);
 
       .timeStep {
         display: flex;
-        box-sizing: border-box;
         flex: 0 0 144px;
-        width: 144px;
         flex-shrink: 0;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        width: 144px;
         padding: 0px 4px;
         border-right: 1px dashed var(--odc-border-color);
       }
@@ -107,29 +107,29 @@
 }
 
 .traceTable {
-  flex-grow: 1;
-  width: 576px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
+  flex-grow: 1;
+  width: 576px;
 
   &Item {
+    position: relative;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    height: 24px;
+    justify-content: space-between;
     width: 576px;
+    height: 24px;
     line-height: 24px;
     border: 1px solid var(--odc-border-color);
     border-top: none;
     border-left: none;
-    position: relative;
     .timeStepItem {
-      flex: 0 0 144px;
       position: absolute;
+      flex: 0 0 144px;
       height: 20px;
-      border-left: 1px solid transparent;
       border-right: 1px dashed var(--odc-border-color);
+      border-left: 1px solid transparent;
       &:nth-child(4) {
         border-right: none;
       }
@@ -137,11 +137,11 @@
 
     .progressBar {
       position: relative;
+      display: flex;
+      align-items: center;
       width: 575px;
       height: 24px;
-      display: flex;
       text-align: right;
-      align-items: center;
     }
   }
 }
@@ -153,25 +153,25 @@
 }
 
 .node {
-  display: flex;
-  width: 288px;
-  height: 24px;
-  align-items: center;
-  justify-content: flex-start;
   position: relative;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 288px;
+  height: 24px;
   &EmptySquare {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
     width: 24px;
     height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    flex-shrink: 0;
     .expandIcon {
+      position: relative;
       z-index: 2;
       flex-shrink: 0;
-      position: relative;
 
       &:hover {
         cursor: pointer;
@@ -179,17 +179,17 @@
     }
     .lastNode {
       position: relative;
-      width: 40px;
       flex-shrink: 0;
+      width: 40px;
     }
   }
 
   &TreeTitle {
     display: flex;
-    gap: 8px;
     flex-grow: 0;
-    height: 24px;
+    gap: 8px;
     align-items: center;
+    height: 24px;
     &Content {
       max-width: 200px;
       white-space: nowrap;
@@ -198,8 +198,8 @@
   }
 }
 .valueElliscape {
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
   &:hover {
     cursor: pointer;
   }
@@ -221,9 +221,9 @@
 }
 .nodeTitle {
   display: flex;
-  gap: 8px;
   flex-grow: 0;
+  gap: 8px;
+  align-items: center;
   height: 20px;
   line-height: 20px;
-  align-items: center;
 }

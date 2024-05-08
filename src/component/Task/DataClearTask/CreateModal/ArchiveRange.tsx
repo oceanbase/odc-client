@@ -19,8 +19,8 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import classNames from 'classnames';
-import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
+import { IArchiveRange } from './index';
 import styles from './index.less';
 interface IProps {
   tables: ITable[];
@@ -134,8 +134,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         <Form.Item {...restField} name={[name, 'conditionExpression']}>
                           <Input
                             placeholder={formatMessage({
-                              id:
-                                'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
                             })} /*请输入清理条件*/
                           />
                         </Form.Item>

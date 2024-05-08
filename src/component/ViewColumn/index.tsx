@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { Component } from 'react';
 import update from 'immutability-helper';
+import { Component } from 'react';
 import DragableViewColumn from './DragableViewColumn';
 import styles from './index.less';
-import { formatMessage } from '@/util/intl';
 
 let dragIdxGenerator = 1;
 

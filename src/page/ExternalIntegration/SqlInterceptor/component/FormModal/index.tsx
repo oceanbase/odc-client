@@ -21,9 +21,9 @@ import {
   updateIntegration,
 } from '@/common/network/manager';
 import YamlEditor from '@/component/YamlEditor';
-import { IManagerIntegration, IntegrationType } from '@/d.ts';
-import { EncryptionAlgorithm } from '@/d.ts';
+import { EncryptionAlgorithm, IManagerIntegration, IntegrationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { decrypt, encrypt } from '@/util/utils';
 import { validTrimEmptyWithWarn } from '@/util/valid';
 import {
@@ -42,7 +42,6 @@ import {
 import type { FormInstance } from 'antd/lib/form';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 interface IProps {
   type: IntegrationType;

@@ -21,8 +21,6 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { getDropSQL } from '@/util/sql';
 import { executeSQL } from './sql';
-import { syncDatasource } from './connection';
-import login from '@/store/login';
 
 export async function listDatabases(
   projectId?: number,
@@ -36,7 +34,7 @@ export async function listDatabases(
    */
   containsUnassigned?: boolean,
   existed?: boolean,
-  includesPermittedAction?: boolean
+  includesPermittedAction?: boolean,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -48,7 +46,7 @@ export async function listDatabases(
       environmentId,
       containsUnassigned,
       existed,
-      includesPermittedAction
+      includesPermittedAction,
     },
   });
 

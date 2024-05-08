@@ -27,9 +27,9 @@ import styles from './index.less';
 import { ReactComponent as CodeSvg } from '@/svgr/Snippet.svg';
 import { formatMessage } from '@/util/intl';
 import { getWrapedSnippetBody } from '@/util/snippet';
+import tracert from '@/util/tracert';
 import copyToCB from 'copy-to-clipboard';
 import SnippetInfoToolTip from './Info';
-import tracert from '@/util/tracert';
 
 export default inject('snippetStore')(
   observer(
@@ -120,8 +120,7 @@ export default inject('snippetStore')(
                               message.success(
                                 formatMessage(
                                   {
-                                    id:
-                                      'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
+                                    id: 'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
                                   },
                                   { snippetPrefix: snippet.prefix },
                                 ), //`${snippet.prefix} 代码片段复制成功！`
@@ -156,8 +155,7 @@ export default inject('snippetStore')(
                                     message.success(
                                       formatMessage(
                                         {
-                                          id:
-                                            'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
+                                          id: 'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
                                         },
                                         { snippetPrefix: snippet.prefix },
                                       ), //`代码片段 ${snippet.prefix} 删除成功！`

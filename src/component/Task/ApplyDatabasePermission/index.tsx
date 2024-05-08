@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
+export * from './CreateModal';
 export { default } from './CreateModal';
 export { default as ApplyDatabasePermissionTaskContent } from './DetailContent';
-export * from './CreateModal';

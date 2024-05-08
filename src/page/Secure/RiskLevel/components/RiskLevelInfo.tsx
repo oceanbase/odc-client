@@ -16,10 +16,9 @@
 
 import { deleteTaskFlow, getTaskFlowList } from '@/common/network/manager';
 import { updateRiskLevel } from '@/common/network/riskLevel';
-import { IRiskLevel } from '@/d.ts/riskLevel';
 import { Acess, canAcess, createPermission } from '@/component/Acess';
+import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
-import { IOperationOptionType } from '@/component/CommonTable/interface';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { actionTypes, IManagerResourceType, ITaskFlow } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -31,7 +30,6 @@ import { useEffect, useState } from 'react';
 import { getColumns } from './column';
 import CreateApproval from './CreateApproval';
 import styles from './index.less';
-import Action from '@/component/Action';
 const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
   const [formRef] = useForm();
   const [approvalProcesses, setApprovalProcesses] = useState<ITaskFlow[]>();
@@ -40,9 +38,8 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [editId, setEditId] = useState<number>(null);
-  const [manageApprovalProcessDrawerOpen, setManageApprovalProcessDrawerOpen] = useState<boolean>(
-    false,
-  );
+  const [manageApprovalProcessDrawerOpen, setManageApprovalProcessDrawerOpen] =
+    useState<boolean>(false);
   const [approvalProcessOptions, setApprovalProcessOptions] = useState<
     {
       label: string;

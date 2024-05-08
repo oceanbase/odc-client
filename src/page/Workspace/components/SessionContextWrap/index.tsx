@@ -17,9 +17,9 @@
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { useUnmount } from 'ahooks';
+import { message } from 'antd';
 import { useEffect, useState } from 'react';
 import SessionContext from './context';
-import { message } from 'antd';
 
 interface IProps extends React.PropsWithChildren<any> {
   defaultDatabaseId: number;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IDatabase } from '@/d.ts/database';
-import { Space } from 'antd';
 import Icon from '@ant-design/icons';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { Space } from 'antd';
 import React from 'react';
 
 interface IProps {

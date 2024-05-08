@@ -25,8 +25,8 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { ConnectionMode } from '@/d.ts';
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import login from '@/store/login';
-import setting from '@/store/setting';
 import modal from '@/store/modal';
-import { formatMessage } from '@/util/intl';
+import setting from '@/store/setting';
 import { isClient } from '@/util/env';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
-import tracert from '@/util/tracert';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [

@@ -15,10 +15,10 @@
  */
 
 import { ModalStore } from '@/store/modal';
-import React from 'react';
 import { Button, Space } from 'antd';
 import type { ButtonProps } from 'antd/lib/button';
 import { inject, observer } from 'mobx-react';
+import React from 'react';
 import ApplyPermissionCreateModal from './CreateModal';
 
 interface IProps extends ButtonProps {

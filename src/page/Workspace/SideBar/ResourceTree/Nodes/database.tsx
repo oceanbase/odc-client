@@ -28,11 +28,10 @@ import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
 
-import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
-import { openNewSQLPage } from '@/store/helper/page';
-import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
-import { DbObjectType } from '@/d.ts';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { DbObjectType } from '@/d.ts';
+import { openNewSQLPage } from '@/store/helper/page';
+import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,

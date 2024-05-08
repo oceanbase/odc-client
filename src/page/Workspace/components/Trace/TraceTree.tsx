@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import Node from './Node';
 import { ExpandTraceSpan } from '.';
+import Node from './Node';
 
 const TraceTree: React.FC<
   {

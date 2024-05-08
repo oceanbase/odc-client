@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { dataTypesIns } from '@/util/dataType';
-import { columnExtraComponent } from '../interface';
 import Character from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/Character';
 import DataSync from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/DateSync';
 import DefaultValue from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/DefaultValue';
 import Enum from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/Enum';
 import Generation from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/Generation';
 import Number from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/Number';
+import { dataTypesIns } from '@/util/dataType';
+import { columnExtraComponent } from '../interface';
 
 const MySQLColumnExtra: columnExtraComponent = ({
   column,

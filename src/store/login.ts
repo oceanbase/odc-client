@@ -19,18 +19,18 @@ import { getOrganizationList } from '@/common/network/organization';
 import { odcServerLoginUrl, odcServerLogoutUrl } from '@/common/network/other';
 import type { IOrganization, ISQLScript, IUser } from '@/d.ts';
 import { SpaceType } from '@/d.ts/_index';
+import odc from '@/plugins/odc';
 import logger from '@/util/logger';
 import request from '@/util/request';
 import tracert, { initTracert } from '@/util/tracert';
-import { encrypt, safeParseJson } from '@/util/utils';
+import { encrypt } from '@/util/utils';
+import { history } from '@umijs/max';
 import { isNil } from 'lodash';
 import { action, observable } from 'mobx';
-import { history } from '@umijs/max';
 import authStore from './auth';
-import setting from './setting';
-import sessionManager from './sessionManager';
 import datasourceStatus from './datasourceStatus';
-import odc from '@/plugins/odc';
+import sessionManager from './sessionManager';
+import setting from './setting';
 
 class ScriptStore {
   @observable

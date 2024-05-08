@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { dataTypesIns } from '@/util/dataType';
-import { columnExtraComponent } from '../interface';
 import DefaultValue from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/DefaultValue';
 import Precision from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/Precision';
+import { dataTypesIns } from '@/util/dataType';
+import { columnExtraComponent } from '../interface';
 
 const OracleColumnExtra: columnExtraComponent = ({
   column,

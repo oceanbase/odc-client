@@ -428,8 +428,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                           >
                             {isExternalFlow ? (
                               formatMessage({
-                                id:
-                                  'odc.src.component.Task.component.CommonDetailModal.ExternalApproval',
+                                id: 'odc.src.component.Task.component.CommonDetailModal.ExternalApproval',
                               }) //'外部审批'
                             ) : (
                               <Space>
@@ -443,8 +442,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                                   <span className={styles.description}>
                                     {
                                       formatMessage({
-                                        id:
-                                          'odc.component.CommonTaskDetailModal.TaskFlow.AutomaticApproval',
+                                        id: 'odc.component.CommonTaskDetailModal.TaskFlow.AutomaticApproval',
                                       })
 
                                       /*(自动审批)*/
@@ -505,8 +503,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                               <a href={externalFlowInstanceUrl} target="_blank" rel="noreferrer">
                                 {
                                   formatMessage({
-                                    id:
-                                      'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
+                                    id: 'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
                                   })
                                   /*查看审批详情*/
                                 }

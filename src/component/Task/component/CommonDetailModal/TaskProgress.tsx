@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { getSubTask, swapTableName } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
@@ -21,12 +22,11 @@ import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import { TaskDetail, TaskRecordParameters } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Space, message } from 'antd';
-import React, { useEffect, useState } from 'react';
 import { useRequest } from 'ahooks';
+import { Drawer, message, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 const getColumns = (params: {
   onOpenDetail: (id: number) => void;
   onSwapTable: (id: number) => void;

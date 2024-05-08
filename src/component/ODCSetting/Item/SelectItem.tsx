@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Radio, RadioGroupProps, Select, SelectProps } from 'antd';
+import { Select, SelectProps } from 'antd';
 import { useState } from 'react';
 
 export default function SelectItem(props: {

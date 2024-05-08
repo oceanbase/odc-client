@@ -15,19 +15,19 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Drawer, Radio, Typography, Modal, message } from 'antd';
-import React, { useEffect, useState, useRef } from 'react';
+import { getDatabasePermissions, reclaimPermission } from '@/common/network/project';
+import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import HelpDoc from '@/component/helpDoc';
+import type { IResponseData } from '@/d.ts';
+import { DatabasePermissionType } from '@/d.ts/database';
+import { IDatabasePermission, PermissionSourceType } from '@/d.ts/project';
+import { Drawer, message, Modal, Radio, Typography } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import CreateAuth from './CreateAuth';
+import styles from './index.less';
+import { databasePermissionStatusMap } from './Status';
 import TaskApplyList from './TaskApplyList';
 import UserAuthList from './UserAuthList';
-import CreateAuth from './CreateAuth';
-import { getDatabasePermissions, reclaimPermission } from '@/common/network/project';
-import { ITableLoadOptions, ITableInstance } from '@/component/CommonTable/interface';
-import HelpDoc from '@/component/helpDoc';
-import { PermissionSourceType, IDatabasePermission } from '@/d.ts/project';
-import { DatabasePermissionType } from '@/d.ts/database';
-import type { IResponseData } from '@/d.ts';
-import { databasePermissionStatusMap } from './Status';
-import styles from './index.less';
 
 const { Text } = Typography;
 

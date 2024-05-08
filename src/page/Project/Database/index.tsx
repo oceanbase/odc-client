@@ -14,38 +14,38 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
-import Icon from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
 import { TaskPageType, TaskType } from '@/d.ts';
-import { IDatabase, DatabasePermissionType } from '@/d.ts/database';
+import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
+import datasourceStatus from '@/store/datasourceStatus';
 import modalStore from '@/store/modal';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
+import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
+import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Input, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import AddDataBaseButton from './AddDataBaseButton';
-import tracert from '@/util/tracert';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
-import ProjectContext from '../ProjectContext';
-import styles from './index.less';
-import setting from '@/store/setting';
-import datasourceStatus from '@/store/datasourceStatus';
 import { observer } from 'mobx-react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import ProjectContext from '../ProjectContext';
+import AddDataBaseButton from './AddDataBaseButton';
+import styles from './index.less';
 import StatusName from './StatusName';
 interface IProps {
   id: string;

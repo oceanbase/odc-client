@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import accountSettings from './config/account';
 import databaseSettings from './config/database';
 import editorSettings from './config/editor';
-import perferenceSettings from './config/preference';
 import performanceSettings from './config/performance';
-import accountSettings from './config/account';
+import perferenceSettings from './config/preference';
 
 export interface ODCSettingGroup {
   label: string;

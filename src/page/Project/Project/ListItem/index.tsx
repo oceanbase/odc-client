@@ -16,7 +16,6 @@
 
 import { IProject, ProjectRole } from '@/d.ts/project';
 import Icon from '@ant-design/icons';
-import { Space } from 'antd';
 import classNames from 'classnames';
 import React, { forwardRef } from 'react';
 import styles from './index.less';

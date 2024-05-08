@@ -15,12 +15,12 @@
  */
 
 import { detailMaskingAlgorithm, testMaskingAlgorithm } from '@/common/network/maskingAlgorithm';
-import { maskRuleTypeMap } from '..';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Drawer, Input, Tooltip, message } from 'antd';
+import { Button, Descriptions, Drawer, Input, message, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
+import { maskRuleTypeMap } from '..';
 const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClose }) => {
   const [searchText, setSearchText] = useState<string>('');
   const [testResult, setTestResult] = useState<string>('');
@@ -123,8 +123,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         <Descriptions.Item
           label={
             formatMessage({
-              id:
-                'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationMethod',
+              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationMethod',
             }) //脱敏方式
           }
         >
@@ -133,8 +132,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         <Descriptions.Item
           label={
             formatMessage({
-              id:
-                'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
+              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
             }) //脱敏效果
           }
         >
@@ -207,8 +205,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
             <Button onClick={handleMaskingTest}>
               {
                 formatMessage({
-                  id:
-                    'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationVerification',
+                  id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationVerification',
                 }) /*脱敏验证*/
               }
             </Button>

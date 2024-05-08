@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { PlusOutlined } from '@ant-design/icons';
 import { useControllableValue } from 'ahooks';
 import { Select, Tag } from 'antd';
-import React, { useMemo } from 'react';
-import { KEY_CODE_MAP, getKeyCodeText } from './keycodemap';
-import { KeyCode, KeyMod } from 'monaco-editor';
+import { KeyCode } from 'monaco-editor';
 import { BaseSelectRef, CustomTagProps } from 'rc-select/lib/BaseSelect';
-import { PlusOutlined } from '@ant-design/icons';
+import React, { useMemo } from 'react';
+import { getKeyCodeText, KEY_CODE_MAP } from './keycodemap';
 
 interface IProps {
   className?: string;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { DbObjectTypeTextMap } from '@/constant/label';
 import { DbObjectType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import Icon, { CloseCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input, Space } from 'antd';
 import { BaseSelectRef } from 'rc-select';

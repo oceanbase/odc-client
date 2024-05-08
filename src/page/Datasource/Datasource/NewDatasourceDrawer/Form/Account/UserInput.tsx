@@ -16,8 +16,7 @@
 
 import { ClusterStore } from '@/store/cluster';
 import { haveOCP } from '@/util/env';
-import { formatMessage } from '@/util/intl';
-import { AutoComplete, Empty, Input, Select } from 'antd';
+import { AutoComplete, Input, Select } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useState } from 'react';
 

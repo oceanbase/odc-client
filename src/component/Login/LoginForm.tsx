@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import setting from '@/store/setting';
+import { ESSOLgoinType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
   LockOutlined,
@@ -29,7 +29,6 @@ import React, { useState } from 'react';
 import type { LoginLocale } from '.';
 import { getPrefix } from './index';
 import './index.less';
-import { ESSOLgoinType } from '@/d.ts';
 
 export interface Values {
   username: string;

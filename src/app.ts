@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { setLocale } from '@umijs/max';
+import React from 'react';
 import { initMetaStore } from './common/metaStore';
 import DndHTML5Provider from './component/DndHTML5Provider';
 import registerPlugins from './plugins/register';
 import { isClient } from './util/env';
-import logger from './util/logger';
-import { getRoute } from './util/tracert/userRoutes';
 import { initIntl } from './util/intl';
+import logger from './util/logger';
 import { initSentry } from './util/sentry';
+import { getRoute } from './util/tracert/userRoutes';
 if (isClient()) {
   import('@sentry/electron').then((_Sentry) => {
     _Sentry.init({

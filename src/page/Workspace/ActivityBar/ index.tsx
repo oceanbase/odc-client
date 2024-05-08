@@ -18,6 +18,7 @@ import { getFirstEnabledTask } from '@/component/Task/helper';
 import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
 import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
 import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
+import SettingItem from '@/layout/SpaceContainer/Sider/SettingItem';
 import SpaceSelect from '@/layout/SpaceContainer/Sider/SpaceSelect';
 import { openTasksPage } from '@/store/helper/page';
 import { ReactComponent as DBSvg } from '@/svgr/database_outline.svg';
@@ -34,7 +35,6 @@ import ActivityBarButton from './ActivityBarButton';
 import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
-import SettingItem from '@/layout/SpaceContainer/Sider/SettingItem';
 
 interface IProps {}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Input, Radio, RadioGroupProps } from 'antd';
+import { Input } from 'antd';
 import { useState } from 'react';
 
 export default function InputItem(props: {

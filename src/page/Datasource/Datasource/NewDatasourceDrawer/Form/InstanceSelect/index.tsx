@@ -143,8 +143,9 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                   innerValue = [cluster, tenant].filter(Boolean);
                 }
                 function onChange({ tenantId, cluster }) {
-                  const tenantMode = tenantListMap[cluster]?.find((t) => t.tenantId === tenantId)
-                    ?.tenantMode;
+                  const tenantMode = tenantListMap[cluster]?.find(
+                    (t) => t.tenantId === tenantId,
+                  )?.tenantMode;
                   form?.setFieldsValue({
                     clusterName: cluster,
                     tenantName: tenantId,

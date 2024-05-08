@@ -114,8 +114,9 @@ const DetailContent: React.FC<{
         >
           <Space direction="vertical" size={4}>
             {conditions?.map(({ object, expression, operation, value }) => {
-              const operationLabel = operationOptions?.find((item) => item.value === operation)
-                ?.label;
+              const operationLabel = operationOptions?.find(
+                (item) => item.value === operation,
+              )?.label;
               return <div>{`${object}, ${expression}, ${operationLabel}, ${value}`}</div>;
             }) || '-'}
           </Space>

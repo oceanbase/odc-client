@@ -15,11 +15,10 @@
  */
 
 import { removeTableQuote } from '@/util/sql';
-import { getQuoteTableName } from '@/util/utils';
 import { Input, InputProps } from 'antd';
 import { InputRef, TextAreaProps } from 'antd/lib/input';
 import { TextAreaRef } from 'antd/lib/input/TextArea';
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 
 interface Options {
   caseSensitive?: boolean;

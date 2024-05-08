@@ -18,13 +18,13 @@ import ScriptEditorModal from '@/page/Workspace/components/ScriptManageModal/Scr
 import { openSQLPageByScript } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { Input, Spin } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import styles from './index.less';
 import Item from './Item';
-import tracert from '@/util/tracert';
 
 interface IProps {
   userStore?: UserStore;

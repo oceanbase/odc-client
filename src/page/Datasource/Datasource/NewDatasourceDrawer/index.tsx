@@ -21,6 +21,7 @@ import {
   getConnectionExists,
   updateConnection,
 } from '@/common/network/connection';
+import { ConnectType, IConnection } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -28,7 +29,6 @@ import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
 import { useEffect, useMemo, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
-import { ConnectType, IConnection } from '@/d.ts';
 
 interface IProps {
   visible: boolean;

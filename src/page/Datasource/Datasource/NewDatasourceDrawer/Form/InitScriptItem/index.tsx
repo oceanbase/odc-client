@@ -18,8 +18,8 @@ import CommonIDE from '@/component/CommonIDE';
 import { Form } from 'antd';
 import React, { useContext } from 'react';
 
-import styles from './index.less';
 import DatasourceFormContext from '../context';
+import styles from './index.less';
 
 interface IProps {
   value?: string;

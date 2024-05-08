@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { uploadTableObject } from '@/common/network/sql';
+import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
 import SubmitConfirm from '@/component/SubmitConfirm';
 import Toolbar from '@/component/Toolbar';
 import icon, { IConStatus } from '@/component/Toolbar/statefulIcon/index';
@@ -28,11 +31,17 @@ import {
   TransState,
 } from '@/d.ts';
 import modal from '@/store/modal';
+import SessionStore from '@/store/sessionManager/session';
 import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
+import { ReactComponent as MockSvg } from '@/svgr/mock_toolbar.svg';
+import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
 import { ReactComponent as SubmitSvg } from '@/svgr/Submit.svg';
 import { ReactComponent as TraceSvg } from '@/svgr/Trace.svg';
+import { getNlsValueKey, isObjectColumn } from '@/util/column';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey, getBlobValueKey } from '@/util/utils';
+import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/versionUtils';
 import Icon, {
   BarsOutlined,
   CheckOutlined,
@@ -50,32 +59,23 @@ import Icon, {
   VerticalLeftOutlined,
   VerticalRightOutlined,
 } from '@ant-design/icons';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
+import { defaultOnCopy, defaultOnCopyCsv } from '@oceanbase-odc/ob-react-data-grid';
+import type { CalculatedColumn } from '@oceanbase-odc/ob-react-data-grid/lib/types';
 import { useControllableValue, useUpdate } from 'ahooks';
 import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
+import BigNumber from 'bignumber.js';
+import { cloneDeep, debounce, isNil, isNull, isString, isUndefined } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
-import styles from './index.less';
-import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { uploadTableObject } from '@/common/network/sql';
-import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/table';
-import SessionStore from '@/store/sessionManager/session';
-import { ReactComponent as MockSvg } from '@/svgr/mock_toolbar.svg';
-import { getNlsValueKey, isObjectColumn } from '@/util/column';
-import { generateUniqKey, getBlobValueKey } from '@/util/utils';
-import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
-import { defaultOnCopy, defaultOnCopyCsv } from '@oceanbase-odc/ob-react-data-grid';
-import type { CalculatedColumn } from '@oceanbase-odc/ob-react-data-grid/lib/types';
-import BigNumber from 'bignumber.js';
-import { cloneDeep, debounce, isNil, isNull, isString, isUndefined } from 'lodash';
 import ColumnModeModal from './ColumnModeModal';
 import useColumns, { isNumberType } from './hooks/useColumns';
+import styles from './index.less';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
-import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;

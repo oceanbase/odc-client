@@ -27,9 +27,9 @@ import React, { useRef, useState } from 'react';
 import DropMenu from '../DropMenu';
 
 import { ModalStore } from '@/store/modal';
-import styles from './index.less';
 import tracert from '@/util/tracert';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
+import styles from './index.less';
 import Locale from './Locale';
 
 interface IProps {

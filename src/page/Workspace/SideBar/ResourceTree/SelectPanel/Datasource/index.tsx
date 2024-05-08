@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+import { deleteConnection } from '@/common/network/connection';
+import Action from '@/component/Action';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import { EnvColorMap } from '@/constant';
+import { ConnectType, IConnectionStatus } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
+import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
@@ -24,13 +37,12 @@ import {
   message,
   Modal,
   Popover,
-  Space,
-  Spin,
   Tree,
   TreeDataNode,
 } from 'antd';
-import ResourceLayout from '../../Layout';
-import { deleteConnection } from '@/common/network/connection';
+import classNames from 'classnames';
+import { throttle, toInteger, toNumber } from 'lodash';
+import { inject, observer } from 'mobx-react';
 import {
   forwardRef,
   useContext,
@@ -40,22 +52,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import ResourceLayout from '../../Layout';
 import styles from './index.less';
-import Action from '@/component/Action';
-import ConnectionPopover from '@/component/ConnectionPopover';
-import { IDatasource } from '@/d.ts/datasource';
-import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import login from '@/store/login';
-import { toInteger, toNumber, throttle } from 'lodash';
-import { ConnectType, IConnectionStatus } from '@/d.ts';
-import { PlusOutlined } from '@ant-design/icons';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import classNames from 'classnames';
-import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
-import { EnvColorMap } from '@/constant';
-import { inject, observer } from 'mobx-react';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
 interface IProps {
   filters: {
     envs: number[];
@@ -251,8 +249,7 @@ export default inject('dataSourceStatusStore')(
                                   items: [
                                     {
                                       label: formatMessage({
-                                        id:
-                                          'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+                                        id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
                                       }), //'克隆'
                                       key: 'clone',
                                       onClick: (e) => {
@@ -312,8 +309,7 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {
                                         formatMessage({
-                                          id:
-                                            'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
                                         }) /* 
                                     克隆
                                    */

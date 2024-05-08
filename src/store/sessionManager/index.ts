@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { getConnectionDetail, getConnectionDetailResponse } from '@/common/network/connection';
+import { getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
+import notification from '@/util/notification';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
-import { message } from 'antd';
-import notification from '@/util/notification';
 
 type ConnectionId = number;
 
@@ -105,10 +104,10 @@ export class SessionManagerStore {
          */
         const now = Date.now();
         if (now - masterSession.createTime > 10 * 1000) {
-         await this.initConnection(datasourceId, databaseid);
-         const datasource = this.connection.get(toInteger(datasourceId));
-         const database = this.database.get(databaseid);
-         masterSession.updateConnectionAndDatabase(datasource, database);
+          await this.initConnection(datasourceId, databaseid);
+          const datasource = this.connection.get(toInteger(datasourceId));
+          const database = this.database.get(databaseid);
+          masterSession.updateConnectionAndDatabase(datasource, database);
         }
         return masterSession;
       }

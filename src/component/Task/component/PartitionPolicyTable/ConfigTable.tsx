@@ -14,13 +14,13 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getFormatDateTime } from '@/util/utils';
 import DisplayTable from '@/component/DisplayTable';
+import { intervalPrecisionOptions } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
+import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
-import { intervalPrecisionOptions } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 
 const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
   const labels = [

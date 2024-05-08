@@ -15,15 +15,15 @@
  */
 
 import { UserStore } from '@/store/login';
+import tracert from '@/util/tracert';
+import { useParams } from '@umijs/max';
+import { Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import ResourceTreeContext from '../../context/ResourceTreeContext';
-import tracert from '@/util/tracert';
-import SelectPanel from './SelectPanel';
-import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
+import SelectPanel from './SelectPanel';
 import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
-import { useParams } from '@umijs/max';
 
 export default inject('userStore')(
   observer(function ResourceTreeContainer({ userStore }: { userStore: UserStore }) {

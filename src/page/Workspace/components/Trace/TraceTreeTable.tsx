@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import styles from './index.less';
-import TraceTree from './TraceTree';
-import TraceTable from './TraceTable';
-import { ExpandTraceSpan } from '.';
 import { formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { ExpandTraceSpan } from '.';
+import styles from './index.less';
+import TraceTable from './TraceTable';
+import TraceTree from './TraceTree';
 
 const TraceTreeTable: React.FC<{
   innerTreeData: ExpandTraceSpan[];

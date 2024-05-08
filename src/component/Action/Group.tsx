@@ -15,7 +15,7 @@
  */
 
 import { EllipsisOutlined, LoadingOutlined, MoreOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Menu, Space, Tooltip, Typography } from 'antd';
+import { Button, Dropdown, Space, Tooltip, Typography } from 'antd';
 import { isBoolean, max, omit } from 'lodash';
 import React from 'react';
 import type { BaseProps } from './Item';

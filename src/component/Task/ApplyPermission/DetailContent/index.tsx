@@ -50,8 +50,7 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
         >
           {
             formatMessage({
-              id:
-                'odc.src.component.Task.ApplyPermission.DetailContent.ApplicationProjectPermissions',
+              id: 'odc.src.component.Task.ApplyPermission.DetailContent.ApplicationProjectPermissions',
             }) /* 申请项目权限 */
           }
         </Descriptions.Item>

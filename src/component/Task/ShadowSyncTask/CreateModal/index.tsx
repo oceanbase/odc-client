@@ -26,7 +26,7 @@ import SelectPanel from './SelectPanel';
 import StructConfigPanel from './StructConfigPanel';
 
 import { createTask } from '@/common/network/task';
-import { ConnectionMode, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import styles from './index.less';
 

@@ -19,12 +19,11 @@
  */
 import { app, dialog, ipcMain, shell } from 'electron';
 import fs from 'fs';
-import path from 'path';
 import MainServer from '../server/main';
+import { getSettingPath, getUserSettingPath } from '../utils';
 import { default as clientLog } from '../utils/log';
 import feedbackImpl from './feedback';
 import { changePwd, checkProcessKey as _checkProcessKey, checkPwd, resetPwdAndDB } from './lock';
-import { getSettingPath, getUserSettingPath } from '../utils';
 
 export function initRenderService() {
   ipcMain.handle('getMainServerPort', (e, ...args) => {

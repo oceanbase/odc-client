@@ -13,34 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { formatMessage } from '@/util/intl';
-import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
-import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import styles from './index.less';
-import Icon, { SearchOutlined } from '@ant-design/icons';
-import tracert from '@/util/tracert';
-import { ConnectionMode, TaskType } from '@/d.ts';
-import SessionContext from '../../context';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
-import login from '@/store/login';
-import { DataNode } from 'antd/lib/tree';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
-import { IDatabase } from '@/d.ts/database';
-import { toInteger } from 'lodash';
-import { useParams } from '@umijs/max';
-import { EnvColorMap } from '@/constant';
-import ConnectionPopover from '@/component/ConnectionPopover';
-import { IProject } from '@/d.ts/project';
-import { IDatasource } from '@/d.ts/datasource';
-import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
-import { inject, observer } from 'mobx-react';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import { listDatabases } from '@/common/network/database';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
+import { EnvColorMap } from '@/constant';
+import { ConnectionMode, TaskType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import { IDatasource } from '@/d.ts/datasource';
+import { IProject } from '@/d.ts/project';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import login from '@/store/login';
+import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
+import Icon, { SearchOutlined } from '@ant-design/icons';
+import { useParams } from '@umijs/max';
+import { useRequest } from 'ahooks';
+import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
+import { DataNode } from 'antd/lib/tree';
+import { toInteger } from 'lodash';
+import { inject, observer } from 'mobx-react';
+import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import SessionContext from '../../context';
+import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
+import styles from './index.less';
 
 interface IDatabasesTitleProps {
   db: IDatabase;

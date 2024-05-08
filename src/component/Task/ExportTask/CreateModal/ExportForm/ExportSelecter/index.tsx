@@ -16,7 +16,7 @@
 
 import { getExportObjects } from '@/common/network';
 import ExportCard from '@/component/ExportCard';
-import { DbObjectType, ConnectionMode } from '@/d.ts';
+import { ConnectionMode, DbObjectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Empty, Popconfirm, Spin, Tree } from 'antd';
@@ -238,8 +238,9 @@ const ExportSelecter: React.FC<IProps> = function ({
   const allTreeDataCount = Object.entries(allTreeData).reduce((prev, current) => {
     return prev + current?.[1]?.children.length;
   }, 0);
-  const selectedTreeDataCount = checkedKeys.filter((key) => !getObjTypeList().includes(key))
-    ?.length;
+  const selectedTreeDataCount = checkedKeys.filter(
+    (key) => !getObjTypeList().includes(key),
+  )?.length;
   return (
     <div className={styles.selecter}>
       <div className={styles.content}>
@@ -333,8 +334,9 @@ const ExportSelecter: React.FC<IProps> = function ({
                           /**
                            * 说明这里删除的是根节点
                            */
-                          const typeList = selectedTreeData.find((d) => d.key === nodeKey)
-                            ?.children;
+                          const typeList = selectedTreeData.find(
+                            (d) => d.key === nodeKey,
+                          )?.children;
                           const filterAllkeys = typeList?.map((item) => item.key);
                           setCheckedKeys(
                             checkedKeys.filter((key) => !filterAllkeys?.includes(key)),

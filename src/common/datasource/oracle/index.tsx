@@ -15,10 +15,10 @@
  */
 
 import { ConnectType, TaskType } from '@/d.ts';
-import { IDataSourceModeConfig } from '../interface';
-import OracleColumnExtra from '../oceanbase/OracleColumnExtra';
 import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { haveOCP } from '@/util/env';
+import { IDataSourceModeConfig } from '../interface';
+import OracleColumnExtra from '../oceanbase/OracleColumnExtra';
 
 const oracleTableConfig = {
   constraintEnableConfigurable: true,

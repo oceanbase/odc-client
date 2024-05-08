@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { EnvColorMap } from '@/constant';
 import { Tag } from 'antd';
 import { RiskLevelMap } from '../../page/Secure/interface';
 import styles from './index.less';
-import { EnvColorMap } from '@/constant';
 
 const RiskLevelLabel: React.FC<{
   level?: number;

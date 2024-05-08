@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { getPartitionPlanKeyDataTypes } from '@/common/network/task';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getPartitionPlanKeyDataTypes } from '@/common/network/task';
+import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
   EditOutlined,
+  ExclamationCircleFilled,
   FilterOutlined,
   SearchOutlined,
-  ExclamationCircleFilled,
 } from '@ant-design/icons';
-import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
-import { Checkbox, Tooltip, Space } from 'antd';
+import { Checkbox, Space, Tooltip } from 'antd';
 import React, { useRef, useState } from 'react';
+import { ITableConfig } from '../../PartitionTask/CreateModal';
+import { getStrategyLabel } from '../PartitionPolicyTable';
 import ConfigDrawer, { NameRuleType } from './configModal';
 import { START_DATE } from './const';
-import { getStrategyLabel } from '../PartitionPolicyTable';
-import { ITableConfig } from '../../PartitionTask/CreateModal';
 import styles from './index.less';
 
 const defaultIntervalPrecision = 3;

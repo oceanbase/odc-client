@@ -37,7 +37,7 @@ import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import Icon, { DownOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Menu, message, Modal, Popover, Space } from 'antd';
+import { Button, Descriptions, message, Modal, Popover, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { debounce } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -191,8 +191,7 @@ const getColumns: ({
             descriptionsData={[
               {
                 label: formatMessage({
-                  id:
-                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
                 }) /* 脱敏方式 */,
                 value: maskRuleTypeMap?.[target?.type],
               },
@@ -302,12 +301,8 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
-  const {
-    dataSourceIdMap,
-    maskingAlgorithms,
-    maskingAlgorithmIdMap,
-    maskingAlgorithmOptions,
-  } = sensitiveContext;
+  const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
+    sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
@@ -580,8 +575,7 @@ const SensitiveColumn = ({
         cascaderContent={{
           options: cascaderOptions,
           placeholder: formatMessage({
-            id:
-              'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
+            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
           }), //'请选择数据源和库'
         }}
         operationContent={{

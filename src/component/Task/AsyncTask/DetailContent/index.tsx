@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
@@ -21,12 +22,11 @@ import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import DatabaseLabel from '../../component/DatabaseLabel';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { InfoCircleOutlined } from '@ant-design/icons';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',

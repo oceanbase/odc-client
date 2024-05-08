@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { TaskErrorStrategy, TaskPartitionStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { TaskPartitionStrategy, TaskErrorStrategy } from '@/d.ts';
 
 export const ErrorStrategyMap = {
   [TaskErrorStrategy.ABORT]: formatMessage({ id: 'src.component.Task.F0079010' }), //'停止任务'

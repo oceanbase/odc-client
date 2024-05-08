@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { createTask, getDatasourceUsers, getLockDatabaseUserRequired } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IDatasourceUser } from '@/d.ts';
+import { IDatasourceUser, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -35,14 +36,13 @@ import {
   Modal,
   Radio,
   Row,
-  Space,
   Select,
+  Space,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;

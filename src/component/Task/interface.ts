@@ -18,11 +18,11 @@ import type { ILog } from '@/component/Task/component/Log';
 import type {
   CommonTaskLogType,
   IAsyncTaskParams,
+  IResponseData,
   ITaskResult,
   TaskDetail,
   TaskRecord,
   TaskRecordParameters,
-  IResponseData,
 } from '@/d.ts';
 export interface ITaskDetailModalProps {
   visible: boolean;

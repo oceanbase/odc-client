@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
+import { getAllConnectTypes, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { batchImportPrivateConnection } from '@/common/network/connection';
+import BatchImportButton from '@/component/BatchImportButton';
+import { ConnectTypeText } from '@/constant/label';
+import { ConnectType, IConnectionType } from '@/d.ts';
+import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
+import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
+import { encryptConnection } from '@/util/connection';
 import { formatMessage } from '@/util/intl';
+import Icon, { DownOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Dropdown,
   Empty,
+  message,
   Popover,
   Space,
   Tooltip,
   Typography,
   UploadFile,
-  message,
 } from 'antd';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { useMemo, useRef, useState } from 'react';
 import NewDatasourceDrawer from '.';
-import { ConnectType, IConnectionType } from '@/d.ts';
-import Icon, { DownOutlined, ExclamationCircleFilled } from '@ant-design/icons';
-import { getAllConnectTypes, getDataSourceStyleByConnectType } from '@/common/datasource';
-import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
-import { ConnectTypeText } from '@/constant/label';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
-import BatchImportButton from '@/component/BatchImportButton';
-import { encryptConnection } from '@/util/connection';
-import { batchImportPrivateConnection } from '@/common/network/connection';
-import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
 
-import styles from './index.less';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { haveOCP } from '@/util/env';
+import styles from './index.less';
 
 const getResultByFiles = (files: UploadFile[]) => {
   const res = [];

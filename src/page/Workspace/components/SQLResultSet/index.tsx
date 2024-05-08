@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, LockOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, MenuProps, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, MenuProps, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -32,11 +32,11 @@ import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
+import DBPermissionTable from './DBPermissionTable';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
-import DBPermissionTable from './DBPermissionTable';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -228,10 +228,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
-  if(unauthorizedDatabases?.length){
-    return (
-      <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />
-    )
+  if (unauthorizedDatabases?.length) {
+    return <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />;
   }
 
   return (
@@ -444,12 +442,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     </Tooltip>
                   ),
                   key: set.uniqKey,
-                  children: (
-                    <SQLResultLog 
-                      resultHeight={resultHeight}
-                      resultSet={set}
-                    />
-                  ),
+                  children: <SQLResultLog resultHeight={resultHeight} resultSet={set} />,
                 };
               }
             }),

@@ -15,12 +15,12 @@
  */
 
 import { getConnectionList } from '@/common/network/connection';
+import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, Modal, Select } from 'antd';
-import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
+import { Form, Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { ModalStore } from '@/store/modal';
 
 interface IProps {
   modalStore?: ModalStore;

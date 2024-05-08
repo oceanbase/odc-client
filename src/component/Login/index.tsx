@@ -15,10 +15,12 @@
  */
 
 import LocalMenus from '@/component/LocalMenus';
+import { ESSOLgoinType } from '@/d.ts';
+import { LDAPLogin } from '@/page/Login/components/LDAPModal';
 import { ReactComponent as LogoImg } from '@/svgr/ob_logo.svg';
-import { formatMessage, getLocalImg } from '@/util/intl';
+import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
-import { Button, Divider, Form, Input, message, Space, Typography } from 'antd';
+import { Divider, message, Typography } from 'antd';
 import type { AlertProps } from 'antd/lib/alert';
 import type { FormProps } from 'antd/lib/form';
 import React, { useCallback, useState } from 'react';
@@ -29,8 +31,6 @@ import type { ILoginFormProps } from './LoginForm';
 import LoginForm from './LoginForm';
 import type { IRegisterFormProps } from './RegisterForm';
 import RegisterForm from './RegisterForm';
-import { ESSOLgoinType } from '@/d.ts';
-import { LDAPLogin } from '@/page/Login/components/LDAPModal';
 export interface Values {
   username: string;
   password: string;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getTriggerByName } from '@/common/network/trigger';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -21,7 +22,7 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ITrigger } from '@/d.ts';
-import { ConnectionMode, TriggerPropsTab as PropsTab, TriggerState } from '@/d.ts';
+import { TriggerPropsTab as PropsTab, TriggerState } from '@/d.ts';
 import { openTriggerEditPageByName } from '@/store/helper/page';
 import { TriggerPage as TriggerPageModel } from '@/store/helper/page/pages';
 import type { PageStore } from '@/store/page';
@@ -37,7 +38,7 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, message, Modal, Radio, Tabs } from 'antd';
+import { Button, Layout, message, Modal, Radio } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
@@ -47,7 +48,6 @@ import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const ToolbarButton = Toolbar.Button;

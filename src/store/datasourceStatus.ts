@@ -17,8 +17,7 @@
 import { batchTest } from '@/common/network/connection';
 import { IConnectionStatus } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
-import { generateUniqKey } from '@/util/utils';
-import { action, observable, runInAction } from 'mobx';
+import { observable, runInAction } from 'mobx';
 
 const INTERVAL_TIME = 2000;
 export class DataSourceStatusStore {

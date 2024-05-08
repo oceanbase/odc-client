@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  getScanningResults,
+  ScannResultType,
+  startScanning,
+} from '@/common/network/sensitiveColumn';
+import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { CheckCircleFilled, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -30,25 +40,21 @@ import {
   Table,
   Tooltip,
 } from 'antd';
+import classnames from 'classnames';
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { PopoverContainer } from '..';
 import { ScanTableData, ScanTableDataItem } from '../../../interface';
+import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
+import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
 import styles from './index.less';
 import ScanRule from './SacnRule';
-import classnames from 'classnames';
-import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
-import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
-import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
-import { PopoverContainer } from '..';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
-import {
-  ScannResultType,
-  getScanningResults,
-  startScanning,
-} from '@/common/network/sensitiveColumn';
-import ProjectContext from '@/page/Project/ProjectContext';
-import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
-import React from 'react';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 interface IScanFormProps {
   formRef: FormInstance<any>;
   _formRef: FormInstance<any>;
@@ -57,13 +63,8 @@ interface IScanFormProps {
   setManageSensitiveRuleDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ScanForm = (props: IScanFormProps, ref) => {
-  const {
-    formRef,
-    _formRef,
-    setFormData,
-    setSensitiveColumns,
-    setManageSensitiveRuleDrawerOpen,
-  } = props;
+  const { formRef, _formRef, setFormData, setSensitiveColumns, setManageSensitiveRuleDrawerOpen } =
+    props;
   const projectContext = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const timer = useRef(null);
@@ -206,15 +207,14 @@ const ScanForm = (props: IScanFormProps, ref) => {
         scanTableData[database][type][tableName] = {};
         dataSource?.forEach(({ columnName, maskingAlgorithmId }) => {
           scanTableData[database][type][tableName][columnName] = maskingAlgorithmId;
-          newScanTableDataMap[
-            `${database}_${type}_${tableName}_${columnName}`
-          ] = sensitiveColumns?.find(
-            (item) =>
-              item?.database?.databaseId === databaseId &&
-              item.type === type &&
-              item.tableName === tableName &&
-              item.columnName === columnName,
-          );
+          newScanTableDataMap[`${database}_${type}_${tableName}_${columnName}`] =
+            sensitiveColumns?.find(
+              (item) =>
+                item?.database?.databaseId === databaseId &&
+                item.type === type &&
+                item.tableName === tableName &&
+                item.columnName === columnName,
+            );
         });
       });
       setFormData(scanTableData);
@@ -412,14 +412,12 @@ const EmptyOrSpin: React.FC<{
   const gentDescription = () => {
     if (hasScan && isSearch && isSearch) {
       return formatMessage({
-        id:
-          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSensitiveColumnsInThe',
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSensitiveColumnsInThe',
       }); //'扫描结果中的敏感列不包含搜索内容'
     }
     if (hasScan && successful && empty) {
       return formatMessage({
-        id:
-          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectingTheDatabaseIsCurrently',
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectingTheDatabaseIsCurrently',
       }); //'选中数据库目前暂无可选敏感列'
     }
     if (hasScan && !successful) {
@@ -578,22 +576,19 @@ const getColumns = (
                       descriptionsData={[
                         {
                           label: formatMessage({
-                            id:
-                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
                           }) /* 脱敏方式 */,
                           value: maskRuleTypeMap?.[target?.type],
                         },
                         {
                           label: formatMessage({
-                            id:
-                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
                           }) /* 测试数据 */,
                           value: target?.sampleContent,
                         },
                         {
                           label: formatMessage({
-                            id:
-                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
                           }) /* 结果预览 */,
                           value: target?.maskedContent,
                         },
@@ -806,8 +801,7 @@ const EmptyCollapse: React.FC<{
             <Descriptions.Item
               label={
                 formatMessage({
-                  id:
-                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView',
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView',
                 }) //'表/视图'
               }
             >

@@ -19,6 +19,7 @@ import { Provider } from 'mobx-react';
 import authStore from '@/store/auth';
 import clusterStore from '@/store/cluster';
 import commonStore from '@/store/common';
+import datasourceStatus from '@/store/datasourceStatus';
 import debugStore from '@/store/debug';
 import userStore from '@/store/login';
 import modalStore from '@/store/modal';
@@ -28,7 +29,6 @@ import settingStore from '@/store/setting';
 import snippetStore from '@/store/snippet';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
-import datasourceStatus from '@/store/datasourceStatus';
 
 export default function (props) {
   return (
