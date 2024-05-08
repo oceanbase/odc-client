@@ -16,13 +16,13 @@ import { formatMessage } from '@/util/intl';
  */
 
 import DisplayTable from '@/component/DisplayTable';
-import { Popover, Tooltip, message } from 'antd';
+import { formatTimeTemplatMicroSeconds } from '@/util/utils';
 import { CopyOutlined } from '@ant-design/icons';
-import styles from './index.less';
+import { message, Popover, Tooltip } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ExpandTraceSpan, InfoRender } from '.';
+import styles from './index.less';
 import { getIconByNodeType } from './Node';
-import { formatTimeTemplatMicroSeconds } from '@/util/utils';
 const TraceList: React.FC<{
   innerTreeData: ExpandTraceSpan[];
 }> = ({ innerTreeData }) => {

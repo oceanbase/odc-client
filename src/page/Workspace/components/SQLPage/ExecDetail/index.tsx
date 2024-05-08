@@ -16,23 +16,23 @@
 
 import { formatMessage } from '@/util/intl';
 import { Col, Drawer, message, Row, Spin } from 'antd';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import * as echarts from 'echarts/core';
-import { TooltipComponent, GridComponent, LegendComponent } from 'echarts/components';
 import { BarChart } from 'echarts/charts';
+import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
+import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 echarts.use([TooltipComponent, GridComponent, LegendComponent, BarChart, CanvasRenderer]);
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import styles from './index.less';
-import BasicInfo from './BasicInfo';
-import TimeStatistics from './TimeStatistics';
-import IOStatistics from './IOStatistics';
-import SQLExplain from '../../SQLExplain';
 import setting from '@/store/setting';
+import SQLExplain from '../../SQLExplain';
+import BasicInfo from './BasicInfo';
+import styles from './index.less';
+import IOStatistics from './IOStatistics';
+import TimeStatistics from './TimeStatistics';
 
 interface IProps {
   visible: boolean;
@@ -83,7 +83,11 @@ const ExecDetail: React.FC<IProps> = function (props) {
         setSqlExecuteDetailToShow(detail);
         setSqlExecuteExplainToShow(explain);
 
-        const { queueTime = 0, execTime = 0, totalTime = 0 } = detail || {
+        const {
+          queueTime = 0,
+          execTime = 0,
+          totalTime = 0,
+        } = detail || {
           queueTime: 0,
           waitTime: 0,
           execTime: 0,

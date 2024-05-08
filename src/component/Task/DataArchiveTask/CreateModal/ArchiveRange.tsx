@@ -19,8 +19,8 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, Select, Space, Typography } from 'antd';
 import classNames from 'classnames';
-import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
+import { IArchiveRange } from './index';
 import styles from './index.less';
 const { Text } = Typography;
 interface IProps {

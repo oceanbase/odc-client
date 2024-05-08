@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import RadioItem from '../Item/RadioItem';
-import { IODCSetting, ODCSettingGroup } from '../config';
-import InputItem from '../Item/InputItem';
 import KeymapInput from '@/component/Input/Keymap';
+import { formatMessage } from '@/util/intl';
+import { IODCSetting, ODCSettingGroup } from '../config';
+import RadioItem from '../Item/RadioItem';
 import SelectItem from '../Item/SelectItem';
 
 const editorGroup: ODCSettingGroup = {

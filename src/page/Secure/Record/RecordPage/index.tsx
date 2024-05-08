@@ -20,6 +20,7 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import { TimeOptions } from '@/component/TimeSelect';
+import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 import type { IAudit } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
@@ -32,7 +33,6 @@ import FormRecordExportModal from '../../components/FormRecordExportModal';
 import { SecureContext } from '../../context';
 import { getPageColumns } from './column';
 import { RecordContent } from './component';
-import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 
 const { RangePicker } = DatePicker;
 

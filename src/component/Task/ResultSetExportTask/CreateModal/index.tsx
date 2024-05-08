@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -20,7 +21,6 @@ import InputBigNumber from '@/component/InputBigNumber';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
-  ConnectionMode,
   EXPORT_TYPE,
   IExportResultSetFileType,
   IMPORT_ENCODING,
@@ -41,7 +41,6 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -232,8 +231,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Text type="secondary">
                 {
                   formatMessage({
-                    id:
-                      'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>

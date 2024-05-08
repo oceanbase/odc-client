@@ -16,13 +16,13 @@
 
 import { IResponseData } from '@/d.ts';
 import {
-  IChannel,
-  ITestChannelResult,
-  IPolicy,
-  IMessage,
-  TBatchUpdatePolicy,
-  EMessageStatus,
   EChannelType,
+  EMessageStatus,
+  IChannel,
+  IMessage,
+  IPolicy,
+  ITestChannelResult,
+  TBatchUpdatePolicy,
 } from '@/d.ts/projectNotification';
 import request from '@/util/request';
 

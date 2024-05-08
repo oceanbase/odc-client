@@ -16,13 +16,13 @@
 
 import CommonIDE from '@/component/CommonIDE';
 import { SensitiveRuleType } from '@/d.ts/sensitiveRule';
+import odc from '@/plugins/odc';
+import { EThemeConfigKey } from '@/store/setting';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Form, Input, Radio, RadioChangeEvent, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import CheckboxInput from './CheckboxInput';
 import styles from './index.less';
-import odc from '@/plugins/odc';
-import { EThemeConfigKey } from '@/store/setting';
 const DetectWay = ({
   key,
   script,
@@ -232,8 +232,7 @@ const DetectWay = ({
                 >
                   {
                     formatMessage({
-                      id:
-                        'odc.src.page.Project.Sensitive.components.SensitiveRule.components.LookAtTheDocumentation',
+                      id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.LookAtTheDocumentation',
                     }) /* 
                   查看文档
                  */

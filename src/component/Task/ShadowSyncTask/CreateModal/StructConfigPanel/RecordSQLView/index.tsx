@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { getShadowSyncAnalysisRecordResult } from '@/common/network/task';
 import MonacoEditor from '@/component/MonacoEditor';
 import SimpleTextItem from '@/component/SimpleTextItem';
@@ -23,7 +24,6 @@ import { useRequest } from 'ahooks';
 import { Drawer, Row, Space, Spin } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { IShadowSyncAnalysisResult } from '../../interface';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export interface IViewRef {
   open: (record: IShadowSyncAnalysisResult['tables'][number]) => void;

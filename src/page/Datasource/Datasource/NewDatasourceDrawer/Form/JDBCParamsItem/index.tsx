@@ -79,8 +79,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
     return [
       {
         name: formatMessage({
-          id:
-            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationItem',
+          id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationItem',
         }), //'配置项'
         key: 'name',
         editor: TextEditor,
@@ -88,8 +87,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
       },
       {
         name: formatMessage({
-          id:
-            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationInformation',
+          id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationInformation',
         }), //'配置信息'
         key: 'value',
         editor: TextEditor,
@@ -112,8 +110,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
       <div style={{ marginTop: 12 }}>
         {
           formatMessage({
-            id:
-              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.AttributeConfiguration',
+            id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.AttributeConfiguration',
           }) /* 
         属性配置 */
         }{' '}
@@ -126,8 +123,7 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
         >
           {
             formatMessage({
-              id:
-                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ExplanationDocument',
+              id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ExplanationDocument',
             }) /* 
           说明文档
          */

@@ -74,8 +74,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                     } else {
                       message.error(
                         formatMessage({
-                          id:
-                            'odc.component.LoginMenus.ChangeLockPwdModal.UnableToDeleteCheckWhether',
+                          id: 'odc.component.LoginMenus.ChangeLockPwdModal.UnableToDeleteCheckWhether',
                         }),
                         // 删除失败，请确认密码是否正确
                       );
@@ -109,8 +108,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 if (values.password !== values.confirmPassword) {
                   message.warning(
                     formatMessage({
-                      id:
-                        'odc.component.LoginMenus.ChangeLockPwdModal.TheTwoPasswordsAreInconsistent',
+                      id: 'odc.component.LoginMenus.ChangeLockPwdModal.TheTwoPasswordsAreInconsistent',
                     }),
                     // 两次密码输入不一致!
                   );

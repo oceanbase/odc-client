@@ -16,16 +16,16 @@
 
 import { createSensitiveRule, updateSensitiveRule } from '@/common/network/sensitiveRule';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Modal, Radio, Select, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../../../ProjectContext';
 import SensitiveContext from '../../../SensitiveContext';
+import { PopoverContainer } from '../../SensitiveColumn';
 import DetectWay from './DetectWay';
 import styles from './index.less';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
-import { PopoverContainer } from '../../SensitiveColumn';
 const FormSensitiveRuleDrawer = ({
   formDrawerVisible,
   handleFormDrawerClose,
@@ -404,8 +404,7 @@ const FormSensitiveRuleDrawer = ({
             {
               required: true,
               message: formatMessage({
-                id:
-                  'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
               }), //请选择脱敏算法
             },
           ]}
@@ -433,22 +432,19 @@ const FormSensitiveRuleDrawer = ({
                     descriptionsData={[
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveRule.components.DesensitizationMethod',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.DesensitizationMethod',
                         }), //'脱敏方式'
                         value: maskRuleTypeMap?.[target?.type],
                       },
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveRule.components.TestData',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.TestData',
                         }), //'测试数据'
                         value: target?.sampleContent,
                       },
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveRule.components.Preview',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.Preview',
                         }), //'结果预览'
                         value: target?.maskedContent,
                       },

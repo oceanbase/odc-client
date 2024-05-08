@@ -15,10 +15,10 @@
  */
 
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
+import { isConnectionModeBeMySQLType } from '../connection';
 import { generateAndDownloadFile, getQuoteTableName } from '../utils';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
-import { isConnectionModeBeMySQLType } from '../connection';
 
 export default function exportToSQL(
   selectData: any[][],

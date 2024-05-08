@@ -69,8 +69,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                       <Checkbox>
                         {
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.EmptyStringTurnsToEmpty',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.EmptyStringTurnsToEmpty',
                           }) /* 空字符串转为空值 */
                         }
                       </Checkbox>
@@ -84,8 +83,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         }}
                         label={
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.FieldSeparator',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FieldSeparator',
                           }) /* 字段分隔符 */
                         }
                         name={['csvFormat', 'columnSeparator']}
@@ -93,15 +91,13 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
                             }), //'请填写字段分隔符'
                           },
                           {
                             max: 1,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.YouCanOnlyEnterOne',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.YouCanOnlyEnterOne',
                             }), //'只能输入一个字符'
                           },
                         ]}
@@ -122,8 +118,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         }}
                         label={
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.TextRecognitionSymbol',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.TextRecognitionSymbol',
                           }) /* 文本识别符 */
                         }
                         name={['csvFormat', 'columnDelimiter']}
@@ -131,8 +126,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheText',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheText',
                             }), //'请填写文本识别符'
                           },
                         ]}
@@ -154,8 +148,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         }}
                         label={
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.ReplacementSymbol',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.ReplacementSymbol',
                           }) /* 换行符号 */
                         }
                         name={['csvFormat', 'lineSeparator']}
@@ -163,8 +156,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheChange',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheChange',
                             }), //'请填写换行符号'
                           },
                         ]}
@@ -209,8 +201,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         <HelpDoc isTip leftText doc="exportTableName">
                           {
                             formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.SpecifiedTableName',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.SpecifiedTableName',
                             }) /* 
                           指定表名
                          */
@@ -269,8 +260,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                       <Checkbox>
                         {
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.ExportSQLToAnotherSheet',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.ExportSQLToAnotherSheet',
                           }) /* 导出 SQL 到另一个 Sheet */
                         }
                       </Checkbox>

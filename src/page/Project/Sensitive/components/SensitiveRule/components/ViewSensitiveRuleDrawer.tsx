@@ -16,6 +16,7 @@
 
 import { detailSensitiveRule } from '@/common/network/sensitiveRule';
 import CommonTable from '@/component/CommonTable';
+import { CommonTableMode } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { DetectRuleTypeMap } from '@/page/Project/Sensitive/interface';
@@ -24,7 +25,6 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { Button, Descriptions, Divider, Drawer } from 'antd';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import styles from './index.less';
-import { CommonTableMode } from '@/component/CommonTable/interface';
 
 const renderByType = (type: SensitiveRuleType, params?: any) => {
   switch (type) {
@@ -35,8 +35,7 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
           <Descriptions.Item
             label={
               formatMessage({
-                id:
-                  'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.PathRecognitionExpression',
               }) //路径识别表达式
             }
           >

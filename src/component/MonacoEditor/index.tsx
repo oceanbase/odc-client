@@ -22,14 +22,14 @@ import odc from '@/plugins/odc';
 import SessionStore from '@/store/sessionManager/session';
 import setting, { SettingStore } from '@/store/setting';
 import editorUtils from '@/util/editor';
+import logger from '@/util/logger';
 import { getUnWrapedSnippetBody } from '@/util/snippet';
 import { inject, observer } from 'mobx-react';
+import { getFontSize } from './config';
 import styles from './index.less';
 import * as groovy from './plugins/languageSupport/groovy';
 import { apply as markerPluginApply } from './plugins/marker';
 import { getModelService } from './plugins/ob-language/service';
-import logger from '@/util/logger';
-import { getFontSize } from './config';
 import { apply as themeApply } from './plugins/theme';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;

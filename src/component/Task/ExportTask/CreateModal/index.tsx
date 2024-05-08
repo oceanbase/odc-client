@@ -39,7 +39,6 @@ import React from 'react';
 import ExportForm, { FormType } from './ExportForm';
 import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;

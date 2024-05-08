@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 export default function Reload({

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { PureComponent, ReactNode, useContext, useState } from 'react';
-import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 import { IPage, PageType } from '@/d.ts';
-import { Badge, Dropdown, Menu, MenuProps, Space, Tabs, Tooltip } from 'antd';
-import { MenuInfo } from 'rc-menu/lib/interface';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { movePagePostion, openNewDefaultPLPage } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
+import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
+import { Badge, Dropdown, MenuProps, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
+import { MenuInfo } from 'rc-menu/lib/interface';
+import { ReactNode, useContext, useState } from 'react';
 import { pageMap } from './config';
 import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 
 interface IProps {
   pages: IPage[];

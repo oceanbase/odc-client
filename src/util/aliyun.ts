@@ -15,8 +15,8 @@
  */
 
 import { generateDatabaseSid } from '@/common/network/pathUtil';
-import request from './request';
 import logger from './logger';
+import request from './request';
 
 // 上传文件到 OSS
 // @see https://help.aliyun.com/document_detail/64047.html

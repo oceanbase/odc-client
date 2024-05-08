@@ -17,12 +17,12 @@
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { checkNumberRange, validTrimEmptyWithWarn } from '@/util/valid';
-import { Col, Form, Input, Row, Space, Select } from 'antd';
+import { Col, Form, Input, Row, Select, Space } from 'antd';
+import { isNil } from 'lodash';
 import React, { useContext } from 'react';
 import DatasourceFormContext from './context';
 import styles from './index.less';
 import InstanceSelect from './InstanceSelect';
-import { isNil } from 'lodash';
 interface IProps {}
 const AddressItems: React.FC<IProps> = function (props) {
   const { isEdit, dataSourceConfig } = useContext(DatasourceFormContext);

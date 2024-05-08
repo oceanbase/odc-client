@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { ConnectType, ConnectionMode } from '@/d.ts';
-import { IDataSourceModeConfig } from './interface';
+import { ConnectionMode, ConnectType } from '@/d.ts';
 import { IDataSourceType } from '@/d.ts/datasource';
-import obOracle from './oceanbase/oboracle';
-import obMySQL from './oceanbase/obmysql';
-import oracle from './oracle';
-import MySQL from './mysql';
-import Doris from './doris';
-import { ReactComponent as OBSvg } from '@/svgr/source_ob.svg';
-import { ReactComponent as DBOBSvg } from '@/svgr/database_oceanbase.svg';
-import { ReactComponent as MySQLSvg } from '@/svgr/mysql.svg';
-import { ReactComponent as DBMySQLSvg } from '@/svgr/database_mysql.svg';
-import { ReactComponent as DorisSvg } from '@/svgr/doris.svg';
 import { ReactComponent as DBDorisSvg } from '@/svgr/database_doris.svg';
-import { ReactComponent as OracleSvg } from '@/svgr/oracle.svg';
+import { ReactComponent as DBMySQLSvg } from '@/svgr/database_mysql.svg';
+import { ReactComponent as DBOBSvg } from '@/svgr/database_oceanbase.svg';
 import { ReactComponent as DBOracleSvg } from '@/svgr/database_oracle.svg';
+import { ReactComponent as DorisSvg } from '@/svgr/doris.svg';
+import { ReactComponent as MySQLSvg } from '@/svgr/mysql.svg';
+import { ReactComponent as OracleSvg } from '@/svgr/oracle.svg';
+import { ReactComponent as OBSvg } from '@/svgr/source_ob.svg';
+import Doris from './doris';
+import { IDataSourceModeConfig } from './interface';
+import MySQL from './mysql';
+import obMySQL from './oceanbase/obmysql';
+import obOracle from './oceanbase/oboracle';
+import oracle from './oracle';
 
 const _types: Map<
   IDataSourceType,

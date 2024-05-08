@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import * as monaco from 'monaco-editor';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import styles from './index.less';
 import { SettingStore } from '@/store/setting';
 import { inject, observer } from 'mobx-react';
-import classNames from 'classnames';
+import * as monaco from 'monaco-editor';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { getFontSize } from './config';
+import styles from './index.less';
 
 export interface IDiffEditor {
   settingStore?: SettingStore;

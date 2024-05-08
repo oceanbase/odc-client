@@ -17,11 +17,13 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { createTask, getCycleTaskDetail, previewSqlStatements } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
-import { CrontabDateType, ICrontab, CrontabMode } from '@/component/Crontab/interface';
+import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
   CreateTaskRecord,
   ICycleTaskTriggerConfig,
+  IDataClearJobParameters,
   ITable,
   TaskExecStrategy,
   TaskJobType,
@@ -29,27 +31,25 @@ import {
   TaskPageScope,
   TaskPageType,
   TaskType,
-  IDataClearJobParameters,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb } from '@/util/utils';
+import { kbToMb, mbToKb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
+import SQLPreviewModal from '../../component/SQLPreviewModal';
+import ThrottleFormItem from '../../component/ThrottleFormItem';
+import { getVariableValue } from '../../DataArchiveTask/CreateModal';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
-import FormItemPanel from '@/component/FormItemPanel';
-import ThrottleFormItem from '../../component/ThrottleFormItem';
-import SQLPreviewModal from '../../component/SQLPreviewModal';
-import { getVariableValue } from '../../DataArchiveTask/CreateModal';
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',

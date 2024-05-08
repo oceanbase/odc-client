@@ -1,38 +1,38 @@
 .main {
-  height: 256px;
   width: 250px;
-  overflow-y: auto;
+  height: 256px;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 .tree {
   .textoverflow {
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    text-overflow: ellipsis;
   }
   :global {
     .ant-tree-treenode {
       width: 100%;
     }
     .ant-tree-node-content-wrapper {
+      display: flex;
       flex-grow: 1;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
-      display: flex;
+      text-overflow: ellipsis;
       .ant-tree-title {
         flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
         padding-right: 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
 
     .ant-badge {
       position: absolute;
-      right: 4px;
       top: 0px;
+      right: 4px;
       .ant-badge-status-dot {
         border-radius: 0px;
       }

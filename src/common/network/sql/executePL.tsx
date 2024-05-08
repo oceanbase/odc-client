@@ -16,8 +16,8 @@
 
 import { PLType } from '@/constant/plType';
 import { IFunction, IProcedure } from '@/d.ts';
-import { generateSessionSid } from '../pathUtil';
 import request from '@/util/request';
+import { generateSessionSid } from '../pathUtil';
 
 type params =
   | {

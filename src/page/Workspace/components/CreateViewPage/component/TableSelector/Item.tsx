@@ -55,14 +55,8 @@ interface IProps extends IDragable {
 
 class Item extends PureComponent<IProps> {
   render() {
-    const {
-      index,
-      dataKey,
-      isDragging,
-      isLast,
-      connectDragSource,
-      handleDelete,
-    } = this.props.props;
+    const { index, dataKey, isDragging, isLast, connectDragSource, handleDelete } =
+      this.props.props;
     const params = parse(dataKey);
     const { d, v, t, uid } = params;
     return connectDragSource(

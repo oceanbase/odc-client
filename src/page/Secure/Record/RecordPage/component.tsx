@@ -15,6 +15,7 @@
  */
 
 import UserPopover from '@/component/UserPopover';
+import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 import type { IAudit } from '@/d.ts';
 import { AuditEventResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -23,7 +24,6 @@ import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { Descriptions, Space } from 'antd';
 import React from 'react';
 import styles from './index.less';
-import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 
 export const Status: React.FC<{
   result: AuditEventResult;

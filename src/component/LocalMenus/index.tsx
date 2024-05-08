@@ -18,9 +18,9 @@ import DropdownMenu from '@/component/DropdownMenu';
 import { localeList } from '@/constant';
 import { defaultLocale } from '@/util/intl';
 import { GlobalOutlined } from '@ant-design/icons';
-import { Menu, Space } from 'antd';
-import React from 'react';
 import { getLocale, setLocale } from '@umijs/max';
+import { Space } from 'antd';
+import React from 'react';
 
 interface IProos {
   showIcon?: boolean;

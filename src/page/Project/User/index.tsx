@@ -21,17 +21,17 @@ import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import TooltipAction from '@/component/TooltipAction';
-import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
+import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { inject, observer } from 'mobx-react';
+import tracert from '@/util/tracert';
 import { Button, message, Popconfirm, Space, Tag } from 'antd';
+import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
-import UpdateUserModal from './UpdateUserModal';
 import ManageModal from './ManageModal';
-import tracert from '@/util/tracert';
+import UpdateUserModal from './UpdateUserModal';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',

@@ -104,8 +104,7 @@ const ViewRiskLevelDrawer: React.FC<{
                           <div className={styles.nodeContent}>
                             {autoApproval
                               ? formatMessage({
-                                  id:
-                                    'odc.RiskLevel.components.ViewRiskLevelDrawer.AutomaticApproval',
+                                  id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.AutomaticApproval',
                                 }) //自动审批
                               : resourceRoleName}
                           </div>

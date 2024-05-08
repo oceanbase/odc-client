@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { SettingStore } from '@/store/setting';
 import DataGrid, { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import type { DataGridProps } from '@oceanbase-odc/ob-react-data-grid/lib/types';
-import React, { useRef } from 'react';
-import { SettingStore } from '@/store/setting';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
+import React, { useRef } from 'react';
 import styles from './index.less';
 
 export interface RowType<R = any> {

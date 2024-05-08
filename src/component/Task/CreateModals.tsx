@@ -16,6 +16,8 @@
 
 import React from 'react';
 import AlterDDLTaskCreateModal from './AlterDdlTask';
+import ApplyDatabasePermissionCreateModal from './ApplyDatabasePermission';
+import ApplyPermissionCreateModal from './ApplyPermission';
 import AsyncTaskCreateModal from './AsyncTask';
 import DataArchiveTaskCreateModal from './DataArchiveTask';
 import DataClearTaskCreateModal from './DataClearTask';
@@ -26,8 +28,6 @@ import PartitionTaskCreateModal from './PartitionTask';
 import ResultSetExportTask from './ResultSetExportTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
 import SQLPlanTaskCreateModal from './SQLPlanTask';
-import ApplyPermissionCreateModal from './ApplyPermission';
-import ApplyDatabasePermissionCreateModal from './ApplyDatabasePermission';
 import StructureComparisonTask from './StructureComparisonTask';
 
 interface IProps {

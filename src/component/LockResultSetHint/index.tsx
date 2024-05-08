@@ -17,8 +17,8 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Component } from 'react';
 // @ts-ignore
-import styles from './index.less';
 import { formatMessage } from '@/util/intl';
+import styles from './index.less';
 
 export class LockResultSetHint extends Component<{
   onClose(): void;

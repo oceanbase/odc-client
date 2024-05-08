@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import { updateLimiterConfig } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
-import { updateLimiterConfig } from '@/common/network/task';
-import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataClearJobParameters, TaskOperationType } from '@/d.ts';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Collapse, Descriptions, Divider, Space, message, Typography } from 'antd';
+import { Collapse, Descriptions, Divider, message, Space, Typography } from 'antd';
 import React from 'react';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
-import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 const { Panel } = Collapse;
 const { Text } = Typography;
 interface IProps {

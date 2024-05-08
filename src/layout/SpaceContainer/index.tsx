@@ -15,15 +15,15 @@
  */
 
 import { UserStore } from '@/store/login';
+import setting from '@/store/setting';
 import { Outlet, useNavigate } from '@umijs/max';
-import { inject, observer } from 'mobx-react';
-import React, { useEffect, useMemo, useState } from 'react';
-import styles from './index.less';
-import Sider from './Sider';
 import { Alert } from 'antd';
 import md5 from 'blueimp-md5';
-import setting from '@/store/setting';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { renderMd } from './helper';
+import styles from './index.less';
+import Sider from './Sider';
 
 const BannerClosedKey = 'ODC_BannerCloseKey';
 interface ISpaceContainerProps {

@@ -19,13 +19,12 @@ import CreatePackageModal from '@/component/CreatePackageModal';
 import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
+import SelectDatabase from '@/component/SelectDatabase/index';
 import CreateModals from '@/component/Task/CreateModals';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import CreateSequenceModal from '../components/CreateSequenceModal';
-import ODCSetting from '@/component/ODCSetting';
-import SelectDatabase from '@/component/SelectDatabase/index';
 
 interface IProps {
   modalStore?: ModalStore;

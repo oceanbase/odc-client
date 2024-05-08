@@ -22,6 +22,7 @@ import {
   setTransactionInfo,
 } from '@/common/network/connection';
 import { generateDatabaseSid, generateSessionSid } from '@/common/network/pathUtil';
+import { getBuiltinSnippets } from '@/common/network/snippet';
 import { queryIdentities } from '@/common/network/table';
 import { IDataType, IRecycleObject, ISessionStatus } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
@@ -30,12 +31,10 @@ import logger from '@/util/logger';
 import request from '@/util/request';
 import { isFunction } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
-import settingStore from '../setting';
+import { default as setting, default as settingStore } from '../setting';
+import { ISnippet } from '../snippet';
 import DatabaseStore from './database';
 import { ISupportFeature } from './type';
-import setting from '../setting';
-import { getBuiltinSnippets } from '@/common/network/snippet';
-import { ISnippet } from '../snippet';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';

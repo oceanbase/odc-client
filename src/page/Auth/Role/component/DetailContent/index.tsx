@@ -256,11 +256,8 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
   ];
 };
 export const getPermissionsTypes = (value: Partial<IManagerRole>) => {
-  const {
-    connectionAccessPermissions,
-    resourceManagementPermissions,
-    systemOperationPermissions,
-  } = value;
+  const { connectionAccessPermissions, resourceManagementPermissions, systemOperationPermissions } =
+    value;
   const types = [];
   if (connectionAccessPermissions?.length) {
     types.push({

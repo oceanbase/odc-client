@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { Button, Drawer, Form, Input, Modal, Radio, Space, message } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useState } from 'react';
+import { getDatabase } from '@/common/network/database';
+import { createStructureComparisonTask } from '@/common/network/task';
 import FormItemPanel from '@/component/FormItemPanel';
-import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
 import {
   ConnectionMode,
   CreateStructureComparisonTaskRecord,
@@ -28,15 +24,19 @@ import {
   TaskPageType,
   TaskType,
 } from '@/d.ts';
-import { comparisonScopeMap } from './interface';
-import DatabaseSelect from '../../component/DatabaseSelect';
-import { createStructureComparisonTask } from '@/common/network/task';
-import TableSelector from './TableSelector';
-import { openTasksPage } from '@/store/helper/page/openPage';
-import { getDatabase } from '@/common/network/database';
-import { useRequest } from 'ahooks';
 import { EComparisonScope } from '@/d.ts/task';
+import { openTasksPage } from '@/store/helper/page/openPage';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import { useRequest } from 'ahooks';
+import { Button, Drawer, Form, Input, message, Modal, Radio, Space } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { getTaskExecStrategyMap } from '../..';
+import DatabaseSelect from '../../component/DatabaseSelect';
+import { comparisonScopeMap } from './interface';
+import TableSelector from './TableSelector';
 interface IProps {
   projectId?: number;
   modalStore?: ModalStore;

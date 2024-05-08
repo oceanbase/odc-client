@@ -15,9 +15,9 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { Button, Drawer, Space } from 'antd';
 import React from 'react';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { DBPermissionTableContent } from './DBPermissionTable';
 
 interface IProps {

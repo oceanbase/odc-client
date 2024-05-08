@@ -61,15 +61,8 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
     onTabChange,
     containerWrapStyle = {},
   } = props;
-  const {
-    title,
-    type,
-    options,
-    defaultValue,
-    showDivider,
-    onChange,
-    onDropdownVisibleChange,
-  } = titleProps;
+  const { title, type, options, defaultValue, showDivider, onChange, onDropdownVisibleChange } =
+    titleProps;
 
   return (
     <div className={styles['page-container']}>

@@ -82,12 +82,8 @@ class LoginModal extends Component<
 
   public render() {
     const { errMsg } = this.props;
-    const {
-      showChangePasswordModal,
-      showRegisterModal,
-      registerLoading,
-      changePasswordLoading,
-    } = this.state;
+    const { showChangePasswordModal, showRegisterModal, registerLoading, changePasswordLoading } =
+      this.state;
 
     return (
       <Form onFinish={this.handleSubmit} className={styles.form} name="loginForm">

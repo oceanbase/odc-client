@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 import { ConnectType, IConnectionTestErrorType } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { FormInstance } from 'antd';
 import React from 'react';
-import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 interface IDatasouceFormContext {
   form?: FormInstance<IDatasource>;

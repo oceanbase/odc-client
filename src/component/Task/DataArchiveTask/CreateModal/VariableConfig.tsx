@@ -17,8 +17,8 @@
 import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import type { FormInstance } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
@@ -185,8 +185,9 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <Form.List name={[name, 'pattern']}>
                   {(subFields, { add: _add, remove: _remove }) => {
                     const disabledAdd = subFields.length >= 3;
-                    const required = !!Object.values(variables?.[index].pattern?.[0] ?? {})?.join('')
-                      ?.length;
+                    const required = !!Object.values(variables?.[index].pattern?.[0] ?? {})?.join(
+                      '',
+                    )?.length;
                     return (
                       <div className={styles.infoBlock}>
                         {subFields.map(({ key, name, ...restField }) => (
@@ -198,8 +199,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose',
+                                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose',
                                   }), //'请选择'
                                 },
                               ]}
@@ -218,8 +218,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseEnter',
+                                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseEnter',
                                   }), //'请输入'
                                 },
                               ]}
@@ -238,8 +237,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose.1',
+                                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose.1',
                                   }), //'请选择'
                                 },
                               ]}
@@ -256,8 +254,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 <Tooltip
                                   title={
                                     formatMessage({
-                                      id:
-                                        'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
+                                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
                                     }) /* 添加时间偏移 */
                                   }
                                 >
@@ -268,8 +265,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 <Tooltip
                                   title={
                                     formatMessage({
-                                      id:
-                                        'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
+                                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
                                     }) /* 删除时间偏移 */
                                   }
                                 >

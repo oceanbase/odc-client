@@ -18,9 +18,9 @@ import {
   EBooleanOperator,
   EConditionType,
 } from '@/page/Secure/RiskLevel/components/InnerRiskLevel';
+import { Expression } from '@/page/Secure/RiskLevel/interface';
 import { ProjectUser } from './project';
 import { IRiskLevel } from './riskLevel';
-import { Expression } from '@/page/Secure/RiskLevel/interface';
 export interface RiskDetectRuleCondition {
   id?: number;
   expression: string;

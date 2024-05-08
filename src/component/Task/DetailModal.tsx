@@ -22,22 +22,22 @@ import {
   getTaskLog,
   getTaskResult,
 } from '@/common/network/task';
+import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
-import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   CycleTaskDetail,
   IAsyncTaskParams,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
   IDataClearJobParameters,
+  IIPartitionPlanTaskDetail,
   IPartitionPlanParams,
+  IResponseData,
   ITaskResult,
   TaskDetail,
   TaskRecord,
-  IIPartitionPlanTaskDetail,
-  IResponseData,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -49,6 +49,8 @@ import {
 } from '@/d.ts';
 import React, { useEffect, useRef, useState } from 'react';
 import { getItems as getDDLAlterItems } from './AlterDdlTask';
+import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
+import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { AsyncTaskContent } from './AsyncTask';
 import TaskTools from './component/ActionBar';
 import ApprovalModal from './component/ApprovalModal';
@@ -61,8 +63,6 @@ import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getResultSetExportTaskContentItems } from './ResultSetExportTask/DetailContent';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
-import { ApplyPermissionTaskContent } from './ApplyPermission';
-import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 
 interface IProps {

@@ -15,6 +15,7 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { getTaskDetail } from '@/common/network/task';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   IAlterScheduleTaskParams,
@@ -27,19 +28,18 @@ import type {
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import type { TaskStore } from '@/store/task';
+import tracert from '@/util/tracert';
 import { getPreTime } from '@/util/utils';
+import { useLocation } from '@umijs/max';
+import { useSetState } from 'ahooks';
+import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
-import { useLocation } from '@umijs/max';
 import React, { useEffect, useRef } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import { getTaskDetail } from '@/common/network/task';
-import { message } from 'antd';
-import { useSetState } from 'ahooks';
 interface IProps {
   taskStore?: TaskStore;
   modalStore?: ModalStore;

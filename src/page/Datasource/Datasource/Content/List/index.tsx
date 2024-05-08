@@ -15,8 +15,8 @@
  */
 
 import { getConnectionList } from '@/common/network/connection';
-import { IConnection, IConnectionStatus } from '@/d.ts';
-import { Result, Space, Spin, Tag } from 'antd';
+import { IConnection } from '@/d.ts';
+import { Result, Space, Spin } from 'antd';
 import React, {
   forwardRef,
   useContext,
@@ -34,17 +34,17 @@ import LoadingItem from '../ListItem/Loading';
 import ConnectionName from './ConnectionNameItem';
 import MoreBtn from './MoreBtn';
 
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IPageType } from '@/d.ts/_index';
 import { ClusterStore } from '@/store/cluster';
 import { CommonStore } from '@/store/common';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import { PageStore } from '@/store/page';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { inject, observer } from 'mobx-react';
 import { history } from '@umijs/max';
+import { inject, observer } from 'mobx-react';
 import TitleButton from '../TitleButton';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
 
 interface IProps {
   width: number;

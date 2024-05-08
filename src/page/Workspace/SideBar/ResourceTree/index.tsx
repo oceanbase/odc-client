@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
+import Reload from '@/component/Button/Reload';
+import { ConnectType, DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
-import { Input, Space, Tree } from 'antd';
+import tracert from '@/util/tracert';
+import Icon, { SwapOutlined } from '@ant-design/icons';
+import { useParams } from '@umijs/max';
+import { useUpdate } from 'ahooks';
+import { Space, Tree } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import ResourceTreeContext from '../../context/ResourceTreeContext';
+import DatabaseSearch from './DatabaseSearch';
+import DatasourceFilter from './DatasourceFilter';
 import { loadNode } from './helper';
 import styles from './index.less';
 import { DataBaseTreeData } from './Nodes/database';
 import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
-import tracert from '@/util/tracert';
-import { useUpdate } from 'ahooks';
-import Icon, { SwapOutlined } from '@ant-design/icons';
-import Reload from '@/component/Button/Reload';
-import DatasourceFilter from './DatasourceFilter';
-import { ConnectType, DbObjectType } from '@/d.ts';
 import useTreeState from './useTreeState';
-import DatabaseSearch from './DatabaseSearch';
-import { useParams } from '@umijs/max';
-import ResourceTreeContext from '../../context/ResourceTreeContext';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;

@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
+import { listDatabases } from '@/common/network/database';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import datasourceStatus from '@/store/datasourceStatus';
+import { useRequest } from 'ahooks';
 import React, { useContext, useEffect } from 'react';
 import ResourceTree from '..';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
 import TreeTitle from './Title';
-import datasourceStatus from '@/store/datasourceStatus';
 
 interface IProps {
   openSelectPanel?: () => void;
 }
 
 const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
-  const { selectDatasourceId, selectProjectId, projectList, datasourceList } = useContext(
-    ResourceTreeContext,
-  );
+  const { selectDatasourceId, selectProjectId, projectList, datasourceList } =
+    useContext(ResourceTreeContext);
   const selectProject = projectList?.find((p) => p.id == selectProjectId);
   const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
 
-  const { data: db, reset, run: _runListDatabases, loading: dbLoading } = useRequest(
-    listDatabases,
-    {
-      manual: true,
-    },
-  );
+  const {
+    data: db,
+    reset,
+    run: _runListDatabases,
+    loading: dbLoading,
+  } = useRequest(listDatabases, {
+    manual: true,
+  });
   const databases = db?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length);
 
   async function initDatabase(projectId: number, datasourceId: number) {

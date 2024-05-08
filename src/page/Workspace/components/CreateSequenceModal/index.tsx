@@ -313,8 +313,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                             ? {
                                 required: true,
                                 message: formatMessage({
-                                  id:
-                                    'workspace.window.createSequence.params.minValue.validation.required',
+                                  id: 'workspace.window.createSequence.params.minValue.validation.required',
                                 }),
                               }
                             : null,
@@ -352,8 +351,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                             ? {
                                 required: true,
                                 message: formatMessage({
-                                  id:
-                                    'workspace.window.createSequence.params.maxValue.validation.required',
+                                  id: 'workspace.window.createSequence.params.maxValue.validation.required',
                                 }),
                               }
                             : null,

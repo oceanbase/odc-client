@@ -155,7 +155,7 @@ export default function SelectTransfer(props: IProps) {
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      wordBreak: "break-all"
+                      wordBreak: 'break-all',
                     }}
                     title={node.title}
                   >

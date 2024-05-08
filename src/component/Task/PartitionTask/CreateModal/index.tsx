@@ -15,48 +15,48 @@
  */
 
 import { createTask, getPartitionPlanTables } from '@/common/network/task';
+import Crontab from '@/component/Crontab';
+import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import FormItemPanel from '@/component/FormItemPanel';
 import {
-  TaskPageScope,
-  TaskPageType,
-  TaskType,
-  TaskExecStrategy,
-  PARTITION_KEY_INVOKER,
-  PARTITION_NAME_INVOKER,
-  TaskPartitionStrategy,
-  TaskErrorStrategy,
   IPartitionPlanKeyType,
   IPartitionTableConfig,
+  PARTITION_KEY_INVOKER,
+  PARTITION_NAME_INVOKER,
+  TaskErrorStrategy,
+  TaskExecStrategy,
+  TaskPageScope,
+  TaskPageType,
+  TaskPartitionStrategy,
+  TaskType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { hourToMilliSeconds } from '@/util/utils';
-import FormItemPanel from '@/component/FormItemPanel';
 import {
+  Alert,
   Button,
+  Checkbox,
+  Divider,
   Drawer,
   Form,
   Input,
+  InputNumber,
   Modal,
+  Radio,
   Space,
   Tooltip,
-  Checkbox,
   Typography,
-  Radio,
-  InputNumber,
-  Alert,
-  Divider,
 } from 'antd';
-import moment from 'moment';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import moment from 'moment';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import DatabaseSelect from '../../component/DatabaseSelect';
 import PartitionPolicyFormTable from '../../component/PartitionPolicyFormTable';
 import { START_DATE } from '../../component/PartitionPolicyFormTable/const';
-import DatabaseSelect from '../../component/DatabaseSelect';
-import Crontab from '@/component/Crontab';
-import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
 import styles from './index.less';
 
 const { Paragraph, Text } = Typography;

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+import { getDataSourceGroupByProject } from '@/common/network/connection';
+import { listProjects } from '@/common/network/project';
+import { IDatasource } from '@/d.ts/datasource';
+import { IProject } from '@/d.ts/project';
+import datasourceStatus from '@/store/datasourceStatus';
+import login from '@/store/login';
+import tracert from '@/util/tracert';
+import { useParams } from '@umijs/max';
+import { useRequest } from 'ahooks';
+import { toInteger } from 'lodash';
 import { useCallback, useState } from 'react';
 import { ActivityBarItemType } from '../ActivityBar/type';
 import ActivityBarContext from './ActivityBarContext';
 import ResourceTreeContext, { ResourceTreeTab } from './ResourceTreeContext';
-import tracert from '@/util/tracert';
-import { IDatasource } from '@/d.ts/datasource';
-import { IProject } from '@/d.ts/project';
-import login from '@/store/login';
-import { useRequest } from 'ahooks';
-import { getDataSourceGroupByProject } from '@/common/network/connection';
-import { listProjects } from '@/common/network/project';
-import { useParams } from '@umijs/max';
-import { toInteger } from 'lodash';
-import datasourceStatus from '@/store/datasourceStatus';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);

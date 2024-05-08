@@ -29,8 +29,8 @@ import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
 import { openNewDefaultPLPage, openNewSQLPage } from '@/store/helper/page';
 import setting, { EThemeConfigKey } from '@/store/setting';
 import { ReactComponent as ConsolePLSvg } from '@/svgr/Console-PL.svg';
-import { useContext, useEffect } from 'react';
 import tracert from '@/util/tracert';
+import { useContext, useEffect } from 'react';
 
 export default function DefaultPage() {
   useEffect(() => {

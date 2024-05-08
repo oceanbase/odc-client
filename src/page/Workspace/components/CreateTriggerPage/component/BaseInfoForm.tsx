@@ -92,8 +92,7 @@ class BaseInfoForm extends Component<IProps> {
                 {
                   max: 128,
                   message: formatMessage({
-                    id:
-                      'odc.CreateTriggerPage.component.BaseInfoForm.TheLengthCannotExceedCharacters',
+                    id: 'odc.CreateTriggerPage.component.BaseInfoForm.TheLengthCannotExceedCharacters',
                   }),
 
                   // 长度不超过 128 个字符

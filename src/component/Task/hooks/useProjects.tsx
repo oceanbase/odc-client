@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
 import { getProjectList } from '@/common/network/task';
+import { useState } from 'react';
 
 export const useProjects = () => {
   const [projects, setProjects] = useState<any[]>([]);

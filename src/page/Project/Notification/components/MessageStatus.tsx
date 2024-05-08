@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IMessage, EMessageStatus } from '@/d.ts/projectNotification';
+import { EMessageStatus, IMessage } from '@/d.ts/projectNotification';
 import {
   CheckCircleFilled,
   CloseCircleFilled,

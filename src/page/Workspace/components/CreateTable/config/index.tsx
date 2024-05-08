@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ConnectType, ConnectionMode } from '@/d.ts';
 import {
   getDataSourceModeConfig,
   getDataSourceModeConfigByConnectionMode,
 } from '@/common/datasource';
+import { ConnectionMode, ConnectType } from '@/d.ts';
 
 export function useTableConfig(dialectType: ConnectionMode) {
   return getDataSourceModeConfigByConnectionMode(dialectType)?.schema?.table || {};

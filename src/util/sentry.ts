@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { haveOCP } from './env';
 import * as Sentry from '@sentry/react';
+import { haveOCP } from './env';
 export function getSentry() {
   if (haveOCP()) {
     return Sentry;

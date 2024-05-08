@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getProcedureByProName } from '@/common/network';
 import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, DbObjectType, IProcedure, PageType } from '@/d.ts';
+import { DbObjectType, IProcedure, PageType } from '@/d.ts';
 import { PropsTab, TopTab } from '@/page/Workspace/components/ProcedurePage';
 import {
   openBatchCompilePLPage,
@@ -33,10 +34,9 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
-import { getDataSourceModeConfig } from '@/common/datasource';
 import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { PLType } from '@/constant/plType';
-import { ConnectType, ConnectionMode, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
+import { ConnectionMode, ConnectType, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
 import { Oracle } from './dataType';
 import { getQuoteTableName } from './utils';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。

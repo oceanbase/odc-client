@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
@@ -21,11 +22,10 @@ import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import React from 'react';
 import { Typography } from 'antd';
+import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { ClearStrategy, SwapTableType } from '../CreateModal';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 const { Text } = Typography;
 interface IDDLAlterParamters {
   errorStrategy: TaskExecStrategy;

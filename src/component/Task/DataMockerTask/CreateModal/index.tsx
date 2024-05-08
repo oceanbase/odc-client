@@ -17,11 +17,11 @@
 import { createTask } from '@/common/network/task';
 import {
   ConnectionMode,
+  IServerMockTable,
   TaskExecStrategy,
   TaskPageScope,
   TaskPageType,
   TaskType,
-  IServerMockTable,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
@@ -30,7 +30,7 @@ import { Button, Drawer, message, Modal, Space } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { FormInstance } from 'antd/es/form/Form';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
 

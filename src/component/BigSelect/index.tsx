@@ -34,15 +34,8 @@ interface IBigSelectProps {
   bottom?: React.ReactNode;
 }
 const BigSelect: React.FC<IBigSelectProps> = (props) => {
-  const {
-    defaultValue,
-    options,
-    bottom,
-    icon,
-    iconColor,
-    onChange,
-    onDropdownVisibleChange,
-  } = props;
+  const { defaultValue, options, bottom, icon, iconColor, onChange, onDropdownVisibleChange } =
+    props;
   return (
     <Space size={12} className={styles['select-wrapper']}>
       <div className={styles.logo}>

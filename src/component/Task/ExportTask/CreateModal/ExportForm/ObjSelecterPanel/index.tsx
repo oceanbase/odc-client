@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import { EXPORT_CONTENT, IConnection, TaskType } from '@/d.ts';
-import { useDBSession } from '@/store/sessionManager/hooks';
+import { EXPORT_CONTENT, TaskType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { Form, Radio } from 'antd';
 import { FormInstance } from 'antd/es/form';
-import React, { useEffect } from 'react';
+import React from 'react';
 import DatabaseSelect from '../../../../component/DatabaseSelect';
 import ExportSelecter from '../ExportSelecter';
-import { useRequest } from 'ahooks';
-import { getDatabase } from '@/common/network/database';
-import { IDatabase } from '@/d.ts/database';
 
 const FormItem = Form.Item;
 
@@ -38,7 +35,6 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
   const connection = database?.dataSource;
   const databaseId = database?.id;
   const connectionId = connection?.id;
-
 
   const handleChange = () => {
     form.setFieldsValue({

@@ -25,8 +25,8 @@ import { Button, Space, Switch, Tooltip } from 'antd';
 import { useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import { SqlInterceptorKey } from './EditRuleDrawer';
-import { RenderLevel } from './InnerEnvironment';
 import styles from './index.less';
+import { RenderLevel } from './InnerEnvironment';
 
 function getConfig(
   rule: IRule,

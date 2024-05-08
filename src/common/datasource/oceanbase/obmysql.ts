@@ -15,9 +15,9 @@
  */
 
 import { ConnectType, TaskType } from '@/d.ts';
+import { haveOCP } from '@/util/env';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from './MySQLColumnExtra';
-import { haveOCP } from '@/util/env';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,

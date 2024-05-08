@@ -239,8 +239,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           message={
             formatMessage(
               {
-                id:
-                  'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                id: 'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
               },
 
               { selectedRowKeysLength: selectedRowKeys.length },

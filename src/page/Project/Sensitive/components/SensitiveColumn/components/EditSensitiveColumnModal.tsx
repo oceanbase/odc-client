@@ -15,12 +15,12 @@
  */
 
 import { batchUpdateSensitiveColumn } from '@/common/network/sensitiveColumn';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { Form, message, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
-import styles from './index.less';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { PopoverContainer } from '..';
+import styles from './index.less';
 const EditSensitiveColumnModal = ({
   projectId,
   tableRef,
@@ -82,8 +82,7 @@ const EditSensitiveColumnModal = ({
           required
           label={
             formatMessage({
-              id:
-                'odc.SensitiveColumn.components.EditSensitiveColumnModal.DesensitizationAlgorithm',
+              id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.DesensitizationAlgorithm',
             }) //脱敏算法
           }
           name="maskingAlgorithmId"
@@ -91,8 +90,7 @@ const EditSensitiveColumnModal = ({
             {
               required: true,
               message: formatMessage({
-                id:
-                  'odc.SensitiveColumn.components.EditSensitiveColumnModal.SelectADesensitizationAlgorithm',
+                id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.SelectADesensitizationAlgorithm',
               }), //请选择脱敏算法
             },
           ]}
@@ -117,22 +115,19 @@ const EditSensitiveColumnModal = ({
                     descriptionsData={[
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
                         }), //'脱敏方式'
                         value: maskRuleTypeMap?.[target?.type],
                       },
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
                         }), //'测试数据'
                         value: target?.sampleContent,
                       },
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
                         }), //'结果预览'
                         value: target?.maskedContent,
                       },

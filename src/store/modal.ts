@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import {
   DbObjectType,
   EStatus,
+  IApplyDatabasePermissionTaskParams,
   IAsyncTaskParams,
+  IMockDataParams,
   ITable,
   RollbackType,
-  TaskDetail,
-  IMockDataParams,
-  IApplyDatabasePermissionTaskParams,
   SubTaskStatus,
+  TaskDetail,
 } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
-import { IDataSourceModeConfig } from '@/common/datasource/interface';
 
 interface ConnectionData {
   data: any;

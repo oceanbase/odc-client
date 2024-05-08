@@ -20,8 +20,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { getSQLExplain } from '@/common/network/sql';
 import SessionStore from '@/store/sessionManager/session';
-import styles from './index.less';
 import SQLExplain from '../../SQLExplain';
+import styles from './index.less';
 
 interface IProps {
   session: SessionStore;

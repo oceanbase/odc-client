@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Menu, Spin } from 'antd';
+import { MenuProps } from 'antd/lib/menu';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
 import styles from './index.less';
-import { Menu, Spin } from 'antd';
-import { MenuProps } from 'antd/lib/menu';
 
 export type MenuItem = Required<MenuProps>['items'][number];
 interface ISecureSiderProps {

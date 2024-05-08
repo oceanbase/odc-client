@@ -15,26 +15,26 @@
     padding: 0px 12px;
     font-size: 12px;
     .label {
-      font-weight: 600;
       flex-shrink: 1;
       overflow: hidden;
-      text-overflow: ellipsis;
+      font-weight: 600;
       font-weight: bold;
+      text-overflow: ellipsis;
+      cursor: pointer;
       :global {
         .ant-space-item {
           overflow: hidden;
           text-overflow: ellipsis;
         }
       }
-      cursor: pointer;
       &:hover {
         color: var(--text-color-link);
       }
     }
     .titleAction {
-      margin-left: 4px;
-      flex-shrink: 0;
       flex-grow: 0;
+      flex-shrink: 0;
+      margin-left: 4px;
     }
   }
   .search {
@@ -50,11 +50,11 @@
     :global {
       .ant-tree-title {
         flex: 1;
+        padding-right: 10px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         word-break: break-all;
-        padding-right: 10px;
       }
 
       .ant-tree-treenode {

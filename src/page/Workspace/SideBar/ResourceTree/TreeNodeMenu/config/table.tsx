@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { dropObject } from '@/common/network/database';
 import { getTableInfo } from '@/common/network/table';
 import { actionTypes } from '@/component/Acess';
@@ -27,13 +28,12 @@ import pageStore from '@/store/page';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
+import tracert from '@/util/tracert';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import tracert from '@/util/tracert';
 import { isSupportExport } from './helper';
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [

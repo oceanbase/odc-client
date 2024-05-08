@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getType } from '@/common/network/type';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -39,7 +40,7 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Layout, message, Tabs } from 'antd';
+import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
 import SessionContext from '../SessionContextWrap/context';
@@ -48,7 +49,6 @@ import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 

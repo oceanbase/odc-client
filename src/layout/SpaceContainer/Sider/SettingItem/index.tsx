@@ -15,11 +15,11 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import MenuItem from '../MenuItem';
-import { SettingOutlined } from '@ant-design/icons';
 import ODCSetting from '@/component/ODCSetting';
 import modal from '@/store/modal';
+import { SettingOutlined } from '@ant-design/icons';
+import React from 'react';
+import MenuItem from '../MenuItem';
 
 interface IProps {
   collapsed?: boolean;

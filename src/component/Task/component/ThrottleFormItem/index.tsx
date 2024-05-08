@@ -15,10 +15,10 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Form, InputNumber, Space } from 'antd';
-import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
+import { Form, InputNumber, Space } from 'antd';
+import React from 'react';
 interface IProps {}
 const ThrottleFormItem: React.FC<IProps> = (props) => {
   return (
@@ -56,8 +56,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 {
                   required: true,
                   message: formatMessage({
-                    id:
-                      'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
+                    id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
                   }), //'请输行限流限流'
                 },
               ]}

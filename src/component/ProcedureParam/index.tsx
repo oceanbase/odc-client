@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import type { IPLParam } from '@/d.ts';
 import { ConnectionMode, DbObjectType, ParamMode } from '@/d.ts';
 import type { RowType } from '@/page/Workspace/components/EditableTable';
@@ -44,8 +45,6 @@ import React, {
   useState,
 } from 'react';
 import Toolbar from '../Toolbar';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
   session: SessionStore;

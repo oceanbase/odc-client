@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
+import { listDatabases } from '@/common/network/database';
+import { getProject, listProjects } from '@/common/network/project';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import TooltipAction from '@/component/TooltipAction';
+import { IProject, ProjectRole } from '@/d.ts/project';
+import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
-import { Button, Menu, Space } from 'antd';
+import { gotoSQLWorkspace } from '@/util/route';
+import tracert from '@/util/tracert';
+import { history, Link, useNavigate, useParams } from '@umijs/max';
+import { useRequest } from 'ahooks';
+import { Button, Space } from 'antd';
+import { isNumber } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { history, useParams } from '@umijs/max';
 import Database from './Database';
+import Notification from './Notification';
+import ProjectContext from './ProjectContext';
+import Sensitive from './Sensitive';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
-import Notification from './Notification';
-import { getProject, listProjects } from '@/common/network/project';
-import { listDatabases } from '@/common/network/database';
-import { IProject, ProjectRole } from '@/d.ts/project';
-import { IPageType } from '@/d.ts/_index';
-import { gotoSQLWorkspace } from '@/util/route';
-import { Link, useNavigate } from '@umijs/max';
-import { useRequest } from 'ahooks';
-import { isNumber } from 'lodash';
-import ProjectContext from './ProjectContext';
-import Sensitive from './Sensitive';
-import tracert from '@/util/tracert';
 const ExtraContent = ({ projectId }) => {
   const [disabled, setDisabled] = useState(false);
 
