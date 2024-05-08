@@ -103,7 +103,7 @@ class Task {
         callback(data);
       } else {
         this.timer = setTimeout(() => {
-          this.taskLoopInterval = Math.min(3000, this.taskLoopInterval + 500);
+          this.taskLoopInterval = Math.min(3000, this.taskLoopInterval + 500); // 这里是说改成?
           this._getResult(callback);
         }, this.taskLoopInterval);
       }
