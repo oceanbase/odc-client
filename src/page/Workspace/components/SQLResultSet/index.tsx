@@ -82,7 +82,7 @@ interface IProps {
 const SQLResultSet: React.FC<IProps> = function (props) {
   const {
     activeKey,
-    sqlStore: { resultSets: r },
+    sqlStore,
     ctx,
     modalStore,
     pageKey,
@@ -106,6 +106,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     onUpdateEditing,
   } = props;
   const [showLockResultSetHint, setShowLockResultSetHint] = useState(false);
+  const { resultSets: r } = sqlStore;
   const resultSets = r.get(pageKey);
 
   useEffect(() => {
@@ -228,11 +229,20 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
-  if(unauthorizedDatabases?.length){
-    return (
-      <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />
-    )
+  if (unauthorizedDatabases?.length) {
+    return <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />;
   }
+  const stopRunning = () => {
+    sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
+  };
+  const openrunningDetailModal = (id) => {
+    modalStore.changeExecuteSqlDetailModalVisible(
+      true,
+      id,
+      ctx?.getSession(),
+      ctx?.editor.getSelectionContent(),
+    );
+  };
 
   return (
     <>
@@ -250,6 +260,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               <ExecuteHistory
                 resultHeight={resultHeight}
                 onShowExecuteDetail={onShowExecuteDetail}
+                // todo 传参待优化, 这里的交互还需要再弄清楚. 这里的计划是实际执行的区别
+                openrunningDetailModal={openrunningDetailModal}
               />
             ),
           },
@@ -445,9 +457,11 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   ),
                   key: set.uniqKey,
                   children: (
-                    <SQLResultLog 
+                    <SQLResultLog
                       resultHeight={resultHeight}
                       resultSet={set}
+                      stopRunning={stopRunning}
+                      openrunningDetailModal={openrunningDetailModal}
                     />
                   ),
                 };

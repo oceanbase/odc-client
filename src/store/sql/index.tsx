@@ -93,6 +93,10 @@ export class SQLStore {
   @observable
   public isCompiling: boolean = false;
 
+  /** 当前激活的tab key */
+  @observable
+  public activeTab: string = null;
+
   public debugLogs: ILogItem[] = [];
 
   @action
@@ -166,7 +170,7 @@ export class SQLStore {
     sessionId: string,
     dbName: string,
     needModal: boolean = true,
-  ): Promise<IExecuteTaskResult> {
+  ): Promise<any> {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
     }
@@ -179,79 +183,111 @@ export class SQLStore {
       const showTableColumnInfo = session?.params?.tableColumnInfoVisible;
       const fullLinkTraceEnabled = session?.params?.fullLinkTraceEnabled;
       const continueExecutionOnError = session?.params?.continueExecutionOnError;
-      record = await executeSQL(
-        {
-          sql,
-          queryLimit: session?.params.queryLimit || undefined,
-          showTableColumnInfo,
-          continueExecutionOnError,
-          fullLinkTraceEnabled,
-          addROWID:
-            setting.configurations?.['odc.sqlexecute.default.addInternalRowId'] === 'true' &&
-            session.supportFeature?.enableRowId,
-        },
-        sessionId,
-        dbName,
-        needModal,
-      );
+      const statusCheckInterval = 1000;
+      let result = [];
+      let streamExecuteResult = null;
+      const handleResult = () => {
+        // 兼容后端不按约定返回的情况
+        if (!record || record.invalid) {
+          return record;
+        }
+        /**
+         * 刷新一下delimiter
+         */
+        session.initSessionStatus();
+
+        // 判断结果集是否支持编辑
+        // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
+        // const isEditable = await this.isResultSetEditable(sql);
+        runInAction(() => {
+          // 加入历史记录
+          /** Record去除rows,性能优化 */
+          const recordWithoutRows = record.executeResult.map((result) => {
+            return {
+              ...result,
+              rows: [],
+            };
+          });
+          // 加到store里
+          this.records = [
+            ...recordWithoutRows.reverse().map((r, index) => {
+              return { ...r, id: generateUniqKey() };
+            }),
+            ...this.records,
+          ]; // 处理结果集，需要保留已锁定的结果集
+
+          const resultSet = this.resultSets.get(pageKey);
+
+          if (resultSet) {
+            const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
+            resultSet.forEach((r) => {
+              if (!r.locked) {
+                /**
+                 * chrome会缓存卸载后的含有react组件的dom，导致数据无法释放，这边手动清空，防止内存爆满
+                 */
+                r.rows.splice(0);
+              }
+            });
+            this.resultSets.set(pageKey, [
+              ...lockedResultSets,
+              // 拼装结果集
+              this.getLogTab(record),
+              ...generateResultSetColumns(record.executeResult, session?.connection?.dialectType),
+            ]);
+            this.activeTab = this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey;
+          }
+        });
+        return record;
+      };
+      while (true) {
+        // 坏了 麻了
+        const res = await executeSQL(
+          {
+            sql,
+            queryLimit: session?.params.queryLimit || undefined,
+            showTableColumnInfo,
+            continueExecutionOnError,
+            fullLinkTraceEnabled,
+            addROWID:
+              setting.configurations?.['odc.sqlexecute.default.addInternalRowId'] === 'true' &&
+              session.supportFeature?.enableRowId,
+          },
+          sessionId,
+          dbName,
+          needModal,
+          streamExecuteResult,
+        );
+        streamExecuteResult = res.streamExecuteResult;
+        console.log('res', res);
+        result.push(...res?.executeResult);
+        console.log('result', result);
+        record = {
+          ...record,
+          executeResult: [...result],
+          currentExecuteInfo: res.currentExecuteInfo,
+        };
+        handleResult();
+
+        if (res?.currentExecuteInfo?.finished) {
+          // record = {...record, executeResult: [...result]}
+          break;
+        } else {
+          // handleResult()
+          await new Promise((resolve) => setTimeout(resolve, statusCheckInterval));
+        }
+      }
+
+      // 这里希望一边存一边请求,将内轮询的逻辑放到store, 以触发页面更新
     } catch (e) {
       throw e;
     } finally {
       this.runningPageKey.delete(pageKey);
       this.isRunningSection.delete(pageKey);
     }
-
-    // 兼容后端不按约定返回的情况
-    if (!record || record.invalid) {
-      return record;
-    }
-    /**
-     * 刷新一下delimiter
-     */
-    session.initSessionStatus();
-
-    // 判断结果集是否支持编辑
-    // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
-    // const isEditable = await this.isResultSetEditable(sql);
-    runInAction(() => {
-      // 加入历史记录
-      /** Record去除rows,性能优化 */
-      const recordWithoutRows = record.executeResult.map((result) => {
-        return {
-          ...result,
-          rows: [],
-        };
-      });
-      this.records = [
-        ...recordWithoutRows.reverse().map((r, index) => {
-          return { ...r, id: generateUniqKey() };
-        }),
-        ...this.records,
-      ]; // 处理结果集，需要保留已锁定的结果集
-
-      const resultSet = this.resultSets.get(pageKey);
-
-      if (resultSet) {
-        const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
-        resultSet.forEach((r) => {
-          if (!r.locked) {
-            /**
-             * chrome会缓存卸载后的含有react组件的dom，导致数据无法释放，这边手动清空，防止内存爆满
-             */
-            r.rows.splice(0);
-          }
-        });
-        this.resultSets.set(pageKey, [
-          ...lockedResultSets,
-          this.getLogTab(record.executeResult),
-          ...generateResultSetColumns(record.executeResult, session?.connection?.dialectType),
-        ]);
-      }
-    });
-    return record;
   }
 
-  public getLogTab(record: ISqlExecuteResult[]): IResultSet {
+  public getLogTab(record: IExecuteTaskResult): IResultSet {
+    const { executeResult, currentExecuteInfo } = record;
     return {
       type: 'LOG',
       uniqKey: generateUniqKey(),
@@ -262,7 +298,8 @@ export class SQLStore {
       // 是否支持编辑
       editable: false,
       isQueriedEditable: false,
-      logTypeData: record?.map((item) => {
+      // todo 这里要带上当前执行信息
+      logTypeData: executeResult?.map((item) => {
         return {
           status: item.status,
           total: item.columns?.length ? 0 : item.total,
@@ -274,6 +311,7 @@ export class SQLStore {
           checkViolations: item.checkViolations,
         };
       }),
+      currentExecuteInfo: currentExecuteInfo,
     };
   }
 
@@ -574,6 +612,10 @@ export class SQLStore {
       resultSet?.find((r) => !r.locked && r.type !== 'LOG')?.uniqKey ||
       resultSet?.find((r) => !r.locked && r.type === 'LOG')?.uniqKey
     );
+  }
+
+  public getLogKey(pageKey: string) {
+    return this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey;
   }
 
   private formatSQLExplainTree(data: any): ISQLExplainTreeNode {

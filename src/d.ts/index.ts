@@ -1034,6 +1034,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   }[];
 
   schemaName?: string;
+  currentExecuteInfo?: any;
 }
 
 export interface IColumnMetaData {
@@ -1541,6 +1542,7 @@ export interface IResultTimerStage {
 }
 
 export interface ISqlExecuteResult {
+  results?: any[];
   allowExport: boolean;
   columnLabels: string[];
   columns?: string[];
