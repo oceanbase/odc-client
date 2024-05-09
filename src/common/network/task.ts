@@ -532,8 +532,12 @@ export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
  */
 export async function getDataArchiveSubTask(
   taskId: number,
+  params?: {
+    page?: number;
+    size?: number;
+  },
 ): Promise<IResponseData<ICycleSubTaskRecord>> {
-  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`);
+  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`, { params });
   return res?.data;
 }
 
