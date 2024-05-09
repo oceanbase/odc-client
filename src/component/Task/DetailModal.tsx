@@ -176,7 +176,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const loadDataArchiveSubTask = async function (args) {
-    const { pagination, pageSize = 20 } = args ?? {};
+    const { pagination, pageSize } = args ?? {};
     const { current = 1 } = pagination ?? {};
     const data = await getDataArchiveSubTask(task?.id, { page: current, size: pageSize });
     setLoading(false);
