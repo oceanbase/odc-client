@@ -388,6 +388,28 @@ export class ModalStore {
     };
   }
 
+  @observable
+  public executeSqlDetailModalVisible: boolean = false;
+
+  @observable
+  public executeSqlDetailData: any = null;
+
+  @action
+  public changeExecuteSqlDetailModalVisible(
+    v: boolean,
+    traceId?: any,
+    session?: any,
+    selectedSQL?: any,
+  ) {
+    this.executeSqlDetailModalVisible = v;
+    this.executeSqlDetailData = {
+      traceId,
+      session,
+      // selectedSQL: selectedSQL
+      selectedSQL: 'select sleep(2) from dual;',
+    };
+  }
+
   /** create type */
   @observable
   public createTypeModalVisible: boolean = false;
@@ -601,6 +623,8 @@ export class ModalStore {
     this.selectDatabaseVisible = false;
     this.databaseSearchModalVisible = false;
     this.canDatabaseSearchModalOpen = false;
+    this.executeSqlDetailModalVisible = false;
+    this.executeSqlDetailData = null;
   }
 }
 

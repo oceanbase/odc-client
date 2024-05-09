@@ -29,10 +29,13 @@ import BigNumber from 'bignumber.js';
 import DBTimeline from './DBTimeline';
 import styles from './index.less';
 
+const { Link } = Typography;
+
 interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
+  openrunningDetailModal?: any;
 }
 
 function getResultText(rs: ISqlExecuteResult) {
@@ -44,7 +47,7 @@ function getResultText(rs: ISqlExecuteResult) {
 }
 
 const ExecuteHistory: React.FC<IProps> = function (props) {
-  const { onShowExecuteDetail, resultHeight, sqlStore } = props;
+  const { onShowExecuteDetail, resultHeight, sqlStore, openrunningDetailModal } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const tableRef = useRef<HTMLDivElement>();
   const [width, setWidth] = useState(0);
@@ -165,6 +168,9 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'traceId',
         title: 'TRACE ID',
         ellipsis: true,
+        render: (value: string, row: any) => {
+          return <Link onClick={() => openrunningDetailModal(value)}>{value}</Link>;
+        },
       },
 
       {
@@ -239,8 +245,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           message={
             formatMessage(
               {
-                id:
-                  'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                id: 'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
               },
 
               { selectedRowKeysLength: selectedRowKeys.length },

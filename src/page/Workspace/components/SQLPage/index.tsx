@@ -103,6 +103,7 @@ interface ISQLPageState {
   baseOffset: number;
   status: EStatus;
   hasExecuted: boolean;
+  hasSelectedTab: boolean;
 }
 
 interface IProps {
@@ -157,6 +158,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     status: null,
     hasExecuted: false,
     isSavingScript: false,
+    hasSelectedTab: false,
   };
 
   public editor: IEditor;
@@ -180,7 +182,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   }
 
   public async componentDidMount() {
-    const { params, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent, page } = this.props;
+    const { params, sqlStore, pageKey, onSetUnsavedModalTitle, onSetUnsavedModalContent, page } =
+      this.props;
     onSetUnsavedModalTitle(
       formatMessage({
         id: 'workspace.window.sql.modal.close.title',
@@ -366,6 +369,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
+    // resultSetTabActiveKey 很烦 如何做到实时更新呢 难道还要存到store吗
     if (selectedSQL) {
       if (range.begin === range.end) {
         this.setState({
@@ -459,6 +463,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         results?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
       ) {
         const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
+
         this.setState({
           resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
         });
@@ -633,6 +638,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         });
         return;
       }
+
       this.setState({
         resultSetTabActiveKey: sqlLintTabKey,
         lintResultSet: result,
@@ -722,6 +728,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   public handleChangeResultSetTab = (activeKey: string) => {
     this.setState({
       resultSetTabActiveKey: activeKey,
+      hasSelectedTab: true,
     });
   };
 
@@ -1090,12 +1097,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
 
   public render() {
-    const {
-      pageKey,
-      pageStore,
-      sqlStore: { runningPageKey },
-      params,
-    } = this.props;
+    const { pageKey, pageStore, sqlStore, params } = this.props;
     const session = this.getSession();
     const config = getDataSourceModeConfigByConnectionMode(session?.connection?.dialectType);
     const {
@@ -1119,7 +1121,15 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       baseOffset,
       unauthorizedDatabases,
       unauthorizedSql,
+      hasSelectedTab,
     } = this.state;
+    const getKey = () => {
+      if (sqlStore.activeTab && !hasSelectedTab) {
+        return sqlStore.activeTab;
+      } else {
+        return resultSetTabActiveKey;
+      }
+    };
     return (
       <SQLConfigContext.Provider value={{ session, pageKey }}>
         <ScriptPage
@@ -1149,12 +1159,13 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
           }}
           handleChangeSplitPane={this.handleChangeSplitPane}
           Result={
-            <Spin wrapperClassName={styles.spinWidth100} spinning={runningPageKey.has(pageKey)}>
+            <Spin wrapperClassName={styles.spinWidth100} spinning={false}>
               <SQLResultSet
                 pageKey={pageKey}
                 ctx={this}
                 resultHeight={resultHeight}
-                activeKey={resultSetTabActiveKey}
+                // tab的数据源是什么,然后筛选到log
+                activeKey={getKey()}
                 onChangeResultSetTab={this.handleChangeResultSetTab}
                 onCloseResultSet={this.handleCloseResultSet}
                 onLockResultSet={this.handleLockResultSet}
@@ -1293,8 +1304,11 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     /**
      * 装填一下额外数据,详细的列名
      */
-
+    // sqlStore.resultSets.get(pageKey)?.find(i=> i.type == 'LOG')?.uniqKey || recordsTabKey,
+    //
+    // tabs增量不会重新渲染: 用key
     const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
+
     this.setState({
       resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
     });

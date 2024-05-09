@@ -65,6 +65,8 @@ export interface IExecuteTaskResult {
   status?: EStatus;
   unauthorizedDatabases?: IUnauthorizedDatabase[];
   unauthorizedSql?: string;
+  streamExecuteResult?: any;
+  currentExecuteInfo?: any;
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -75,7 +77,7 @@ class Task {
   constructor(public requestId: string, public sessionId: string) {}
   private fetchData = async () => {
     const res = await request.get(
-      `/api/v2/datasource/sessions/${generateSessionSid(this.sessionId)}/sqls/getResult`,
+      `/api/v2/datasource/sessions/${generateSessionSid(this.sessionId)}/sqls/getMoreResults`,
       {
         params: {
           requestId: this.requestId,
@@ -87,7 +89,7 @@ class Task {
     }
     return res?.data;
   };
-  public getResult = async (): Promise<ISqlExecuteResult[]> => {
+  public getResult = async (): Promise<ISqlExecuteResult> => {
     return new Promise((resolve, reject) => {
       this._getResult(resolve);
     });
@@ -99,13 +101,11 @@ class Task {
     }
     try {
       const data = await this.fetchData();
-      if (data?.length) {
+      if (data?.finished) {
         callback(data);
+        return;
       } else {
-        this.timer = setTimeout(() => {
-          this.taskLoopInterval = Math.min(3000, this.taskLoopInterval + 500); // 这里是说改成?
-          this._getResult(callback);
-        }, this.taskLoopInterval);
+        callback(data);
       }
     } catch (e) {
       console.trace('get execute result fail', e);
@@ -134,7 +134,7 @@ class TaskManager {
     });
     this.tasks = this.tasks.filter(Boolean);
   }
-  public async addAndWaitTask(requestId: string, sessionId: string): Promise<ISqlExecuteResult[]> {
+  public async addAndWaitTask(requestId: string, sessionId: string): Promise<ISqlExecuteResult> {
     const task = new Task(requestId, sessionId);
     this.tasks.push(task);
     try {
@@ -160,7 +160,9 @@ export default async function executeSQL(
   sessionId: string,
   dbName: string,
   needModal: boolean = true,
+  streamExecuteResult?: any,
 ): Promise<IExecuteTaskResult> {
+  // todo 改造executeSQL, 使得有全量模式(用于测试sql执行是否ok)和增量模式(用于展示)
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
     typeof params === 'string'
@@ -172,9 +174,11 @@ export default async function executeSQL(
           sid,
           ...params,
         };
-  const res = await request.post(`/api/v2/datasource/sessions/${sid}/sqls/asyncExecute`, {
-    data: serverParams,
-  });
+  const res =
+    streamExecuteResult ||
+    (await request.post(`/api/v2/datasource/sessions/${sid}/sqls/streamExecute`, {
+      data: serverParams,
+    }));
   const taskInfo: ISQLExecuteTask = res?.data;
   const rootViolatedRules = taskInfo?.violatedRules?.reduce((pre, cur) => {
     if (cur?.violation) {
@@ -260,7 +264,9 @@ export default async function executeSQL(
   if (!requestId || !sqls?.length) {
     return null;
   }
-  let results = await executeTaskManager.addAndWaitTask(requestId, sessionId);
+  let executeRes = await executeTaskManager.addAndWaitTask(requestId, sessionId);
+  let { results } = executeRes;
+  // const
   results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;
@@ -268,6 +274,8 @@ export default async function executeSQL(
     return result;
   });
   return {
+    streamExecuteResult: res,
+    currentExecuteInfo: executeRes,
     invalid: false,
     executeSuccess:
       !!results && !results?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS),
