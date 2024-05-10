@@ -193,10 +193,17 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           {taskExecStrategyMap[triggerConfig.triggerStrategy]}
         </Descriptions.Item>
         {triggerConfig.triggerStrategy === TaskExecStrategy.START_AT && (
-          <Descriptions.Item label="执行时间">
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.074676BE',
+              }) /*"执行时间"*/
+            }
+          >
             {getLocalFormatDateTime(triggerConfig?.startAt)}
           </Descriptions.Item>
         )}
+
         {isCycleStrategy && (
           <Descriptions.Item>
             <Collapse
@@ -227,6 +234,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
           label={
             formatMessage({
@@ -282,6 +290,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({
