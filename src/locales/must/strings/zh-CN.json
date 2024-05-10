@@ -4516,7 +4516,6 @@
   "src.component.Task.component.PartitionPolicyTable.2C76F5F5": "表达式",
   "src.page.Project.B4D9BC23": "消息",
   "src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.42C44540": "导出结果集",
-  "src.component.helpDoc.69D23502": "超出数量后，仅保留最近若干个分区，其他分区均删除",
   "src.component.Task.StructureComparisonTask.DetailContent.A725ADD7": "比对结果",
   "src.page.Secure.Record.RecordPage.52BD5121": "批量删除敏感列",
   "src.page.Secure.Env.components.B398D211": "禁用成功",
@@ -4655,6 +4654,6 @@
   "src.constant.052399AE": "创建结构比对任务",
   "src.constant.2AC9D3B7": "同意结构比对任务",
   "src.constant.8171D57C": "拒绝结构比对任务",
-  "src.component.helpDoc.3DE01124": "仅保留最新的若干个分区，去他分区均删除。分区保留数目通常需要大于分区预创建数目，避免仅将预创建的分区保留而删除了全部的历史分区",
+  "src.component.helpDoc.3DE01124": "仅保留最新的若干个分区，其他分区均删除。分区保留数目的设置需要考虑预创建分区的影响，避免因为分区预创建而导致的历史分区误删，详细信息请查阅文档",
   "src.component.Task.DataArchiveTask.DetailContent.074676BE": "执行时间"
 }

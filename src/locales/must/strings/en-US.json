@@ -4607,7 +4607,6 @@
   "src.page.ExternalIntegration.SSO.NewSSODrawerButton.506C2E48": "Create Login Integration",
   "src.page.Secure.Env.components.8DBF10C0": "Failed to disable",
   "src.page.Project.User.FE2F4924": "No permissions",
-  "src.component.helpDoc.69D23502": "When exceeding the limit, only retain the most recent several partitions, and delete the rest.",
   "src.component.Task.component.PartitionPolicyTable.68E34A9C": "Suffix: ",
   "src.component.Task.component.PartitionPolicyTable.2C76F5F5": "Expression",
   "src.component.helpDoc.188E681E": "User Authorization: Permissions granted by project administrators or DBA.",
@@ -4653,5 +4652,7 @@
   "src.constant.2AC9D3B7": "Approve Schema Comparison Task",
   "src.constant.052399AE": "Create Schema Comparison Task",
   "src.page.Secure.Record.RecordPage.14735BCB": "Data Source Name",
-  "src.constant.8171D57C": "Reject Schema Comparison Task"
+  "src.constant.8171D57C": "Reject Schema Comparison Task",
+  "src.component.helpDoc.3DE01124": "Retain only the latest several partitions and delete the rest. When setting the number of partitions to retain, consider the impact of pre-creating partitions to avoid mistakenly deleting historical partitions due to pre-creation. For more information, refer to the documentation.",
+  "src.component.Task.DataArchiveTask.DetailContent.074676BE": "Execution time"
 }
