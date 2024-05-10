@@ -4654,5 +4654,7 @@
   "src.page.Secure.Record.RecordPage.14735BCB": "数据源名称",
   "src.constant.052399AE": "创建结构比对任务",
   "src.constant.2AC9D3B7": "同意结构比对任务",
-  "src.constant.8171D57C": "拒绝结构比对任务"
+  "src.constant.8171D57C": "拒绝结构比对任务",
+  "src.component.helpDoc.3DE01124": "仅保留最新的若干个分区，去他分区均删除。分区保留数目通常需要大于分区预创建数目，避免仅将预创建的分区保留而删除了全部的历史分区",
+  "src.component.Task.DataArchiveTask.DetailContent.074676BE": "执行时间"
 }
