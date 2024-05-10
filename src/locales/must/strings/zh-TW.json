@@ -4579,7 +4579,6 @@
   "src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.42C44540": "導出結果集",
   "src.page.Secure.Record.RecordPage.2D2EFDF4": "刪除自動授權規則",
   "src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.13EB1436": "請輸入 SQL 表達式生成分區上界,可引用變量如 ${INTERVAL}",
-  "src.component.helpDoc.69D23502": "超出數量後,僅保留最近若干個分區,其他分區均刪除",
   "src.page.Project.Notification.components.982731E2": "請輸入",
   "src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E": "定時任務",
   "src.page.Project.Notification.components.5909ABDC": "新建推送通道",
@@ -4654,5 +4653,7 @@
   "src.page.Secure.Record.RecordPage.A75C9FD5": "數據源類型",
   "src.constant.052399AE": "創建結構比對任務",
   "src.page.Secure.Record.RecordPage.14735BCB": "數據源名稱",
-  "src.constant.8282AA35": "執行結構比對任務"
+  "src.constant.8282AA35": "執行結構比對任務",
+  "src.component.helpDoc.3DE01124": "僅保留最新的若干個分區,其他分區均刪除。 分區保留數目的設置需要考慮預創建分區的影響,避免因為分區預創建而導致的歷史分區誤刪,詳細信息請查閱文檔",
+  "src.component.Task.DataArchiveTask.DetailContent.074676BE": "執行時間"
 }
