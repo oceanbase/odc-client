@@ -451,20 +451,25 @@ const TaskTable: React.FC<IProps> = inject(
                       props.onMenuClick(key as TaskPageType);
                     },
                     items: flatten(
-                      menus?.map(({ group, groupName }, index) => {
-                        const tasks = group?.filter((task) => task.enabled);
-                        return {
-                          key: index,
-                          label: groupName,
-                          children: tasks?.map((item) => {
-                            return {
-                              key: item.value,
-                              label: item.label,
-                            };
-                          }),
-                          type: 'group',
-                        };
-                      }),
+                      menus
+                        ?.map(({ group, groupName }, index) => {
+                          const tasks = group?.filter((task) => task.enabled);
+                          if (tasks.length === 0) {
+                            return null;
+                          }
+                          return {
+                            key: index,
+                            label: groupName,
+                            children: tasks?.map((item) => {
+                              return {
+                                key: item.value,
+                                label: item.label,
+                              };
+                            }),
+                            type: 'group',
+                          };
+                        })
+                        .filter(Boolean),
                     ),
                   },
                 }

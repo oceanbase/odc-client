@@ -15,7 +15,7 @@
  */
 
 import { ConnectionMode, IPartitionType } from '@/d.ts';
-import { IServerTable } from '@/d.ts/table';
+import { ColumnStoreType, IServerTable } from '@/d.ts/table';
 import {
   ITableModel,
   TableIndexScope,
@@ -48,7 +48,13 @@ export function convertTableToServerTable(
     collationName: info.collation,
     comment: info.comment,
   };
-  serverTable.columnGroups = info?.columnGroups;
+  serverTable.columnGroups =
+    info?.columnGroups?.map((item) => {
+      return {
+        allColumns: item === ColumnStoreType.ROW,
+        eachColumn: item === ColumnStoreType.COLUMN,
+      };
+    }) || [];
   // column
   serverTable.columns = columns.map((column) => {
     return {
@@ -86,7 +92,13 @@ export function convertTableToServerTable(
       columnNames: index.columns,
       algorithm: index.method,
       ordinalPosition: index.ordinalPosition,
-      columnGroups: index.columnGroups,
+      columnGroups:
+        index.columnGroups?.map((item) => {
+          return {
+            allColumns: item === ColumnStoreType.ROW,
+            eachColumn: item === ColumnStoreType.COLUMN,
+          };
+        }) || [],
     };
   });
   // constraint
@@ -245,7 +257,10 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
     owner: data?.owner,
     rowCount: data?.stats?.rowCount,
     tableSize: data?.stats?.tableSize,
-    columnGroups: data.columnGroups,
+    columnGroups:
+      data.columnGroups?.map((item) => {
+        return item.allColumns ? ColumnStoreType.ROW : ColumnStoreType.COLUMN;
+      }) || [],
   };
   // column
   table.columns = data.columns.map((column) => {
@@ -287,7 +302,10 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
       method: index.algorithm as any,
       ordinalPosition: index.ordinalPosition,
       available: index.available,
-      columnGroups: index.columnGroups,
+      columnGroups:
+        index.columnGroups?.map((item) => {
+          return item.allColumns ? ColumnStoreType.ROW : ColumnStoreType.COLUMN;
+        }) || [],
     };
   });
   // constraint
