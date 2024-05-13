@@ -35,7 +35,7 @@ interface IProps {
   resultHeight: number;
   resultSet: IResultSet;
   stopRunning?: any;
-  openrunningDetailModal?: any;
+  onOpenExecutingDetailModal?: (traceId: number) => void;
 }
 
 function getSuccessLog(type: SqlType, total: number) {
@@ -94,26 +94,33 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
   );
 }
 
-const runningLogPage = (currentExecuteInfo, stopRunning, openrunningDetailModal) => {
+const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailModal) => {
   return (
-    <div>
-      <Spin />
-      <div>
-        共有 {currentExecuteInfo?.total} 个 SQL 执行，当前正在执行第 {currentExecuteInfo?.count} 个
-      </div>
-      <div>
-        <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
-        <Link onClick={() => openrunningDetailModal(currentExecuteInfo?.traceId)}>
-          查看执行画像
-        </Link>
-      </div>
-      <Button onClick={stopRunning}>终 止</Button>
+    <div className={styles.runningSql}>
+      <Spin style={{ marginBottom: 16 }} />
+      <Space direction="vertical" size="small">
+        <div>
+          共有 {currentExecuteInfo?.total} 个 SQL 执行，当前正在执行第 {currentExecuteInfo?.count}{' '}
+          个
+        </div>
+        <div>
+          <Space size="small">
+            <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
+            <Link onClick={() => onOpenExecutingDetailModal(currentExecuteInfo?.traceId)}>
+              查看执行画像
+            </Link>
+          </Space>
+        </div>
+      </Space>
+      <Button onClick={stopRunning} style={{ marginTop: 16 }}>
+        终 止
+      </Button>
     </div>
   );
 };
 
 const SQLResultLog: React.FC<IProps> = function (props) {
-  const { resultSet, resultHeight, stopRunning, openrunningDetailModal } = props;
+  const { resultSet, resultHeight, stopRunning, onOpenExecutingDetailModal } = props;
   const { currentExecuteInfo } = resultSet;
   if (currentExecuteInfo?.finished) {
     const logs = resultSet.logTypeData
@@ -217,7 +224,7 @@ const SQLResultLog: React.FC<IProps> = function (props) {
       </div>
     );
   } else {
-    return runningLogPage(currentExecuteInfo, stopRunning, openrunningDetailModal);
+    return runningLogPage(currentExecuteInfo, stopRunning, onOpenExecutingDetailModal);
   }
 };
 

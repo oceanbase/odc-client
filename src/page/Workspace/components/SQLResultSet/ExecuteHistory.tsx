@@ -35,7 +35,7 @@ interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
-  openrunningDetailModal?: any;
+  onOpenExecutingDetailModal?: (traceId: number | string) => void;
 }
 
 function getResultText(rs: ISqlExecuteResult) {
@@ -47,7 +47,7 @@ function getResultText(rs: ISqlExecuteResult) {
 }
 
 const ExecuteHistory: React.FC<IProps> = function (props) {
-  const { onShowExecuteDetail, resultHeight, sqlStore, openrunningDetailModal } = props;
+  const { onShowExecuteDetail, resultHeight, sqlStore, onOpenExecutingDetailModal } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const tableRef = useRef<HTMLDivElement>();
   const [width, setWidth] = useState(0);
@@ -169,7 +169,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         title: 'TRACE ID',
         ellipsis: true,
         render: (value: string, row: any) => {
-          return <Link onClick={() => openrunningDetailModal(value)}>{value}</Link>;
+          return value ? (
+            <Link onClick={() => onOpenExecutingDetailModal(value)}>{value}</Link>
+          ) : (
+            '-'
+          );
         },
       },
 

@@ -16,13 +16,25 @@
 
 import { formatMessage } from '@/util/intl';
 import Icon, { CaretDownOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, MenuProps, message, Popconfirm, Popover, Tooltip } from 'antd';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  MenuProps,
+  message,
+  Popconfirm,
+  Popover,
+  Tooltip,
+  Badge,
+} from 'antd';
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
 import { ComponentType } from 'react';
 
 import styles from './index.less';
 import statefulIcon, { IConStatus } from './statefulIcon';
+
+import guideCache from '@/util/guideCache';
 
 const noop = () => {
   // TODO
@@ -38,6 +50,8 @@ function TButton({
   isMenuIcon,
   isShowText = false,
   confirmConfig,
+  GuideTipKey,
+  GuideTipContent,
   ...rest
 }: {
   [key: string]: any;
@@ -131,11 +145,32 @@ function TButton({
           className={clzName}
           onClick={!disabled && !confirmConfig && !isRunning ? onClick : null}
         >
-          {icon} {isShowText && <span className={styles.buttonText}>{text}</span>}
+          <Badge
+            dot={
+              !!GuideTipKey
+                ? !guideCache.getGuideCacheByKey(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN)
+                : false
+            }
+            color="blue"
+          >
+            {icon} {isShowText && <span className={styles.buttonText}>{text}</span>}
+          </Badge>
         </span>
       );
       break;
   }
+  if (
+    GuideTipKey &&
+    GuideTipContent &&
+    !guideCache.getGuideCacheByKey(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN)
+  ) {
+    return (
+      <Tooltip placement={'topLeft'} title={GuideTipContent}>
+        {content}
+      </Tooltip>
+    );
+  }
+
   if (confirmConfig && !disabled && !isRunning) {
     content = (
       <Popconfirm disabled={disabled} {...confirmConfig}>

@@ -235,7 +235,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const stopRunning = () => {
     sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
   };
-  const openrunningDetailModal = (id) => {
+  const onOpenExecutingDetailModal = (id: number) => {
     modalStore.changeExecuteSqlDetailModalVisible(
       true,
       id,
@@ -261,7 +261,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                 resultHeight={resultHeight}
                 onShowExecuteDetail={onShowExecuteDetail}
                 // todo 传参待优化, 这里的交互还需要再弄清楚. 这里的计划是实际执行的区别
-                openrunningDetailModal={openrunningDetailModal}
+                onOpenExecutingDetailModal={onOpenExecutingDetailModal}
               />
             ),
           },
@@ -333,9 +333,11 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <DDLResultSet
                       key={set.uniqKey || i}
                       dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                      showExplain={session?.supportFeature?.enableSQLExplain}
+                      // showExplain={session?.supportFeature?.enableSQLExplain}
+                      showExecutePlan={session?.supportFeature?.enableSQLExplain} // todo 是都展示还是保留这个
                       showPagination={true}
-                      showTrace={true}
+                      // showTrace={true} // 因为这里是全部为true的
+                      onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       columns={set.columns}
                       session={session}
                       sqlId={set.sqlId}
@@ -461,7 +463,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       resultHeight={resultHeight}
                       resultSet={set}
                       stopRunning={stopRunning}
-                      openrunningDetailModal={openrunningDetailModal}
+                      onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                     />
                   ),
                 };

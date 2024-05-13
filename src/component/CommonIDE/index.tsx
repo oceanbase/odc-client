@@ -214,7 +214,6 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                               <DDLResultSet
                                 session={session}
                                 key={set.uniqKey || i}
-                                showExplain={false}
                                 showPagination={true}
                                 autoCommit={true}
                                 columns={set.columns}
