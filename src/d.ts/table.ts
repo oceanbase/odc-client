@@ -16,7 +16,7 @@
 
 export interface IServerTable {
   name: string;
-  columnGroups: ColumnStoreType[];
+  columnGroups: IColumnStoreServerType[];
   tableOptions: Partial<IServerTableOptions>;
   columns: Partial<IServerTableColumn>[];
   indexes: Partial<IServerTableIndex>[];
@@ -123,7 +123,7 @@ export interface IServerTableIndex {
   algorithm: string;
   ordinalPosition: number;
   available: boolean;
-  columnGroups?: ColumnStoreType[];
+  columnGroups?: IColumnStoreServerType[];
 }
 
 export interface IServerTableConstraint {
@@ -199,9 +199,16 @@ export enum TableForeignConstraintOnUpdateType {
   RESTRICT = 'RESTRICT',
 }
 
+export interface IColumnStoreServerType {
+  allColumns?: boolean;
+  eachColumn?: boolean;
+  groupName?: string;
+  columnNames?: string[];
+}
+
 export enum ColumnStoreType {
   COLUMN = 'each column',
-  ROW = 'all columns',
+  ROW = 'all column',
 }
 
 export enum DBDefaultStoreType {
