@@ -504,7 +504,6 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                     <Spin spinning={dataLoading || !resultSet}>
                       {resultSet && (
                         <DDLResultSet
-                          showExplain={false}
                           session={session}
                           autoCommit={session?.params?.autoCommit}
                           showPagination={true}

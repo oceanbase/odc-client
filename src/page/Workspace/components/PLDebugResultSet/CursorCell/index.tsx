@@ -91,7 +91,6 @@ const CursorCell: React.FC<ICursorCellProps> = (props) => {
         >
           <DDLResultSet
             session={null}
-            showExplain={false}
             disableEdit={true}
             autoCommit={false}
             isEditing={false}

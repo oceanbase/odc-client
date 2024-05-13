@@ -51,7 +51,18 @@ import Icon, {
   VerticalRightOutlined,
 } from '@ant-design/icons';
 import { useControllableValue, useUpdate } from 'ahooks';
-import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
+import {
+  Checkbox,
+  Col,
+  Input,
+  InputNumber,
+  message,
+  Popover,
+  Row,
+  Spin,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { RowType } from '../EditableTable';
@@ -76,10 +87,13 @@ import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
 import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
+import guideCache from '@/util/guideCache';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
 const ToolbarDivider = Toolbar.Divider;
+
+const { Link } = Typography;
 export const DATASET_INDEX_KEY = '_datasetIdx';
 const ExpainSvg = icon.EXPAIN;
 export enum ColumnOrder {
@@ -111,8 +125,9 @@ interface IProps {
   disableEdit?: boolean;
   shouldWrapDownload?: boolean;
   showMock?: boolean;
-  showExplain?: boolean;
-  showTrace?: boolean; // 是否展示trace功能
+  // showExplain?: boolean;
+  // showTrace?: boolean; // 是否展示trace功能
+  showExecutePlan?: boolean;
   showPagination?: boolean;
   allowExport?: boolean; // 是否允许导出
   columns: ResultSetColumn[];
@@ -125,7 +140,7 @@ interface IProps {
   resultHeight: number | string;
   pageKey?: string;
   generalSqlType?: GeneralSQLType;
-  traceId?: string;
+  traceId?: string | number;
   enableRowId?: boolean;
   autoCommit: boolean;
   withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
@@ -145,6 +160,7 @@ interface IProps {
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
+  onOpenExecutingDetailModal?: (traceId: number | string) => void;
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
@@ -156,8 +172,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     showPagination,
     sqlStore,
     settingStore,
-    showExplain,
-    showTrace = false,
+    // showExplain,
+    // showTrace = false,
+    showExecutePlan = false,
     showMock,
     allowExport = true,
     table,
@@ -176,6 +193,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     onExport,
     onSubmitRows,
     enableRowId,
+    traceId,
+    onOpenExecutingDetailModal,
   } = props;
   const sessionId = session?.sessionId;
   const obVersion = session?.params?.obVersion;
@@ -634,6 +653,17 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     [columnsToDisplay],
   );
   const isInTransaction = session?.transState?.transState === TransState.IDLE;
+
+  const executeGuideTipContent = () => {
+    return (
+      <div>
+        <div>SQL 执行画像</div>
+        <div>支持 SQL 执行实时剖析，物理执行计划、全链路诊断也一段描述一段描述一段描述</div>
+        <Link>我知道了</Link>
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -870,7 +900,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 />
               </>
             ) : null}
-            {showExplain &&
+            {/* {showExplain &&
               ([GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
               props?.traceId ? (
                 <ToolbarButton
@@ -906,8 +936,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     disabled
                   />
                 </Tooltip>
-              ))}
-            {showTrace &&
+              ))} */}
+            {/* {showTrace &&
               (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
                 <ToolbarButton
                   text={
@@ -932,7 +962,19 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     onShowTrace?.();
                   }}
                 />
-              ))}
+              ))} */}
+            {showExecutePlan && (
+              <ToolbarButton
+                text={'执行画像'}
+                icon={<TraceSvg />}
+                onClick={() => {
+                  guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
+                  onOpenExecutingDetailModal?.(traceId);
+                }}
+                GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}
+                GuideTipContent={executeGuideTipContent}
+              />
+            )}
             {showPagination && rows.length ? (
               <>
                 <ToolbarDivider />
