@@ -1,8 +1,13 @@
 .executeSqlModal {
+  height: calc(100% - 80px);
+  top: 40px;
+  padding-bottom: 0;
   :global {
-    .ant-modal-body {
-      height: 458px;
-      padding: 18px 16px;
+    .ant-modal-content {
+      height: 100%;
+      .ant-modal-body {
+        padding: 18px 16px;
+      }
     }
   }
 }
