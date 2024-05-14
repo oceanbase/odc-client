@@ -103,6 +103,24 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
   return null;
 }
 
+export async function getSQLExecuteProfile(
+  tag: string,
+  sessionId,
+  dbName,
+): Promise<ISQLExplain | null> {
+  const sid = generateDatabaseSid(dbName, sessionId);
+  const result = await request.post(`/api/v1/diagnose/getQueryProfile/${sid}`, {
+    data: {
+      tag,
+    },
+    params: {
+      ignoreError: false,
+    },
+  });
+  const { data } = result;
+  return data;
+}
+
 function formatSQLExplainTree(data: any): ISQLExplainTreeNode {
   const formatted: ISQLExplainTreeNode = {
     ...data,

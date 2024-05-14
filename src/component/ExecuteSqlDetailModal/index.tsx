@@ -4,7 +4,7 @@ import { Alert, Button, message, Modal } from 'antd';
 import styles from './index.less';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
-import { getSQLExplain } from '@/common/network/sql';
+import { getSQLExecuteProfile, getSQLExplain } from '@/common/network/sql';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -20,8 +20,8 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   };
 
   const getDetail = async () => {
-    const explain = await getSQLExplain(
-      modalStore.executeSqlDetailData?.selectedSQL,
+    const explain = await getSQLExecuteProfile(
+      modalStore?.executeSqlDetailData?.traceId,
       modalStore.executeSqlDetailData?.session?.sessionId,
       modalStore.executeSqlDetailData?.session?.database?.dbName,
     );
@@ -38,7 +38,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
     <>
       <Modal
         zIndex={1002}
-        width={840}
+        width={'calc(100% - 80px)'}
         destroyOnClose={true}
         title={`Trace ID 为 "${modalStore?.executeSqlDetailData?.traceId}" 的执行画像`}
         open={modalStore.executeSqlDetailModalVisible}
