@@ -140,6 +140,7 @@ const items: Record<
       sys: false,
       ssl: true,
       defaultSchema: true,
+      unionUser: true,
     },
     features: {
       task: [TaskType.ASYNC, TaskType.SQL_PLAN],

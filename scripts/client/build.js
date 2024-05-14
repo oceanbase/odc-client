@@ -36,15 +36,15 @@ async function buildClient(target) {
     mac: [
       {
         ENV: '',
-        ARCH: '',
-        targets: electronBuilder.Platform.MAC.createTarget(),
+        ARCH: 'x64',
+        targets: electronBuilder.Platform.MAC.createTarget(['dmg'], electronBuilder.Arch.x64),
       },
     ],
     'mac-jre': [
       {
         ENV: 'jre',
         ARCH: '',
-        targets: electronBuilder.Platform.MAC.createTarget(),
+        targets: electronBuilder.Platform.MAC.createTarget(['dmg'], electronBuilder.Arch.x64),
       },
     ],
     'linux_x86': [
