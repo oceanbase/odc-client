@@ -4,7 +4,7 @@ import {
   SEARCH_OBJECT_FROM_ALL_DATABASE,
   MAX_OBJECT_LENGTH,
 } from '../constant';
-import { Tabs, Divider, Button, Empty, Tooltip } from 'antd';
+import { Tabs, Divider, Button, Empty, Tooltip, Spin } from 'antd';
 import styles from '../index.less';
 import { DbObjectType } from '@/d.ts';
 import { DbObjsIcon } from '@/constant';
@@ -20,9 +20,17 @@ interface Iprops {
   activeKey: string;
   setActiveKey: React.Dispatch<React.SetStateAction<string>>;
   modalStore: ModalStore;
+  loading: boolean;
 }
 
-const ObjectList = ({ database, objectlist, activeKey, setActiveKey, modalStore }: Iprops) => {
+const ObjectList = ({
+  database,
+  objectlist,
+  activeKey,
+  setActiveKey,
+  modalStore,
+  loading,
+}: Iprops) => {
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
 
   const getTyepBlock = () => {
@@ -112,75 +120,76 @@ const ObjectList = ({ database, objectlist, activeKey, setActiveKey, modalStore 
   };
 
   const renderAllTab = () => {
-    if (!objectlist?.dbColumns?.length && !objectlist?.dbObjects?.length) {
-      return (
-        <div className={styles.objectlistBoxEmpty}>
-          <Empty />
-        </div>
-      );
-    }
     return (
-      <div className={styles.objectlistBox}>
-        {typeObjectTree?.map((i) => {
-          if (i?.data?.length) {
-            return (
-              <div className={styles.objectTypeBox}>
-                <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
-                <div>
-                  {i.data.map((object, index) => {
-                    if (index < 3) {
-                      return (
-                        <div
-                          className={styles.objectTypeItem}
-                          onClick={(e) => openTree(e, object)}
-                          onMouseEnter={() => setActiveDatabase(object)}
-                          onMouseLeave={() => setActiveDatabase(null)}
-                        >
-                          <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                            <Icon
-                              component={DbObjsIcon[i?.key]}
-                              style={{
-                                color: 'var(--brand-blue6-color)',
-                                paddingRight: 4,
-                                fontSize: 14,
-                              }}
-                            />
-                            <span style={{ paddingRight: 4 }}>{object?.name}</span>
-                            <span
-                              style={{
-                                color: 'var(--icon-color-disable)',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                display: 'flex',
-                                alignContent: 'center',
-                              }}
+      <Spin spinning={loading}>
+        {!objectlist?.dbColumns?.length && !objectlist?.dbObjects?.length ? (
+          <div className={styles.objectlistBoxEmpty}>
+            <Empty />
+          </div>
+        ) : (
+          <div className={styles.objectlistBox}>
+            {typeObjectTree?.map((i) => {
+              if (i?.data?.length) {
+                return (
+                  <div className={styles.objectTypeBox}>
+                    <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
+                    <div>
+                      {i.data.map((object, index) => {
+                        if (index < 3) {
+                          return (
+                            <div
+                              className={styles.objectTypeItem}
+                              onClick={(e) => openTree(e, object)}
+                              onMouseEnter={() => setActiveDatabase(object)}
+                              onMouseLeave={() => setActiveDatabase(null)}
                             >
-                              {getSubTitle(object, i?.key)}
-                            </span>
-                          </div>
-                          {permissionBtn(object)}
-                        </div>
-                      );
-                    }
-                  })}
-                </div>
-                <Button
-                  className={styles.objectTypeItemMore}
-                  type="link"
-                  onClick={() => setActiveKey(i.key)}
-                >
-                  查看更多
-                </Button>
-                <Divider
-                  style={{
-                    margin: '12px 0',
-                  }}
-                />
-              </div>
-            );
-          }
-        })}
-      </div>
+                              <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
+                                <Icon
+                                  component={DbObjsIcon[i?.key]}
+                                  style={{
+                                    color: 'var(--brand-blue6-color)',
+                                    paddingRight: 4,
+                                    fontSize: 14,
+                                  }}
+                                />
+                                <span style={{ paddingRight: 4 }}>{object?.name}</span>
+                                <span
+                                  style={{
+                                    color: 'var(--icon-color-disable)',
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    display: 'flex',
+                                    alignContent: 'center',
+                                  }}
+                                >
+                                  {getSubTitle(object, i?.key)}
+                                </span>
+                              </div>
+                              {permissionBtn(object)}
+                            </div>
+                          );
+                        }
+                      })}
+                    </div>
+                    <Button
+                      className={styles.objectTypeItemMore}
+                      type="link"
+                      onClick={() => setActiveKey(i.key)}
+                    >
+                      查看更多
+                    </Button>
+                    <Divider
+                      style={{
+                        margin: '12px 0',
+                      }}
+                    />
+                  </div>
+                );
+              }
+            })}
+          </div>
+        )}
+      </Spin>
     );
   };
 
@@ -226,51 +235,52 @@ const ObjectList = ({ database, objectlist, activeKey, setActiveKey, modalStore 
 
   const renderObjectTypeTabs = (type) => {
     const currentObjectList = typeObjectTree?.find((i) => i.key === type);
-    if (!currentObjectList?.data?.length) {
-      return (
-        <div className={styles.objectlistBoxEmpty}>
-          <Empty />
-        </div>
-      );
-    }
     return (
-      <div className={styles.objectlistBox}>
-        {currentObjectList?.data?.map((object) => {
-          return (
-            <div
-              className={styles.objectItem}
-              onClick={(e) => openTree(e, object)}
-              onMouseEnter={() => setActiveDatabase(object)}
-              onMouseLeave={() => setActiveDatabase(null)}
-            >
-              <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                <Icon
-                  component={DbObjsIcon[type]}
-                  style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
-                />
-                <span style={{ paddingRight: 4 }}>{object?.name}</span>
-                <span
-                  style={{
-                    color: 'var(--icon-color-disable)',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    display: 'flex',
-                    alignContent: 'center',
-                  }}
+      <Spin spinning={loading}>
+        {!currentObjectList?.data?.length ? (
+          <div className={styles.objectlistBoxEmpty}>
+            <Empty />
+          </div>
+        ) : (
+          <div className={styles.objectlistBox}>
+            {currentObjectList?.data?.map((object) => {
+              return (
+                <div
+                  className={styles.objectItem}
+                  onClick={(e) => openTree(e, object)}
+                  onMouseEnter={() => setActiveDatabase(object)}
+                  onMouseLeave={() => setActiveDatabase(null)}
                 >
-                  {getSubTitle(object, type)}
-                </span>
-              </div>
-              {permissionBtn(object)}
-            </div>
-          );
-        })}
-        {currentObjectList?.data?.length === MAX_OBJECT_LENGTH && (
-          <Divider plain>
-            <span style={{ color: 'var(--icon-color-disable)' }}>最多展示 1000 条结果</span>
-          </Divider>
+                  <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
+                    <Icon
+                      component={DbObjsIcon[type]}
+                      style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
+                    />
+                    <span style={{ paddingRight: 4 }}>{object?.name}</span>
+                    <span
+                      style={{
+                        color: 'var(--icon-color-disable)',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        display: 'flex',
+                        alignContent: 'center',
+                      }}
+                    >
+                      {getSubTitle(object, type)}
+                    </span>
+                  </div>
+                  {permissionBtn(object)}
+                </div>
+              );
+            })}
+            {currentObjectList?.data?.length === MAX_OBJECT_LENGTH && (
+              <Divider plain>
+                <span style={{ color: 'var(--icon-color-disable)' }}>最多展示 1000 条结果</span>
+              </Divider>
+            )}
+          </div>
         )}
-      </div>
+      </Spin>
     );
   };
 
