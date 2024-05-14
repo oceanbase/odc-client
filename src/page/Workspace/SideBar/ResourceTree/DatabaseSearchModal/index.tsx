@@ -93,6 +93,7 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
         activeKey={activeKey}
         setActiveKey={setActiveKey}
         modalStore={modalStore}
+        loading={loading}
       />
     );
   };
