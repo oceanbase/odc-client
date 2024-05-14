@@ -324,7 +324,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: '元数据同步',
       subText: (node) => {
         const database: IDatabase = node.data;
-        if (!database.lastSyncTime) return;
+        if (!database.objectLastSyncTime) return;
         return (
           <div style={{ fontSize: 12, color: 'var(--neutral-black45-color)' }}>
             上次同步时间: {getLocalFormatDateTime(database?.objectLastSyncTime)}
