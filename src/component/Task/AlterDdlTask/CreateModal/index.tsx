@@ -42,9 +42,12 @@ import { inject, observer } from 'mobx-react';
 import React, { useState, useEffect } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
+import ThrottleFormItem from '../../component/ThrottleFormItem';
+import { SettingStore } from '@/store/setting';
 import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
   modalStore?: ModalStore;
+  settingStore?: SettingStore;
   projectId?: number;
   theme?: 'dark' | 'white';
 }
@@ -65,7 +68,7 @@ export enum ClearStrategy {
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, settingStore, projectId, theme } = props;
   const { ddlAlterData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
@@ -75,6 +78,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
+  const initialValue = {
+    rowLimit: 100,
+    dataSizeLimit: 1.0,
+  };
   const datasourceUserOptions = datasourceUser?.map(({ name }) => ({
     label: name,
     value: name,
@@ -119,6 +126,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           executionTime,
           executionStrategy,
           lockUsers,
+          dataSizeLimit,
+          rowLimit,
         } = values;
         const parameters = {
           lockTableTimeOutSeconds,
@@ -129,6 +138,13 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           originTableCleanStrategy,
           lockUsers,
           swapTableType,
+          rateLimitConfig:
+            rowLimit || dataSizeLimit
+              ? {
+                  rowLimit,
+                  dataSizeLimit,
+                }
+              : null,
         };
         const data = {
           projectId,
@@ -567,10 +583,11 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               </Radio>
             </Radio.Group>
           </Form.Item>
+          {settingStore.enableOSCLimiting && <ThrottleFormItem initialValue={initialValue} />}
         </FormItemPanel>
         <DescriptionInput />
       </Form>
     </Drawer>
   );
 };
-export default inject('modalStore')(observer(CreateDDLTaskModal));
+export default inject('modalStore', 'settingStore')(observer(CreateDDLTaskModal));
