@@ -392,7 +392,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       break;
     }
     default: {
-      getItems = taskContentMap[task?.type]?.getItems;
+      getItems = (...args) => taskContentMap[task?.type]?.getItems(...args, handleReloadData);
       break;
     }
   }

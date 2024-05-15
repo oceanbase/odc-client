@@ -624,6 +624,26 @@ export async function updateLimiterConfig(
   });
   return !!res?.data;
 }
+
+/*
+ * 更新无锁结构变更限流配置
+ */
+export async function updateThrottleConfig(
+  flowInstanceId: number,
+  rateLimitConfig: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  },
+): Promise<boolean> {
+  const res = await request.post(`/api/v2/osc/updateRateLimitConfig`, {
+    data: {
+      flowInstanceId,
+      rateLimitConfig,
+    },
+  });
+  return !!res?.data;
+}
+
 /**
  * 获取结构比对中涉及的表信息
  * @param taskId 结构比对工单id

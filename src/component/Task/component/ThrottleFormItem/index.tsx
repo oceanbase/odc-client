@@ -19,8 +19,14 @@ import { Form, InputNumber, Space } from 'antd';
 import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
-interface IProps {}
+interface IProps {
+  initialValue?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
+}
 const ThrottleFormItem: React.FC<IProps> = (props) => {
+  const { initialValue } = props;
   return (
     <Form.Item
       label={
@@ -52,12 +58,12 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
               style={{
                 marginBottom: 0,
               }}
+              initialValue={initialValue?.rowLimit}
               rules={[
                 {
                   required: true,
                   message: formatMessage({
-                    id:
-                      'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
+                    id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
                   }), //'请输行限流限流'
                 },
               ]}
@@ -96,6 +102,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                   }), //'请输数据大小限流'
                 },
               ]}
+              initialValue={initialValue?.dataSizeLimit}
             >
               <InputNumber min={1} max={setting.maxSingleTaskDataSizeLimit} precision={1} />
             </Form.Item>
