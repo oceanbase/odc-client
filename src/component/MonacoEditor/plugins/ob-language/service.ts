@@ -58,6 +58,12 @@ export function getModelService(
           sessionFunc()?.connection?.dialectType,
         ),
       );
+      dbName = getRealNameInDatabase(
+        dbName,
+        [ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(
+          sessionFunc()?.connection?.dialectType,
+        ),
+      );
       if (!hasConnect(sessionFunc())) {
         return;
       }
