@@ -30,6 +30,9 @@ import React from 'react';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
+import { TaskExecStrategy } from '@/d.ts';
+import { getLocalFormatDateTime } from '@/util/utils';
+
 const { Panel } = Collapse;
 const { Text } = Typography;
 interface IProps {
@@ -155,6 +158,17 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         >
           {taskExecStrategyMap[triggerConfig.triggerStrategy]}
         </Descriptions.Item>
+        {triggerConfig.triggerStrategy === TaskExecStrategy.START_AT && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.074676BE',
+              }) /*"执行时间"*/
+            }
+          >
+            {getLocalFormatDateTime(triggerConfig?.startAt)}
+          </Descriptions.Item>
+        )}
         {isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
           <Descriptions.Item>
             <Collapse
