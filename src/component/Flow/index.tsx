@@ -11,7 +11,6 @@ import CustomEdge from './realTimeAnalysis/customComponents/CustomEdge';
 import CustomNode from './realTimeAnalysis/customComponents/CustomNode';
 import CustomControl from './realTimeAnalysis/customComponents/CustomControl';
 import CustomDetailBox from './realTimeAnalysis/customComponents/CustomDetailBox';
-import { mockData } from './realTimeAnalysis/mock';
 import { transformDataForReactFlow } from './realTimeAnalysis/utils';
 
 import 'reactflow/dist/style.css';
@@ -37,16 +36,12 @@ function Flow(props) {
     setNodes,
     setSelectedNode,
   );
-  const { zoomIn, zoomOut, setCenter } = useReactFlow();
-  const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
+  const { zoomIn, zoomOut, setCenter, setViewport } = useReactFlow();
 
   const reactFlowInstance = useRef(null);
-
-  // useEffect(() => {
-  //   fitView();
-  // }, []); // 确保只在组件挂载后调用
-
   useEffect(() => {
+    debugger;
+    setCenter(170, 220, { zoom: 1 });
     setNodes(initialNodes);
     setEdges(initialEdges);
     setSelectedNode(initialNodes[0]);
@@ -54,8 +49,6 @@ function Flow(props) {
 
   useEffect(() => {
     if (!initialNodes.length) return;
-    // debugger
-    // if(selectedNode) return
     const newNodes = initialNodes.map((el) => {
       if (el.id === selectedNode?.id) {
         // 标记为选中
@@ -64,7 +57,6 @@ function Flow(props) {
       // 移除其他节点的选中标记
       return { ...el, data: { ...el.data, isSelected: false } };
     });
-    // debugger
     setNodes(newNodes);
   }, [JSON.stringify(selectedNode)]);
 
@@ -99,11 +91,11 @@ function Flow(props) {
         onConnect={onConnect}
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
-        fitView
+        // fitView
         ref={reactFlowInstance}
-        fitViewOptions={{
-          ...defaultViewport,
-        }}
+        // fitViewOptions={{
+        //   ...defaultViewport,
+        // }}
         onElementClick={(event, element) => {
           setSelectedNode(element);
         }}
