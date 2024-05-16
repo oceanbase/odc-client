@@ -1,6 +1,7 @@
 export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
   const nodes = [];
   const edges = [];
+  const durationSum = vertexes.reduce((sum, vertex) => sum + vertex.duration, 0);
   const idToNodeMap = new Map();
   const rootNodes = [];
   const LEVEL_GAP = 200; // 每层的垂直间隙
@@ -104,6 +105,7 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
         hasChild: node.outEdges.length,
         outEdges: node?.outEdges || [],
         setSelectedNode: setSelectedNode,
+        percentage: ((node.duration / durationSum) * 100).toFixed(2),
       },
       position: { x: node.x, y: node.y },
       type: 'customNode',
@@ -123,5 +125,5 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
     });
   });
 
-  return { nodes, edges };
+  return { nodes, edges, durationSum };
 }

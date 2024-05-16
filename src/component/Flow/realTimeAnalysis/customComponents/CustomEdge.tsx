@@ -59,9 +59,6 @@ const CustomEdge = ({
         <div
           style={{
             position: 'absolute',
-            // top: -80,
-            // left: 100,
-            // transform: `translate(${100}px,${100}px)`,
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             pointerEvents: 'all',
             height: 20,
@@ -69,11 +66,6 @@ const CustomEdge = ({
             backgroundColor: '#FFFFFF',
             border: '1px solid rgba(0,0,0,0.12)',
             borderRadius: 2,
-          }}
-          className="nodrag nopan"
-          onClick={() => {
-            // setEdges((es) => es.filter((e) => e.id !== id));
-            console.log('验证可以获取到点击的边', id);
           }}
         >
           {data?.weight || Math.random() * 1000000}

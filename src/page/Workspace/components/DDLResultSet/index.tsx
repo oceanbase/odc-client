@@ -195,6 +195,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     enableRowId,
     traceId,
     onOpenExecutingDetailModal,
+    originSql,
   } = props;
   const sessionId = session?.sessionId;
   const obVersion = session?.params?.obVersion;
@@ -971,7 +972,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
                   // debugger
                   // todo 这里进的拿不到当前sql?
-                  onOpenExecutingDetailModal?.(traceId);
+                  onOpenExecutingDetailModal?.(traceId, originSql);
                 }}
                 GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}
                 GuideTipContent={executeGuideTipContent}

@@ -5,6 +5,7 @@ export default (props) => {
   if (!dataSource) return null;
 
   const { data } = dataSource;
+  // debugger
   if (!data) return null;
   return (
     <div
@@ -14,7 +15,7 @@ export default (props) => {
         width: '320px',
         backgroundColor: '#FFFFF',
         border: '1px solid #E0E0E0',
-        height: 'calc(100% - 173px)',
+        height: 'calc(100% - 140px)',
         overflowY: 'auto',
         padding: '12px 8px',
       }}
@@ -31,8 +32,7 @@ export default (props) => {
         <Divider />
         <div>
           <h3 className={styles.customDetailBoxTitle}>Node 执行概览</h3>
-          // todo待计算 忘记怎么算的了
-          <Progress percent={17} />
+          <Progress percent={data?.percentage} />
           <div className={styles.customDetailBoxItem}>
             DB 耗时: <span>{data?.overview?.['DB Time']}</span>
           </div>
@@ -41,7 +41,7 @@ export default (props) => {
           </div>
         </div>
         <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
-        <div className={styles.customDetailBoxItem}>这里我忘了</div>
+        {/* <div className={styles.customDetailBoxItem}>这里我忘了</div> */}
         <h3 className={styles.customDetailBoxTitle}>节点属性</h3>
         {Object?.entries(data?.attributes)?.map(([key, value]) => {
           return (
