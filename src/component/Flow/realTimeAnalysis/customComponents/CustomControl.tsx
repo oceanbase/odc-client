@@ -5,13 +5,13 @@ export default function Flow() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   return (
     <Controls>
-      <ControlButton
+      {/* <ControlButton
         onClick={() => {
           zoomOut();
         }}
       >
         ++
-      </ControlButton>
+      </ControlButton> */}
     </Controls>
   );
 }

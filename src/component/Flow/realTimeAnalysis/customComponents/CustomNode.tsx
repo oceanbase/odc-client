@@ -5,36 +5,42 @@ import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 const handleStyle = { left: 10 };
 
 function TextUpdaterNode({ data, id, isConnectable }) {
-  const onClick = useCallback((evt) => {
-    // data里要有id
-    console.log(IDBCursor);
-  }, []);
-
+  // debugger
   return (
     <div className="text-updater-node">
-      <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={isConnectable}
+        style={{ visibility: 'hidden' }}
+      />
       <div
         style={{
           height: 90,
-          width: 200,
+          width: 280,
           backgroundColor: '#FFFFFF',
-          border: '1px solid rgba(0,0,0,0.12)',
           borderRadius: 2,
+          padding: '12px 16px 16px 16px',
+          border: data?.isSelected
+            ? '2px solid rgba(24,144,255,0.20)'
+            : '1px solid rgba(0,0,0,0.12)',
         }}
-        onClick={() => {
-          console.log('hjkl');
-        }}
+        onClick={() => data?.setSelectedNode(data)}
       >
         {' '}
-        {data.label}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+          <span>
+            {data.label}[{data?.id}]
+          </span>
+          <span>{data?.overview?.['DB Time']}(?%)</span>
+        </div>
         {data.hasChild && (
           <div
             style={{
               position: 'absolute',
-              bottom: '-26px',
-              left: '90px',
+              bottom: '-25px',
+              left: '130px',
               padding: 4,
-              backgroundColor: 'var(--neutral-grey3-color)',
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -46,7 +52,13 @@ function TextUpdaterNode({ data, id, isConnectable }) {
           </div>
         )}
       </div>
-      <Handle type="source" position={Position.Bottom} id="b" isConnectable={isConnectable} />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="b"
+        isConnectable={isConnectable}
+        style={{ visibility: 'hidden' }}
+      />
     </div>
   );
 }

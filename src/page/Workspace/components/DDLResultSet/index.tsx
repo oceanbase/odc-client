@@ -160,7 +160,7 @@ interface IProps {
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
-  onOpenExecutingDetailModal?: (traceId: number | string) => void;
+  onOpenExecutingDetailModal?: (traceId: number | string, sql?: string) => void;
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
@@ -969,6 +969,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 icon={<TraceSvg />}
                 onClick={() => {
                   guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
+                  // debugger
+                  // todo 这里进的拿不到当前sql?
                   onOpenExecutingDetailModal?.(traceId);
                 }}
                 GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}

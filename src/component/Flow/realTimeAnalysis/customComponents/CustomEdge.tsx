@@ -24,9 +24,9 @@ const CustomEdge = ({
   });
 
   const edgeEndPointY = targetY - 20;
-  const pathData = `M ${sourceX},${
-    sourceY + 8
-  } L ${targetX},${edgeEndPointY} L ${targetX},${targetY}`;
+  const pathData = `M ${sourceX},${sourceY + 18} L ${targetX},${edgeEndPointY} L ${targetX},${
+    targetY + 10
+  }`;
 
   const widthHelper = (weight) => {
     if (weight < 20000) {
