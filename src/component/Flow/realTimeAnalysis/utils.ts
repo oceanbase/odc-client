@@ -1,4 +1,4 @@
-export function transformDataForReactFlow(vertexes, setNodes) {
+export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
   const nodes = [];
   const edges = [];
   const idToNodeMap = new Map();
@@ -59,7 +59,7 @@ export function transformDataForReactFlow(vertexes, setNodes) {
   // 计算节点宽度的函数
   function calculateNodeWidth(node) {
     if (node.children.length === 0) {
-      return 200; // 叶子节点宽度
+      return 280; // 叶子节点宽度
     }
     // 子节点的宽度之和加上间隔
     let totalWidth = (node.children.length - 1) * 50;
@@ -96,12 +96,14 @@ export function transformDataForReactFlow(vertexes, setNodes) {
     nodes.push({
       id: node.graphId.toString(),
       data: {
+        ...node,
         label: `${node.name}`,
         id: node.graphId.toString(),
         isTreeOpen: true,
         changeTreeOpen: changeTreeOpen,
         hasChild: node.outEdges.length,
         outEdges: node?.outEdges || [],
+        setSelectedNode: setSelectedNode,
       },
       position: { x: node.x, y: node.y },
       type: 'customNode',

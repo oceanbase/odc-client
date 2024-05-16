@@ -398,15 +398,17 @@ export class ModalStore {
   public changeExecuteSqlDetailModalVisible(
     v: boolean,
     traceId?: any,
+    sql?: string,
     session?: any,
     selectedSQL?: any,
   ) {
     this.executeSqlDetailModalVisible = v;
     this.executeSqlDetailData = {
       traceId,
+      sql: sql,
       session,
-      // selectedSQL: selectedSQL
-      selectedSQL: 'select sleep(2) from dual;',
+      selectedSQL: selectedSQL,
+      // selectedSQL: 'select sleep(2) from dual;',
     };
   }
 

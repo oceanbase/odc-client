@@ -35,7 +35,7 @@ interface IProps {
   resultHeight: number;
   resultSet: IResultSet;
   stopRunning?: any;
-  onOpenExecutingDetailModal?: (traceId: number) => void;
+  onOpenExecutingDetailModal?: (traceId: number, sql?: string) => void;
 }
 
 function getSuccessLog(type: SqlType, total: number) {
@@ -106,9 +106,15 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
         <div>
           <Space size="small">
             <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
-            <Link onClick={() => onOpenExecutingDetailModal(currentExecuteInfo?.traceId)}>
-              查看执行画像
-            </Link>
+            {currentExecuteInfo?.traceId && (
+              <Link
+                onClick={() =>
+                  onOpenExecutingDetailModal(currentExecuteInfo?.traceId, currentExecuteInfo?.sql)
+                }
+              >
+                查看执行画像
+              </Link>
+            )}
           </Space>
         </div>
       </Space>

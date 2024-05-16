@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
   addEdge,
   useNodesState,
@@ -10,6 +10,7 @@ import ReactFlow, {
 import CustomEdge from './realTimeAnalysis/customComponents/CustomEdge';
 import CustomNode from './realTimeAnalysis/customComponents/CustomNode';
 import CustomControl from './realTimeAnalysis/customComponents/CustomControl';
+import CustomDetailBox from './realTimeAnalysis/customComponents/CustomDetailBox';
 import { mockData } from './realTimeAnalysis/mock';
 import { transformDataForReactFlow } from './realTimeAnalysis/utils';
 
@@ -25,28 +26,21 @@ const edgeTypes = { 'custom-edge': CustomEdge };
 const nodeTypes = { customNode: CustomNode };
 
 function Flow(props) {
+  const { dataSource } = props;
+
+  if (!dataSource) return null;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
   const { nodes: initialNodes, edges: initialEdges } = transformDataForReactFlow(
-    mockData.vertexes,
+    dataSource?.vertexes,
     setNodes,
+    setSelectedNode,
   );
   const { zoomIn, zoomOut, setCenter } = useReactFlow();
   const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
   const reactFlowInstance = useRef(null);
-
-  // const fitView = () => {
-  //   const flowInstance = reactFlowInstance.current;
-  //   debugger;
-  //   if (flowInstance) {
-  //     const { width, height, clientWidth, clientHeight } =
-  //       flowInstance.container;
-  //     const centerX = (width + clientWidth) / 2;
-  //     const centerY = (height + clientHeight) / 2;
-  //     flowInstance.fitView([centerX, centerY], [clientWidth, clientHeight]);
-  //   }
-  // };
 
   // useEffect(() => {
   //   fitView();
@@ -55,7 +49,24 @@ function Flow(props) {
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
+    setSelectedNode(initialNodes[0]);
   }, []);
+
+  useEffect(() => {
+    if (!initialNodes.length) return;
+    // debugger
+    // if(selectedNode) return
+    const newNodes = initialNodes.map((el) => {
+      if (el.id === selectedNode?.id) {
+        // 标记为选中
+        return { ...el, data: { ...el.data, isSelected: true } };
+      }
+      // 移除其他节点的选中标记
+      return { ...el, data: { ...el.data, isSelected: false } };
+    });
+    // debugger
+    setNodes(newNodes);
+  }, [JSON.stringify(selectedNode)]);
 
   const onConnect = useCallback(
     (connection) => {
@@ -66,10 +77,19 @@ function Flow(props) {
   );
 
   return (
-    <div style={{ width: 2000, height: 1000 }}>
-      <button onClick={() => setCenter(100, 100, { zoom: 2, duration: 50 })}>111</button>
+    <div
+      style={{
+        height: '100%',
+        overflowY: 'auto',
+        backgroundColor: 'rgba(0,0,0,0.02)',
+        border: '1px solid #E0E0E0',
+        width: 'calc(100% - 320px)',
+      }}
+    >
+      <CustomDetailBox dataSource={nodes.find((i) => i.id === selectedNode?.id)} />
+      {/* <button onClick={() => setCenter(100, 100, { zoom: 2, duration: 50 })}>111</button>
       <button onClick={() => zoomIn()}>+</button>
-      <button onClick={() => zoomOut()}>-</button>
+      <button onClick={() => zoomOut()}>-</button> */}
       <ReactFlow
         {...props}
         nodes={nodes}
@@ -83,6 +103,9 @@ function Flow(props) {
         ref={reactFlowInstance}
         fitViewOptions={{
           ...defaultViewport,
+        }}
+        onElementClick={(event, element) => {
+          setSelectedNode(element);
         }}
       >
         <CustomControl />
