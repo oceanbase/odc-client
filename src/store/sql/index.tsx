@@ -397,7 +397,7 @@ export class SQLStore {
         };
       }
     }
-    // {"errCode":null,"errMsg":"ORA-00904: invalid identifier 'CHZ' in 'field list'","data":null,"importantMsg":false}
+
     // {"errCode":null,"errMsg":null,"data":{"funName":"F_ADD","ddl":"CREATE OR REPLACE function f_add(\np1 in integer, \np2 in integer) \nreturn integer as \nbegin \nreturn p1 + p2;\nend;","definer":"CHZ","status":null,"createTime":1606274473000,"modifyTime":1606274473000,"returnType":"integer","returnValue":"33","params":null,"varibales":[],"types":[]},"importantMsg":false}
 
     if (res.errMsg) {
