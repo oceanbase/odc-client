@@ -39,7 +39,7 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { mbToKb, kbToMb } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
+import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
@@ -50,6 +50,9 @@ import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
 import { timeUnitOptions } from './VariableConfig';
+import TaskdurationItem from '../../component/TaskdurationItem';
+import SynchronizationItem from '../../component/SynchronizationItem';
+
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
@@ -314,7 +317,15 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
+          taskExecutionDurationHours,
+          syncTableStructure,
         } = values;
+        _tables.map((i) => {
+          i.partitions = i?.partitions
+            ?.replace(/[\r\n]+/g, '')
+            ?.split(',')
+            ?.filter(Boolean);
+        });
         const parameters = {
           type: TaskType.MIGRATION,
           operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
@@ -335,6 +346,8 @@ const CreateModal: React.FC<IProps> = (props) => {
                 : _tables,
             deleteAfterMigration,
             migrationInsertAction,
+            syncTableStructure,
+            taskExecutionDurationHours,
             rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
@@ -383,6 +396,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
+        _tables.map((i) => {
+          i.partitions = i?.partitions
+            ?.replace(/[\r\n]+/g, '')
+            ?.split(',')
+            ?.filter(Boolean);
+        });
         const parameters = {
           variables: getVariables(variables),
           tables:
@@ -615,6 +634,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
+          <TaskdurationItem />
+          <SynchronizationItem />
           <Form.Item
             label={
               formatMessage({
