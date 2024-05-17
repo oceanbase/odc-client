@@ -96,17 +96,44 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             }) /*数据清理*/
           }
         </Descriptions.Item>
-        <Descriptions.Item
-          span={2}
-          label={formatMessage({
-            id: 'odc.DataClearTask.DetailContent.Database',
-          })} /*数据库*/
-        >
-          <Space size={2}>
-            <span>{task?.database?.name || '-'}</span>
-            <Text type="secondary">{task?.database?.dataSource?.name}</Text>
-          </Space>
-        </Descriptions.Item>
+        {jobParameters?.needCheckBeforeDelete ? (
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.DetailContent.SourceDatabase',
+            })} /*源数据库*/
+          >
+            <Space size={2}>
+              <span>{jobParameters?.databaseName}</span>
+              <Text type="secondary">{jobParameters?.sourceDataSourceName}</Text>
+            </Space>
+          </Descriptions.Item>
+        ) : (
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'odc.DataClearTask.DetailContent.Database',
+            })} /*数据库*/
+          >
+            <Space size={2}>
+              <span>{jobParameters?.databaseName}</span>
+              <Text type="secondary">{task?.database?.dataSource?.name}</Text>
+            </Space>
+          </Descriptions.Item>
+        )}
+        {jobParameters.needCheckBeforeDelete && (
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.DetailContent.TargetDatabase',
+            })} /*目标数据库*/
+          >
+            <Space size={2}>
+              <span>{jobParameters?.targetDatabaseName}</span>
+              <Text type="secondary">{jobParameters?.targetDataSourceName}</Text>
+            </Space>
+          </Descriptions.Item>
+        )}
         {hasFlow && (
           <Descriptions.Item
             label={formatMessage({
@@ -144,7 +171,10 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
               margin: '8px 0 12px',
             }}
           >
-            <ArchiveRange tables={jobParameters?.tables} />
+            <ArchiveRange
+              tables={jobParameters?.tables}
+              needCheckBeforeDelete={jobParameters?.needCheckBeforeDelete}
+            />
           </div>
         }
         direction="column"
@@ -240,6 +270,11 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           {jobParameters?.deleteByUniqueKey
             ? formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.D2882643' })
             : formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.834E7D89' })}
+        </Descriptions.Item>
+        <Descriptions.Item label={'指定任务时长'} span={1}>
+          {jobParameters.taskExecutionDurationHours
+            ? jobParameters.taskExecutionDurationHours + 'h'
+            : '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({

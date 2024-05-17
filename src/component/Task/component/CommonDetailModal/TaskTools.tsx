@@ -20,7 +20,14 @@ import {
   stopDataArchiveSubTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
-import { ITaskResult, SubTaskStatus, TaskDetail, TaskRecord, TaskRecordParameters } from '@/d.ts';
+import {
+  ITaskResult,
+  SubTaskStatus,
+  TaskDetail,
+  TaskRecord,
+  TaskRecordParameters,
+  SubTaskType,
+} from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
@@ -43,6 +50,7 @@ interface IProps {
   onReloadList: () => void;
   onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onLogVisible: (recordId: number, visible: boolean) => void;
+  onExcecuteDetailVisible: (recordId: number, visible: boolean) => void;
   onClose?: () => void;
 }
 const ActionBar: React.FC<IProps> = inject(
@@ -51,7 +59,15 @@ const ActionBar: React.FC<IProps> = inject(
   'modalStore',
 )(
   observer((props) => {
-    const { isDetailModal, record, taskId, showRollback, showLog, onLogVisible } = props;
+    const {
+      isDetailModal,
+      record,
+      taskId,
+      showRollback,
+      showLog,
+      onLogVisible,
+      onExcecuteDetailVisible,
+    } = props;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const resetActiveBtnKey = () => {
       setActiveBtnKey(null);
@@ -136,12 +152,16 @@ const ActionBar: React.FC<IProps> = inject(
     const handleLogVisible = async () => {
       onLogVisible(record.id, true);
     };
+    const handleExcuteDetailVisible = () => {
+      onExcecuteDetailVisible(record.id, true);
+    };
+
     const getTaskTools = (_task) => {
       let tools = [];
       if (!_task) {
         return [];
       }
-      const { status } = _task;
+      const { status, jobGroup: type } = _task;
       const rollbackBtn = {
         key: 'rollback',
         text: formatMessage({
@@ -190,6 +210,12 @@ const ActionBar: React.FC<IProps> = inject(
         action: handleLogVisible,
         type: 'button',
       };
+      const excuteDetailBtn = {
+        key: 'excuteDetail',
+        text: '执行详情',
+        action: handleExcuteDetailVisible,
+        type: 'button',
+      };
       switch (status) {
         case SubTaskStatus.PREPARING: {
           tools = [];
@@ -212,6 +238,15 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         default:
+      }
+      if (
+        [
+          SubTaskType.DATA_ARCHIVE,
+          SubTaskType.DATA_DELETE,
+          SubTaskType.DATA_ARCHIVE_ROLLBACK,
+        ].includes(type)
+      ) {
+        tools.unshift(excuteDetailBtn);
       }
       return tools;
     };
