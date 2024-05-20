@@ -29,7 +29,7 @@ import ImportTaskCreateModal from '@/component/Task/ImportTask';
 import { TaskPageType, TaskType } from '@/d.ts';
 import { IDatabase, DatabasePermissionType } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
-import modalStore from '@/store/modal';
+import modalStore, { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -45,15 +45,17 @@ import ProjectContext from '../ProjectContext';
 import styles from './index.less';
 import setting from '@/store/setting';
 import datasourceStatus from '@/store/datasourceStatus';
-import { observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import StatusName from './StatusName';
 import ChangeOwnerModal from '@/page/Project/Database/ChangeOwnerModal';
 import { ProjectRole } from '@/d.ts/project';
+import MutipleAsyncTask from '@/component/Task/MutipleAsyncTask';
 interface IProps {
   id: string;
+  modalStore?: ModalStore;
 }
 
-const Database: React.FC<IProps> = ({ id }) => {
+const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
@@ -128,7 +130,13 @@ const Database: React.FC<IProps> = ({ id }) => {
   };
   return (
     <TableCard
-      title={<AddDataBaseButton onSuccess={() => reload()} projectId={parseInt(id)} />}
+      title={
+        <AddDataBaseButton
+          modalStore={modalStore}
+          onSuccess={() => reload()}
+          projectId={parseInt(id)}
+        />
+      }
       extra={
         <Space>
           <Input.Search
@@ -535,7 +543,8 @@ const Database: React.FC<IProps> = ({ id }) => {
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
       <AsyncTaskCreateModal theme="white" />
+      <MutipleAsyncTask />
     </TableCard>
   );
 };
-export default observer(Database);
+export default inject('modalStore')(observer(Database));

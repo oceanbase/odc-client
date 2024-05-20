@@ -158,6 +158,12 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           // 数据库变更
         },
         {
+          value: TaskPageType.MULTIPLE_ASYNC,
+          label: '多库变更',
+          enabled: true,
+          // 数据库变更
+        },
+        {
           value: TaskPageType.SHADOW,
           label: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',

@@ -22,7 +22,7 @@ import VariableConfigTable from '@/component/Task/component/VariableConfigTable'
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
+import { SyncTableStructureConfig, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
@@ -244,6 +244,23 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={isCycleStrategy ? 2 : 1}
         >
           {insertActionLabel || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label={'指定任务时长'} span={1}>
+          {jobParameters.taskExecutionDurationHours
+            ? jobParameters.taskExecutionDurationHours + 'h'
+            : '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label={'开启目标表结构同步'} span={1}>
+          {jobParameters.syncTableStructure ? '是' : '否'}
+        </Descriptions.Item>
+        <Descriptions.Item label={'同步范围'} span={1}>
+          {jobParameters?.syncTableStructure
+            ? jobParameters.syncTableStructure
+                ?.map((i) => {
+                  return SyncTableStructureConfig[i].label;
+                })
+                .join(',')
+            : '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={
