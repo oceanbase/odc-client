@@ -4,13 +4,13 @@ import classnames from 'classnames';
 
 export default (props) => {
   const { dataSource, topNodes, initialNodes } = props;
-  console.log(dataSource);
   const { duration } = topNodes;
   const topNodesList = initialNodes?.filter((i) => [...duration].includes(i?.id));
 
   const locateNode = (i) => {
     i?.data?.locateNode(i?.id);
   };
+
   const top5 = () => {
     return (
       <div>

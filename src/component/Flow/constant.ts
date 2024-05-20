@@ -1,6 +1,1 @@
-/**
- * flow类型
- */
-export const Flow_TYPE = {
-  realTimeAnalysis: 'realTimeAnalysis',
-};
+export const REACT_FLOW_ID = 'react-flow-box';

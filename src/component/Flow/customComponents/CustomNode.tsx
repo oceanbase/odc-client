@@ -3,10 +3,7 @@ import { Handle, Position } from 'reactflow';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Progress, Tooltip } from 'antd';
 
-const handleStyle = { left: 10 };
-
 function TextUpdaterNode({ data, id, isConnectable }) {
-  // debugger
   return (
     <div className="text-updater-node">
       <Handle
@@ -71,7 +68,7 @@ function TextUpdaterNode({ data, id, isConnectable }) {
             style={{
               position: 'absolute',
               bottom: '-25px',
-              left: '129px',
+              left: '130px',
               padding: 4,
             }}
             onClick={(e) => {

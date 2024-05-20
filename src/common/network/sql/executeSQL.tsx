@@ -162,7 +162,6 @@ export default async function executeSQL(
   needModal: boolean = true,
   streamExecuteResult?: any,
 ): Promise<IExecuteTaskResult> {
-  // todo 改造executeSQL, 使得有全量模式(用于测试sql执行是否ok)和增量模式(用于展示)
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
     typeof params === 'string'
@@ -266,7 +265,6 @@ export default async function executeSQL(
   }
   let executeRes = await executeTaskManager.addAndWaitTask(requestId, sessionId);
   let { results } = executeRes;
-  // const
   results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;

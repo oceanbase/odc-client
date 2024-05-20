@@ -420,7 +420,6 @@ export class ModalStore {
       sql: sql,
       session,
       selectedSQL: selectedSQL,
-      // selectedSQL: 'select sleep(2) from dual;',
     };
   }
 

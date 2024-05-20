@@ -1,7 +1,7 @@
-// CustomEdge.jsx
 import React from 'react';
 import { BaseEdge, EdgeLabelRenderer, getStraightPath, useReactFlow } from 'reactflow';
 import { Tooltip } from 'antd';
+import { getEdgeWidth, getUnit } from '../utils';
 
 const CustomEdge = ({
   id,
@@ -25,45 +25,17 @@ const CustomEdge = ({
   });
 
   const edgeEndPointY = targetY - 20;
+  // 根据tartget与source的x位置计算xOffset
   const xOffset = sourceX > targetX ? -16 : sourceX < targetX ? 16 : 0;
+  // 根据tartget与source的x位置计算yOffset
   const yOffset = sourceX === targetX ? 25 : 10;
+  // 折线path
   const pathData = `M ${sourceX + xOffset},${
     sourceY + yOffset
   } L ${targetX},${edgeEndPointY} L ${targetX},${targetY + 10}`;
 
-  const widthHelper = (weight) => {
-    if (weight <= 500 * 1000) {
-      return 1;
-    } else if (weight < 1 * 1000 * 1000 && weight > 500 * 1000) {
-      return 2;
-    } else if (weight <= 10 * 1000 * 1000 && weight > 1 * 1000 * 1000) {
-      return 3;
-    } else if (weight <= 50 * 1000 * 1000 && weight > 10 * 1000 * 10004) {
-      return 4;
-    } else {
-      return 5;
-    }
-  };
-
-  const unitTransfer = (num) => {
-    if (num >= 1000 && num < 1000 * 1000) {
-      return (num / 1000).toFixed(2) + 'k';
-    }
-    if (num >= 1000 * 1000 && num < 1000 * 1000 * 1000) {
-      return (num / 1000 / 1000).toFixed(2) + 'M';
-    }
-    return num;
-  };
-
   const BaseEdge = () => {
     return (
-      // <path
-      //   id={id}
-      //   style={{ stroke: '#E0E0E0', strokeWidth: widthHelper(data.weight), ...style }}
-      //   className="react-flow__edge-path"
-      //   d={pathData}
-      //   markerEnd='url(#arrowhead)'
-      // />
       <>
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>
@@ -76,7 +48,7 @@ const CustomEdge = ({
               orient="auto" // 确保箭头的方向与路径的方向一致
               markerUnits="userSpaceOnUse"
             >
-              {/* 这里绘制箭头形状 */}
+              {/* 绘制箭头形状 */}
               <path d="M 10 0 L 0 3.5 L 10 7 L 10 0" fill="#E0E0E0" />
             </marker>
           </defs>
@@ -89,7 +61,7 @@ const CustomEdge = ({
           strokeWidth="2"
           fill="none"
           markerStart="url(#arrowhead-start)" // 在路径的源端添加箭头
-          style={{ stroke: '#E0E0E0', strokeWidth: widthHelper(data.weight), ...style }}
+          style={{ stroke: '#E0E0E0', strokeWidth: getEdgeWidth(data.weight), ...style }}
           id={id}
         />
       </>
@@ -110,9 +82,7 @@ const CustomEdge = ({
             padding: 2,
           }}
         >
-          <Tooltip title={'数据量:' + data?.weight}>
-            {unitTransfer(data?.weight) || Math.random() * 1000000}
-          </Tooltip>
+          <Tooltip title={'数据量:' + data?.weight}>{getUnit(data?.weight)}</Tooltip>
         </div>
       </EdgeLabelRenderer>
     </>

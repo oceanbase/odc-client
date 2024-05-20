@@ -369,8 +369,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
-    // resultSetTabActiveKey 很烦 如何做到实时更新呢 难道还要存到store吗
-    // await 完了之后才会进 debugger
     // todo
     this.state.hasSelectedTab = false;
     if (selectedSQL) {

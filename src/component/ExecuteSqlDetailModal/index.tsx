@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import modal from '@/store/modal';
-import { Tabs, Button, message, Modal, Radio, Space } from 'antd';
+import { Tabs, Button, message, Modal, Radio, Space, Tooltip } from 'antd';
 import styles from './index.less';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
@@ -29,7 +29,6 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [sqlExplainToShow, setSqlExplainToShow] = useState(null);
 
   const fetchExecPlan = async () => {
-    // debugger
     const explain = await getSQLExecuteExplain(
       modalStore?.executeSqlDetailData?.sql,
       null,
@@ -40,11 +39,6 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       setSqlExplainToShow(explain);
     }
   };
-  // useEffect(() => {
-  //   if (tab === EXECUTE_KAY.EXECUTE_PLAN) {
-  //     fetchExecPlan();
-  //   }
-  // }, [tab])
 
   const handleSubmit = () => {
     onCancel();
@@ -59,9 +53,6 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       modalStore?.executeSqlDetailData?.session?.sessionId,
       modalStore?.executeSqlDetailData?.session?.database?.dbName,
     );
-    // debugger
-    console.log(explain);
-    // todo 图的api未更新
     setData(explain);
   };
   useEffect(() => {
@@ -90,21 +81,13 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       label: '全链路诊断',
       key: EXECUTE_KAY.FULL_TRACE,
       children: '全链路诊断',
-      // <Trace
-      //   key={'trace' + modalStore?.executeSqlDetailData?.session?.sessionId}
-      //   open={true}
-      //   sql={modalStore?.executeSqlDetailData?.sql}
-      //   session={modalStore?.executeSqlDetailData?.session}
-      //   traceId={modalStore?.executeSqlDetailData?.traceId}
-      //   setOpen={() =>{}}
-      // />
     },
   };
 
   const TypeOptions = [
-    { value: TypeMap.TREE, icon: <Icon component={Tree} /> },
-    { value: TypeMap.LIST, icon: <Icon component={List} /> },
-    { value: TypeMap.TEXT, icon: <Icon component={Text} /> },
+    { value: TypeMap.TREE, icon: <Icon component={Tree} />, message: '树视图' },
+    { value: TypeMap.LIST, icon: <Icon component={List} />, message: '列表视图' },
+    { value: TypeMap.TEXT, icon: <Icon component={Text} />, message: '文本视图' },
   ];
   return (
     <>
@@ -142,7 +125,9 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
               </Radio.Button>
             </Radio.Group>
             <Space>
-              <Button>导出 Json</Button>
+              <Tooltip title={'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'}>
+                <Button>导出 Json</Button>
+              </Tooltip>
               <Radio.Group
                 defaultValue={TypeMap.TREE}
                 size="small"
@@ -150,7 +135,11 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
                 onChange={(e) => setViewType(e.target.value)}
               >
                 {TypeOptions.map((i) => {
-                  return <Radio.Button value={i.value}>{i?.icon}</Radio.Button>;
+                  return (
+                    <Radio.Button value={i.value}>
+                      <Tooltip title={i?.message}>{i?.icon}</Tooltip>
+                    </Radio.Button>
+                  );
                 })}
               </Radio.Group>
             </Space>
