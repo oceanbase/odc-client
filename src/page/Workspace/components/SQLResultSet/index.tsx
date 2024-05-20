@@ -261,7 +261,6 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               <ExecuteHistory
                 resultHeight={resultHeight}
                 onShowExecuteDetail={onShowExecuteDetail}
-                // todo 传参待优化, 这里的交互还需要再弄清楚. 这里的计划是实际执行的区别
                 onOpenExecutingDetailModal={onOpenExecutingDetailModal}
               />
             ),
@@ -335,9 +334,9 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       key={set.uniqKey || i}
                       dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
                       // showExplain={session?.supportFeature?.enableSQLExplain}
-                      showExecutePlan={session?.supportFeature?.enableSQLExplain} // todo 是都展示还是保留这个
+                      showExecutePlan={session?.supportFeature?.enableSQLExplain}
                       showPagination={true}
-                      // showTrace={true} // 因为这里是全部为true的
+                      // showTrace={true}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       columns={set.columns}
                       session={session}

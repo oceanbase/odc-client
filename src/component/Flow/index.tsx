@@ -7,12 +7,13 @@ import ReactFlow, {
   useReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
-import CustomEdge from './realTimeAnalysis/customComponents/CustomEdge';
-import CustomNode from './realTimeAnalysis/customComponents/CustomNode';
-import CustomControl from './realTimeAnalysis/customComponents/CustomControl';
-import CustomDetailBox from './realTimeAnalysis/customComponents/CustomDetailBox';
-import { transformDataForReactFlow } from './realTimeAnalysis/utils';
-import * as d3 from 'd3';
+import CustomEdge from './customComponents/CustomEdge';
+import CustomNode from './customComponents/CustomNode';
+import CustomControl from './customComponents/CustomControl';
+import CustomDetailBox from './customComponents/CustomDetailBox';
+import { transformDataForReactFlow, initCenter, handleSelectNode } from './utils';
+import { REACT_FLOW_ID } from './constant';
+
 import 'reactflow/dist/style.css';
 
 const edgeTypes = { 'custom-edge': CustomEdge };
@@ -21,67 +22,37 @@ const nodeTypes = { customNode: CustomNode };
 
 function Flow(props) {
   const { dataSource } = props;
-
   if (!dataSource) return null;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
 
-  const locateNode = (nodeId) => {
-    // debugger
-    // 1. 获取节点信息:它在画布上的坐标。
-    // 2. 计算画布应该移动的位移: 根据节点的坐标和画布的尺寸，计算出为了使节点居中，画布应该如何移动。
+  const { zoomIn, zoomOut, setCenter, setViewport } = useReactFlow();
 
-    // 3. 更新React Flow的状态: 使用React Flow提供的API来更新画布的位置和/或缩放级别，以确保节点被移动到中心。
-    const node = initialNodes?.find((n) => n?.id === nodeId);
-    setSelectedNode(node);
-    const element = document.getElementById('react-flow-box');
-    const width = element.offsetWidth;
-    const height = element.offsetHeight;
-    if (node) {
-      // 假设画布大小是800x600，这个根据你的实际大小调整
-      const x = -node?.position.x + width / 2 - 280 / 2;
-      const y = -node?.position.y + height / 2 - 90 / 2;
-      setViewport({ x, y, zoom: 1 }, { duration: 500 });
-    }
-  };
   const { nodes: initialNodes, edges: initialEdges } = transformDataForReactFlow(
     dataSource?.vertexes,
     dataSource?.duration,
     setNodes,
     setSelectedNode,
-    locateNode,
+    setViewport,
   );
 
-  const { zoomIn, zoomOut, setCenter, setViewport } = useReactFlow();
-
   const reactFlowInstance = useRef(null);
+
+  // 初始化数据
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
-    // setSelectedNode(initialNodes[0]);
   }, []);
 
+  // 视图位置初始化
   useEffect(() => {
-    const element = document.getElementById('react-flow-box');
-    const width = element.offsetWidth;
-    const height = element.offsetHeight;
-    const centerWidth = width / 4 - 280;
-    const centerHeight = height / 2 - 16;
-    setCenter(centerWidth, centerHeight, { zoom: 1 });
+    initCenter(setCenter);
   }, [setCenter]);
 
+  // 选择的高亮
   useEffect(() => {
-    // if (!initialNodes.length) return;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === selectedNode?.id) {
-          // debugger
-          return { ...node, data: { ...node.data, isSelected: !node.data?.isSelected } };
-        }
-        return { ...node, data: { ...node.data, isSelected: false } };
-      }),
-    );
+    handleSelectNode(setNodes, selectedNode?.id);
   }, [JSON.stringify(selectedNode?.id)]);
 
   const onConnect = useCallback(
@@ -97,9 +68,11 @@ function Flow(props) {
       style={{
         height: '100%',
         overflowY: 'auto',
+        overflowX: 'auto',
         backgroundColor: 'rgba(0,0,0,0.02)',
         border: '1px solid #E0E0E0',
         width: 'calc(100% - 320px)',
+        minWidth: '960px',
       }}
     >
       <CustomDetailBox
@@ -107,11 +80,8 @@ function Flow(props) {
         topNodes={dataSource?.topNodes}
         initialNodes={initialNodes}
       />
-      {/* <button onClick={() => setCenter(100, 100, { zoom: 2, duration: 50 })}>111</button>
-      <button onClick={() => zoomIn()}>+</button>
-      <button onClick={() => zoomOut()}>-</button> */}
       <ReactFlow
-        id="react-flow-box"
+        id={REACT_FLOW_ID}
         {...props}
         nodes={nodes}
         edges={edges}
@@ -120,11 +90,7 @@ function Flow(props) {
         onConnect={onConnect}
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
-        // fitView
         ref={reactFlowInstance}
-        // fitViewOptions={{
-        //   ...defaultViewport,
-        // }}
         onElementClick={(event, element) => {
           setSelectedNode(element);
         }}
@@ -136,7 +102,6 @@ function Flow(props) {
 }
 
 function FlowWithProvider(props) {
-  // debugger
   return (
     <ReactFlowProvider>
       <Flow {...props} />

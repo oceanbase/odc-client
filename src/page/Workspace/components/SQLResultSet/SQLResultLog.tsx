@@ -104,9 +104,9 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
           个
         </div>
         <div>
-          <Space size="small">
-            <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
-            {currentExecuteInfo?.traceId && (
+          {currentExecuteInfo?.traceId && (
+            <Space size="small">
+              <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
               <Link
                 onClick={() =>
                   onOpenExecutingDetailModal(currentExecuteInfo?.traceId, currentExecuteInfo?.sql)
@@ -114,8 +114,8 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
               >
                 查看执行画像
               </Link>
-            )}
-          </Space>
+            </Space>
+          )}
         </div>
       </Space>
       <Button onClick={stopRunning} style={{ marginTop: 16 }}>

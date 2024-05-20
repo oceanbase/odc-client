@@ -208,7 +208,6 @@ export class SQLStore {
               rows: [],
             };
           });
-          // 加到store里
           this.records = [
             ...recordWithoutRows.reverse().map((r, index) => {
               return { ...r, id: generateUniqKey() };
@@ -230,7 +229,6 @@ export class SQLStore {
             });
             this.resultSets.set(pageKey, [
               ...lockedResultSets,
-              // 拼装结果集
               this.getLogTab(record),
               ...generateResultSetColumns(record.executeResult, session?.connection?.dialectType),
             ]);
@@ -269,15 +267,11 @@ export class SQLStore {
         handleResult();
 
         if (res?.currentExecuteInfo?.finished) {
-          // record = {...record, executeResult: [...result]}
           break;
         } else {
-          // handleResult()
           await new Promise((resolve) => setTimeout(resolve, statusCheckInterval));
         }
       }
-
-      // 这里希望一边存一边请求,将内轮询的逻辑放到store, 以触发页面更新
     } catch (e) {
       throw e;
     } finally {
@@ -298,7 +292,6 @@ export class SQLStore {
       // 是否支持编辑
       editable: false,
       isQueriedEditable: false,
-      // todo 这里要带上当前执行信息
       logTypeData: executeResult?.map((item) => {
         return {
           status: item.status,
