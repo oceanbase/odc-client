@@ -7,6 +7,7 @@
   margin-bottom: 16px;
   background: var(--odc-antd-drawer-bg-color);
 }
+
 .content {
   position: absolute;
   top: 60px;
@@ -15,12 +16,14 @@
   left: 0;
   padding: 0 24px 24px 24px;
   overflow: auto;
+
   :global {
     .ant-divider-horizontal {
       margin: 12px 0;
     }
   }
 }
+
 .flowDrawer {
   :global {
     .ant-drawer-footer {
@@ -28,6 +31,7 @@
     }
   }
 }
+
 .taskinfo {
   :global {
     .ant-descriptions {
@@ -36,6 +40,7 @@
           padding-bottom: 0;
         }
       }
+
       .ant-descriptions-item {
         .ant-descriptions-item-content {
           display: inline-block;
@@ -61,12 +66,14 @@
   padding-right: 16px;
   border-top: 1px solid var(--odc-border-color);
 }
+
 .detailDrawer {
   :global {
     .ant-spin-nested-loading,
     .ant-spin-container {
       height: 100%;
     }
+
     .ant-drawer-body {
       position: absolute;
       top: 55px;
@@ -77,6 +84,7 @@
       overflow-y: scroll;
     }
   }
+
   .content {
     position: absolute;
     top: 60px;
@@ -85,6 +93,7 @@
     left: 0;
     padding: 0 24px 24px 24px;
     overflow: auto;
+
     :global {
       .ant-divider-horizontal {
         margin: 12px 0;
@@ -92,22 +101,27 @@
     }
   }
 }
+
 .taskResult {
   width: 100%;
+
   .errorRecord {
     width: 100%;
   }
+
   .record {
     max-height: 400px;
     padding: 12px 20px;
     overflow-y: auto;
     background: var(--background-tertraiy-color);
     border: 1px solid var(--odc-border-color);
+
     .item {
       margin-top: 10px;
       color: var(--text-color-secondary);
       font-family: 'Monaco', monospace;
       line-height: 20px;
+
       &:first-child {
         margin-top: 0;
       }
@@ -119,39 +133,47 @@
   .description {
     color: var(--text-color-hint);
   }
+
   .block {
     padding: 12px;
     background: var(--background-primary-color);
   }
+
   .userList {
     .split {
       padding: 0 5px;
       color: #cbcbcb;
     }
+
     .approverWrapper {
       :global {
         .ant-btn.ant-btn-link {
           background: var(--background-primary-color);
         }
       }
+
       &::after {
         background: linear-gradient(to right, transparent, var(--background-primary-color) 50%);
       }
     }
+
     :global {
       .ant-descriptions-item-container .ant-descriptions-item-content {
         flex-wrap: wrap;
       }
     }
   }
+
   :global {
     .ant-descriptions-row > td {
       padding-bottom: 6px;
     }
+
     .ant-steps-item-title {
       font-weight: 700;
       font-size: 12px;
     }
+
     .ant-steps-item-process {
       .ant-steps-item-icon {
         width: 8px;
@@ -159,6 +181,7 @@
       }
     }
   }
+
   &:global(.ant-steps-vertical.ant-steps-dot) {
     :global {
       .ant-steps-item-process .ant-steps-item-container .ant-steps-item-icon .ant-steps-icon-dot {
@@ -173,17 +196,21 @@
     .ant-table-tbody > tr.ant-table-row-selected > td {
       background: var(--background-primary-color);
     }
+
     .ant-table-row,
     .ant-table-thead {
       background: var(--background-primary-color);
+
       .ant-table-cell:first-child {
         border-left: 1px solid var(--odc-border-color);
       }
+
       .ant-table-cell {
         border-right: 1px solid var(--odc-border-color);
         border-bottom: 1px solid var(--odc-border-color);
       }
     }
+
     .ant-table-thead {
       .ant-table-cell {
         border-top: 1px solid var(--odc-border-color);
@@ -196,15 +223,18 @@
   :global {
     .ant-descriptions-header {
       margin-bottom: 6px;
+
       .ant-descriptions-title {
         font-weight: normal;
         font-size: 12px;
       }
     }
+
     .ant-descriptions-view {
       padding: 12px;
       background: var(--background-tertraiy-color);
     }
+
     .ant-descriptions-row:last-child > td {
       padding-bottom: 0;
     }
@@ -215,6 +245,7 @@
   display: flex;
   justify-content: space-between;
   padding-right: 15px;
+
   .share {
     font-size: 12px;
   }
@@ -224,6 +255,14 @@
   :global {
     .ant-descriptions-item-label {
       line-height: 22px;
+    }
+  }
+}
+
+.multipleErrorExecNode {
+  :global {
+    .ant-steps-item-tail::after {
+      background-color: #1890ff !important;
     }
   }
 }

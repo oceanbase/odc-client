@@ -22,6 +22,7 @@ import {
 import UserPopover from '@/component/UserPopover';
 import {
   IFlowTaskType,
+  IMultipleAsyncPermisssionTaskParams,
   ITaskFlowNode,
   ITaskResult,
   TaskDetail,
@@ -34,11 +35,12 @@ import {
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Space, Steps } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './index.less';
 import { getStatusDisplayInfo } from './Nodes/helper';
 import RollbackNode from './Nodes/RollbackNode';
 import SQLCheckNode from './Nodes/SQLCheckNode';
+import MultipleSQLCheckNode from './Nodes/MultipleSQLCheckNode';
 const { Step } = Steps;
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;
@@ -63,8 +65,10 @@ interface ITaskRenderFlowNode extends ITaskFlowNode {
 }
 const TaskFlow: React.FC<IProps> = (props) => {
   const { task, result } = props;
-  const { creator } = task ?? {};
+  const { creator, parameters, nodeList } = task ?? {};
   let approvalCount = 0;
+  let executeNodeCount = 0;
+  let currrentRenderExecuteNodeCount = 0;
   let currentNodeIndex = 0;
   let completedNode: {
     visible: boolean;
@@ -175,14 +179,20 @@ const TaskFlow: React.FC<IProps> = (props) => {
   };
   const handleTask = (node: Partial<ITaskRenderFlowNode>, index: number) => {
     let _node = node;
+    if ((node?.taskType as unknown) === TaskType.MULTIPLE_ASYNC) {
+      executeNodeCount++;
+    }
     if (
       node.nodeType === TaskFlowNodeType.SERVICE_TASK &&
       ![IFlowTaskType.PRE_CHECK, IFlowTaskType.GENERATE_ROLLBACK].includes(node.taskType)
     ) {
       const { deadlineTime, completeTime, operator, status, taskType } = node;
-      let title = formatMessage({
-        id: 'odc.component.CommonTaskDetailModal.TaskFlow.Run',
-      });
+      let title =
+        (node?.taskType as unknown) === TaskType.MULTIPLE_ASYNC
+          ? `执行节点${executeNodeCount}`
+          : formatMessage({
+              id: 'odc.component.CommonTaskDetailModal.TaskFlow.Run',
+            });
 
       //执行
       let statusContent = nodeStatusMap[TaskFlowNodeType.SERVICE_TASK][status];
@@ -192,6 +202,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
             title,
             operator,
             status,
+            taskType,
             statusContent,
             hasOperatorLabel: true,
           };
@@ -205,6 +216,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
             status,
             statusContent,
             deadlineTime,
+            taskType,
             hasDeadlineTimeLabel: true,
             hasOperatorLabel: true,
           };
@@ -389,7 +401,13 @@ const TaskFlow: React.FC<IProps> = (props) => {
                     id: 'odc.component.CommonTaskDetailModal.TaskFlow.PreCheck',
                   }) //预检查
                 }
-                description={<SQLCheckNode flowId={task?.id} node={item} />}
+                description={
+                  task?.type === TaskType?.MULTIPLE_ASYNC ? (
+                    <MultipleSQLCheckNode flowId={task?.id} node={item} />
+                  ) : (
+                    <SQLCheckNode flowId={task?.id} node={item} />
+                  )
+                }
               />
             );
           }
@@ -410,6 +428,80 @@ const TaskFlow: React.FC<IProps> = (props) => {
            * 旧版还是用老的模版
            */
           default: {
+            if ((item?.taskType as unknown) === TaskType.MULTIPLE_ASYNC) {
+              const parameters = (task as TaskDetail<IMultipleAsyncPermisssionTaskParams>)
+                ?.parameters;
+              const databaseMap = parameters?.databases?.reduce((pre, cur) => {
+                pre[cur?.id] = cur;
+                return pre;
+              }, {});
+              const databaseIdStr =
+                parameters?.orderedDatabaseIds?.[currrentRenderExecuteNodeCount++]
+                  ?.map((id) => {
+                    return databaseMap?.[id]?.name;
+                  })
+                  ?.filter(Boolean)
+                  ?.join(', ') || '-';
+              return (
+                <Step
+                  key={i}
+                  status={statusContent?.status as any}
+                  title={title}
+                  className={styles.multipleErrorExecNode}
+                  description={
+                    hasDescription && (
+                      <Space direction="vertical">
+                        <Descriptions column={1} className={styles.block}>
+                          {hasOperatorLabel && (
+                            <Descriptions.Item
+                              label="数据库"
+
+                              /*处理人*/
+                            >
+                              {databaseIdStr}
+                            </Descriptions.Item>
+                          )}
+
+                          <Descriptions.Item
+                            label={formatMessage({
+                              id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingStatus',
+                            })}
+
+                            /*处理状态*/
+                          >
+                            <Space>
+                              {statusContent?.text}
+                              {isExternalFlow && (
+                                <a href={externalFlowInstanceUrl} target="_blank" rel="noreferrer">
+                                  {
+                                    formatMessage({
+                                      id: 'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
+                                    })
+                                    /*查看审批详情*/
+                                  }
+                                </a>
+                              )}
+                            </Space>
+                          </Descriptions.Item>
+
+                          {hasCompleteTimeLabel && (
+                            <Descriptions.Item
+                              label={formatMessage({
+                                id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingTime',
+                              })}
+
+                              /*处理时间*/
+                            >
+                              {getLocalFormatDateTime(completeTime)}
+                            </Descriptions.Item>
+                          )}
+                        </Descriptions>
+                      </Space>
+                    )
+                  }
+                />
+              );
+            }
             return (
               <Step
                 status={statusContent?.status as any}
@@ -428,8 +520,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                           >
                             {isExternalFlow ? (
                               formatMessage({
-                                id:
-                                  'odc.src.component.Task.component.CommonDetailModal.ExternalApproval',
+                                id: 'odc.src.component.Task.component.CommonDetailModal.ExternalApproval',
                               }) //'外部审批'
                             ) : (
                               <Space>
@@ -443,8 +534,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                                   <span className={styles.description}>
                                     {
                                       formatMessage({
-                                        id:
-                                          'odc.component.CommonTaskDetailModal.TaskFlow.AutomaticApproval',
+                                        id: 'odc.component.CommonTaskDetailModal.TaskFlow.AutomaticApproval',
                                       })
 
                                       /*(自动审批)*/
@@ -469,6 +559,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                               externalApprovalName
                             ) : (
                               <MultiLineOverflowText
+                                key={i}
                                 className={styles.approverWrapper}
                                 isShowMore
                                 content={
@@ -505,8 +596,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
                               <a href={externalFlowInstanceUrl} target="_blank" rel="noreferrer">
                                 {
                                   formatMessage({
-                                    id:
-                                      'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
+                                    id: 'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
                                   })
                                   /*查看审批详情*/
                                 }

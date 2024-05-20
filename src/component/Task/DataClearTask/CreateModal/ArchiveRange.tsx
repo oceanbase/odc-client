@@ -17,20 +17,29 @@
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, Select, Space } from 'antd';
+import { Button, Form, Input, Radio, Select, Space, Checkbox, Typography } from 'antd';
 import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
+import { useState } from 'react';
+import { PartitionTextArea } from '../../component/PartitionTextArea';
+
+const { TextArea } = Input;
+const { Text, Link } = Typography;
+
 interface IProps {
   tables: ITable[];
+  needCheckBeforeDelete?: boolean;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables } = props;
+  const { tables, needCheckBeforeDelete = false } = props;
+  const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
+  const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
   return (
     <>
       <Form.Item
@@ -63,31 +72,44 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           if (archiveRange !== IArchiveRange.PORTION) {
             return null;
           }
+          const tables = getFieldValue('tables') || [];
           return (
-            <Space direction="vertical">
-              <Space className={styles.infoLabel}>
-                <div
-                  style={{
-                    width: '220px',
-                  }}
-                >
-                  {
-                    formatMessage({
-                      id: 'odc.DataClearTask.CreateModal.ArchiveRange.TableName',
-                    }) /*表名*/
-                  }
+            <div className={styles.tableHeader}>
+              <div className={styles.tableHeaderExtra}>
+                <div>清理设置</div>
+                <div>
+                  <Checkbox
+                    onChange={() => {
+                      setEnablePartition(!enablePartition);
+                    }}
+                  >
+                    指定分区
+                  </Checkbox>
                 </div>
-                <div
-                  style={{
-                    width: '460px',
-                  }}
-                >
-                  <Space>
+              </div>
+              <div
+                className={classNames(styles.tables, styles.title, {
+                  [styles.delete]: tables?.length > 1,
+                  [styles.advancedOption]: needCheckBeforeDelete || enablePartition,
+                })}
+              >
+                <div className={styles.tableTitle} style={{ width: 160, padding: '3px 8px' }}>
+                  清理表
+                </div>
+                <div className={styles.tableTitle}>
+                  <div style={{ display: 'inline-flex', gap: 4, padding: '3px 8px' }}>
                     {
                       formatMessage({
                         id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
                       }) /*清理条件*/
                     }
+                    <Text type="secondary">
+                      {
+                        formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                        }) /*(可选)*/
+                      }
+                    </Text>
                     <ArchiveRangeTip
                       label={
                         formatMessage({
@@ -95,9 +117,23 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         }) /* 清理 */
                       }
                     />
-                  </Space>
+                  </div>
                 </div>
-              </Space>
+                {hasAdvancedOptionCol && (
+                  <div className={styles.tableTitle}>
+                    <span style={{ padding: '3px 8px', display: 'inline-flex', gap: '4px' }}>
+                      <span>高级设置</span>
+                      <Text type="secondary">
+                        {
+                          formatMessage({
+                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                          }) /*(可选)*/
+                        }
+                      </Text>
+                    </span>
+                  </div>
+                )}
+              </div>
               <Form.List name="tables">
                 {(fields, { add, remove }) => (
                   <div className={styles.infoBlock}>
@@ -106,6 +142,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         key={key}
                         className={classNames(styles.tables, {
                           [styles.delete]: fields?.length > 1,
+                          [styles.advancedOption]: hasAdvancedOptionCol,
                         })}
                       >
                         <Form.Item
@@ -119,6 +156,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               }), //请选择
                             },
                           ]}
+                          style={{ width: 160 }}
                         >
                           <Select
                             showSearch
@@ -134,12 +172,47 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         <Form.Item {...restField} name={[name, 'conditionExpression']}>
                           <Input
                             placeholder={formatMessage({
-                              id:
-                                'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
                             })} /*请输入清理条件*/
                           />
                         </Form.Item>
-                        {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
+                        {(needCheckBeforeDelete || enablePartition) && (
+                          <div
+                            style={{ display: 'flex', flexDirection: 'column' }}
+                            className={styles.multiInputBox}
+                          >
+                            {needCheckBeforeDelete && (
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'targetTableName']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: '请输入',
+                                  },
+                                ]}
+                              >
+                                <Input
+                                  addonBefore={'目标表'}
+                                  placeholder={
+                                    formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                    }) /*"请输入"*/
+                                  }
+                                />
+                              </Form.Item>
+                            )}
+                            {enablePartition && (
+                              <PartitionTextArea {...restField} name={[name, 'partitions']} />
+                            )}
+                          </div>
+                        )}
+
+                        {fields?.length > 1 && (
+                          <Link onClick={() => remove(name)} style={{ textAlign: 'center' }}>
+                            移除
+                          </Link>
+                        )}
                       </div>
                     ))}
                     <Form.Item
@@ -147,7 +220,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         marginBottom: 0,
                       }}
                     >
-                      <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                      <Button onClick={() => add()} block icon={<PlusOutlined />}>
                         {
                           formatMessage({
                             id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
@@ -158,7 +231,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   </div>
                 )}
               </Form.List>
-            </Space>
+            </div>
           );
         }}
       </Form.Item>

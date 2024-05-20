@@ -19,7 +19,7 @@ import { formatMessage } from '@/util/intl';
 import { Tooltip } from 'antd';
 import React from 'react';
 
-const columns = [
+const columns = (needCheckBeforeDelete: boolean) => [
   {
     dataIndex: 'tableName',
     title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.TableName' }), //表名
@@ -35,6 +35,27 @@ const columns = [
       return <Tooltip title={value}>{value || '-'}</Tooltip>;
     },
   },
+  {
+    dataIndex: 'targetTableName',
+    title: '目标表名',
+    ellipsis: true,
+    width: 190,
+    render: (value) => {
+      if (!needCheckBeforeDelete) {
+        return '-';
+      }
+      return <Tooltip title={value}>{value || '-'}</Tooltip>;
+    },
+  },
+  {
+    dataIndex: 'partitions',
+    title: '指定分区',
+    ellipsis: true,
+    width: 190,
+    render: (value) => {
+      return value?.join(',') || '-';
+    },
+  },
 ];
 
 const ArchiveRange: React.FC<{
@@ -42,12 +63,13 @@ const ArchiveRange: React.FC<{
     conditionExpression: string;
     tableName: string;
   }[];
+  needCheckBeforeDelete?: boolean;
 }> = (props) => {
-  const { tables } = props;
+  const { tables, needCheckBeforeDelete = false } = props;
   return (
     <DisplayTable
       rowKey="id"
-      columns={columns}
+      columns={columns(needCheckBeforeDelete)}
       dataSource={tables}
       scroll={null}
       disablePagination
