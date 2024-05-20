@@ -444,8 +444,6 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                   const raw = await formRef.getFieldsValue()?.conditions;
                                   if (raw?.length >= 2) {
                                     setShowConditionGroup(true);
-                                  } else {
-                                    console.log(raw);
                                   }
                                 }}
                               >

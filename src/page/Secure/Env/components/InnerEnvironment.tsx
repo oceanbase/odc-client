@@ -30,7 +30,8 @@ import { useState } from 'react';
 export const RenderLevel: React.FC<{
   level: number | string;
   extra?: string;
-}> = ({ level, extra }) => {
+  iconMode?: boolean;
+}> = ({ iconMode, level, extra }) => {
   const levelMap = {
     [RiskLevelEnum.DEFAULT]: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
     //无需改进
@@ -44,7 +45,15 @@ export const RenderLevel: React.FC<{
     [RiskLevelEnum.SUGGEST]: 'orange',
     [RiskLevelEnum.MUST]: 'red',
   };
-  return <RiskLevelLabel content={levelMap[level]} color={colorMap[level]} extra={extra} />;
+  return (
+    <RiskLevelLabel
+      iconMode={iconMode}
+      level={level as number}
+      content={levelMap[level]}
+      color={colorMap[level]}
+      extra={extra}
+    />
+  );
 };
 export interface InnerEnvironmentProps {
   currentEnvironment: IEnvironment;

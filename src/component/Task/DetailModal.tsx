@@ -64,6 +64,7 @@ import { SqlPlanTaskContent } from './SQLPlanTask';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
+import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
 
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;
@@ -389,6 +390,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
           theme={theme}
         />
       );
+      break;
+    }
+    case TaskType.MULTIPLE_ASYNC: {
+      taskContent = <MutipleAsyncTaskContent task={task} result={result} hasFlow={hasFlow} />;
       break;
     }
     default: {

@@ -40,6 +40,7 @@ import tracert from '@/util/tracert';
 import { getTaskDetail } from '@/common/network/task';
 import { message } from 'antd';
 import { useSetState } from 'ahooks';
+import { TaskDetailContext } from './TaskDetailContext';
 interface IProps {
   taskStore?: TaskStore;
   modalStore?: ModalStore;
@@ -51,7 +52,7 @@ interface IProps {
   defaultTaskId?: number;
   defaultTaskType?: TaskType;
 }
-interface IState {
+export interface IState {
   detailId: number;
   detailType: TaskType;
   detailVisible: boolean;
@@ -60,7 +61,7 @@ interface IState {
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
 const TaskManaerContent: React.FC<IProps> = (props) => {
-  const { pageKey, taskStore, modalStore, isMultiPage = false } = props;
+  const { pageKey, taskStore, modalStore, isMultiPage = false, inProject, projectId } = props;
   const taskTabType = pageKey || taskStore?.taskPageType;
   const taskOpenRef = useRef<boolean>(null);
   const [state, setState] = useSetState<IState>({
@@ -94,6 +95,15 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     [TaskPageType.APPLY_PROJECT_PERMISSION]: () => modalStore.changeApplyPermissionModal(true),
     [TaskPageType.APPLY_DATABASE_PERMISSION]: () =>
       modalStore.changeApplyDatabasePermissionModal(true),
+    [TaskPageType.MULTIPLE_ASYNC]: () =>
+      modalStore.changeMultiDatabaseChangeModal(
+        true,
+        inProject
+          ? {
+              projectId,
+            }
+          : null,
+      ),
   };
   const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { pageKey, taskStore } = props;
@@ -255,7 +265,12 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     openDefaultTask();
   }, []);
   return (
-    <>
+    <TaskDetailContext.Provider
+      value={{
+        handleDetailVisible,
+        setState,
+      }}
+    >
       <div className={styles.content}>
         <TaskTable
           tableRef={tableRef}
@@ -277,7 +292,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         onDetailVisible={handleDetailVisible}
         onReloadList={reloadList}
       />
-    </>
+    </TaskDetailContext.Provider>
   );
 };
 export default inject('userStore', 'taskStore', 'modalStore')(observer(TaskManaerContent));

@@ -27,6 +27,7 @@ import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import { SqlInterceptorKey } from './EditRuleDrawer';
 import { RenderLevel } from './InnerEnvironment';
 import styles from './index.less';
+import { LintLabel } from '@/page/Workspace/components/SQLResultSet/columns';
 
 function getConfig(
   rule: IRule,
@@ -157,19 +158,19 @@ export const getColumns = ({
       key: 'level',
       filters: [
         {
-          text: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+          text: <LintLabel level={RiskLevelEnum.DEFAULT} needLevelMap noPadding />,
           value: RiskLevelEnum.DEFAULT,
         },
         {
-          text: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+          text: <LintLabel level={RiskLevelEnum.SUGGEST} needLevelMap noPadding />,
           value: RiskLevelEnum.SUGGEST,
         },
         {
-          text: RiskLevelTextMap[RiskLevelEnum.MUST],
+          text: <LintLabel level={RiskLevelEnum.MUST} needLevelMap noPadding />,
           value: RiskLevelEnum.MUST,
         },
       ],
-      render: (_, record) => <RenderLevel level={record.level} />,
+      render: (_, record) => <LintLabel level={record.level} needLevelMap noPadding />,
     },
     {
       title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.WhetherToEnable' }), //是否启用

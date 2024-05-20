@@ -24,7 +24,7 @@ const Task: React.FC<IProps> = (props) => {
   useEffect(() => {
     tracert.expo('a3112.b64002.c330859');
   }, []);
-  return <TaskManage projectId={Number(props.id)} inProject={true} />;
+  return <TaskManage projectId={Number(props?.id)} inProject={true} />;
 };
 
 export default Task;

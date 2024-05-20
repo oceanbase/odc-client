@@ -20,7 +20,7 @@ import { IRiskLevel } from '@/d.ts/riskLevel';
 import { Acess, canAcess, createPermission } from '@/component/Acess';
 import CommonTable from '@/component/CommonTable';
 import { IOperationOptionType } from '@/component/CommonTable/interface';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { actionTypes, IManagerResourceType, ITaskFlow } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { ExclamationCircleFilled } from '@ant-design/icons';
@@ -40,9 +40,8 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [editId, setEditId] = useState<number>(null);
-  const [manageApprovalProcessDrawerOpen, setManageApprovalProcessDrawerOpen] = useState<boolean>(
-    false,
-  );
+  const [manageApprovalProcessDrawerOpen, setManageApprovalProcessDrawerOpen] =
+    useState<boolean>(false);
   const [approvalProcessOptions, setApprovalProcessOptions] = useState<
     {
       label: string;
@@ -159,7 +158,8 @@ const RiskLevelInfo = ({ currentRiskLevel, memoryReload }) => {
             }
             <span>:</span>
           </div>
-          <RiskLevelLabel level={currentRiskLevel?.level} color={currentRiskLevel?.style} />
+          {/* <RiskLevelLabel level={currentRiskLevel?.level} color={currentRiskLevel?.style} /> */}
+          <ODCRiskLevelLabel iconMode levelMap level={currentRiskLevel?.level} />
         </Space>
 
         <Space className={styles.tag}>
