@@ -30,6 +30,7 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 import _executeSQL from './executeSQL';
+import { IDatabase } from '@/d.ts/database';
 
 export const executeSQL = _executeSQL;
 
@@ -335,5 +336,26 @@ export async function runSQLLint(
       },
     },
   );
+  return res?.data?.contents;
+}
+export async function runMultipleSQLLint(
+  data: {
+    databaseIds: number[];
+    delimiter: string;
+    scriptContent: string;
+  },
+  currentOrganizationId: string,
+): Promise<
+  {
+    checkResultList: ISQLLintReuslt[];
+    database: IDatabase;
+  }[]
+> {
+  const res = await request.post(`/api/v2/datasource/sessions/sqlCheck`, {
+    data,
+    params: {
+      currentOrganizationId,
+    },
+  });
   return res?.data?.contents;
 }

@@ -29,6 +29,7 @@ import {
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import LogModal from './LogModal';
+import ExcecuteDetailModal from './ExcecuteDetailModal';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import styles from './index.less';
@@ -82,8 +83,17 @@ const getConnectionColumns = (params: {
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onLogVisible: (recordId: number, visible: boolean) => void;
+  onExcecuteDetailVisible: (recordId: number, visible: boolean) => void;
 }) => {
-  const { taskType, taskId, showLog, onReloadList, onDetailVisible, onLogVisible } = params;
+  const {
+    taskType,
+    taskId,
+    showLog,
+    onReloadList,
+    onDetailVisible,
+    onLogVisible,
+    onExcecuteDetailVisible,
+  } = params;
   const jobFilter = getJobFilter(taskType);
   const isSqlPlan = taskType === TaskType.SQL_PLAN;
   const statusFilters = getStatusFilters(!isSqlPlan);
@@ -145,7 +155,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Operation' }), //操作
       ellipsis: true,
-      width: 140,
+      width: 210,
       render: (_, record) => {
         return (
           <TaskTools
@@ -156,6 +166,7 @@ const getConnectionColumns = (params: {
             onReloadList={onReloadList}
             onDetailVisible={onDetailVisible}
             onLogVisible={onLogVisible}
+            onExcecuteDetailVisible={onExcecuteDetailVisible}
           />
         );
       },
@@ -174,6 +185,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [logVisible, setLogVisible] = useState(false);
+  const [excecuteDetailVisible, setExcecuteDetailVisible] = useState<boolean>(false);
   const tableRef = useRef();
   const taskId = task?.id;
   const showLog = [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(task?.type);
@@ -193,6 +205,14 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
 
   const handleCloseLog = () => {
     handleLogVisible(null);
+  };
+
+  const handleExcecuteDetailVisible = (recordId: number, visible: boolean = false) => {
+    setExcecuteDetailVisible(visible);
+    setDetailId(recordId);
+  };
+  const handleCloseExcecuteDetail = () => {
+    handleExcecuteDetailVisible(null);
   };
 
   const handleLoad = async (args?: ITableLoadOptions) => {
@@ -215,6 +235,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
             onReloadList: onReload,
             onDetailVisible: handleDetailVisible,
             onLogVisible: handleLogVisible,
+            onExcecuteDetailVisible: handleExcecuteDetailVisible,
           }),
           dataSource: subTasks?.contents,
           rowKey: 'id',
@@ -242,6 +263,12 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         scheduleId={task?.id}
         recordId={detailId}
         onClose={handleCloseLog}
+      />
+      <ExcecuteDetailModal
+        visible={excecuteDetailVisible}
+        scheduleId={task?.id}
+        recordId={detailId}
+        onClose={handleCloseExcecuteDetail}
       />
     </>
   );

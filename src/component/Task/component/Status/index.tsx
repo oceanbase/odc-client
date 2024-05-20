@@ -558,7 +558,7 @@ export const subTaskStatus = {
 
 interface IProps {
   status: TaskStatus;
-  progress: number;
+  progress?: number;
   type?: TaskType;
   isSubTask?: boolean;
 }

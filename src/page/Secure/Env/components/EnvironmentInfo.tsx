@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { formatMessage } from '@/util/intl';
 import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
 import styles from './index.less';

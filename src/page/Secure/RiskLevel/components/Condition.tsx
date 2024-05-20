@@ -131,7 +131,6 @@ const Condition = ({
       if (checkIsProNameOrDBName(expression)) {
         setIsInputComponent(true);
         setValue(value);
-        console.log(105, value);
       } else {
         setIsInputComponent(false);
         const data = formRef.getFieldsValue()?.conditions;
