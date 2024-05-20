@@ -16,10 +16,11 @@
 
 import { useState } from 'react';
 import { getProjectList } from '@/common/network/task';
+import { IProject } from '@/d.ts/project';
 
 export const useProjects = () => {
-  const [projects, setProjects] = useState<any[]>([]);
-
+  const [projects, setProjects] = useState<IProject[]>([]);
+  const [projectMap, setProjectMap] = useState<Record<number, string>>({});
   const projectOptions = projects?.map(({ name, id }) => ({
     label: name,
     value: id,
@@ -28,10 +29,16 @@ export const useProjects = () => {
   const loadProjects = async () => {
     const res = await getProjectList(false);
     setProjects(res?.contents);
+    const rawProjectMap = res?.contents?.reduce((pre, cur) => {
+      pre[cur?.id] = cur?.name;
+      return pre;
+    }, {});
+    setProjectMap(rawProjectMap);
   };
 
   return {
     projects,
+    projectMap,
     projectOptions,
     loadProjects,
   };

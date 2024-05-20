@@ -282,7 +282,16 @@ export interface IResponseData<T> {
   contents: T[];
   page: IResponseDataPage;
 }
-
+export interface IResponse<T> {
+  data: T;
+  durationMillis: number;
+  httpStatus: string;
+  requestId?: string;
+  server: string;
+  successful: boolean;
+  timestamp: number;
+  traceId: string;
+}
 export enum IConnectionStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
@@ -1864,6 +1873,7 @@ export enum TaskPageType {
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
 }
 
 export enum TaskType {
@@ -1885,6 +1895,7 @@ export enum TaskType {
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
 }
 
 export enum TaskJobType {
@@ -2267,7 +2278,8 @@ export type TaskRecordParameters =
   | IAlterScheduleTaskParams
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
-  | IApplyDatabasePermissionTaskParams;
+  | IApplyDatabasePermissionTaskParams
+  | IMultipleAsyncPermisssionTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2623,6 +2635,10 @@ export interface IApplyDatabasePermissionTaskParams {
   types: DatabasePermissionType[];
   expireTime: number;
   applyReason: string;
+}
+export interface IMultipleAsyncPermisssionTaskParams {
+  databases?: IDatabase[];
+  orderedDatabaseIds?: number[][];
 }
 
 export interface IResultSetExportTaskParams {

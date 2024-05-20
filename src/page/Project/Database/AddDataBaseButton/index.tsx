@@ -30,12 +30,13 @@ import { ProjectRole } from '@/d.ts/project';
 import { DefaultOptionType } from 'antd/es/select';
 import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
+import { ModalStore } from '@/store/modal';
 interface IProps {
   projectId: number;
+  modalStore?: ModalStore;
   onSuccess: () => void;
 }
-
-export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
+const AddDataBaseButton: React.FC<IProps> = ({ projectId, modalStore, onSuccess }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
 
@@ -112,6 +113,15 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
             }
           </Button>
         </TooltipAction>
+        <Button
+          onClick={() =>
+            modalStore?.changeMultiDatabaseChangeModal(true, {
+              projectId,
+            })
+          }
+        >
+          多库变更
+        </Button>
         <ApplyDatabasePermissionButton
           label={
             formatMessage({
@@ -275,4 +285,6 @@ export default function AddDataBaseButton({ projectId, onSuccess }: IProps) {
       </Modal>
     </>
   );
-}
+};
+
+export default AddDataBaseButton;

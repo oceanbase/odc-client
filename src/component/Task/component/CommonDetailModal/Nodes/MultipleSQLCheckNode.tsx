@@ -1,53 +1,51 @@
-/*
- * Copyright 2023 OceanBase
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { getFlowSQLLintResult } from '@/common/network/task';
-import LintDrawer from '@/component/SQLLintResult/Drawer';
-import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
-import { Descriptions, Tag } from 'antd';
+import { Descriptions, Drawer, Tag } from 'antd';
 import React, { useState } from 'react';
 import NodeCompleteTime from './Items/NodeCompleteTime';
 import NodeStatus from './Items/NodeStatus';
 import { formatMessage } from '@/util/intl';
 import styles from '../index.less';
+import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
+import { IDatabase } from '@/d.ts/database';
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;
 }
-const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
+const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [permissionResultVisible, setPermissionResultVisible] = useState(false);
-  const [data, setData] = useState<ISQLLintReuslt[]>([]);
-  // const [multipleData, setMultipleData] = useState
+  const [data, setData] = useState<
+    {
+      checkResult: ISQLLintReuslt;
+      database: IDatabase;
+    }[]
+  >([]);
   const showCount = typeof issueCount === 'number';
   const showUnauthorized = unauthorizedDatabases?.length > 0;
   const showReslut = showCount || showUnauthorized || preCheckOverLimit;
   async function viewLintResult() {
+    setVisible(true);
     if (isLoading) {
       return;
     }
     setIsLoading(true);
     try {
       const result = await getFlowSQLLintResult(flowId, id);
-      if (result?.sqlCheckResult?.results) {
-        setData(result?.sqlCheckResult?.results);
+      if (result?.multipleSqlCheckTaskResult?.sqlCheckTaskResultList) {
+        const { databaseList, sqlCheckTaskResultList } = result?.multipleSqlCheckTaskResult ?? {};
+        const lintResults = [];
+        sqlCheckTaskResultList?.forEach((item, index) => {
+          lintResults.push(
+            ...item?.results?.map((result) => ({
+              checkResult: result,
+              database: databaseList?.[index],
+            })),
+          );
+        });
+        setData(lintResults);
         setVisible(true);
       }
     } finally {
@@ -56,7 +54,8 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   }
 
   function viewPermissionResult() {
-    setPermissionResultVisible(true);
+    // setPermissionResultVisible(true);
+    setVisible(true);
   }
   return (
     <>
@@ -180,15 +179,29 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
           <NodeCompleteTime node={node} />
         </Descriptions.Item>
       </Descriptions>
-      <LintDrawer visible={visible} closePage={() => setVisible(false)} data={data} />
-      <DBPermissionTableDrawer
-        visible={permissionResultVisible}
-        dataSource={unauthorizedDatabases}
+      {/* <LintDrawer visible={visible} closePage={() => setVisible(false)} data={data} /> */}
+      <Drawer
+        title="检查结果"
+        width={720}
+        open={visible}
+        closable
         onClose={() => {
-          setPermissionResultVisible(false);
+          setVisible(false);
         }}
-      />
+      >
+        <Descriptions>
+          <Descriptions.Item label="SQL 检查结果">存在{issueCount}个问题</Descriptions.Item>
+        </Descriptions>
+        <MultipleLintResultTable
+          pageSize={10}
+          showLocate={false}
+          hasExtraOpt={false}
+          lintResultSet={data}
+          sqlChanged={false}
+          baseOffset={0}
+        />
+      </Drawer>
     </>
   );
 };
-export default SQLCheckNode;
+export default MultipleSQLCheckNode;
