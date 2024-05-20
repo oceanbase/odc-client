@@ -1,10 +1,17 @@
-export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
+export function transformDataForReactFlow(
+  vertexes,
+  duration,
+  setNodes,
+  setSelectedNode,
+  locateNode,
+) {
   const nodes = [];
   const edges = [];
-  const durationSum = vertexes.reduce((sum, vertex) => sum + vertex.duration, 0);
   const idToNodeMap = new Map();
   const rootNodes = [];
   const LEVEL_GAP = 200; // 每层的垂直间隙
+  const defaultHeight = 0;
+  // const defaultHeight = 16
 
   const hiddenChild = (allNodes, node, nodeHidden, isChild = false) => {
     if (nodeHidden && isChild) {
@@ -19,6 +26,7 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
       hiddenChild(allNodes, childNode, nodeHidden, true);
     });
   };
+  // 树打开收起
   const changeTreeOpen = (nodeId, nodeHidden) => {
     setNodes((nds) =>
       nds.map((node) => {
@@ -72,7 +80,7 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
   function layoutNode(node, x, level) {
     // 设置节点的x和y
     node.x = x;
-    node.y = level * LEVEL_GAP;
+    node.y = level * LEVEL_GAP + defaultHeight;
 
     let currentX = x - calculateNodeWidth(node) / 2;
     node.children.forEach((child, index) => {
@@ -89,6 +97,9 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
 
   // 对根节点进行布局
   rootNodes.forEach((root) => {
+    // 初始化
+    // const element = document.getElementById('react-flow-box');
+    // const width = element?.offsetWidth || 0;
     layoutNode(root, 0, 0); // 假设根节点从(0,0)开始布局
   });
 
@@ -102,10 +113,12 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
         id: node.graphId.toString(),
         isTreeOpen: true,
         changeTreeOpen: changeTreeOpen,
+        locateNode: locateNode,
         hasChild: node.outEdges.length,
         outEdges: node?.outEdges || [],
         setSelectedNode: setSelectedNode,
-        percentage: ((node.duration / durationSum) * 100).toFixed(2),
+        percentage: ((node.duration / duration) * 100).toFixed(2),
+        isSelected: false,
       },
       position: { x: node.x, y: node.y },
       type: 'customNode',
@@ -125,5 +138,5 @@ export function transformDataForReactFlow(vertexes, setNodes, setSelectedNode) {
     });
   });
 
-  return { nodes, edges, durationSum };
+  return { nodes, edges, duration };
 }

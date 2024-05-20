@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import modal from '@/store/modal';
-import { Tabs, Button, message, Modal, Radio } from 'antd';
+import { Tabs, Button, message, Modal, Radio, Space } from 'antd';
 import styles from './index.less';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
@@ -9,13 +9,23 @@ import Flow from '@/component/Flow';
 import SQLExplain from '@/page/Workspace/components/SQLExplain';
 import { getSQLExecuteExplain } from '@/common/network/sql';
 import Trace from '@/page/Workspace/components/Trace';
+import { ReactComponent as List } from '@/svgr/List.svg';
+import { ReactComponent as Tree } from '@/svgr/Tree.svg';
+import { ReactComponent as Text } from '@/svgr/Text.svg';
+import Icon from '@ant-design/icons';
 interface IProps {
   modalStore?: ModalStore;
 }
 
+const TypeMap = {
+  TREE: 'TREE',
+  LIST: 'LIST',
+  TEXT: 'TEXT',
+};
 const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [data, setData] = useState(null);
   const [tab, setTab] = useState<EXECUTE_KAY>(EXECUTE_KAY.EXECUTE_DETAIL);
+  const [viewType, setViewType] = useState(TypeMap.TREE);
   const [sqlExplainToShow, setSqlExplainToShow] = useState(null);
 
   const fetchExecPlan = async () => {
@@ -62,25 +72,24 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
 
   const enum EXECUTE_KAY {
     EXECUTE_DETAIL = 'EXECUTE_DETAIL',
-    EXECUTE_PLAN = 'EXECUTE_PLAN',
     FULL_TRACE = 'FULL_TRACE',
   }
+
+  const SqlProfileMap = {
+    [TypeMap.TREE]: <Flow dataSource={data?.graph} />,
+    [TypeMap.LIST]: 'list',
+    [TypeMap.TEXT]: 'text',
+  };
   const EXECUTE_MAP = {
     [EXECUTE_KAY.EXECUTE_DETAIL]: {
       label: '执行详情',
       key: EXECUTE_KAY.EXECUTE_DETAIL,
-      children: <Flow dataSource={data?.graph} />,
-    },
-    [EXECUTE_KAY.EXECUTE_PLAN]: {
-      label: '执行计划',
-      key: EXECUTE_KAY.EXECUTE_PLAN,
-      children: '执行计划-待搬',
-      // children: <SQLExplain session={modalStore?.executeSqlDetailData?.session} sql={modalStore?.executeSqlDetailData?.selectedSQL} explain={sqlExplainToShow} haveText />,
+      children: SqlProfileMap[viewType],
     },
     [EXECUTE_KAY.FULL_TRACE]: {
       label: '全链路诊断',
       key: EXECUTE_KAY.FULL_TRACE,
-      children: '全链路诊断-待搬',
+      children: '全链路诊断',
       // <Trace
       //   key={'trace' + modalStore?.executeSqlDetailData?.session?.sessionId}
       //   open={true}
@@ -92,6 +101,11 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
     },
   };
 
+  const TypeOptions = [
+    { value: TypeMap.TREE, icon: <Icon component={Tree} /> },
+    { value: TypeMap.LIST, icon: <Icon component={List} /> },
+    { value: TypeMap.TEXT, icon: <Icon component={Text} /> },
+  ];
   return (
     <>
       <Modal
@@ -112,25 +126,35 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           >
             SQL: {modalStore?.executeSqlDetailData?.sql}
           </span>
-          {/* todo 这里可以返回吗 */}
-          {/* SQL: {data?.sqlText} */}
-          <Radio.Group
-            value={tab}
-            onChange={(e) => {
-              setTab(e?.target?.value);
-            }}
-            style={{ padding: '8px 0' }}
-          >
-            <Radio.Button value={EXECUTE_KAY.EXECUTE_DETAIL}>
-              {EXECUTE_MAP.EXECUTE_DETAIL.label}
-            </Radio.Button>
-            <Radio.Button value={EXECUTE_KAY.EXECUTE_PLAN}>
-              {EXECUTE_MAP.EXECUTE_PLAN.label}
-            </Radio.Button>
-            <Radio.Button value={EXECUTE_KAY.FULL_TRACE}>
-              {EXECUTE_MAP.FULL_TRACE.label}
-            </Radio.Button>
-          </Radio.Group>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Radio.Group
+              value={tab}
+              onChange={(e) => {
+                setTab(e?.target?.value);
+              }}
+              style={{ padding: '8px 0' }}
+            >
+              <Radio.Button value={EXECUTE_KAY.EXECUTE_DETAIL}>
+                {EXECUTE_MAP.EXECUTE_DETAIL.label}
+              </Radio.Button>
+              <Radio.Button value={EXECUTE_KAY.FULL_TRACE}>
+                {EXECUTE_MAP.FULL_TRACE.label}
+              </Radio.Button>
+            </Radio.Group>
+            <Space>
+              <Button>导出 Json</Button>
+              <Radio.Group
+                defaultValue={TypeMap.TREE}
+                size="small"
+                value={viewType}
+                onChange={(e) => setViewType(e.target.value)}
+              >
+                {TypeOptions.map((i) => {
+                  return <Radio.Button value={i.value}>{i?.icon}</Radio.Button>;
+                })}
+              </Radio.Group>
+            </Space>
+          </div>
           {EXECUTE_MAP?.[tab]?.children}
         </div>
       </Modal>
