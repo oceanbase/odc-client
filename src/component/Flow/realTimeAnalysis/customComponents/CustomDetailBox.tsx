@@ -1,38 +1,82 @@
 import { Divider, Progress } from 'antd';
 import styles from './index.less';
+import classnames from 'classnames';
+
 export default (props) => {
-  const { dataSource } = props;
-  if (!dataSource) return null;
+  const { dataSource, topNodes, initialNodes } = props;
+  console.log(dataSource);
+  const { duration } = topNodes;
+  const topNodesList = initialNodes?.filter((i) => [...duration].includes(i?.id));
+
+  const locateNode = (i) => {
+    i?.data?.locateNode(i?.id);
+  };
+  const top5 = () => {
+    return (
+      <div>
+        <h3 style={{ padding: '0px 8px' }}>耗时 Top5</h3>
+        {topNodesList?.map((i) => {
+          return (
+            <div
+              className={classnames(styles.top5, {
+                [styles.current]: i?.id === dataSource?.data?.id,
+              })}
+              onClick={() => locateNode(i)}
+            >
+              <span>
+                {i?.data?.name}
+                <span style={{ color: 'rgba(0,0,0,0.45)', height: 28 }}>[{i?.id}]</span>
+              </span>
+              <span>{i?.data?.overview?.['DB Time']}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+  if (!topNodesList) return null;
+  if (!dataSource) {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          right: '16px',
+          width: '320px',
+          backgroundColor: '#FFFFF',
+          border: '1px solid #E0E0E0',
+          height: 'calc(100% - 140px)',
+          overflowY: 'auto',
+          padding: '12px 8px',
+        }}
+        className={styles.customDetailBox}
+      >
+        {top5()}
+      </div>
+    );
+  }
 
   const { data } = dataSource;
-  // debugger
   if (!data) return null;
   return (
     <div
       style={{
         position: 'absolute',
-        right: '16px',
+        right: '17px',
         width: '320px',
         backgroundColor: '#FFFFF',
         border: '1px solid #E0E0E0',
-        height: 'calc(100% - 140px)',
+        height: 'calc(100% - 141px)',
         overflowY: 'auto',
         padding: '12px 8px',
       }}
       className={styles.customDetailBox}
     >
       <div>
-        <div>
-          <h3>耗时 Top5</h3>
-          // todo 未返回
-          {data?.topNodes?.map((i) => {
-            return i;
-          })}
-        </div>
+        {top5()}
         <Divider />
-        <div>
-          <h3 className={styles.customDetailBoxTitle}>Node 执行概览</h3>
-          <Progress percent={data?.percentage} />
+        <div style={{ padding: '0px 8px' }}>
+          <h3>执行概览</h3>
+          <Progress percent={data?.percentage} showInfo={false} />
           <div className={styles.customDetailBoxItem}>
             DB 耗时: <span>{data?.overview?.['DB Time']}</span>
           </div>
@@ -41,15 +85,22 @@ export default (props) => {
           </div>
         </div>
         <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
-        {/* <div className={styles.customDetailBoxItem}>这里我忘了</div> */}
+        {Object?.entries(data?.statistics)?.map(([key, value]) => {
+          return (
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px' }}>
+              <span>{key}</span>
+              <span>{value}</span>
+            </div>
+          );
+        })}
         <h3 className={styles.customDetailBoxTitle}>节点属性</h3>
         {Object?.entries(data?.attributes)?.map(([key, value]) => {
           return (
-            <div>
+            <div style={{ padding: '0 8px' }}>
               <h4 className={styles.customDetailBoxSubTitle}>{key}</h4>
               {/* @ts-ignore */}
               {value?.map((i) => (
-                <div className={styles.customDetailBoxItem}>{i}</div>
+                <div>{i}</div>
               ))}
             </div>
           );

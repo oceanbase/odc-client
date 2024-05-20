@@ -32,6 +32,8 @@ import type { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import { ReactComponent as SubmitSvg } from '@/svgr/Submit.svg';
 import { ReactComponent as TraceSvg } from '@/svgr/Trace.svg';
+import { ReactComponent as SqlProfile } from '@/svgr/SqlProfile.svg';
+
 import { formatMessage } from '@/util/intl';
 import Icon, {
   BarsOutlined,
@@ -967,11 +969,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             {showExecutePlan && (
               <ToolbarButton
                 text={'执行画像'}
-                icon={<TraceSvg />}
+                icon={<Icon component={SqlProfile} />}
                 onClick={() => {
                   guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
-                  // debugger
-                  // todo 这里进的拿不到当前sql?
                   onOpenExecutingDetailModal?.(traceId, originSql);
                 }}
                 GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}
