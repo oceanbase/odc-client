@@ -14,19 +14,35 @@
  * limitations under the License.
  */
 
-import { getSubTask, swapTableName } from '@/common/network/task';
+import { getSubTask, getTaskDetail, swapTableName } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
-import { TaskDetail, TaskRecordParameters } from '@/d.ts';
+import {
+  IMultipleAsyncPermisssionTaskParams,
+  TaskDetail,
+  TaskPageType,
+  TaskRecordParameters,
+  TaskType,
+} from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Space, message } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Drawer, Popover, Space, message } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRequest } from 'ahooks';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import {
+  getDataSourceModeConfigByConnectionMode,
+  getDataSourceStyleByConnectType,
+} from '@/common/datasource';
+import { getLocalFormatDateTime } from '@/util/utils';
+import { flatArray } from '../../MutipleAsyncTask/CreateModal';
+import { TaskDetailContext } from '../../TaskDetailContext';
+import { TaskStore } from '@/store/task';
+import { inject, observer } from 'mobx-react';
+import Icon from '@ant-design/icons';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 const getColumns = (params: {
   onOpenDetail: (id: number) => void;
   onSwapTable: (id: number) => void;
@@ -101,19 +117,173 @@ const getColumns = (params: {
     },
   ];
 };
+const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: number) => void }) => {
+  return [
+    {
+      title: '执行顺序',
+      dataIndex: 'nodeIndex',
+      width: 100,
+      render: (nodeIndex) => nodeIndex + 1,
+      onCell: (record, index) => {
+        return {
+          rowSpan: record?.needMerge ? record?.rowSpan : 0,
+        };
+      },
+    },
+    {
+      title: '数据库',
+      dataIndex: 'database',
+      width: 264,
+      ellipsis: {
+        showTitle: true,
+      },
+      render: (_, record) => {
+        const icon = getDataSourceStyleByConnectType(record?.database?.dataSource?.type);
+        return (
+          <Popover
+            content={
+              <Space size={0}>
+                <RiskLevelLabel
+                  content={record?.database?.environment?.name}
+                  color={record?.database?.environment?.style}
+                />
+                <Space size={4}>
+                  <Icon
+                    component={icon?.icon?.component}
+                    style={{
+                      color: icon?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+                  <div>{record?.database?.name}</div>
+                  <div style={{ color: 'var(--neutral-black45-color)' }}>
+                    {record?.database?.dataSource?.name}
+                  </div>
+                </Space>
+              </Space>
+            }
+          >
+            <Space size={0}>
+              <RiskLevelLabel
+                content={record?.database?.environment?.name}
+                color={record?.database?.environment?.style}
+              />
+              <Space size={4}>
+                <Icon
+                  component={icon?.icon?.component}
+                  style={{
+                    color: icon?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
+                <div>{record?.database?.name}</div>
+                <div style={{ color: 'var(--neutral-black45-color)' }}>
+                  {record?.database?.dataSource?.name}
+                </div>
+              </Space>
+            </Space>
+          </Popover>
+        );
+      },
+    },
+    {
+      title: '开始时间',
+      dataIndex: 'createTime',
+      width: 178,
+      render: (_, record) => (
+        <div>
+          {record?.flowInstanceDetailResp?.createTime
+            ? getLocalFormatDateTime(record?.flowInstanceDetailResp?.createTime)
+            : '-'}
+        </div>
+      ),
+    },
+    {
+      dataIndex: 'status',
+      title: '执行状态',
+      ellipsis: true,
+      width: 140,
+      render: (status, record) => {
+        return (
+          <StatusLabel
+            status={record?.status}
+            progress={Math.floor(record?.flowInstanceDetailResp?.progressPercentage)}
+          />
+        );
+      },
+    },
+    {
+      dataIndex: 'action',
+      title: '操作',
+      ellipsis: true,
+      width: 120,
+      render: (_, record) => {
+        return (
+          <>
+            <Action.Link
+              disabled={!record?.flowInstanceDetailResp}
+              onClick={async () => {
+                onOpenDetail(record?.flowInstanceDetailResp?.id);
+              }}
+            >
+              {
+                formatMessage({
+                  id: 'odc.component.CommonDetailModal.TaskProgress.View',
+                }) /*查看*/
+              }
+            </Action.Link>
+          </>
+        );
+      },
+    },
+  ];
+};
 interface IProps {
+  taskStore?: TaskStore;
   task: TaskDetail<TaskRecordParameters>;
   theme?: string;
 }
 const TaskProgress: React.FC<IProps> = (props) => {
-  const { task, theme } = props;
+  const { handleDetailVisible: _handleDetailVisible, setState } = useContext(TaskDetailContext);
+  const { task, theme, taskStore } = props;
   const [subTasks, setSubTasks] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [open, setOpen] = useState(false);
   const { run: loadData } = useRequest(
     async () => {
       const res = await getSubTask(task.id);
-      setSubTasks(res?.contents?.[0].tasks);
+      if (task?.type === TaskType.MULTIPLE_ASYNC) {
+        const sortDb = flatArray(
+          (task as TaskDetail<IMultipleAsyncPermisssionTaskParams>)?.parameters?.orderedDatabaseIds,
+        );
+        // @ts-ignore
+        const dbMap = res?.contents?.[0]?.databaseChangingRecordList?.reduce((pre, cur) => {
+          pre[cur?.database?.id] = cur;
+          return pre;
+        }, {});
+        const rawData = [];
+        let rawCount = 0;
+        (
+          task as TaskDetail<IMultipleAsyncPermisssionTaskParams>
+        )?.parameters?.orderedDatabaseIds?.map((item, index) => {
+          item?.forEach((_item_, _index_) => {
+            rawData.push({
+              id: rawCount,
+              nodeIndex: index,
+              rowSpan: item?.length,
+              needMerge: _index_ === 0,
+              ...dbMap[_item_],
+            });
+            rawCount++;
+          });
+        });
+        // @ts-ignore
+        setSubTasks(rawData);
+      } else {
+        setSubTasks(res?.contents?.[0].tasks);
+      }
     },
     {
       pollingInterval: 3000,
@@ -142,58 +312,36 @@ const TaskProgress: React.FC<IProps> = (props) => {
     setOpen(true);
     setDetailId(id);
   };
+  const onOpenDetail = async (taskId: number) => {
+    const data = await getTaskDetail(taskId, true);
+    setState({
+      detailVisible: false,
+    });
+    taskStore.changeTaskPageType(TaskPageType.ASYNC);
+    _handleDetailVisible(data, true);
+  };
   const handleClose = () => {
     setOpen(false);
   };
+  const columns =
+    task?.type === TaskType.MULTIPLE_ASYNC
+      ? getMultipleAsyncColumns({
+          onOpenDetail,
+        })
+      : getColumns({
+          onOpenDetail: handleDetailVisible,
+          onSwapTable: handleSwapTable,
+        });
   return (
     <>
+      {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
+        <div>以下 {subTasks?.length} 个数据库待执行</div>
+      )}
       <DisplayTable
         className={styles.subTaskTable}
         rowKey="id"
-        columns={getColumns({
-          onOpenDetail: handleDetailVisible,
-          onSwapTable: handleSwapTable,
-        })}
+        columns={columns}
         dataSource={subTasks}
-        expandable={{
-          expandedRowRender: (record) => {
-            const resultJson = JSON.parse(record?.resultJson);
-            return (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '0 8px',
-                }}
-              >
-                <span>
-                  {
-                    formatMessage({
-                      id: 'odc.component.CommonDetailModal.TaskProgress.EstimatedNumberOfRows',
-                    }) /*预估数据行数：*/
-                  }
-                  {resultJson?.fullTransferEstimatedCount ?? '-'}
-                </span>
-                <span>
-                  {
-                    formatMessage({
-                      id: 'odc.component.CommonDetailModal.TaskProgress.ActualNumberOfCopies',
-                    }) /*实际拷贝行数：*/
-                  }
-                  {resultJson?.fullTransferFinishedCount ?? '-'}
-                </span>
-                <span>
-                  {
-                    formatMessage({
-                      id: 'odc.component.CommonDetailModal.TaskProgress.DataConsistencyCheck',
-                    }) /*数据一致性校验：*/
-                  }
-                  {resultJson?.fullVerificationResultDescription ?? '-'}{' '}
-                </span>
-              </div>
-            );
-          },
-        }}
         disablePagination
         scroll={null}
       />
@@ -265,4 +413,4 @@ const TaskProgress: React.FC<IProps> = (props) => {
     </>
   );
 };
-export default TaskProgress;
+export default inject('taskStore')(observer(TaskProgress));

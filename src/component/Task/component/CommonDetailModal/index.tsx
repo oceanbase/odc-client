@@ -127,6 +127,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     theme,
     onClose,
   } = props;
+  // 任务信息
   const hasInfo = [
     TaskType.ASYNC,
     TaskType.IMPORT,
@@ -143,7 +144,9 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
     TaskType.APPLY_DATABASE_PERMISSION,
+    TaskType.MULTIPLE_ASYNC,
   ].includes(task?.type);
+  // 任务日志
   const hasLog = [
     TaskType.ASYNC,
     TaskType.IMPORT,
@@ -264,8 +267,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               </Radio.Button>
             </>
           )}
-
-          {task?.type === TaskType.ONLINE_SCHEMA_CHANGE && (
+          {[TaskType.ONLINE_SCHEMA_CHANGE, TaskType.MULTIPLE_ASYNC]?.includes(task?.type) && (
             <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
                 formatMessage({

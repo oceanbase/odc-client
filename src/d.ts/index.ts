@@ -282,7 +282,16 @@ export interface IResponseData<T> {
   contents: T[];
   page: IResponseDataPage;
 }
-
+export interface IResponse<T> {
+  data: T;
+  durationMillis: number;
+  httpStatus: string;
+  requestId?: string;
+  server: string;
+  successful: boolean;
+  timestamp: number;
+  traceId: string;
+}
 export enum IConnectionStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
@@ -1864,6 +1873,7 @@ export enum TaskPageType {
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
 }
 
 export enum TaskType {
@@ -1885,6 +1895,7 @@ export enum TaskType {
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
 }
 
 export enum TaskJobType {
@@ -2267,7 +2278,8 @@ export type TaskRecordParameters =
   | IAlterScheduleTaskParams
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
-  | IApplyDatabasePermissionTaskParams;
+  | IApplyDatabasePermissionTaskParams
+  | IMultipleAsyncPermisssionTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2297,6 +2309,49 @@ export enum MigrationInsertAction {
   INSERT_DUPLICATE_UPDATE = 'INSERT_DUPLICATE_UPDATE',
 }
 
+export enum SyncTableStructureEnum {
+  COLUMN = 'COLUMN',
+  CONSTRAINT = 'CONSTRAINT',
+  INDEX = 'INDEX',
+  PARTITION = 'PARTITION',
+}
+
+export const SyncTableStructureConfig = {
+  [SyncTableStructureEnum.COLUMN]: {
+    label: '表结构',
+  },
+  [SyncTableStructureEnum.CONSTRAINT]: {
+    label: '唯一性约束',
+  },
+  [SyncTableStructureEnum.INDEX]: {
+    label: '索引',
+  },
+  [SyncTableStructureEnum.PARTITION]: {
+    label: '分区',
+  },
+};
+export const SyncTableStructureOptions = [
+  {
+    value: SyncTableStructureEnum.COLUMN,
+    label: SyncTableStructureConfig[SyncTableStructureEnum.COLUMN].label,
+    disabled: true,
+  },
+  {
+    value: SyncTableStructureEnum.CONSTRAINT,
+    label: SyncTableStructureConfig[SyncTableStructureEnum.CONSTRAINT].label,
+
+    disabled: true,
+  },
+  {
+    value: SyncTableStructureEnum.PARTITION,
+    label: SyncTableStructureConfig[SyncTableStructureEnum.PARTITION].label,
+  },
+  {
+    value: SyncTableStructureEnum.INDEX,
+    label: SyncTableStructureConfig[SyncTableStructureEnum.INDEX].label,
+  },
+];
+
 export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
   name: string;
@@ -2320,6 +2375,8 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
+  taskExecutionDurationHours: number;
+  syncTableStructure: SyncTableStructureEnum[];
 }
 
 export interface IDataClearJobParameters {
@@ -2340,6 +2397,12 @@ export interface IDataClearJobParameters {
     name: string;
     pattern: string;
   }[];
+  taskExecutionDurationHours: number;
+  needCheckBeforeDelete: boolean;
+  targetDatabaseId?: number;
+  targetDatabaseName?: string;
+  sourceDataSourceName?: string;
+  targetDataSourceName?: string;
 }
 
 export interface ISqlPlayJobParameters {
@@ -2375,6 +2438,60 @@ export interface ICycleTaskRecord<T> {
   database: IDatabase;
   riskLevel?: IRiskLevel;
   description?: string;
+}
+
+export interface ICycleSubTaskDetailRecord {
+  createTime: number;
+  id: number;
+  jobGroup: TaskType.DATA_ARCHIVE | TaskType.SQL_PLAN;
+  jobName: string;
+  resultJson: string;
+  status: SubTaskStatus;
+  updateTime: number;
+  executionDetails: string;
+}
+
+export enum SubTaskType {
+  MIGRATE = 'MIGRATE',
+  CHECK = 'CHECK',
+  DELETE = 'DELETE',
+  QUICK_DELETE = 'QUICK_DELETE',
+  DEIRECT_DELETE = 'DEIRECT_DELETE',
+  ROLLBACK = 'ROLLBACK',
+}
+
+export const SubTaskTypeMap = {
+  [SubTaskType.MIGRATE]: {
+    label: '归档',
+  },
+  [SubTaskType.CHECK]: {
+    label: '数据检查',
+  },
+  [SubTaskType.DELETE]: {
+    label: '数据清理',
+  },
+  [SubTaskType.QUICK_DELETE]: {
+    label: '数据清理',
+  },
+  [SubTaskType.DEIRECT_DELETE]: {
+    label: '数据清理',
+  },
+  [SubTaskType.ROLLBACK]: {
+    label: '回滚',
+  },
+};
+
+export interface ISubTaskTaskUnit {
+  endTime: number;
+  processedRowCount: number;
+  processedRowsPerSecond: number;
+  readRowCount: number;
+  readRowsPerSecond: number;
+  startTime: number;
+  status: TaskStatus;
+  tableName: string;
+  type: TaskType;
+  userCondition: string;
 }
 
 export interface IDataArchiveTaskRecord {
@@ -2518,6 +2635,10 @@ export interface IApplyDatabasePermissionTaskParams {
   types: DatabasePermissionType[];
   expireTime: number;
   applyReason: string;
+}
+export interface IMultipleAsyncPermisssionTaskParams {
+  databases?: IDatabase[];
+  orderedDatabaseIds?: number[][];
 }
 
 export interface IResultSetExportTaskParams {

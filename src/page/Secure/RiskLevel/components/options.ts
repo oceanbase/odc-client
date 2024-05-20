@@ -78,6 +78,10 @@ export const getTaskTypeOptions = () => {
       label: TaskTypeMap[TaskType.STRUCTURE_COMPARISON],
       value: TaskType.STRUCTURE_COMPARISON,
     },
+    {
+      label: TaskTypeMap[TaskType.MULTIPLE_ASYNC],
+      value: TaskType.MULTIPLE_ASYNC,
+    },
   ];
   return newTaskTypeOptions;
 };

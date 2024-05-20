@@ -35,6 +35,7 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   const [visible, setVisible] = useState(false);
   const [permissionResultVisible, setPermissionResultVisible] = useState(false);
   const [data, setData] = useState<ISQLLintReuslt[]>([]);
+  // const [multipleData, setMultipleData] = useState
   const showCount = typeof issueCount === 'number';
   const showUnauthorized = unauthorizedDatabases?.length > 0;
   const showReslut = showCount || showUnauthorized || preCheckOverLimit;
@@ -45,8 +46,8 @@ const SQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
     setIsLoading(true);
     try {
       const result = await getFlowSQLLintResult(flowId, id);
-      if (result) {
-        setData(result);
+      if (result?.sqlCheckResult?.results) {
+        setData(result?.sqlCheckResult?.results);
         setVisible(true);
       }
     } finally {

@@ -64,6 +64,12 @@ interface AsyncData {
   activePageKey?: string;
 }
 
+export interface IMultipleAsyncTaskData {
+  projectId?: number;
+  parameters: {
+    orderedDatabaseIds: number[][];
+  };
+}
 interface ResultSetExportData {
   sql?: string;
   databaseId?: number;
@@ -206,6 +212,9 @@ export class ModalStore {
   public structureComparisonVisible: boolean = false;
 
   @observable
+  public multipleDatabaseChangeOpen: boolean = false;
+
+  @observable
   public structureComparisonDataMap: Map<
     number,
     {
@@ -249,6 +258,9 @@ export class ModalStore {
 
   @observable
   public asyncTaskData: AsyncData = null;
+
+  @observable
+  public multipleAsyncTaskData: Partial<IMultipleAsyncTaskData> = null;
 
   @observable
   public resultSetExportData: ResultSetExportData = null;
@@ -490,6 +502,15 @@ export class ModalStore {
     this.structureComparisonVisible = isShow;
     isShow && this.structureComparisonDataMap.clear();
     this.structureComparisonTaskData = isShow ? data : null;
+  }
+
+  @action
+  public changeMultiDatabaseChangeModal(
+    isShow: boolean = true,
+    data?: Partial<IMultipleAsyncTaskData>,
+  ) {
+    this.multipleDatabaseChangeOpen = isShow;
+    this.multipleAsyncTaskData = isShow ? data : null;
   }
 
   @action

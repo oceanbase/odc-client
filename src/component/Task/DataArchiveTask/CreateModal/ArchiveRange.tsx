@@ -17,18 +17,22 @@
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, Select, Space, Typography } from 'antd';
+import { Button, Form, Input, Radio, Select, Space, Typography, Checkbox } from 'antd';
 import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-const { Text } = Typography;
+import { useState } from 'react';
+import { PartitionTextArea } from '../../component/PartitionTextArea';
+const { TextArea, Group } = Input;
+const { Text, Link } = Typography;
 interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
   const { tables, enabledTargetTable = false } = props;
+  const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
@@ -67,21 +71,33 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             return null;
           }
           return (
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Space
-                className={classNames(styles.tables, {
+            <div className={styles.tableHeader}>
+              <div className={styles.tableHeaderExtra}>
+                <div>归档设置</div>
+                <div>
+                  <Checkbox
+                    onChange={() => {
+                      setEnablePartition(!enablePartition);
+                    }}
+                  >
+                    指定分区
+                  </Checkbox>
+                </div>
+              </div>
+              <div
+                className={classNames(styles.tables, styles.title, {
                   [styles.delete]: tables?.length > 1,
                 })}
               >
-                <div>
+                <div className={styles.tableTitle}>
                   {
                     formatMessage({
                       id: 'odc.src.component.Task.DataArchiveTask.CreateModal.ArchiveTable',
                     }) /* 归档表 */
                   }
                 </div>
-                <div>
-                  <Space>
+                <div className={styles.tableTitle}>
+                  <div style={{ display: 'inline-flex', gap: 4 }}>
                     <span>
                       {
                         formatMessage({
@@ -103,14 +119,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         }) /* 归档 */
                       }
                     />
-                  </Space>
+                  </div>
                 </div>
                 {enabledTargetTable && (
-                  <div>
-                    {formatMessage({
-                      id: 'src.component.Task.DataArchiveTask.CreateModal.50BCBA55' /*目标表*/,
-                    })}
-
+                  <div className={styles.tableTitle}>
+                    高级设置
                     <Text type="secondary">
                       {
                         formatMessage({
@@ -120,7 +133,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     </Text>
                   </div>
                 )}
-              </Space>
+              </div>
               <Form.List name="tables">
                 {(fields, { add, remove }) => (
                   <div className={styles.infoBlock}>
@@ -162,18 +175,31 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           />
                         </Form.Item>
                         {enabledTargetTable && (
-                          <Form.Item {...restField} name={[name, 'targetTableName']}>
-                            <Input
-                              placeholder={
-                                formatMessage({
-                                  id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                }) /*"请输入"*/
-                              }
-                            />
-                          </Form.Item>
+                          <div
+                            style={{ display: 'flex', flexDirection: 'column' }}
+                            className={styles.multiInputBox}
+                          >
+                            <Form.Item {...restField} name={[name, 'targetTableName']}>
+                              <Input
+                                addonBefore={'目标表'}
+                                placeholder={
+                                  formatMessage({
+                                    id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                  }) /*"请输入"*/
+                                }
+                              />
+                            </Form.Item>
+                            {enablePartition && (
+                              <PartitionTextArea {...restField} name={[name, 'partitions']} />
+                            )}
+                          </div>
                         )}
 
-                        {fields?.length > 1 && <DeleteOutlined onClick={() => remove(name)} />}
+                        {fields?.length > 1 && (
+                          <Link onClick={() => remove(name)} style={{ textAlign: 'center' }}>
+                            移除
+                          </Link>
+                        )}
                       </div>
                     ))}
                     <Form.Item
@@ -181,7 +207,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         marginBottom: 0,
                       }}
                     >
-                      <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                      <Button onClick={() => add()} block icon={<PlusOutlined />}>
                         {
                           formatMessage({
                             id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
@@ -192,7 +218,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   </div>
                 )}
               </Form.List>
-            </Space>
+            </div>
           );
         }}
       </Form.Item>

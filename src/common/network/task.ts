@@ -23,6 +23,7 @@ import {
   IAsyncTaskResultSet,
   ICycleSubTaskRecord,
   ICycleTaskRecord,
+  ICycleSubTaskDetailRecord,
   IFunction,
   IPartitionPlan,
   IPartitionPlanTable,
@@ -190,6 +191,19 @@ export async function getTaskStatus(ids: number[]): Promise<Record<number, TaskS
  */
 export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail<T>> {
   const res = await request.get(`/api/v2/schedule/scheduleConfigs/${id}`);
+  return res?.data;
+}
+
+/**
+ * 查询周期任务详情的子任务详情
+ */
+export async function getCycleSubTaskDetail(
+  scheduleId: number,
+  scheduleTaskId: number,
+): Promise<ICycleSubTaskDetailRecord> {
+  const res = await request.get(
+    `/api/v2/schedule/scheduleConfigs/${scheduleId}/scheduleTask/${scheduleTaskId}`,
+  );
   return res?.data;
 }
 
@@ -524,7 +538,7 @@ export async function setShadowSyncRecordStatus(
 
 export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
   const res = await request.get(`/api/v2/flow/flowInstances/${flowId}/tasks/${nodeId}/result`);
-  return res?.data?.contents?.[0]?.sqlCheckResult?.results;
+  return res?.data?.contents?.[0];
 }
 
 /**

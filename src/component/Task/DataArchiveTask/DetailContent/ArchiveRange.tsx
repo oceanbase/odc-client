@@ -40,6 +40,15 @@ const columns = [
     ellipsis: true,
     width: 190,
   },
+  {
+    dataIndex: 'partitions',
+    title: '指定分区',
+    ellipsis: true,
+    width: 190,
+    render: (value) => {
+      return value?.join(',') || '-';
+    },
+  },
 ];
 
 const ArchiveRange: React.FC<{
