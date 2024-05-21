@@ -29,8 +29,7 @@ const DatabaseList = ({
   setSelectAllState,
   modalStore,
 }: Iprops) => {
-  const { selectDatasourceId, datasourceList } = useContext(ResourceTreeContext);
-  const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
+  const { selectProjectId } = useContext(ResourceTreeContext);
 
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
   const options = [...databaseList].filter((i) =>
@@ -113,7 +112,9 @@ const DatabaseList = ({
                   >
                     <DataBaseStatusIcon item={db} />
                     <div style={{ padding: '0 4px' }}>{db.name}</div>
-                    <div className={styles.subInfo}>{selectDatasource?.name}</div>
+                    <div className={styles.subInfo}>
+                      {selectProjectId ? db?.dataSource?.name : null}
+                    </div>
                   </div>
                   {getPositioninButton(db)}
                 </div>
