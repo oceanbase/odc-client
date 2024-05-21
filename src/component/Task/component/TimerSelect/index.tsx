@@ -24,7 +24,7 @@ import moment from 'moment';
 import React from 'react';
 
 interface IProps {
-  isReadonlyPublicConn: boolean;
+  isReadonlyPublicConn?: boolean;
 }
 
 const disabledDate: RangePickerProps['disabledDate'] = (current) => {
@@ -32,12 +32,9 @@ const disabledDate: RangePickerProps['disabledDate'] = (current) => {
 };
 
 const TimerSelect: React.FC<IProps> = (props) => {
-  const { isReadonlyPublicConn } = props;
-  const label = isReadonlyPublicConn
-    ? formatMessage({
-        id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
-      }) //执行方式: 审批完成后
-    : formatMessage({ id: 'odc.components.TaskTimer.ExecutionMethod' }); //执行方式
+  const label = formatMessage({
+    id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
+  });
   return (
     <>
       <Form.Item label={label} name="executionStrategy" required>
@@ -58,15 +55,13 @@ const TimerSelect: React.FC<IProps> = (props) => {
               }
             </Radio>
           ) : null}
-          {isReadonlyPublicConn && (
-            <Radio value={TaskExecStrategy.MANUAL}>
-              {
-                formatMessage({
-                  id: 'odc.components.TaskTimer.ManualExecution',
-                }) /*手动执行*/
-              }
-            </Radio>
-          )}
+          <Radio value={TaskExecStrategy.MANUAL}>
+            {
+              formatMessage({
+                id: 'odc.components.TaskTimer.ManualExecution',
+              }) /*手动执行*/
+            }
+          </Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item noStyle shouldUpdate>
@@ -88,11 +83,9 @@ const TimerSelect: React.FC<IProps> = (props) => {
                   },
                 ]}
                 extra={
-                  isReadonlyPublicConn
-                    ? formatMessage({
-                        id: 'odc.components.TaskTimer.IfTheApprovalIsNot',
-                      }) //若执行时间前未完成审批，则任务将终止不执行
-                    : null
+                  formatMessage({
+                    id: 'odc.components.TaskTimer.IfTheApprovalIsNot',
+                  }) //若执行时间前未完成审批，则任务将终止不执行
                 }
               >
                 <DatePicker

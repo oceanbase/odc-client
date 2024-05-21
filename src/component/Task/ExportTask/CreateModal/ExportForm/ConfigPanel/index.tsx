@@ -33,10 +33,9 @@ const Option = Select.Option;
 
 interface IProps {
   form: FormInstance<any>;
-  isReadonlyPublicConn: boolean;
   connection: IConnection;
 }
-const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, connection }) {
+const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
   const formContext = useContext(FormContext);
   const config = getDataSourceModeConfig(connection?.type);
   const exportFileMaxSizeOpt = [
@@ -504,7 +503,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, isReadonlyPublicConn, co
         label={formatMessage({ id: 'odc.ExportForm.ConfigPanel.TaskSettings' })}
         /*任务设置*/ keepExpand
       >
-        <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
+        <TaskTimer />
       </FormItemPanel>
       {ENABLED_SYS_FROM_ITEM &&
         odc.appConfig.connection.sys &&
