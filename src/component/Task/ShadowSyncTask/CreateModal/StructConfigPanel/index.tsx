@@ -34,7 +34,7 @@ enum TabKeys {
 }
 
 const StructConfigPanel = forwardRef<any, IProps>(function (
-  { data, setData, isReadonlyPublicConn, connectionMode },
+  { data, setData, connectionMode },
   ref,
 ) {
   const [form] = Form.useForm();
@@ -136,7 +136,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
             id: 'odc.CreateShadowSyncModal.StructConfigPanel.TaskSettings',
           })} /*任务设置*/
         >
-          <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
+          <TaskTimer />
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',
