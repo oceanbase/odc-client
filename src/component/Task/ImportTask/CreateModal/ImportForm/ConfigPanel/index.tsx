@@ -15,7 +15,6 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
@@ -83,7 +82,6 @@ const FileSelecterPanel: React.FC<IProps> = function ({
           const importFileName = getFieldValue('importFileName');
           const importContent = getFieldValue('importContent');
           const transferData = importContent !== EXPORT_CONTENT.STRUCT;
-          const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
           const { containsData, containsSchema } = importFileName?.[0]?.response?.data || {};
           return (
             <>
@@ -182,42 +180,38 @@ const FileSelecterPanel: React.FC<IProps> = function ({
                 })}
                 /*任务设置*/ keepExpand
               >
-                {((!isSQLFileType && transferData) || isReadonlyPublicConn) && (
-                  <>
-                    {!isSQLFileType && transferData && (
-                      <FormItem
-                        requiredMark={false}
-                        label={formatMessage({
-                          id: 'odc.ImportDrawer.ImportForm.TaskErrorHandling',
-                        })}
-                        /* 任务错误处理 */ name="stopWhenError"
-                      >
-                        <Radio.Group>
-                          <Radio value>
-                            {
-                              formatMessage({
-                                id: 'odc.ImportDrawer.ImportForm.StopATask',
-                              })
+                {!isSQLFileType && transferData && (
+                  <FormItem
+                    requiredMark={false}
+                    label={formatMessage({
+                      id: 'odc.ImportDrawer.ImportForm.TaskErrorHandling',
+                    })}
+                    /* 任务错误处理 */ name="stopWhenError"
+                  >
+                    <Radio.Group>
+                      <Radio value>
+                        {
+                          formatMessage({
+                            id: 'odc.ImportDrawer.ImportForm.StopATask',
+                          })
 
-                              /* 停止任务 */
-                            }
-                          </Radio>
-                          <Radio value={false}>
-                            {
-                              formatMessage({
-                                id: 'odc.ImportDrawer.ImportForm.IgnoreErrorsContinueTasks',
-                              })
+                          /* 停止任务 */
+                        }
+                      </Radio>
+                      <Radio value={false}>
+                        {
+                          formatMessage({
+                            id: 'odc.ImportDrawer.ImportForm.IgnoreErrorsContinueTasks',
+                          })
 
-                              /* 忽略错误继续任务 */
-                            }
-                          </Radio>
-                        </Radio.Group>
-                      </FormItem>
-                    )}
-                  </>
+                          /* 忽略错误继续任务 */
+                        }
+                      </Radio>
+                    </Radio.Group>
+                  </FormItem>
                 )}
 
-                <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
+                <TaskTimer />
               </FormItemPanel>
             </>
           );

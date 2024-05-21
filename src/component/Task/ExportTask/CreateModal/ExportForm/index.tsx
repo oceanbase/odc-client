@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { isReadonlyPublicConnection } from '@/component/Acess';
 import { formatMessage } from '@/util/intl';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
@@ -55,7 +54,6 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
       });
       const database = data?.data;
       const connection = database?.dataSource;
-      const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
 
       useEffect(() => {
         if (databaseId) {
@@ -97,13 +95,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
             return <ObjSelecterPanel form={form} projectId={projectId} database={database} />;
           }
           case FormType.Config: {
-            return (
-              <ConfigPanel
-                form={form}
-                isReadonlyPublicConn={isReadonlyPublicConn}
-                connection={connection}
-              />
-            );
+            return <ConfigPanel form={form} connection={connection} />;
           }
           default: {
             return null;

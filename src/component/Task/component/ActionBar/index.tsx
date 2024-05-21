@@ -164,6 +164,7 @@ const ActionBar: React.FC<IProps> = inject(
 
           //执行成功
         );
+        closeTaskDetail();
       }
     };
 
@@ -681,6 +682,23 @@ const ActionBar: React.FC<IProps> = inject(
         }
       } else {
         tools = [viewBtn];
+        if (status === TaskStatus.WAIT_FOR_EXECUTION && isOwner) {
+          const _executeBtn = { ...executeBtn };
+          if (task?.executionStrategy === TaskExecStrategy.TIMER) {
+            _executeBtn.disabled = true;
+            const executionTime = getLocalFormatDateTime(task?.executionTime);
+            _executeBtn.tooltip = formatMessage(
+              {
+                id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+              },
+
+              { executionTime: executionTime },
+            );
+          }
+          task?.executionStrategy === TaskExecStrategy.AUTO
+            ? tools.push(stopBtn)
+            : tools.push(_executeBtn, stopBtn);
+        }
       }
       if (task?.executionStrategy === TaskExecStrategy.TIMER) {
         // 定时任务无再次发起
