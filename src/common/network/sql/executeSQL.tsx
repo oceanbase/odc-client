@@ -193,7 +193,7 @@ export default async function executeSQL(
     return pre;
   }, []);
   const unauthorizedDatabases = taskInfo?.unauthorizedDatabases;
-  const violatedRules = rootViolatedRules.concat(taskInfo?.sqls);
+  const violatedRules = rootViolatedRules?.concat(taskInfo?.sqls);
   if (unauthorizedDatabases?.length) {
     // 无权限库
     return {
