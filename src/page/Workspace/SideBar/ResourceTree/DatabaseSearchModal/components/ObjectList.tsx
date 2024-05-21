@@ -32,7 +32,7 @@ const ObjectList = ({
   loading,
 }: Iprops) => {
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
-
+  const ALL_TAB_MAX_LENGTH = 3;
   const getTyepBlock = () => {
     const typeList =
       objectTypeConfig[database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE];
@@ -135,7 +135,7 @@ const ObjectList = ({
                     <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
                     <div>
                       {i.data.map((object, index) => {
-                        if (index < 3) {
+                        if (index < ALL_TAB_MAX_LENGTH) {
                           return (
                             <div
                               className={styles.objectTypeItem}
@@ -171,13 +171,15 @@ const ObjectList = ({
                         }
                       })}
                     </div>
-                    <Button
-                      className={styles.objectTypeItemMore}
-                      type="link"
-                      onClick={() => setActiveKey(i.key)}
-                    >
-                      查看更多
-                    </Button>
+                    {i.data.length > ALL_TAB_MAX_LENGTH ? (
+                      <Button
+                        className={styles.objectTypeItemMore}
+                        type="link"
+                        onClick={() => setActiveKey(i.key)}
+                      >
+                        查看更多
+                      </Button>
+                    ) : null}
                     <Divider
                       style={{
                         margin: '12px 0',
@@ -231,6 +233,7 @@ const ObjectList = ({
       ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
     );
     modalStore.changeDatabaseSearchModalVisible(false);
+    modalStore.databseSearchsSetExpandedKeysFunction(databaseId);
   };
 
   const renderObjectTypeTabs = (type) => {
@@ -316,6 +319,7 @@ const ObjectList = ({
       activeKey={activeKey}
       items={tabList}
       onChange={handleChange}
+      popupClassName={styles.objectSearchPopup}
     />
   );
 };

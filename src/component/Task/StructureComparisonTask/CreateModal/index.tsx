@@ -273,7 +273,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
               <Radio value={TaskExecStrategy.AUTO}>
                 {taskExecStrategyMap?.[TaskExecStrategy.AUTO]}
               </Radio>
-              <Radio value={TaskExecStrategy.MANUAL} disabled>
+              <Radio value={TaskExecStrategy.MANUAL}>
                 {taskExecStrategyMap?.[TaskExecStrategy.MANUAL]}
               </Radio>
             </Radio.Group>

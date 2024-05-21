@@ -500,7 +500,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           })}
           /*任务设置*/ keepExpand
         >
-          <TaskTimer isReadonlyPublicConn={false} />
+          <TaskTimer />
           <Form.Item
             label={formatMessage({
               id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',

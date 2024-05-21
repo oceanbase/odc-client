@@ -937,56 +937,53 @@ const CreateModal: React.FC<IProps> = (props) => {
               </Radio>
             </Radio.Group>
           </Form.Item>
-          <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
+          <TaskTimer />
         </FormItemPanel>
-        {!isReadonlyPublicConn && (
+        <Form.Item
+          label={formatMessage({
+            id: 'odc.components.CreateAsyncTaskModal.ExecutionTimeout',
+          })}
+          /* 执行超时时间 */ required
+        >
           <Form.Item
             label={formatMessage({
-              id: 'odc.components.CreateAsyncTaskModal.ExecutionTimeout',
+              id: 'odc.components.CreateAsyncTaskModal.Hours',
             })}
-            /* 执行超时时间 */ required
-          >
-            <Form.Item
-              label={formatMessage({
-                id: 'odc.components.CreateAsyncTaskModal.Hours',
-              })}
-              /* 小时 */ name="timeoutMillis"
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.EnterATimeoutPeriod',
-                  }),
-
-                  // 请输入超时时间
-                },
-                {
-                  type: 'number',
-                  max: 480,
-                  message: formatMessage({
-                    id: 'odc.components.CreateAsyncTaskModal.MaximumLengthOfHours',
-                  }),
-
-                  // 最大不超过480小时
-                },
-              ]}
-              initialValue={48}
-              noStyle
-            >
-              <InputNumber min={0} precision={1} />
-            </Form.Item>
-            <span className={styles.hour}>
+            /* 小时 */ name="timeoutMillis"
+            rules={[
               {
-                formatMessage({
-                  id: 'odc.components.CreateAsyncTaskModal.Hours',
-                })
+                required: true,
+                message: formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.EnterATimeoutPeriod',
+                }),
 
-                /* 小时 */
-              }
-            </span>
+                // 请输入超时时间
+              },
+              {
+                type: 'number',
+                max: 480,
+                message: formatMessage({
+                  id: 'odc.components.CreateAsyncTaskModal.MaximumLengthOfHours',
+                }),
+
+                // 最大不超过480小时
+              },
+            ]}
+            initialValue={48}
+            noStyle
+          >
+            <InputNumber min={0} precision={1} />
           </Form.Item>
-        )}
+          <span className={styles.hour}>
+            {
+              formatMessage({
+                id: 'odc.components.CreateAsyncTaskModal.Hours',
+              })
 
+              /* 小时 */
+            }
+          </span>
+        </Form.Item>
         <DescriptionInput />
       </Form>
     </Drawer>
