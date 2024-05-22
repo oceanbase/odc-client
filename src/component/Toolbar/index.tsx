@@ -29,7 +29,7 @@ import {
 } from 'antd';
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
-import { ComponentType } from 'react';
+import { ComponentType, useState } from 'react';
 
 import styles from './index.less';
 import statefulIcon, { IConStatus } from './statefulIcon';
@@ -68,6 +68,8 @@ function TButton({
   const isRunning = status === IConStatus.RUNNING;
   disabled = disabled || status === IConStatus.DISABLE;
   const isActive = status === IConStatus.ACTIVE;
+  const [key, setKey] = useState(0);
+  const forceUpdate = () => setKey((prevKey) => prevKey + 1);
   if (typeof icon === 'function' || icon?.render) {
     icon = <Icon component={icon} />;
   } else if (typeof icon === 'string') {
@@ -143,7 +145,14 @@ function TButton({
         <span
           {...rest}
           className={clzName}
-          onClick={!disabled && !confirmConfig && !isRunning ? onClick : null}
+          onClick={
+            !disabled && !confirmConfig && !isRunning
+              ? () => {
+                  onClick();
+                  forceUpdate();
+                }
+              : null
+          }
         >
           <Badge
             dot={

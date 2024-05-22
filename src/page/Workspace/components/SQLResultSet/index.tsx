@@ -37,6 +37,7 @@ import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
 import DBPermissionTable from './DBPermissionTable';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -242,6 +243,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
       sql,
       ctx?.getSession(),
       ctx?.editor.getSelectionContent(),
+      ProfileType.Execute,
     );
   };
 

@@ -21,12 +21,14 @@ import { TransState } from '@/d.ts';
 import { SQLPage } from '@/page/Workspace/components/SQLPage';
 import login from '@/store/login';
 import sqlStore from '@/store/sql';
+import modalStore from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { SaveOutlined } from '@ant-design/icons';
 import { ToolBarActions } from '..';
 import setting from '@/store/setting';
 import { KeyCode } from 'monaco-editor';
 import { getKeyCodeText } from '@/component/Input/Keymap/keycodemap';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 const sqlActions: ToolBarActions = {
   SQL_SAVE: {
@@ -57,7 +59,14 @@ const sqlActions: ToolBarActions = {
       return ctx.getSession()?.supportFeature.enableSQLExplain;
     },
     async action(ctx: any) {
-      await ctx.handleExplain();
+      modalStore.changeExecuteSqlDetailModalVisible(
+        true,
+        null,
+        ctx?.state?.initialSQL,
+        ctx?.getSession(),
+        ctx?.editor.getSelectionContent(),
+        ProfileType.Plan,
+      );
     },
   },
 

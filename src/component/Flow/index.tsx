@@ -43,7 +43,7 @@ function Flow(props) {
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
-  }, []);
+  }, [JSON.stringify(dataSource)]);
 
   // 视图位置初始化
   useEffect(() => {
@@ -72,7 +72,7 @@ function Flow(props) {
         backgroundColor: 'rgba(0,0,0,0.02)',
         border: '1px solid #E0E0E0',
         width: 'calc(100% - 320px)',
-        minWidth: '960px',
+        // minWidth: '960px',
       }}
     >
       <CustomDetailBox
