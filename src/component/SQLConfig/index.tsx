@@ -62,101 +62,126 @@ const SQLConfig: React.FC<IProps> = function (props) {
   function renderContent() {
     return (
       <Row>
-        <Row
-          style={{
-            lineHeight: '28px',
-            width: '100%',
-          }}
-        >
-          Delimiter
-        </Row>
-        <Row style={{ width: '100%' }}>
-          <DelimiterSelect />
-        </Row>
-        <Row
-          style={{
-            lineHeight: '28px',
-            marginTop: 12,
-          }}
-        >
-          {
-            formatMessage({
-              id: 'odc.component.SQLConfig.QueryResultLimits',
-            })
-            /*查询结果限制*/
-          }
-        </Row>
-        <Row>
-          <InputBigNumber
-            value={queryLimitValue}
-            min="1"
-            max={props.settingStore.maxResultSetRows + ''}
+        <h4>SQL 执行</h4>
+        <div className={styles.sqlconfigGroup}>
+          <Row
             style={{
+              lineHeight: '28px',
               width: '100%',
             }}
-            placeholder={formatMessage({
-              id: 'odc.component.SQLConfig.Unlimited',
-            })}
-            /*无限制*/
-            onChange={(v) => {
-              if (!v) {
-                /**
-                 * 判断是否允许无限制，假如不允许，禁止删除
-                 */
-                const max = props.settingStore.maxResultSetRows;
-                if (max !== Number.MAX_SAFE_INTEGER) {
-                  setQueryLimitValue(1);
-                  return;
-                }
-              }
-              setQueryLimitValue(parseInt(v) || undefined);
-            }}
-            onBlur={handleSetQueryLimit}
-          />
-
-          {!queryLimitValue && (
-            <div
-              style={{
-                lineHeight: '28px',
-                color: '#faad14',
-              }}
-            >
-              {
-                formatMessage({
-                  id: 'odc.component.SQLConfig.UnlimitedSystemInstability',
-                })
-
-                /*无限制易导致系统不稳定*/
-              }
-            </div>
-          )}
-        </Row>
-        <Row
-          style={{
-            lineHeight: '28px',
-            marginTop: 12,
-          }}
-        >
-          {
-            formatMessage({
-              id: 'odc.component.SQLConfig.ObtainTheColumnInformationOf',
-            }) /*获取结果集列信息*/
-          }
-        </Row>
-        <Row style={{ width: '100%' }}>
-          <Tooltip
-            title={formatMessage({
-              id: 'odc.component.SQLConfig.AfterClosingColumnCommentsAnd',
-            })} /*关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时*/
           >
+            Delimiter
+          </Row>
+          <Row style={{ width: '100%' }}>
+            <DelimiterSelect />
+          </Row>
+          <Row
+            style={{
+              lineHeight: '28px',
+              marginTop: 12,
+            }}
+          >
+            {
+              formatMessage({
+                id: 'odc.component.SQLConfig.QueryResultLimits',
+              })
+              /*查询结果限制*/
+            }
+          </Row>
+          <Row>
+            <InputBigNumber
+              value={queryLimitValue}
+              min="1"
+              max={props.settingStore.maxResultSetRows + ''}
+              style={{
+                width: '100%',
+              }}
+              placeholder={formatMessage({
+                id: 'odc.component.SQLConfig.Unlimited',
+              })}
+              /*无限制*/
+              onChange={(v) => {
+                if (!v) {
+                  /**
+                   * 判断是否允许无限制，假如不允许，禁止删除
+                   */
+                  const max = props.settingStore.maxResultSetRows;
+                  if (max !== Number.MAX_SAFE_INTEGER) {
+                    setQueryLimitValue(1);
+                    return;
+                  }
+                }
+                setQueryLimitValue(parseInt(v) || undefined);
+              }}
+              onBlur={handleSetQueryLimit}
+            />
+
+            {!queryLimitValue && (
+              <div
+                style={{
+                  lineHeight: '28px',
+                  color: '#faad14',
+                }}
+              >
+                {
+                  formatMessage({
+                    id: 'odc.component.SQLConfig.UnlimitedSystemInstability',
+                  })
+
+                  /*无限制易导致系统不稳定*/
+                }
+              </div>
+            )}
+          </Row>
+        </div>
+        <h4>SQL 执行</h4>
+        <div className={styles.sqlconfigGroup}>
+          <Row
+            style={{
+              lineHeight: '28px',
+              marginTop: 12,
+            }}
+          >
+            {
+              formatMessage({
+                id: 'odc.component.SQLConfig.ObtainTheColumnInformationOf',
+              }) /*获取结果集列信息*/
+            }
+          </Row>
+          <Row style={{ width: '100%' }}>
+            <Tooltip
+              title={formatMessage({
+                id: 'odc.component.SQLConfig.AfterClosingColumnCommentsAnd',
+              })} /*关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时*/
+            >
+              <Switch
+                size="small"
+                checked={tableColumnInfoVisible}
+                onChange={handleColumnInfoVisibleChange}
+              />
+            </Tooltip>
+          </Row>
+          <Row
+            style={{
+              lineHeight: '28px',
+              marginTop: 12,
+            }}
+          >
+            {
+              formatMessage({
+                id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
+              }) /* 报错继续执行 */
+            }
+          </Row>
+          <Row style={{ width: '100%' }}>
             <Switch
               size="small"
-              checked={tableColumnInfoVisible}
-              onChange={handleColumnInfoVisibleChange}
+              checked={continueExecutionOnError}
+              onChange={session?.changeContinueExecutionOnError}
             />
-          </Tooltip>
-        </Row>
-        <Row
+          </Row>
+        </div>
+        {/* <Row
           style={{
             lineHeight: '28px',
             marginTop: 12,
@@ -164,27 +189,8 @@ const SQLConfig: React.FC<IProps> = function (props) {
         >
           {
             formatMessage({
-              id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
-            }) /* 报错继续执行 */
-          }
-        </Row>
-        <Row style={{ width: '100%' }}>
-          <Switch
-            size="small"
-            checked={continueExecutionOnError}
-            onChange={session?.changeContinueExecutionOnError}
-          />
-        </Row>
-        <Row
-          style={{
-            lineHeight: '28px',
-            marginTop: 12,
-          }}
-        >
-          {
-            formatMessage({
-              id: 'src.component.SQLConfig.C03B2372' /*开启全链路诊断*/,
-            }) /* 开启全链路诊断 */
+              id: 'src.component.SQLConfig.C03B2372'
+            })
           }
         </Row>
         <Row style={{ width: '100%' }}>
@@ -193,8 +199,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             checked={fullLinkTraceEnabled}
             onChange={session?.changeFullTraceDiagnosisEnabled}
           />
-        </Row>
-
+        </Row> */}
         <Row
           style={{
             marginTop: 18,

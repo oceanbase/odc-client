@@ -30,6 +30,7 @@ import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 interface ConnectionData {
   data: any;
@@ -404,7 +405,14 @@ export class ModalStore {
   public executeSqlDetailModalVisible: boolean = false;
 
   @observable
-  public executeSqlDetailData: any = null;
+  public executeSqlDetailData: {
+    v?: boolean;
+    traceId?: any;
+    sql?: string;
+    session?: any;
+    selectedSQL?: any;
+    profileType?: ProfileType;
+  } = null;
 
   @action
   public changeExecuteSqlDetailModalVisible(
@@ -413,6 +421,7 @@ export class ModalStore {
     sql?: string,
     session?: any,
     selectedSQL?: any,
+    profileType?: ProfileType,
   ) {
     this.executeSqlDetailModalVisible = v;
     this.executeSqlDetailData = {
@@ -420,6 +429,7 @@ export class ModalStore {
       sql: sql,
       session,
       selectedSQL: selectedSQL,
+      profileType: profileType,
     };
   }
 

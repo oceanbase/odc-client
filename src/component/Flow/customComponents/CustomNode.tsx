@@ -47,8 +47,9 @@ function TextUpdaterNode({ data, id, isConnectable }) {
             </Tooltip>
             <div style={{ color: 'rgba(0,0,0,0.45)' }}>[{data?.id}]</div>
           </span>
-          <span>
-            {data?.overview?.['DB Time']}({data?.percentage}%)
+          <span style={{ textWrap: 'nowrap' }}>
+            {data?.overview?.['DB Time']}{' '}
+            {data && data.percentage === '' ? '' : `(${data?.percentage}%)`}
           </span>
         </div>
         <div
@@ -62,7 +63,11 @@ function TextUpdaterNode({ data, id, isConnectable }) {
         >
           {data?.title || '-'}
         </div>
-        <Progress percent={data?.percentage} showInfo={false}></Progress>
+        {data.percentage === '' ? (
+          <div></div>
+        ) : (
+          <Progress percent={data?.percentage} showInfo={false}></Progress>
+        )}
         {data?.hasChild ? (
           <div
             style={{

@@ -1,4 +1,5 @@
 import { REACT_FLOW_ID } from './constant';
+import { Tree, Node } from './treeLayout';
 const NODE_WIDTH = 280;
 const NODE_HEIGTH = 90;
 const KILO = 1000;
@@ -45,7 +46,7 @@ const getXYPosition = () => {
 };
 
 const locateNode: (...args) => void = (nodeId, initialNodes, setSelectedNode, setViewport) => {
-  // 1. 获取节点在画布上的坐标。
+  // 1. 获取节点在画布上的坐标
   // 2. 计算画布应该移动的位移
   const node = initialNodes?.find((n) => n?.id === nodeId);
   setSelectedNode(node);
@@ -81,8 +82,8 @@ export const getEdgeWidth = (weight: number): number => {
 };
 
 export const getUnit = (num) => {
-  const MILLION = KILO * KILO; // 使用分隔符增强可读性
-  const BILLION = KILO * KILO * KILO; // 使用分隔符增强可读性
+  const MILLION = KILO * KILO;
+  const BILLION = KILO * KILO * KILO;
   if (num >= KILO && num < MILLION) {
     return (num / KILO).toFixed(2) + 'K';
   }
@@ -121,8 +122,6 @@ export function transformDataForReactFlow(
   const edges = [];
   const idToNodeMap = new Map();
   const rootNodes = [];
-  const LEVEL_GAP = 200; // 每层的垂直间隙
-  const BROTHER_GAP = 50; // 同一层级的水平间隙
 
   // 构建节点映射和确定根节点
   vertexes.forEach((vertex) => {
@@ -142,75 +141,90 @@ export function transformDataForReactFlow(
     });
   });
 
-  // 计算节点宽度的函数
-  function calculateNodeWidth(node) {
-    if (node.children.length === 0) {
-      return NODE_WIDTH; // 叶子节点宽度
-    }
-    // 子节点的宽度之和加上间隔
-    let totalWidth = (node.children.length - 1) * BROTHER_GAP;
-    node.children.forEach((child) => (totalWidth += calculateNodeWidth(child)));
-    return totalWidth;
-  }
-
-  // 布局节点的递归函数
-  function layoutNode(node, x, level) {
-    // 设置节点的x和y
-    node.x = x;
-    node.y = level * LEVEL_GAP;
-
-    let currentX = x - calculateNodeWidth(node) / 2;
-    node.children.forEach((child, index) => {
-      let childWidth = calculateNodeWidth(child);
-      // 更新子节点的位置，调整currentX以反映子节点的实际宽度
-      layoutNode(child, currentX + childWidth / 2, level + 1);
-      currentX += childWidth + BROTHER_GAP; // 加上间隔
-    });
-    // 无子节点或多子节点，边界条件处理
-    if (node.children.length === 0 || node.children.length > 1) {
-      node.x = x; // 确保此节点居中（对于叶子节点）或基于子节点的平均位置（多子节点）
-    }
-  }
-
-  // 对根节点进行布局
-  // todo  Reingold-Tilford algorithm
-  rootNodes.forEach((root) => {
-    layoutNode(root, 0, 0);
-  });
-
-  // 创建nodes和edges数组
-  idToNodeMap.forEach((node) => {
-    nodes.push({
-      id: node.graphId.toString(),
-      data: {
-        ...node,
-        label: `${node.name}`,
-        id: node.graphId.toString(),
-        isTreeOpen: true,
-        changeTreeOpen: (...args: any[]) => changeTreeOpen(...args, setNodes),
-        locateNode: (...args) => locateNode(...args, nodes, setSelectedNode, setViewport),
-        hasChild: node.outEdges.length,
-        outEdges: node?.outEdges || [],
-        setSelectedNode: setSelectedNode,
-        percentage: ((node.duration / duration) * 100).toFixed(2),
-        isSelected: false,
-      },
-      position: { x: node.x, y: node.y },
-      type: 'customNode',
+  function buildTree(data: any[]): Tree {
+    const tree = new Tree();
+    const nodesMap = new Map<string, Node>();
+    if (!data.length) return;
+    data?.forEach((nodeData) => {
+      const node = new Node(nodeData, null, 0, 0, tree.rootX, tree.rootY);
+      nodesMap.set(nodeData.graphId, node);
     });
 
-    node.children.forEach((child) => {
-      edges.push({
-        id: `e${node.graphId}-${child.graphId}`,
-        source: node.graphId.toString(),
-        target: child.graphId.toString(),
-        type: 'custom-edge',
+    data?.forEach((nodeData) => {
+      const node = nodesMap.get(nodeData.graphId);
+      if (node) {
+        nodeData?.outEdges?.forEach((edge) => {
+          const childNode = nodesMap.get(edge.to);
+          if (childNode) {
+            childNode.parent = node;
+            childNode.layer = node.layer + 1;
+            node.child.push(childNode);
+          }
+        });
+      }
+    });
+
+    const rootNode = Array.from(nodesMap.values()).find((node) => !node.parent);
+    tree.root = rootNode ? rootNode : nodesMap.values().next().value;
+    nodesMap.forEach((node) => {
+      if (tree.hashTree[node.layer]) {
+        tree.hashTree[node.layer].push(node);
+      } else {
+        tree.hashTree[node.layer] = [node];
+      }
+    });
+
+    return tree;
+  }
+
+  const treeList = buildTree(vertexes);
+  treeList.layout();
+
+  function convertTreeToReactFlow(tree) {
+    function traverseAndBuild(node, parentId = null) {
+      const reactFlowNode = {
+        id: node.data.graphId,
+        position: { x: node.x, y: node.y },
         data: {
-          weight: child?.inEdges?.[0]?.weight,
+          ...node.data,
+          label: `${node.data.name}`,
+          id: node.data.graphId,
+          isTreeOpen: true,
+          changeTreeOpen: (...args: any[]) => changeTreeOpen(...args, setNodes),
+          locateNode: (...args) => locateNode(...args, nodes, setSelectedNode, setViewport),
+          hasChild: node.data.outEdges.length,
+          outEdges: node?.data.outEdges || [],
+          setSelectedNode: setSelectedNode,
+          percentage: duration ? ((node.data.duration / duration) * 100).toFixed(2) : '',
+          isSelected: false,
         },
-      });
-    });
-  });
+        type: 'customNode',
+      };
 
+      nodes.push(reactFlowNode);
+
+      if (parentId !== null) {
+        const reactFlowEdge = {
+          id: `e${parentId}-${node.data.graphId}`,
+          source: parentId,
+          target: node.data.graphId,
+          type: 'custom-edge',
+          data: {
+            weight: node?.data.inEdges?.[0]?.weight,
+          },
+        };
+        edges.push(reactFlowEdge);
+      }
+
+      for (let child of node.child) {
+        traverseAndBuild(child, node.data.graphId);
+      }
+    }
+
+    if (tree && tree.root) {
+      traverseAndBuild(tree.root);
+    }
+  }
+  convertTreeToReactFlow(treeList);
   return { nodes, edges, duration };
 }

@@ -186,7 +186,7 @@ export class SQLStore {
       const statusCheckInterval = 1000;
       let result = [];
       let streamExecuteResult = null;
-      const handleResult = () => {
+      const handleResult = (finished = true) => {
         // 兼容后端不按约定返回的情况
         if (!record || record.invalid) {
           return record;
@@ -194,7 +194,7 @@ export class SQLStore {
         /**
          * 刷新一下delimiter
          */
-        session.initSessionStatus();
+        finished && session.initSessionStatus();
 
         // 判断结果集是否支持编辑
         // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
@@ -238,7 +238,6 @@ export class SQLStore {
         return record;
       };
       while (true) {
-        // 坏了 麻了
         const res = await executeSQL(
           {
             sql,
@@ -256,17 +255,15 @@ export class SQLStore {
           streamExecuteResult,
         );
         streamExecuteResult = res.streamExecuteResult;
-        console.log('res', res);
         result.push(...res?.executeResult);
-        console.log('result', result);
         record = {
           ...record,
           executeResult: [...result],
           currentExecuteInfo: res.currentExecuteInfo,
         };
-        handleResult();
-
-        if (res?.currentExecuteInfo?.finished) {
+        const finished = res?.currentExecuteInfo?.finished;
+        handleResult(finished);
+        if (finished) {
           break;
         } else {
           await new Promise((resolve) => setTimeout(resolve, statusCheckInterval));

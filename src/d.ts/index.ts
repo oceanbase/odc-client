@@ -1685,6 +1685,8 @@ export interface ISQLExplain {
   outline: string;
   originalText: string;
   showFormatInfo?: boolean;
+  graph?: any;
+  // todo
 }
 
 export interface ISQLExecuteDetail {

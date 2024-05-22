@@ -92,6 +92,7 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
         outline: data.outline,
         originalText: data?.originalText,
         showFormatInfo: data?.showFormatInfo,
+        graph: data?.graph,
       };
     }
     return {
@@ -99,6 +100,7 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
       outline: data.outline,
       originalText: data?.originalText,
       showFormatInfo: data?.showFormatInfo,
+      graph: data?.graph,
     };
   }
   return null;
@@ -119,7 +121,17 @@ export async function getSQLExecuteProfile(
     },
   });
   const { data } = result;
-  return data;
+  if (data) {
+    if (data?.expTree) {
+      return {
+        tree: [formatSQLExplainTree(JSON.parse(data.expTree))],
+        outline: data.outline,
+        originalText: data?.originalText,
+        showFormatInfo: data?.showFormatInfo,
+        graph: data?.graph,
+      };
+    }
+  }
 }
 
 function formatSQLExplainTree(data: any): ISQLExplainTreeNode {
