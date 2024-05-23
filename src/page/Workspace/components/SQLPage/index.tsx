@@ -105,7 +105,6 @@ interface ISQLPageState {
   baseOffset: number;
   status: EStatus;
   hasExecuted: boolean;
-  hasSelectedTab: boolean;
 }
 
 interface IProps {
@@ -160,7 +159,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     status: null,
     hasExecuted: false,
     isSavingScript: false,
-    hasSelectedTab: false,
   };
 
   public editor: IEditor;
@@ -371,8 +369,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
-
-    this.state.hasSelectedTab = false;
     if (selectedSQL) {
       if (range.begin === range.end) {
         this.setState({
@@ -729,10 +725,11 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
 
   public handleChangeResultSetTab = (activeKey: string) => {
+    const { sqlStore } = this.props;
     this.setState({
       resultSetTabActiveKey: activeKey,
-      hasSelectedTab: true,
     });
+    sqlStore.setSelectedTabState(true);
   };
 
   public handleSaveRowData = async (
@@ -1129,10 +1126,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       baseOffset,
       unauthorizedDatabases,
       unauthorizedSql,
-      hasSelectedTab,
     } = this.state;
     const getKey = () => {
-      if (sqlStore.activeTab && !hasSelectedTab) {
+      if (sqlStore.activeTab && !sqlStore.hasSelectedTab) {
         return sqlStore.activeTab;
       } else {
         return resultSetTabActiveKey;
@@ -1172,7 +1168,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 pageKey={pageKey}
                 ctx={this}
                 resultHeight={resultHeight}
-                // tab的数据源是什么,然后筛选到log
                 activeKey={getKey()}
                 onChangeResultSetTab={this.handleChangeResultSetTab}
                 onCloseResultSet={this.handleCloseResultSet}
@@ -1314,9 +1309,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
      */
     // sqlStore.resultSets.get(pageKey)?.find(i=> i.type == 'LOG')?.uniqKey || recordsTabKey,
     //
-    // tabs增量不会重新渲染: 用key
     const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-
     this.setState({
       resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,
     });

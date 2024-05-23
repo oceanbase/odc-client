@@ -98,6 +98,9 @@ export class SQLStore {
   public activeTab: string = null;
 
   @observable
+  public hasSelectedTab: boolean = false;
+
+  @observable
   public uniqLogKey: string = null;
 
   public debugLogs: ILogItem[] = [];
@@ -112,6 +115,11 @@ export class SQLStore {
   @action
   public setActiveTab(key: string) {
     this.activeTab = key;
+  }
+
+  @action
+  public setSelectedTabState(v: boolean) {
+    this.hasSelectedTab = v;
   }
 
   @action
@@ -185,6 +193,7 @@ export class SQLStore {
     let record: IExecuteTaskResult; // 需要忽略默认错误处理
     const session = sessionManager.sessionMap.get(sessionId);
     try {
+      this.setSelectedTabState(false);
       this.runningPageKey.add(pageKey);
       !!isSection && this.isRunningSection.add(pageKey);
       const showTableColumnInfo = session?.params?.tableColumnInfoVisible;
@@ -208,12 +217,11 @@ export class SQLStore {
         // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
         // const isEditable = await this.isResultSetEditable(sql);
         runInAction(() => {
-          // 加入历史记录
           /** Record去除rows,性能优化 */
           const recordWithoutRows = record.executeResult.map((result) => {
             return {
               ...result,
-              rows: [],
+              // rows: [],
             };
           });
           const recordAll = streamExecuteResult?.data?.sqls.map((i) => {
@@ -257,7 +265,7 @@ export class SQLStore {
                 /**
                  * chrome会缓存卸载后的含有react组件的dom，导致数据无法释放，这边手动清空，防止内存爆满
                  */
-                r.rows.splice(0);
+                // r.rows.splice(0);
               }
             });
             this.resultSets.set(pageKey, [

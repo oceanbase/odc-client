@@ -98,7 +98,7 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
   return (
     <div className={styles.runningSql}>
       <Spin style={{ marginBottom: 16 }} />
-      <Space direction="vertical" size="small">
+      <Space direction="vertical" size="small" align="center">
         <div>
           共有 {currentExecuteInfo?.total} 个 SQL 执行，当前正在执行第 {currentExecuteInfo?.count}{' '}
           个
