@@ -97,6 +97,9 @@ export class SQLStore {
   @observable
   public activeTab: string = null;
 
+  @observable
+  public uniqLogKey: string = null;
+
   public debugLogs: ILogItem[] = [];
 
   @action
@@ -104,6 +107,11 @@ export class SQLStore {
     this.records = this.records.filter((record) => {
       return !keys.includes(record.id);
     });
+  }
+
+  @action
+  public setActiveTab(key: string) {
+    this.activeTab = key;
   }
 
   @action
@@ -174,7 +182,6 @@ export class SQLStore {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
     }
-
     let record: IExecuteTaskResult; // 需要忽略默认错误处理
     const session = sessionManager.sessionMap.get(sessionId);
     try {
@@ -186,7 +193,9 @@ export class SQLStore {
       const statusCheckInterval = 1000;
       let result = [];
       let streamExecuteResult = null;
-      const handleResult = (finished = true) => {
+      let pastRecord = JSON.parse(JSON.stringify(this.records));
+      const handleResult = (finished = true, streamExecuteResult, currentExecuteInfo) => {
+        // todo 需要考虑同时执行
         // 兼容后端不按约定返回的情况
         if (!record || record.invalid) {
           return record;
@@ -195,7 +204,6 @@ export class SQLStore {
          * 刷新一下delimiter
          */
         finished && session.initSessionStatus();
-
         // 判断结果集是否支持编辑
         // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
         // const isEditable = await this.isResultSetEditable(sql);
@@ -208,11 +216,36 @@ export class SQLStore {
               rows: [],
             };
           });
+          const recordAll = streamExecuteResult?.data?.sqls.map((i) => {
+            return {
+              ...i.sqlTuple,
+              status: ISqlExecuteResultStatus.WAITING,
+              timer: null,
+              track: null,
+              total: null,
+              traceId: null,
+              elapsedTime: null,
+              executeSql: null,
+              id: generateUniqKey(),
+            };
+          });
+          const showRecordList = recordAll.map((i) => {
+            // 运行中的
+            if (currentExecuteInfo.sqlId === i.sqlId && !finished) {
+              return { ...i, status: ISqlExecuteResultStatus.RUNNING };
+            }
+            // 已执行的
+            if (recordWithoutRows.find((j) => j.sqlId.includes(i.sqlId))) {
+              return { ...recordWithoutRows.find((j) => j.sqlId.includes(i.sqlId)) };
+            }
+            // 等待的
+            return i;
+          });
           this.records = [
-            ...recordWithoutRows.reverse().map((r, index) => {
-              return { ...r, id: generateUniqKey() };
+            ...showRecordList.reverse().map((r, index) => {
+              return { ...r };
             }),
-            ...this.records,
+            ...pastRecord,
           ]; // 处理结果集，需要保留已锁定的结果集
 
           const resultSet = this.resultSets.get(pageKey);
@@ -262,7 +295,7 @@ export class SQLStore {
           currentExecuteInfo: res.currentExecuteInfo,
         };
         const finished = res?.currentExecuteInfo?.finished;
-        handleResult(finished);
+        handleResult(finished, streamExecuteResult, res.currentExecuteInfo);
         if (finished) {
           break;
         } else {
@@ -279,9 +312,11 @@ export class SQLStore {
 
   public getLogTab(record: IExecuteTaskResult): IResultSet {
     const { executeResult, currentExecuteInfo } = record;
+    const uniqKey = this.uniqLogKey || generateUniqKey();
+    this.uniqLogKey = uniqKey;
     return {
       type: 'LOG',
-      uniqKey: generateUniqKey(),
+      uniqKey: uniqKey,
       columns: [],
       rows: [],
       initialSql: '',

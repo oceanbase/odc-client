@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { Button, Drawer, Spin, Modal } from 'antd';
+import { Button, Drawer, Spin } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { getSQLExplain } from '@/common/network/sql';
@@ -61,13 +61,13 @@ const ExecPlan: React.FC<IProps> = function (props) {
     }
   }, [selectedSQL, visible]);
   return (
-    <Modal
+    <Drawer
       title={formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.title',
       })}
-      // placement="right"
+      placement="right"
       closable
-      onCancel={onClose}
+      onClose={onClose}
       open={visible}
       width={960}
       className={styles.explainDrawer}
@@ -100,7 +100,7 @@ const ExecPlan: React.FC<IProps> = function (props) {
           }
         </Button>
       </div>
-    </Modal>
+    </Drawer>
   );
 };
 
