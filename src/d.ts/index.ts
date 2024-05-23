@@ -1616,6 +1616,8 @@ export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
+  WAITING = 'WAITING',
+  RUNNING = 'RUNNING',
 }
 
 export interface ISqlExecuteResultWidthData {

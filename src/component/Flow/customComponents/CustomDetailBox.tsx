@@ -1,12 +1,14 @@
-import { Divider, Progress } from 'antd';
+import { Divider, Progress, Tooltip } from 'antd';
 import styles from './index.less';
 import classnames from 'classnames';
 
 export default (props) => {
-  const { dataSource, topNodes, initialNodes } = props;
-  const { duration = [] } = topNodes || {};
-  const topNodesList = initialNodes?.filter((i) => [...duration].includes(i?.id));
+  const { dataSource, topNodes, initialNodes, globalInfo } = props;
 
+  const { duration = [] } = topNodes || {};
+  const topNodesList = initialNodes
+    ?.filter((i) => [...duration].includes(i?.id))
+    ?.sort((a, b) => b.data.duration - a.data.duration);
   const locateNode = (i) => {
     i?.data?.locateNode(i?.id);
   };
@@ -52,6 +54,36 @@ export default (props) => {
         className={styles.customDetailBox}
       >
         {top5()}
+        {globalInfo?.overview ? (
+          <>
+            <Divider />
+            <div style={{ padding: '0px 8px' }}>
+              <h3>执行概览</h3>
+              <Progress percent={100} showInfo={false} />
+              {Object?.entries(globalInfo?.overview)?.map(([key, value]) => {
+                return (
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0px' }}
+                  >
+                    <span>{key}</span>
+                    <span>{value}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
+            {Object?.entries(globalInfo?.statistics)?.map(([key, value]) => {
+              return (
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px' }}
+                >
+                  <span>{key}</span>
+                  <span>{value}</span>
+                </div>
+              );
+            })}
+          </>
+        ) : null}
       </div>
     );
   }
@@ -118,7 +150,18 @@ export default (props) => {
               <h4 className={styles.customDetailBoxSubTitle}>{key}</h4>
               {/* @ts-ignore */}
               {value?.map((i) => (
-                <div style={{ padding: '4px 0' }}>{i}</div>
+                <Tooltip title={i}>
+                  <div
+                    style={{
+                      padding: '4px 0',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {i}
+                  </div>
+                </Tooltip>
               ))}
             </div>
           );

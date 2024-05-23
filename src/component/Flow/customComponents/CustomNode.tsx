@@ -20,8 +20,9 @@ function TextUpdaterNode({ data, id, isConnectable }) {
           borderRadius: 2,
           padding: '12px 16px',
           border: data?.isSelected
-            ? '2px solid rgba(24,144,255,0.20)'
+            ? '1px solid rgba(24,144,255,0.20)'
             : '1px solid rgba(0,0,0,0.12)',
+          boxShadow: data?.isSelected ? '0 0 4px rgba(24,144,255,0.20)' : null,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',

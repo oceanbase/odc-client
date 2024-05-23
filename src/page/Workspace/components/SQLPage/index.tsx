@@ -67,6 +67,8 @@ import ExecPlan from './ExecPlan';
 import styles from './index.less';
 import setting, { SettingStore } from '@/store/setting';
 import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
+
 interface ISQLPageState {
   resultHeight: number;
   initialSQL: string;
@@ -369,7 +371,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       false,
       selectedSQL ? await utils.getCurrentSelectRange(this.editor) : null,
     );
-    // todo
+
     this.state.hasSelectedTab = false;
     if (selectedSQL) {
       if (range.begin === range.end) {
@@ -959,6 +961,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   };
 
   public handleExplain = async () => {
+    const { modalStore } = this.props;
     let selectedSQL = this.editor.getSelectionContent(); // 如果没有选中，尝试获取当前语句
 
     if (!selectedSQL) {
@@ -986,10 +989,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (!selectedSQL) {
       return;
     }
-    this.setState({
+    modalStore.changeExecuteSqlDetailModalVisible(
+      true,
+      null,
+      this?.state?.initialSQL,
+      this?.getSession(),
       selectedSQL,
-      showExplainDrawer: true,
-    });
+      ProfileType.Plan,
+    );
   };
 
   public handleShowExecuteDetail = async (sql: string, traceId: string) => {

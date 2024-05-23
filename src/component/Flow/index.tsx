@@ -79,6 +79,11 @@ function Flow(props) {
         dataSource={nodes.find((i) => i.id === selectedNode?.id)}
         topNodes={dataSource?.topNodes}
         initialNodes={initialNodes}
+        globalInfo={{
+          duration: dataSource.duration,
+          overview: dataSource.overview,
+          statistics: dataSource.statistics,
+        }}
       />
       <ReactFlow
         id={REACT_FLOW_ID}
@@ -94,6 +99,7 @@ function Flow(props) {
         onElementClick={(event, element) => {
           setSelectedNode(element);
         }}
+        onPaneClick={() => setSelectedNode(null)}
       >
         <CustomControl />
       </ReactFlow>

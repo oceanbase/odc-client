@@ -59,14 +59,7 @@ const sqlActions: ToolBarActions = {
       return ctx.getSession()?.supportFeature.enableSQLExplain;
     },
     async action(ctx: any) {
-      modalStore.changeExecuteSqlDetailModalVisible(
-        true,
-        null,
-        ctx?.state?.initialSQL,
-        ctx?.getSession(),
-        ctx?.editor.getSelectionContent(),
-        ProfileType.Plan,
-      );
+      await ctx.handleExplain();
     },
   },
 

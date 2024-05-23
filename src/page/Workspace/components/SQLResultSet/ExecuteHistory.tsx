@@ -19,7 +19,14 @@ import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
-import { CheckCircleFilled, CloseCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  InfoCircleOutlined,
+  LoadingOutlined,
+  StopFilled,
+  ClockCircleFilled,
+} from '@ant-design/icons';
 import { Alert, message, Space, Table, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -39,6 +46,7 @@ interface IProps {
 }
 
 function getResultText(rs: ISqlExecuteResult) {
+  if (!rs.total) return '-';
   if ([SqlType.show, SqlType.select].includes(rs.sqlType)) {
     return `${rs.total} row(s) returned`;
   } else {
@@ -74,6 +82,25 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
     };
   }, []);
 
+  const getIcon = (status) => {
+    switch (status) {
+      case ISqlExecuteResultStatus.SUCCESS: {
+        return <CheckCircleFilled style={{ color: '#52c41a' }} />;
+      }
+      case ISqlExecuteResultStatus.FAILED: {
+        return <CloseCircleFilled style={{ color: '#F5222D' }} />;
+      }
+      case ISqlExecuteResultStatus.CANCELED: {
+        return <StopFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
+      }
+      case ISqlExecuteResultStatus.WAITING: {
+        return <ClockCircleFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
+      }
+      case ISqlExecuteResultStatus.RUNNING: {
+        return <LoadingOutlined style={{ color: '#1890FF' }} />;
+      }
+    }
+  };
   /**
    * 执行记录
    */
@@ -87,12 +114,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         }),
 
         width: 50,
-        render: (value: ISqlExecuteResultStatus) =>
-          value === ISqlExecuteResultStatus.SUCCESS ? (
-            <CheckCircleFilled style={{ color: '#52c41a' }} />
-          ) : (
-            <CloseCircleFilled style={{ color: '#F5222D' }} />
-          ),
+        render: (value: ISqlExecuteResultStatus) => getIcon(value),
       },
 
       {
@@ -103,9 +125,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
 
         width: isSmallMode ? 80 : 100,
         render: (_, record: ISqlExecuteResult) => {
-          return moment(
-            record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
-          ).format('HH:mm:ss');
+          return record.timer
+            ? moment(
+                record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
+              ).format('HH:mm:ss')
+            : '-';
         },
       },
 
@@ -127,11 +151,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
                   overflowY: 'auto',
                 }}
               >
-                {value}
+                {value || '-'}
               </div>
             }
           >
-            {value}
+            {value || '-'}
           </Tooltip>
         ),
       },
@@ -155,11 +179,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
                     overflowY: 'auto',
                   }}
                 >
-                  {value}
+                  {value || '-'}
                 </div>
               }
             >
-              {value}
+              {value || '-'}
             </Tooltip>
           ),
       },
