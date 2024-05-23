@@ -13,22 +13,22 @@ interface Iprops {
   visible: boolean;
   onChangeInput: (SearchTypeMap: SearchTypeMap, value: string) => void;
   isSelectDatabase: boolean;
-  setSelectDatabaseState: React.Dispatch<React.SetStateAction<boolean>>;
   searchKey: string;
   isSelectAll: boolean;
   setSelectAllState: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
+  setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
 }
 const Search = ({
   database,
   visible,
   onChangeInput,
   isSelectDatabase,
-  setSelectDatabaseState,
   searchKey,
   isSelectAll,
   setSelectAllState,
   loading,
+  setDatabase,
 }: Iprops) => {
   const { selectDatasourceId, selectProjectId, projectList, datasourceList } =
     useContext(ResourceTreeContext);
@@ -57,9 +57,9 @@ const Search = ({
     if (database) {
       return (
         <span
-          className={styles.selecteDatabase}
+          className={styles.selectedDatabase}
           onClick={() => {
-            setSelectDatabaseState(true);
+            setDatabase(null);
             setSelectAllState(false);
             onChangeInput(SearchTypeMap.DATABASE, null);
           }}
@@ -75,9 +75,9 @@ const Search = ({
     if (isSelectAll) {
       return (
         <span
-          className={styles.selecteDatabase}
+          className={styles.selectedDatabase}
           onClick={() => {
-            setSelectDatabaseState(true);
+            setDatabase(null);
             setSelectAllState(false);
             onChangeInput(SearchTypeMap.DATABASE, null);
           }}
@@ -127,10 +127,13 @@ const Search = ({
   };
 
   const getIcon = () => {
+    const props = {
+      style: { color: 'var(--code-normal-color)' },
+    };
     if (loading) {
-      return <LoadingOutlined />;
+      return <LoadingOutlined {...props} />;
     }
-    return <SearchOutlined />;
+    return <SearchOutlined {...props} />;
   };
 
   return (

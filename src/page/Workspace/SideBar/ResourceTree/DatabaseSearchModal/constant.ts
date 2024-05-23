@@ -51,7 +51,7 @@ export enum SearchTypeMap {
 
 export const SEARCH_OBJECT_FROM_ALL_DATABASE = 'SEARCH_OBJECT_FROM_ALL_DATABASE';
 
-export const MAX_OBJECT_LENGTH = 1000;
+export const MAX_OBJECT_LENGTH = 200;
 
 export const DbObjectTypeMap = {
   SEARCH_OBJECT_FROM_ALL_DATABASE: { label: '全部' },
