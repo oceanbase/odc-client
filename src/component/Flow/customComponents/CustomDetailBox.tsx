@@ -60,28 +60,41 @@ export default (props) => {
             <div style={{ padding: '0px 8px' }}>
               <h3>执行概览</h3>
               <Progress percent={100} showInfo={false} />
-              {Object?.entries(globalInfo?.overview)?.map(([key, value]) => {
-                return (
-                  <div
-                    style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0px' }}
-                  >
-                    <span>{key}</span>
-                    <span>{value}</span>
-                  </div>
-                );
-              })}
+
+              {globalInfo?.overview
+                ? Object.entries(globalInfo?.overview)?.map(([key, value]) => {
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '4px 0px',
+                        }}
+                      >
+                        <span>{key}</span>
+                        <span>{value}</span>
+                      </div>
+                    );
+                  })
+                : null}
             </div>
             <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
-            {Object?.entries(globalInfo?.statistics)?.map(([key, value]) => {
-              return (
-                <div
-                  style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px' }}
-                >
-                  <span>{key}</span>
-                  <span>{value}</span>
-                </div>
-              );
-            })}
+            {globalInfo?.overview
+              ? Object.entries(globalInfo?.statistics)?.map(([key, value]) => {
+                  return (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '4px 8px',
+                      }}
+                    >
+                      <span>{key}</span>
+                      <span>{value}</span>
+                    </div>
+                  );
+                })
+              : null}
           </>
         ) : null}
       </div>
@@ -122,7 +135,7 @@ export default (props) => {
               </div>
             </>
           ) : (
-            Object?.entries(data?.overview)?.map(([key, value]) => {
+            Object.entries(data?.overview)?.map(([key, value]) => {
               return (
                 <div
                   style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0px' }}
@@ -135,37 +148,43 @@ export default (props) => {
           )}
         </div>
         <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
-        {Object?.entries(data?.statistics)?.map(([key, value]) => {
-          return (
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px' }}>
-              <span>{key}</span>
-              <span>{value}</span>
-            </div>
-          );
-        })}
+        {data?.statistics
+          ? Object.entries(data?.statistics)?.map(([key, value]) => {
+              return (
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px' }}
+                >
+                  <span>{key}</span>
+                  <span>{value}</span>
+                </div>
+              );
+            })
+          : null}
         <h3 className={styles.customDetailBoxTitle}>节点属性</h3>
-        {Object?.entries(data?.attributes)?.map(([key, value]) => {
-          return (
-            <div style={{ padding: '0 8px' }}>
-              <h4 className={styles.customDetailBoxSubTitle}>{key}</h4>
-              {/* @ts-ignore */}
-              {value?.map((i) => (
-                <Tooltip title={i}>
-                  <div
-                    style={{
-                      padding: '4px 0',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {i}
-                  </div>
-                </Tooltip>
-              ))}
-            </div>
-          );
-        })}
+        {data?.attributes
+          ? Object.entries(data?.attributes)?.map(([key, value]) => {
+              return (
+                <div style={{ padding: '0 8px' }}>
+                  <h4 className={styles.customDetailBoxSubTitle}>{key}</h4>
+                  {/* @ts-ignore */}
+                  {value?.map((i) => (
+                    <Tooltip title={i}>
+                      <div
+                        style={{
+                          padding: '4px 0',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {i}
+                      </div>
+                    </Tooltip>
+                  ))}
+                </div>
+              );
+            })
+          : null}
       </div>
     </div>
   );
