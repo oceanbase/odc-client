@@ -244,6 +244,7 @@ const ActionBar: React.FC<IProps> = inject(
           SubTaskType.DATA_ARCHIVE,
           SubTaskType.DATA_DELETE,
           SubTaskType.DATA_ARCHIVE_ROLLBACK,
+          SubTaskType.DATA_ARCHIVE_DELETE,
         ].includes(type)
       ) {
         tools.unshift(excuteDetailBtn);
