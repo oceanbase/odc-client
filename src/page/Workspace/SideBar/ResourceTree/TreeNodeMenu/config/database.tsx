@@ -243,7 +243,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }) /*'定时任务'*/,
       ],
       ellipsis: true,
-      hasDivider: true,
+      hasDivider:
+        setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
       children: [
         {
           key: 'TASK_SQL_PLAN',
@@ -326,12 +327,15 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         const database: IDatabase = node.data;
         if (!database.objectLastSyncTime) return;
         return (
-          <div style={{ fontSize: 12, color: 'var(--neutral-black45-color)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text-color-hint)' }}>
             上次同步时间: {getLocalFormatDateTime(database?.objectLastSyncTime)}
           </div>
         );
       },
       ellipsis: true,
+      isHide(_, node) {
+        return setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false';
+      },
       run(session, node, databaseFrom, reloadDatabase) {
         const database: IDatabase = node.data;
         message.loading({ content: '元数据同步中，请等待…', duration: 1 });

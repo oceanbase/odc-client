@@ -94,6 +94,7 @@ export interface IUserConfig {
   'odc.appearance.language': 'FollowSystem' | string;
   'odc.account.defaultOrganizationType': SpaceType;
   'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
+  'odc.database.default.enableGlobalObjectSearch': 'true' | 'false';
 }
 
 // 系统配置

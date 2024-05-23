@@ -75,7 +75,9 @@ const ObjectList = ({
       case DbObjectType.column:
         const { dbObject } = item;
         const { database, name: tableName, type } = dbObject;
+        if (!database) return;
         const { name: databaseName, dataSource } = database;
+        if (!dataSource) return;
         const { name: dataSourceName, dialectType } = dataSource;
         const dialectTypeIcon = getDataSourceStyleByConnectType(dialectType)?.icon;
         const dbIcon = getDataSourceStyleByConnectType(dialectType)?.dbIcon;
@@ -213,7 +215,7 @@ const ObjectList = ({
 
   const permissionBtn = (object) => {
     if (activeDatabase?.id !== object.id) return;
-    if (hasPermission) return;
+    if (hasPermission(object)) return;
     return (
       <Button
         type="link"
@@ -226,6 +228,7 @@ const ObjectList = ({
   };
 
   const openTree = (e, object) => {
+    if (!hasPermission(object)) return;
     const type = object?.type || DbObjectType.column;
     e.stopPropagation();
     const databaseId = object?.dbObject?.database?.id || object?.database?.id;
@@ -278,7 +281,9 @@ const ObjectList = ({
             })}
             {currentObjectList?.data?.length === MAX_OBJECT_LENGTH && (
               <Divider plain>
-                <span style={{ color: 'var(--icon-color-disable)' }}>最多展示 1000 条结果</span>
+                <span style={{ color: 'var(--icon-color-disable)' }}>
+                  最多展示 {MAX_OBJECT_LENGTH} 条结果
+                </span>
               </Divider>
             )}
           </div>

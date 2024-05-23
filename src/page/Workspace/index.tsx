@@ -292,6 +292,8 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   }, []);
 
   useEffect(() => {
+    if (settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false')
+      return;
     const handleKeyDown = (event) => {
       if ((event.ctrlKey || event.metaKey) && ['J', 'j'].includes(event.key)) {
         modalStore.changeDatabaseSearchModalVisible(!modalStore.databaseSearchModalVisible);
@@ -305,7 +307,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [settingStore.configurations['odc.database.default.enableGlobalObjectSearch']]);
 
   return (
     <>

@@ -38,9 +38,15 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
     setActiveKey(SEARCH_OBJECT_FROM_ALL_DATABASE);
   }, [database]);
 
+  const getType = () => {
+    if (isSelectDatabase) return 'SCHEMA';
+    if (activeKey === SEARCH_OBJECT_FROM_ALL_DATABASE) return null;
+    return activeKey;
+  };
+
   const getObjectListData = async (value) => {
     const databaseIds = isSelectAll ? null : database?.id;
-    const type = activeKey === SEARCH_OBJECT_FROM_ALL_DATABASE ? null : activeKey;
+    const type = getType();
     setLoading(true);
     const res = await getDatabaseObject(
       selectProjectId,
@@ -83,6 +89,7 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
           isSelectAll={isSelectAll}
           setSelectAllState={setSelectAllState}
           modalStore={modalStore}
+          objectlist={objectlist}
         />
       );
     }
@@ -108,11 +115,11 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
           visible={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
           onChangeInput={onChangeInput}
           isSelectDatabase={isSelectDatabase}
-          setSelectDatabaseState={setSelectDatabaseState}
           searchKey={searchKey}
           isSelectAll={isSelectAll}
           setSelectAllState={setSelectAllState}
           loading={loading}
+          setDatabase={setDatabase}
         />
       }
       open={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
