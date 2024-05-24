@@ -29,7 +29,11 @@ function Flow(props) {
 
   const { zoomIn, zoomOut, setCenter, setViewport } = useReactFlow();
 
-  const { nodes: initialNodes, edges: initialEdges } = transformDataForReactFlow(
+  const {
+    nodes: initialNodes,
+    edges: initialEdges,
+    nodeDurationSum,
+  } = transformDataForReactFlow(
     dataSource?.vertexes,
     dataSource?.duration,
     setNodes,
@@ -83,6 +87,7 @@ function Flow(props) {
           duration: dataSource.duration,
           overview: dataSource.overview,
           statistics: dataSource.statistics,
+          percent: dataSource?.duration ? (nodeDurationSum / dataSource?.duration) * 100 : 0,
         }}
       />
       <ReactFlow

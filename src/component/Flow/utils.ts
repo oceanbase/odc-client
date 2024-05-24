@@ -226,5 +226,9 @@ export function transformDataForReactFlow(
     }
   }
   convertTreeToReactFlow(treeList);
-  return { nodes, edges, duration };
+  const nodeDurationSum = nodes.reduce((accumulator, currentObject) => {
+    return accumulator + currentObject?.data?.duration;
+  }, 0);
+
+  return { nodes, edges, nodeDurationSum };
 }
