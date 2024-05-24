@@ -273,7 +273,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
                     ? setViewType(TypeMap.TREE)
                     : setViewType(TypeMap.TRACE);
                 }}
-                style={{ padding: '8px 0' }}
+                style={{ padding: '12px 0' }}
               >
                 {page?.radioOption.map((i) => {
                   return <Radio.Button value={i.value}>{i.label}</Radio.Button>;

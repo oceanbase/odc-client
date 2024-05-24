@@ -47,7 +47,8 @@ export default (props) => {
           width: '320px',
           backgroundColor: '#FFFFF',
           border: '1px solid #E0E0E0',
-          height: 'calc(100% - 142px)',
+          borderLeft: 'none',
+          height: 'calc(100% - 151px)',
           overflowY: 'auto',
           padding: '12px 8px',
         }}
@@ -56,10 +57,10 @@ export default (props) => {
         {top5()}
         {globalInfo?.overview ? (
           <>
-            <Divider />
+            {topNodesList.length ? <Divider /> : null}
             <div style={{ padding: '0px 8px' }}>
-              <h3>执行概览</h3>
-              <Progress percent={100} showInfo={false} />
+              {globalInfo?.overview ? <h3>执行概览</h3> : null}
+              <Progress percent={globalInfo?.percent} showInfo={false} />
 
               {globalInfo?.overview
                 ? Object.entries(globalInfo?.overview)?.map(([key, value]) => {
@@ -78,8 +79,10 @@ export default (props) => {
                   })
                 : null}
             </div>
-            <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
-            {globalInfo?.overview
+            {globalInfo?.statistics ? (
+              <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
+            ) : null}
+            {globalInfo?.statistics
               ? Object.entries(globalInfo?.statistics)?.map(([key, value]) => {
                   return (
                     <div
@@ -111,7 +114,8 @@ export default (props) => {
         width: '320px',
         backgroundColor: '#FFFFF',
         border: '1px solid #E0E0E0',
-        height: 'calc(100% - 142px)',
+        borderLeft: 'none',
+        height: 'calc(100% - 151px)',
         overflowY: 'auto',
         padding: '12px 8px',
       }}
