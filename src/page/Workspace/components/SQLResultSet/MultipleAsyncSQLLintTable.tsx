@@ -82,7 +82,7 @@ const MultipleLintResultTable: React.FC<ILintResultTableProps> = ({
         }
       />
     );
-  }, [lintResultSet, ctx, baseOffset, dataSource, resultHeight]);
+  }, [lintResultSet, ctx, baseOffset, sqlChanged, dataSource, resultHeight]);
   useEffect(() => {
     if (Array.isArray(lintResultSet) && lintResultSet?.length) {
       const newDataSource = lintResultSet?.map((resultSet, index) => {

@@ -1,4 +1,13 @@
 .asyncTask {
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+  :global {
+    .ant-drawer-body {
+      padding: 16px 0px 16px 16px;
+    }
+  }
   .hide {
     display: none;
   }
@@ -225,9 +234,9 @@
 }
 
 .multipleMenu {
-  position: absolute;
+  position: fixed;
   z-index: 1;
-  right: 20px;
+  right: 0px;
   top: 64px;
   width: 120px;
   padding: 12px 8px;
@@ -246,4 +255,10 @@
       line-height: 28px;
     }
   }
+}
+.content {
+  display: flex;
+  position: relative;
+  overflow-y: scroll;
+  max-height: calc(100vh - 98px);
 }
