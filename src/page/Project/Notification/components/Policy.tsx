@@ -365,6 +365,9 @@ const FormPolicyModal: React.FC<{
                 }) /*"请选择"*/
               }
               options={options}
+              filterOption={(input, option) =>
+                (option?.label?.toLowerCase() ?? '').includes(input?.toLowerCase())
+              }
               style={{ width: '320px' }}
               dropdownRender={(menu) => (
                 <>

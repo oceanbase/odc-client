@@ -339,9 +339,10 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
   observer((props) => {
     const { task: _task, result, modalStore, theme, visible } = props;
     const [task, setTask] = useState<TaskDetail<IStructureComparisonTaskParams>>(_task);
-    const timerRef = useRef(null);
-    const timerTaskRef = useRef(null);
-    const taskEndRef = useRef(null);
+    const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+    const timerTaskRef = useRef<ReturnType<typeof setTimeout>>(null);
+    const taskEndRef = useRef<boolean>(null);
+    const currentTaskRef = useRef<TaskDetail<IStructureComparisonTaskParams>>(_task);
     const [currentResult, setCurrentResult] = useState<ITaskResult>(result);
     const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
     const [comparisonResult, setComparisonResult] = useState<IComparisonResultData>(null);
@@ -412,7 +413,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             TaskStatus.APPROVING,
             TaskStatus.WAIT_FOR_EXECUTION,
             TaskStatus.CREATED,
-          ]?.includes(task?.status)
+          ]?.includes(currentTaskRef.current?.status)
         ) {
           loopGetTask(6000);
         } else {
@@ -421,6 +422,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         }
         const currentTask = await getTaskDetail(task?.id);
         setTask(currentTask as TaskDetail<IStructureComparisonTaskParams>);
+        currentTaskRef.current = currentTask as TaskDetail<IStructureComparisonTaskParams>;
       }, timeout);
     };
     const handleDetailModalOpen = async (taskId: number, structureComparisonId: number) => {

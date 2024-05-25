@@ -60,6 +60,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [data, setData] = useState<IDatabase[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [visible, setVisible] = useState(false);
   /**
    * 修改管理员弹窗显示与隐藏
@@ -128,10 +129,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       </span>
     );
   };
+  const clearSelectedRowKeys = () => {
+    setSelectedRowKeys([]);
+  };
   return (
     <TableCard
       title={
         <AddDataBaseButton
+          orderedDatabaseIds={
+            selectedRowKeys?.length ? [selectedRowKeys as number[]] : [[undefined]]
+          }
+          clearSelectedRowKeys={clearSelectedRowKeys}
           modalStore={modalStore}
           onSuccess={() => reload()}
           projectId={parseInt(id)}
@@ -161,6 +169,26 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     >
       <MiniTable<IDatabase>
         rowKey={'id'}
+        rowSelection={{
+          selectedRowKeys: selectedRowKeys,
+          onChange: (selectedRowKeys: React.Key[], selectedRows: IDatabase[]) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+          getCheckboxProps: (record: IDatabase) => {
+            const hasChangeAuth = record.authorizedPermissionTypes?.includes(
+              DatabasePermissionType.CHANGE,
+            );
+            const hasQueryAuth = record.authorizedPermissionTypes?.includes(
+              DatabasePermissionType.QUERY,
+            );
+            const disabled =
+              !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
+            return {
+              disabled: disabled,
+              name: record.name,
+            };
+          },
+        }}
         scroll={{
           x: 920,
         }}

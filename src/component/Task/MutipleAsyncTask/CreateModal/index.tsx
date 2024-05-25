@@ -5,6 +5,7 @@ import ODCDragger from '@/component/OSSDragger2';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
+  ConnectType,
   IConnection,
   SQLContentType,
   TaskExecStrategy,
@@ -50,13 +51,14 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
 import { IEnvironment } from '@/d.ts/environment';
-import _ from 'lodash';
+import _, { throttle } from 'lodash';
 import InnerSelecter from './InnerSelecter';
 import { CreateTemplateModal, SelectTemplate } from './template';
 import { runMultipleSQLLint } from '@/common/network/sql';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { IDatabase } from '@/d.ts/database';
 import { MultipleAsyncContext } from './MultipleAsyncContext';
+import { getDataSourceModeConfig } from '@/common/datasource';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 interface IProps {
   sqlStore?: SQLStore;
@@ -83,7 +85,7 @@ enum SiderTabKeys {
   SELECT_DATABASE = 'SELECT_DATABASE',
   SQL_CONTENT = 'SQL_CONTENT',
   ROLLBACK_CONTENT = 'ROLLBACK_CONTENT',
-  MORE_SETTINGs = 'MORE_SETTINGs',
+  MORE_SETTINGS = 'MORE_SETTINGS',
 }
 const items = [
   {
@@ -100,7 +102,7 @@ const items = [
   },
   {
     label: '更多设置',
-    key: SiderTabKeys.MORE_SETTINGs,
+    key: SiderTabKeys.MORE_SETTINGS,
   },
 ];
 const CreateModal: React.FC<IProps> = (props) => {
@@ -109,6 +111,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
   const scrollSwitcher = useRef<Boolean>(true);
+  const formBoxRef = React.createRef<HTMLDivElement>();
   const [activeKey, setActiveKey] = useState<SiderTabKeys>(SiderTabKeys.SELECT_DATABASE);
 
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
@@ -117,6 +120,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { projectOptions, projectMap, loadProjects } = useProjects();
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
+  const [defaultDatasource, setDefaultDatasource] = useState<IConnection>();
   const _projectId = Form.useWatch<number>('projectId', form);
   const sqlContent = Form.useWatch<string>(['parameters', 'sqlContent'], form);
   const executionStrategy = Form.useWatch<TaskExecStrategy>('executionStrategy', form);
@@ -160,6 +164,36 @@ const CreateModal: React.FC<IProps> = (props) => {
       scrollSwitcher.current = true;
     });
   };
+  // src/component/ODCSetting/index.tsx
+  const listener = throttle(() => {
+    if (!scrollSwitcher.current) {
+      return;
+    }
+    // 获取容器A的当前滚动位置和高度
+    const scrollTop = formBoxRef.current?.scrollTop;
+    // 遍历所有子节点
+    const children = formBoxRef.current?.querySelectorAll<HTMLHeadingElement>('[data-name]'); // 假定子节点有共同的类名'child'
+    let min = Number.MAX_SAFE_INTEGER;
+    let key;
+    children.forEach((child) => {
+      // 获取子节点相对于容器A顶部的位置
+      const childOffsetTop = child.offsetTop;
+      let distance = childOffsetTop - scrollTop;
+      if (distance >= 0) {
+        distance = distance / 2;
+      }
+      const distanceAbs = Math.abs(distance);
+      if (distanceAbs < min) {
+        min = distanceAbs;
+        key = child.getAttribute('data-name');
+      }
+    });
+    if (!key) {
+      return;
+    }
+    setActiveKey(key);
+  }, 500);
+
   const getFileIdAndNames = (files: UploadFile[]) => {
     const ids = [];
     const names = [];
@@ -373,6 +407,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(false);
         if (res) {
           openTasksPage(TaskPageType.MULTIPLE_ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
+          modalStore.changeMultiDatabaseChangeModal(false);
         }
       })
       .catch((errorInfo) => {
@@ -398,22 +433,23 @@ const CreateModal: React.FC<IProps> = (props) => {
         },
         login.organizationId?.toString(),
       );
-
-      setExecuteOrPreCheckSql(sqlContent);
-      setSqlChanged(false);
-      setHasPreCheck(true);
-      setPreLoading(false);
-      setLintResultSet(
-        result?.reduce((pre, cur) => {
-          cur?.checkResultList?.forEach((item) => {
-            pre.push({
-              checkResult: item,
-              database: cur?.database,
+      if (result) {
+        setExecuteOrPreCheckSql(sqlContent);
+        setSqlChanged(false);
+        setHasPreCheck(true);
+        setLintResultSet(
+          result?.reduce((pre, cur) => {
+            cur?.checkResultList?.forEach((item) => {
+              pre.push({
+                checkResult: item,
+                database: cur?.database,
+              });
             });
-          });
-          return pre;
-        }, []),
-      );
+            return pre;
+          }, []),
+        );
+      }
+      setPreLoading(false);
     }
   };
   const onEditorAfterCreatedCallback = (editor: IEditor) => {
@@ -484,6 +520,9 @@ const CreateModal: React.FC<IProps> = (props) => {
         existed: item?.existed,
       })),
     );
+    if (databaseList?.contents?.length) {
+      setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
+    }
     databaseList?.contents?.forEach((db) => {
       databaseIdMap.set(db.id, false);
     });
@@ -505,7 +544,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         destroyOnClose
         className={styles.asyncTask}
         width={905}
-        title="新建多库表更工单"
+        title="新建多库变更工单"
         footer={
           <Space>
             <Button
@@ -537,15 +576,11 @@ const CreateModal: React.FC<IProps> = (props) => {
           handleCancel(hasEdit);
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-          }}
-        >
+        <div className={styles.content} ref={formBoxRef} onScroll={listener}>
           <div
             style={{
               flexGrow: 1,
-              maxWidth: 'calc(100% - 120px)',
+              maxWidth: 'calc(100% - 136px)',
             }}
           >
             <Form
@@ -824,8 +859,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                 >
                   <CommonIDE
                     ref={editorRef}
-                    // initialSQL={initSqlContent}
-                    language={'sql'}
+                    language={
+                      getDataSourceModeConfig(defaultDatasource?.type || ConnectType.OB_MYSQL)?.sql
+                        ?.language
+                    }
                     onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
                     onSQLChange={(sql) => {
                       handleSqlChange('sqlContent', sql);
@@ -1017,7 +1054,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   </ODCDragger>
                 </Form.Item>
               </div>
-              <div data-name={SiderTabKeys.MORE_SETTINGs}>
+              <div data-name={SiderTabKeys.MORE_SETTINGS}>
                 <FormItemPanel label="SQL 执行设置" keepExpand>
                   <Space size={24}>
                     <Form.Item
